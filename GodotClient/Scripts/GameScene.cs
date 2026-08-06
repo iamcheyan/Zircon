@@ -285,9 +285,12 @@ public partial class GameScene : Control
 
     private void SpawnEffectAt(int cellX, int cellY)
     {
-        var fx = new EffectNode();
+        // M6: 通用序列帧特效 (替代 M5 EffectNode 单帧占位)
+        // Magic.Zl 爆炸帧 580 起 10 帧, 每帧 100ms, Blend 半透明 (参考原版火球爆炸)
+        var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
+        fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
+        fx.Blend = true;
     }
 
     // 血量变化: 受伤扣血并显示血条 (Miss/Block 只播动画不扣)
@@ -602,6 +605,7 @@ public partial class GameScene : Control
             (cellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX,
             (cellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY);
     }
+
 
     public override void _Input(InputEvent @event)
     {
