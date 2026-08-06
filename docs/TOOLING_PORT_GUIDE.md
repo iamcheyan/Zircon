@@ -101,7 +101,7 @@
   - `zircon-image convert --in <dir> --out <dir>`(WTL→Zl,递归)
   - `zircon-image pack --in <dir> --out <dir>`(BMP+Placements.txt→Zl)
   - `zircon-image thumb --dir <dir>`(大图缩到 800×600)
-- **收益**:比 Windows 版更好用——能进 shell 脚本,能 `find | xargs` 批量。仓库已有先例:`Tools/convert_audio_to_ogg.cmd`、`Tools/download_zircon_assets.sh` 都是"资源批处理脚本化"趋势。
+- **收益**:比 Windows 版更好用——能进 shell 脚本,能 `find | xargs` 批量。仓库已有先例:`Tools/convert_audio_to_ogg.cmd`、`Tools/setup_environment.sh` 都是"资源批处理脚本化"趋势。
 - **技术点**:GDI+ 读 BMP 换成 Godot 的 `Image.LoadBmpFromBuffer`(或 ImageSharp NuGet);进度条换 `Console.WriteLine`;`Parallel.For` 照用。
 - **前置**:先移植 `WTLLibrary.cs` 读取(当前唯一未移植的格式层)。
 

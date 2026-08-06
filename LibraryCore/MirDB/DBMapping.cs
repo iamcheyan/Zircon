@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,8 +37,10 @@ namespace MirDB
 
             if (Type == null)
             {
+                Console.WriteLine($"[DB] GetType 失败: {typeName}");
                 typeName = typeName.Replace("Server.DBModels", "Library.SystemModels");
-                Type = Assembly.GetEntryAssembly().GetType(typeName) ?? Assembly.GetCallingAssembly().GetType(typeName);
+                Type = Assembly.GetEntryAssembly()?.GetType(typeName) ?? Assembly.GetCallingAssembly().GetType(typeName);
+                Console.WriteLine($"[DB] fallback 结果: {(Type == null ? "null" : Type.FullName)}");
             }
 
             int count = reader.ReadInt32();

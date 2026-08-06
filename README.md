@@ -69,7 +69,7 @@
 - **Godot 4.x .NET 版**：Fedora 源的是标准版（无 C# 支持），需从官网下载 `_mono_linux_arm64.zip`（本机已装 4.6.3 mono，软链 `~/.local/bin/godot-mono`）。**不要**用标准版打开 C# 工程。
 - **ServerDb 探测工具**：`dotnet run --project Tools/SystemDbProbe -- <Database目录>`（验证逻辑层 + 数据可读）
 - **启动 Godot 客户端**：`~/.local/bin/godot-mono --path GodotClient/`（需先启动服务端）；headless 测试加 `--headless -- --auto-login`
-- **资产下载**：`bash Tools/download_zircon_assets.sh [目标目录]`（需要 curl；建议装 aria2c 并行下载）
+- **一键还原环境**：`bash Tools/setup_environment.sh`（下载 System.db + 全部 Data/Map/Sound 资源到 `Debug/Client/`，并还原环境修复：Map Data 目录重组织、HorseS/MagicEx 落位、Data/System.db 副本；需要 curl，建议装 aria2c 并行）；可选 `--server-dir` 搭建服务端运行目录、`--convert-ogg` 转换音频、`--skip-data` 只拉数据库
 
 ## 六、仓库结构
 

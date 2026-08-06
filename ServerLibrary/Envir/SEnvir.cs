@@ -3996,6 +3996,7 @@ namespace Server.Envir
         }
         public static void StartGame(C.StartGame p, SConnection con)
         {
+            Console.WriteLine($"[Srv] StartGame charIdx={p.CharacterIndex} accountChars={con.Account?.Characters?.Count} allowStart={Config.AllowStartGame}");
             if (!Config.AllowStartGame)
             {
                 con.Enqueue(new S.StartGame { Result = StartGameResult.Disabled });
@@ -4019,9 +4020,10 @@ namespace Server.Envir
                     con.Enqueue(new S.StartGame { Result = StartGameResult.Delayed, Duration = Config.RelogDelay - duration });
                     return;
                 }
-
+                Console.WriteLine($"[Srv] StartGame 找到角色 {character.CharacterName}, 创建 PlayerObject...");
                 PlayerObject player = new PlayerObject(character, con);
                 player.StartGame();
+                Console.WriteLine($"[Srv] StartGame player.StartGame() 完成");
                 return;
             }
 
