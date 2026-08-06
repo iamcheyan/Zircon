@@ -58,7 +58,7 @@
 |---|---|---|
 | 第 0 步 | Linux 编译 ServerLibrary + 读 System.db（验证逻辑层跨平台、数据可读） | ✅ **已完成**：0 警告 0 错误；`Tools/SystemDbProbe` 读出 244 地图 / 309 怪物 / 1078 物品 / 174 魔法 / 1471 刷新点 |
 | 第 1 步 | 服务端本机跑起来 + 协议链路验证 | ✅ **已完成**：ServerCore 监听 127.0.0.1:7000；`Tools/ClientProbe`（继承 BaseConnection）走通握手→GoodVersion→Login，服务端返回 `BadPassword`（业务逻辑响应）。修复了 MirDB 路径分隔符跨平台坑（[`03`](docs/notes/03-服务端在Linux跑通-路径分隔符坑与修复.md)），协议链路验证见 [`04`](docs/notes/04-协议链路验证-最小客户端走通登录流程.md) |
-| 第 2 步 | Godot 客户端骨架：连接服务端 + 登录/选角色 UI（复用 BaseConnection） | ⏳ 未开始 |
+| 第 2 步 | Godot 客户端骨架：连接服务端 + 登录/选角色 UI（复用 BaseConnection） | ✅ **已完成**：`GodotClient/` 工程引用 LibraryCore（Godot.NET.Sdk/4.6.0 + net10.0）；headless 验证走通登录→建角色→选角色→StartGame 全流程（服务端返回 `Delayed` 是冷却保护，非 bug）。详见 [`docs/notes/05`](docs/notes/05-Godot客户端骨架-登录与选角色全流程走通.md) |
 | 第 3 步 | Godot 写 `.Zl` / `.map` 读取器（移植自 LibraryEditor），地图与图库渲染 | ⏳ 未开始 |
 | 第 4 步 | 逐 packet 接渲染：走路 → 攻击 → 背包 → 魔法，直至可玩 | ⏳ 未开始 |
 | 第 5 步（远期） | 客户端导出 web，连远程服务端 | 💤 规划中 |
@@ -68,7 +68,7 @@
 - **.NET 10 SDK**：`sudo dnf install dotnet-sdk-10.0`（本机已装 10.0.110）
 - **Godot 4.x .NET 版**：Fedora 源的是标准版（无 C# 支持），需从官网下载 `_mono_linux_arm64.zip`（本机已装 4.6.3 mono，软链 `~/.local/bin/godot-mono`）。**不要**用标准版打开 C# 工程。
 - **ServerDb 探测工具**：`dotnet run --project Tools/SystemDbProbe -- <Database目录>`（验证逻辑层 + 数据可读）
-- **启动服务端**：`dotnet build ServerCore/ServerCore.csproj` → 在工作目录放好 `Database/`、`Map/` → `dotnet ServerCore.dll`（详见 docs/notes/03 §3）
+- **启动 Godot 客户端**：`~/.local/bin/godot-mono --path GodotClient/`（需先启动服务端）；headless 测试加 `--headless -- --auto-login`
 - **资产下载**：`bash Tools/download_zircon_assets.sh [目标目录]`（需要 curl；建议装 aria2c 并行下载）
 
 ## 六、仓库结构
@@ -78,13 +78,13 @@ Server/          DevExpress 可视化编辑器（Windows only，不参与重构�
 ServerLibrary/   服务端核心逻辑 —— 原样复用
 ServerCore/      无头服务端 host（Linux 可跑，已验证）
 LibraryCore/     共享库：MirDB / SystemModels / 网络 packet（BaseConnection 跨平台）
+GodotClient/     Godot C# 客户端（引用 LibraryCore，登录+选角色已通）
 LibraryEditor/   .Zl 图库编辑器（读取器可移植到 Godot）
 RenderingCore/   客户端渲染（Windows only）
-Tools/           资产下载脚本 + SystemDbProbe（数据探测）+ ServerProbe（加载复现）
+Tools/           资产下载脚本 + SystemDbProbe + ServerProbe + ClientProbe + AccountSetup
 docs/notes/      讨论笔记（学习材料，人工整理）
 docs/database/   数据库内容文档（SystemDbProbe 自动生成）
 Debug/           构建输出 + 已下载资产（System.db / .Zl / .map / .wav）
-```
 
 ---
 

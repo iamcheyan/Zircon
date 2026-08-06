@@ -1,0 +1,13 @@
+config_version=5
+
+[application]
+config/name="ZirconClient"
+run/main_scene="res://Scenes/LoginScene.tscn"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+
+[autoload]
+
+NetworkManager="*res://Network/NetworkManager.cs"
+
+[dotnet]
+project/assembly_name="ZirconClient"
