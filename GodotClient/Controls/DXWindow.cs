@@ -85,12 +85,13 @@ public abstract partial class DXWindow : DXControl
         {
             if (mb.Pressed)
             {
+                // 点击窗口任意处置顶 (原版: 可见窗口 BringToFront + 点击激活)
+                WindowManager.BringToFront(this);
                 // 只允许在标题栏区域拖动
                 if (HasTitle && mb.Position.Y < TitleHeight)
                 {
                     _moving = true;
                     _moveGrabOffset = mb.Position;
-                    BringToFront();
                     AcceptEvent();
                     return;
                 }

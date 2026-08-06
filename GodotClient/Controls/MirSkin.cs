@@ -26,8 +26,9 @@ public static class MirSkin
         if (_libraries.TryGetValue(file, out var lib)) return lib;
         if (!Libraries.LibraryList.TryGetValue(file, out string path)) return null;
 
-        string p = path.StartsWith("Data/") ? path.Substring(5) : path;
-        p = p.Replace('\\', '/');
+        // LibraryList 路径是 Windows 格式 "Data\xxx.Zl": 先转正斜杠再剥 Data/ 前缀
+        string p = path.Replace('\\', '/');
+        if (p.StartsWith("Data/")) p = p.Substring(5);
         string full = Path.Combine(DataPath, p);
         if (!File.Exists(full)) return null;
 

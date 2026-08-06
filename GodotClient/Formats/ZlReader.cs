@@ -8,7 +8,7 @@ using Rectangle = System.Drawing.Rectangle;
 namespace ZirconClient.Formats;
 
 // .Zl 图库读取器（移植自 RenderingCore/Library/MirLibrary.cs + ZlImageMetadata.cs）
-// 支持旧格式（version 0/1），不支持 ZL2 压缩容器（仅 7 个文件用，后续补）
+// 支持旧格式（version 0/1）与 ZL2 压缩容器（version 2, Deflate 压缩, 按 entry 索引）
 public sealed class ZlLibrary : IDisposable
 {
     public int Version;
@@ -18,6 +18,9 @@ public sealed class ZlLibrary : IDisposable
     public string FileName { get; }
 
     private readonly Dictionary<int, ImageTexture> _texCache = new();
+
+    private readonly Dictionary<int, Zl2Entry> _zl2Entries = new();
+    private bool _isZl2;
 
     public ZlLibrary(string fileName)
     {
@@ -32,18 +35,10 @@ public sealed class ZlLibrary : IDisposable
         _reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
         // 检查 ZL2 签名
-        if (_reader.BaseStream.Length >= 3)
-        {
-            long pos = _reader.BaseStream.Position;
-            byte[] sig = _reader.ReadBytes(3);
-            if (sig[0] == 'Z' && sig[1] == 'L' && sig[2] == '2')
-            {
-                GD.PrintErr($"[ZlReader] ZL2 压缩容器格式暂不支持: {Path.GetFileName(FileName)}");
-                Images = Array.Empty<ZlImage>();
-                return;
-            }
-            _reader.BaseStream.Seek(pos, SeekOrigin.Begin);
-        }
+        if (TryReadCompressedContainer())
+            return;
+
+        _reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
         // 旧格式: 先读 Int32(元数据块大小) → 读该块到内存 → 在内存里解析
         int metaSize = _reader.ReadInt32();
@@ -65,12 +60,76 @@ public sealed class ZlLibrary : IDisposable
         }
     }
 
+    // ZL2 压缩容器: 头部 → index 块(entry: offset/大小/压缩/编解码) → metadata 块(帧定义)
+    // 移植自 RenderingCore/Library/MirLibrary.cs TryReadCompressedContainer
+    private bool TryReadCompressedContainer()
+    {
+        if (_reader.BaseStream.Length < 43) return false;
+        long pos = _reader.BaseStream.Position;
+        byte[] sig = _reader.ReadBytes(3);
+        if (sig.Length != 3 || sig[0] != 'Z' || sig[1] != 'L' || sig[2] != '2')
+        {
+            _reader.BaseStream.Seek(pos, SeekOrigin.Begin);
+            return false;
+        }
+
+        _reader.ReadInt32(); // Version
+        int imageCount = _reader.ReadInt32();
+        int atlasCount = _reader.ReadInt32();
+        _reader.ReadByte();  // 默认压缩
+        int flags = _reader.ReadByte();
+        _reader.ReadInt16(); // 保留
+        long metadataOffset = _reader.ReadInt64();
+        int metadataSize = _reader.ReadInt32();
+        long indexOffset = _reader.ReadInt64();
+        int indexSize = _reader.ReadInt32();
+
+        _zl2Entries.Clear();
+        _reader.BaseStream.Seek(indexOffset, SeekOrigin.Begin);
+        using (var indexStream = new MemoryStream(_reader.ReadBytes(indexSize)))
+        using (var indexReader = new BinaryReader(indexStream))
+        {
+            int entryCount = indexReader.ReadInt32();
+            for (int i = 0; i < entryCount; i++)
+            {
+                Zl2Entry entry = Zl2Entry.Read(indexReader);
+                _zl2Entries[entry.Id] = entry;
+            }
+        }
+
+        _reader.BaseStream.Seek(metadataOffset, SeekOrigin.Begin);
+        using (var metadataStream = new MemoryStream(_reader.ReadBytes(metadataSize)))
+        using (var reader = new BinaryReader(metadataStream))
+        {
+            Version = reader.ReadInt32();
+            int count = reader.ReadInt32();
+            reader.ReadInt32(); // AtlasGroupImageCount
+            reader.ReadInt32(); // AtlasPageSize
+            Images = new ZlImage[count];
+
+            for (int i = 0; i < Images.Length; i++)
+            {
+                if (!reader.ReadBoolean()) continue;
+                Images[i] = ZlImage.Read(reader, Version);
+            }
+            // atlas 页与 layer mappings 本端用不到(GetUseZlAtlasPages=false), 块内自包含, 无需继续读
+            _ = flags; _ = atlasCount; _ = imageCount;
+        }
+
+        _isZl2 = true;
+        return true;
+    }
+
     // 读取第 index 帧的像素数据，返回 BGRA32 byte[]
     public byte[] GetImageData(int index)
     {
         if (index < 0 || index >= Images.Length) return null;
         var img = Images[index];
-        if (img == null || img.Position == 0 || img.Width <= 0 || img.Height <= 0) return null;
+        if (img == null || img.Width <= 0 || img.Height <= 0) return null;
+
+        // ZL2: Position 即 entry Id (0 也是合法 id)
+        if (_isZl2) return GetZl2ImageData(img);
+        if (img.Position == 0) return null;
 
         int dataSize = img.GetDataSize();
         byte[] buffer;
@@ -81,6 +140,61 @@ public sealed class ZlLibrary : IDisposable
         }
 
         return ZlImageCodecUtil.DecodeToBgra(buffer, img.ImageCodec, img.Width, img.Height);
+    }
+
+    // ZL2: entry → 压缩段 → Deflate 解压 → primary 段(offset 0, StoredImageDataSize) 按元数据 codec 解码;
+    // primary 失败时回退 Bc7 段
+    private byte[] GetZl2ImageData(ZlImage img)
+    {
+        if (!_zl2Entries.TryGetValue(img.Position, out Zl2Entry entry)) return null;
+
+        byte[] payload;
+        lock (_reader)
+        {
+            _reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
+            payload = _reader.ReadBytes(entry.CompressedSize);
+        }
+        byte[] raw = entry.Compression == ZlContainerCompression.None
+            ? payload
+            : DecompressDeflate(payload, entry.UncompressedSize);
+        if (raw == null || raw.Length == 0) return null;
+
+        // primary 段
+        int primarySize = img.GetDataSize();
+        if (primarySize <= 0 || primarySize > raw.Length) primarySize = raw.Length;
+        byte[] segment = primarySize == raw.Length ? raw : raw[..primarySize];
+
+        byte[] bgra = ZlImageCodecUtil.DecodeToBgra(segment, img.ImageCodec, img.Width, img.Height);
+        int expected = img.Width * img.Height * 4;
+        if (bgra.Length == expected) return bgra;
+
+        // 回退: Bc7 段 (primary 段之后, Bc7DataSize 字节)
+        if (img.Bc7DataSize > 0 && primarySize + img.Bc7DataSize <= raw.Length)
+        {
+            byte[] bc7Seg = raw.AsSpan(primarySize, img.Bc7DataSize).ToArray();
+            bgra = ZlImageCodecUtil.DecodeToBgra(bc7Seg, ZlImageCodec.Bc7, img.Width, img.Height);
+            if (bgra.Length == expected) return bgra;
+        }
+
+        GD.PrintErr($"[ZlReader] ZL2 帧 {img.Position} 解码尺寸不符: w={img.Width} h={img.Height} codec={img.ImageCodec} primary={primarySize}");
+        return bgra;
+    }
+
+    private static byte[] DecompressDeflate(byte[] payload, int uncompressedSize)
+    {
+        try
+        {
+            using var input = new MemoryStream(payload);
+            using var deflate = new System.IO.Compression.DeflateStream(input, System.IO.Compression.CompressionMode.Decompress);
+            using var output = new MemoryStream(uncompressedSize);
+            deflate.CopyTo(output);
+            return output.ToArray();
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[ZlReader] Deflate 解压失败: {ex.Message}");
+            return null;
+        }
     }
 
     // 读取第 index 帧，返回 Godot ImageTexture (带缓存, 避免重复解码)
@@ -196,6 +310,39 @@ public sealed class ZlImage
 public enum ZlImageCodec : byte
 {
     Dxt1, Dxt5, Bgra32, Bc7, Png,
+}
+
+// ZL2 容器条目 (移植自 RenderingCore/LibraryFormat/ZlFormat.cs)
+public enum ZlContainerCompression : byte
+{
+    None,
+    DeflateFast,
+    DeflateBest,
+}
+
+public sealed class Zl2Entry
+{
+    public byte Type;
+    public int Id;
+    public int UncompressedSize;
+    public int CompressedSize;
+    public long Offset;
+    public ZlContainerCompression Compression;
+    public ZlImageCodec Codec;
+
+    public static Zl2Entry Read(BinaryReader reader)
+    {
+        return new Zl2Entry
+        {
+            Type = reader.ReadByte(),
+            Id = reader.ReadInt32(),
+            UncompressedSize = reader.ReadInt32(),
+            CompressedSize = reader.ReadInt32(),
+            Offset = reader.ReadInt64(),
+            Compression = (ZlContainerCompression)reader.ReadByte(),
+            Codec = (ZlImageCodec)reader.ReadByte(),
+        };
+    }
 }
 
 // 编解码工具

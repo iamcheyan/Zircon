@@ -36,6 +36,7 @@ public partial class PlayerRenderer : Node2D
     // ---- M5 战斗: 玩家血量 (DataObjectHealthMana/MaxHealthMana) ----
     public int Health;
     public int MaxHealth;
+    public int MaxMana;
     public bool ShowHealthBar;
 
     // ---- 动画状态 ----

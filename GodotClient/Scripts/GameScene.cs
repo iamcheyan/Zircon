@@ -7,6 +7,7 @@ using Library.Network;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
+using ZirconClient.Controls;
 
 namespace ZirconClient.Scripts;
 
@@ -16,6 +17,11 @@ public partial class GameScene : Control
     private MapView _mapView;
     private Label _statusLabel;
     private PlayerRenderer _player;
+
+    // M11: UI 窗口层 (与 2D 世界分层) + 窗口管理器
+    private CanvasLayer _uiLayer;
+    private StatusWindow _statusWindow;
+    private double _statusRefreshMs;
 
     // 周围物体 (怪物/NPC/物品): ObjectID -> 渲染节点
     private readonly System.Collections.Generic.Dictionary<uint, ObjectRenderer> _objects = new();
@@ -56,6 +62,13 @@ public partial class GameScene : Control
         _statusLabel.Size = new Vector2(500, 80);
         _statusLabel.ZIndex = 100;
         AddChild(_statusLabel);
+
+        // M11: 窗口层 CanvasLayer, 所有窗口挂这里 (独立于 2D 世界, 永远最顶层)
+        _uiLayer = new CanvasLayer();
+        _uiLayer.Layer = 10;
+        AddChild(_uiLayer);
+
+        _statusWindow = new StatusWindow(); // 初始隐藏, F2 打开
 
         _net.Connection.StartGameResultEvent += OnStartGameResult;
         _net.Connection.MapChangedEvent += OnMapChanged;
@@ -357,6 +370,7 @@ public partial class GameScene : Control
     {
         if (_player == null) return;
         _player.MaxHealth = maxHealth;
+        _player.MaxMana = maxMana;
         if (_player.Health <= 0) _player.Health = maxHealth;
     }
 
@@ -529,6 +543,17 @@ public partial class GameScene : Control
     {
         UpdateViewRange();
 
+        // M11: 状态窗口节流刷新 (200ms)
+        if (_statusWindow != null && _statusWindow.Visible && _player != null)
+        {
+            double nowMs = Godot.Time.GetTicksMsec();
+            if (nowMs - _statusRefreshMs > 200)
+            {
+                _statusRefreshMs = nowMs;
+                RefreshStatusWindow();
+            }
+        }
+
         // 移动插值: 在 Walking 帧时长内从起点插到终点
         if (_moveFrameCount > 1 && _player != null)
         {
@@ -582,6 +607,18 @@ public partial class GameScene : Control
         _mapView.ViewRangeY = Math.Max(_mapView.ViewRangeY, vry);
     }
 
+    // M11: 填充状态窗口 (玩家真实数据)
+    private void RefreshStatusWindow()
+    {
+        string mapName = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex)?.Description ?? $"Map{_playerMapIndex}";
+        string className = StartInfo?.Class.ToString() ?? "-";
+        _statusWindow.Refresh(
+            StartInfo?.Name ?? "-", className,
+            _player.Health, _player.MaxHealth, _player.MaxMana,
+            _playerLocation.X, _playerLocation.Y, _playerDirection,
+            mapName, _objects.Count);
+    }
+
     // 相机锚定玩家后, 计算所有周围物体的屏幕位置 (含移动像素偏移 OffsetX/OffsetY)
     private void UpdateObjectPositions()
     {
@@ -616,6 +653,17 @@ public partial class GameScene : Control
     {
         if (@event is not InputEventKey key || !key.Pressed) return;
         if (_net?.Connection?.Connected != true) return;
+
+        // M11: F2 开关状态窗口, Esc 关闭最上层窗口
+        if (key.Keycode == Key.F2)
+        {
+            WindowManager.Toggle(_statusWindow, _uiLayer);
+            return;
+        }
+        if (key.Keycode == Key.Escape)
+        {
+            if (WindowManager.CloseTop()) return;
+        }
 
         MirDirection? dir = key.Keycode switch
         {
