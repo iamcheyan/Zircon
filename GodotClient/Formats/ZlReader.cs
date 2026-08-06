@@ -136,6 +136,8 @@ public sealed class ZlImage
     public short OverlayWidth, OverlayHeight;
     public ZlImageCodec ImageCodec;
     public int StoredImageDataSize;
+    public int Bc7DataSize;
+    public int FallbackDataSize;
 
     public static ZlImage Read(BinaryReader reader, int version)
     {
@@ -168,7 +170,8 @@ public sealed class ZlImage
             reader.ReadByte(); // OverlayCodec
             reader.ReadByte(); reader.ReadByte(); reader.ReadByte(); // RuntimePreferences
             img.StoredImageDataSize = reader.ReadInt32();
-            reader.ReadInt32(); reader.ReadInt32(); // ImageBc7DataSize, ImageFallbackDataSize
+            img.Bc7DataSize = reader.ReadInt32();
+            img.FallbackDataSize = reader.ReadInt32();
             reader.ReadInt32(); reader.ReadInt32(); reader.ReadInt32(); // Shadow sizes
             reader.ReadInt32(); reader.ReadInt32(); reader.ReadInt32(); // Overlay sizes
         }

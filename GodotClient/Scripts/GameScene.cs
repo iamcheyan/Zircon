@@ -16,6 +16,9 @@ public partial class GameScene : Control
     private Label _statusLabel;
     private PlayerRenderer _player;
 
+    // 周围物体 (怪物/NPC/物品): ObjectID -> 渲染节点
+    private readonly System.Collections.Generic.Dictionary<uint, ObjectRenderer> _objects = new();
+
     // SelectScene 传入的进游戏信息(StartGame 回包在场景创建前已处理完)
     public StartInformation StartInfo { get; set; }
 
@@ -35,13 +38,13 @@ public partial class GameScene : Control
     private System.Drawing.Point _moveFrom;
     private double _moveStartMs;
     private int _moveFrameCount = 1;
-
     public override void _Ready()
     {
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");
 
         _mapView = new MapView();
         AddChild(_mapView);
+        UpdateViewRange();
 
         _player = new PlayerRenderer();
         _player.ZIndex = 50;
@@ -57,6 +60,14 @@ public partial class GameScene : Control
         _net.Connection.MapChangedEvent += OnMapChanged;
         _net.Connection.UserLocationEvent += OnUserLocation;
         _net.Connection.ObjectMoveEvent += OnObjectMove;
+        _net.Connection.ObjectMonsterEvent += OnObjectMonster;
+        _net.Connection.ObjectNPCEvent += OnObjectNPC;
+        _net.Connection.ObjectItemEvent += OnObjectItem;
+        _net.Connection.ObjectRemoveEvent += OnObjectRemove;
+        _net.Connection.ObjectTurnEvent += OnObjectTurn;
+
+        // StartGame 突发包在 _Ready 前已被 Process 处理(订阅未生效), 一次性排空积压队列
+        DrainPendingObjects();
 
         if (StartInfo != null)
         {
@@ -79,6 +90,11 @@ public partial class GameScene : Control
             _net.Connection.MapChangedEvent -= OnMapChanged;
             _net.Connection.UserLocationEvent -= OnUserLocation;
             _net.Connection.ObjectMoveEvent -= OnObjectMove;
+            _net.Connection.ObjectMonsterEvent -= OnObjectMonster;
+            _net.Connection.ObjectNPCEvent -= OnObjectNPC;
+            _net.Connection.ObjectItemEvent -= OnObjectItem;
+            _net.Connection.ObjectRemoveEvent -= OnObjectRemove;
+            _net.Connection.ObjectTurnEvent -= OnObjectTurn;
         }
     }
 
@@ -101,7 +117,7 @@ public partial class GameScene : Control
             GD.Print($"[Game] 进入游戏! 玩家: {_pendingStartInfo.Name}, 位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}), 方向: {_pendingStartInfo.Direction}, 地图: {_pendingStartInfo.MapIndex}");
             _statusLabel.Text = $"进入游戏: {_pendingStartInfo.Name}\n位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}) 方向: {_pendingStartInfo.Direction}";
 
-            LoadPlayerMap();
+            LoadPlayerMap(clearObjects: false);
         }
         else
         {
@@ -133,11 +149,92 @@ public partial class GameScene : Control
 
     private void OnObjectMove(uint objectID, MirDirection dir, System.Drawing.Point loc, int distance)
     {
-        if (objectID != _playerObjectID) return; // 只处理自己的移动(其他玩家 M4)
-        _pendingDir = dir;
-        _pendingX = loc.X;
-        _pendingY = loc.Y;
-        CallDeferred(nameof(ShowUserLocation));
+        if (objectID == _playerObjectID)
+        {
+            _pendingDir = dir;
+            _pendingX = loc.X;
+            _pendingY = loc.Y;
+            CallDeferred(nameof(ShowUserLocation));
+            return;
+        }
+
+        // 其他玩家/怪物移动 (M4)
+        if (_objects.TryGetValue(objectID, out var ob))
+            ob.StartMove(loc, dir);
+    }
+
+    private void OnObjectMonster(S.ObjectMonster p)
+    {
+        GD.Print($"[Game] OnObjectMonster: ObjectID={p.ObjectID} MonsterIndex={p.MonsterIndex} Dead={p.Dead}");
+        if (_objects.ContainsKey(p.ObjectID)) return; // 已有(重复包)
+        var ob = ObjectRenderer.CreateMonster(p);
+        if (ob == null) return;
+        AddObject(ob, p.ObjectID, zIndex: 40);
+    }
+
+    private void OnObjectNPC(S.ObjectNPC p)
+    {
+        if (_objects.ContainsKey(p.ObjectID)) return;
+        var ob = ObjectRenderer.CreateNPC(p);
+        if (ob == null) return;
+        AddObject(ob, p.ObjectID, zIndex: 40);
+    }
+
+    private void OnObjectItem(S.ObjectItem p)
+    {
+        if (_objects.ContainsKey(p.ObjectID)) return;
+        var ob = ObjectRenderer.CreateItem(p);
+        if (ob == null) return;
+        AddObject(ob, p.ObjectID, zIndex: 30);
+    }
+
+    private void OnObjectRemove(uint objectID)
+    {
+        if (!_objects.Remove(objectID, out var ob)) return;
+        ob.QueueFree();
+        GD.Print($"[Game] 移除物体: ObjectID={objectID}");
+    }
+
+    private void OnObjectTurn(uint objectID, MirDirection dir)
+    {
+        if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Direction = dir;
+            ob.QueueRedraw();
+        }
+    }
+
+    // 排空 StartGame 突发积压包(顺序与服务器一致: Move/Turn/Monster/NPC/Item/Remove)
+    private void DrainPendingObjects()
+    {
+        var conn = _net.Connection;
+        while (conn.PendingMoves.Count > 0)
+        {
+            var m = conn.PendingMoves.Dequeue();
+            OnObjectMove(m.ObjectID, m.Direction, m.Location, m.Distance);
+        }
+        while (conn.PendingTurns.Count > 0)
+        {
+            var (id, dir) = conn.PendingTurns.Dequeue();
+            OnObjectTurn(id, dir);
+        }
+        while (conn.PendingMonsters.Count > 0)
+            OnObjectMonster(conn.PendingMonsters.Dequeue());
+        while (conn.PendingNPCs.Count > 0)
+            OnObjectNPC(conn.PendingNPCs.Dequeue());
+        while (conn.PendingItems.Count > 0)
+            OnObjectItem(conn.PendingItems.Dequeue());
+        while (conn.PendingRemoves.Count > 0)
+            OnObjectRemove(conn.PendingRemoves.Dequeue());
+    }
+
+    private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
+    {        ob.ObjectID = objectID;
+        ob.ZIndex = zIndex;
+        AddChild(ob);
+        _objects[objectID] = ob;
+        UpdateObjectPositions();
+        GD.Print($"[Game] 添加物体: {ob.Type} '{ob.DisplayName}' ObjectID={objectID} Cell=({ob.CellX},{ob.CellY})");
     }
 
     private void ShowUserLocation()
@@ -157,7 +254,9 @@ public partial class GameScene : Control
         _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
     }
 
-    private void LoadPlayerMap()
+    private void LoadPlayerMap() => LoadPlayerMap(clearObjects: true);
+
+    private void LoadPlayerMap(bool clearObjects)
     {
         var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
         if (mapInfo == null)
@@ -169,14 +268,25 @@ public partial class GameScene : Control
 
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
         _mapView.LoadMap(mapInfo.FileName);
-        _player.CellX = _playerLocation.X;
-        _player.CellY = _playerLocation.Y;
-        _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
-        UpdatePlayerPosition();
+
+        // 换图: 清空旧地图的周围物体 (首次进图时 _objects 里是 Drain 的新图对象, 不清)
+        if (clearObjects)
+        {
+            foreach (var ob in _objects.Values)
+                ob.QueueFree();
+            _objects.Clear();
+        }
+
+            _player.CellX = _playerLocation.X;
+            _player.CellY = _playerLocation.Y;
+            _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
+            UpdatePlayerPosition();
     }
 
     public override void _Process(double delta)
     {
+        UpdateViewRange();
+
         // 移动插值: 在 Walking 帧时长内从起点插到终点
         if (_moveFrameCount > 1 && _player != null)
         {
@@ -216,6 +326,36 @@ public partial class GameScene : Control
 
         _player.Position = new Vector2(px, py);
         _mapView.CenterOn(_player.CellX, _player.CellY);
+        UpdateObjectPositions();
+    }
+
+    // 视野范围随视口尺寸自适应 (窗口模式视口大, 固定 12x15 画不满)
+    private void UpdateViewRange()
+    {
+        if (_mapView == null) return;
+        var vp = GetViewport().GetVisibleRect().Size;
+        int vrx = (int)Math.Ceiling(vp.X / (2f * 48)) + 1;
+        int vry = (int)Math.Ceiling(vp.Y / (2f * 32)) + 1;
+        _mapView.ViewRangeX = Math.Max(_mapView.ViewRangeX, vrx);
+        _mapView.ViewRangeY = Math.Max(_mapView.ViewRangeY, vry);
+    }
+
+    // 相机锚定玩家后, 计算所有周围物体的屏幕位置
+    private void UpdateObjectPositions()
+    {
+        if (_mapView?.Map == null) return;
+
+        const int CellWidth = 48;
+        const int CellHeight = 32;
+        float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
+        float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
+
+        foreach (var ob in _objects.Values)
+        {
+            ob.Position = new Vector2(
+                (ob.CellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX,
+                (ob.CellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY);
+        }
     }
 
     public override void _Input(InputEvent @event)

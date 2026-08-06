@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using Godot;
 using Library;
 using Library.Network;
@@ -39,6 +40,19 @@ public partial class ServerConnection : BaseConnection
     public event Action<int, int> MapChangedEvent;       // mapIndex, instanceIndex
     public event Action<MirDirection, System.Drawing.Point> UserLocationEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, int> ObjectMoveEvent; // objectID, dir, loc, distance
+    public event Action<S.ObjectMonster> ObjectMonsterEvent;
+    public event Action<S.ObjectNPC> ObjectNPCEvent;
+    public event Action<S.ObjectItem> ObjectItemEvent;
+    public event Action<uint> ObjectRemoveEvent;
+    public event Action<uint, MirDirection> ObjectTurnEvent;
+    // StartGame 突发包缓冲: GameScene._Ready 前的事件订阅来不及, 这些包在订阅前已被 Process 丢弃。
+    // Process 里 Enqueue + Invoke 双发; GameScene._Ready 一次性 Drain 积压, 之后靠事件接实时包。
+    public readonly Queue<S.ObjectMove> PendingMoves = new();
+    public readonly Queue<S.ObjectMonster> PendingMonsters = new();
+    public readonly Queue<S.ObjectNPC> PendingNPCs = new();
+    public readonly Queue<S.ObjectItem> PendingItems = new();
+    public readonly Queue<uint> PendingRemoves = new();
+    public readonly Queue<(uint, MirDirection)> PendingTurns = new();
 
     public void Process(G.Connected p)
     {
@@ -85,7 +99,38 @@ public partial class ServerConnection : BaseConnection
 
     public void Process(S.ObjectMove p)
     {
+        PendingMoves.Enqueue(p);
         ObjectMoveEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.Distance);
+    }
+
+    public void Process(S.ObjectMonster p)
+    {
+        PendingMonsters.Enqueue(p);
+        ObjectMonsterEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectNPC p)
+    {
+        PendingNPCs.Enqueue(p);
+        ObjectNPCEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectItem p)
+    {
+        PendingItems.Enqueue(p);
+        ObjectItemEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectRemove p)
+    {
+        PendingRemoves.Enqueue(p.ObjectID);
+        ObjectRemoveEvent?.Invoke(p.ObjectID);
+    }
+
+    public void Process(S.ObjectTurn p)
+    {
+        PendingTurns.Enqueue((p.ObjectID, p.Direction));
+        ObjectTurnEvent?.Invoke(p.ObjectID, p.Direction);
     }
 
     // UI 层调用: 发包
