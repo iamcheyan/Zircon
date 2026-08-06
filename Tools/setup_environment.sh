@@ -38,7 +38,7 @@ SYSTEM_DB_SHA256="c43ed64125dbd651a955b62409b7bb80594d9eda46bb800e1bca4423d9ccc4
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-CLIENT_DIR="$REPO_ROOT/Debug/Client"
+CLIENT_DIR="${CLIENT_DIR:-$REPO_ROOT/Debug/Client}"
 SERVER_DIR=""
 CONVERT_OGG=0
 SKIP_DATA=0
@@ -52,7 +52,12 @@ usage() {
 while [ $# -gt 0 ]; do
     case "$1" in
         --client-dir) CLIENT_DIR="${2:?--client-dir 需要目录}"; shift 2 ;;
-        --server-dir) SERVER_DIR="${2:-$REPO_ROOT/Debug/ServerCore}"; [ "${2:-}" != "" ] && shift; shift ;;
+        --server-dir)
+            case "${2:-}" in
+                ""|-*) SERVER_DIR="$REPO_ROOT/Debug/ServerCore" ;;
+                *) SERVER_DIR="$2"; shift ;;
+            esac
+            shift ;;
         --convert-ogg) CONVERT_OGG=1; shift ;;
         --skip-data) SKIP_DATA=1; shift ;;
         --jobs) JOBS="${2:?--jobs 需要数字}"; shift 2 ;;
@@ -286,4 +291,6 @@ fi
 echo
 echo "=== 完成 ==="
 echo "客户端资源: $CLIENT_DIR (Godot 客户端: godot-mono --path GodotClient/)"
-[ -n "$SERVER_DIR" ] && echo "服务端: $SERVER_DIR (dotnet ServerCore.dll, 监听 127.0.0.1:7000)"
+if [ -n "$SERVER_DIR" ]; then
+    echo "服务端: $SERVER_DIR (dotnet ServerCore.dll, 监听 127.0.0.1:7000)"
+fi
