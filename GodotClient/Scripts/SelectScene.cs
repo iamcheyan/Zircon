@@ -71,6 +71,7 @@ public partial class SelectScene : Control
     }
     private void AutoStartGame()
     {
+        GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={_characters[0].CharacterIndex}");
         _net.Connection?.SendStartGame(_characters[0].CharacterIndex);
     }
 
@@ -150,17 +151,38 @@ public partial class SelectScene : Control
     }
 
     private StartGameResult _pendingStartResult;
+    private StartInformation _pendingStartInfo;
     private void OnStartGameResult(StartGameResult result, StartInformation info)
     {
         _pendingStartResult = result;
+        _pendingStartInfo = info;
         CallDeferred(nameof(ShowStartGameResult));
     }
     private void ShowStartGameResult()
     {
         if (_pendingStartResult == StartGameResult.Success)
         {
-            _statusLabel.Text = "进入游戏成功! (游戏画面第3步做)";
             GD.Print($"[Select] *** StartGame 成功! 进入游戏 ***");
+            var gameScene = ResourceLoader.Load<PackedScene>("res://Scenes/GameScene.tscn");
+            var game = gameScene.Instantiate<GameScene>();
+            GetTree().Root.AddChild(game);
+            QueueFree();
+        }
+        else if (_pendingStartResult == StartGameResult.Delayed)
+        {
+            GD.Print("[Select] StartGame 冷却中, 3秒后重试...");
+            _statusLabel.Text = "冷却中, 3秒后重试...";
+            var timer = new Timer();
+            timer.WaitTime = 3.0;
+            timer.OneShot = true;
+            AddChild(timer);
+            timer.Timeout += () =>
+            {
+                GD.Print("[Select] 重试 StartGame");
+                GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={_characters[0].CharacterIndex}");
+        _net.Connection?.SendStartGame(_characters[0].CharacterIndex);
+            };
+            timer.Start();
         }
         else
         {

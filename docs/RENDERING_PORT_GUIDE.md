@@ -4155,7 +4155,7 @@ DrawLight(..., ob.DrawX + CellWidth/2F - ..., ob.DrawY + CellHeight/2F - ..., sc
 ---
 
  ---
-# 第 8 章 Godot 单机版移植对照路线(逐包实现)
+# 第 8 章 Godot 客户端移植对照路线(逐包实现)
 
 > 前提(已在前期完成):全部资源下载并通过 MD5 校验,按清单重排;客户端为 WinForms + SharpDX/Vortice D3D11,无法在 Linux/Apple Silicon 构建;`ServerCore`(net10.0,无头)在 Linux 本机 127.0.0.1:7000 原样运行,Godot 客户端经 TCP 直连(协议链路已用 ClientProbe 验证);`DevExpress 25.2.6` 仅阻塞 `Server`/`LibraryEditor`,与本方案无关。
 > 本路线把第 1-7 章的数据逐条映射到 Godot 4.x(C#)实现,供移植时对照,不再需要读客户端源码。
@@ -4291,7 +4291,7 @@ Godot 侧关键对应:
 | M2 | 包 C:玩家外观(装备换装/动画) | 原版 vs Godot 同装备帧对比 |
 | M3 | 包 D+E:怪物/NPC/物品渲染 | 同场景怪物图鉴截图对比 |
 | M4 | 包 F:魔法/特效全表 | 施放每技能,特效帧号/颜色对照文档 |
-| M5 | UI + 背包 + 战斗循环 | 完整单机流程可玩 |
+| M5 | UI + 背包 + 战斗循环 | 完整流程可玩(连本机服务端) |
 
 所有帧号、库名、音效名以本文档表格为准;发现不一致时,先查对应源码行号(文中已标注),再改文档与实现。
 

@@ -59,7 +59,7 @@
 | 第 0 步 | Linux 编译 ServerLibrary + 读 System.db（验证逻辑层跨平台、数据可读） | ✅ **已完成**：0 警告 0 错误；`Tools/SystemDbProbe` 读出 244 地图 / 309 怪物 / 1078 物品 / 174 魔法 / 1471 刷新点 |
 | 第 1 步 | 服务端本机跑起来 + 协议链路验证 | ✅ **已完成**：ServerCore 监听 127.0.0.1:7000；`Tools/ClientProbe`（继承 BaseConnection）走通握手→GoodVersion→Login，服务端返回 `BadPassword`（业务逻辑响应）。修复了 MirDB 路径分隔符跨平台坑（[`03`](docs/notes/03-服务端在Linux跑通-路径分隔符坑与修复.md)），协议链路验证见 [`04`](docs/notes/04-协议链路验证-最小客户端走通登录流程.md) |
 | 第 2 步 | Godot 客户端骨架：连接服务端 + 登录/选角色 UI（复用 BaseConnection） | ✅ **已完成**：`GodotClient/` 工程引用 LibraryCore（Godot.NET.Sdk/4.6.0 + net10.0）；headless 验证走通登录→建角色→选角色→StartGame 全流程（服务端返回 `Delayed` 是冷却保护，非 bug）。详见 [`docs/notes/05`](docs/notes/05-Godot客户端骨架-登录与选角色全流程走通.md) |
-| 第 3 步 | Godot 写 `.Zl` / `.map` 读取器（移植自 LibraryEditor），地图与图库渲染 | ⏳ 未开始 |
+| 第 3 步 | `.Zl` / `.map` 读取器 + 地图渲染 + 游戏场景骨架 | 🔨 **进行中**：.Zl 读取器（DXT1/5/BC7 解码 via BCnEncoder.NET）+ .map 解析器 + 地形渲染验证通过（Tiles30c 1080 帧解码成功，0.map 350x350 渲染完成）；GameScene 骨架就位，StartGame 回包路由有遗留问题待解。详见 [`docs/notes/06`](docs/notes/06-地图渲染-Zl图库与Map地图读取器.md) |
 | 第 4 步 | 逐 packet 接渲染：走路 → 攻击 → 背包 → 魔法，直至可玩 | ⏳ 未开始 |
 | 第 5 步（远期） | 客户端导出 web，连远程服务端 | 💤 规划中 |
 

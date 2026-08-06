@@ -13,9 +13,11 @@ public partial class NetworkManager : Node
 
     public event Action<string> Log;
 
+    private int _frameCount;
     public override void _Process(double delta)
     {
-        // 每帧处理收到的包 (BaseConnection.Process 内部循环 ReceiveList)
+        _frameCount++;
+        if (_frameCount % 300 == 0) GD.Print($"[Net] _Process frame={_frameCount} conn={Connection?.Connected}");
         if (Connection != null && Connection.Connected)
         {
             try { Connection.Process(); }

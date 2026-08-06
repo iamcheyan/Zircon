@@ -36,6 +36,8 @@ public partial class ServerConnection : BaseConnection
     public event Action<NewAccountResult> NewAccountResultEvent;
     public event Action<NewCharacterResult, SelectInfo> NewCharacterResultEvent;
     public event Action<StartGameResult, StartInformation> StartGameResultEvent;
+    public event Action<int, int> MapChangedEvent;       // mapIndex, instanceIndex
+    public event Action<MirDirection, System.Drawing.Point> UserLocationEvent;
 
     public void Process(G.Connected p)
     {
@@ -68,7 +70,16 @@ public partial class ServerConnection : BaseConnection
     }
     public void Process(S.StartGame p)
     {
+        GD.Print($"[Net] 收到 S.StartGame: Result={p.Result}");
         StartGameResultEvent?.Invoke(p.Result, p.StartInformation);
+    }
+    public void Process(S.MapChanged p)
+    {
+        MapChangedEvent?.Invoke(p.MapIndex, p.InstanceIndex);
+    }
+    public void Process(S.UserLocation p)
+    {
+        UserLocationEvent?.Invoke(p.Direction, p.Location);
     }
 
     // UI 层调用: 发包
@@ -102,6 +113,7 @@ public partial class ServerConnection : BaseConnection
     }
     public void SendStartGame(int characterIndex)
     {
+        GD.Print($"[Net] SendStartGame charIndex={characterIndex}, Connected={Connected}, SendList={(SendList?.Count ?? -1)}");
         Enqueue(new C.StartGame { CharacterIndex = characterIndex });
     }
 }
