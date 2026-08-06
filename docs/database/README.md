@@ -3,6 +3,9 @@
 本文档由 [Tools/SystemDbProbe](../../Tools/SystemDbProbe/Program.cs) 直接读取 `Debug/Server/Database/System.db` 生成，
 相当于一个**离线数据库查看器**：每一张地图、每一只怪物、每一件物品……的每个字段都能查到实际值。
 
+> **想快速浏览（不看字段，只看内容）** → 直接进 [**玩家视图**](views/README.md)：
+> 技能/怪物/物品/地图/任务/NPC 分类整理成直观条目（属性、刷新、掉落、奖励一目了然）。
+
 - **集合一览（全部表 + 记录数 + 文档入口）** → [_summary.md](_summary.md)
 - **枚举字典**（所有字段中出现的枚举成员、数值、说明） → [data/enums.md](data/enums.md)
 - **属性字典**（`Stats` 字段中出现的属性名含义） → [data/stats.md](data/stats.md)
@@ -28,6 +31,8 @@
 dotnet run --project Tools/SystemDbProbe
 # 全量生成 Markdown 文档到 docs/database/
 dotnet run --project Tools/SystemDbProbe -- --dump docs/database
+# 生成玩家视图（分类浏览，直观条目）到 docs/database/views/
+dotnet run --project Tools/SystemDbProbe -- --view docs/database/views
 ```
 
 生成规则：每个集合（表）一个文件，放在 `data/`；记录数超过 300 时自动按 Index 分段
