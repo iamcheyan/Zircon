@@ -203,6 +203,7 @@ public partial class ObjectRenderer : MapObjectNode
         {
             DrawLayer(BodyFrame, 0, 0);
         }
+        DrawHealthBar();
     }
 
     public int BodyFrame => DrawFrame + BodyShape * BodyOffSet;

@@ -33,12 +33,20 @@ public partial class PlayerRenderer : Node2D
     public int HorseShape;
     public bool Dead;
 
+    // ---- M5 战斗: 玩家血量 (DataObjectHealthMana/MaxHealthMana) ----
+    public int Health;
+    public int MaxHealth;
+    public bool ShowHealthBar;
+
     // ---- 动画状态 ----
     public MirDirection Direction;
     public MirAnimation Animation = MirAnimation.Standing;
     public int FrameIndex;
     public double FrameStartMs;   // 本帧序列开始时间
     private Frame _currentFrame;
+
+    // 一次性动作动画 (Combat/Struck): 播完回 Standing
+    private MirAnimation _oneShotAnim = MirAnimation.Standing;
 
     // 移动插值 (格子坐标 -> 屏幕偏移)
     public int CellX, CellY;          // 服务端权威格子坐标
@@ -105,7 +113,31 @@ public partial class PlayerRenderer : Node2D
         _currentFrame = GetFrameTable(anim);
         FrameStartMs = Godot.Time.GetTicksMsec(); // 从当前时刻起播, 保证从第 0 帧开始
         FrameIndex = 0;
+        // 一次性动作: 播完回 Standing (Die 保持最后一帧)
+        _oneShotAnim = anim is MirAnimation.Combat1 or MirAnimation.Combat2 or MirAnimation.Combat3
+            or MirAnimation.Combat4 or MirAnimation.Combat5 or MirAnimation.Combat6 or MirAnimation.Combat7
+            or MirAnimation.Combat8 or MirAnimation.Combat9 or MirAnimation.Combat10 or MirAnimation.Combat11
+            or MirAnimation.Combat12 or MirAnimation.Combat13 or MirAnimation.Combat14 or MirAnimation.Combat15
+            or MirAnimation.Struck or MirAnimation.Pushed or MirAnimation.Harvest ? anim : MirAnimation.Standing;
+        QueueRedraw();
     }
+
+    // M5 战斗: 玩家攻击/受击/死亡动画
+    public void PlayCombat(MagicType magic)
+    {
+        SetAnimation(CombatForMagic(magic));
+    }
+
+    public void PlayStruck() => SetAnimation(MirAnimation.Struck);
+
+    public void PlayDie()
+    {
+        SetAnimation(MirAnimation.Die);
+        Dead = true;
+    }
+
+    // 普通攻击 = Combat3 (战士默认), 技能按原客户端 GetAttackAnimation 简化
+    private static MirAnimation CombatForMagic(MagicType magic) => MirAnimation.Combat3;
 
     private Frame GetFrameTable(MirAnimation anim)
     {
@@ -175,11 +207,22 @@ public partial class PlayerRenderer : Node2D
     public override void _Process(double delta)
     {
         double nowMs = Godot.Time.GetTicksMsec();
-        int frame = GetFrameIndex(nowMs, true);
+        int frame = GetFrameIndex(nowMs, _oneShotAnim == MirAnimation.Standing);
         if (frame != FrameIndex)
         {
             FrameIndex = frame;
             QueueRedraw();
+        }
+
+        // 一次性动作播完回 Standing (死亡保持 Die 帧)
+        if (_oneShotAnim != MirAnimation.Standing && !Dead)
+        {
+            var f = _currentFrame;
+            if (f != null && nowMs - FrameStartMs >= f.Sum)
+            {
+                _oneShotAnim = MirAnimation.Standing;
+                SetAnimation(MirAnimation.Standing);
+            }
         }
     }
 
@@ -211,6 +254,22 @@ public partial class PlayerRenderer : Node2D
                      $"Cell=({CellX},{CellY}) Pos={Position}");
         }
         DrawPlayerAt(0, 0);
+
+        // 玩家头顶血条
+        if (ShowHealthBar && !Dead && MaxHealth > 0)
+        {
+            float percent = Math.Clamp(Health / (float)MaxHealth, 0f, 1f);
+            if (percent > 0f)
+            {
+                const float w = 48, h = 6;
+                float x = -w / 2, y = -70;
+                DrawRect(new Rect2(x - 1, y - 1, w + 2, h + 2), new Color(0f, 0f, 0f, 0.75f));
+                var col = percent > 0.5f ? new Color(0f, 0.8f, 0.29f)
+                        : percent > 0.25f ? new Color(0.9f, 0.8f, 0.1f)
+                        : new Color(0.9f, 0.2f, 0.1f);
+                DrawRect(new Rect2(x, y, w * percent, h), col);
+            }
+        }
     }
 
     // 供 GameScene 调用: 计算本节点屏幕位置

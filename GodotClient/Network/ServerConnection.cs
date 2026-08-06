@@ -45,6 +45,16 @@ public partial class ServerConnection : BaseConnection
     public event Action<S.ObjectItem> ObjectItemEvent;
     public event Action<uint> ObjectRemoveEvent;
     public event Action<uint, MirDirection> ObjectTurnEvent;
+    // M5 战斗
+    public event Action<uint, MirDirection, System.Drawing.Point, MagicType, uint> ObjectAttackEvent; // id, dir, loc, magic, targetID
+    public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>, List<System.Drawing.Point>, bool> ObjectMagicEvent; // id, dir, loc, type, targets, locations, cast
+    public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
+    public event Action<uint, int, int, bool> DataObjectHealthManaEvent; // id, health, mana, dead
+    public event Action<uint, int, int> DataObjectMaxHealthManaEvent; // id, maxHealth, maxMana
+    public event Action<uint, int, int, int, bool> DataObjectMonsterEvent; // id, health, maxHealth, monsterIndex, dead
+    public event Action<uint> ObjectDiedEvent;
+    public event Action<uint, MirDirection, System.Drawing.Point, uint, Element> ObjectStruckEvent; // id, dir, loc, attackerID, element
+    public event Action<int, int> StatsUpdateEvent; // maxHealth, maxMana
     // StartGame 突发包缓冲: GameScene._Ready 前的事件订阅来不及, 这些包在订阅前已被 Process 丢弃。
     // Process 里 Enqueue + Invoke 双发; GameScene._Ready 一次性 Drain 积压, 之后靠事件接实时包。
     public readonly Queue<S.ObjectMove> PendingMoves = new();
@@ -53,6 +63,15 @@ public partial class ServerConnection : BaseConnection
     public readonly Queue<S.ObjectItem> PendingItems = new();
     public readonly Queue<uint> PendingRemoves = new();
     public readonly Queue<(uint, MirDirection)> PendingTurns = new();
+    public readonly Queue<S.ObjectAttack> PendingAttacks = new();
+    public readonly Queue<S.ObjectMagic> PendingMagics = new();
+    public readonly Queue<S.HealthChanged> PendingHealthChanges = new();
+    public readonly Queue<S.DataObjectHealthMana> PendingHealthManas = new();
+    public readonly Queue<S.DataObjectMaxHealthMana> PendingMaxHealthManas = new();
+    public readonly Queue<S.DataObjectMonster> PendingDataMonsters = new();
+    public readonly Queue<uint> PendingDeaths = new();
+    public readonly Queue<S.ObjectStruck> PendingStruck = new();
+    public readonly Queue<S.StatsUpdate> PendingStats = new();
 
     public void Process(G.Connected p)
     {
@@ -131,6 +150,63 @@ public partial class ServerConnection : BaseConnection
     {
         PendingTurns.Enqueue((p.ObjectID, p.Direction));
         ObjectTurnEvent?.Invoke(p.ObjectID, p.Direction);
+    }
+
+    public void Process(S.ObjectAttack p)
+    {
+        PendingAttacks.Enqueue(p);
+        ObjectAttackEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.AttackMagic, p.TargetID);
+    }
+
+    public void Process(S.ObjectMagic p)
+    {
+        PendingMagics.Enqueue(p);
+        ObjectMagicEvent?.Invoke(p.ObjectID, p.Direction, p.CurrentLocation, p.Type, p.Targets, p.Locations, p.Cast);
+    }
+
+    public void Process(S.HealthChanged p)
+    {
+        PendingHealthChanges.Enqueue(p);
+        HealthChangedEvent?.Invoke(p.ObjectID, p.Change, p.Miss, p.Block, p.Critical);
+    }
+
+    public void Process(S.DataObjectHealthMana p)
+    {
+        PendingHealthManas.Enqueue(p);
+        DataObjectHealthManaEvent?.Invoke(p.ObjectID, p.Health, p.Mana, p.Dead);
+    }
+
+    public void Process(S.DataObjectMaxHealthMana p)
+    {
+        PendingMaxHealthManas.Enqueue(p);
+        DataObjectMaxHealthManaEvent?.Invoke(p.ObjectID, p.MaxHealth, p.MaxMana);
+    }
+
+    public void Process(S.DataObjectMonster p)
+    {
+        PendingDataMonsters.Enqueue(p);
+        int maxHealth = p.Stats != null ? p.Stats[Stat.Health] : 0;
+        DataObjectMonsterEvent?.Invoke(p.ObjectID, p.Health, maxHealth, p.MonsterIndex, p.Dead);
+    }
+
+    public void Process(S.ObjectDied p)
+    {
+        PendingDeaths.Enqueue(p.ObjectID);
+        ObjectDiedEvent?.Invoke(p.ObjectID);
+    }
+
+    public void Process(S.ObjectStruck p)
+    {
+        PendingStruck.Enqueue(p);
+        ObjectStruckEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.AttackerID, p.Element);
+    }
+
+    public void Process(S.StatsUpdate p)
+    {
+        PendingStats.Enqueue(p);
+        int maxHealth = p.Stats != null ? p.Stats[Stat.Health] : 0;
+        int maxMana = p.Stats != null ? p.Stats[Stat.Mana] : 0;
+        StatsUpdateEvent?.Invoke(maxHealth, maxMana);
     }
 
     // UI 层调用: 发包

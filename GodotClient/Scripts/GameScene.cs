@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Library;
@@ -65,6 +66,15 @@ public partial class GameScene : Control
         _net.Connection.ObjectItemEvent += OnObjectItem;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
+        _net.Connection.ObjectAttackEvent += OnObjectAttack;
+        _net.Connection.ObjectMagicEvent += OnObjectMagic;
+        _net.Connection.HealthChangedEvent += OnHealthChanged;
+        _net.Connection.DataObjectHealthManaEvent += OnDataObjectHealthMana;
+        _net.Connection.DataObjectMaxHealthManaEvent += OnDataObjectMaxHealthMana;
+        _net.Connection.DataObjectMonsterEvent += OnDataObjectMonsterInfo;
+        _net.Connection.ObjectDiedEvent += OnObjectDied;
+        _net.Connection.ObjectStruckEvent += OnObjectStruck;
+        _net.Connection.StatsUpdateEvent += OnStatsUpdate;
 
         // StartGame 突发包在 _Ready 前已被 Process 处理(订阅未生效), 一次性排空积压队列
         DrainPendingObjects();
@@ -95,6 +105,15 @@ public partial class GameScene : Control
             _net.Connection.ObjectItemEvent -= OnObjectItem;
             _net.Connection.ObjectRemoveEvent -= OnObjectRemove;
             _net.Connection.ObjectTurnEvent -= OnObjectTurn;
+            _net.Connection.ObjectAttackEvent -= OnObjectAttack;
+            _net.Connection.ObjectMagicEvent -= OnObjectMagic;
+            _net.Connection.HealthChangedEvent -= OnHealthChanged;
+            _net.Connection.DataObjectHealthManaEvent -= OnDataObjectHealthMana;
+            _net.Connection.DataObjectMaxHealthManaEvent -= OnDataObjectMaxHealthMana;
+            _net.Connection.DataObjectMonsterEvent -= OnDataObjectMonsterInfo;
+            _net.Connection.ObjectDiedEvent -= OnObjectDied;
+            _net.Connection.ObjectStruckEvent -= OnObjectStruck;
+            _net.Connection.StatsUpdateEvent -= OnStatsUpdate;
         }
     }
 
@@ -204,6 +223,184 @@ public partial class GameScene : Control
         }
     }
 
+    // ---- M5 战斗 ----
+
+    // 攻击: 攻击者播攻击动画, 被攻击者播 Struck
+    private void OnObjectAttack(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType magic, uint targetID)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player != null) _player.PlayCombat(magic);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Direction = dir;
+            ob.SetAnimation(MirAnimation.Combat1);
+        }
+
+        if (targetID != 0)
+        {
+            if (targetID == _playerObjectID)
+            {
+                if (_player != null) _player.PlayStruck();
+            }
+            else if (_objects.TryGetValue(targetID, out var tgt))
+            {
+                tgt.SetAnimation(MirAnimation.Struck);
+            }
+        }
+    }
+
+    // 魔法施放: 施法者播攻击动画, 目标位置显示特效帧
+    private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player != null) _player.PlayCombat(type);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Direction = dir;
+            ob.SetAnimation(MirAnimation.Combat1);
+        }
+
+        // 目标位置放一个短暂魔法特效 (Magic.Zl 帧, 500ms 自删)
+        if (locations.Count > 0)
+        {
+            foreach (var locPt in locations)
+                SpawnEffectAt(locPt.X, locPt.Y);
+        }
+        else if (targets.Count > 0)
+        {
+            foreach (uint tid in targets)
+            {
+                if (_objects.TryGetValue(tid, out var tgt))
+                {
+                    tgt.SetAnimation(MirAnimation.Struck);
+                    SpawnEffectAt(tgt.CellX, tgt.CellY);
+                }
+            }
+        }
+    }
+
+    private void SpawnEffectAt(int cellX, int cellY)
+    {
+        var fx = new EffectNode();
+        AddChild(fx);
+        fx.Setup(cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
+    }
+
+    // 血量变化: 受伤扣血并显示血条 (Miss/Block 只播动画不扣)
+    private void OnHealthChanged(uint objectID, int change, bool miss, bool block, bool critical)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player == null) return;
+            if (!miss && !block) _player.Health += change;
+            _player.ShowHealthBar = true;
+            if (!miss && !block) _player.PlayStruck();
+            return;
+        }
+        if (!_objects.TryGetValue(objectID, out var ob)) return;
+        ob.ShowHealthBar = true;
+        if (!miss && !block)
+        {
+            ob.Health += change;
+            ob.SetAnimation(MirAnimation.Struck);
+        }
+    }
+
+    private void OnDataObjectHealthMana(uint objectID, int health, int mana, bool dead)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player == null) return;
+            _player.Health = health;
+            _player.ShowHealthBar = true;
+            return;
+        }
+        if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Health = health;
+            ob.Dead = dead;
+            ob.ShowHealthBar = true;
+        }
+    }
+
+    private void OnDataObjectMaxHealthMana(uint objectID, int maxHealth, int maxMana)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player == null) return;
+            _player.MaxHealth = maxHealth;
+            return;
+        }
+        if (_objects.TryGetValue(objectID, out var ob))
+            ob.MaxHealth = maxHealth;
+    }
+
+    // DataObjectMonster: 视野内怪物的权威血量 (进游戏时批量发, 血条数据源)
+    private void OnDataObjectMonsterInfo(uint objectID, int health, int maxHealth, int monsterIndex, bool dead)
+    {
+        if (!_objects.TryGetValue(objectID, out var ob)) return;
+        ob.Health = health;
+        ob.MaxHealth = maxHealth;
+        ob.Dead = dead;
+        ob.ShowHealthBar = maxHealth > 0;
+    }
+
+    // 玩家属性: MaxHealth/MaxMana 来源
+    private void OnStatsUpdate(int maxHealth, int maxMana)
+    {
+        if (_player == null) return;
+        _player.MaxHealth = maxHealth;
+        if (_player.Health <= 0) _player.Health = maxHealth;
+    }
+
+    // 受击: 被击退到新位置 + 播 Struck 动画
+    private void OnObjectStruck(uint objectID, MirDirection dir, System.Drawing.Point loc, uint attackerID, Element element)
+    {
+        if (objectID == _playerObjectID)
+        {
+            if (_player == null) return;
+            _playerLocation = loc;
+            _player.CellX = loc.X;
+            _player.CellY = loc.Y;
+            _player.Direction = dir;
+            _player.PlayStruck();
+            UpdatePlayerPosition();
+            return;
+        }
+        if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.CellX = loc.X;
+            ob.CellY = loc.Y;
+            ob.Direction = dir;
+            ob.SetAnimation(MirAnimation.Struck);
+            ob.Position = ComputeObjectScreenPos(loc.X, loc.Y);
+        }
+    }
+
+    // 死亡: 播 Die 动画后延迟移除
+    private void OnObjectDied(uint objectID)
+    {        if (objectID == _playerObjectID)
+        {
+            if (_player != null) _player.PlayDie();
+            return;
+        }
+        if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Dead = true;
+            ob.SetAnimation(MirAnimation.Die);
+            var renderer = ob;
+            GetTree().CreateTimer(1.2).Timeout += () =>
+            {
+                if (renderer.IsInsideTree() && _objects.Remove(objectID, out _))
+                    renderer.QueueFree();
+            };
+        }
+    }
+
     // 排空 StartGame 突发积压包(顺序与服务器一致: Move/Turn/Monster/NPC/Item/Remove)
     private void DrainPendingObjects()
     {
@@ -226,6 +423,48 @@ public partial class GameScene : Control
             OnObjectItem(conn.PendingItems.Dequeue());
         while (conn.PendingRemoves.Count > 0)
             OnObjectRemove(conn.PendingRemoves.Dequeue());
+        while (conn.PendingAttacks.Count > 0)
+        {
+            var a = conn.PendingAttacks.Dequeue();
+            OnObjectAttack(a.ObjectID, a.Direction, a.Location, a.AttackMagic, a.TargetID);
+        }
+        while (conn.PendingMagics.Count > 0)
+        {
+            var m = conn.PendingMagics.Dequeue();
+            OnObjectMagic(m.ObjectID, m.Direction, m.CurrentLocation, m.Type, m.Targets, m.Locations, m.Cast);
+        }
+        while (conn.PendingHealthChanges.Count > 0)
+        {
+            var h = conn.PendingHealthChanges.Dequeue();
+            OnHealthChanged(h.ObjectID, h.Change, h.Miss, h.Block, h.Critical);
+        }
+        while (conn.PendingHealthManas.Count > 0)
+        {
+            var h = conn.PendingHealthManas.Dequeue();
+            OnDataObjectHealthMana(h.ObjectID, h.Health, h.Mana, h.Dead);
+        }
+        while (conn.PendingMaxHealthManas.Count > 0)
+        {
+            var h = conn.PendingMaxHealthManas.Dequeue();
+            OnDataObjectMaxHealthMana(h.ObjectID, h.MaxHealth, h.MaxMana);
+        }
+        while (conn.PendingDataMonsters.Count > 0)
+        {
+            var m = conn.PendingDataMonsters.Dequeue();
+            OnDataObjectMonsterInfo(m.ObjectID, m.Health, m.Stats != null ? m.Stats[Stat.Health] : 0, m.MonsterIndex, m.Dead);
+        }
+        while (conn.PendingDeaths.Count > 0)
+            OnObjectDied(conn.PendingDeaths.Dequeue());
+        while (conn.PendingStruck.Count > 0)
+        {
+            var s = conn.PendingStruck.Dequeue();
+            OnObjectStruck(s.ObjectID, s.Direction, s.Location, s.AttackerID, s.Element);
+        }
+        while (conn.PendingStats.Count > 0)
+        {
+            var st = conn.PendingStats.Dequeue();
+            OnStatsUpdate(st.Stats != null ? st.Stats[Stat.Health] : 0, st.Stats != null ? st.Stats[Stat.Mana] : 0);
+        }
     }
 
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
@@ -345,17 +584,23 @@ public partial class GameScene : Control
     {
         if (_mapView?.Map == null) return;
 
+        foreach (var ob in _objects.Values)
+            ob.Position = ComputeObjectScreenPos(ob.CellX, ob.CellY);
+    }
+
+    // 格子坐标 -> 屏幕坐标 (与玩家居中公式一致)
+    private Vector2 ComputeObjectScreenPos(int cellX, int cellY)
+    {
+        if (_mapView?.Map == null) return Vector2.Zero;
+
         const int CellWidth = 48;
         const int CellHeight = 32;
         float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
         float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
 
-        foreach (var ob in _objects.Values)
-        {
-            ob.Position = new Vector2(
-                (ob.CellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX,
-                (ob.CellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY);
-        }
+        return new Vector2(
+            (cellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX,
+            (cellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY);
     }
 
     public override void _Input(InputEvent @event)
