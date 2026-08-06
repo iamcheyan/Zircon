@@ -24,6 +24,9 @@ public sealed class MirMap
         Width = reader.ReadInt16();
         Height = reader.ReadInt16();
 
+        // 数据从偏移 28 开始（原客户端 mStream.Seek(28, SeekOrigin.Begin)）
+        reader.BaseStream.Seek(28, SeekOrigin.Begin);
+
         Cells = new MapCell[Width, Height];
 
         // 第一段: 背景层（半分辨率，只存偶数格）

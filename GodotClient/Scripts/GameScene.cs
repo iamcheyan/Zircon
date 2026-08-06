@@ -14,7 +14,7 @@ public partial class GameScene : Control
     private Network.NetworkManager _net;
     private MapView _mapView;
     private Label _statusLabel;
-    private Sprite2D _playerSprite;
+    private PlayerRenderer _player;
 
     // SelectScene 传入的进游戏信息(StartGame 回包在场景创建前已处理完)
     public StartInformation StartInfo { get; set; }
@@ -31,6 +31,15 @@ public partial class GameScene : Control
     private MirDirection _pendingDir;
     private int _pendingX, _pendingY;
 
+    // 移动插值状态
+    private System.Drawing.Point _moveFrom;
+    private double _moveStartMs;
+    private int _moveFrameCount = 1;
+
+    // 自动截图调试(不依赖窗口焦点/F12)
+    private double _autoShotAt = 0;
+    private bool _autoShotDone;
+
     public override void _Ready()
     {
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");
@@ -38,18 +47,15 @@ public partial class GameScene : Control
         _mapView = new MapView();
         AddChild(_mapView);
 
+        _player = new PlayerRenderer();
+        _player.ZIndex = 50;
+        AddChild(_player);
+
         _statusLabel = new Label();
         _statusLabel.Position = new Vector2(10, 10);
         _statusLabel.Size = new Vector2(500, 80);
         _statusLabel.ZIndex = 100;
         AddChild(_statusLabel);
-
-        _playerSprite = new Sprite2D();
-        var img = Image.CreateEmpty(32, 48, false, Image.Format.Rgba8);
-        img.Fill(new Godot.Color(1, 0, 0, 0.8f));
-        _playerSprite.Texture = ImageTexture.CreateFromImage(img);
-        _playerSprite.ZIndex = 50;
-        AddChild(_playerSprite);
 
         _net.Connection.StartGameResultEvent += OnStartGameResult;
         _net.Connection.MapChangedEvent += OnMapChanged;
@@ -130,7 +136,16 @@ public partial class GameScene : Control
     private void ShowUserLocation()
     {
         _playerDirection = _pendingDir;
+
+        // 平滑移动: 起点是当前(旧)位置, 终点是服务端新位置
+        _moveFrom = _playerLocation;
+        _moveStartMs = Godot.Time.GetTicksMsec();
+        _moveFrameCount = 6; // Walking 帧数
+
         _playerLocation = new System.Drawing.Point(_pendingX, _pendingY);
+        _player.Direction = _pendingDir;
+        _player.SetAnimation(MirAnimation.Walking);
+
         UpdatePlayerPosition();
         _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
     }
@@ -147,7 +162,48 @@ public partial class GameScene : Control
 
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
         _mapView.LoadMap(mapInfo.FileName);
+        _player.CellX = _playerLocation.X;
+        _player.CellY = _playerLocation.Y;
+        _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
         UpdatePlayerPosition();
+
+        _autoShotAt = Godot.Time.GetTicksMsec() + 5000; // 5秒后自动截图
+    }
+
+    public override void _Process(double delta)
+    {
+        // 自动截图调试: 进游戏后定时截图(不依赖 F12 焦点)
+        if (!_autoShotDone && _autoShotAt > 0 && Godot.Time.GetTicksMsec() > _autoShotAt)
+        {
+            _autoShotDone = true;
+            var img = GetViewport().GetTexture().GetImage();
+            img.SavePng("/tmp/game_auto.png");
+            GD.Print($"[Game] 自动截图 /tmp/game_auto.png size={img.GetWidth()}x{img.GetHeight()}");
+        }
+
+        // 移动插值: 在 Walking 帧时长内从起点插到终点
+        if (_moveFrameCount > 1 && _player != null)
+        {
+            const double walkMs = 6 * 100.0; // 6帧 * 100ms
+            double elapsed = Godot.Time.GetTicksMsec() - _moveStartMs;
+            double t = Math.Clamp(elapsed / walkMs, 0.0, 1.0);
+
+            _player.CellX = (int)Math.Round(_moveFrom.X + (_playerLocation.X - _moveFrom.X) * t);
+            _player.CellY = (int)Math.Round(_moveFrom.Y + (_playerLocation.Y - _moveFrom.Y) * t);
+
+            if (t >= 1.0)
+            {
+                _moveFrameCount = 1;
+                _player.SetAnimation(MirAnimation.Standing);
+            }
+            UpdatePlayerPosition();
+        }
+        else if (_player != null)
+        {
+            _player.CellX = _playerLocation.X;
+            _player.CellY = _playerLocation.Y;
+            UpdatePlayerPosition();
+        }
     }
 
     private void UpdatePlayerPosition()
@@ -159,11 +215,11 @@ public partial class GameScene : Control
         float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
         float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
 
-        float px = (_playerLocation.X - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX;
-        float py = (_playerLocation.Y - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY;
+        float px = (_player.CellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX;
+        float py = (_player.CellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY;
 
-        _playerSprite.Position = new Vector2(px, py);
-        _mapView.CenterOn(_playerLocation.X, _playerLocation.Y);
+        _player.Position = new Vector2(px, py);
+        _mapView.CenterOn(_player.CellX, _player.CellY);
     }
 
     public override void _Input(InputEvent @event)
@@ -183,6 +239,12 @@ public partial class GameScene : Control
         if (dir != null)
         {
             _net.Connection.Enqueue(new C.Move { Direction = dir.Value, Distance = 1 });
+        }
+        else if (key.Keycode == Key.F12)
+        {
+            var img = GetViewport().GetTexture().GetImage();
+            img.SavePng("/tmp/game_screenshot.png");
+            GD.Print("[Game] 截图保存 /tmp/game_screenshot.png");
         }
     }
 }

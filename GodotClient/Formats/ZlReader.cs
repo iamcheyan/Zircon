@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Godot;
 using System.Drawing;
@@ -15,6 +16,8 @@ public sealed class ZlLibrary : IDisposable
     private readonly FileStream _stream;
     private readonly BinaryReader _reader;
     public string FileName { get; }
+
+    private readonly Dictionary<int, ImageTexture> _texCache = new();
 
     public ZlLibrary(string fileName)
     {
@@ -80,9 +83,14 @@ public sealed class ZlLibrary : IDisposable
         return ZlImageCodecUtil.DecodeToBgra(buffer, img.ImageCodec, img.Width, img.Height);
     }
 
-    // 读取第 index 帧，返回 Godot ImageTexture
+    // 读取第 index 帧，返回 Godot ImageTexture (带缓存, 避免重复解码)
     public ImageTexture GetImageTexture(int index)
     {
+        if (index < 0 || index >= Images.Length) return null;
+        if (Images[index] == null) return null;
+
+        if (_texCache.TryGetValue(index, out var cached)) return cached;
+
         byte[] bgra = GetImageData(index);
         if (bgra == null) return null;
 
@@ -98,11 +106,16 @@ public sealed class ZlLibrary : IDisposable
         }
 
         var godotImage = Image.CreateFromData(img.Width, img.Height, false, Image.Format.Rgba8, rgba);
-        return ImageTexture.CreateFromImage(godotImage);
+        var texture = ImageTexture.CreateFromImage(godotImage);
+        _texCache[index] = texture;
+        return texture;
     }
 
     public void Dispose()
     {
+        foreach (var tex in _texCache.Values)
+            tex?.Dispose();
+        _texCache.Clear();
         _reader?.Dispose();
         _stream?.Dispose();
     }

@@ -10,9 +10,7 @@ namespace ZirconClient.Scripts;
 // 地图渲染视图: 加载 .map + 渲染地形层，可滚动
 public partial class MapView : Node2D
 {
-    private string _dataPath = "/home/tetsuya/development/Zircon/Debug/Client/Data/";
     private string _mapPath = "/home/tetsuya/development/Zircon/Debug/Client/Map/";
-    private Dictionary<LibraryFile, ZlLibrary> _libCache = new();
     public MirMap Map { get; private set; }
     public string MapFileName { get; private set; }
 
@@ -33,9 +31,17 @@ public partial class MapView : Node2D
         GD.Print($"[MapView] 加载 {mapFileName}: {Map.Width}x{Map.Height}");
     }
 
+    private bool _debugLogged;
+
     public override void _Draw()
     {
         if (Map == null) return;
+        if (!_debugLogged)
+        {
+            _debugLogged = true;
+            GD.Print($"[MapView] 首帧诊断: viewport={GetViewport().GetVisibleRect().Size} " +
+                     $"center=({CenterX},{CenterY}) range=({ViewRangeX},{ViewRangeY})");
+        }
 
         int sx = Math.Max(0, CenterX - ViewRangeX);
         int sy = Math.Max(0, CenterY - ViewRangeY);
@@ -46,6 +52,7 @@ public partial class MapView : Node2D
         float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - ViewRangeX * CellWidth;
         float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - ViewRangeY * CellHeight;
 
+        int drawn = 0;
         for (int x = sx; x < ex; x++)
         {
             for (int y = sy; y < ey; y++)
@@ -54,51 +61,70 @@ public partial class MapView : Node2D
                 float px = (x - CenterX + ViewRangeX) * CellWidth + offsetX;
                 float py = (y - CenterY + ViewRangeY) * CellHeight + offsetY;
 
-                // 背景层
-                if (x % 2 == 0 && y % 2 == 0 && cell.BackFile > 0)
-                    DrawCell(cell.BackFile, cell.BackImage, px, py);
+                // 背景层（半分辨率，只画偶数格; BackFile=0 即 KROrder[0]=Tilesc 地面）
+                if (x % 2 == 0 && y % 2 == 0 && cell.BackImage > 0)
+                {
+                    if (DrawCell(cell.BackFile, cell.BackImage, px, py, false)) drawn++;
+                }
 
-                // 中层
+                // 中层（跳过 Tilesc 大地面贴图集, 只画 1x1/2x2 装饰）
                 if (cell.MiddleFile > 0 && cell.MiddleImage > 0)
-                    DrawCell(cell.MiddleFile, cell.MiddleImage - 1, px, py);
+                {
+                    if (DrawCell(cell.MiddleFile, cell.MiddleImage - 1, px, py, true)) drawn++;
+                }
 
                 // 前景
                 if (cell.FrontFile > 0 && cell.FrontImage > 0)
-                    DrawCell(cell.FrontFile, cell.FrontImage - 1, px, py);
+                {
+                    if (DrawCell(cell.FrontFile, cell.FrontImage - 1, px, py, true)) drawn++;
+                }
             }
+        }
+        if (drawn == 0 && !_warned)
+        {
+            _warned = true;
+            GD.PrintErr("[MapView] 警告: 视野内没有可绘制的格子!");
+        }
+        else if (!_countLogged)
+        {
+            _countLogged = true;
+            GD.Print($"[MapView] 首帧绘制: {drawn} 格, viewport={GetViewport().GetVisibleRect().Size}");
         }
     }
 
-    private void DrawCell(int fileByte, int imageIndex, float px, float py)
+    private bool _warned;
+    private bool _countLogged;
+
+    // skipTilesc: Middle/Front 跳过 Tilesc; 背景层不过滤
+    private bool DrawCell(int fileByte, int imageIndex, float px, float py, bool skipTilesc)
     {
-        if (fileByte == 0 || imageIndex < 0) return;
-        if (!Libraries.KROrder.TryGetValue(fileByte, out LibraryFile file)) return;
-        if (file == LibraryFile.Tilesc) return;
+        if (imageIndex < 0) return false;
+        if (!Libraries.KROrder.TryGetValue(fileByte, out LibraryFile file)) return false;
+        if (skipTilesc && file == LibraryFile.Tilesc) return false;
 
         var lib = GetLibrary(file);
-        if (lib == null || imageIndex >= lib.Images.Length) return;
-        if (lib.Images[imageIndex] == null) return;
-
-        var texture = lib.GetImageTexture(imageIndex);
-        if (texture == null) return;
+        if (lib == null || imageIndex >= lib.Images.Length) return false;
+        if (lib.Images[imageIndex] == null) return false;
 
         var img = lib.Images[imageIndex];
+
+        // 原客户端: Middle/Front 只画 1x1 或 2x2 尺寸的贴图 (跳过大型贴图集)
+        if (skipTilesc && !((img.Width == CellWidth && img.Height == CellHeight) ||
+                            (img.Width == CellWidth * 2 && img.Height == CellHeight * 2)))
+            return false;
+
+        var texture = lib.GetImageTexture(imageIndex);
+        if (texture == null) return false;
+
         Rect2 dest = new Rect2(px + img.OffSetX, py + img.OffSetY, img.Width, img.Height);
         Rect2 src = new Rect2(0, 0, img.Width, img.Height);
         DrawTextureRectRegion(texture, dest, src);
+        return true;
     }
 
     private ZlLibrary GetLibrary(LibraryFile file)
     {
-        if (_libCache.TryGetValue(file, out var lib)) return lib;
-        if (!Libraries.LibraryList.TryGetValue(file, out string path)) return null;
-        if (path.StartsWith("Data/")) path = path.Substring(5);
-        path = path.Replace('\\', '/');
-        string fullPath = Path.Combine(_dataPath, path);
-        if (!File.Exists(fullPath)) return null;
-        lib = new ZlLibrary(fullPath);
-        _libCache[file] = lib;
-        return lib;
+        return LibraryCache.Get(file);
     }
 
     public void CenterOn(int x, int y)
