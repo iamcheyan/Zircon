@@ -1,6 +1,7 @@
 .idea/*
 *.user
 Build/
+/Debug/
 .vs/
 [Oo]bj/
 [Bb]in/
