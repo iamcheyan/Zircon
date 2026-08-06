@@ -103,7 +103,7 @@ public partial class PlayerRenderer : Node2D
     {
         Animation = anim;
         _currentFrame = GetFrameTable(anim);
-        FrameStartMs = 0;
+        FrameStartMs = Godot.Time.GetTicksMsec(); // 从当前时刻起播, 保证从第 0 帧开始
         FrameIndex = 0;
     }
 

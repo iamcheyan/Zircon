@@ -36,10 +36,6 @@ public partial class GameScene : Control
     private double _moveStartMs;
     private int _moveFrameCount = 1;
 
-    // 自动截图调试(不依赖窗口焦点/F12)
-    private double _autoShotAt = 0;
-    private bool _autoShotDone;
-
     public override void _Ready()
     {
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");
@@ -60,6 +56,7 @@ public partial class GameScene : Control
         _net.Connection.StartGameResultEvent += OnStartGameResult;
         _net.Connection.MapChangedEvent += OnMapChanged;
         _net.Connection.UserLocationEvent += OnUserLocation;
+        _net.Connection.ObjectMoveEvent += OnObjectMove;
 
         if (StartInfo != null)
         {
@@ -81,6 +78,7 @@ public partial class GameScene : Control
             _net.Connection.StartGameResultEvent -= OnStartGameResult;
             _net.Connection.MapChangedEvent -= OnMapChanged;
             _net.Connection.UserLocationEvent -= OnUserLocation;
+            _net.Connection.ObjectMoveEvent -= OnObjectMove;
         }
     }
 
@@ -133,6 +131,15 @@ public partial class GameScene : Control
         CallDeferred(nameof(ShowUserLocation));
     }
 
+    private void OnObjectMove(uint objectID, MirDirection dir, System.Drawing.Point loc, int distance)
+    {
+        if (objectID != _playerObjectID) return; // 只处理自己的移动(其他玩家 M4)
+        _pendingDir = dir;
+        _pendingX = loc.X;
+        _pendingY = loc.Y;
+        CallDeferred(nameof(ShowUserLocation));
+    }
+
     private void ShowUserLocation()
     {
         _playerDirection = _pendingDir;
@@ -166,21 +173,10 @@ public partial class GameScene : Control
         _player.CellY = _playerLocation.Y;
         _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
         UpdatePlayerPosition();
-
-        _autoShotAt = Godot.Time.GetTicksMsec() + 5000; // 5秒后自动截图
     }
 
     public override void _Process(double delta)
     {
-        // 自动截图调试: 进游戏后定时截图(不依赖 F12 焦点)
-        if (!_autoShotDone && _autoShotAt > 0 && Godot.Time.GetTicksMsec() > _autoShotAt)
-        {
-            _autoShotDone = true;
-            var img = GetViewport().GetTexture().GetImage();
-            img.SavePng("/tmp/game_auto.png");
-            GD.Print($"[Game] 自动截图 /tmp/game_auto.png size={img.GetWidth()}x{img.GetHeight()}");
-        }
-
         // 移动插值: 在 Walking 帧时长内从起点插到终点
         if (_moveFrameCount > 1 && _player != null)
         {

@@ -38,6 +38,7 @@ public partial class ServerConnection : BaseConnection
     public event Action<StartGameResult, StartInformation> StartGameResultEvent;
     public event Action<int, int> MapChangedEvent;       // mapIndex, instanceIndex
     public event Action<MirDirection, System.Drawing.Point> UserLocationEvent;
+    public event Action<uint, MirDirection, System.Drawing.Point, int> ObjectMoveEvent; // objectID, dir, loc, distance
 
     public void Process(G.Connected p)
     {
@@ -80,6 +81,11 @@ public partial class ServerConnection : BaseConnection
     public void Process(S.UserLocation p)
     {
         UserLocationEvent?.Invoke(p.Direction, p.Location);
+    }
+
+    public void Process(S.ObjectMove p)
+    {
+        ObjectMoveEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.Distance);
     }
 
     // UI 层调用: 发包
