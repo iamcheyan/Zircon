@@ -582,13 +582,18 @@ public partial class GameScene : Control
         _mapView.ViewRangeY = Math.Max(_mapView.ViewRangeY, vry);
     }
 
-    // 相机锚定玩家后, 计算所有周围物体的屏幕位置
+    // 相机锚定玩家后, 计算所有周围物体的屏幕位置 (含移动像素偏移 OffsetX/OffsetY)
     private void UpdateObjectPositions()
     {
         if (_mapView?.Map == null) return;
 
+        const int CellWidth = 48;
+        const int CellHeight = 32;
+        float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
+        float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
+
         foreach (var ob in _objects.Values)
-            ob.Position = ComputeObjectScreenPos(ob.CellX, ob.CellY);
+            ob.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX, _mapView.ViewRangeY, offsetX, offsetY);
     }
 
     // 格子坐标 -> 屏幕坐标 (与玩家居中公式一致)
