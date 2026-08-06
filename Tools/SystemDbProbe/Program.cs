@@ -207,10 +207,12 @@ foreach (Type type in types)
                 })
                 .GroupBy(x => x.Cls)
                 .ToDictionary(g => g.Key, g => g.ToList());
+            sb.AppendLine("## 按职业分组（技能速查）");
+            sb.AppendLine();
             foreach (string cls in classOrder.Concat(grouped.Keys.Except(classOrder)))
             {
                 if (!grouped.TryGetValue(cls, out var list) || list.Count == 0) continue;
-                sb.AppendLine($"### {cls}（{list.Count} 个）");
+                sb.AppendLine($"#### {cls}（{list.Count} 个）");
                 sb.AppendLine();
                 sb.AppendLine("| # | Name | Magic | 1级 | 2级 | 3级 | 基础耗蓝 | 施法延迟 |");
                 sb.AppendLine("|---|---|---|---|---|---|---|---|");

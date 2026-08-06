@@ -43,7 +43,7 @@ dotnet run --project Tools/SystemDbProbe -- --dump docs/database
 ```
 # 地图（MapInfo）                     ← 集合名 + 中文名
 > 记录 #0 – #243，共 244 条。         ← 范围（#N 即数据库 Index，索引键）
-## 快速浏览                           ← 地图/怪物/物品三个大表才有：一行一记录的关键字段表
+## 快速浏览                           ← 概览表：一行一条记录的关键字段（主要集合都有；魔法另有「按职业分组」速查）
 ### #1 · 0                           ← 单条记录：Index + 标识字段（IsIdentity）
 | 字段 | 值 |                         ← 该记录的全部字段
 ```
@@ -152,6 +152,8 @@ dotnet run --project Tools/SystemDbProbe -- --dump docs/database
 | `Drops` | 被哪些怪物掉落（明细见 `DropInfo`） |
 
 ### 3.4 魔法 MagicInfo（174 条）
+
+> 文件头部有「快速浏览」全表 + 「按职业分组」技能速查（战士 32 / 法师 42 / 道士 47 / 刺客 53），按职业浏览技能最直观；单条记录仍是完整字段表。
 
 | 字段 | 含义 |
 |---|---|
@@ -295,3 +297,4 @@ dotnet run --project Tools/SystemDbProbe -- --dump docs/database
 - **查一只怪掉什么**：`data/MonsterInfo.md` → 详情 `Drops × N 条` → `data/DropInfo.md` 按 `Monster` 过滤。
 - **查一件装备**：`data/ItemInfo.N.md` → 详情看 `ItemStats`/`Stats`（属性）、`Set`（套装）、`Drops`（哪里掉）。
 - **查任务**：`data/QuestInfo.md` → `QuestTask`/`QuestTaskMonsterDetails` 看杀什么怪、`QuestReward` 看给什么。
+- **查技能**：`data/MagicInfo.md` → 「按职业分组」看某职业全部技能与等级门槛 → 点进单条看威力/耗蓝/熟练度明细。

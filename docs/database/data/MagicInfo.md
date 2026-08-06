@@ -183,7 +183,9 @@
 | 173 | Burning Fire | BurningFire | Assassin | Kill | Active | 456 | 90 | 90 | 30 | 5000 |
 | 174 | Chain Of Fire | ChainOfFire | Assassin | Atrocity | Augmentation | 520 | 95 | 97 | 0 | 0 |
 
-### Warrior（32 个）
+## 按职业分组（技能速查）
+
+#### Warrior（32 个）
 
 | # | Name | Magic | 1级 | 2级 | 3级 | 基础耗蓝 | 施法延迟 |
 |---|---|---|---|---|---|---|---|
@@ -220,7 +222,7 @@
 | 155 | Defensive Blow | DefensiveBlow | 86 | 88 | 91 | 50 | 10000 |
 | 156 | Elemental Swords | ElementalSwords | 95 | 96 | 97 | 10 | 5000 |
 
-### Wizard（42 个）
+#### Wizard（42 个）
 
 | # | Name | Magic | 1级 | 2级 | 3级 | 基础耗蓝 | 施法延迟 |
 |---|---|---|---|---|---|---|---|
@@ -267,7 +269,7 @@
 | 157 | Storm | Storm | 86 | 88 | 91 | 0 | 0 |
 | 158 | Tornado | Tornado | 95 | 96 | 97 | 0 | 0 |
 
-### Taoist（47 个）
+#### Taoist（47 个）
 
 | # | Name | Magic | 1级 | 2级 | 3级 | 基础耗蓝 | 施法延迟 |
 |---|---|---|---|---|---|---|---|
@@ -319,7 +321,7 @@
 | 160 | Corpse Exploder | CorpseExploder | 86 | 88 | 95 | 30 | 0 |
 | 161 | Summon Dead | SummonDead | 95 | 96 | 97 | 0 | 0 |
 
-### Assassin（53 个）
+#### Assassin（53 个）
 
 | # | Name | Magic | 1级 | 2级 | 3级 | 基础耗蓝 | 施法延迟 |
 |---|---|---|---|---|---|---|---|
