@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Library;
 using Library.Network;
@@ -14,6 +15,9 @@ public partial class GameScene : Control
     private MapView _mapView;
     private Label _statusLabel;
     private Sprite2D _playerSprite;
+
+    // SelectScene 传入的进游戏信息(StartGame 回包在场景创建前已处理完)
+    public StartInformation StartInfo { get; set; }
 
     private uint _playerObjectID;
     private int _playerMapIndex;
@@ -51,7 +55,17 @@ public partial class GameScene : Control
         _net.Connection.MapChangedEvent += OnMapChanged;
         _net.Connection.UserLocationEvent += OnUserLocation;
 
-        _statusLabel.Text = "等待进入游戏...";
+        if (StartInfo != null)
+        {
+            // 主线程内直接处理, 无需 CallDeferred
+            _pendingStartResult = StartGameResult.Success;
+            _pendingStartInfo = StartInfo;
+            ShowStartGameResult();
+        }
+        else
+        {
+            _statusLabel.Text = "等待进入游戏...";
+        }
     }
 
     public override void _ExitTree()
@@ -123,8 +137,16 @@ public partial class GameScene : Control
 
     private void LoadPlayerMap()
     {
-        // TODO: 从 System.db 按 MapIndex 查 MapInfo.FileName
-        _mapView.LoadMap("0");
+        var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+        if (mapInfo == null)
+        {
+            GD.PrintErr($"[Game] 找不到地图: MapIndex={_playerMapIndex}");
+            _statusLabel.Text = $"找不到地图: MapIndex={_playerMapIndex}";
+            return;
+        }
+
+        GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
+        _mapView.LoadMap(mapInfo.FileName);
         UpdatePlayerPosition();
     }
 

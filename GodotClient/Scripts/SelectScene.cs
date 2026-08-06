@@ -165,6 +165,7 @@ public partial class SelectScene : Control
             GD.Print($"[Select] *** StartGame 成功! 进入游戏 ***");
             var gameScene = ResourceLoader.Load<PackedScene>("res://Scenes/GameScene.tscn");
             var game = gameScene.Instantiate<GameScene>();
+            game.StartInfo = _pendingStartInfo;
             GetTree().Root.AddChild(game);
             QueueFree();
         }
