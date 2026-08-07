@@ -44,6 +44,7 @@ public partial class GameScene : Control
     private RankingDialog _rankingDialog;
     private CommunicationDialog _communicationDialog;
     private GameStoreDialog _gameStoreDialog;
+    private ConsignmentDialog _consignmentDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
     private uint _npcObjectId;
@@ -119,6 +120,7 @@ public partial class GameScene : Control
     public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
     public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
+    public void OpenConsignmentDialog() { if (_consignmentDialog != null) WindowManager.Open(_consignmentDialog, _uiLayer); }
     public void OpenCaptionDialog() { if (_captionDialog != null) WindowManager.Open(_captionDialog, _uiLayer); }
 
     public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
@@ -311,12 +313,21 @@ public partial class GameScene : Control
         _net.Connection.NPCSocketItemEvent += p => _npcDialog?.SocketResult(p.Success, p.Message);
         _net.Connection.NPCSocketCombineEvent += p => _npcDialog?.SocketCombineResult(p.Success, p.Message);
         _net.Connection.SetTimerEvent += p => _timerDialog?.AddTimer(p);
+        _net.Connection.MarketPlaceConsignEvent += p => _consignmentDialog?.AddConsignments(p?.Consignments);
+        _net.Connection.MarketPlaceSearchEvent += p => _consignmentDialog?.ApplySearch(p?.Count ?? 0, p?.Results);
+        _net.Connection.MarketPlaceSearchCountEvent += p => _consignmentDialog?.ApplySearchCount(p?.Count ?? 0);
+        _net.Connection.MarketPlaceSearchIndexEvent += p => _consignmentDialog?.ApplySearchIndex(p?.Index ?? -1, p?.Result);
+        _net.Connection.MarketPlaceBuyEvent += p => _consignmentDialog?.ApplyBuy(p?.Index ?? -1, p?.Count ?? 0, p?.Success == true);
+        _net.Connection.MarketPlaceConsignChangedEvent += p => _consignmentDialog?.ApplyConsignChanged(p?.Index ?? -1, p?.Count ?? 0);
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
         _net.Connection.ObjectAttackEvent += OnObjectAttack;
         _net.Connection.ObjectRangeAttackEvent += OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent += OnObjectMagic;
+        _net.Connection.ObjectProjectileEvent += OnObjectProjectile;
+        _net.Connection.ObjectEffectEvent += OnObjectEffect;
+        _net.Connection.MapEffectEvent += OnMapEffect;
         _net.Connection.HealthChangedEvent += OnHealthChanged;
         _net.Connection.DataObjectHealthManaEvent += OnDataObjectHealthMana;
         _net.Connection.DataObjectMaxHealthManaEvent += OnDataObjectMaxHealthMana;
@@ -414,7 +425,10 @@ public partial class GameScene : Control
             _net.Connection.ObjectTurnEvent -= OnObjectTurn;
         _net.Connection.ObjectAttackEvent -= OnObjectAttack;
             _net.Connection.ObjectRangeAttackEvent -= OnObjectRangeAttack;
-            _net.Connection.ObjectMagicEvent -= OnObjectMagic;
+        _net.Connection.ObjectMagicEvent -= OnObjectMagic;
+            _net.Connection.ObjectProjectileEvent -= OnObjectProjectile;
+            _net.Connection.ObjectEffectEvent -= OnObjectEffect;
+            _net.Connection.MapEffectEvent -= OnMapEffect;
             _net.Connection.HealthChangedEvent -= OnHealthChanged;
             _net.Connection.DataObjectHealthManaEvent -= OnDataObjectHealthMana;
             _net.Connection.DataObjectMaxHealthManaEvent -= OnDataObjectMaxHealthMana;
@@ -877,7 +891,7 @@ public partial class GameScene : Control
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.SetAnimation(MirAnimation.Combat1);
+            ob.PlaySpell(type);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -1036,6 +1050,86 @@ public partial class GameScene : Control
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
         if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource)
             SpawnCastEffect(def, sourceX, sourceY);
+    }
+
+    private void OnObjectProjectile(S.ObjectProjectile packet)
+    {
+        if (!_objects.TryGetValue(packet.ObjectID, out var source) && packet.ObjectID != _playerObjectID) return;
+        int sourceX = packet.CurrentLocation.X;
+        int sourceY = packet.CurrentLocation.Y;
+        var def = MagicEffectTable.Get(packet.Type);
+        if (def?.Projectile == null) return;
+
+        foreach (var p in packet.Locations)
+            SpawnProjectile(def, sourceX, sourceY, p.X, p.Y);
+        foreach (uint id in packet.Targets)
+        {
+            var target = GetMagicTargetNode(id);
+            if (target != null) SpawnProjectileTarget(def, sourceX, sourceY, target);
+        }
+    }
+
+    private void OnObjectEffect(uint objectID, Effect effect)
+    {
+        var target = GetMagicTargetNode(objectID);
+        if (target == null) return;
+        var def = effect switch
+        {
+            Effect.TeleportOut => new MagicEffectTable.ImpactDef { File = LibraryFile.Magic, StartIndex = 110, FrameCount = 10, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.TeleportIn => new MagicEffectTable.ImpactDef { File = LibraryFile.Magic, StartIndex = 110, FrameCount = 10, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.FullBloom => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1700, FrameCount = 4, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.WhiteLotus => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1600, FrameCount = 12, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.RedLotus => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1700, FrameCount = 12, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.SweetBrier => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1900, FrameCount = 10, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.Karma => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1800, FrameCount = 10, Colour = Colors.White, BlendRate = 0.6f },
+            Effect.Puppet => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 820, FrameCount = 8, Colour = MagicEffectTable.Fire, BlendRate = 0.6f },
+            Effect.PuppetFire => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1546, FrameCount = 8, Colour = MagicEffectTable.Fire, BlendRate = 0.6f },
+            Effect.PuppetIce => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2700, FrameCount = 10, Colour = MagicEffectTable.Ice, BlendRate = 0.6f },
+            Effect.PuppetLightning => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2800, FrameCount = 10, Colour = MagicEffectTable.Lightning, BlendRate = 0.6f },
+            Effect.PuppetWind => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2900, FrameCount = 10, Colour = MagicEffectTable.Wind, BlendRate = 0.6f },
+            Effect.ThunderBolt => new MagicEffectTable.ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = MagicEffectTable.Lightning, BlendRate = 0.7f },
+            Effect.FrostBiteEnd => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 700, FrameCount = 7, Colour = MagicEffectTable.Ice, BlendRate = 0.6f },
+            Effect.DanceOfSwallow => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 1300, FrameCount = 8, Colour = Colors.White, BlendRate = 0.7f },
+            Effect.FlashOfLight => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2400, FrameCount = 5, Colour = Colors.White, BlendRate = 0.7f },
+            Effect.DemonExplosion => new MagicEffectTable.ImpactDef { File = LibraryFile.MonMagicEx8, StartIndex = 3300, FrameCount = 10, Colour = MagicEffectTable.Phantom, BlendRate = 0.6f },
+            Effect.ParasiteExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 700, FrameCount = 7, Colour = Colors.White },
+            Effect.BurningFireExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx6, StartIndex = 1100, FrameCount = 10, Colour = MagicEffectTable.Fire },
+            Effect.ChainOfFireExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx10, StartIndex = 600, FrameCount = 12, Colour = MagicEffectTable.Fire },
+            _ => null,
+        };
+        if (def == null) return;
+        SpawnImpactTarget(def, target);
+        if (effect == Effect.TeleportOut && GetMagicTargetNode(objectID) != null)
+        {
+            // 旧端 TeleportOut 倒放，保持同一目标锚点。
+            var reverse = new MirEffectNode();
+            AddChild(reverse);
+            reverse.SetupTarget(def.File, def.StartIndex, def.FrameCount, def.DelayMs, target, () => GetTargetRenderY(target));
+            reverse.Reversed = true;
+            reverse.Blend = true;
+            reverse.BlendRate = def.BlendRate;
+        }
+    }
+
+    private void OnMapEffect(System.Drawing.Point location, Effect effect, MirDirection direction)
+    {
+        var def = effect switch
+        {
+            Effect.SummonSkeleton => new MagicEffectTable.CastEffect { File = LibraryFile.Magic, StartIndex = 750, FrameCount = 10, Colour = MagicEffectTable.Phantom },
+            Effect.SummonShinsu => new MagicEffectTable.CastEffect { File = LibraryFile.Mon_9, StartIndex = 9640, FrameCount = 10, Colour = MagicEffectTable.Phantom, Skip = 10 },
+            Effect.CursedDoll => new MagicEffectTable.CastEffect { File = LibraryFile.MagicEx3, StartIndex = 700, FrameCount = 13, Colour = MagicEffectTable.None },
+            Effect.UndeadSoul => new MagicEffectTable.CastEffect { File = LibraryFile.MonMagicEx20, StartIndex = 3300, FrameCount = 10, Colour = MagicEffectTable.None },
+            Effect.MirrorImage => new MagicEffectTable.CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1280, FrameCount = 10, Colour = MagicEffectTable.None },
+            Effect.FireWallSmoke => new MagicEffectTable.CastEffect { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, Colour = MagicEffectTable.None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f },
+            _ => null,
+        };
+        if (def == null) return;
+        SpawnCastEffect(def, location.X, location.Y);
+        if (effect == Effect.SummonShinsu)
+        {
+            var fx = GetChildren().OfType<MirEffectNode>().LastOrDefault();
+            if (fx != null) fx.Direction = direction;
+        }
     }
 
     private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y)
@@ -1458,6 +1552,8 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_groupDialog);
         _gameStoreDialog = new GameStoreDialog();
         _uiLayer.AddChild(_gameStoreDialog);
+        _consignmentDialog = new ConsignmentDialog();
+        _uiLayer.AddChild(_consignmentDialog);
         _tradeDialog = new TradeDialog();
         _uiLayer.AddChild(_tradeDialog);
         _npcDialog = new NPCDialog();
@@ -1577,6 +1673,11 @@ public partial class GameScene : Control
             _filterDropDialog.Location = new Vector2I(
                 Math.Max(0, (int)((vp.X - _filterDropDialog.Size.X) / 2f)),
                 Math.Max(0, (int)((vp.Y - _filterDropDialog.Size.Y) / 2f)));
+
+        if (_consignmentDialog != null)
+            _consignmentDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _consignmentDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _consignmentDialog.Size.Y) / 2f)));
 
         if (_bundleDialog != null)
             _bundleDialog.Location = new Vector2I(
@@ -1984,6 +2085,11 @@ public partial class GameScene : Control
     public void SendLootBoxReveal(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxReveal { Slot = slot, Choice = choice });
     public void SendLootBoxTake(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxTakeItems { Slot = slot, Choice = choice });
     public void SendCaptionChange(string caption) => _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption });
+
+    public void SendMarketSearch(string name, MarketPlaceSort sort) => _net?.Connection?.SendMarketSearch(name, sort);
+    public void SendMarketBuy(long index, long count) => _net?.Connection?.SendMarketBuy(index, count);
+    public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
+    public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
     public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem) => _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
     public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3) => _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
@@ -2604,6 +2710,17 @@ public partial class GameScene : Control
         {
             var m = conn.PendingMagics.Dequeue();
             OnObjectMagic(m.ObjectID, m.Direction, m.CurrentLocation, m.Type, m.Targets, m.Locations, m.Cast);
+        }
+        while (conn.PendingProjectiles.Count > 0) OnObjectProjectile(conn.PendingProjectiles.Dequeue());
+        while (conn.PendingObjectEffects.Count > 0)
+        {
+            var e = conn.PendingObjectEffects.Dequeue();
+            OnObjectEffect(e.ObjectID, e.Effect);
+        }
+        while (conn.PendingMapEffects.Count > 0)
+        {
+            var e = conn.PendingMapEffects.Dequeue();
+            OnMapEffect(e.Location, e.Effect, e.Direction);
         }
         while (conn.PendingHealthChanges.Count > 0)
         {

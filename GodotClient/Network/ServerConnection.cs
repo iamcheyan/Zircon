@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Godot;
@@ -41,15 +42,47 @@ public partial class ServerConnection : BaseConnection
     public event Action<MirDirection, System.Drawing.Point> UserLocationEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, int> ObjectMoveEvent; // objectID, dir, loc, distance
     public event Action<S.ObjectMonster> ObjectMonsterEvent;
+    public event Action<S.ObjectPlayer> ObjectPlayerEvent;
     public event Action<S.ObjectNPC> ObjectNPCEvent;
+    public event Action<S.NPCResponse> NPCResponseEvent;
+    public event Action NPCClosedEvent;
+    public event Action<S.NPCRepair> NPCRepairEvent;
+    public event Action<S.BundleOpen> BundleOpenEvent;
+    public event Action BundleCloseEvent;
+    public event Action<S.FortuneUpdate> FortuneUpdateEvent;
+    public event Action<S.LootBoxOpen> LootBoxOpenEvent;
+    public event Action LootBoxCloseEvent;
+    public event Action<S.NPCSocketItem> NPCSocketItemEvent;
+    public event Action<S.NPCSocketCombine> NPCSocketCombineEvent;
+    public event Action<S.SetTimer> SetTimerEvent;
+    public event Action<S.MarketPlaceConsign> MarketPlaceConsignEvent;
+    public event Action<S.MarketPlaceSearch> MarketPlaceSearchEvent;
+    public event Action<S.MarketPlaceSearchCount> MarketPlaceSearchCountEvent;
+    public event Action<S.MarketPlaceSearchIndex> MarketPlaceSearchIndexEvent;
+    public event Action<S.MarketPlaceBuy> MarketPlaceBuyEvent;
+    public event Action<S.MarketPlaceConsignChanged> MarketPlaceConsignChangedEvent;
     public event Action<S.ObjectItem> ObjectItemEvent;
     public event Action<S.Chat> ChatEvent;
+    public event Action<uint, string> GroupMemberEvent;
+    public event Action<uint> GroupRemoveEvent;
+    public event Action<S.GroupLFG> GroupLFGEvent;
+    public event Action<List<ClientMailInfo>> MailListEvent;
+    public event Action<ClientMailInfo> MailNewEvent;
+    public event Action<int> MailDeleteEvent;
+    public event Action<S.TradeOpen> TradeOpenEvent;
+    public event Action TradeCloseEvent;
+    public event Action<ClientUserItem> TradeItemAddedEvent;
+    public event Action<long> TradeGoldAddedEvent;
+    public event Action TradeUnlockEvent;
     public event Action<uint> ObjectRemoveEvent;
     public event Action<uint, MirDirection> ObjectTurnEvent;
     // M5 战斗
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, uint> ObjectAttackEvent; // id, dir, loc, magic, targetID
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>> ObjectRangeAttackEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>, List<System.Drawing.Point>, bool> ObjectMagicEvent; // id, dir, loc, type, targets, locations, cast
+    public event Action<S.ObjectProjectile> ObjectProjectileEvent;
+    public event Action<uint, Effect> ObjectEffectEvent;
+    public event Action<System.Drawing.Point, Effect, MirDirection> MapEffectEvent;
     public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
     public event Action<uint, int, int, bool> DataObjectHealthManaEvent; // id, health, mana, dead
     public event Action<uint, int, int> DataObjectMaxHealthManaEvent; // id, maxHealth, maxMana
@@ -93,6 +126,7 @@ public partial class ServerConnection : BaseConnection
     // Process 里 Enqueue + Invoke 双发; GameScene._Ready 一次性 Drain 积压, 之后靠事件接实时包。
     public readonly Queue<S.ObjectMove> PendingMoves = new();
     public readonly Queue<S.ObjectMonster> PendingMonsters = new();
+    public readonly Queue<S.ObjectPlayer> PendingPlayers = new();
     public readonly Queue<S.ObjectNPC> PendingNPCs = new();
     public readonly Queue<S.ObjectItem> PendingItems = new();
     public readonly Queue<S.Chat> PendingChats = new();
@@ -100,6 +134,9 @@ public partial class ServerConnection : BaseConnection
     public readonly Queue<(uint, MirDirection)> PendingTurns = new();
     public readonly Queue<S.ObjectAttack> PendingAttacks = new();
     public readonly Queue<S.ObjectMagic> PendingMagics = new();
+    public readonly Queue<S.ObjectProjectile> PendingProjectiles = new();
+    public readonly Queue<S.ObjectEffect> PendingObjectEffects = new();
+    public readonly Queue<S.MapEffect> PendingMapEffects = new();
     public readonly Queue<S.HealthChanged> PendingHealthChanges = new();
     public readonly Queue<S.DataObjectHealthMana> PendingHealthManas = new();
     public readonly Queue<S.DataObjectMaxHealthMana> PendingMaxHealthManas = new();
@@ -169,7 +206,7 @@ public partial class ServerConnection : BaseConnection
     }
     public void Process(S.StartGame p)
     {
-        GD.Print($"[Net] 收到 S.StartGame: Result={p.Result}");
+        GD.Print($"[Net] 收到 S.StartGame: Result={p.Result}, Magics={p.StartInformation?.Magics?.Count ?? 0}, 前3个Set1=[{string.Join(",", (p.StartInformation?.Magics ?? new()).Take(3).Select(m => $"{m.InfoIndex}:{m.Set1Key}"))}]");
         StartGameResultEvent?.Invoke(p.Result, p.StartInformation);
     }
     public void Process(S.MapChanged p)
@@ -192,12 +229,34 @@ public partial class ServerConnection : BaseConnection
         PendingMonsters.Enqueue(p);
         ObjectMonsterEvent?.Invoke(p);
     }
+    public void Process(S.ObjectPlayer p)
+    {
+        PendingPlayers.Enqueue(p);
+        ObjectPlayerEvent?.Invoke(p);
+    }
 
     public void Process(S.ObjectNPC p)
     {
         PendingNPCs.Enqueue(p);
         ObjectNPCEvent?.Invoke(p);
     }
+    public void Process(S.NPCResponse p) => NPCResponseEvent?.Invoke(p);
+    public void Process(S.NPCClose p) => NPCClosedEvent?.Invoke();
+    public void Process(S.NPCRepair p) => NPCRepairEvent?.Invoke(p);
+    public void Process(S.BundleOpen p) => BundleOpenEvent?.Invoke(p);
+    public void Process(S.BundleClose p) => BundleCloseEvent?.Invoke();
+    public void Process(S.FortuneUpdate p) => FortuneUpdateEvent?.Invoke(p);
+    public void Process(S.LootBoxOpen p) => LootBoxOpenEvent?.Invoke(p);
+    public void Process(S.LootBoxClose p) => LootBoxCloseEvent?.Invoke();
+    public void Process(S.NPCSocketItem p) => NPCSocketItemEvent?.Invoke(p);
+    public void Process(S.NPCSocketCombine p) => NPCSocketCombineEvent?.Invoke(p);
+    public void Process(S.SetTimer p) => SetTimerEvent?.Invoke(p);
+    public void Process(S.MarketPlaceConsign p) => MarketPlaceConsignEvent?.Invoke(p);
+    public void Process(S.MarketPlaceSearch p) => MarketPlaceSearchEvent?.Invoke(p);
+    public void Process(S.MarketPlaceSearchCount p) => MarketPlaceSearchCountEvent?.Invoke(p);
+    public void Process(S.MarketPlaceSearchIndex p) => MarketPlaceSearchIndexEvent?.Invoke(p);
+    public void Process(S.MarketPlaceBuy p) => MarketPlaceBuyEvent?.Invoke(p);
+    public void Process(S.MarketPlaceConsignChanged p) => MarketPlaceConsignChangedEvent?.Invoke(p);
 
     public void Process(S.ObjectItem p)
     {
@@ -210,6 +269,18 @@ public partial class ServerConnection : BaseConnection
         PendingChats.Enqueue(p);
         ChatEvent?.Invoke(p);
     }
+
+    public void Process(S.GroupMember p) => GroupMemberEvent?.Invoke(p.ObjectID, p.Name);
+    public void Process(S.GroupRemove p) => GroupRemoveEvent?.Invoke(p.ObjectID);
+    public void Process(S.GroupLFG p) => GroupLFGEvent?.Invoke(p);
+    public void Process(S.MailList p) => MailListEvent?.Invoke(p.Mail ?? new List<ClientMailInfo>());
+    public void Process(S.MailNew p) => MailNewEvent?.Invoke(p.Mail);
+    public void Process(S.MailDelete p) => MailDeleteEvent?.Invoke(p.Index);
+    public void Process(S.TradeOpen p) => TradeOpenEvent?.Invoke(p);
+    public void Process(S.TradeClose p) => TradeCloseEvent?.Invoke();
+    public void Process(S.TradeItemAdded p) => TradeItemAddedEvent?.Invoke(p.Item);
+    public void Process(S.TradeGoldAdded p) => TradeGoldAddedEvent?.Invoke(p.Gold);
+    public void Process(S.TradeUnlock p) => TradeUnlockEvent?.Invoke();
 
     public void Process(S.ObjectRemove p)
     {
@@ -238,6 +309,24 @@ public partial class ServerConnection : BaseConnection
     {
         PendingMagics.Enqueue(p);
         ObjectMagicEvent?.Invoke(p.ObjectID, p.Direction, p.CurrentLocation, p.Type, p.Targets, p.Locations, p.Cast);
+    }
+
+    public void Process(S.ObjectProjectile p)
+    {
+        PendingProjectiles.Enqueue(p);
+        ObjectProjectileEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectEffect p)
+    {
+        PendingObjectEffects.Enqueue(p);
+        ObjectEffectEvent?.Invoke(p.ObjectID, p.Effect);
+    }
+
+    public void Process(S.MapEffect p)
+    {
+        PendingMapEffects.Enqueue(p);
+        MapEffectEvent?.Invoke(p.Location, p.Effect, p.Direction);
     }
 
     public void Process(S.HealthChanged p)
@@ -539,6 +628,26 @@ public partial class ServerConnection : BaseConnection
     public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
     {
         Enqueue(new C.BeltLinkChanged { Slot = slot, LinkIndex = linkInfoIndex, LinkItemIndex = linkItemIndex });
+    }
+
+    // ---- 原版寄售行 ----
+    public void SendMarketSearch(string name, MarketPlaceSort sort)
+    {
+        Enqueue(new C.MarketPlaceSearch { Name = name ?? string.Empty, Sort = sort, ItemTypeFilter = false, ItemType = ItemType.Nothing });
+    }
+
+    public void SendMarketSearchIndex(int index) => Enqueue(new C.MarketPlaceSearchIndex { Index = index });
+    public void SendMarketBuy(long index, long count) => Enqueue(new C.MarketPlaceBuy { Index = index, Count = count, GuildFunds = false });
+    public void SendMarketCancel(int index, long count) => Enqueue(new C.MarketPlaceCancelConsign { Index = index, Count = count });
+    public void SendMarketConsign(GridType grid, int slot, long count, int price)
+    {
+        Enqueue(new C.MarketPlaceConsign
+        {
+            Link = new CellLinkInfo { GridType = grid, Slot = slot, Count = count },
+            Price = price,
+            Message = string.Empty,
+            GuildFunds = false,
+        });
     }
 
     // 玩家学新技能 (S.NewMagic)
