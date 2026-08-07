@@ -319,12 +319,15 @@ public static class MagicEffectTable
         [MagicType.LightningStrike] = new CastEffect
         {
             File = LibraryFile.MagicEx6, StartIndex = 500, FrameCount = 8, Colour = Lightning,
+            DirectionFromCast = true,
+            Source = new ImpactDef { File = LibraryFile.MagicEx6, StartIndex = 400, FrameCount = 8, Colour = Lightning },
             Projectile = new ProjectileDef { File = LibraryFile.MagicEx6, StartIndex = 500, FrameCount = 8, Colour = Lightning, Skip = 0 },
             Impact = new ImpactDef { File = LibraryFile.MagicEx6, StartIndex = 500, FrameCount = 8, Colour = Lightning },
         },
         [MagicType.IceRain] = new CastEffect
         {
             File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice,
+            Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Ice },
             ProjectileDelayStepMs = 200,
             Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice, Skip = 0, Explode = true, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 720, FrameCount = 7, Colour = Ice },
