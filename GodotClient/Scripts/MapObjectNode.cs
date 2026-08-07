@@ -45,6 +45,8 @@ public partial class MapObjectNode : Node2D
     public System.Drawing.Point MoveFrom;
     public double MoveStartMs;
     private int _targetX, _targetY;
+    public int MoveDistance { get; private set; }
+    private readonly Queue<(System.Drawing.Point To, MirDirection Direction, int Distance)> _moveQueue = new();
 
     private Dictionary<MirAnimation, Frame> _frameTable = new(FrameSet.DefaultMonster);
     public virtual Dictionary<MirAnimation, Frame> FrameTable => _frameTable;
@@ -70,6 +72,12 @@ public partial class MapObjectNode : Node2D
     // 原版 DoNextAction: 队列空 -> Standing (Die 后保持 Dead); 否则弹队首
     public virtual void DoNextAction()
     {
+        if (_moveQueue.Count > 0 && !Dead)
+        {
+            var move = _moveQueue.Dequeue();
+            StartMove(move.To, move.Direction, move.Distance);
+            return;
+        }
         if (ActionQueue.Count == 0)
         {
             SetAnimation(Dead ? MirAnimation.Dead : MirAnimation.Standing);
@@ -176,11 +184,21 @@ public partial class MapObjectNode : Node2D
 
         double t = Math.Clamp((nowMs - MoveStartMs) / sum, 0.0, 1.0);
         double k = 1.0 - t; // 1 -> 起点, 0 -> 终点(权威格)
-        int dx = _targetX - MoveFrom.X;
-        int dy = _targetY - MoveFrom.Y;
-
-        int x = (int)(dx * CellWidth * k);
-        int y = (int)(dy * CellHeight * k);
+        float xStep = CellWidth * MoveDistance * (float)k;
+        float yStep = CellHeight * MoveDistance * (float)k;
+        int x = 0, y = 0;
+        // 与旧端 MapObject.UpdateFrame 的 Direction switch 完全一致。
+        switch (Direction)
+        {
+            case MirDirection.Up: y = (int)yStep; break;
+            case MirDirection.UpRight: x = -(int)xStep; y = (int)yStep; break;
+            case MirDirection.Right: x = -(int)xStep; break;
+            case MirDirection.DownRight: x = -(int)xStep; y = -(int)yStep; break;
+            case MirDirection.Down: y = -(int)yStep; break;
+            case MirDirection.DownLeft: x = (int)xStep; y = -(int)yStep; break;
+            case MirDirection.Left: x = (int)xStep; break;
+            case MirDirection.UpLeft: x = (int)xStep; y = (int)yStep; break;
+        }
         x -= x % 2; // 偶数像素对齐 (原版 x -= x % 2)
         y -= y % 2;
         OffsetX = x;
@@ -188,17 +206,36 @@ public partial class MapObjectNode : Node2D
     }
 
     // 开始一格(或多格)移动: 终点为服务端权威位置, 起点为当前格
-    public void StartMove(System.Drawing.Point to, MirDirection dir)
+    public void StartMove(System.Drawing.Point to, MirDirection dir, int distance = 1)
     {
         MoveFrom = new System.Drawing.Point(CellX, CellY);
         _targetX = to.X;
         _targetY = to.Y;
+        MoveDistance = Math.Max(1, distance);
         Direction = dir;
         MoveStartMs = Godot.Time.GetTicksMsec();
         CellX = to.X;  // 权威格立即到终点, 视觉位置由 OffsetX/OffsetY 回拉
         CellY = to.Y;
-        SetAnimation(MirAnimation.Walking);
+        // 原版会按 Distance 选择 Walking/Running；不能把多格移动都当作走路。
+        SetAnimation(distance >= 2 ? MirAnimation.Running : MirAnimation.Walking);
     }
+
+    public void QueueMove(System.Drawing.Point to, MirDirection dir, int distance)
+    {
+        distance = Math.Max(1, distance);
+        if (Animation is MirAnimation.Walking or MirAnimation.Running)
+        {
+            _moveQueue.Enqueue((to, dir, distance));
+            return;
+        }
+        StartMove(to, dir, distance);
+    }
+
+    // 旧端 RenderY：向上移动时按起点侧的视觉行排序，避免穿层。
+    public int RenderY => OffsetX != 0 || OffsetY != 0
+        ? (Direction is MirDirection.Up or MirDirection.UpRight or MirDirection.UpLeft
+            ? CellY + MoveDistance : CellY)
+        : CellY;
 
     public int DrawFrame => FrameIndex + _currentFrame.StartIndex + _currentFrame.OffSet * (int)Direction;
 

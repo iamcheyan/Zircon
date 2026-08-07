@@ -31,6 +31,8 @@ public static class MagicEffectTable
         public int DelayMs = 100;
         public Color Colour = Colors.White;
         public bool Blend = true;
+        // 旧端 Spell 分支中挂在施法者/自身对象上的效果（如 HealStart）。
+        public bool CastAtSource;
         // 飞行弹道: 非空表示从施法者飞到目标
         public ProjectileDef Projectile;
         // 落地/命中特效 (目标位置)
@@ -117,29 +119,33 @@ public static class MagicEffectTable
         },
         [MagicType.Cyclone] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind },
         [MagicType.FireStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 950, FrameCount = 7, Colour = Fire },
-        [MagicType.MagicShield] = new CastEffect { File = LibraryFile.Magic, StartIndex = 830, FrameCount = 19, DelayMs = 60, Colour = Phantom },
-        [MagicType.SuperiorMagicShield] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1900, FrameCount = 17, DelayMs = 60, Colour = Fire },
+        [MagicType.MagicShield] = new CastEffect { File = LibraryFile.Magic, StartIndex = 830, FrameCount = 19, DelayMs = 60, Colour = Phantom, CastAtSource = true },
+        [MagicType.SuperiorMagicShield] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1900, FrameCount = 17, DelayMs = 60, Colour = Fire, CastAtSource = true },
 
         // ---- 道士 ----
         [MagicType.Heal] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 660, FrameCount = 10, DelayMs = 60, Colour = Holy,
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 610, FrameCount = 10, Colour = Holy },
+            CastAtSource = true,
         },
         [MagicType.MassHeal] = new CastEffect
         {
-            File = LibraryFile.Magic, StartIndex = 670, FrameCount = 7, Colour = Holy,
-            Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 660, FrameCount = 10, DelayMs = 60, Colour = Holy },
+            File = LibraryFile.Magic, StartIndex = 660, FrameCount = 10, DelayMs = 60, Colour = Holy,
+            Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 670, FrameCount = 7, Colour = Holy },
+            CastAtSource = true,
         },
         [MagicType.PoisonDust] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 60, FrameCount = 10, DelayMs = 60, Colour = Dark,
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 70, FrameCount = 10, Colour = Dark },
+            CastAtSource = true,
         },
         [MagicType.Purification] = new CastEffect
         {
-            File = LibraryFile.MagicEx2, StartIndex = 230, FrameCount = 10, Colour = Holy,
+            File = LibraryFile.MagicEx2, StartIndex = 220, FrameCount = 10, Colour = Holy,
             Impact = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 230, FrameCount = 10, Colour = Holy },
+            CastAtSource = true,
         },
         [MagicType.SummonDemonicCreature] = new CastEffect { File = LibraryFile.Magic, StartIndex = 740, FrameCount = 10, DelayMs = 60, Colour = Phantom },
         [MagicType.SummonShinsu] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2590, FrameCount = 19, DelayMs = 60, Colour = Phantom },

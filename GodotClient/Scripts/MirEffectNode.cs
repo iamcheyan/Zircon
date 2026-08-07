@@ -42,6 +42,8 @@ public partial class MirEffectNode : Node2D
     public float BlendRate = 0.7f;
     public float Opacity = 1f;
     public bool UseOffSet = true; // 用图库 OffSet 居中
+    public int FrameLight;
+    public Color FrameLightColour = Colors.White;
 
     // 生命周期
     protected double _startMs;
@@ -107,7 +109,9 @@ public partial class MirEffectNode : Node2D
 
         // 位置跟随目标或固定格子
         if (_target != null)
-            Position = _target.Position;
+            // MapObjectNode 使用对象基线，而旧端 MirEffect.Target 使用
+            // MapObject.DrawY；当前对象基线多一格，需还原到旧端锚点。
+            Position = _target.Position - new Vector2(0f, 32f);
         else if (_cameraFn != null)
             Position = _cameraFn();
 
@@ -178,7 +182,7 @@ public partial class MirEffectNode : Node2D
         var img = _lib.Images[df];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
 
-        var tex = _lib.GetImageTexture(df);
+        var tex = _lib.GetEffectTexture(df);
         if (tex == null) return;
 
         // UseOffSet: 用图库 OffSet 居中(原版 Draw 用 OffSetX/OffSetY)

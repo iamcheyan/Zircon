@@ -58,6 +58,11 @@ public partial class PlayerRenderer : Node2D
     // 移动插值 (格子坐标 -> 屏幕偏移)
     public int CellX, CellY;          // 服务端权威格子坐标
     public float OffsetX, OffsetY;    // 平滑移动的像素偏移
+    public int MoveDistance { get; private set; }
+    private bool _remoteMoving;
+    private System.Drawing.Point _remoteMoveFrom;
+    private double _remoteMoveStartMs;
+    private int _remoteMoveTargetX, _remoteMoveTargetY;
 
     private const int CellWidth = 48;
     private const int CellHeight = 32;
@@ -172,10 +177,29 @@ public partial class PlayerRenderer : Node2D
     public void BeginMove(MirDirection direction, int distance, bool mounted, bool running)
     {
         Direction = direction;
+        MoveDistance = Math.Max(1, distance);
         SetAnimation(running
             ? (mounted ? MirAnimation.HorseRunning : MirAnimation.Running)
             : (mounted ? MirAnimation.HorseWalking : MirAnimation.Walking));
     }
+
+    // 其他玩家的移动回包：权威坐标立即到终点，画面从起点平滑回拉。
+    public void StartMove(System.Drawing.Point to, MirDirection direction, int distance, bool mounted)
+    {
+        _remoteMoveFrom = new System.Drawing.Point(CellX, CellY);
+        _remoteMoveTargetX = to.X;
+        _remoteMoveTargetY = to.Y;
+        CellX = to.X;
+        CellY = to.Y;
+        _remoteMoveStartMs = Godot.Time.GetTicksMsec();
+        _remoteMoving = true;
+        BeginMove(direction, distance, mounted, distance >= 2);
+    }
+
+    public int RenderY => OffsetX != 0 || OffsetY != 0
+        ? (Direction is MirDirection.Up or MirDirection.UpRight or MirDirection.UpLeft
+            ? CellY + MoveDistance : CellY)
+        : CellY;
 
     public void PlayStruck() => SetAnimation(MirAnimation.Struck);
 
@@ -280,6 +304,34 @@ public partial class PlayerRenderer : Node2D
             {
                 _oneShotAnim = MirAnimation.Standing;
                 SetAnimation(MirAnimation.Standing);
+            }
+        }
+
+        if (_remoteMoving && _currentFrame != null)
+        {
+            double t = Math.Clamp((nowMs - _remoteMoveStartMs) / Math.Max(1.0, _currentFrame.Sum), 0.0, 1.0);
+            double k = 1.0 - t;
+            float xStep = CellWidth * MoveDistance * (float)k;
+            float yStep = CellHeight * MoveDistance * (float)k;
+            OffsetX = 0f;
+            OffsetY = 0f;
+            switch (Direction)
+            {
+                case MirDirection.Up: OffsetY = yStep; break;
+                case MirDirection.UpRight: OffsetX = -xStep; OffsetY = yStep; break;
+                case MirDirection.Right: OffsetX = -xStep; break;
+                case MirDirection.DownRight: OffsetX = -xStep; OffsetY = -yStep; break;
+                case MirDirection.Down: OffsetY = -yStep; break;
+                case MirDirection.DownLeft: OffsetX = xStep; OffsetY = -yStep; break;
+                case MirDirection.Left: OffsetX = xStep; break;
+                case MirDirection.UpLeft: OffsetX = xStep; OffsetY = yStep; break;
+            }
+            if (t >= 1.0)
+            {
+                _remoteMoving = false;
+                OffsetX = 0f;
+                OffsetY = 0f;
+                SetAnimation(Horse != HorseType.None ? MirAnimation.HorseStanding : MirAnimation.Standing);
             }
         }
     }
@@ -499,7 +551,8 @@ public partial class PlayerRenderer : Node2D
         if (img == null || !RenderPrimitives.IsUsableResourceShadow(img.ShadowWidth, img.ShadowHeight))
             return false;
         var texture = lib.GetShadowTexture(frame);
-        if (texture == null) return false;
+        if (!RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
+            return false;
         DrawTextureRectRegion(texture,
             new Rect2(img.ShadowOffSetX, img.ShadowOffSetY, img.ShadowWidth, img.ShadowHeight),
             new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
