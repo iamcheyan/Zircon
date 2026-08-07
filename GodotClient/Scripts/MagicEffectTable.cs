@@ -37,6 +37,7 @@ public static class MagicEffectTable
         public float Opacity = 1f;
         public int Skip = 10;
         public double StartDelayMs;
+        public int DistanceDelayMs;
         // 旧端 Spell 分支中挂在施法者/自身对象上的效果（如 HealStart）。
         public bool CastAtSource;
         // 飞行弹道: 非空表示从施法者飞到目标
@@ -76,6 +77,7 @@ public static class MagicEffectTable
         public float Opacity = 1f;
         public int Skip = 10;
         public double StartDelayMs;
+        public int DistanceDelayMs;
     }
 
     public sealed class OffsetImpactDef : ImpactDef
@@ -223,9 +225,9 @@ public static class MagicEffectTable
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 420, FrameCount = 5, Colour = Fire },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 580, FrameCount = 10, Colour = Fire },
         },
-        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
+        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.LightningBeam] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1180, FrameCount = 4, Colour = Lightning },
-        [MagicType.FrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, Colour = Ice, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
+        [MagicType.FrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, DistanceDelayMs = 50, Colour = Ice, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, DistanceDelayMs = 50, Colour = Ice, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.BlowEarth] = new CastEffect
         {
             File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind,
@@ -238,7 +240,7 @@ public static class MagicEffectTable
         [MagicType.LightningWave] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 980, FrameCount = 8, Colour = Lightning } },
         [MagicType.IceStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 770, FrameCount = 10, DelayMs = 60, Colour = Ice, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 780, FrameCount = 7, Colour = Ice } },
         [MagicType.DragonTornado] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1030, FrameCount = 10, DelayMs = 60, Colour = Wind, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1040, FrameCount = 16, Colour = Wind } },
-        [MagicType.GreaterFrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
+        [MagicType.GreaterFrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, DistanceDelayMs = 50, Colour = Ice, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.ChainLightning] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 470, FrameCount = 10, Colour = Lightning },
         [MagicType.Asteroid] = new CastEffect
         {
