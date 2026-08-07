@@ -46,6 +46,7 @@ public static class MagicEffectTable
         public ImpactDef Source;
         // 飞行弹道: 非空表示从施法者飞到目标
         public ProjectileDef Projectile;
+        public ProjectileDef TargetProjectile;
         // 落地/命中特效 (目标位置)
         public ImpactDef Impact;
         public List<ImpactDef> Additional = new();
@@ -483,6 +484,7 @@ public static class MagicEffectTable
         {
             File = LibraryFile.MonMagicEx20, StartIndex = 1500, FrameCount = 6, Colour = Phantom,
             Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx20, StartIndex = 1500, FrameCount = 6, Colour = Phantom },
+            TargetProjectile = new ProjectileDef { File = LibraryFile.MonMagicEx20, StartIndex = 1600, FrameCount = 6, Colour = Phantom, Has16Directions = false },
             Impact = new ImpactDef { File = LibraryFile.MonMagicEx20, StartIndex = 1700, FrameCount = 10, Colour = Phantom },
         },
         [MagicType.GreenSludgeBall] = new CastEffect

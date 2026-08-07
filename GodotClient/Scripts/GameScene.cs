@@ -1650,7 +1650,7 @@ public partial class GameScene : Control
 
     private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target)
     {
-        var proj = def.Projectile;
+        var proj = def.TargetProjectile ?? def.Projectile;
         SpawnProjectileDefinitionTarget(proj, fromX, fromY, target, def.Impact);
     }
 
