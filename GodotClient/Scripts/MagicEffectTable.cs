@@ -352,6 +352,46 @@ public static class MagicEffectTable
         [MagicType.RagingWind] = new CastEffect { File = LibraryFile.MagicEx4, StartIndex = 2600, FrameCount = 12, DelayMs = 70, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor },
         [MagicType.Concentration] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 300, FrameCount = 15, Colour = None, CastAtSource = true },
         [MagicType.Containment] = new CastEffect { File = LibraryFile.MagicEx3, StartIndex = 590, FrameCount = 9, DelayMs = 60, Colour = None, CastAtSource = true },
+        [MagicType.Assault] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 740, FrameCount = 3, Colour = None, CastAtSource = true },
+        [MagicType.ElementalSwords] = new CastEffect { File = LibraryFile.MagicEx10, StartIndex = 300, FrameCount = 5, Colour = None },
+        [MagicType.HundredFist] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2100, FrameCount = 5, DelayMs = 200, Colour = Fire, CastAtSource = true },
+        [MagicType.ThunderKick] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1190, FrameCount = 10, Colour = None },
+        [MagicType.CorpseExploder] = new CastEffect
+        {
+            File = LibraryFile.MagicEx7, StartIndex = 300, FrameCount = 4, Colour = Fire,
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 300, FrameCount = 4, Colour = Fire },
+            Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 1000, FrameCount = 17, Colour = Fire },
+        },
+        [MagicType.Hemorrhage] = new CastEffect
+        {
+            File = LibraryFile.MagicEx7, StartIndex = 1100, FrameCount = 6, Colour = Fire,
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 1100, FrameCount = 6, Colour = Fire },
+            Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 1270, FrameCount = 10, Colour = Fire },
+        },
+        [MagicType.FlamingDaggers] = new CastEffect
+        {
+            File = LibraryFile.MagicEx5, StartIndex = 3900, FrameCount = 7, Colour = Fire,
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 3900, FrameCount = 7, Colour = Fire },
+            Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 4100, FrameCount = 8, Colour = Fire },
+        },
+        [MagicType.Shredding] = new CastEffect
+        {
+            File = LibraryFile.MagicEx5, StartIndex = 4300, FrameCount = 5, Colour = Fire,
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 4300, FrameCount = 5, Colour = Fire },
+            Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 4500, FrameCount = 10, Colour = Fire },
+        },
+        [MagicType.PinkFireBall] = new CastEffect
+        {
+            File = LibraryFile.MonMagicEx20, StartIndex = 1500, FrameCount = 6, Colour = Phantom,
+            Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx20, StartIndex = 1500, FrameCount = 6, Colour = Phantom },
+            Impact = new ImpactDef { File = LibraryFile.MonMagicEx20, StartIndex = 1700, FrameCount = 10, Colour = Phantom },
+        },
+        [MagicType.GreenSludgeBall] = new CastEffect
+        {
+            File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f),
+            Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = false },
+            Impact = new ImpactDef { File = LibraryFile.MonMagicEx23, StartIndex = 2780, FrameCount = 6, Colour = new Color(0.6f, 1f, 0.1f) },
+        },
 
         // ---- 刺客 ----
         [MagicType.FlameSplash] = new CastEffect { File = LibraryFile.Magic, StartIndex = 580, FrameCount = 10, Colour = Fire },

@@ -45,6 +45,8 @@ public partial class GameScene : Control
     private CommunicationDialog _communicationDialog;
     private GameStoreDialog _gameStoreDialog;
     private ConsignmentDialog _consignmentDialog;
+    private FishingDialog _fishingDialog;
+    private FishingCatchDialog _fishingCatchDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
     private uint _npcObjectId;
@@ -121,6 +123,12 @@ public partial class GameScene : Control
     public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
     public void OpenConsignmentDialog() { if (_consignmentDialog != null) WindowManager.Open(_consignmentDialog, _uiLayer); }
+    public void OpenFishingDialog() { if (_fishingDialog != null) WindowManager.Open(_fishingDialog, _uiLayer); }
+    public void StartFishing()
+    {
+        OpenFishingDialog();
+        SendFishingCast(FishingState.Cast);
+    }
     public void OpenCaptionDialog() { if (_captionDialog != null) WindowManager.Open(_captionDialog, _uiLayer); }
 
     public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
@@ -319,6 +327,8 @@ public partial class GameScene : Control
         _net.Connection.MarketPlaceSearchIndexEvent += p => _consignmentDialog?.ApplySearchIndex(p?.Index ?? -1, p?.Result);
         _net.Connection.MarketPlaceBuyEvent += p => _consignmentDialog?.ApplyBuy(p?.Index ?? -1, p?.Count ?? 0, p?.Success == true);
         _net.Connection.MarketPlaceConsignChangedEvent += p => _consignmentDialog?.ApplyConsignChanged(p?.Index ?? -1, p?.Count ?? 0);
+        _net.Connection.ObjectFishingEvent += OnObjectFishing;
+        _net.Connection.FishingStatsEvent += p => _fishingCatchDialog?.UpdateStats(p);
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
@@ -994,12 +1004,10 @@ public partial class GameScene : Control
         foreach (uint tid in targets)
             if (_otherPlayers.TryGetValue(tid, out var targetPlayer)) targetPlayer.PlayStruck();
 
-        // 兜底: 查不到特效定义, 用通用爆炸 (保持原占位行为)
+        // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
+        // MagicType 会被错误地表现成“所有技能都是火球落地”。
         if (def == null)
-        {
-            foreach (var (x, y) in destCells) SpawnGenericExplosion(x, y);
             return;
-        }
 
         if (def.CastAtSource)
         {
@@ -1558,6 +1566,10 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_gameStoreDialog);
         _consignmentDialog = new ConsignmentDialog();
         _uiLayer.AddChild(_consignmentDialog);
+        _fishingDialog = new FishingDialog();
+        _uiLayer.AddChild(_fishingDialog);
+        _fishingCatchDialog = new FishingCatchDialog();
+        _uiLayer.AddChild(_fishingCatchDialog);
         _tradeDialog = new TradeDialog();
         _uiLayer.AddChild(_tradeDialog);
         _npcDialog = new NPCDialog();
@@ -1682,6 +1694,15 @@ public partial class GameScene : Control
             _consignmentDialog.Location = new Vector2I(
                 Math.Max(0, (int)((vp.X - _consignmentDialog.Size.X) / 2f)),
                 Math.Max(0, (int)((vp.Y - _consignmentDialog.Size.Y) / 2f)));
+
+        if (_fishingDialog != null)
+            _fishingDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _fishingDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _fishingDialog.Size.Y) / 2f)));
+        if (_fishingCatchDialog != null)
+            _fishingCatchDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _fishingCatchDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _fishingCatchDialog.Size.Y) / 2f) + 110));
 
         if (_bundleDialog != null)
             _bundleDialog.Location = new Vector2I(
@@ -2094,6 +2115,15 @@ public partial class GameScene : Control
     public void SendMarketBuy(long index, long count) => _net?.Connection?.SendMarketBuy(index, count);
     public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
     public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
+    public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
+
+    private void OnObjectFishing(S.ObjectFishing p)
+    {
+        if (p == null || p.ObjectID != _playerObjectID) return;
+        _fishingCatchDialog?.SetState(p.State, p.FishFound);
+        if (p.State == FishingState.None || p.State == FishingState.Cancel)
+            WindowManager.Close(_fishingDialog);
+    }
     public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem) => _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
     public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3) => _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
