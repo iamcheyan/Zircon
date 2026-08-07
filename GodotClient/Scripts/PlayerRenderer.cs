@@ -54,6 +54,7 @@ public partial class PlayerRenderer : Node2D
 
     // 一次性动作动画 (Combat/Struck): 播完回 Standing
     private MirAnimation _oneShotAnim = MirAnimation.Standing;
+    private MagicType _spellType = MagicType.None;
 
     // 移动插值 (格子坐标 -> 屏幕偏移)
     public int CellX, CellY;          // 服务端权威格子坐标
@@ -145,6 +146,8 @@ public partial class PlayerRenderer : Node2D
             or MirAnimation.Combat12 or MirAnimation.Combat13 or MirAnimation.Combat14 or MirAnimation.Combat15
             or MirAnimation.Struck or MirAnimation.Pushed or MirAnimation.Harvest
             or MirAnimation.FishingCast or MirAnimation.FishingReel or MirAnimation.TamingCast
+            or MirAnimation.ChannellingStart or MirAnimation.ChannellingEnd
+            or MirAnimation.DragonRepulseStart or MirAnimation.DragonRepulseEnd
             or MirAnimation.Die or MirAnimation.Dead ? anim : MirAnimation.Standing;
         QueueRedraw();
     }
@@ -159,11 +162,17 @@ public partial class PlayerRenderer : Node2D
 
     public void PlaySpell(MagicType magic)
     {
+        _spellType = magic;
         MirAnimation anim;
         try { anim = Functions.GetMagicAnimation(magic); }
         catch (NotImplementedException) { anim = MirAnimation.Combat1; }
-        // 部分法术沿用战斗库帧；没有玩家专用帧时不能落到怪物帧表。
-        if (!FrameSet.Players.ContainsKey(anim)) anim = MirAnimation.Combat1;
+        // Functions.GetMagicAnimation 与原版共用同一张技能动作表。
+        // 不要把 Channelling/DragonRepulse 等合法动作降级成 Combat1。
+        if (!FrameSet.Players.ContainsKey(anim))
+        {
+            GD.PrintErr($"[PlayerSpell] 缺少玩家动作帧表: Magic={magic}, Animation={anim}");
+            anim = MirAnimation.Combat1;
+        }
         SetAnimation(anim);
     }
 
@@ -211,42 +220,10 @@ public partial class PlayerRenderer : Node2D
 
     private Frame GetFrameTable(MirAnimation anim)
     {
-        // 行走/站立用 Players 表; 马/其他用 DefaultMonster 兜底
-        switch (anim)
-        {
-            case MirAnimation.Standing:
-            case MirAnimation.Walking:
-            case MirAnimation.Running:
-            case MirAnimation.Struck:
-            case MirAnimation.Die:
-            case MirAnimation.Dead:
-            case MirAnimation.Pushed:
-            case MirAnimation.Combat1:
-            case MirAnimation.Combat2:
-            case MirAnimation.Combat3:
-            case MirAnimation.Combat4:
-            case MirAnimation.Combat5:
-            case MirAnimation.Combat6:
-            case MirAnimation.Combat7:
-            case MirAnimation.Combat8:
-            case MirAnimation.Combat9:
-            case MirAnimation.Combat10:
-            case MirAnimation.Combat11:
-            case MirAnimation.Combat12:
-            case MirAnimation.Combat13:
-            case MirAnimation.Combat14:
-            case MirAnimation.Combat15:
-            case MirAnimation.Stance:
-            case MirAnimation.Harvest:
-                if (FrameSet.Players.TryGetValue(anim, out var pf)) return pf;
-                break;
-            case MirAnimation.HorseStanding:
-            case MirAnimation.HorseWalking:
-            case MirAnimation.HorseRunning:
-            case MirAnimation.HorseStruck:
-                if (FrameSet.Players.TryGetValue(anim, out var hf)) return hf;
-                break;
-        }
+        // FrameSet.Players 同时包含普通、施法、持续施法和骑马动作。
+        // 之前的 switch 漏掉 Channelling/DragonRepulse，导致这些技能直接
+        // 使用 DefaultMonster.Standing，表现为人物不做施法动作。
+        if (FrameSet.Players.TryGetValue(anim, out var frame)) return frame;
         return FrameSet.DefaultMonster[MirAnimation.Standing];
     }
 
@@ -302,8 +279,17 @@ public partial class PlayerRenderer : Node2D
             var f = _currentFrame;
             if (f != null && nowMs - FrameStartMs >= f.Sum)
             {
-                _oneShotAnim = MirAnimation.Standing;
-                SetAnimation(MirAnimation.Standing);
+                // 原版持续施法不是起手动作结束就回到站立。
+                if (Animation == MirAnimation.ChannellingStart &&
+                    _spellType == MagicType.ElementalHurricane)
+                {
+                    SetAnimation(MirAnimation.ChannellingMiddle);
+                }
+                else
+                {
+                    _oneShotAnim = MirAnimation.Standing;
+                    SetAnimation(MirAnimation.Standing);
+                }
             }
         }
 

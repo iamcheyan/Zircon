@@ -150,6 +150,7 @@ public partial class GameScene : Control
     private DXLabel _hoverLabel;        // 物品悬浮提示
     private ClientUserItem _hoverItem;
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _itemGlows = new(); // 地面物品稀有度光效
+    private readonly System.Collections.Generic.Dictionary<int, MirEffectNode> _buffEffects = new();
 
     private InventoryDialog _inventoryDialog;
     private CharacterDialog _characterDialog;
@@ -178,6 +179,9 @@ public partial class GameScene : Control
 
     private uint _playerObjectID;
     private int _playerMapIndex;
+    private readonly List<AutoPathRoute> _autoPathRoutes = new();
+    private int _autoPathProgressMap = -1;
+    private int _autoPathProgressPoint = -1;
     private System.Drawing.Point _playerLocation;
     private MirDirection _playerDirection;
     private Library.HorseType _playerHorse = Library.HorseType.None;
@@ -240,7 +244,8 @@ public partial class GameScene : Control
         {
             if (_net?.Connection?.Connected == true)
                 _net.Connection.Enqueue(new C.Turn { Direction = dir });
-        });
+        },
+        () => IsMouseOverUi());
         AddChild(_mouseWalker);
         _combatController = new CombatController(_mapView,
             () => _objects,
@@ -329,6 +334,7 @@ public partial class GameScene : Control
         _net.Connection.MarketPlaceConsignChangedEvent += p => _consignmentDialog?.ApplyConsignChanged(p?.Index ?? -1, p?.Count ?? 0);
         _net.Connection.ObjectFishingEvent += OnObjectFishing;
         _net.Connection.FishingStatsEvent += p => _fishingCatchDialog?.UpdateStats(p);
+        _net.Connection.AutoPathChangedEvent += OnAutoPathChanged;
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
@@ -1629,6 +1635,21 @@ public partial class GameScene : Control
         UpdatePlayerPosition();
     }
 
+    /// <summary>
+    /// 鼠标是否悬停在游戏 UI 上 (所有窗口/面板都在 _uiLayer 下)。
+    /// UI 上的左/右键是操作界面, 不是移动角色 —— MouseWalker 据此屏蔽移动。
+    /// 等价原版 MapControl.ProcessInput 的 MouseControl == this 判断。
+    /// </summary>
+    private bool IsMouseOverUi()
+    {
+        var hovered = GetViewport().GuiGetHoveredControl();
+        for (Node n = hovered; n != null; n = n.GetParent())
+        {
+            if (n == _uiLayer) return true;
+        }
+        return false;
+    }
+
     // 所有常驻 HUD 都基于当前 viewport 重新锚定。不能只在 _Ready 中
     // 计算一次：Linux/Windows 高 DPI 下 Godot 可能在场景创建后才完成
     // 窗口尺寸调整，旧坐标会把底栏留在屏幕中间。
@@ -1904,13 +1925,56 @@ public partial class GameScene : Control
     {
         if (p.Buff == null) return;
         _buffs[p.Buff.Index] = p.Buff;
+        if (_buffEffects.Remove(p.Buff.Index, out var oldFx)) oldFx.QueueFree();
+        if (_player != null && TryGetBuffEffect(p.Buff.Type, out var def))
+        {
+            var fx = new MirEffectNode();
+            AddChild(fx);
+            fx.SetupTarget(def.File, def.StartIndex, def.FrameCount, def.DelayMs, _player,
+                () => _player.CellY);
+            fx.Loop = true;
+            fx.Blend = true;
+            fx.BlendRate = def.BlendRate;
+            fx.FrameLight = 10;
+            fx.FrameLightColour = def.Colour;
+            _buffEffects[p.Buff.Index] = fx;
+        }
         _buffDialog?.BuffsChanged(_buffs);
     }
 
     private void OnBuffRemove(int index)
     {
+        if (_buffEffects.Remove(index, out var fx)) fx.QueueFree();
         if (_buffs.Remove(index))
             _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    private void OnAutoPathChanged(S.AutoPathChanged packet)
+    {
+        _autoPathRoutes.Clear();
+        if (packet?.Routes != null) _autoPathRoutes.AddRange(packet.Routes);
+        _autoPathProgressMap = -1;
+        _autoPathProgressPoint = -1;
+    }
+
+    private bool TryGetBuffEffect(BuffType type, out MagicEffectTable.ImpactDef def)
+    {
+        def = type switch
+        {
+            BuffType.MagicShield => new MagicEffectTable.ImpactDef { File = LibraryFile.Magic, StartIndex = 850, FrameCount = 3, DelayMs = 200, Colour = MagicEffectTable.Wind, BlendRate = 0.7f },
+            BuffType.SuperiorMagicShield => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1920, FrameCount = 3, DelayMs = 200, Colour = MagicEffectTable.Fire, BlendRate = 0.7f },
+            BuffType.CelestialLight => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 300, FrameCount = 3, DelayMs = 200, Colour = MagicEffectTable.Holy, BlendRate = 0.7f },
+            BuffType.DefensiveBlow => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 880, FrameCount = 6, DelayMs = 100, Colour = MagicEffectTable.None },
+            BuffType.ReflectDamage => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1240, FrameCount = 3, DelayMs = 100, Colour = MagicEffectTable.None },
+            BuffType.LifeSteal => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1260, FrameCount = 6, DelayMs = 150, Colour = MagicEffectTable.Dark },
+            BuffType.FrostBite => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 600, FrameCount = 7, DelayMs = 150, Colour = MagicEffectTable.Ice },
+            BuffType.PoisonousCloud => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 400, FrameCount = 15, DelayMs = 100, Colour = MagicEffectTable.Dark },
+            BuffType.Evasion => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2500, FrameCount = 12, DelayMs = 70, Colour = MagicEffectTable.None, DrawType = MirEffectNode.EffectLayer.Floor },
+            BuffType.RagingWind => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 2600, FrameCount = 12, DelayMs = 70, Colour = MagicEffectTable.None, DrawType = MirEffectNode.EffectLayer.Floor },
+            BuffType.Concentration => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 300, FrameCount = 15, DelayMs = 100, Colour = MagicEffectTable.None },
+            _ => null,
+        };
+        return def != null;
     }
 
     private void OnBuffChanged(S.BuffChanged p)
