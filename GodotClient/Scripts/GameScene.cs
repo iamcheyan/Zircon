@@ -47,6 +47,7 @@ public partial class GameScene : Control
     private ConsignmentDialog _consignmentDialog;
     private FishingDialog _fishingDialog;
     private FishingCatchDialog _fishingCatchDialog;
+    private HorseTameDialog _horseTameDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
     private uint _npcObjectId;
@@ -151,6 +152,7 @@ public partial class GameScene : Control
     private ClientUserItem _hoverItem;
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _itemGlows = new(); // 地面物品稀有度光效
     private readonly System.Collections.Generic.Dictionary<int, MirEffectNode> _buffEffects = new();
+    private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _spellEffects = new();
 
     private InventoryDialog _inventoryDialog;
     private CharacterDialog _characterDialog;
@@ -335,6 +337,7 @@ public partial class GameScene : Control
         _net.Connection.ObjectFishingEvent += OnObjectFishing;
         _net.Connection.FishingStatsEvent += p => _fishingCatchDialog?.UpdateStats(p);
         _net.Connection.AutoPathChangedEvent += OnAutoPathChanged;
+        _net.Connection.ObjectTamingEvent += OnObjectTaming;
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
@@ -907,7 +910,7 @@ public partial class GameScene : Control
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.PlaySpell(magic);
+            ob.SetAnimation(MirAnimation.Combat1);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -1081,6 +1084,55 @@ public partial class GameScene : Control
             var target = GetMagicTargetNode(id);
             if (target != null) SpawnProjectileTarget(def, sourceX, sourceY, target);
         }
+    }
+
+    private void OnObjectSpell(S.ObjectSpell packet)
+    {
+        if (_spellEffects.Remove(packet.ObjectID, out var oldFx)) oldFx.QueueFree();
+        var config = packet.Effect switch
+        {
+            SpellEffect.SafeZone => (LibraryFile.Magic, 649, 1, 365000, 0.3f, MagicEffectTable.None),
+            SpellEffect.FireWall => (LibraryFile.Magic, 920, 5, 150, 0.55f, MagicEffectTable.Fire),
+            SpellEffect.Tempest => (LibraryFile.MagicEx2, 920, 10, 150, 0.55f, MagicEffectTable.Wind),
+            SpellEffect.IceAura => (LibraryFile.MagicEx5, 2600, 10, 150, 0.55f, MagicEffectTable.Ice),
+            SpellEffect.TrapOctagon => (LibraryFile.Magic, 200, 6, 100, 0.7f, MagicEffectTable.Dark),
+            SpellEffect.DarkSoulPrison => (LibraryFile.MagicEx6, 700, 10, 100, 0.7f, MagicEffectTable.Dark),
+            SpellEffect.PoisonousCloud => (LibraryFile.MagicEx4, 400, 15, 100, 0.7f, MagicEffectTable.Dark),
+            SpellEffect.BurningFire => (LibraryFile.MagicEx6, 1000, 8, 100, 1f, MagicEffectTable.Fire),
+            SpellEffect.Rubble => (LibraryFile.ProgUse, 230, 1, 100, 1f, MagicEffectTable.None),
+            SpellEffect.MonsterDeathCloud => (LibraryFile.MonMagicEx2, 850, 10, 100, 1f, MagicEffectTable.Dark),
+            SpellEffect.ZombieHole => (LibraryFile.ProgUse, 240 + (int)packet.Direction, 1, 100, 1f, MagicEffectTable.None),
+            _ => (LibraryFile.Magic, -1, 0, 0, 0f, Colors.White),
+        };
+        if (config.Item2 < 0) return;
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.Setup(config.Item1, config.Item2, config.Item3, config.Item4, null,
+            packet.Location.X, packet.Location.Y,
+            () => ComputeEffectScreenPos(packet.Location.X, packet.Location.Y));
+        fx.Direction = packet.Direction;
+        fx.Loop = true;
+        fx.Blend = config.Item5 < 1f;
+        fx.BlendRate = config.Item5;
+        fx.DrawType = EffectLayerFloor(packet.Effect);
+        fx.FrameLight = 10;
+        fx.FrameLightColour = config.Item6;
+        _spellEffects[packet.ObjectID] = fx;
+    }
+
+    private void OnObjectSpellChanged(S.ObjectSpellChanged packet)
+    {
+        // 旧端按 Power 更新 SpellObject 的伤害/素材，帧段不随威力改变；
+        // 保留包处理以免被误报为未处理网络包。
+        if (_spellEffects.TryGetValue(packet.ObjectID, out var fx)) fx.QueueRedraw();
+    }
+
+    private static MirEffectNode.EffectLayer EffectLayerFloor(SpellEffect effect)
+    {
+        return effect is SpellEffect.FireWall or SpellEffect.Tempest or SpellEffect.IceAura
+            or SpellEffect.TrapOctagon or SpellEffect.PoisonousCloud or SpellEffect.BurningFire
+            or SpellEffect.Rubble or SpellEffect.ZombieHole
+            ? MirEffectNode.EffectLayer.Floor : MirEffectNode.EffectLayer.Object;
     }
 
     private void OnObjectEffect(uint objectID, Effect effect)
@@ -1576,6 +1628,8 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_fishingDialog);
         _fishingCatchDialog = new FishingCatchDialog();
         _uiLayer.AddChild(_fishingCatchDialog);
+        _horseTameDialog = new HorseTameDialog();
+        _uiLayer.AddChild(_horseTameDialog);
         _tradeDialog = new TradeDialog();
         _uiLayer.AddChild(_tradeDialog);
         _npcDialog = new NPCDialog();
@@ -2149,6 +2203,9 @@ public partial class GameScene : Control
     public void SendItemDelete(GridType grid, int slot)
         => _net.Connection.SendItemDelete(grid, slot);
 
+    public void SendAutoPathWaypoint(int mapIndex, int x, int y)
+        => _net?.Connection?.SendAutoPathWaypoint(mapIndex, new System.Drawing.Point(x, y));
+
     public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
         => _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
 
@@ -2180,6 +2237,16 @@ public partial class GameScene : Control
     public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
     public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
+    public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
+    public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
+
+    private void OnObjectTaming(S.ObjectTaming p)
+    {
+        if (p == null || p.ObjectID != _playerObjectID) return;
+        _horseTameDialog?.SetState(p.State);
+        if (p.State == TamingState.Cast && _objects.TryGetValue(p.TamingObjectID, out var target))
+            _horseTameDialog?.SetTarget(p.TamingObjectID, target.Position / UiScale);
+    }
 
     private void OnObjectFishing(S.ObjectFishing p)
     {

@@ -55,6 +55,10 @@ public partial class ServerConnection : BaseConnection
     public event Action<S.NPCSocketItem> NPCSocketItemEvent;
     public event Action<S.NPCSocketCombine> NPCSocketCombineEvent;
     public event Action<S.SetTimer> SetTimerEvent;
+    public event Action<S.ObjectFishing> ObjectFishingEvent;
+    public event Action<S.FishingStats> FishingStatsEvent;
+    public event Action<S.AutoPathChanged> AutoPathChangedEvent;
+    public event Action<S.ObjectTaming> ObjectTamingEvent;
     public event Action<S.MarketPlaceConsign> MarketPlaceConsignEvent;
     public event Action<S.MarketPlaceSearch> MarketPlaceSearchEvent;
     public event Action<S.MarketPlaceSearchCount> MarketPlaceSearchCountEvent;
@@ -81,6 +85,8 @@ public partial class ServerConnection : BaseConnection
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>> ObjectRangeAttackEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>, List<System.Drawing.Point>, bool> ObjectMagicEvent; // id, dir, loc, type, targets, locations, cast
     public event Action<S.ObjectProjectile> ObjectProjectileEvent;
+    public event Action<S.ObjectSpell> ObjectSpellEvent;
+    public event Action<S.ObjectSpellChanged> ObjectSpellChangedEvent;
     public event Action<uint, Effect> ObjectEffectEvent;
     public event Action<System.Drawing.Point, Effect, MirDirection> MapEffectEvent;
     public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
@@ -135,6 +141,8 @@ public partial class ServerConnection : BaseConnection
     public readonly Queue<S.ObjectAttack> PendingAttacks = new();
     public readonly Queue<S.ObjectMagic> PendingMagics = new();
     public readonly Queue<S.ObjectProjectile> PendingProjectiles = new();
+    public readonly Queue<S.ObjectSpell> PendingSpells = new();
+    public readonly Queue<S.ObjectSpellChanged> PendingSpellChanges = new();
     public readonly Queue<S.ObjectEffect> PendingObjectEffects = new();
     public readonly Queue<S.MapEffect> PendingMapEffects = new();
     public readonly Queue<S.HealthChanged> PendingHealthChanges = new();
@@ -251,6 +259,10 @@ public partial class ServerConnection : BaseConnection
     public void Process(S.NPCSocketItem p) => NPCSocketItemEvent?.Invoke(p);
     public void Process(S.NPCSocketCombine p) => NPCSocketCombineEvent?.Invoke(p);
     public void Process(S.SetTimer p) => SetTimerEvent?.Invoke(p);
+    public void Process(S.ObjectFishing p) => ObjectFishingEvent?.Invoke(p);
+    public void Process(S.FishingStats p) => FishingStatsEvent?.Invoke(p);
+    public void Process(S.AutoPathChanged p) => AutoPathChangedEvent?.Invoke(p);
+    public void Process(S.ObjectTaming p) => ObjectTamingEvent?.Invoke(p);
     public void Process(S.MarketPlaceConsign p) => MarketPlaceConsignEvent?.Invoke(p);
     public void Process(S.MarketPlaceSearch p) => MarketPlaceSearchEvent?.Invoke(p);
     public void Process(S.MarketPlaceSearchCount p) => MarketPlaceSearchCountEvent?.Invoke(p);
@@ -315,6 +327,18 @@ public partial class ServerConnection : BaseConnection
     {
         PendingProjectiles.Enqueue(p);
         ObjectProjectileEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectSpell p)
+    {
+        PendingSpells.Enqueue(p);
+        ObjectSpellEvent?.Invoke(p);
+    }
+
+    public void Process(S.ObjectSpellChanged p)
+    {
+        PendingSpellChanges.Enqueue(p);
+        ObjectSpellChangedEvent?.Invoke(p);
     }
 
     public void Process(S.ObjectEffect p)
@@ -649,6 +673,17 @@ public partial class ServerConnection : BaseConnection
             GuildFunds = false,
         });
     }
+
+    public void SendFishingCast(FishingState state, MirDirection direction, System.Drawing.Point location, bool caught = false)
+    {
+        Enqueue(new C.FishingCast { State = state, Direction = direction, FloatLocation = location, CaughtFish = caught });
+    }
+
+    public void SendAutoPathStart(int npcIndex) => Enqueue(new C.AutoPathStart { NPCIndex = npcIndex });
+    public void SendAutoPathWaypoint(int mapIndex, System.Drawing.Point location) => Enqueue(new C.AutoPathWaypoint { MapIndex = mapIndex, Location = location });
+    public void SendAutoPathCancel() => Enqueue(new C.AutoPathCancel());
+    public void SendTaming(uint objectID, TamingState state, MirDirection direction) => Enqueue(new C.Taming { ObjectID = objectID, State = state, Direction = direction });
+    public void SendTamingSuccess(uint objectID) => Enqueue(new C.TamingSuccess { ObjectID = objectID });
 
     // 玩家学新技能 (S.NewMagic)
     public event Action<ClientUserMagic> NewMagicEvent;
