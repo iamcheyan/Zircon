@@ -153,6 +153,8 @@ public partial class GameScene : Control
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _itemGlows = new(); // 地面物品稀有度光效
     private readonly System.Collections.Generic.Dictionary<int, MirEffectNode> _buffEffects = new();
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _spellEffects = new();
+    private readonly System.Collections.Generic.Dictionary<(uint, BuffType), MirEffectNode> _objectBuffEffects = new();
+    private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _objectPoisonEffects = new();
 
     private InventoryDialog _inventoryDialog;
     private CharacterDialog _characterDialog;
@@ -164,7 +166,7 @@ public partial class GameScene : Control
     private BundleDialog _bundleDialog;
     private FortuneCheckerDialog _fortuneDialog;
     private LootBoxDialog _lootBoxDialog;
-    private LegacyPanelDialog _dungeonFinderDialog;
+    private DungeonFinderDialog _dungeonFinderDialog;
     private TimerDialog _timerDialog;
     private CaptionDialog _captionDialog;
     private readonly Dictionary<int, ClientFortuneInfo> _fortunes = new();
@@ -338,6 +340,7 @@ public partial class GameScene : Control
         _net.Connection.FishingStatsEvent += p => _fishingCatchDialog?.UpdateStats(p);
         _net.Connection.AutoPathChangedEvent += OnAutoPathChanged;
         _net.Connection.ObjectTamingEvent += OnObjectTaming;
+        _net.Connection.JoinInstanceEvent += OnJoinInstance;
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
@@ -347,6 +350,9 @@ public partial class GameScene : Control
         _net.Connection.ObjectProjectileEvent += OnObjectProjectile;
         _net.Connection.ObjectEffectEvent += OnObjectEffect;
         _net.Connection.MapEffectEvent += OnMapEffect;
+        _net.Connection.ObjectBuffAddEvent += OnObjectBuffAdd;
+        _net.Connection.ObjectBuffRemoveEvent += OnObjectBuffRemove;
+        _net.Connection.ObjectPoisonEvent += OnObjectPoison;
         _net.Connection.HealthChangedEvent += OnHealthChanged;
         _net.Connection.DataObjectHealthManaEvent += OnDataObjectHealthMana;
         _net.Connection.DataObjectMaxHealthManaEvent += OnDataObjectMaxHealthMana;
@@ -448,6 +454,9 @@ public partial class GameScene : Control
             _net.Connection.ObjectProjectileEvent -= OnObjectProjectile;
             _net.Connection.ObjectEffectEvent -= OnObjectEffect;
             _net.Connection.MapEffectEvent -= OnMapEffect;
+            _net.Connection.ObjectBuffAddEvent -= OnObjectBuffAdd;
+            _net.Connection.ObjectBuffRemoveEvent -= OnObjectBuffRemove;
+            _net.Connection.ObjectPoisonEvent -= OnObjectPoison;
             _net.Connection.HealthChangedEvent -= OnHealthChanged;
             _net.Connection.DataObjectHealthManaEvent -= OnDataObjectHealthMana;
             _net.Connection.DataObjectMaxHealthManaEvent -= OnDataObjectMaxHealthMana;
@@ -987,7 +996,7 @@ public partial class GameScene : Control
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.SetAnimation(MirAnimation.Combat1);
+            ob.PlaySpell(type);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -1580,7 +1589,7 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_fortuneDialog);
         _lootBoxDialog = new LootBoxDialog();
         _uiLayer.AddChild(_lootBoxDialog);
-        _dungeonFinderDialog = new LegacyPanelDialog("Dungeon Finder", 200, new Vector2I(430, 480), new[] { "Dungeons", "Raids", "Search", "Join" });
+        _dungeonFinderDialog = new DungeonFinderDialog();
         _uiLayer.AddChild(_dungeonFinderDialog);
         _timerDialog = new TimerDialog { Location = new Vector2I(20, 100) };
         _uiLayer.AddChild(_timerDialog);
@@ -2031,6 +2040,70 @@ public partial class GameScene : Control
         return def != null;
     }
 
+    private void OnObjectBuffAdd(uint objectID, BuffType type, int extra)
+    {
+        var target = GetMagicTargetNode(objectID);
+        if (target == null || !TryGetBuffEffect(type, out var def)) return;
+        var key = (objectID, type);
+        if (_objectBuffEffects.Remove(key, out var oldFx)) oldFx.QueueFree();
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(def.File, def.StartIndex, def.FrameCount, def.DelayMs, target,
+            () => GetTargetRenderY(target));
+        fx.Loop = true;
+        fx.Blend = true;
+        fx.BlendRate = def.BlendRate;
+        fx.DrawType = def.DrawType;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = def.Colour;
+        _objectBuffEffects[key] = fx;
+    }
+
+    private void OnObjectBuffRemove(uint objectID, BuffType type)
+    {
+        if (_objectBuffEffects.Remove((objectID, type), out var fx)) fx.QueueFree();
+    }
+
+    private void OnObjectPoison(uint objectID, PoisonType poison)
+    {
+        var target = GetMagicTargetNode(objectID);
+        if (target == null) return;
+        if (_objectPoisonEffects.Remove(objectID, out var oldFx)) oldFx.QueueFree();
+
+        var config = poison.HasFlag(PoisonType.WraithGrip)
+            ? (LibraryFile.MagicEx4, 1424, 10, 100, 0.4f, MagicEffectTable.None)
+            : poison.HasFlag(PoisonType.HellFire) || poison.HasFlag(PoisonType.Burn)
+                ? (LibraryFile.MagicEx, 790, 6, 100, 0.7f, MagicEffectTable.Fire)
+                : poison.HasFlag(PoisonType.Silenced) || poison.HasFlag(PoisonType.Abyss)
+                    ? (LibraryFile.ProgUse, 680, 6, 150, 0.8f, MagicEffectTable.None)
+                    : poison.HasFlag(PoisonType.Parasite)
+                        ? (LibraryFile.MagicEx5, 900, 7, 100, 0.8f, MagicEffectTable.None)
+                        : poison.HasFlag(PoisonType.Neutralize)
+                            ? (LibraryFile.MagicEx7, 470, 6, 120, 0.8f, MagicEffectTable.None)
+                            : poison.HasFlag(PoisonType.Fear)
+                                ? (LibraryFile.ProgUse, 700, 15, 100, 0.7f, MagicEffectTable.None)
+                                : poison.HasFlag(PoisonType.Containment)
+                                    ? (LibraryFile.MagicEx2, 2040, 10, 100, 0.7f, MagicEffectTable.None)
+                                    : poison.HasFlag(PoisonType.Chain)
+                                        ? (LibraryFile.MagicEx7, 27, 4, 100, 0.7f, MagicEffectTable.None)
+                                        : poison.HasFlag(PoisonType.Hemorrhage)
+                                            ? (LibraryFile.MagicEx7, 1290, 1, 100, 0.7f, MagicEffectTable.None)
+                                            : poison.HasFlag(PoisonType.Binding)
+                                                ? (LibraryFile.MagicEx5, 3100, 14, 100, 0.7f, MagicEffectTable.None)
+                                                : (LibraryFile.Magic, -1, 0, 0, 0f, Colors.White);
+        if (config.Item2 < 0) return;
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(config.Item1, config.Item2, config.Item3, config.Item4, target,
+            () => GetTargetRenderY(target));
+        fx.Loop = true;
+        fx.Blend = true;
+        fx.BlendRate = config.Item5;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = config.Item6;
+        _objectPoisonEffects[objectID] = fx;
+    }
+
     private void OnBuffChanged(S.BuffChanged p)
     {
         if (_buffs.TryGetValue(p.Index, out var buff))
@@ -2239,6 +2312,14 @@ public partial class GameScene : Control
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
     public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
+
+    public void SendJoinInstance(int index) => _net?.Connection?.SendJoinInstance(index);
+
+    private void OnJoinInstance(S.JoinInstance p)
+    {
+        if (p == null) return;
+        _statusLabel.Text = p.Success ? "副本加入成功" : $"副本加入失败: {p.Result}";
+    }
 
     private void OnObjectTaming(S.ObjectTaming p)
     {

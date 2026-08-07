@@ -59,6 +59,7 @@ public partial class ServerConnection : BaseConnection
     public event Action<S.FishingStats> FishingStatsEvent;
     public event Action<S.AutoPathChanged> AutoPathChangedEvent;
     public event Action<S.ObjectTaming> ObjectTamingEvent;
+    public event Action<S.JoinInstance> JoinInstanceEvent;
     public event Action<S.MarketPlaceConsign> MarketPlaceConsignEvent;
     public event Action<S.MarketPlaceSearch> MarketPlaceSearchEvent;
     public event Action<S.MarketPlaceSearchCount> MarketPlaceSearchCountEvent;
@@ -87,6 +88,9 @@ public partial class ServerConnection : BaseConnection
     public event Action<S.ObjectProjectile> ObjectProjectileEvent;
     public event Action<S.ObjectSpell> ObjectSpellEvent;
     public event Action<S.ObjectSpellChanged> ObjectSpellChangedEvent;
+    public event Action<uint, BuffType, int> ObjectBuffAddEvent;
+    public event Action<uint, BuffType> ObjectBuffRemoveEvent;
+    public event Action<uint, PoisonType> ObjectPoisonEvent;
     public event Action<uint, Effect> ObjectEffectEvent;
     public event Action<System.Drawing.Point, Effect, MirDirection> MapEffectEvent;
     public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
@@ -263,6 +267,7 @@ public partial class ServerConnection : BaseConnection
     public void Process(S.FishingStats p) => FishingStatsEvent?.Invoke(p);
     public void Process(S.AutoPathChanged p) => AutoPathChangedEvent?.Invoke(p);
     public void Process(S.ObjectTaming p) => ObjectTamingEvent?.Invoke(p);
+    public void Process(S.JoinInstance p) => JoinInstanceEvent?.Invoke(p);
     public void Process(S.MarketPlaceConsign p) => MarketPlaceConsignEvent?.Invoke(p);
     public void Process(S.MarketPlaceSearch p) => MarketPlaceSearchEvent?.Invoke(p);
     public void Process(S.MarketPlaceSearchCount p) => MarketPlaceSearchCountEvent?.Invoke(p);
@@ -340,6 +345,10 @@ public partial class ServerConnection : BaseConnection
         PendingSpellChanges.Enqueue(p);
         ObjectSpellChangedEvent?.Invoke(p);
     }
+
+    public void Process(S.ObjectBuffAdd p) => ObjectBuffAddEvent?.Invoke(p.ObjectID, p.Type, p.Extra);
+    public void Process(S.ObjectBuffRemove p) => ObjectBuffRemoveEvent?.Invoke(p.ObjectID, p.Type);
+    public void Process(S.ObjectPoison p) => ObjectPoisonEvent?.Invoke(p.ObjectID, p.Poison);
 
     public void Process(S.ObjectEffect p)
     {
@@ -684,6 +693,7 @@ public partial class ServerConnection : BaseConnection
     public void SendAutoPathCancel() => Enqueue(new C.AutoPathCancel());
     public void SendTaming(uint objectID, TamingState state, MirDirection direction) => Enqueue(new C.Taming { ObjectID = objectID, State = state, Direction = direction });
     public void SendTamingSuccess(uint objectID) => Enqueue(new C.TamingSuccess { ObjectID = objectID });
+    public void SendJoinInstance(int index) => Enqueue(new C.JoinInstance { Index = index });
 
     // 玩家学新技能 (S.NewMagic)
     public event Action<ClientUserMagic> NewMagicEvent;
