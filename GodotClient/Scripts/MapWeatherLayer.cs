@@ -18,7 +18,6 @@ public partial class MapWeatherLayer : Node2D
     private double _rainSpawn;
     private double _snowSpawn;
     private double _lightningSpawn;
-    private double _flashMs;
 
     private sealed class WeatherParticle
     {
@@ -40,7 +39,6 @@ public partial class MapWeatherLayer : Node2D
         _weather = weather;
         _particles.Clear();
         _rainSpawn = _snowSpawn = _lightningSpawn = 0;
-        _flashMs = 0;
         _library = LibraryCache.Get(LibraryFile.ProgUse);
         if (_library == null)
         {
@@ -79,7 +77,7 @@ public partial class MapWeatherLayer : Node2D
         if (Has(Weather.Lightning))
         {
             _lightningSpawn -= ms;
-            if (_lightningSpawn <= 0)
+            if (_lightningSpawn <= 0 && CountKind(540) < 3)
             {
                 SpawnLightning(size);
                 _lightningSpawn = _rng.RandfRange(1000, 5000);
@@ -90,7 +88,8 @@ public partial class MapWeatherLayer : Node2D
         {
             var p = _particles[i];
             p.AgeMs += ms;
-            if (!p.Grounded) p.Position += p.Velocity * (float)delta;
+            // 旧端粒子速度按约 60 ticks/s 的逻辑帧计算；Godot 的 delta 是秒。
+            if (!p.Grounded) p.Position += p.Velocity * (float)delta * 60f;
             p.Rotation += p.AngularVelocity * (float)delta;
 
             if (p.TextureIndex == 509 && p.AgeMs >= p.LifeMs && !p.Grounded)
@@ -101,6 +100,23 @@ public partial class MapWeatherLayer : Node2D
                 p.LifeMs = 500;
                 p.Velocity = Vector2.Zero;
             }
+            else if (p.Grounded && p.TextureIndex >= 510 && p.TextureIndex < 514 && p.AgeMs >= 100)
+            {
+                // RainParticle 在旧端会依次播放 510..514，每帧 100ms。
+                p.TextureIndex++;
+                p.AgeMs = 0;
+                p.LifeMs = p.TextureIndex == 514 ? 100 : 100;
+            }
+            else if (p.TextureIndex == 500 && p.AgeMs >= p.LifeMs && !p.Grounded)
+            {
+                // 旧端 SnowParticle 到期后停在落点，再以 ScaleRate=-0.01
+                // 和 FadeRate=0.01 消融；不能继续按原速度飘走。
+                p.Grounded = true;
+                p.Velocity = Vector2.Zero;
+                p.Fading = true;
+                p.AgeMs = 0;
+                p.LifeMs = 1000;
+            }
             else if (p.Fade && p.AgeMs >= p.LifeMs)
             {
                 p.Fading = true;
@@ -109,12 +125,12 @@ public partial class MapWeatherLayer : Node2D
             }
             if (p.Fading) p.Scale -= 0.01f * (float)delta * 60f;
 
-            if ((p.Grounded && p.AgeMs >= p.LifeMs) || (p.Fade && p.Scale <= 0) ||
-                (p.Fading && p.AgeMs >= p.LifeMs))
+            if ((p.Grounded && p.TextureIndex >= 514 && p.AgeMs >= p.LifeMs) ||
+                (p.TextureIndex == 500 && p.Scale <= 0) ||
+                (p.Fading && p.TextureIndex != 500 && p.AgeMs >= p.LifeMs))
                 _particles.RemoveAt(i);
         }
 
-        if (_flashMs > 0) _flashMs -= ms;
         QueueRedraw();
     }
 
@@ -122,8 +138,6 @@ public partial class MapWeatherLayer : Node2D
     {
         if (_library == null) return;
         foreach (var p in _particles) DrawParticle(p);
-        if (_flashMs > 0)
-            DrawRect(new Rect2(Vector2.Zero, LogicalViewport()), new Color(0.8f, 0.88f, 1f, 0.25f));
     }
 
     private void DrawParticle(WeatherParticle p)
@@ -131,10 +145,14 @@ public partial class MapWeatherLayer : Node2D
         if (p.TextureIndex < 0 || p.TextureIndex >= _library.Images.Length) return;
         var img = _library.Images[p.TextureIndex];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
-        var tex = _library.GetImageTexture(p.TextureIndex);
+        // ProgUse 粒子沿用原版黑色透明键；普通 GetImageTexture 会把透明键
+        // 当成黑色实体矩形，雨、雪、雾和闪电因此会出现黑底。
+        var tex = _library.GetEffectTexture(p.TextureIndex);
         if (tex == null) return;
 
-        float opacity = p.Fade ? Math.Clamp(1f - (float)(p.AgeMs / Math.Max(1, p.LifeMs)), 0, 1) : 1f;
+        float opacity = p.Fade && p.Fading
+            ? Math.Clamp(1f - (float)(p.AgeMs / Math.Max(1, p.LifeMs)), 0, 1)
+            : 1f;
         DrawSetTransform(p.Position, p.Rotation, Vector2.One * Math.Max(0.01f, p.Scale));
         DrawTextureRectRegion(tex,
             new Rect2(img.OffSetX, img.OffSetY, img.Width, img.Height),
@@ -191,7 +209,6 @@ public partial class MapWeatherLayer : Node2D
             Velocity = Vector2.Zero, Scale = _rng.RandiRange(1, 3),
             LifeMs = _rng.RandiRange(100, 200), Fade = true
         });
-        _flashMs = 80;
     }
 
     private int CountKind(int texture) { int n = 0; foreach (var p in _particles) if (p.TextureIndex == texture) n++; return n; }
