@@ -36,6 +36,18 @@ public partial class MirProjectileNode : MirEffectNode
         _targetCellY = mapCellY;
     }
 
+    public void SetupProjectileTarget(LibraryFile file, int startIndex, int frameCount, double frameDelayMs,
+        Node2D target, Func<int> targetRenderYFn, System.Drawing.Point origin,
+        Func<int, int, Vector2> cameraFnByCell)
+    {
+        SetupTarget(file, startIndex, frameCount, frameDelayMs, target, targetRenderYFn);
+        Origin = origin;
+        Direction = MirDirection.Up;
+        _cameraFnByCell = cameraFnByCell;
+        _targetCellX = 0;
+        _targetCellY = 0;
+    }
+
     public override void _Process(double delta)
     {
         double now = Godot.Time.GetTicksMsec();
@@ -50,8 +62,8 @@ public partial class MirProjectileNode : MirEffectNode
         // 原版每帧重新取目标位置。这样目标移动、玩家滚屏和玩家自身的
         // MovingOffSet 都会反映到飞行轨迹，而不是沿着旧屏幕坐标漂移。
         Vector2 originScreen = _cameraFnByCell(Origin.X, Origin.Y);
-        Vector2 targetScreen = _target != null
-            ? _target.Position - new Vector2(0f, 32f)
+        Vector2 targetScreen = _targetNode != null
+            ? _targetNode.Position - new Vector2(0f, 32f)
             : _cameraFnByCell(_targetCellX, _targetCellY);
         var origin = ToLegacyProjectilePoint(originScreen);
         var target = ToLegacyProjectilePoint(targetScreen);

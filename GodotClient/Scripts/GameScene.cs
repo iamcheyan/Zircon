@@ -119,6 +119,7 @@ public partial class GameScene : Control
     public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
     public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
+    public void OpenCaptionDialog() { if (_captionDialog != null) WindowManager.Open(_captionDialog, _uiLayer); }
 
     public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
     public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
@@ -151,6 +152,8 @@ public partial class GameScene : Control
     private FortuneCheckerDialog _fortuneDialog;
     private LootBoxDialog _lootBoxDialog;
     private LegacyPanelDialog _dungeonFinderDialog;
+    private TimerDialog _timerDialog;
+    private CaptionDialog _captionDialog;
     private readonly Dictionary<int, ClientFortuneInfo> _fortunes = new();
     public string[] DropFilters { get; private set; } = Array.Empty<string>();
 
@@ -307,6 +310,7 @@ public partial class GameScene : Control
         _net.Connection.LootBoxCloseEvent += () => { if (_lootBoxDialog != null) WindowManager.Close(_lootBoxDialog); };
         _net.Connection.NPCSocketItemEvent += p => _npcDialog?.SocketResult(p.Success, p.Message);
         _net.Connection.NPCSocketCombineEvent += p => _npcDialog?.SocketCombineResult(p.Success, p.Message);
+        _net.Connection.SetTimerEvent += p => _timerDialog?.AddTimer(p);
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
@@ -960,11 +964,10 @@ public partial class GameScene : Control
         int sourceX = loc.X;
         int sourceY = loc.Y;
 
-        // 收集所有目标格 (locations + targets 的位置)
+        // MapLocations 和 AttackTargets 在旧端是两条不同的锚定路径：
+        // 前者是 MapTarget 地面坐标，后者是实时 Target 对象坐标。
         var destCells = new List<(int x, int y)>();
         foreach (var lp in locations) destCells.Add((lp.X, lp.Y));
-        foreach (uint tid in targets)
-            if (_objects.TryGetValue(tid, out var tgt)) destCells.Add((tgt.CellX, tgt.CellY));
 
         // 目标受击动画
         foreach (uint tid in targets)
@@ -980,7 +983,11 @@ public partial class GameScene : Control
         }
 
         if (def.CastAtSource)
-            SpawnCastEffect(def, sourceX, sourceY);
+        {
+            var sourceNode = GetMagicTargetNode(objectID);
+            if (sourceNode != null) SpawnCastEffectTarget(def, sourceNode);
+            else SpawnCastEffect(def, sourceX, sourceY);
+        }
 
         // 旧端按 MagicLocations/AttackTargets 分别挂载特效：
         // MapTarget 使用地面格坐标，Target 使用对象坐标；不能先在施法者
@@ -1001,6 +1008,26 @@ public partial class GameScene : Control
             }
         }
 
+        foreach (uint tid in targets)
+        {
+            var targetNode = GetMagicTargetNode(tid);
+            if (targetNode != null)
+            {
+                if (def.Projectile != null)
+                    SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
+                else if (def.Impact != null)
+                    SpawnImpactTarget(def.Impact, targetNode);
+                else
+                    SpawnCastEffectTarget(def, targetNode);
+            }
+            else if (_objects.TryGetValue(tid, out var tgt))
+            {
+                if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
+                else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY);
+                else SpawnCastEffect(def, tgt.CellX, tgt.CellY);
+            }
+        }
+
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
         if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource)
             SpawnCastEffect(def, sourceX, sourceY);
@@ -1016,11 +1043,33 @@ public partial class GameScene : Control
         fx.FrameLightColour = def.Colour;
     }
 
+    private void SpawnCastEffectTarget(MagicEffectTable.CastEffect def, Node2D target)
+    {
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(def.File, def.StartIndex, def.FrameCount, def.DelayMs, target,
+            () => GetTargetRenderY(target));
+        fx.Blend = def.Blend;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = def.Colour;
+    }
+
     private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
         fx.Setup(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
+        fx.Blend = true;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = imp.Colour;
+    }
+
+    private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target)
+    {
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, target,
+            () => GetTargetRenderY(target));
         fx.Blend = true;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
@@ -1041,6 +1090,37 @@ public partial class GameScene : Control
             var impact = def.Impact;
             pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
         }
+    }
+
+    private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target)
+    {
+        var proj = def.Projectile;
+        var pn = new MirProjectileNode();
+        AddChild(pn);
+        pn.SetupProjectileTarget(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs,
+            target, () => GetTargetRenderY(target), new System.Drawing.Point(fromX, fromY),
+            (cx, cy) => ComputeEffectScreenPos(cx, cy));
+        pn.Blend = true;
+        pn.FrameLightColour = proj.Colour;
+        if (def.Impact != null) pn.CompleteAction = () => SpawnImpactTarget(def.Impact, target);
+    }
+
+    private Node2D GetMagicTargetNode(uint objectID)
+    {
+        if (objectID == _playerObjectID) return _player;
+        if (_objects.TryGetValue(objectID, out var ob)) return ob;
+        if (_otherPlayers.TryGetValue(objectID, out var player)) return player;
+        return null;
+    }
+
+    private int GetTargetRenderY(Node2D target)
+    {
+        return target switch
+        {
+            MapObjectNode ob => ob.RenderY,
+            PlayerRenderer player => player.CellY,
+            _ => 0,
+        };
     }
 
     private void SpawnGenericExplosion(int cellX, int cellY)
@@ -1265,6 +1345,10 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_lootBoxDialog);
         _dungeonFinderDialog = new LegacyPanelDialog("Dungeon Finder", 200, new Vector2I(430, 480), new[] { "Dungeons", "Raids", "Search", "Join" });
         _uiLayer.AddChild(_dungeonFinderDialog);
+        _timerDialog = new TimerDialog { Location = new Vector2I(20, 100) };
+        _uiLayer.AddChild(_timerDialog);
+        _captionDialog = new CaptionDialog();
+        _uiLayer.AddChild(_captionDialog);
 
         _magicBar = new MagicBar(this);
         _uiLayer.AddChild(_magicBar);
@@ -1826,6 +1910,7 @@ public partial class GameScene : Control
     public void SendLootBoxConfirm(int slot) => _net?.Connection?.Enqueue(new C.LootBoxConfirmSelection { Slot = slot });
     public void SendLootBoxReveal(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxReveal { Slot = slot, Choice = choice });
     public void SendLootBoxTake(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxTakeItems { Slot = slot, Choice = choice });
+    public void SendCaptionChange(string caption) => _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption });
     public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem) => _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
     public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3) => _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
@@ -2801,10 +2886,11 @@ public partial class GameScene : Control
         return _mapView.CellToScreen(cellX, cellY, false);
     }
 
-    // F1~F12 -> SpellKey.Spell01~12 -> 当前栏组里 SetXKey 匹配的技能 -> C.Magic
+    // F1~F12 -> Spell01~12, Shift+F1~F12 -> Spell13~24。
+    // 键盘输入和技能栏点击共用这一条链路。
     public void UseMagicSlot(int slot)
     {
-        if (slot < 0 || slot > 11) return;
+        if (slot < 0 || slot > 23) return;
         if (_net?.Connection?.Connected != true)
         {
             GD.Print("[Magic] 未释放：网络尚未连接");

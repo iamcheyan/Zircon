@@ -22,6 +22,8 @@ public partial class MirEffectNode : Node2D
 
     // 锚定: 跟随对象(_target!=null)或固定格子坐标
     protected MapObjectNode _target;
+    protected Node2D _targetNode;
+    private Func<int> _targetRenderYFn;
     public int MapCellX, MapCellY;
     protected Func<Vector2> _cameraFn; // GameScene.ComputeObjectScreenPos 委托
 
@@ -82,6 +84,25 @@ public partial class MirEffectNode : Node2D
         UpdateRenderLayer();
     }
 
+    /// <summary>
+    /// 旧端 MirEffect.Target 的对象锚定版本。PlayerRenderer 和 MapObjectNode
+    /// 都必须跟随实时 Position，不能退化成施法包中的静态格子。
+    /// </summary>
+    public void SetupTarget(LibraryFile file, int startIndex, int frameCount, double frameDelayMs,
+        Node2D target, Func<int> targetRenderYFn)
+    {
+        _lib = LibraryCache.Get(file);
+        StartIndex = startIndex;
+        FrameCount = frameCount;
+        _target = target as MapObjectNode;
+        _targetNode = target;
+        _targetRenderYFn = targetRenderYFn;
+        Delays = new double[frameCount];
+        for (int i = 0; i < frameCount; i++) Delays[i] = frameDelayMs;
+        _startMs = Godot.Time.GetTicksMsec();
+        UpdateRenderLayer();
+    }
+
     public void SetDelay(int frame, double ms)
     {
         if (frame >= 0 && frame < Delays.Length) Delays[frame] = ms;
@@ -108,10 +129,10 @@ public partial class MirEffectNode : Node2D
         }
 
         // 位置跟随目标或固定格子
-        if (_target != null)
+        if (_targetNode != null)
             // MapObjectNode 使用对象基线，而旧端 MirEffect.Target 使用
             // MapObject.DrawY；当前对象基线多一格，需还原到旧端锚点。
-            Position = _target.Position - new Vector2(0f, 32f);
+            Position = _targetNode.Position - new Vector2(0f, 32f);
         else if (_cameraFn != null)
             Position = _cameraFn();
 
@@ -127,7 +148,7 @@ public partial class MirEffectNode : Node2D
         {
             EffectLayer.Floor => 50,
             EffectLayer.Final => 10000,
-            _ => 100 + (_target?.CellY ?? MapCellY),
+            _ => 100 + (_targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY),
         };
     }
 
