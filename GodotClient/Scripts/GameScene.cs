@@ -32,6 +32,14 @@ public partial class GameScene : Control
     // M11: UI 窗口层 (与 2D 世界分层) + 窗口管理器
     private CanvasLayer _uiLayer;
     private StatusWindow _statusWindow;
+    private MenuDialog _menuDialog;
+    private ExitDialog _exitDialog;
+    private ChatLogPanel _chatLog;
+    private HelpDialog _helpDialog;
+    private ConfigDialog _configDialog;
+    private ChatOptionsDialog _chatOptionsDialog;
+    private LegacyPanelDialog _guildDialog, _rankingDialog, _companionDialog;
+    private LegacyPanelDialog _communicationDialog, _groupDialog, _gameStoreDialog;
     private double _statusRefreshMs;
 
     // M12: HUD + 键位
@@ -40,6 +48,7 @@ public partial class GameScene : Control
     private BigMapDialog _bigMap;
     private BuffDialog _buffDialog;
     private QuestTrackerDialog _questTracker;
+    private QuestDialog _questDialog;
     private readonly System.Collections.Generic.Dictionary<int, ClientBuffInfo> _buffs = new();
     private MagicBar _magicBar;
     private MagicDialog _magicDialog;
@@ -52,6 +61,56 @@ public partial class GameScene : Control
 
     // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
     public static GameScene Game;
+
+    public void ToggleStorageWindow()
+    {
+        if (_storageDialog != null)
+            WindowManager.Toggle(_storageDialog, _uiLayer);
+    }
+
+    public void LeaveGame()
+    {
+        _net?.Disconnect();
+        GetTree().Quit();
+    }
+
+    public void SendChat(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        _net?.Connection?.Enqueue(new C.Chat
+        {
+            Text = text.Trim(),
+            LinkedItemIndexes = new List<int>(),
+        });
+    }
+
+    public void OpenExitDialog()
+    {
+        if (_exitDialog == null) return;
+        WindowManager.Open(_exitDialog, _uiLayer);
+    }
+
+    public void OpenHelpDialog()
+    {
+        if (_helpDialog != null) WindowManager.Open(_helpDialog, _uiLayer);
+    }
+
+    public void OpenConfigDialog()
+    {
+        if (_configDialog != null) WindowManager.Open(_configDialog, _uiLayer);
+    }
+
+    public void OpenChatOptionsDialog()
+    {
+        if (_chatOptionsDialog != null) WindowManager.Open(_chatOptionsDialog, _uiLayer);
+    }
+
+    public void OpenGuildDialog() { if (_guildDialog != null) WindowManager.Open(_guildDialog, _uiLayer); }
+    public void OpenRankingDialog() { if (_rankingDialog != null) WindowManager.Open(_rankingDialog, _uiLayer); }
+    public void OpenCompanionDialog() { if (_companionDialog != null) WindowManager.Open(_companionDialog, _uiLayer); }
+    public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
+    public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
+    public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
 
     public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
     public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
@@ -96,6 +155,7 @@ public partial class GameScene : Control
     public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
+    private bool _canRun;
 
     // CallDeferred 缓冲
     private StartGameResult _pendingStartResult;
@@ -126,19 +186,26 @@ public partial class GameScene : Control
         _lightLayer.SetObjectSources(GetObjectLightSources);
         _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
         AddChild(_weatherLayer);
-        _mouseWalker = new MouseWalker(_mapView, (dir, dist) =>
+        _mouseWalker = new MouseWalker(_mapView, (dir, dist, running) =>
         {
             if (_net?.Connection?.Connected != true) return;
+            _player?.BeginMove(dir, dist, _playerHorse != HorseType.None, running);
+            _canRun = true;
             _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
         },
         () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
         () =>
         {
             // 原版 Run: 基础1, 负重允许+1, 骑马+1
-            int cap = _playerStats[Stat.BagWeight] + _playerStats[Stat.WearWeight];
-            int steps = (BagWeight + WearWeight) <= cap ? 2 : 1;
-            if (_playerHorse != Library.HorseType.None) steps++;
+            int steps = _canRun && BagWeight <= _playerStats[Stat.BagWeight]
+                && WearWeight <= _playerStats[Stat.WearWeight] ? 2 : 1;
+            if (steps > 1 && _playerHorse != Library.HorseType.None) steps++;
             return steps;
+        },
+        dir =>
+        {
+            if (_net?.Connection?.Connected == true)
+                _net.Connection.Enqueue(new C.Turn { Direction = dir });
         });
         AddChild(_mouseWalker);
         _combatController = new CombatController(_mapView,
@@ -152,12 +219,15 @@ public partial class GameScene : Control
                     _player.Direction = dir;
                     if (action == MirAction.Attack) _player.PlayCombat(magic);
                 }
+                _canRun = false;
+                GD.Print($"[Combat] enqueue C.Attack action={action} magic={magic} direction={dir}");
                 _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = magic });
             },
             (dir, distance) =>
             {
                 if (_net?.Connection?.Connected != true) return;
                 _player?.BeginMove(dir, distance, _playerHorse != HorseType.None);
+                _canRun = true; // 原版 AttemptAction(Moving) 后立即允许下一次 Run
                 _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = Math.Max(1, distance) });
             });
         AddChild(_combatController);
@@ -360,6 +430,7 @@ public partial class GameScene : Control
 
             InitHudData(_pendingStartInfo);
             LoadPlayerMap(clearObjects: false);
+
         }
         else
         {
@@ -406,6 +477,17 @@ public partial class GameScene : Control
 
     private void HandleKeyBind(KeyBindAction action)
     {
+        if (action >= KeyBindAction.SpellUse01 && action <= KeyBindAction.SpellUse12)
+        {
+            UseMagicKey((int)(action - KeyBindAction.SpellUse01));
+            return;
+        }
+        if (action >= KeyBindAction.SpellSet01 && action <= KeyBindAction.SpellSet04)
+        {
+            MagicBarSpellSet = (int)(action - KeyBindAction.SpellSet01) + 1;
+            _magicBar?.Refresh();
+            return;
+        }
         switch (action)
         {
             case KeyBindAction.MapMiniWindow:
@@ -443,9 +525,17 @@ public partial class GameScene : Control
                     _magicDialog.Refresh();
                 }
                 break;
+            case KeyBindAction.MenuWindow:
+                WindowManager.Toggle(_menuDialog, _uiLayer);
+                break;
+            case KeyBindAction.HelpWindow:
+                OpenHelpDialog();
+                break;
+            case KeyBindAction.ConfigWindow:
+                OpenConfigDialog();
+                break;
             default:
-                // MenuWindow/HelpWindow/ConfigWindow/MagicWindow:
-                // 对应对话框在 M13/M14 移植, 先 no-op
+                // ConfigWindow 等窗口仍待迁移。
                 GD.Print($"[Game] 键位 {action} 暂未接入 (后续里程碑)");
                 break;
         }
@@ -459,6 +549,7 @@ public partial class GameScene : Control
             _pendingX = loc.X;
             _pendingY = loc.Y;
             _pendingDistance = Math.Max(1, distance);
+            _canRun = true;
             CallDeferred(nameof(ShowUserLocation));
             return;
         }
@@ -497,9 +588,21 @@ public partial class GameScene : Control
     private void OnChat(S.Chat p)
     {
         if (p == null || string.IsNullOrWhiteSpace(p.Text)) return;
+        string sender = p.ObjectID == _playerObjectID ? (StartInfo?.Name ?? "我") :
+            (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : "系统");
+        _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", ChatColour(p.Type));
         if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
         else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
     }
+
+    private static Color ChatColour(MessageType type) => type switch
+    {
+        MessageType.Shout or MessageType.Global => new Color(1f, 0.75f, 0.3f),
+        MessageType.WhisperIn or MessageType.WhisperOut or MessageType.GMWhisperIn => new Color(0.85f, 0.65f, 1f),
+        MessageType.System or MessageType.Announcement => new Color(1f, 0.85f, 0.45f),
+        MessageType.Group or MessageType.Guild => new Color(0.55f, 0.9f, 1f),
+        _ => Colors.White,
+    };
 
     // 稀有度光效 (原版 ItemObject: Common+AddedStats / Superior / Elite)
     private void SpawnItemGlow(ObjectRenderer ob, ClientUserItem item)
@@ -611,10 +714,12 @@ public partial class GameScene : Control
 
     private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc)
     {
-        if (_player == null || (_playerLocation.X == loc.X && _playerLocation.Y == loc.Y)) return;
+        if (_player == null) return;
         _playerLocation = loc;
         _pendingDistance = 1;
         _moveFrameCount = 1;
+        _player.OffsetX = 0f;
+        _player.OffsetY = 0f;
         _player.CellX = loc.X;
         _player.CellY = loc.Y;
         UpdatePlayerPosition();
@@ -623,7 +728,7 @@ public partial class GameScene : Control
     // 魔法施放: 施法者播攻击动画, 按 MagicType 查特效表播放站桩/弹道/落地特效
     private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
     {
-        // 施法者动画
+        GD.Print($"[Magic] OnObjectMagic type={type} cast={cast} targets={targets?.Count ?? 0} locs={locations?.Count ?? 0} loc=({loc.X},{loc.Y})");
         if (objectID == _playerObjectID)
         {
             if (_player != null) _player.PlaySpell(type);
@@ -817,6 +922,10 @@ public partial class GameScene : Control
             _player.CellY = loc.Y;
             _player.Direction = dir;
             _player.PlayStruck();
+            _canRun = false;
+            _moveFrameCount = 1;
+            _player.OffsetX = 0f;
+            _player.OffsetY = 0f;
             UpdatePlayerPosition();
             _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
             _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
@@ -841,6 +950,9 @@ public partial class GameScene : Control
         _mainPanel = new MainPanel();
         _uiLayer.AddChild(_mainPanel);
 
+        _chatLog = new ChatLogPanel();
+        _uiLayer.AddChild(_chatLog);
+
         _miniMap = new MiniMapDialog();
         _uiLayer.AddChild(_miniMap);
         _miniMap.Visible = true; // DXWindow 默认隐藏, HUD 常驻
@@ -850,6 +962,9 @@ public partial class GameScene : Control
         _questTracker = new QuestTrackerDialog();
         _uiLayer.AddChild(_questTracker);
         _questTracker.Visible = true;
+
+        _questDialog = new QuestDialog();
+        _uiLayer.AddChild(_questDialog);
 
         _buffDialog = new BuffDialog();
         _uiLayer.AddChild(_buffDialog);
@@ -881,6 +996,34 @@ public partial class GameScene : Control
         _magicDialog = new MagicDialog();
         _uiLayer.AddChild(_magicDialog);
 
+        _menuDialog = new MenuDialog();
+        _menuDialog.Location = new Vector2I(40, 80);
+        _uiLayer.AddChild(_menuDialog);
+
+        _exitDialog = new ExitDialog();
+        _exitDialog.Location = new Vector2I(40, 80);
+        _uiLayer.AddChild(_exitDialog);
+
+        _helpDialog = new HelpDialog();
+        _uiLayer.AddChild(_helpDialog);
+
+        _configDialog = new ConfigDialog();
+        _uiLayer.AddChild(_configDialog);
+        _chatOptionsDialog = new ChatOptionsDialog();
+        _uiLayer.AddChild(_chatOptionsDialog);
+        _guildDialog = new LegacyPanelDialog("行会", 260, new Vector2I(456, 556), new[] { "行会主页", "成员列表", "行会仓库", "行会设置" });
+        _uiLayer.AddChild(_guildDialog);
+        _rankingDialog = new LegacyPanelDialog("排行", 211, new Vector2I(576, 456), new[] { "综合排行", "等级排行", "财富排行", "战力排行" });
+        _uiLayer.AddChild(_rankingDialog);
+        _companionDialog = new LegacyPanelDialog("伙伴", 141, new Vector2I(360, 430), new[] { "伙伴信息", "伙伴技能", "伙伴背包" });
+        _uiLayer.AddChild(_companionDialog);
+        _communicationDialog = new LegacyPanelDialog("邮件", 200, new Vector2I(420, 430), new[] { "收件箱", "写邮件", "已发送" });
+        _uiLayer.AddChild(_communicationDialog);
+        _groupDialog = new LegacyPanelDialog("队伍", 240, new Vector2I(214, 220), new[] { "队伍成员", "队伍设置" });
+        _uiLayer.AddChild(_groupDialog);
+        _gameStoreDialog = new LegacyPanelDialog("商城", 310, new Vector2I(580, 520), new[] { "商品分类", "推荐商品", "我的订单" });
+        _uiLayer.AddChild(_gameStoreDialog);
+
         // 数组注入: 先设 ItemGrid 再 CreateGrid (格子建立时快照 ItemGrid)
         _inventoryDialog.Grid.ItemGrid = Inventory;
         _inventoryDialog.Grid.CreateGrid();
@@ -892,6 +1035,8 @@ public partial class GameScene : Control
 
         _storageDialog.Grid.ItemGrid = Storage;
         _storageDialog.Grid.CreateGrid();
+        _storageDialog.PartGrid.ItemGrid = PartsStorage;
+        _storageDialog.PartGrid.CreateGrid();
         _storageDialog.RefreshStorage(); // 行数 = StorageSize/10, 重建格 + 滚轮重绑
 
         BeltLinks = _beltDialog.Links; // 与对话框共享同一数组 (QuickInfo/QuickItem 写回)
@@ -900,6 +1045,22 @@ public partial class GameScene : Control
         _mainPanel.CharacterButton.MouseClick += (o, e) => WindowManager.Toggle(_characterDialog, _uiLayer);
         _mainPanel.InventoryButton.MouseClick += (o, e) => WindowManager.Toggle(_inventoryDialog, _uiLayer);
         _mainPanel.BeltButton.MouseClick += (o, e) => WindowManager.Toggle(_beltDialog, _uiLayer);
+        _mainPanel.SpellButton.MouseClick += (o, e) =>
+        {
+            WindowManager.Toggle(_magicDialog, _uiLayer);
+            _magicDialog.Refresh();
+        };
+        _mainPanel.QuestButton.MouseClick += (o, e) =>
+        {
+            WindowManager.Toggle(_questDialog, _uiLayer);
+        };
+        _mainPanel.MenuButton.MouseClick += (o, e) =>
+        {
+            WindowManager.Toggle(_menuDialog, _uiLayer);
+        };
+        _mainPanel.MailButton.MouseClick += (o, e) => OpenCommunicationDialog();
+        _mainPanel.GroupButton.MouseClick += (o, e) => OpenGroupDialog();
+        _mainPanel.CashShopButton.MouseClick += (o, e) => OpenGameStoreDialog();
 
         LayoutHud();
     }
@@ -925,6 +1086,11 @@ public partial class GameScene : Control
                 Math.Max(0, (int)((vp.X - _mainPanel.Size.X) / 2f)),
                 Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y)));
 
+        if (_chatLog != null && _mainPanel != null)
+            _chatLog.Position = new Vector2(
+                Math.Max(0, _mainPanel.Position.X),
+                Math.Max(0, _mainPanel.Position.Y - _chatLog.Size.Y - 4));
+
         if (_miniMap != null)
             _miniMap.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _miniMap.Size.X)), 0);
@@ -933,6 +1099,11 @@ public partial class GameScene : Control
             _questTracker.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _questTracker.Size.X)),
                 (int)_miniMap.Size.Y + 5);
+
+        if (_questDialog != null)
+            _questDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _questDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _questDialog.Size.Y) / 2f)));
 
         if (_buffDialog != null)
             _buffDialog.Location = new Vector2I(
@@ -1006,7 +1177,12 @@ public partial class GameScene : Control
                 _buffs[b.Index] = b;
         _buffDialog?.BuffsChanged(_buffs);
 
-        _questTracker?.PopulateQuests(info.Quests ?? Enumerable.Empty<ClientUserQuest>());
+        var quests = info.Quests ?? Enumerable.Empty<ClientUserQuest>();
+        _questTracker?.PopulateQuests(quests);
+        _questDialog?.SetQuests(quests);
+        _mainPanel?.SetQuestIndicators(
+            quests.Any(q => q != null && !q.IsComplete),
+            quests.Any(q => q != null && q.IsComplete));
 
         // ---- M9: 物品数据 (StartInformation + 登录仓库包) ----
         FillItems(info.Items);
@@ -1971,15 +2147,18 @@ public partial class GameScene : Control
     {
         _playerDirection = _pendingDir;
 
-        // 平滑移动: 起点是当前(旧)位置, 终点是服务端新位置
+        // 原版 MovingOffSet：权威格立即切到终点，视觉位置从起点回拉。
         _moveFrom = _playerLocation;
         _moveStartMs = Godot.Time.GetTicksMsec();
-        // 用 6 帧作为每次服务端移动的插值窗口；Distance 只决定走/跑帧表。
-        _moveFrameCount = Math.Max(2, _pendingDistance * 6);
 
         _playerLocation = new System.Drawing.Point(_pendingX, _pendingY);
+        _player.CellX = _pendingX;
+        _player.CellY = _pendingY;
+        _player.OffsetX = (_moveFrom.X - _pendingX) * 48f;
+        _player.OffsetY = (_moveFrom.Y - _pendingY) * 32f;
         _player.Direction = _pendingDir;
         _player.BeginMove(_pendingDir, _pendingDistance, _playerHorse != HorseType.None);
+        _moveFrameCount = 2;
 
         UpdatePlayerPosition();
         _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
@@ -2074,19 +2253,20 @@ public partial class GameScene : Control
             }
         }
 
-        // 移动插值: 在 Walking 帧时长内从起点插到终点
+        // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
         if (_moveFrameCount > 1 && _player != null)
         {
-            const double walkMs = 6 * 100.0; // 6帧 * 100ms
-            double elapsed = Godot.Time.GetTicksMsec() - _moveStartMs;
-            double t = Math.Clamp(elapsed / walkMs, 0.0, 1.0);
-
-            _player.CellX = (int)Math.Round(_moveFrom.X + (_playerLocation.X - _moveFrom.X) * t);
-            _player.CellY = (int)Math.Round(_moveFrom.Y + (_playerLocation.Y - _moveFrom.Y) * t);
+            const double moveMs = 6 * 100.0;
+            double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) / moveMs, 0.0, 1.0);
+            double k = 1.0 - t;
+            _player.OffsetX = (float)((_moveFrom.X - _playerLocation.X) * 48.0 * k);
+            _player.OffsetY = (float)((_moveFrom.Y - _playerLocation.Y) * 32.0 * k);
 
             if (t >= 1.0)
             {
                 _moveFrameCount = 1;
+                _player.OffsetX = 0f;
+                _player.OffsetY = 0f;
                 _player.SetAnimation(_playerHorse != HorseType.None
                     ? MirAnimation.HorseStanding : MirAnimation.Standing);
             }
@@ -2096,6 +2276,8 @@ public partial class GameScene : Control
         {
             _player.CellX = _playerLocation.X;
             _player.CellY = _playerLocation.Y;
+            _player.OffsetX = 0f;
+            _player.OffsetY = 0f;
             UpdatePlayerPosition();
         }
     }
@@ -2104,7 +2286,8 @@ public partial class GameScene : Control
     {
         if (_mapView?.Map == null) return;
         _mapView.CenterOn(_player.CellX, _player.CellY);
-        _player.Position = _mapView.CellToScreen(_player.CellX, _player.CellY, true);
+        _player.Position = _mapView.CellToScreen(_player.CellX, _player.CellY, true)
+            + new Vector2(_player.OffsetX, _player.OffsetY);
         _player.ZIndex = 100 + _player.CellY;
         UpdateObjectPositions();
     }
@@ -2154,10 +2337,10 @@ public partial class GameScene : Control
     }
 
 
-    // F1~F8 -> SpellKey.Spell01~08 -> 当前栏组里 SetXKey 匹配的技能 -> C.Magic
+    // F1~F12 -> SpellKey.Spell01~12 -> 当前栏组里 SetXKey 匹配的技能 -> C.Magic
     private void UseMagicKey(int slot)
     {
-        if (slot < 0 || slot > 7) return;
+        if (slot < 0 || slot > 11) return;
         var key = (Library.SpellKey)(slot + 1);  // Spell01 = 1
         ClientUserMagic magic = null;
         foreach (var kv in UserMagics)
@@ -2170,7 +2353,7 @@ public partial class GameScene : Control
             else if (MagicBarSpellSet == 4 && m.Set4Key == key) magic = m;
             if (magic != null) break;
         }
-        if (magic == null) return;
+        if (magic == null) { GD.Print($"[Magic] UseMagicKey slot={slot} key={key} Set={MagicBarSpellSet} 未找到匹配技能"); return; }
         // 朝当前目标方向; 无目标朝玩家朝向
         MirDirection dir = _playerDirection;
         var pCell = _playerLocation;
@@ -2193,14 +2376,8 @@ public partial class GameScene : Control
         if (_net?.Connection?.Connected != true) return;
 
         // M11: F2 开关状态窗口, Esc 关闭最上层窗口
-        if (key.Keycode == Key.F2)
-        {
-            WindowManager.Toggle(_statusWindow, _uiLayer);
-            return;
-        }
-        // F1, F3~F6, F8 = 释放魔法 (F2 状态窗口/F7 调试/F12 截图 已占用)
-        // Ctrl+F1~F4 = 切魔法栏组 (原版 SpellSet01~04)
-        if (key.Keycode >= Key.F1 && key.Keycode <= Key.F8)
+        // 原版：Ctrl+F1~F4 切换技能栏，其余 F1~F12 释放当前栏技能。
+        if (key.Keycode >= Key.F1 && key.Keycode <= Key.F12)
         {
             if (key.CtrlPressed)
             {
@@ -2217,12 +2394,7 @@ public partial class GameScene : Control
                 }
                 return;
             }
-            if (key.Keycode == Key.F2 || key.Keycode == Key.F7) { /* 已占用, 走下面 */ }
-            else
-            {
-                UseMagicKey((int)(key.Keycode - Key.F1));  // 0~7 -> Spell01~08
-                return;
-            }
+            if (!key.AltPressed) { UseMagicKey((int)(key.Keycode - Key.F1)); return; }
         }
         if (key.Keycode == Key.Escape)
         {
@@ -2278,12 +2450,6 @@ public partial class GameScene : Control
             var img = GetViewport().GetTexture().GetImage();
             img.SavePng("/tmp/game_screenshot.png");
             GD.Print("[Game] 截图保存 /tmp/game_screenshot.png");
-        }
-        else if (key.Keycode == Key.F7)
-        {
-            // TEMP M9 验证钩子: 地面掉落 10 金币 (提交前删除)
-            GD.Print("[Game] TEMP CurrencyDrop 10 gold");
-            _net.Connection.Enqueue(new C.CurrencyDrop { CurrencyIndex = 1, Amount = 10 });
         }
     }
 }
