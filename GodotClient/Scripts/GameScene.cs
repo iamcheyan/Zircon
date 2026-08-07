@@ -16,6 +16,12 @@ public partial class GameScene : Control
 {
     private const float UiScale = 2f;
     private const float WorldScale = 2f;
+    // 仅用于当前 Godot 客户端测试：主要城镇每次进入时随机天气，便于验证四类粒子。
+    private const bool TownWeatherTestMode = true;
+    private static readonly HashSet<string> TownWeatherTestMaps = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "0", "1", "2", "3", "4"
+    };
 
     public float DayTime { get; private set; } = 1f;
     public TimeOfDay TimeOfDay { get; private set; } = TimeOfDay.Day;
@@ -3783,11 +3789,12 @@ public partial class GameScene : Control
         }
 
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
-        GD.Print($"[Light] map={mapInfo.FileName} setting={mapInfo.Light} weather={mapInfo.Weather} dayTime={DayTime:0.###}");
+        Weather weather = ResolveMapWeather(mapInfo);
+        GD.Print($"[Light] map={mapInfo.FileName} setting={mapInfo.Light} weather={weather} dayTime={DayTime:0.###}");
         _mapView.LoadMap(mapInfo.FileName, mapInfo.Background);
         _lightLayer?.SetMap(mapInfo, _mapView);
         _lightLayer?.SetDayTime(DayTime);
-        _weatherLayer?.SetWeather(mapInfo.Weather);
+        _weatherLayer?.SetWeather(weather);
 
         // M12: 小地图/大地图换图 (清动态标记, 重建静态 NPC/出口)
         if (_mapView.Map != null)

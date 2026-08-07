@@ -10,6 +10,8 @@ namespace ZirconClient.Scripts;
 public partial class MapLightLayer : Node2D
 {
     private const float WorldScale = 2f;
+    // 客户端不使用旧端 Night 的近乎纯黑亮度；最低使用 Twilight 档。
+    private const float MinimumAmbient = 100f / 255f;
     private MapInfo _mapInfo;
     private MapView _mapView;
     private float _dayTime = 1f;
@@ -40,9 +42,9 @@ public partial class MapLightLayer : Node2D
         float ambient = _mapInfo.Light switch
         {
             LightSetting.Light => 1f,
-            LightSetting.Night => 0.06f,
-            LightSetting.Twilight => 0.39f,
-            _ => _dayTime,
+            LightSetting.Night => MinimumAmbient,
+            LightSetting.Twilight => MinimumAmbient,
+            _ => Math.Max(MinimumAmbient, _dayTime),
         };
 
         if (ambient < 0.999f)
