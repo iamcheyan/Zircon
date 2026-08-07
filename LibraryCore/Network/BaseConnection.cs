@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -127,6 +127,7 @@ namespace Library.Network
             {
                 Sending = true;
                 TotalBytesSent += data.Count;
+                Console.WriteLine($"[SendQ] BeginSend {data.Count} bytes");
                 Client.Client.BeginSend(data.ToArray(), 0, data.Count, SocketFlags.None, SendData, null);
                 UpdateTimeOut();
             }
@@ -144,6 +145,7 @@ namespace Library.Network
             {
                 Sending = false;
                 Client.Client.EndSend(result);
+                Console.WriteLine("[SendQ] SendData done");
                 UpdateTimeOut();
             }
             catch (Exception ex)
@@ -158,6 +160,7 @@ namespace Library.Network
             if (!Connected || p == null) return;
 
             SendList.Enqueue(p);
+            Console.WriteLine($"[SendQ] enqueue {p.GetType().Name} sending={Sending} q={SendList.Count}");
         }
 
         public abstract void TryDisconnect();
@@ -267,9 +270,12 @@ namespace Library.Network
             if (!Disconnecting && Sending)
                 UpdateTimeOut();
 
+            if (!SendList.IsEmpty && Sending)
+                Console.WriteLine($"[SendQ] blocked: Sending=true q={SendList.Count}");
             if (SendList.IsEmpty || Sending) return;
 
             List<byte> data = new List<byte>();
+            int flushed = 0;
             while (!SendList.IsEmpty)
             {
                 Packet p;
@@ -278,6 +284,7 @@ namespace Library.Network
 
                 if (p == null) continue;
 
+                flushed++;
                 try
                 {
                     byte[] bytes = p.GetPacketBytes();

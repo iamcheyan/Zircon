@@ -1,4 +1,4 @@
-﻿using Library;
+using Library;
 using Library.Network;
 using Library.Network.ClientPackets;
 using Library.SystemModels;
@@ -8396,21 +8396,25 @@ namespace Server.Models
         }
         public void CurrencyDrop(C.CurrencyDrop p)
         {
+            Console.WriteLine($"[TEMP] CurrencyDrop idx={p.CurrencyIndex} amt={p.Amount} Dead={Dead} map={CurrentMap?.Info.FileName}");
             if (Dead) return;
 
             var currency = SEnvir.CurrencyInfoList.Binding.FirstOrDefault(x => x.Index == p.CurrencyIndex);
 
-            if (currency == null) return;
+            if (currency == null) { Console.WriteLine("[TEMP]  currency==null"); return; }
+            Console.WriteLine($"[TEMP]  currency={currency.Name} dropItem={currency.DropItem?.ItemName} canDrop={currency.DropItem?.CanDrop}");
 
             var userCurrency = GetCurrency(currency);
 
             var amount = userCurrency.Amount;
+            Console.WriteLine($"[TEMP]  amount={amount}");
 
-            if (currency.DropItem == null || !currency.DropItem.CanDrop || p.Amount <= 0 || p.Amount > amount) return;
+            if (currency.DropItem == null || !currency.DropItem.CanDrop || p.Amount <= 0 || p.Amount > amount) { Console.WriteLine("[TEMP]  guard2 fail"); return; }
 
             Cell cell = GetDropLocation(Config.DropDistance, null);
 
-            if (cell == null) return;
+            if (cell == null) { Console.WriteLine("[TEMP]  cell==null"); return; }
+            Console.WriteLine($"[TEMP]  cell=({cell.Location.X},{cell.Location.Y})");
 
             userCurrency.Amount -= p.Amount;
             CurrencyChanged(userCurrency);
@@ -8425,6 +8429,7 @@ namespace Server.Models
             };
 
             ob.Spawn(CurrentMap, cell.Location);
+            Console.WriteLine("[TEMP]  spawned OK");
         }
         public void BeltLinkChanged(C.BeltLinkChanged p)
         {
