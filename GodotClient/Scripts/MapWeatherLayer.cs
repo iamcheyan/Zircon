@@ -25,6 +25,8 @@ public partial class MapWeatherLayer : Node2D
         public Vector2 Position;
         public Vector2 Velocity;
         public float Scale;
+        public float Opacity = 1f;
+        public float FadeRate;
         public float Rotation;
         public float AngularVelocity;
         public Color Colour = Colors.White;
@@ -127,11 +129,18 @@ public partial class MapWeatherLayer : Node2D
                 p.AgeMs = 0;
                 p.LifeMs = 100;
             }
-            if (p.Fading) p.Scale -= 0.01f * (float)delta * 60f;
+            if (p.Fading)
+            {
+                if (p.TextureIndex == 540)
+                    p.Opacity -= p.FadeRate * (float)delta * 100f;
+                else
+                    p.Scale -= 0.01f * (float)delta * 60f;
+            }
 
             if ((p.Grounded && p.TextureIndex >= 514 && p.AgeMs >= p.LifeMs) ||
                 (p.TextureIndex == 500 && p.Scale <= 0) ||
-                (p.Fading && p.TextureIndex != 500 && p.AgeMs >= p.LifeMs))
+                (p.TextureIndex == 540 && p.Opacity <= 0f) ||
+                (p.Fading && p.TextureIndex != 500 && p.TextureIndex != 540 && p.AgeMs >= p.LifeMs))
                 _particles.RemoveAt(i);
         }
 
@@ -151,12 +160,14 @@ public partial class MapWeatherLayer : Node2D
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
         // ProgUse 粒子沿用原版黑色透明键；普通 GetImageTexture 会把透明键
         // 当成黑色实体矩形，雨、雪、雾和闪电因此会出现黑底。
-        var tex = _library.GetEffectTexture(p.TextureIndex);
+        // 天气背景在旧客户端是黑色透明键；DXT 压缩会留下较宽的近黑色
+        // 边缘，使用天气专用透明缓存，不能让这些像素形成黑色雪块。
+        var tex = p.TextureIndex == 550
+            ? _library.GetFogTexture(p.TextureIndex)
+            : _library.GetWeatherTexture(p.TextureIndex);
         if (tex == null) return;
 
-        float opacity = p.Fade && p.Fading
-            ? Math.Clamp(1f - (float)(p.AgeMs / Math.Max(1, p.LifeMs)), 0, 1)
-            : 1f;
+        float opacity = Math.Clamp(p.Opacity, 0f, 1f);
         DrawSetTransform(p.Position, p.Rotation, Vector2.One * Math.Max(0.01f, p.Scale));
         DrawTextureRectRegion(tex,
             // Particle.DrawBlendCentered(..., useOffSet:false) places the
@@ -214,7 +225,7 @@ public partial class MapWeatherLayer : Node2D
             TextureIndex = 540,
             Position = new Vector2(_rng.RandfRange(0, size.X), 0),
             Velocity = Vector2.Zero, Scale = _rng.RandiRange(1, 3),
-            LifeMs = _rng.RandiRange(100, 200), Fade = true
+            LifeMs = _rng.RandiRange(100, 200), Fade = true, FadeRate = 0.1f
         });
     }
 
