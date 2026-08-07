@@ -1232,7 +1232,7 @@ public partial class GameScene : Control
             var sourceNode = GetMagicTargetNode(objectID);
             if (sourceNode != null)
                 SpawnCastEffectTarget(def, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
-            else SpawnCastEffect(def, sourceX, sourceY);
+            else SpawnCastEffect(def, sourceX, sourceY, int.MinValue, int.MinValue, dir);
         }
         if (def.Source != null)
         {
@@ -1241,6 +1241,13 @@ public partial class GameScene : Control
                 SpawnImpactTarget(def.Source, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
             else
                 SpawnImpact(def.Source, sourceX, sourceY);
+            foreach (var extra in def.SourceAdditional)
+            {
+                if (sourceNode != null)
+                    SpawnImpactTarget(extra, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
+                else
+                    SpawnImpact(extra, sourceX, sourceY);
+            }
         }
 
         // 旧端按 MagicLocations/AttackTargets 分别挂载特效：
@@ -1258,9 +1265,9 @@ public partial class GameScene : Control
             {
                 SpawnImpact(def.Impact, x, y, sourceX, sourceY);
             }
-            else
+            else if (def.Source == null)
             {
-                SpawnCastEffect(def, x, y, sourceX, sourceY);
+                SpawnCastEffect(def, x, y, sourceX, sourceY, dir);
             }
             foreach (var extraProjectile in def.AdditionalProjectiles)
                 SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null, projectileDelay);
@@ -1305,7 +1312,7 @@ public partial class GameScene : Control
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
         if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource && def.Source == null)
         {
-            SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY);
+            SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY, dir);
             foreach (var extra in def.AdditionalMapEffects)
                 SpawnImpact(extra, sourceX + extra.OffsetX, sourceY + extra.OffsetY, sourceX, sourceY);
         }
@@ -1541,7 +1548,7 @@ public partial class GameScene : Control
         }
     }
 
-    private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue)
+    private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue, MirDirection castDirection = MirDirection.Up)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -1555,6 +1562,8 @@ public partial class GameScene : Control
         fx.SetStartDelay(def.StartDelayMs + distanceDelay);
         if (def.DirectionFromSource && sourceX != int.MinValue)
             fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
+        else if (def.DirectionFromCast)
+            fx.Direction = castDirection;
         fx.FrameLight = 10;
         fx.FrameLightColour = def.Colour;
     }
