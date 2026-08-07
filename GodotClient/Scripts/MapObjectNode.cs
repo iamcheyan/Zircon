@@ -219,11 +219,17 @@ public partial class MapObjectNode : Node2D
     }
 
     // 计算本节点屏幕位置 (相机锚定玩家, 含移动像素偏移)
-    public void ComputeScreenPos(int camCenterX, int camCenterY, int viewRangeX, int viewRangeY, float screenOffsetX, float screenOffsetY)
+    public void ComputeScreenPos(int camCenterX, int camCenterY, int viewRangeX, int viewRangeY,
+        float screenOffsetX, float screenOffsetY, MapView mapView = null)
     {
+        if (mapView != null)
+        {
+            Position = mapView.CellToScreen(CellX, CellY, true) + new Vector2(OffsetX, OffsetY);
+            return;
+        }
         Position = new Vector2(
             (CellX - camCenterX + viewRangeX) * CellWidth + screenOffsetX + OffsetX,
-            (CellY - camCenterY + viewRangeY) * CellHeight + screenOffsetY + OffsetY
+            (CellY - camCenterY + viewRangeY + 1) * CellHeight + screenOffsetY - 34 + OffsetY
         );
     }
 

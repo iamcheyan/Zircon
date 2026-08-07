@@ -1,0 +1,200 @@
+using System;
+using System.Collections.Generic;
+using Godot;
+using Library;
+using ZirconClient.Formats;
+
+namespace ZirconClient.Scripts;
+
+// 按 Client/Models/Particles/Weather 参数移植的真实 ProgUse.Zl 天气粒子。
+// 雨509(水花510-514)、雪500、雾550、闪电540。
+public partial class MapWeatherLayer : Node2D
+{
+    private const float WorldScale = 2f;
+    private readonly List<WeatherParticle> _particles = new();
+    private readonly RandomNumberGenerator _rng = new();
+    private ZlLibrary _library;
+    private Weather _weather;
+    private double _rainSpawn;
+    private double _snowSpawn;
+    private double _lightningSpawn;
+    private double _flashMs;
+
+    private sealed class WeatherParticle
+    {
+        public int TextureIndex;
+        public Vector2 Position;
+        public Vector2 Velocity;
+        public float Scale;
+        public float Rotation;
+        public float AngularVelocity;
+        public double AgeMs;
+        public double LifeMs;
+        public bool Grounded;
+        public bool Fade;
+        public bool Fading;
+    }
+
+    public void SetWeather(Weather weather)
+    {
+        _weather = weather;
+        _particles.Clear();
+        _rainSpawn = _snowSpawn = _lightningSpawn = 0;
+        _flashMs = 0;
+        _library = LibraryCache.Get(LibraryFile.ProgUse);
+        if (_library == null)
+        {
+            GD.PrintErr("[Weather] ProgUse.Zl 加载失败");
+            return;
+        }
+        _rng.Seed = (ulong)(uint)weather + 0x5EEDUL;
+        if (Has(Weather.Fog)) SpawnFog();
+        QueueRedraw();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_weather == Weather.None || _library == null) return;
+        double ms = delta * 1000.0;
+        Vector2 size = LogicalViewport();
+
+        if (Has(Weather.Rain))
+        {
+            _rainSpawn += ms;
+            while (_rainSpawn >= 10 && _particles.Count < 600)
+            {
+                _rainSpawn -= 10;
+                SpawnRain(size);
+            }
+        }
+        if (Has(Weather.Snow))
+        {
+            _snowSpawn += ms;
+            while (_snowSpawn >= 20 && CountKind(500) < 500)
+            {
+                _snowSpawn -= 20;
+                SpawnSnow(size);
+            }
+        }
+        if (Has(Weather.Lightning))
+        {
+            _lightningSpawn -= ms;
+            if (_lightningSpawn <= 0)
+            {
+                SpawnLightning(size);
+                _lightningSpawn = _rng.RandfRange(1000, 5000);
+            }
+        }
+
+        for (int i = _particles.Count - 1; i >= 0; i--)
+        {
+            var p = _particles[i];
+            p.AgeMs += ms;
+            if (!p.Grounded) p.Position += p.Velocity * (float)delta;
+            p.Rotation += p.AngularVelocity * (float)delta;
+
+            if (p.TextureIndex == 509 && p.AgeMs >= p.LifeMs && !p.Grounded)
+            {
+                p.Grounded = true;
+                p.TextureIndex = 510;
+                p.AgeMs = 0;
+                p.LifeMs = 500;
+                p.Velocity = Vector2.Zero;
+            }
+            else if (p.Fade && p.AgeMs >= p.LifeMs)
+            {
+                p.Fading = true;
+                p.AgeMs = 0;
+                p.LifeMs = 100;
+            }
+            if (p.Fading) p.Scale -= 0.01f * (float)delta * 60f;
+
+            if ((p.Grounded && p.AgeMs >= p.LifeMs) || (p.Fade && p.Scale <= 0) ||
+                (p.Fading && p.AgeMs >= p.LifeMs))
+                _particles.RemoveAt(i);
+        }
+
+        if (_flashMs > 0) _flashMs -= ms;
+        QueueRedraw();
+    }
+
+    public override void _Draw()
+    {
+        if (_library == null) return;
+        foreach (var p in _particles) DrawParticle(p);
+        if (_flashMs > 0)
+            DrawRect(new Rect2(Vector2.Zero, LogicalViewport()), new Color(0.8f, 0.88f, 1f, 0.25f));
+    }
+
+    private void DrawParticle(WeatherParticle p)
+    {
+        if (p.TextureIndex < 0 || p.TextureIndex >= _library.Images.Length) return;
+        var img = _library.Images[p.TextureIndex];
+        if (img == null || img.Width <= 0 || img.Height <= 0) return;
+        var tex = _library.GetImageTexture(p.TextureIndex);
+        if (tex == null) return;
+
+        float opacity = p.Fade ? Math.Clamp(1f - (float)(p.AgeMs / Math.Max(1, p.LifeMs)), 0, 1) : 1f;
+        DrawSetTransform(p.Position, p.Rotation, Vector2.One * Math.Max(0.01f, p.Scale));
+        DrawTextureRectRegion(tex,
+            new Rect2(img.OffSetX, img.OffSetY, img.Width, img.Height),
+            new Rect2(0, 0, img.Width, img.Height), new Color(1, 1, 1, opacity));
+        DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+    }
+
+    private void SpawnRain(Vector2 size)
+    {
+        bool top = _rng.Randf() < 0.8f;
+        var position = top
+            ? new Vector2(_rng.RandfRange(0, size.X), 1)
+            : new Vector2(size.X, _rng.RandfRange(0, size.Y));
+        _particles.Add(new WeatherParticle
+        {
+            TextureIndex = 509, Position = position, Velocity = new Vector2(-1, 5),
+            Scale = _rng.RandiRange(1, 2), Rotation = 0.4f,
+            LifeMs = _rng.RandiRange(500, 2000)
+        });
+    }
+
+    private void SpawnSnow(Vector2 size)
+    {
+        _particles.Add(new WeatherParticle
+        {
+            TextureIndex = 500,
+            Position = new Vector2(_rng.RandfRange(0, size.X), 0),
+            Velocity = new Vector2(_rng.RandiRange(-1, 0), 1),
+            Scale = _rng.RandfRange(0.05f, 1.5f), AngularVelocity = 0.1f,
+            LifeMs = _rng.RandiRange(4000, 10000), Fade = true
+        });
+    }
+
+    private void SpawnFog()
+    {
+        Vector2 size = LogicalViewport();
+        int fogWidth = _library.Images[550]?.Width ?? 128;
+        for (int i = 0; i < 4; i++)
+            _particles.Add(new WeatherParticle
+            {
+                TextureIndex = 550,
+                Position = new Vector2(size.X / 2f - i * fogWidth * 4f, size.Y / 2f),
+                Velocity = new Vector2(1, 0), Scale = 4f,
+                LifeMs = 3600000
+            });
+    }
+
+    private void SpawnLightning(Vector2 size)
+    {
+        _particles.Add(new WeatherParticle
+        {
+            TextureIndex = 540,
+            Position = new Vector2(_rng.RandfRange(0, size.X), 0),
+            Velocity = Vector2.Zero, Scale = _rng.RandiRange(1, 3),
+            LifeMs = _rng.RandiRange(100, 200), Fade = true
+        });
+        _flashMs = 80;
+    }
+
+    private int CountKind(int texture) { int n = 0; foreach (var p in _particles) if (p.TextureIndex == texture) n++; return n; }
+    private bool Has(Weather value) => ((int)_weather & (int)value) != 0;
+    private Vector2 LogicalViewport() => GetViewport().GetVisibleRect().Size / WorldScale;
+}

@@ -22,6 +22,10 @@ public partial class ObjectRenderer : MapObjectNode
     public int BodyOffSet;  // 怪物: 1000; NPC: 100; 物品: 0
     public int DrawImage;   // 物品专用: Ground 图库帧号 (无方向/形状)
     public string DisplayName;
+    public Color NameColour = Colors.White;
+    public PoisonType Poison;
+    public bool Focused;
+    public int Light;
 
     private Dictionary<MirAnimation, Frame> _frameTable = new(FrameSet.DefaultMonster);
     public override Dictionary<MirAnimation, Frame> FrameTable => _frameTable;
@@ -47,6 +51,8 @@ public partial class ObjectRenderer : MapObjectNode
         {
             Type = Kind.Monster,
             DisplayName = mi.MonsterName,
+            NameColour = p.NameColour == System.Drawing.Color.Empty ? Colors.White : ToGodot(p.NameColour),
+            Poison = p.Poison,
             BodyLibrary = LibraryCache.Get(lookup.File),
             BodyShape = lookup.Shape,
             BodyOffSet = 1000,
@@ -73,6 +79,7 @@ public partial class ObjectRenderer : MapObjectNode
         {
             Type = Kind.NPC,
             DisplayName = ni.NPCName,
+            NameColour = new Color(0.4f, 1f, 0.4f),
             BodyLibrary = LibraryCache.Get(LibraryFile.NPC),
             BodyShape = ni.Image,
             BodyOffSet = 100,
@@ -114,6 +121,7 @@ public partial class ObjectRenderer : MapObjectNode
         {
             Type = Kind.Item,
             DisplayName = info.ItemName ?? "Item",
+            NameColour = Colors.White,
             BodyLibrary = LibraryCache.Get(LibraryFile.Ground),
             BodyShape = 0,
             BodyOffSet = 0,
@@ -184,6 +192,9 @@ public partial class ObjectRenderer : MapObjectNode
     private bool _debugLogged;
     private bool _decodeErrorLogged;
 
+    private static Color ToGodot(System.Drawing.Color c) =>
+        new(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+
     public override void _Draw()
     {
         if (BodyLibrary == null) return;
@@ -197,16 +208,35 @@ public partial class ObjectRenderer : MapObjectNode
 
         if (Type == Kind.Item)
         {
+            RenderPrimitives.DrawGroundShadow(this, 20f, 6f, 0f, 2f, 0.32f);
             DrawItemImage(DrawImage, 0, 0);
         }
         else
         {
+            if (!DrawResourceShadow(BodyFrame))
+                RenderPrimitives.DrawGroundShadow(this, Type == Kind.NPC ? 21f : 28f,
+                    Type == Kind.NPC ? 7f : 10f, 0f, 2f, 0.44f);
             DrawLayer(BodyFrame, 0, 0);
         }
+        DrawName();
         DrawHealthBar();
     }
 
     public int BodyFrame => DrawFrame + BodyShape * BodyOffSet;
+
+    private bool DrawResourceShadow(int frame)
+    {
+        if (frame < 0 || frame >= BodyLibrary.Images.Length) return false;
+        var img = BodyLibrary.Images[frame];
+        if (img == null || img.ShadowWidth <= 0 || img.ShadowHeight <= 0) return false;
+        var texture = BodyLibrary.GetShadowTexture(frame);
+        if (texture == null) return false;
+        var dest = new Rect2(img.ShadowOffSetX, img.ShadowOffSetY,
+            img.ShadowWidth, img.ShadowHeight);
+        DrawTextureRectRegion(texture, dest, new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
+            new Color(0f, 0f, 0f, 0.52f));
+        return true;
+    }
 
     // 地面物品: 居中绘制 (物品图标是平铺地面的, 无锚点)
     private void DrawItemImage(int frame, float px, float py)
@@ -247,5 +277,14 @@ public partial class ObjectRenderer : MapObjectNode
         var img = BodyLibrary.Images[frame];
         DrawTextureRectRegion(texture, new Rect2(px + img.OffSetX, py + img.OffSetY, img.Width, img.Height),
                               new Rect2(0, 0, img.Width, img.Height));
+    }
+
+    private void DrawName()
+    {
+        if (Type == Kind.Item && !Focused) return;
+        float y = Type == Kind.Item ? -18f : -64f;
+        RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(0f, y), NameColour, 9f);
+        if (Poison != PoisonType.None)
+            DrawCircle(new Vector2(0f, y - 7f), 3f, new Color(0.35f, 1f, 0.35f, 0.85f));
     }
 }

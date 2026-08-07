@@ -200,15 +200,35 @@ public sealed class ZlLibrary : IDisposable
     // 读取第 index 帧，返回 Godot ImageTexture (带缓存, 避免重复解码)
     public ImageTexture GetImageTexture(int index)
     {
+        return GetPartTexture(index, ZlImagePart.Image);
+    }
+
+    public ImageTexture GetShadowTexture(int index)
+    {
+        return GetPartTexture(index, ZlImagePart.Shadow);
+    }
+
+    public ImageTexture GetOverlayTexture(int index)
+    {
+        return GetPartTexture(index, ZlImagePart.Overlay);
+    }
+
+    private ImageTexture GetPartTexture(int index, ZlImagePart part)
+    {
         if (index < 0 || index >= Images.Length) return null;
         if (Images[index] == null) return null;
 
-        if (_texCache.TryGetValue(index, out var cached)) return cached;
+        if (part == ZlImagePart.Image && _texCache.TryGetValue(index, out var cached)) return cached;
 
-        byte[] bgra = GetImageData(index);
+        ZlImage img = Images[index];
+        int width = part == ZlImagePart.Shadow ? img.ShadowWidth : part == ZlImagePart.Overlay ? img.OverlayWidth : img.Width;
+        int height = part == ZlImagePart.Shadow ? img.ShadowHeight : part == ZlImagePart.Overlay ? img.OverlayHeight : img.Height;
+        if (width <= 0 || height <= 0) return null;
+        byte[] bgra = GetPartData(index, part);
         if (bgra == null) return null;
 
-        var img = Images[index];
+        int expected = width * height * 4;
+        if (bgra.Length < expected) return null;
         // BGRA → RGBA (Godot 用 RGBA8)
         byte[] rgba = new byte[bgra.Length];
         for (int i = 0; i < bgra.Length; i += 4)
@@ -219,11 +239,66 @@ public sealed class ZlLibrary : IDisposable
             rgba[i + 3] = bgra[i + 3]; // A
         }
 
-        var godotImage = Image.CreateFromData(img.Width, img.Height, false, Image.Format.Rgba8, rgba);
+        var godotImage = Image.CreateFromData(width, height, false, Image.Format.Rgba8, rgba);
         var texture = ImageTexture.CreateFromImage(godotImage);
-        _texCache[index] = texture;
+        if (part == ZlImagePart.Image) _texCache[index] = texture;
         return texture;
     }
+
+    private byte[] GetPartData(int index, ZlImagePart part)
+    {
+        var img = Images[index];
+        if (part == ZlImagePart.Image) return GetImageData(index);
+
+        byte[] raw;
+        if (_isZl2)
+        {
+            if (!_zl2Entries.TryGetValue(img.Position, out var entry)) return null;
+            lock (_reader)
+            {
+                _reader.BaseStream.Seek(entry.Offset, SeekOrigin.Begin);
+                raw = _reader.ReadBytes(entry.CompressedSize);
+            }
+            raw = entry.Compression == ZlContainerCompression.None ? raw : DecompressDeflate(raw, entry.UncompressedSize);
+        }
+        else
+        {
+            if (img.Position == 0) return null;
+            int primary = img.GetImagePayloadSize();
+            int shadow = img.GetShadowPayloadSize();
+            int overlay = img.GetOverlayPayloadSize();
+            int total = primary + shadow + overlay;
+            lock (_reader)
+            {
+                _reader.BaseStream.Seek(img.Position, SeekOrigin.Begin);
+                raw = _reader.ReadBytes(total);
+            }
+        }
+        if (raw == null || raw.Length == 0) return null;
+
+        int primarySize = img.GetImagePayloadSize();
+        int shadowSize = img.GetShadowPayloadSize();
+        int offset = part == ZlImagePart.Shadow ? primarySize : primarySize + shadowSize;
+        int size = part == ZlImagePart.Shadow ? img.GetShadowDataSize() : img.GetOverlayDataSize();
+        if (size <= 0 || offset < 0 || offset + size > raw.Length) return null;
+        byte[] segment = raw.AsSpan(offset, size).ToArray();
+        var codec = part == ZlImagePart.Shadow ? img.ShadowCodec : img.OverlayCodec;
+        int width = part == ZlImagePart.Shadow ? img.ShadowWidth : img.OverlayWidth;
+        int height = part == ZlImagePart.Shadow ? img.ShadowHeight : img.OverlayHeight;
+        byte[] decoded = ZlImageCodecUtil.DecodeToBgra(segment, codec, (short)width, (short)height);
+        if (decoded.Length == width * height * 4) return decoded;
+
+        // ZL2 的 payload 后面还可能有 BC7 fallback 段。
+        int bc7Size = part == ZlImagePart.Shadow ? img.ShadowBc7DataSize : img.OverlayBc7DataSize;
+        if (bc7Size > 0 && offset + size + bc7Size <= raw.Length)
+        {
+            byte[] bc7 = raw.AsSpan(offset + size, bc7Size).ToArray();
+            return ZlImageCodecUtil.DecodeToBgra(bc7, ZlImageCodec.Bc7, (short)width, (short)height);
+        }
+        return decoded;
+    }
+
+    private enum ZlImagePart { Image, Shadow, Overlay }
 
     public void Dispose()
     {
@@ -249,9 +324,13 @@ public sealed class ZlImage
     public short ShadowOffSetX, ShadowOffSetY;
     public short OverlayWidth, OverlayHeight;
     public ZlImageCodec ImageCodec;
+    public ZlImageCodec ShadowCodec;
+    public ZlImageCodec OverlayCodec;
     public int StoredImageDataSize;
     public int Bc7DataSize;
     public int FallbackDataSize;
+    public int StoredShadowDataSize, ShadowBc7DataSize, ShadowFallbackDataSize;
+    public int StoredOverlayDataSize, OverlayBc7DataSize, OverlayFallbackDataSize;
 
     public static ZlImage Read(BinaryReader reader, int version)
     {
@@ -280,14 +359,18 @@ public sealed class ZlImage
             reader.ReadInt16(); reader.ReadInt16(); reader.ReadInt16(); reader.ReadInt16(); // SourceRectangle
             reader.ReadInt16(); reader.ReadInt16(); reader.ReadInt16(); reader.ReadInt16(); // VisibleBounds
             img.ImageCodec = (ZlImageCodec)reader.ReadByte();
-            reader.ReadByte(); // ShadowCodec
-            reader.ReadByte(); // OverlayCodec
+            img.ShadowCodec = (ZlImageCodec)reader.ReadByte();
+            img.OverlayCodec = (ZlImageCodec)reader.ReadByte();
             reader.ReadByte(); reader.ReadByte(); reader.ReadByte(); // RuntimePreferences
             img.StoredImageDataSize = reader.ReadInt32();
             img.Bc7DataSize = reader.ReadInt32();
             img.FallbackDataSize = reader.ReadInt32();
-            reader.ReadInt32(); reader.ReadInt32(); reader.ReadInt32(); // Shadow sizes
-            reader.ReadInt32(); reader.ReadInt32(); reader.ReadInt32(); // Overlay sizes
+            img.StoredShadowDataSize = reader.ReadInt32();
+            img.ShadowBc7DataSize = reader.ReadInt32();
+            img.ShadowFallbackDataSize = reader.ReadInt32();
+            img.StoredOverlayDataSize = reader.ReadInt32();
+            img.OverlayBc7DataSize = reader.ReadInt32();
+            img.OverlayFallbackDataSize = reader.ReadInt32();
         }
         return img;
     }
@@ -303,6 +386,29 @@ public sealed class ZlImage
             ZlImageCodec.Dxt5 => Math.Max(1, Width / 4) * Math.Max(1, Height / 4) * 16,
             ZlImageCodec.Bc7 => Math.Max(1, Width / 4) * Math.Max(1, Height / 4) * 16,
             _ => Width * Height * 4,
+        };
+    }
+
+    public int GetShadowDataSize() => Version >= 2 && StoredShadowDataSize > 0
+        ? StoredShadowDataSize : GetDataSize(ShadowWidth, ShadowHeight, ShadowCodec);
+
+    public int GetOverlayDataSize() => Version >= 2 && StoredOverlayDataSize > 0
+        ? StoredOverlayDataSize : GetDataSize(OverlayWidth, OverlayHeight, OverlayCodec);
+
+    public int GetImagePayloadSize() => GetDataSize() + Bc7DataSize + FallbackDataSize;
+    public int GetShadowPayloadSize() => GetShadowDataSize() + ShadowBc7DataSize + ShadowFallbackDataSize;
+    public int GetOverlayPayloadSize() => GetOverlayDataSize() + OverlayBc7DataSize + OverlayFallbackDataSize;
+
+    private static int GetDataSize(short width, short height, ZlImageCodec codec)
+    {
+        if (width <= 0 || height <= 0) return 0;
+        return codec switch
+        {
+            ZlImageCodec.Bgra32 => width * height * 4,
+            ZlImageCodec.Dxt1 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 8,
+            ZlImageCodec.Dxt5 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 16,
+            ZlImageCodec.Bc7 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 16,
+            _ => 0,
         };
     }
 }

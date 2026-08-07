@@ -38,6 +38,9 @@ public partial class PlayerRenderer : Node2D
     public int MaxHealth;
     public int MaxMana;
     public bool ShowHealthBar;
+    public string DisplayName;
+    public Color NameColour = Colors.White;
+    public int Light;
 
     // ---- 动画状态 ----
     public MirDirection Direction;
@@ -57,6 +60,7 @@ public partial class PlayerRenderer : Node2D
     private const int CellHeight = 32;
 
     private ZlLibrary _bodyLib, _hairLib, _helmetLib, _weaponLib1, _weaponLib2, _shieldLib;
+    private ZlLibrary _horseLib, _horseEffectLib;
 
     public void UpdateAppearance(StartInformation info)
     {
@@ -254,7 +258,10 @@ public partial class PlayerRenderer : Node2D
                      $"DrawFrame={DrawFrame} ArmourFrame={ArmourFrame} HairFrame={HairFrame} " +
                      $"Cell=({CellX},{CellY}) Pos={Position}");
         }
+        DrawShadow();
         DrawPlayerAt(0, 0);
+        if (!string.IsNullOrWhiteSpace(DisplayName))
+            RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(0f, -76f), NameColour, 9f);
 
         // 玩家头顶血条
         if (ShowHealthBar && !Dead && MaxHealth > 0)
@@ -278,13 +285,18 @@ public partial class PlayerRenderer : Node2D
     {
         Position = new Vector2(
             (CellX - camCenterX + viewRangeX) * CellWidth + screenOffsetX + OffsetX,
-            (CellY - camCenterY + viewRangeY) * CellHeight + screenOffsetY + OffsetY
+            (CellY - camCenterY + viewRangeY + 1) * CellHeight + screenOffsetY - 34 + OffsetY
         );
     }
 
     private void DrawPlayerAt(float px, float py)
     {
         bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
+
+        // 坐骑必须位于人物所有装备层之前，阴影单独绘制在人物和坐骑的共同基线。
+        if (Animation is MirAnimation.HorseStanding or MirAnimation.HorseWalking
+            or MirAnimation.HorseRunning or MirAnimation.HorseStruck)
+            DrawHorse(px, py);
 
         // 1. 背武器 (Up/DownLeft/Left/UpLeft 方向)
         if (!hideWeapon)
@@ -299,6 +311,8 @@ public partial class PlayerRenderer : Node2D
 
         // 3. 身体
         DrawLayer(_bodyLib, ArmourFrame, px, py);
+        if (ArmourColour != Colors.White)
+            DrawOverlay(_bodyLib, ArmourFrame, px, py, ArmourColour);
 
         // 4. 头 (盔优先, 否则发)
         if (!HideHead)
@@ -315,6 +329,44 @@ public partial class PlayerRenderer : Node2D
             if (Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight or MirDirection.Down)
                 DrawLayer(_weaponLib1, WeaponFrame, px, py);
         }
+    }
+
+    private void DrawShadow()
+    {
+        bool horse = Animation is MirAnimation.HorseStanding or MirAnimation.HorseWalking
+            or MirAnimation.HorseRunning or MirAnimation.HorseStruck;
+        bool resourceShadow = false;
+        if (horse && _horseLib != null)
+            resourceShadow = DrawResourceShadow(_horseLib, DrawFrame + ((int)Horse - 1) * 5000);
+        if (!resourceShadow)
+            resourceShadow = DrawResourceShadow(_bodyLib, ArmourFrame);
+        if (!resourceShadow)
+            RenderPrimitives.DrawGroundShadow(this, horse ? 42f : 27f, horse ? 12f : 9f,
+                0f, horse ? 7f : 2f, 0.46f);
+    }
+
+    private bool DrawResourceShadow(ZlLibrary lib, int frame)
+    {
+        if (lib == null || frame < 0 || frame >= lib.Images.Length) return false;
+        var img = lib.Images[frame];
+        if (img == null || img.ShadowWidth <= 0 || img.ShadowHeight <= 0) return false;
+        var texture = lib.GetShadowTexture(frame);
+        if (texture == null) return false;
+        DrawTextureRectRegion(texture,
+            new Rect2(img.ShadowOffSetX, img.ShadowOffSetY, img.ShadowWidth, img.ShadowHeight),
+            new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
+            new Color(0f, 0f, 0f, 0.5f));
+        return true;
+    }
+
+    private void DrawHorse(float px, float py)
+    {
+        if (_horseLib == null) return;
+        int frame = DrawFrame + ((int)Horse - 1) * 5000;
+        if (HorseShape is >= 4 and <= 6) frame = DrawFrame;
+        DrawLayer(_horseLib, frame, px, py);
+        if (_horseEffectLib != null && HorseShape is 5 or 6)
+            DrawLayer(_horseEffectLib, DrawFrame, px, py);
     }
 
     private void DrawLayer(ZlLibrary lib, int frame, float px, float py, Color? tint = null)
@@ -334,10 +386,24 @@ public partial class PlayerRenderer : Node2D
             DrawTextureRectRegion(texture, dest, new Rect2(0, 0, img.Width, img.Height));
     }
 
+    private void DrawOverlay(ZlLibrary lib, int frame, float px, float py, Color tint)
+    {
+        if (lib == null || frame < 0 || frame >= lib.Images.Length) return;
+        var img = lib.Images[frame];
+        if (img == null || img.OverlayWidth <= 0 || img.OverlayHeight <= 0) return;
+        var texture = lib.GetOverlayTexture(frame);
+        if (texture == null) return;
+        DrawTextureRectRegion(texture,
+            new Rect2(px + img.OffSetX, py + img.OffSetY, img.OverlayWidth, img.OverlayHeight),
+            new Rect2(0, 0, img.OverlayWidth, img.OverlayHeight), tint);
+    }
+
     // 库选择 (UpdateLibraries 移植)
     private void RefreshLibraries()
     {
         _weaponLib2 = null;
+        _horseLib = null;
+        _horseEffectLib = null;
 
         bool isFemale = Gender == MirGender.Female;
         bool isAssassin = Class == MirClass.Assassin;
@@ -406,6 +472,28 @@ public partial class PlayerRenderer : Node2D
             if (TryShield(shieldKey, out var shieldFile))
                 _shieldLib = LibraryCache.Get(shieldFile);
         }
+
+        switch (HorseShape)
+        {
+            case 1: _horseLib = LibraryCache.Get(LibraryFile.HorseIron); break;
+            case 2: _horseLib = LibraryCache.Get(LibraryFile.HorseSilver); break;
+            case 3: _horseLib = LibraryCache.Get(LibraryFile.HorseGold); break;
+            case 4: _horseLib = LibraryCache.Get(LibraryFile.HorseBlue); break;
+            case 5:
+                _horseLib = LibraryCache.Get(LibraryFile.HorseDark);
+                _horseEffectLib = LibraryCache.Get(LibraryFile.HorseDarkEffect);
+                break;
+            case 6:
+                _horseLib = LibraryCache.Get(LibraryFile.HorseRoyal);
+                _horseEffectLib = LibraryCache.Get(LibraryFile.HorseRoyalEffect);
+                break;
+            case 7:
+                _horseLib = LibraryCache.Get(LibraryFile.HorseBlueDragon);
+                _horseEffectLib = LibraryCache.Get(LibraryFile.HorseBlueDragonEffect);
+                break;
+            default: _horseLib = LibraryCache.Get(LibraryFile.Horse); break;
+        }
+        if (Horse == HorseType.None) _horseLib = null;
     }
 
     // ---- 装备库字典 (4.2 节) ----

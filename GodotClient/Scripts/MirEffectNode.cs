@@ -13,6 +13,13 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class MirEffectNode : Node2D
 {
+    public enum EffectLayer
+    {
+        Floor,
+        Object,
+        Final,
+    }
+
     // 锚定: 跟随对象(_target!=null)或固定格子坐标
     protected MapObjectNode _target;
     public int MapCellX, MapCellY;
@@ -44,6 +51,7 @@ public partial class MirEffectNode : Node2D
 
     // Z 排序 (对应原版 DrawType: Floor/Object/Final)
     public int ZLayer = 60;
+    public EffectLayer DrawType = EffectLayer.Object;
 
     // 附加偏移
     public int AdditionalOffX, AdditionalOffY;
@@ -69,7 +77,7 @@ public partial class MirEffectNode : Node2D
             Delays[i] = frameDelayMs;
 
         _startMs = Godot.Time.GetTicksMsec();
-        ZIndex = ZLayer;
+        UpdateRenderLayer();
     }
 
     public void SetDelay(int frame, double ms)
@@ -104,8 +112,19 @@ public partial class MirEffectNode : Node2D
             Position = _cameraFn();
 
         Position += new Vector2(AdditionalOffX, AdditionalOffY);
+        UpdateRenderLayer();
 
         QueueRedraw();
+    }
+
+    private void UpdateRenderLayer()
+    {
+        ZIndex = DrawType switch
+        {
+            EffectLayer.Floor => 50,
+            EffectLayer.Final => 10000,
+            _ => 100 + (_target?.CellY ?? MapCellY),
+        };
     }
 
     protected int GetFrame(double now)
