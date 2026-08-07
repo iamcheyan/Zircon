@@ -3847,7 +3847,7 @@ public partial class GameScene : Control
         // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
         if (_moveFrameCount > 1 && _player != null)
         {
-            const double moveMs = 6 * 100.0;
+            double moveMs = _player.MovementDurationMs;
             double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) / moveMs, 0.0, 1.0);
             double k = 1.0 - t;
             float xStep = 48f * _player.MoveDistance * (float)k;

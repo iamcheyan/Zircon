@@ -60,6 +60,9 @@ public partial class PlayerRenderer : Node2D
     public int CellX, CellY;          // 服务端权威格子坐标
     public float OffsetX, OffsetY;    // 平滑移动的像素偏移
     public int MoveDistance { get; private set; }
+    // 原版 MapObject.MovingOffSet 使用当前走/跑帧表的 Sum，
+    // 不应把所有职业、坐骑和特殊外观都硬编码成 600ms。
+    public double MovementDurationMs => _currentFrame?.Sum > 0 ? _currentFrame.Sum : 600.0;
     private bool _remoteMoving;
     private System.Drawing.Point _remoteMoveFrom;
     private double _remoteMoveStartMs;
