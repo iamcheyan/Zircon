@@ -92,6 +92,7 @@
   ```
 
   要点：① 必须用 `hyprctl dispatch` 启动（归 hyprland 托管，进程不随终端退出被杀）；② Hyprland 0.55+ 语法为 `hl.dsp.focus({ workspace = "empty" })` 与 `hl.dsp.exec_cmd("...")`（旧 `hyprctl dispatch workspace empty` 已失效）；③ `workspace = "empty"` 是选中一个空工作区，可换成具体编号 `"9"`；④ `exec_cmd` 内命令用**绝对路径**最稳。
+- **测试角色已增强**：`TestHero`（战士）70 级、10 件装备、全 32 个技能（Lv.3）、1000 万金币、背包大药+回城卷。想再改等级/装备/技能/金币，用 `Tools/CharacterEditor`（用法和数据库结构见 [`docs/notes/20`](docs/notes/20-测试角色修改指南-CharacterEditor.md)，改完重启服务端生效）。
 - **一键还原环境**：`bash Tools/setup_environment.sh`（下载 System.db + 全部 Data/Map/Sound 资源到 `Debug/Client/`，并还原环境修复：Map Data 目录重组织、HorseS/MagicEx 落位、Data/System.db 副本；需要 curl，建议装 aria2c 并行）；可选 `--server-dir` 搭建服务端运行目录、`--convert-ogg` 转换音频、`--skip-data` 只拉数据库
 
 ## 六、仓库结构
