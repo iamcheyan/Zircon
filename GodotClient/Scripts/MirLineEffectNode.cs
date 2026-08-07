@@ -17,6 +17,8 @@ public partial class MirLineEffectNode : Node2D
     private float _imageScale;
     private double _expireAt;
     private Vector2[] _points = System.Array.Empty<Vector2>();
+    private Vector2[] _velocities = System.Array.Empty<Vector2>();
+    private bool _initialized;
 
     public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs)
     {
@@ -41,13 +43,29 @@ public partial class MirLineEffectNode : Node2D
         Vector2 b = _target.Position - new Vector2(0, 50);
         float distance = a.DistanceTo(b);
         int count = Mathf.Max(2, Mathf.CeilToInt(distance / (30f * _imageScale)) + 1);
-        if (_points.Length != count) _points = new Vector2[count];
-
-        for (int i = 0; i < count; i++)
+        if (_points.Length != count)
         {
-            float t = i / (float)(count - 1);
-            float sag = Mathf.Sin(t * Mathf.Pi) * Mathf.Min(28f, distance * 0.12f);
-            _points[i] = a.Lerp(b, t) + new Vector2(0, sag);
+            _points = new Vector2[count];
+            _velocities = new Vector2[count];
+            _initialized = false;
+        }
+        if (!_initialized)
+        {
+            for (int i = 0; i < count; i++) _points[i] = a.Lerp(b, i / (float)(count - 1));
+            System.Array.Clear(_velocities, 0, _velocities.Length);
+            _initialized = true;
+        }
+
+        // 旧端 MirLineEffect 的中间链节：Gravity=.05、SpringStrength=.15、Damping=.9。
+        _points[0] = a;
+        _points[^1] = b;
+        for (int i = 1; i < count - 1; i++)
+        {
+            _velocities[i] += new Vector2(0, .05f);
+            Vector2 midpoint = (_points[i - 1] + _points[i + 1]) * .5f;
+            _velocities[i] += (midpoint - _points[i]) * .15f;
+            _points[i] += _velocities[i];
+            _velocities[i] *= .9f;
         }
         QueueRedraw();
     }
