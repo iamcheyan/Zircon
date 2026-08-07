@@ -891,7 +891,7 @@ public partial class GameScene : Control
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.PlaySpell(type);
+            ob.PlaySpell(magic);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -1095,11 +1095,15 @@ public partial class GameScene : Control
             Effect.ParasiteExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 700, FrameCount = 7, Colour = Colors.White },
             Effect.BurningFireExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx6, StartIndex = 1100, FrameCount = 10, Colour = MagicEffectTable.Fire },
             Effect.ChainOfFireExplode => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx10, StartIndex = 600, FrameCount = 12, Colour = MagicEffectTable.Fire },
+            Effect.HundredFist => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 2100, FrameCount = 5, DelayMs = 200, Colour = MagicEffectTable.Fire },
+            Effect.HundredFistStruck => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 2200, FrameCount = 6, DelayMs = 150, Colour = MagicEffectTable.Fire },
+            Effect.IceAuraEnd => new MagicEffectTable.ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 2700, FrameCount = 11, Colour = MagicEffectTable.Ice },
             _ => null,
         };
         if (def == null) return;
-        SpawnImpactTarget(def, target);
-        if (effect == Effect.TeleportOut && GetMagicTargetNode(objectID) != null)
+        if (effect != Effect.TeleportOut)
+            SpawnImpactTarget(def, target);
+        if (effect == Effect.TeleportOut)
         {
             // 旧端 TeleportOut 倒放，保持同一目标锚点。
             var reverse = new MirEffectNode();
