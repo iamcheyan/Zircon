@@ -14,10 +14,20 @@ namespace ZirconClient.Scripts;
 
 public partial class GameScene : Control
 {
+    private const float UiScale = 2f;
+    private const float WorldScale = 2f;
+
+    public float DayTime { get; private set; } = 1f;
+    public TimeOfDay TimeOfDay { get; private set; } = TimeOfDay.Day;
+
     private Network.NetworkManager _net;
     private MapView _mapView;
     private Label _statusLabel;
     private PlayerRenderer _player;
+    private CombatController _combatController;
+    private MapLightLayer _lightLayer;
+    private MapWeatherLayer _weatherLayer;
+    private MouseWalker _mouseWalker;
 
     // M11: UI 窗口层 (与 2D 世界分层) + 窗口管理器
     private CanvasLayer _uiLayer;
@@ -30,6 +40,7 @@ public partial class GameScene : Control
     private BigMapDialog _bigMap;
     private BuffDialog _buffDialog;
     private QuestTrackerDialog _questTracker;
+    private MagicBar _magicBar;
     private readonly Dictionary<int, ClientBuffInfo> _buffs = new();
     private Stats _playerStats = new Stats();
     private int _playerLevel;
@@ -37,6 +48,36 @@ public partial class GameScene : Control
     private int _currentHP, _currentMP, _currentFP;
     private AttackMode _attackMode;
     private PetMode _petMode;
+
+    // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
+    public static GameScene Game;
+
+    public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
+    public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
+    public ClientUserItem[] Storage = new ClientUserItem[Globals.StorageSize];
+    public ClientUserItem[] PartsStorage = new ClientUserItem[Globals.StorageSize];
+    public List<ClientUserCurrency> Currencies = new();
+    public ClientBeltLink[] BeltLinks = new ClientBeltLink[Globals.MaxBeltCount];
+    public int StorageSize = Globals.StorageSize;
+    public int BagWeight, WearWeight, HandWeight;
+
+    public DXItemCell[] InventoryCells = Array.Empty<DXItemCell>();
+    public DXItemCell[] EquipmentCells = Array.Empty<DXItemCell>();
+
+    // 物品交互状态
+    public double UseItemTime;          // 服务端 S.ItemUseDelay 给的下次可用时间 (绝对 ms)
+    private double _pickUpNextMs;       // Tab 拾取节流 (250ms)
+    private DXLabel _mouseItemLabel;    // 拿起物品跟随鼠标的悬浮图标
+    private DXLabel _hoverLabel;        // 物品悬浮提示
+    private ClientUserItem _hoverItem;
+    private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _itemGlows = new(); // 地面物品稀有度光效
+
+    private InventoryDialog _inventoryDialog;
+    private CharacterDialog _characterDialog;
+    private StorageDialog _storageDialog;
+    private BeltDialog _beltDialog;
+
+    public Stats PlayerStats => _playerStats;
 
     // 周围物体 (怪物/NPC/物品): ObjectID -> 渲染节点
     private readonly System.Collections.Generic.Dictionary<uint, ObjectRenderer> _objects = new();
@@ -48,6 +89,12 @@ public partial class GameScene : Control
     private int _playerMapIndex;
     private System.Drawing.Point _playerLocation;
     private MirDirection _playerDirection;
+    private Library.HorseType _playerHorse = Library.HorseType.None;
+
+    // 玩家已学技能: MagicInfo -> ClientUserMagic (S.NewMagic 维护)
+    public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
+    public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
+    private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
 
     // CallDeferred 缓冲
     private StartGameResult _pendingStartResult;
@@ -62,14 +109,49 @@ public partial class GameScene : Control
     private int _moveFrameCount = 1;
     public override void _Ready()
     {
+        Game = this;
+
+        // 世界坐标使用原版 48x32 逻辑格，最终整体按 2 倍输出。
+        // UI CanvasLayer 有独立缩放，不会被这里重复缩放。
+        Scale = Vector2.One * WorldScale;
+
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");
 
         _mapView = new MapView();
         AddChild(_mapView);
+        _lightLayer = new MapLightLayer { ZIndex = 900 };
+        AddChild(_lightLayer);
+        _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
+        AddChild(_weatherLayer);
+        _mouseWalker = new MouseWalker(_mapView, (dir, dist) =>
+        {
+            if (_net?.Connection?.Connected != true) return;
+            _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
+        },
+        () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
+        () =>
+        {
+            // 原版 Run: 基础1, 负重允许+1, 骑马+1
+            int cap = _playerStats[Stat.BagWeight] + _playerStats[Stat.WearWeight];
+            int steps = (BagWeight + WearWeight) <= cap ? 2 : 1;
+            if (_playerHorse != Library.HorseType.None) steps++;
+            return steps;
+        });
+        AddChild(_mouseWalker);
+        _combatController = new CombatController(_mapView,
+            () => _objects,
+            () => _playerLocation,
+            (dir, action, magic) =>
+            {
+                if (_net?.Connection?.Connected != true) return;
+                _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = magic });
+            });
+        AddChild(_combatController);
+        _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
 
         _player = new PlayerRenderer();
-        _player.ZIndex = 50;
+        _player.ZIndex = 100;
         AddChild(_player);
 
         _statusLabel = new Label();
@@ -81,10 +163,13 @@ public partial class GameScene : Control
         // M11: 窗口层 CanvasLayer, 所有窗口挂这里 (独立于 2D 世界, 永远最顶层)
         _uiLayer = new CanvasLayer();
         _uiLayer.Layer = 10;
+        _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
         AddChild(_uiLayer);
 
         _statusWindow = new StatusWindow(); // 初始隐藏, F2 打开
         CreateHud();
+        Resized += OnGameResized;
+        CallDeferred(nameof(LayoutHud));
 
         _net.Connection.StartGameResultEvent += OnStartGameResult;
         _net.Connection.MapChangedEvent += OnMapChanged;
@@ -92,7 +177,8 @@ public partial class GameScene : Control
         _net.Connection.ObjectMoveEvent += OnObjectMove;
         _net.Connection.ObjectMonsterEvent += OnObjectMonster;
         _net.Connection.ObjectNPCEvent += OnObjectNPC;
-        _net.Connection.ObjectItemEvent += OnObjectItem;
+        _net.Connection.ObjectMagicEvent += OnObjectMagic;
+        _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
         _net.Connection.ObjectAttackEvent += OnObjectAttack;
@@ -104,6 +190,8 @@ public partial class GameScene : Control
         _net.Connection.ObjectDiedEvent += OnObjectDied;
         _net.Connection.ObjectStruckEvent += OnObjectStruck;
         _net.Connection.StatsUpdateEvent += OnStatsUpdate;
+        _net.Connection.DayTimeChangedEvent += OnDayTimeChanged;
+        _net.Connection.TimeOfDayChangedEvent += OnTimeOfDayChanged;
         _net.Connection.LevelChangedEvent += OnLevelChanged;
         _net.Connection.GainedExperienceEvent += OnGainedExperience;
         _net.Connection.InformMaxExperienceEvent += OnInformMaxExperience;
@@ -116,6 +204,46 @@ public partial class GameScene : Control
         _net.Connection.BuffPausedEvent += OnBuffPaused;
         _net.Connection.AttackModeChangedEvent += OnAttackModeChanged;
         _net.Connection.PetModeChangedEvent += OnPetModeChanged;
+        // M9 物品系统
+        _net.Connection.ItemsGainedEvent += OnItemsGained;
+        _net.Connection.ItemMoveEvent += OnItemMove;
+        _net.Connection.ItemSortEvent += OnItemSort;
+        _net.Connection.ItemSplitEvent += OnItemSplit;
+        _net.Connection.ItemDeleteEvent += OnItemDelete;
+        _net.Connection.ItemLockEvent += OnItemLock;
+        _net.Connection.ItemUseDelayEvent += OnItemUseDelay;
+        _net.Connection.ItemChangedEvent += OnItemChanged;
+        _net.Connection.ItemStatsChangedEvent += OnItemStatsChanged;
+        _net.Connection.ItemStatsRefreshedEvent += OnItemStatsRefreshed;
+        _net.Connection.ItemDurabilityEvent += OnItemDurability;
+        _net.Connection.ItemExperienceEvent += OnItemExperience;
+        _net.Connection.ItemsChangedEvent += OnItemsChanged;
+        _net.Connection.CurrencyChangedEvent += OnCurrencyChanged;
+        _net.Connection.WeightUpdateEvent += OnWeightUpdate;
+        _net.Connection.StorageSizeEvent += OnStorageSize;
+
+        // M9: 鼠标跟随物品图标 + 悬浮提示 (窗口层最顶)
+        _mouseItemLabel = new DXLabel
+        {
+            TextColour = Colors.White,
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            AutoSize = true,
+            ZIndex = 500,
+            Visible = false,
+        };
+        _uiLayer.AddChild(_mouseItemLabel);
+
+        _hoverLabel = new DXLabel
+        {
+            TextColour = new Color(0.9f, 0.9f, 0.5f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            AutoSize = true,
+            ZIndex = 500,
+            Visible = false,
+        };
+        _uiLayer.AddChild(_hoverLabel);
 
         // StartGame 突发包在 _Ready 前已被 Process 处理(订阅未生效), 一次性排空积压队列
         DrainPendingObjects();
@@ -155,6 +283,8 @@ public partial class GameScene : Control
             _net.Connection.ObjectDiedEvent -= OnObjectDied;
             _net.Connection.ObjectStruckEvent -= OnObjectStruck;
             _net.Connection.StatsUpdateEvent -= OnStatsUpdate;
+            _net.Connection.DayTimeChangedEvent -= OnDayTimeChanged;
+            _net.Connection.TimeOfDayChangedEvent -= OnTimeOfDayChanged;
             _net.Connection.LevelChangedEvent -= OnLevelChanged;
             _net.Connection.GainedExperienceEvent -= OnGainedExperience;
             _net.Connection.InformMaxExperienceEvent -= OnInformMaxExperience;
@@ -167,7 +297,26 @@ public partial class GameScene : Control
             _net.Connection.BuffPausedEvent -= OnBuffPaused;
             _net.Connection.AttackModeChangedEvent -= OnAttackModeChanged;
             _net.Connection.PetModeChangedEvent -= OnPetModeChanged;
+            // M9 物品系统
+            _net.Connection.ItemsGainedEvent -= OnItemsGained;
+            _net.Connection.ItemMoveEvent -= OnItemMove;
+            _net.Connection.ItemSortEvent -= OnItemSort;
+            _net.Connection.ItemSplitEvent -= OnItemSplit;
+            _net.Connection.ItemDeleteEvent -= OnItemDelete;
+            _net.Connection.ItemLockEvent -= OnItemLock;
+            _net.Connection.ItemUseDelayEvent -= OnItemUseDelay;
+            _net.Connection.ItemChangedEvent -= OnItemChanged;
+            _net.Connection.ItemStatsChangedEvent -= OnItemStatsChanged;
+            _net.Connection.ItemStatsRefreshedEvent -= OnItemStatsRefreshed;
+            _net.Connection.ItemDurabilityEvent -= OnItemDurability;
+            _net.Connection.ItemExperienceEvent -= OnItemExperience;
+            _net.Connection.ItemsChangedEvent -= OnItemsChanged;
+            _net.Connection.CurrencyChangedEvent -= OnCurrencyChanged;
+            _net.Connection.WeightUpdateEvent -= OnWeightUpdate;
+            _net.Connection.StorageSizeEvent -= OnStorageSize;
         }
+
+        if (Game == this) Game = null;
     }
 
     private void OnStartGameResult(StartGameResult result, StartInformation info)
@@ -183,8 +332,10 @@ public partial class GameScene : Control
         {
             _playerObjectID = _pendingStartInfo.ObjectID;
             _playerMapIndex = _pendingStartInfo.MapIndex;
-            _playerLocation = _pendingStartInfo.Location;
             _playerDirection = _pendingStartInfo.Direction;
+            _playerHorse = _pendingStartInfo.Horse;
+            DayTime = _pendingStartInfo.DayTime;
+            TimeOfDay = _pendingStartInfo.TimeOfDay;
 
             GD.Print($"[Game] 进入游戏! 玩家: {_pendingStartInfo.Name}, 位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}), 方向: {_pendingStartInfo.Direction}, 地图: {_pendingStartInfo.MapIndex}");
             _statusLabel.Text = $"进入游戏: {_pendingStartInfo.Name}\n位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}) 方向: {_pendingStartInfo.Direction}";
@@ -205,6 +356,19 @@ public partial class GameScene : Control
         CallDeferred(nameof(ShowMapChanged));
     }
 
+    private void OnDayTimeChanged(float dayTime)
+    {
+        DayTime = Math.Clamp(dayTime, 0f, 1f);
+        _lightLayer?.SetDayTime(DayTime);
+    }
+
+    private void OnTimeOfDayChanged(TimeOfDay timeOfDay, string label)
+    {
+        TimeOfDay = timeOfDay;
+        GD.Print($"[Game] 时间阶段: {timeOfDay} {label}");
+        _lightLayer?.QueueRedraw();
+    }
+
     private void ShowMapChanged()
     {
         _playerMapIndex = _pendingMapIndex;
@@ -214,6 +378,7 @@ public partial class GameScene : Control
 
     private void OnUserLocation(MirDirection dir, System.Drawing.Point loc)
     {
+        GD.Print($"[Game] USERLOC dir={dir} loc=({loc.X},{loc.Y})");
         _pendingDir = dir;
         _pendingX = loc.X;
         _pendingY = loc.Y;
@@ -240,9 +405,24 @@ public partial class GameScene : Control
             case KeyBindAction.ChangePetMode:
                 CyclePetMode();
                 break;
+            case KeyBindAction.CharacterWindow:
+                WindowManager.Toggle(_characterDialog, _uiLayer);
+                break;
+            case KeyBindAction.InventoryWindow:
+                WindowManager.Toggle(_inventoryDialog, _uiLayer);
+                break;
+            case KeyBindAction.StorageWindow:
+                WindowManager.Toggle(_storageDialog, _uiLayer);
+                break;
+            case KeyBindAction.BeltWindow:
+                WindowManager.Toggle(_beltDialog, _uiLayer);
+                break;
+            case KeyBindAction.ItemPickUp:
+                PickUpItems();
+                break;
             default:
-                // MenuWindow/HelpWindow/ConfigWindow/CharacterWindow/InventoryWindow/MagicWindow:
-                // 对应对话框在 M9/M13 移植, 先 no-op
+                // MenuWindow/HelpWindow/ConfigWindow/MagicWindow:
+                // 对应对话框在 M13/M14 移植, 先 no-op
                 GD.Print($"[Game] 键位 {action} 暂未接入 (后续里程碑)");
                 break;
         }
@@ -287,10 +467,46 @@ public partial class GameScene : Control
         var ob = ObjectRenderer.CreateItem(p);
         if (ob == null) return;
         AddObject(ob, p.ObjectID, zIndex: 30);
+        SpawnItemGlow(ob, p.Item);
+    }
+
+    // 稀有度光效 (原版 ItemObject: Common+AddedStats / Superior / Elite)
+    private void SpawnItemGlow(ObjectRenderer ob, ClientUserItem item)
+    {
+        if (item?.Info == null) return;
+        var info = item.Info;
+
+        int fxIndex;
+        Color colour;
+        switch (info.Rarity)
+        {
+            case Rarity.Superior:
+                fxIndex = 100; colour = new Color(0.6f, 1f, 0.6f); break;  // PaleGreen
+            case Rarity.Elite:
+                fxIndex = 120; colour = new Color(0.72f, 0.6f, 1f); break; // MediumPurple
+            default:
+                // Common: 带附加属性且非零件才有光效
+                if (item.AddedStats?.Count > 0 && info.ItemEffect != ItemEffect.ItemPart)
+                {
+                    fxIndex = 110; colour = new Color(0.3f, 0.7f, 1f); break; // DeepSkyBlue
+                }
+                return;
+        }
+
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.Setup(LibraryFile.ProgUse, fxIndex, 10, 100, ob, ob.CellX, ob.CellY, null);
+        fx.Loop = true;
+        fx.Blend = true;
+        fx.BlendRate = 0.5f;
+        fx.ZIndex = 25;
+        fx.SelfModulate = colour;
+        _itemGlows[ob.ObjectID] = fx;
     }
 
     private void OnObjectRemove(uint objectID)
     {
+        if (_itemGlows.Remove(objectID, out var fx)) fx.QueueFree();
         if (!_objects.Remove(objectID, out var ob)) return;
         ob.QueueFree();
         GD.Print($"[Game] 移除物体: ObjectID={objectID}");
@@ -484,31 +700,121 @@ public partial class GameScene : Control
     // QuestTracker 小地图下方, Buff 小地图左侧, BigMap 居中
     private void CreateHud()
     {
-        var vp = GetViewport().GetVisibleRect().Size;
-
         _mainPanel = new MainPanel();
-        _mainPanel.Location = new Vector2I((int)(vp.X - _mainPanel.Size.X) / 2, (int)(vp.Y - _mainPanel.Size.Y));
         _uiLayer.AddChild(_mainPanel);
 
         _miniMap = new MiniMapDialog();
-        _miniMap.Location = new Vector2I((int)vp.X - 200, 0);
         _uiLayer.AddChild(_miniMap);
         _miniMap.Visible = true; // DXWindow 默认隐藏, HUD 常驻
         _miniMap.SetBigMapRequestHandler(OpenBigMap);
+        _miniMap.LayoutChanged += LayoutHud;
 
         _questTracker = new QuestTrackerDialog();
-        _questTracker.Location = new Vector2I((int)vp.X - 250, 200 + 5);
         _uiLayer.AddChild(_questTracker);
         _questTracker.Visible = true;
 
         _buffDialog = new BuffDialog();
-        _buffDialog.Location = new Vector2I((int)vp.X - 200 - (int)_buffDialog.Size.X - 5, 0);
         _uiLayer.AddChild(_buffDialog);
         _buffDialog.Visible = true;
 
         _bigMap = new BigMapDialog();
         _bigMap.SetRecenterMapProvider(() => GetMapInfo(_playerMapIndex), OpenBigMapForMap);
         _uiLayer.AddChild(_bigMap);
+
+        // ---- M9: 背包/角色/仓库/腰带对话框 ----
+        _inventoryDialog = new InventoryDialog();
+        _uiLayer.AddChild(_inventoryDialog);
+
+        _characterDialog = new CharacterDialog();
+        _characterDialog.Location = Vector2I.Zero;
+        _uiLayer.AddChild(_characterDialog);
+
+        _storageDialog = new StorageDialog();
+        _uiLayer.AddChild(_storageDialog);
+
+        _beltDialog = new BeltDialog();
+        _uiLayer.AddChild(_beltDialog);
+        _beltDialog.Visible = true; // 腰带常驻 (原版主面板上方)
+
+        _magicBar = new MagicBar(this);
+        _uiLayer.AddChild(_magicBar);
+        _magicBar.Visible = true;
+
+        // 数组注入: 先设 ItemGrid 再 CreateGrid (格子建立时快照 ItemGrid)
+        _inventoryDialog.Grid.ItemGrid = Inventory;
+        _inventoryDialog.Grid.CreateGrid();
+        InventoryCells = _inventoryDialog.Grid.Cells;
+
+        foreach (var cell in _characterDialog.Grid)
+            cell.ItemGrid = Equipment;
+        EquipmentCells = _characterDialog.Grid;
+
+        _storageDialog.Grid.ItemGrid = Storage;
+        _storageDialog.Grid.CreateGrid();
+        _storageDialog.RefreshStorage(); // 行数 = StorageSize/10, 重建格 + 滚轮重绑
+
+        BeltLinks = _beltDialog.Links; // 与对话框共享同一数组 (QuickInfo/QuickItem 写回)
+
+        // M9: 主面板功能按钮 -> 对话框开关
+        _mainPanel.CharacterButton.MouseClick += (o, e) => WindowManager.Toggle(_characterDialog, _uiLayer);
+        _mainPanel.InventoryButton.MouseClick += (o, e) => WindowManager.Toggle(_inventoryDialog, _uiLayer);
+        _mainPanel.BeltButton.MouseClick += (o, e) => WindowManager.Toggle(_beltDialog, _uiLayer);
+
+        LayoutHud();
+    }
+
+    private void OnGameResized()
+    {
+        LayoutHud();
+        UpdateViewRange();
+        UpdatePlayerPosition();
+    }
+
+    // 所有常驻 HUD 都基于当前 viewport 重新锚定。不能只在 _Ready 中
+    // 计算一次：Linux/Windows 高 DPI 下 Godot 可能在场景创建后才完成
+    // 窗口尺寸调整，旧坐标会把底栏留在屏幕中间。
+    private void LayoutHud()
+    {
+        if (_uiLayer == null || !IsInstanceValid(_uiLayer)) return;
+        Vector2 vp = GetViewport().GetVisibleRect().Size / UiScale;
+        if (vp.X <= 0 || vp.Y <= 0) return;
+
+        if (_mainPanel != null)
+            _mainPanel.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _mainPanel.Size.X) / 2f)),
+                Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y)));
+
+        if (_miniMap != null)
+            _miniMap.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X)), 0);
+
+        if (_questTracker != null)
+            _questTracker.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _questTracker.Size.X)),
+                (int)_miniMap.Size.Y + 5);
+
+        if (_buffDialog != null)
+            _buffDialog.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 5)), 0);
+
+        if (_inventoryDialog != null)
+            _inventoryDialog.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _inventoryDialog.Size.X)),
+                (int)_miniMap.Size.Y);
+
+        if (_storageDialog != null)
+            _storageDialog.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _storageDialog.Size.X - _inventoryDialog.Size.X)), 0);
+
+        if (_beltDialog != null)
+            _beltDialog.Location = new Vector2I(
+                (int)(_mainPanel.Location.X + _mainPanel.Size.X - _beltDialog.Size.X),
+                Math.Max(0, (int)(_mainPanel.Location.Y - _beltDialog.Size.Y)));
+
+        if (_magicBar != null)
+            _magicBar.Position = new Vector2(
+                Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
+                Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));
     }
 
     private MapInfo GetMapInfo(int mapIndex)
@@ -524,11 +830,12 @@ public partial class GameScene : Control
     private void OpenBigMapForMap(MapInfo map)
     {
         if (map == null) return;
-        var vp = GetViewport().GetVisibleRect().Size;
-        _bigMap.Size = new Vector2I(400, 300);
-        _bigMap.Location = new Vector2I((int)(vp.X - 400) / 2, (int)(vp.Y - 300) / 2);
+        var vp = GetViewport().GetVisibleRect().Size / UiScale;
         bool isCurrent = map.Index == _playerMapIndex;
         _bigMap.SetMap(map, _mapView.Map?.Width ?? 0, _mapView.Map?.Height ?? 0, _playerObjectID, isCurrent);
+        _bigMap.Location = new Vector2I(
+            Math.Max(0, (int)((vp.X - _bigMap.Size.X) / 2f)),
+            Math.Max(0, (int)((vp.Y - _bigMap.Size.Y) / 2f)));
         _bigMap.Visible = true;
     }
 
@@ -559,6 +866,17 @@ public partial class GameScene : Control
         _buffDialog?.BuffsChanged(_buffs);
 
         _questTracker?.PopulateQuests(info.Quests ?? Enumerable.Empty<ClientUserQuest>());
+
+        // ---- M9: 物品数据 (StartInformation + 登录仓库包) ----
+        FillItems(info.Items);
+        ApplyBeltLinks(info.BeltLinks);
+
+        Currencies.Clear();
+        if (info.Currencies != null) Currencies.AddRange(info.Currencies);
+        RefreshCurrency();
+
+        if (info.StorageSize > 0) StorageSize = info.StorageSize;
+        FillStorage(_net.Connection.PendingStorageItems);
     }
 
     // 血/蓝/专注条刷新 (Stats 就绪后与增量变化后调用)
@@ -678,6 +996,619 @@ public partial class GameScene : Control
         _mainPanel?.SetPetMode(mode);
     }
 
+    // ==================== M9 物品系统 ====================
+
+    private ClientUserItem[] GetGrid(GridType type)
+    {
+        switch (type)
+        {
+            case GridType.Inventory: return Inventory;
+            case GridType.Equipment: return Equipment;
+            case GridType.Storage: return Storage;
+            case GridType.PartsStorage: return PartsStorage;
+            default: return null;
+        }
+    }
+
+    private ClientUserItem ItemAt(GridType type, int slot)
+    {
+        var arr = GetGrid(type);
+        if (arr == null || slot < 0 || slot >= arr.Length) return null;
+        return arr[slot];
+    }
+
+    // 解锁源/目标格 (服务端回包后解除 Locked, 允许后续操作)
+    private void UnlockCell(GridType type, int slot)
+    {
+        DXItemCell[] cells = type switch
+        {
+            GridType.Inventory => InventoryCells,
+            GridType.Equipment => EquipmentCells,
+            GridType.Belt => _beltDialog?.Grid?.Cells,
+            GridType.Storage => _storageDialog?.Grid?.Cells,
+            _ => null,
+        };
+        if (cells != null && slot >= 0 && slot < cells.Length && cells[slot] != null)
+            cells[slot].Locked = false;
+    }
+
+    // 批量变更后刷新所有可见格
+    private void RefreshItemGrids()
+    {
+        foreach (var c in InventoryCells) c?.RefreshItem();
+        foreach (var c in EquipmentCells) c?.RefreshItem();
+        _beltDialog?.Grid?.RefreshGrid();
+        _storageDialog?.Grid?.RefreshGrid();
+    }
+
+    // 背包权重重算 (服务端未发 WeightUpdate 时的本地兜底)
+    public void RefreshInventoryWeights()
+    {
+        int bag = 0;
+        foreach (var item in Inventory)
+            if (item != null) bag += item.Weight;
+        BagWeight = bag;
+        _inventoryDialog?.SetWeight(bag);
+    }
+
+    public void RefreshCurrency()
+    {
+        long gold = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
+        long gg = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.GameGold)?.Amount ?? 0;
+        _inventoryDialog?.SetCurrency(gold, gg);
+
+        // 主面板 FP/CP (原版 CurrencyChanged 语义)
+        if (_mainPanel != null)
+        {
+            _mainPanel.FPLabel.Text = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.FP)?.Amount.ToString() ?? "0";
+            _mainPanel.CPLabel.Text = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.CP)?.Amount.ToString() ?? "0";
+        }
+    }
+
+    // 拿起物品跟随鼠标 + 悬浮提示
+    private void UpdateMouseItem()
+    {
+        var dragged = DXItemCell.SelectedCell?.Item;
+        if (dragged != null)
+        {
+            _mouseItemLabel.Visible = true;
+            _mouseItemLabel.Text = $"{dragged.Info?.ItemName}" + (dragged.Count > 1 ? $" x{dragged.Count}" : "");
+        }
+        else
+        {
+            _mouseItemLabel.Visible = false;
+        }
+
+        if (_hoverItem != null && dragged == null)
+        {
+            _hoverLabel.Visible = true;
+            _hoverLabel.Text = _hoverItem.Info?.ItemName ?? "";
+        }
+        else
+        {
+            _hoverLabel.Visible = false;
+        }
+
+        if (_mouseItemLabel.Visible || _hoverLabel.Visible)
+        {
+            var p = GetGlobalMousePosition() / UiScale;
+            _mouseItemLabel.Position = new Vector2(p.X + 14, p.Y + 10);
+            _hoverLabel.Position = new Vector2(p.X + 14, p.Y + 10);
+        }
+    }
+
+    public void SetHoverItem(ClientUserItem item)
+    {
+        _hoverItem = item;
+    }
+
+    // ---- 发包转发 (DXItemCell/对话框调用) ----
+    public void SendItemMove(GridType fromGrid, GridType toGrid, int fromSlot, int toSlot, bool mergeItem)
+        => _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
+
+    public void SendItemUse(GridType grid, int slot)
+        => _net.Connection.SendItemUse(grid, slot);
+
+    public void SendItemLock(GridType grid, int slot, bool locked)
+        => _net.Connection.SendItemLock(grid, slot, locked);
+
+    public void SendItemSort(GridType grid)
+        => _net.Connection.SendItemSort(grid);
+
+    public void SendItemDelete(GridType grid, int slot)
+        => _net.Connection.SendItemDelete(grid, slot);
+
+    public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
+        => _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
+
+    public void SendPickUp()
+        => _net.Connection.SendPickUp();
+
+    // ---- Tab 拾取 (250ms 节流) ----
+    private void PickUpItems()
+    {
+        double now = Godot.Time.GetTicksMsec();
+        if (now < _pickUpNextMs) return;
+        _pickUpNextMs = now + 250;
+        _net.Connection.SendPickUp();
+    }
+
+    // ---- 使用冷却 ----
+    public bool IsUseItemOnCooldown(ClientUserItem item) => Godot.Time.GetTicksMsec() < UseItemTime;
+
+    public void SetUseItemCooldown(double ms)
+    {
+        double until = Godot.Time.GetTicksMsec() + ms;
+        if (until > UseItemTime) UseItemTime = until;
+    }
+
+    // ---- 数据填充 ----
+    public void FillItems(List<ClientUserItem> items)
+    {
+        if (items == null) return;
+        foreach (var item in items)
+        {
+            if (item.Slot >= Globals.EquipmentOffSet)
+            {
+                int slot = item.Slot - Globals.EquipmentOffSet;
+                if (slot >= 0 && slot < Equipment.Length) Equipment[slot] = item;
+            }
+            else if (item.Slot >= 0 && item.Slot < Inventory.Length)
+            {
+                Inventory[item.Slot] = item;
+            }
+        }
+        RefreshItemGrids();
+    }
+
+    public void FillStorage(List<ClientUserItem> items)
+    {
+        if (items == null) return;
+        Array.Clear(Storage, 0, Storage.Length);
+        Array.Clear(PartsStorage, 0, PartsStorage.Length);
+        foreach (var item in items)
+        {
+            if (item.Slot >= Globals.PartsStorageOffset)
+            {
+                int slot = item.Slot - Globals.PartsStorageOffset;
+                if (slot < PartsStorage.Length) PartsStorage[slot] = item;
+            }
+            else if (item.Slot >= 0 && item.Slot < Storage.Length)
+            {
+                Storage[item.Slot] = item;
+            }
+        }
+        _storageDialog?.RefreshStorage();
+    }
+
+    public void ApplyBeltLinks(List<ClientBeltLink> links)
+    {
+        for (int i = 0; i < BeltLinks.Length; i++)
+        {
+            BeltLinks[i].Slot = i;
+            BeltLinks[i].LinkInfoIndex = -1;
+            BeltLinks[i].LinkItemIndex = -1;
+        }
+        if (links != null)
+        {
+            foreach (var link in links)
+            {
+                if (link.Slot < 0 || link.Slot >= BeltLinks.Length) continue;
+                BeltLinks[link.Slot].LinkInfoIndex = link.LinkInfoIndex;
+                BeltLinks[link.Slot].LinkItemIndex = link.LinkItemIndex;
+            }
+        }
+        _beltDialog?.UpdateLinks();
+    }
+
+    // 物品离身/变更: 遍历腰带清失效链接 (原版 ItemChanged 的 ShouldLinkInfo 分支)
+    private void ClearBeltLinkItem(int itemIndex, ClientUserItem replaceItem)
+    {
+        for (int i = 0; i < BeltLinks.Length; i++)
+        {
+            var link = BeltLinks[i];
+            if (link.LinkItemIndex != itemIndex) continue;
+
+            var cell = _beltDialog?.Grid?.Cells != null && i < _beltDialog.Grid.Cells.Length ? _beltDialog.Grid.Cells[i] : null;
+            if (cell != null) cell.QuickItem = null; // setter 同步 link.LinkItemIndex = -1
+
+            if (replaceItem != null && !replaceItem.Info.ShouldLinkInfo)
+            {
+                link.LinkItemIndex = replaceItem.Index;
+                if (cell != null) cell.QuickItem = replaceItem;
+            }
+            SendBeltLinkChanged(link.Slot, link.LinkInfoIndex, link.LinkItemIndex);
+        }
+    }
+
+    // ---- 16 个 S 包处理器 ----
+
+    // 拾取获得/系统发放
+    private void OnItemsGained(S.ItemsGained p)
+    {
+        AddItems(p.Items ?? new List<ClientUserItem>());
+    }
+
+    public void AddItems(List<ClientUserItem> items)
+    {
+        foreach (var item in items)
+        {
+            if (item.Info?.ItemEffect == ItemEffect.Experience) continue;
+            if ((item.Flags & UserItemFlags.QuestItem) == UserItemFlags.QuestItem) continue;
+
+            var currency = Currencies.FirstOrDefault(x => x.Info?.DropItem == item.Info);
+            if (currency != null)
+            {
+                currency.Amount += item.Count;
+                RefreshCurrency();
+                continue;
+            }
+
+            bool handled = false;
+            if (item.Info.StackSize > 1 && (item.Flags & UserItemFlags.Expirable) != UserItemFlags.Expirable)
+            {
+                foreach (var cellItem in Inventory)
+                {
+                    if (cellItem == null || cellItem.Info != item.Info) continue;
+                    if (cellItem.Count >= cellItem.Info.StackSize) continue;
+                    if ((cellItem.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable) continue;
+                    if ((cellItem.Flags & UserItemFlags.Bound) != (item.Flags & UserItemFlags.Bound)) continue;
+                    if ((cellItem.Flags & UserItemFlags.Worthless) != (item.Flags & UserItemFlags.Worthless)) continue;
+                    if ((cellItem.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
+                    if (!cellItem.AddedStats.Compare(item.AddedStats)) continue;
+
+                    if (cellItem.Count + item.Count <= item.Info.StackSize)
+                    {
+                        cellItem.Count += item.Count;
+                        handled = true;
+                        break;
+                    }
+                    item.Count -= item.Info.StackSize - cellItem.Count;
+                    cellItem.Count = item.Info.StackSize;
+                }
+                if (handled) continue;
+            }
+
+            for (int i = 0; i < Inventory.Length; i++)
+            {
+                if (Inventory[i] != null) continue;
+                Inventory[i] = item;
+                item.Slot = i;
+                break;
+            }
+        }
+        RefreshItemGrids();
+    }
+
+    // 物品移动 (服务端权威, 直接执行; 原版无双向确认)
+    private void OnItemMove(S.ItemMove p)
+    {
+        var fromArr = GetGrid(p.FromGrid);
+        var toArr = GetGrid(p.ToGrid);
+        if (fromArr == null || toArr == null) return;
+        if (p.FromSlot < 0 || p.FromSlot >= fromArr.Length) return;
+        if (p.ToSlot < 0 || p.ToSlot >= toArr.Length) return;
+
+        UnlockCell(p.FromGrid, p.FromSlot);
+        UnlockCell(p.ToGrid, p.ToSlot);
+
+        var fromItem = fromArr[p.FromSlot];
+        var toItem = toArr[p.ToSlot];
+
+        // 背包<->装备移动: 清理旧物品的腰带链接
+        if (p.FromGrid != p.ToGrid && p.Success)
+        {
+            if (p.FromGrid == GridType.Inventory && fromItem != null && !fromItem.Info.ShouldLinkInfo)
+                ClearBeltLinkItem(fromItem.Index, p.ToGrid == GridType.Equipment ? toItem : null);
+            else if (p.ToGrid == GridType.Inventory && toItem != null && !toItem.Info.ShouldLinkInfo)
+                ClearBeltLinkItem(toItem.Index, null);
+        }
+
+        if (!p.Success) return;
+
+        if (p.MergeItem)
+        {
+            if (fromItem == null || toItem == null) return;
+            if (toItem.Count + fromItem.Count <= toItem.Info.StackSize)
+            {
+                toItem.Count += fromItem.Count;
+                fromArr[p.FromSlot] = null;
+            }
+            else
+            {
+                fromItem.Count -= toItem.Info.StackSize - toItem.Count;
+                toItem.Count = toItem.Info.StackSize;
+            }
+        }
+        else
+        {
+            toArr[p.ToSlot] = fromItem;
+            fromArr[p.FromSlot] = toItem;
+            if (fromItem != null) fromItem.Slot = p.ToSlot;
+            if (toItem != null) toItem.Slot = p.FromSlot;
+        }
+
+        RefreshItemGrids();
+    }
+
+    // 整理 (清空重排)
+    private void OnItemSort(S.ItemSort p)
+    {
+        var arr = GetGrid(p.Grid);
+        if (arr == null) return;
+
+        for (int i = 0; i < arr.Length; i++) arr[i] = null;
+
+        if (p.Success && p.Items != null)
+        {
+            foreach (var item in p.Items)
+            {
+                int slot = item.Slot;
+                if (p.Grid == GridType.PartsStorage) slot -= Globals.PartsStorageOffset;
+                if (slot < 0 || slot >= arr.Length) continue;
+                arr[slot] = item;
+            }
+        }
+        RefreshItemGrids();
+    }
+
+    // 拆分
+    private void OnItemSplit(S.ItemSplit p)
+    {
+        var arr = GetGrid(p.Grid);
+        if (arr == null) return;
+        if (p.Slot < 0 || p.Slot >= arr.Length) return;
+        UnlockCell(p.Grid, p.Slot);
+        if (!p.Success) return;
+
+        var fromItem = arr[p.Slot];
+        if (fromItem == null) return;
+        if (p.NewSlot < 0 || p.NewSlot >= arr.Length) return;
+
+        arr[p.NewSlot] = new ClientUserItem(fromItem, p.Count) { Slot = p.NewSlot };
+        if (p.Count >= fromItem.Count) arr[p.Slot] = null;
+        else fromItem.Count -= p.Count;
+
+        RefreshItemGrids();
+    }
+
+    // 删除 (丢弃/移除)
+    private void OnItemDelete(S.ItemDelete p)
+    {
+        var arr = GetGrid(p.Grid);
+        if (arr == null) return;
+        if (p.Slot < 0 || p.Slot >= arr.Length) return;
+        UnlockCell(p.Grid, p.Slot);
+        DXItemCell.SelectedCell = null;
+        if (!p.Success) return;
+
+        var item = arr[p.Slot];
+        if (item == null) return;
+
+        if (!item.Info.ShouldLinkInfo)
+            ClearBeltLinkItem(item.Index, null);
+
+        arr[p.Slot] = null;
+        RefreshItemGrids();
+    }
+
+    // 锁定
+    private void OnItemLock(S.ItemLock p)
+    {
+        var item = ItemAt(p.Grid, p.Slot);
+        if (item == null) return;
+        if (p.Locked) item.Flags |= UserItemFlags.Locked;
+        else item.Flags &= ~UserItemFlags.Locked;
+        RefreshItemGrids();
+    }
+
+    // 使用延迟: 服务端给的绝对冷却 (下次可用时间)
+    private void OnItemUseDelay(S.ItemUseDelay p)
+    {
+        UseItemTime = Godot.Time.GetTicksMsec() + p.Delay.TotalMilliseconds;
+    }
+
+    // 数量变更 (使用消耗/拆分结果)
+    private void OnItemChanged(S.ItemChanged p)
+    {
+        var arr = GetGrid(p.Link.GridType);
+        if (arr == null) return;
+        if (p.Link.Slot < 0 || p.Link.Slot >= arr.Length) return;
+        UnlockCell(p.Link.GridType, p.Link.Slot);
+        if (!p.Success) return;
+
+        var item = arr[p.Link.Slot];
+        if (item == null) return;
+
+        if (!item.Info.ShouldLinkInfo)
+            ClearBeltLinkItem(item.Index, null);
+
+        if (p.Link.Count == 0) arr[p.Link.Slot] = null;
+        else item.Count = p.Link.Count;
+
+        RefreshItemGrids();
+    }
+
+    // 属性变更 (附魔等)
+    private void OnItemStatsChanged(S.ItemStatsChanged p)
+    {
+        var item = ItemAt(p.GridType, p.Slot);
+        if (item == null) return;
+        item.AddedStats.Add(p.NewStats);
+        GD.Print($"[Item] 属性变更: {item.Info?.ItemName} +{p.NewStats.Count} 条");
+        RefreshItemGrids();
+    }
+
+    private void OnItemStatsRefreshed(S.ItemStatsRefreshed p)
+    {
+        var item = ItemAt(p.GridType, p.Slot);
+        if (item == null) return;
+        item.AddedStats = p.NewStats;
+        RefreshItemGrids();
+    }
+
+    // 耐久变化: 归零提示
+    private void OnItemDurability(S.ItemDurability p)
+    {
+        var item = ItemAt(p.GridType, p.Slot);
+        if (item == null) return;
+        item.CurrentDurability = p.CurrentDurability;
+        if (p.CurrentDurability == 0)
+            GD.Print($"[Item] {item.Info?.ItemName} 耐久已耗尽");
+        RefreshItemGrids();
+    }
+
+    // 武器熟练度经验
+    private void OnItemExperience(S.ItemExperience p)
+    {
+        var item = ItemAt(p.Target.GridType, p.Target.Slot);
+        if (item == null) return;
+        item.Experience = p.Experience;
+        item.Level = p.Level;
+        if (p.Level > 0) item.Flags |= UserItemFlags.Bound;
+        RefreshItemGrids();
+    }
+
+    // 批量变更 (仓库/交易等; Count == 当前 Count 表示整格移除)
+    private void OnItemsChanged(S.ItemsChanged p)
+    {
+        if (p.Links == null)
+        {
+            DXItemCell.SelectedCell = null;
+            return;
+        }
+
+        foreach (var link in p.Links)
+        {
+            var arr = GetGrid(link.GridType);
+            if (arr == null) continue;
+            if (link.Slot < 0 || link.Slot >= arr.Length) continue;
+            UnlockCell(link.GridType, link.Slot);
+
+            var item = arr[link.Slot];
+            if (item == null || !p.Success) continue;
+
+            if (!item.Info.ShouldLinkInfo)
+                ClearBeltLinkItem(item.Index, null);
+
+            if (link.Count == item.Count) arr[link.Slot] = null;
+            else item.Count -= link.Count;
+        }
+        DXItemCell.SelectedCell = null;
+        RefreshItemGrids();
+    }
+
+    // 货币变更
+    private void OnCurrencyChanged(int currencyIndex, long amount)
+    {
+        var currency = Currencies.FirstOrDefault(x => x.CurrencyIndex == currencyIndex);
+        if (currency != null) currency.Amount = amount;
+        RefreshCurrency();
+    }
+
+    // 负重变更
+    private void OnWeightUpdate(int bag, int wear, int hand)
+    {
+        BagWeight = bag;
+        WearWeight = wear;
+        HandWeight = hand;
+        _inventoryDialog?.SetWeight(bag);
+        _characterDialog?.SetWeight(wear, hand);
+    }
+
+    // 仓库容量变更
+    private void OnStorageSize(int size)
+    {
+        StorageSize = size;
+        _storageDialog?.RefreshStorage();
+    }
+
+    // ---- 使用/穿戴校验 (移植自原版 CanUseItem/CanWearItem) ----
+    public bool CanUseItem(ClientUserItem item)
+    {
+        if (item?.Info == null) return false;
+
+        if (item.Info.RequiredGender != RequiredGender.None &&
+            item.Info.RequiredGender != (RequiredGender)StartInfo?.Gender)
+            return false;
+
+        if (item.Info.RequiredClass != RequiredClass.None &&
+            item.Info.RequiredClass != (RequiredClass)StartInfo?.Class)
+            return false;
+
+        switch (item.Info.RequiredType)
+        {
+            case RequiredType.Level:
+                if (_playerLevel < item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
+                break;
+            case RequiredType.MaxLevel:
+                if (_playerLevel > item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
+                break;
+        }
+
+        // 负重检查 (原版 User.CheckWeight)
+        int weight = BagWeight + WearWeight + item.Weight;
+        if (weight > _playerStats[Stat.BagWeight] + _playerStats[Stat.WearWeight])
+        {
+            GD.Print($"[Item] 负重不足, 无法使用 {item.Info.ItemName}");
+            return false;
+        }
+
+        // Book 类: 魔法系统 (M13) 未移植, 客户端直接拦
+        if (item.Info.ItemType == ItemType.Book) return false;
+
+        return true;
+    }
+
+    public bool CanWearItem(ClientUserItem item, EquipmentSlot slot)
+    {
+        if (item?.Info == null) return false;
+
+        // 类型与槽位匹配 (原版 CorrectSlot 校验, 客户端先行)
+        if (!Functions.CorrectSlot(item.Info.ItemType, slot))
+        {
+            GD.Print($"[Item] {item.Info.ItemName} 不能穿戴到 {slot}");
+            return false;
+        }
+
+        if (item.Info.RequiredGender != RequiredGender.None &&
+            item.Info.RequiredGender != (RequiredGender)StartInfo?.Gender)
+            return false;
+
+        if (item.Info.RequiredClass != RequiredClass.None &&
+            item.Info.RequiredClass != (RequiredClass)StartInfo?.Class)
+            return false;
+
+        switch (item.Info.RequiredType)
+        {
+            case RequiredType.Level:
+                if (_playerLevel < item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
+                break;
+            case RequiredType.MaxLevel:
+                if (_playerLevel > item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
+                break;
+        }
+
+        // 负重: 手持槽 (Weapon/Torch/Shield) 查 HandWeight, 其余查 WearWeight; 卸下旧装备减重
+        ClientUserItem old = Equipment[(int)slot];
+        int weight = item.Weight - (old?.Weight ?? 0);
+        if (slot == EquipmentSlot.Weapon || slot == EquipmentSlot.Torch || slot == EquipmentSlot.Shield)
+        {
+            if (HandWeight + weight > _playerStats[Stat.HandWeight])
+            {
+                GD.Print($"[Item] 手持负重不足, 无法穿戴 {item.Info.ItemName}");
+                return false;
+            }
+        }
+        else if (WearWeight + weight > _playerStats[Stat.WearWeight])
+        {
+            GD.Print($"[Item] 穿戴负重不足, 无法穿戴 {item.Info.ItemName}");
+            return false;
+        }
+
+        return true;
+    }
+
     // 死亡: 播 Die 动画后延迟移除
     private void OnObjectDied(uint objectID)
     {        if (objectID == _playerObjectID)
@@ -788,6 +1719,55 @@ public partial class GameScene : Control
             var (idx, paused) = conn.PendingBuffPauseds.Dequeue();
             OnBuffPaused(idx, paused);
         }
+        // M9 物品系统
+        while (conn.PendingItemsGained.Count > 0)
+            OnItemsGained(conn.PendingItemsGained.Dequeue());
+        while (conn.PendingItemMoves.Count > 0)
+            OnItemMove(conn.PendingItemMoves.Dequeue());
+        while (conn.PendingItemSorts.Count > 0)
+            OnItemSort(conn.PendingItemSorts.Dequeue());
+        while (conn.PendingItemSplits.Count > 0)
+            OnItemSplit(conn.PendingItemSplits.Dequeue());
+        while (conn.PendingItemDeletes.Count > 0)
+            OnItemDelete(conn.PendingItemDeletes.Dequeue());
+        while (conn.PendingItemLocks.Count > 0)
+            OnItemLock(conn.PendingItemLocks.Dequeue());
+        while (conn.PendingItemUseDelays.Count > 0)
+            OnItemUseDelay(conn.PendingItemUseDelays.Dequeue());
+        while (conn.PendingItemChangeds.Count > 0)
+            OnItemChanged(conn.PendingItemChangeds.Dequeue());
+        while (conn.PendingItemStatsChangeds.Count > 0)
+            OnItemStatsChanged(conn.PendingItemStatsChangeds.Dequeue());
+        while (conn.PendingItemStatsRefresheds.Count > 0)
+            OnItemStatsRefreshed(conn.PendingItemStatsRefresheds.Dequeue());
+        while (conn.PendingItemDurabilities.Count > 0)
+            OnItemDurability(conn.PendingItemDurabilities.Dequeue());
+        while (conn.PendingItemExperiences.Count > 0)
+            OnItemExperience(conn.PendingItemExperiences.Dequeue());
+        while (conn.PendingItemsChangeds.Count > 0)
+            OnItemsChanged(conn.PendingItemsChangeds.Dequeue());
+        while (conn.PendingCurrencyChangeds.Count > 0)
+        {
+            var (idx, amount) = conn.PendingCurrencyChangeds.Dequeue();
+            OnCurrencyChanged(idx, amount);
+        }
+        while (conn.PendingWeightUpdates.Count > 0)
+        {
+            var (bag, wear, hand) = conn.PendingWeightUpdates.Dequeue();
+            OnWeightUpdate(bag, wear, hand);
+        }
+        while (conn.PendingStorageSizes.Count > 0)
+            OnStorageSize(conn.PendingStorageSizes.Dequeue());
+        while (conn.PendingNewMagics.Count > 0)
+            OnNewMagic(conn.PendingNewMagics.Dequeue());
+    }
+
+    private void OnNewMagic(ClientUserMagic m)
+    {
+        if (m?.Info == null) return;
+        UserMagics[m.Info] = m;
+        GD.Print($"[Magic] 学会技能: {m.Info.Name} (Magic={m.Info.Magic}) Set1={m.Set1Key} Level={m.Level}");
+        _magicBar?.Refresh();
     }
 
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
@@ -838,7 +1818,10 @@ public partial class GameScene : Control
         }
 
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
-        _mapView.LoadMap(mapInfo.FileName);
+        _mapView.LoadMap(mapInfo.FileName, mapInfo.Background);
+        _lightLayer?.SetMap(mapInfo, _mapView);
+        _lightLayer?.SetDayTime(DayTime);
+        _weatherLayer?.SetWeather(mapInfo.Weather);
 
         // M12: 小地图/大地图换图 (清动态标记, 重建静态 NPC/出口)
         if (_mapView.Map != null)
@@ -850,6 +1833,9 @@ public partial class GameScene : Control
         // 换图: 清空旧地图的周围物体 (首次进图时 _objects 里是 Drain 的新图对象, 不清)
         if (clearObjects)
         {
+            foreach (var fx in _itemGlows.Values)
+                fx.QueueFree();
+            _itemGlows.Clear();
             foreach (var ob in _objects.Values)
                 ob.QueueFree();
             _objects.Clear();
@@ -877,6 +1863,9 @@ public partial class GameScene : Control
     public override void _Process(double delta)
     {
         UpdateViewRange();
+
+        // M9: 拿起物品跟随鼠标 + 悬浮提示
+        UpdateMouseItem();
 
         // M11: 状态窗口节流刷新 (200ms)
         if (_statusWindow != null && _statusWindow.Visible && _player != null)
@@ -917,17 +1906,9 @@ public partial class GameScene : Control
     private void UpdatePlayerPosition()
     {
         if (_mapView?.Map == null) return;
-
-        const int CellWidth = 48;
-        const int CellHeight = 32;
-        float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
-        float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
-
-        float px = (_player.CellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX;
-        float py = (_player.CellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY;
-
-        _player.Position = new Vector2(px, py);
         _mapView.CenterOn(_player.CellX, _player.CellY);
+        _player.Position = _mapView.CellToScreen(_player.CellX, _player.CellY, true);
+        _player.ZIndex = 100 + _player.CellY;
         UpdateObjectPositions();
     }
 
@@ -935,7 +1916,7 @@ public partial class GameScene : Control
     private void UpdateViewRange()
     {
         if (_mapView == null) return;
-        var vp = GetViewport().GetVisibleRect().Size;
+        var vp = GetViewport().GetVisibleRect().Size / WorldScale;
         int vrx = (int)Math.Ceiling(vp.X / (2f * 48)) + 1;
         int vry = (int)Math.Ceiling(vp.Y / (2f * 32)) + 1;
         _mapView.ViewRangeX = Math.Max(_mapView.ViewRangeX, vrx);
@@ -959,13 +1940,12 @@ public partial class GameScene : Control
     {
         if (_mapView?.Map == null) return;
 
-        const int CellWidth = 48;
-        const int CellHeight = 32;
-        float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
-        float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
-
         foreach (var ob in _objects.Values)
-            ob.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX, _mapView.ViewRangeY, offsetX, offsetY);
+        {
+            ob.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX,
+                _mapView.ViewRangeY, 0, 0, _mapView);
+            ob.ZIndex = 100 + ob.CellY;
+        }
     }
 
     // 格子坐标 -> 屏幕坐标 (与玩家居中公式一致)
@@ -973,20 +1953,46 @@ public partial class GameScene : Control
     {
         if (_mapView?.Map == null) return Vector2.Zero;
 
-        const int CellWidth = 48;
-        const int CellHeight = 32;
-        float offsetX = GetViewport().GetVisibleRect().Size.X / 2 - _mapView.ViewRangeX * CellWidth;
-        float offsetY = GetViewport().GetVisibleRect().Size.Y / 2 - _mapView.ViewRangeY * CellHeight;
-
-        return new Vector2(
-            (cellX - _mapView.CenterX + _mapView.ViewRangeX) * CellWidth + offsetX,
-            (cellY - _mapView.CenterY + _mapView.ViewRangeY) * CellHeight + offsetY);
+        return _mapView.CellToScreen(cellX, cellY, true);
     }
 
+
+    // F1~F8 -> SpellKey.Spell01~08 -> 当前栏组里 SetXKey 匹配的技能 -> C.Magic
+    private void UseMagicKey(int slot)
+    {
+        if (slot < 0 || slot > 7) return;
+        var key = (Library.SpellKey)(slot + 1);  // Spell01 = 1
+        ClientUserMagic magic = null;
+        foreach (var kv in UserMagics)
+        {
+            var m = kv.Value;
+            if (m == null) continue;
+            if (MagicBarSpellSet == 1 && m.Set1Key == key) magic = m;
+            else if (MagicBarSpellSet == 2 && m.Set2Key == key) magic = m;
+            else if (MagicBarSpellSet == 3 && m.Set3Key == key) magic = m;
+            else if (MagicBarSpellSet == 4 && m.Set4Key == key) magic = m;
+            if (magic != null) break;
+        }
+        if (magic == null) return;
+        // 朝当前目标方向; 无目标朝玩家朝向
+        MirDirection dir = _playerDirection;
+        var pCell = _playerLocation;
+        uint targetID = _combatController?.TargetObject?.ObjectID ?? 0;
+        _net.Connection.Enqueue(new C.Magic
+        {
+            Direction = dir,
+            Action = MirAction.Spell,
+            Type = magic.Info.Magic,
+            Target = targetID,
+            Location = new System.Drawing.Point(pCell.X, pCell.Y),
+        });
+        GD.Print($"[Magic] 释放 {magic.Info.Name} (Magic={magic.Info.Magic}) 方向={dir} 目标={targetID}");
+    }
 
     public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventKey key || !key.Pressed) return;
+        GD.Print($"[Game] KEY {key.Keycode} ctrl={key.CtrlPressed} alt={key.AltPressed} shift={key.ShiftPressed}");
         if (_net?.Connection?.Connected != true) return;
 
         // M11: F2 开关状态窗口, Esc 关闭最上层窗口
@@ -994,6 +2000,32 @@ public partial class GameScene : Control
         {
             WindowManager.Toggle(_statusWindow, _uiLayer);
             return;
+        }
+        // F1, F3~F6, F8 = 释放魔法 (F2 状态窗口/F7 调试/F12 截图 已占用)
+        // Ctrl+F1~F4 = 切魔法栏组 (原版 SpellSet01~04)
+        if (key.Keycode >= Key.F1 && key.Keycode <= Key.F8)
+        {
+            if (key.CtrlPressed)
+            {
+                int set = key.Keycode switch
+                {
+                    Key.F1 => 1, Key.F2 => 2, Key.F3 => 3, Key.F4 => 4,
+                    _ => 0,
+                };
+                if (set > 0)
+                {
+                    MagicBarSpellSet = set;
+                    _magicBar?.Refresh();
+                    GD.Print($"[Magic] 切换栏组 -> Set{set}");
+                }
+                return;
+            }
+            if (key.Keycode == Key.F2 || key.Keycode == Key.F7) { /* 已占用, 走下面 */ }
+            else
+            {
+                UseMagicKey((int)(key.Keycode - Key.F1));  // 0~7 -> Spell01~08
+                return;
+            }
         }
         if (key.Keycode == Key.Escape)
         {
@@ -1008,6 +2040,28 @@ public partial class GameScene : Control
             return;
         }
 
+        // 功能键 (不走 KeyBindManager, 避免改 KeyBindManager 与他人冲突)
+        if (key.Keycode == Key.M)
+        {
+            _net.Connection.Enqueue(new C.Mount());
+            GD.Print("[Game] 请求上下马");
+            return;
+        }
+        if (key.Keycode == Key.D && !key.CtrlPressed && !key.AltPressed && !key.ShiftPressed)
+        {
+            _autoRun = !_autoRun;
+            _mouseWalker.AutoRun = _autoRun;
+            GD.Print($"[Game] 自动跑步: {(_autoRun ? "开" : "关")}");
+        }
+        // T 请求交易 (原版 TradeRequest)
+        if (key.Keycode == Key.T && !key.CtrlPressed && !key.AltPressed && !key.ShiftPressed)
+        {
+            var t = _combatController?.TargetObject;
+            if (t != null && t.Type == ObjectRenderer.Kind.Monster) { /* 怪物不能交易, 忽略 */ }
+            // TODO: 交易需要选中玩家; 当前无玩家选中, 预留
+            return;
+        }
+
         MirDirection? dir = key.Keycode switch
         {
             Key.Up => MirDirection.Up,
@@ -1019,6 +2073,7 @@ public partial class GameScene : Control
 
         if (dir != null)
         {
+            GD.Print($"[Game] MOVE {dir.Value}");
             _net.Connection.Enqueue(new C.Move { Direction = dir.Value, Distance = 1 });
         }
         else if (key.Keycode == Key.F12)
@@ -1026,6 +2081,12 @@ public partial class GameScene : Control
             var img = GetViewport().GetTexture().GetImage();
             img.SavePng("/tmp/game_screenshot.png");
             GD.Print("[Game] 截图保存 /tmp/game_screenshot.png");
+        }
+        else if (key.Keycode == Key.F7)
+        {
+            // TEMP M9 验证钩子: 地面掉落 10 金币 (提交前删除)
+            GD.Print("[Game] TEMP CurrencyDrop 10 gold");
+            _net.Connection.Enqueue(new C.CurrencyDrop { CurrencyIndex = 1, Amount = 10 });
         }
     }
 }
