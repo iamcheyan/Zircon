@@ -78,6 +78,42 @@ public static class MagicEffectTable
         return null;  // 兜底由调用方处理
     }
 
+    /// <summary>旧端 MirAction.Attack 的攻击者目标特效（不是 Spell 的落点特效）。</summary>
+    public static ImpactDef GetAttack(MagicType type)
+    {
+        _attackTable.TryGetValue(type, out var def);
+        return def;
+    }
+
+    private static readonly Dictionary<MagicType, ImpactDef> _attackTable = new()
+    {
+        [MagicType.None] = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1090, FrameCount = 6, Colour = None },
+        [MagicType.Slaying] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1350, FrameCount = 6, Colour = None },
+        [MagicType.Thrusting] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 0, FrameCount = 6, Colour = None, Skip = 10 },
+        [MagicType.HalfMoon] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 230, FrameCount = 6, Colour = None },
+        [MagicType.DestructiveSurge] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1420, FrameCount = 6, Colour = None },
+        [MagicType.FlamingSword] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1470, FrameCount = 6, Colour = Fire },
+        [MagicType.DragonRise] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2185, FrameCount = 10, Colour = None },
+        [MagicType.BladeStorm] = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1780, FrameCount = 10, DelayMs = 60, Colour = None },
+        [MagicType.DefensiveBlow] = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 800, FrameCount = 9, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor },
+        [MagicType.FlameSplash] = new ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 900, FrameCount = 8, Colour = Fire },
+        [MagicType.DragonBlood] = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 200, FrameCount = 7, Colour = None },
+        [MagicType.SeismicSlam] = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 4900, FrameCount = 6, Colour = Lightning },
+        [MagicType.CrushingWave] = new ImpactDef { File = LibraryFile.MagicEx6, StartIndex = 100, FrameCount = 6, Colour = Lightning },
+        [MagicType.Endurance] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 190, FrameCount = 10, Colour = None },
+        [MagicType.ReflectDamage] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1220, FrameCount = 10, Colour = None },
+        [MagicType.Fetter] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 2370, FrameCount = 10, Colour = None },
+        [MagicType.Repulsion] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 90, FrameCount = 10, Colour = Wind },
+        [MagicType.Renounce] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 80, FrameCount = 10, Colour = Phantom },
+        [MagicType.Tempest] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 910, FrameCount = 10, DelayMs = 60, Colour = Wind },
+        [MagicType.MirrorImage] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1260, FrameCount = 6, Colour = None },
+        [MagicType.FrostBite] = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 500, FrameCount = 16, DelayMs = 60, Colour = Ice },
+        [MagicType.Transparency] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 430, FrameCount = 7, Colour = Phantom },
+        [MagicType.CursedDoll] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 690, FrameCount = 10, DelayMs = 60, Colour = Fire },
+        [MagicType.Spiritualism] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1580, FrameCount = 11, Colour = None },
+        [MagicType.Containment] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 590, FrameCount = 9, DelayMs = 60, Colour = None },
+    };
+
     private static readonly Dictionary<MagicType, CastEffect> _table = new()
     {
         // ---- 战士 ----

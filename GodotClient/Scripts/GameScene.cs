@@ -895,6 +895,11 @@ public partial class GameScene : Control
                 tgt.SetAnimation(MirAnimation.Struck);
             }
             else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
+
+            var attackEffect = MagicEffectTable.GetAttack(magic);
+            var attackTarget = GetMagicTargetNode(targetID);
+            if (attackEffect != null && attackTarget != null)
+                SpawnImpactTarget(attackEffect, attackTarget, dir);
         }
     }
 
@@ -1077,6 +1082,9 @@ public partial class GameScene : Control
     }
 
     private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target)
+        => SpawnImpactTarget(imp, target, MirDirection.Up);
+
+    private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target, MirDirection direction)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -1087,6 +1095,7 @@ public partial class GameScene : Control
         fx.BlendRate = imp.BlendRate;
         fx.Opacity = imp.Opacity;
         fx.Skip = imp.Skip;
+        fx.Direction = direction;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
     }
@@ -1275,6 +1284,7 @@ public partial class GameScene : Control
     // 受击: 被击退到新位置 + 播 Struck 动画
     private void OnObjectStruck(uint objectID, MirDirection dir, System.Drawing.Point loc, uint attackerID, Element element)
     {
+        SpawnStruckEffect(objectID, element);
         if (objectID == _playerObjectID)
         {
             if (_player == null) return;
@@ -1308,6 +1318,41 @@ public partial class GameScene : Control
             player.PlayStruck();
             UpdateOtherPlayerPosition(player);
         }
+    }
+
+    private void SpawnStruckEffect(uint objectID, Element element)
+    {
+        var target = GetMagicTargetNode(objectID);
+        if (target == null) return;
+        int start = element switch
+        {
+            Element.Fire => 790,
+            Element.Ice => 810,
+            Element.Lightning => 830,
+            Element.Wind => 850,
+            Element.Holy => 870,
+            Element.Dark => 890,
+            Element.Phantom => 910,
+            _ => 930,
+        };
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(LibraryFile.MagicEx, start, 6, 100, target,
+            () => GetTargetRenderY(target));
+        fx.Blend = true;
+        fx.BlendRate = 0.7f;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = element switch
+        {
+            Element.Fire => MagicEffectTable.Fire,
+            Element.Ice => MagicEffectTable.Ice,
+            Element.Lightning => MagicEffectTable.Lightning,
+            Element.Wind => MagicEffectTable.Wind,
+            Element.Holy => MagicEffectTable.Holy,
+            Element.Dark => MagicEffectTable.Dark,
+            Element.Phantom => MagicEffectTable.Phantom,
+            _ => MagicEffectTable.None,
+        };
     }
 
     // ---- M12 HUD ----
