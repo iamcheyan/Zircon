@@ -1,0 +1,341 @@
+using System;
+using System.ComponentModel;
+using System.Reflection;
+using Godot;
+using Library;
+
+namespace ZirconClient.Controls;
+
+/// <summary>
+/// 底部 HUD 主面板 (移植自 Client/Scenes/Views/MainPanel.cs)。
+/// GameInter 50 底图; 血/蓝/专注/经验条按原版"缩放"语义绘制 (目标宽 = 图宽 x 百分比);
+/// 属性图标 + 标签 + 功能按钮行。数据由 GameScene 通过 Set* 方法注入。
+/// </summary>
+public partial class MainPanel : DXImageControl
+{
+    public DXImageControl ExperienceBar;
+    public DXControl HealthBar, ManaBar, FocusBar;
+    public DXButton CharacterButton, InventoryButton, SpellButton, QuestButton, MailButton,
+        BeltButton, GroupButton, MenuButton, CashShopButton;
+    public DXImageControl NewMailIcon, AvailableQuestIcon, CompletedQuestIcon;
+    public DXImageControl ClassImage, LevelImage, FPImage, CPImage, ACImage, DCImage, MACImage, MCImage, SCImage;
+    public DXLabel ClassLabel, LevelLabel, FPLabel, CPLabel, ACLabel, DCLabel, MACLabel, MCLabel, SCLabel,
+        HealthLabel, ManaLabel, FocusLabel, AttackModeLabel, PetModeLabel;
+
+    // 数据状态 (GameScene 注入)
+    private int _currentHP, _currentMP, _currentFP;
+    private decimal _experience, _maxExperience;
+    private Stats _stats = new Stats();
+
+    public MainPanel()
+    {
+        LibraryFile = LibraryFile.GameInter;
+        Index = 50; // 底图, Size 自动
+
+        ExperienceBar = new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 51 };
+        ExperienceBar.Location = new Vector2I((int)(Size.X - ExperienceBar.Size.X) / 2 + 1, 3);
+        ExperienceBar.BeforeDraw += DrawExperienceFill;
+        AddControl(ExperienceBar);
+
+        HealthBar = CreateBar(35, 22, 52, 52, () => PercentOf(_currentHP, _stats[Stat.Health]));
+        ManaBar = CreateBar(35, 36, 52, 54, () => PercentOf(_currentMP, _stats[Stat.Mana]));
+        FocusBar = CreateBar(35, 50, 58, 58, () => PercentOf(_currentFP, _stats[Stat.Focus]), glowIndex: 59);
+
+        CharacterButton = CreateButton(82, 650, 23);
+        InventoryButton = CreateButton(87, 689, 23);
+        SpellButton = CreateButton(92, 728, 23);
+        QuestButton = CreateButton(112, 767, 23);
+        MailButton = CreateButton(97, 806, 23);
+        BeltButton = CreateButton(107, 845, 23);
+        GroupButton = CreateButton(102, 884, 23);
+        MenuButton = CreateButton(117, 923, 23);
+        CashShopButton = CreateButton(122, 972, 16);
+
+        NewMailIcon = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = 240,
+            IsControl = false,
+            Location = new Vector2I(2, 2),
+            Visible = false,
+        };
+        MailButton.AddControl(NewMailIcon);
+
+        AvailableQuestIcon = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = 240,
+            IsControl = false,
+            Location = new Vector2I(2, 2),
+            Visible = false,
+        };
+        QuestButton.AddControl(AvailableQuestIcon);
+
+        CompletedQuestIcon = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = 241,
+            IsControl = false,
+            Location = new Vector2I(2, 2),
+            Visible = false,
+        };
+        QuestButton.AddControl(CompletedQuestIcon);
+
+        ClassImage = CreateStatImage(70, 277, 25);
+        LevelImage = CreateStatImage(71, 277, 45);
+        FPImage = CreateStatImage(72, 362, 25);
+        CPImage = CreateStatImage(73, 362, 45);
+        ACImage = CreateStatImage(66, 445, 25);
+        DCImage = CreateStatImage(65, 445, 45);
+        MACImage = CreateStatImage(63, 531, 25);
+        MCImage = CreateStatImage(62, 541, 45);
+        SCImage = CreateStatImage(64, 547, 45);
+
+        ClassLabel = CreateStatLabel(300, 20);
+        LevelLabel = CreateStatLabel(300, 40);
+        FPLabel = CreateStatLabel(385, 20);
+        CPLabel = CreateStatLabel(385, 40);
+        ACLabel = CreateStatLabel(470, 20);
+        DCLabel = CreateStatLabel(470, 40);
+        MACLabel = CreateStatLabel(567, 20);
+        MCLabel = CreateStatLabel(567, 40);
+        SCLabel = CreateStatLabel(567, 40);
+
+        HealthLabel = CreateBarLabel();
+        ManaLabel = CreateBarLabel();
+        FocusLabel = CreateBarLabel();
+        FocusLabel.Visible = false;
+
+        AttackModeLabel = new DXLabel
+        {
+            TextColour = Colors.Cyan,
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Visible = false,
+        };
+        AddControl(AttackModeLabel);
+
+        PetModeLabel = new DXLabel
+        {
+            TextColour = Colors.Cyan,
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Visible = false,
+        };
+        AddControl(PetModeLabel);
+    }
+
+    private static float PercentOf(int current, int max)
+    {
+        if (max <= 0) return 0;
+        return Math.Clamp(current / (float)max, 0f, 1f);
+    }
+
+    // ---- 条: 容器尺寸取背景图, 填充在 BeforeDraw 里按百分比缩放绘制 ----
+
+    private DXControl CreateBar(int x, int y, int sizeIndex, int fillIndex, Func<float> percent, int glowIndex = -1)
+    {
+        var bar = new DXControl
+        {
+            Location = new Vector2I(x, y),
+            Size = MirSkin.GetSize(LibraryFile.GameInter, sizeIndex),
+        };
+        bar.BeforeDraw += (o, e) => DrawBarFill(bar, fillIndex, percent, glowIndex);
+        AddControl(bar);
+        return bar;
+    }
+
+    private void DrawBarFill(DXControl bar, int fillIndex, Func<float> percent, int glowIndex)
+    {
+        float p = percent();
+        if (p <= 0) return;
+
+        int idx = fillIndex;
+        if (glowIndex >= 0 && p >= 1f && DateTime.Now.Second % 2 == 0)
+            idx = glowIndex;
+
+        var tex = MirSkin.GetTexture(LibraryFile.GameInter, idx);
+        if (tex == null) return;
+
+        var imgSize = tex.GetSize();
+        float w = imgSize.X * p;
+        bar.DrawTextureRect(tex, new Rect2(0, 0, w, imgSize.Y), false);
+    }
+
+    private void DrawExperienceFill(object sender, EventArgs e)
+    {
+        if (sender is not DXControl bar) return;
+        if (_maxExperience <= 0) return;
+        float p = Math.Clamp((float)(_experience / _maxExperience), 0f, 1f);
+        if (p <= 0) return;
+
+        var tex = MirSkin.GetTexture(LibraryFile.GameInter, 56);
+        if (tex == null) return;
+
+        var imgSize = tex.GetSize();
+        // 原版: 填充在经验条内水平居中
+        float x = (ExperienceBar.Size.X - imgSize.X) / 2f;
+        float y = (ExperienceBar.Size.Y - imgSize.Y) / 2f - 1;
+        bar.DrawTextureRect(tex, new Rect2(x, y, imgSize.X * p, imgSize.Y), false);
+    }
+
+    private DXButton CreateButton(int index, int x, int y)
+    {
+        var b = new DXButton
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = index,
+            Location = new Vector2I(x, y),
+        };
+        AddControl(b);
+        return b;
+    }
+
+    private DXImageControl CreateStatImage(int index, int x, int y)
+    {
+        var img = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = index,
+            Location = new Vector2I(x, y),
+            IsControl = false,
+        };
+        AddControl(img);
+        return img;
+    }
+
+    private DXLabel CreateStatLabel(int x, int y)
+    {
+        var label = new DXLabel
+        {
+            AutoSize = false,
+            Location = new Vector2I(x, y),
+            Size = new Vector2I(60, 16),
+            FontSize = 8,
+            TextColour = Colors.White,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            IsControl = false,
+        };
+        AddControl(label);
+        return label;
+    }
+
+    private DXLabel CreateBarLabel()
+    {
+        var label = new DXLabel
+        {
+            TextColour = Colors.White,
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            IsControl = false,
+        };
+        AddControl(label);
+        return label;
+    }
+
+    // 条上文字居中 (原版 SizeChanged 里做, Godot 标签不自适应尺寸, 用 MeasureText)
+    private void CenterBarLabel(DXLabel label, DXControl bar)
+    {
+        var size = MirSkin.MeasureText(label.Text, label.FontSize);
+        label.Location = new Vector2I(
+            bar.Location.X + (int)((bar.Size.X - size.X) / 2),
+            bar.Location.Y + (int)((bar.Size.Y - size.Y) / 2));
+    }
+
+    // ---- GameScene 数据注入 (对应原版 GameScene 的 Changed 方法) ----
+
+    public void SetLevel(int level)
+    {
+        LevelLabel.Text = level.ToString();
+    }
+
+    public void SetClass(MirClass cls)
+    {
+        ClassLabel.Text = cls.ToString();
+        bool showMC = cls == MirClass.Wizard || cls == MirClass.Warrior;
+        bool showSC = cls == MirClass.Taoist || cls == MirClass.Assassin;
+        MCLabel.Visible = showMC;
+        MCImage.Visible = showMC;
+        SCLabel.Visible = showSC;
+        SCImage.Visible = showSC;
+    }
+
+    public void SetStats(Stats stats)
+    {
+        _stats = stats ?? new Stats();
+        ACLabel.Text = _stats.GetFormat(Stat.MaxAC) ?? "";
+        MACLabel.Text = _stats.GetFormat(Stat.MaxMR) ?? "";
+        DCLabel.Text = _stats.GetFormat(Stat.MaxDC) ?? "";
+        SCLabel.Text = _stats.GetFormat(Stat.MaxSC) ?? "";
+        MCLabel.Text = _stats.GetFormat(Stat.MaxMC) ?? "";
+        RefreshBars();
+    }
+
+    public void SetHealth(int currentHP)
+    {
+        _currentHP = currentHP;
+        HealthLabel.Text = $"{currentHP}/{_stats[Stat.Health]}";
+        CenterBarLabel(HealthLabel, HealthBar);
+    }
+
+    public void SetMana(int currentMP)
+    {
+        _currentMP = currentMP;
+        ManaLabel.Text = $"{currentMP}/{_stats[Stat.Mana]}";
+        CenterBarLabel(ManaLabel, ManaBar);
+    }
+
+    public void SetFocus(int currentFP)
+    {
+        _currentFP = currentFP;
+        FocusLabel.Visible = _stats[Stat.Focus] > 0;
+        FocusLabel.Text = $"{currentFP}/{_stats[Stat.Focus]}";
+        CenterBarLabel(FocusLabel, FocusBar);
+    }
+
+    public void SetExperience(decimal experience, decimal maxExperience)
+    {
+        _experience = experience;
+        _maxExperience = maxExperience;
+        ExperienceBar.QueueRedraw();
+    }
+
+    public void SetAttackMode(AttackMode mode)
+    {
+        AttackModeLabel.Text = GetDescription(mode) ?? mode.ToString();
+        AttackModeLabel.Visible = true;
+        CenterBarLabel(AttackModeLabel, FocusBar);
+        AttackModeLabel.Location = new Vector2I(
+            AttackModeLabel.Location.X,
+            FocusBar.Location.Y + (int)((FocusBar.Size.Y - AttackModeLabel.Size.Y) / 2) - 2);
+    }
+
+    public void SetPetMode(PetMode mode)
+    {
+        PetModeLabel.Text = GetDescription(mode) ?? mode.ToString();
+        PetModeLabel.Visible = true;
+        CenterBarLabel(PetModeLabel, FocusBar);
+        PetModeLabel.Location = new Vector2I(
+            FocusBar.Location.X + (int)(FocusBar.Size.X - PetModeLabel.Size.X),
+            FocusBar.Location.Y + (int)((FocusBar.Size.Y - PetModeLabel.Size.Y) / 2) - 2);
+    }
+
+    private static string GetDescription<T>(T value) where T : Enum
+    {
+        MemberInfo[] infos = typeof(T).GetMember(value.ToString());
+        if (infos.Length == 0) return null;
+        return infos[0].GetCustomAttribute<DescriptionAttribute>()?.Description;
+    }
+
+    private void RefreshBars()
+    {
+        HealthBar.QueueRedraw();
+        ManaBar.QueueRedraw();
+        FocusBar.QueueRedraw();
+        ExperienceBar.QueueRedraw();
+        SetHealth(_currentHP);
+        SetMana(_currentMP);
+        SetFocus(_currentFP);
+    }
+}

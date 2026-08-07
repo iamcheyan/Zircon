@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using Library;
 using Library.Network;
+using Library.SystemModels;
 using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
@@ -22,6 +23,20 @@ public partial class GameScene : Control
     private CanvasLayer _uiLayer;
     private StatusWindow _statusWindow;
     private double _statusRefreshMs;
+
+    // M12: HUD + 键位
+    private MainPanel _mainPanel;
+    private MiniMapDialog _miniMap;
+    private BigMapDialog _bigMap;
+    private BuffDialog _buffDialog;
+    private QuestTrackerDialog _questTracker;
+    private readonly Dictionary<int, ClientBuffInfo> _buffs = new();
+    private Stats _playerStats = new Stats();
+    private int _playerLevel;
+    private decimal _playerExperience, _playerMaxExperience;
+    private int _currentHP, _currentMP, _currentFP;
+    private AttackMode _attackMode;
+    private PetMode _petMode;
 
     // 周围物体 (怪物/NPC/物品): ObjectID -> 渲染节点
     private readonly System.Collections.Generic.Dictionary<uint, ObjectRenderer> _objects = new();
@@ -69,6 +84,7 @@ public partial class GameScene : Control
         AddChild(_uiLayer);
 
         _statusWindow = new StatusWindow(); // 初始隐藏, F2 打开
+        CreateHud();
 
         _net.Connection.StartGameResultEvent += OnStartGameResult;
         _net.Connection.MapChangedEvent += OnMapChanged;
@@ -88,6 +104,18 @@ public partial class GameScene : Control
         _net.Connection.ObjectDiedEvent += OnObjectDied;
         _net.Connection.ObjectStruckEvent += OnObjectStruck;
         _net.Connection.StatsUpdateEvent += OnStatsUpdate;
+        _net.Connection.LevelChangedEvent += OnLevelChanged;
+        _net.Connection.GainedExperienceEvent += OnGainedExperience;
+        _net.Connection.InformMaxExperienceEvent += OnInformMaxExperience;
+        _net.Connection.ManaChangedEvent += OnManaChanged;
+        _net.Connection.FocusChangedEvent += OnFocusChanged;
+        _net.Connection.BuffAddEvent += OnBuffAdd;
+        _net.Connection.BuffRemoveEvent += OnBuffRemove;
+        _net.Connection.BuffChangedEvent += OnBuffChanged;
+        _net.Connection.BuffTimeEvent += OnBuffTime;
+        _net.Connection.BuffPausedEvent += OnBuffPaused;
+        _net.Connection.AttackModeChangedEvent += OnAttackModeChanged;
+        _net.Connection.PetModeChangedEvent += OnPetModeChanged;
 
         // StartGame 突发包在 _Ready 前已被 Process 处理(订阅未生效), 一次性排空积压队列
         DrainPendingObjects();
@@ -127,6 +155,18 @@ public partial class GameScene : Control
             _net.Connection.ObjectDiedEvent -= OnObjectDied;
             _net.Connection.ObjectStruckEvent -= OnObjectStruck;
             _net.Connection.StatsUpdateEvent -= OnStatsUpdate;
+            _net.Connection.LevelChangedEvent -= OnLevelChanged;
+            _net.Connection.GainedExperienceEvent -= OnGainedExperience;
+            _net.Connection.InformMaxExperienceEvent -= OnInformMaxExperience;
+            _net.Connection.ManaChangedEvent -= OnManaChanged;
+            _net.Connection.FocusChangedEvent -= OnFocusChanged;
+            _net.Connection.BuffAddEvent -= OnBuffAdd;
+            _net.Connection.BuffRemoveEvent -= OnBuffRemove;
+            _net.Connection.BuffChangedEvent -= OnBuffChanged;
+            _net.Connection.BuffTimeEvent -= OnBuffTime;
+            _net.Connection.BuffPausedEvent -= OnBuffPaused;
+            _net.Connection.AttackModeChangedEvent -= OnAttackModeChanged;
+            _net.Connection.PetModeChangedEvent -= OnPetModeChanged;
         }
     }
 
@@ -149,6 +189,7 @@ public partial class GameScene : Control
             GD.Print($"[Game] 进入游戏! 玩家: {_pendingStartInfo.Name}, 位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}), 方向: {_pendingStartInfo.Direction}, 地图: {_pendingStartInfo.MapIndex}");
             _statusLabel.Text = $"进入游戏: {_pendingStartInfo.Name}\n位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}) 方向: {_pendingStartInfo.Direction}";
 
+            InitHudData(_pendingStartInfo);
             LoadPlayerMap(clearObjects: false);
         }
         else
@@ -177,6 +218,34 @@ public partial class GameScene : Control
         _pendingX = loc.X;
         _pendingY = loc.Y;
         CallDeferred(nameof(ShowUserLocation));
+    }
+
+    private void HandleKeyBind(KeyBindAction action)
+    {
+        switch (action)
+        {
+            case KeyBindAction.MapMiniWindow:
+                _miniMap.Visible = !_miniMap.Visible;
+                break;
+            case KeyBindAction.MapBigWindow:
+                if (_bigMap.Visible) _bigMap.Visible = false;
+                else OpenBigMap();
+                break;
+            case KeyBindAction.QuestTrackerWindow:
+                _questTracker.Visible = !_questTracker.Visible;
+                break;
+            case KeyBindAction.ChangeAttackMode:
+                CycleAttackMode();
+                break;
+            case KeyBindAction.ChangePetMode:
+                CyclePetMode();
+                break;
+            default:
+                // MenuWindow/HelpWindow/ConfigWindow/CharacterWindow/InventoryWindow/MagicWindow:
+                // 对应对话框在 M9/M13 移植, 先 no-op
+                GD.Print($"[Game] 键位 {action} 暂未接入 (后续里程碑)");
+                break;
+        }
     }
 
     private void OnObjectMove(uint objectID, MirDirection dir, System.Drawing.Point loc, int distance)
@@ -225,6 +294,8 @@ public partial class GameScene : Control
         if (!_objects.Remove(objectID, out var ob)) return;
         ob.QueueFree();
         GD.Print($"[Game] 移除物体: ObjectID={objectID}");
+        _miniMap?.RemoveObject(objectID);
+        _bigMap?.RemoveObject(objectID);
     }
 
     private void OnObjectTurn(uint objectID, MirDirection dir)
@@ -312,7 +383,12 @@ public partial class GameScene : Control
         if (objectID == _playerObjectID)
         {
             if (_player == null) return;
-            if (!miss && !block) _player.Health += change;
+            if (!miss && !block)
+            {
+                _player.Health += change;
+                _currentHP = _player.Health;
+                _mainPanel?.SetHealth(_currentHP);
+            }
             _player.ShowHealthBar = true;
             if (!miss && !block) _player.PlayStruck();
             return;
@@ -332,6 +408,8 @@ public partial class GameScene : Control
         {
             if (_player == null) return;
             _player.Health = health;
+            _currentHP = health;
+            _mainPanel?.SetHealth(_currentHP);
             _player.ShowHealthBar = true;
             return;
         }
@@ -386,6 +464,8 @@ public partial class GameScene : Control
             _player.Direction = dir;
             _player.PlayStruck();
             UpdatePlayerPosition();
+            _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
+            _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
             return;
         }
         if (_objects.TryGetValue(objectID, out var ob))
@@ -396,6 +476,206 @@ public partial class GameScene : Control
             ob.SetAnimation(MirAnimation.Struck);
             ob.Position = ComputeObjectScreenPos(loc.X, loc.Y);
         }
+    }
+
+    // ---- M12 HUD ----
+
+    // 挂载坐标照原版 GameScene (Size = 视口): MainPanel 底中, MiniMap 右上,
+    // QuestTracker 小地图下方, Buff 小地图左侧, BigMap 居中
+    private void CreateHud()
+    {
+        var vp = GetViewport().GetVisibleRect().Size;
+
+        _mainPanel = new MainPanel();
+        _mainPanel.Location = new Vector2I((int)(vp.X - _mainPanel.Size.X) / 2, (int)(vp.Y - _mainPanel.Size.Y));
+        _uiLayer.AddChild(_mainPanel);
+
+        _miniMap = new MiniMapDialog();
+        _miniMap.Location = new Vector2I((int)vp.X - 200, 0);
+        _uiLayer.AddChild(_miniMap);
+        _miniMap.Visible = true; // DXWindow 默认隐藏, HUD 常驻
+        _miniMap.SetBigMapRequestHandler(OpenBigMap);
+
+        _questTracker = new QuestTrackerDialog();
+        _questTracker.Location = new Vector2I((int)vp.X - 250, 200 + 5);
+        _uiLayer.AddChild(_questTracker);
+        _questTracker.Visible = true;
+
+        _buffDialog = new BuffDialog();
+        _buffDialog.Location = new Vector2I((int)vp.X - 200 - (int)_buffDialog.Size.X - 5, 0);
+        _uiLayer.AddChild(_buffDialog);
+        _buffDialog.Visible = true;
+
+        _bigMap = new BigMapDialog();
+        _bigMap.SetRecenterMapProvider(() => GetMapInfo(_playerMapIndex), OpenBigMapForMap);
+        _uiLayer.AddChild(_bigMap);
+    }
+
+    private MapInfo GetMapInfo(int mapIndex)
+    {
+        return Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == mapIndex);
+    }
+
+    private void OpenBigMap()
+    {
+        OpenBigMapForMap(GetMapInfo(_playerMapIndex));
+    }
+
+    private void OpenBigMapForMap(MapInfo map)
+    {
+        if (map == null) return;
+        var vp = GetViewport().GetVisibleRect().Size;
+        _bigMap.Size = new Vector2I(400, 300);
+        _bigMap.Location = new Vector2I((int)(vp.X - 400) / 2, (int)(vp.Y - 300) / 2);
+        bool isCurrent = map.Index == _playerMapIndex;
+        _bigMap.SetMap(map, _mapView.Map?.Width ?? 0, _mapView.Map?.Height ?? 0, _playerObjectID, isCurrent);
+        _bigMap.Visible = true;
+    }
+
+    // StartGame 数据 -> HUD (等级/职业/属性/血蓝/经验/Buff/任务/攻击宠物模式)
+    private void InitHudData(StartInformation info)
+    {
+        _playerStats = new Stats();
+        _playerLevel = info.Level;
+        _playerExperience = info.Experience;
+        // MaxExperience 由 S.InformMaxExperience / S.LevelChanged 填充 (排空可能已先到)
+        _currentHP = info.CurrentHP;
+        _currentMP = info.CurrentMP;
+        _currentFP = info.CurrentFP;
+        _attackMode = info.AttackMode;
+        _petMode = info.PetMode;
+
+        _mainPanel?.SetLevel(_playerLevel);
+        _mainPanel?.SetClass(info.Class);
+        _mainPanel?.SetExperience(_playerExperience, _playerMaxExperience);
+        _mainPanel?.SetAttackMode(_attackMode);
+        _mainPanel?.SetPetMode(_petMode);
+        RefreshPlayerBars();
+
+        _buffs.Clear();
+        if (info.Buffs != null)
+            foreach (var b in info.Buffs)
+                _buffs[b.Index] = b;
+        _buffDialog?.BuffsChanged(_buffs);
+
+        _questTracker?.PopulateQuests(info.Quests ?? Enumerable.Empty<ClientUserQuest>());
+    }
+
+    // 血/蓝/专注条刷新 (Stats 就绪后与增量变化后调用)
+    private void RefreshPlayerBars()
+    {
+        _mainPanel?.SetHealth(_currentHP);
+        _mainPanel?.SetMana(_currentMP);
+        _mainPanel?.SetFocus(_currentFP);
+    }
+
+    private void OnStatsUpdate(S.StatsUpdate p)
+    {
+        _playerStats = p.Stats ?? new Stats();
+        _mainPanel?.SetStats(_playerStats);
+        if (_player == null) return;
+        _player.MaxHealth = _playerStats[Stat.Health];
+        _player.MaxMana = _playerStats[Stat.Mana];
+        if (_player.Health <= 0) _player.Health = _playerStats[Stat.Health];
+        RefreshPlayerBars();
+    }
+
+    private void OnLevelChanged(S.LevelChanged p)
+    {
+        _playerLevel = p.Level;
+        _playerExperience = p.Experience;
+        _playerMaxExperience = p.MaxExperience;
+        _mainPanel?.SetLevel(_playerLevel);
+        _mainPanel?.SetExperience(_playerExperience, _playerMaxExperience);
+    }
+
+    private void OnGainedExperience(decimal amount)
+    {
+        _playerExperience += amount;
+        _mainPanel?.SetExperience(_playerExperience, _playerMaxExperience);
+    }
+
+    private void OnInformMaxExperience(decimal maxExperience)
+    {
+        _playerMaxExperience = maxExperience;
+        _mainPanel?.SetExperience(_playerExperience, _playerMaxExperience);
+    }
+
+    // 蓝/专注: 照原版按 ObjectID 累加 Change (只有玩家的会到 HUD)
+    private void OnManaChanged(uint objectID, int change)
+    {
+        if (objectID != _playerObjectID) return;
+        _currentMP += change;
+        RefreshPlayerBars();
+    }
+
+    private void OnFocusChanged(uint objectID, int change)
+    {
+        if (objectID != _playerObjectID) return;
+        _currentFP += change;
+        RefreshPlayerBars();
+    }
+
+    private void OnBuffAdd(S.BuffAdd p)
+    {
+        if (p.Buff == null) return;
+        _buffs[p.Buff.Index] = p.Buff;
+        _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    private void OnBuffRemove(int index)
+    {
+        if (_buffs.Remove(index))
+            _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    private void OnBuffChanged(S.BuffChanged p)
+    {
+        if (_buffs.TryGetValue(p.Index, out var buff))
+            buff.Stats = p.Stats;
+        _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    private void OnBuffTime(S.BuffTime p)
+    {
+        if (_buffs.TryGetValue(p.Index, out var buff))
+            buff.RemainingTime = p.Time;
+        _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    private void OnBuffPaused(int index, bool paused)
+    {
+        if (_buffs.TryGetValue(index, out var buff))
+            buff.Pause = paused;
+        _buffDialog?.BuffsChanged(_buffs);
+    }
+
+    // 攻击/宠物模式循环 (照原版 (Mode+1)%5, 仅本地切 + 发包)
+    private void CycleAttackMode()
+    {
+        _attackMode = (AttackMode)(((int)_attackMode + 1) % 5);
+        _mainPanel?.SetAttackMode(_attackMode);
+        _net.Connection.Enqueue(new C.ChangeAttackMode { Mode = _attackMode });
+    }
+
+    private void CyclePetMode()
+    {
+        _petMode = (PetMode)(((int)_petMode + 1) % 5);
+        _mainPanel?.SetPetMode(_petMode);
+        _net.Connection.Enqueue(new C.ChangePetMode { Mode = _petMode });
+    }
+
+    // 服务端回显 (权威): 与本地循环一致, 双保险
+    private void OnAttackModeChanged(AttackMode mode)
+    {
+        _attackMode = mode;
+        _mainPanel?.SetAttackMode(mode);
+    }
+
+    private void OnPetModeChanged(PetMode mode)
+    {
+        _petMode = mode;
+        _mainPanel?.SetPetMode(mode);
     }
 
     // 死亡: 播 Die 动画后延迟移除
@@ -478,19 +758,50 @@ public partial class GameScene : Control
             OnObjectStruck(s.ObjectID, s.Direction, s.Location, s.AttackerID, s.Element);
         }
         while (conn.PendingStats.Count > 0)
+            OnStatsUpdate(conn.PendingStats.Dequeue());
+        while (conn.PendingLevelChanges.Count > 0)
+            OnLevelChanged(conn.PendingLevelChanges.Dequeue());
+        while (conn.PendingGainedExperience.Count > 0)
+            OnGainedExperience(conn.PendingGainedExperience.Dequeue());
+        while (conn.PendingMaxExperience.Count > 0)
+            OnInformMaxExperience(conn.PendingMaxExperience.Dequeue());
+        while (conn.PendingManaChanges.Count > 0)
         {
-            var st = conn.PendingStats.Dequeue();
-            OnStatsUpdate(st.Stats != null ? st.Stats[Stat.Health] : 0, st.Stats != null ? st.Stats[Stat.Mana] : 0);
+            var m = conn.PendingManaChanges.Dequeue();
+            OnManaChanged(m.ObjectID, m.Change);
+        }
+        while (conn.PendingFocusChanges.Count > 0)
+        {
+            var f = conn.PendingFocusChanges.Dequeue();
+            OnFocusChanged(f.ObjectID, f.Change);
+        }
+        while (conn.PendingBuffAdds.Count > 0)
+            OnBuffAdd(conn.PendingBuffAdds.Dequeue());
+        while (conn.PendingBuffRemoves.Count > 0)
+            OnBuffRemove(conn.PendingBuffRemoves.Dequeue());
+        while (conn.PendingBuffChangeds.Count > 0)
+            OnBuffChanged(conn.PendingBuffChangeds.Dequeue());
+        while (conn.PendingBuffTimes.Count > 0)
+            OnBuffTime(conn.PendingBuffTimes.Dequeue());
+        while (conn.PendingBuffPauseds.Count > 0)
+        {
+            var (idx, paused) = conn.PendingBuffPauseds.Dequeue();
+            OnBuffPaused(idx, paused);
         }
     }
 
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
-    {        ob.ObjectID = objectID;
+    {
+        ob.ObjectID = objectID;
         ob.ZIndex = zIndex;
         AddChild(ob);
         _objects[objectID] = ob;
         UpdateObjectPositions();
         GD.Print($"[Game] 添加物体: {ob.Type} '{ob.DisplayName}' ObjectID={objectID} Cell=({ob.CellX},{ob.CellY})");
+
+        // M12: 小/大地图动态标记
+        _miniMap?.UpdateObject(objectID, ob.CellX, ob.CellY, ob.Type);
+        _bigMap?.UpdateObject(objectID, ob.CellX, ob.CellY, ob.Type);
     }
 
     private void ShowUserLocation()
@@ -508,6 +819,10 @@ public partial class GameScene : Control
 
         UpdatePlayerPosition();
         _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
+
+        // M12: 地图玩家标记跟随
+        _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
+        _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
     }
 
     private void LoadPlayerMap() => LoadPlayerMap(clearObjects: true);
@@ -525,6 +840,13 @@ public partial class GameScene : Control
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
         _mapView.LoadMap(mapInfo.FileName);
 
+        // M12: 小地图/大地图换图 (清动态标记, 重建静态 NPC/出口)
+        if (_mapView.Map != null)
+        {
+            _miniMap?.SetMap(mapInfo, _mapView.Map.Width, _mapView.Map.Height, _playerObjectID);
+            _bigMap?.SetMap(mapInfo, _mapView.Map.Width, _mapView.Map.Height, _playerObjectID, isCurrentMap: true);
+        }
+
         // 换图: 清空旧地图的周围物体 (首次进图时 _objects 里是 Drain 的新图对象, 不清)
         if (clearObjects)
         {
@@ -532,11 +854,24 @@ public partial class GameScene : Control
                 ob.QueueFree();
             _objects.Clear();
         }
+        else
+        {
+            // 首次进图: SetMap 已清动态标记, 补回 Drain 阶段加过的
+            foreach (var ob in _objects.Values)
+            {
+                _miniMap?.UpdateObject(ob.ObjectID, ob.CellX, ob.CellY, ob.Type);
+                _bigMap?.UpdateObject(ob.ObjectID, ob.CellX, ob.CellY, ob.Type);
+            }
+        }
 
-            _player.CellX = _playerLocation.X;
-            _player.CellY = _playerLocation.Y;
-            _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
-            UpdatePlayerPosition();
+        _player.CellX = _playerLocation.X;
+        _player.CellY = _playerLocation.Y;
+        _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
+        UpdatePlayerPosition();
+
+        // M12: 玩家标记 (小地图居中/大地图复位)
+        _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
+        _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
     }
 
     public override void _Process(double delta)
@@ -663,6 +998,14 @@ public partial class GameScene : Control
         if (key.Keycode == Key.Escape)
         {
             if (WindowManager.CloseTop()) return;
+        }
+
+        // M12: 键位表分发 (N/H/O/Q/W/E 对应对话框未移植, V/B/L + Ctrl+H/A 生效)
+        KeyBindAction bind = KeyBindManager.GetAction(key);
+        if (bind != KeyBindAction.None)
+        {
+            HandleKeyBind(bind);
+            return;
         }
 
         MirDirection? dir = key.Keycode switch

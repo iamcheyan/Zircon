@@ -54,7 +54,20 @@ public partial class ServerConnection : BaseConnection
     public event Action<uint, int, int, int, bool> DataObjectMonsterEvent; // id, health, maxHealth, monsterIndex, dead
     public event Action<uint> ObjectDiedEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, uint, Element> ObjectStruckEvent; // id, dir, loc, attackerID, element
-    public event Action<int, int> StatsUpdateEvent; // maxHealth, maxMana
+    public event Action<S.StatsUpdate> StatsUpdateEvent; // 完整属性
+    // M12 HUD: 等级/经验/蓝/专注/Buff
+    public event Action<S.LevelChanged> LevelChangedEvent;
+    public event Action<decimal> GainedExperienceEvent;    // amount
+    public event Action<decimal> InformMaxExperienceEvent; // maxExperience
+    public event Action<uint, int> ManaChangedEvent;       // objectID, change
+    public event Action<uint, int> FocusChangedEvent;      // objectID, change
+    public event Action<S.BuffAdd> BuffAddEvent;
+    public event Action<int> BuffRemoveEvent;              // index
+    public event Action<S.BuffChanged> BuffChangedEvent;
+    public event Action<S.BuffTime> BuffTimeEvent;
+    public event Action<int, bool> BuffPausedEvent;        // index, paused
+    public event Action<AttackMode> AttackModeChangedEvent; // 服务端回显
+    public event Action<PetMode> PetModeChangedEvent;
     // StartGame 突发包缓冲: GameScene._Ready 前的事件订阅来不及, 这些包在订阅前已被 Process 丢弃。
     // Process 里 Enqueue + Invoke 双发; GameScene._Ready 一次性 Drain 积压, 之后靠事件接实时包。
     public readonly Queue<S.ObjectMove> PendingMoves = new();
@@ -72,6 +85,16 @@ public partial class ServerConnection : BaseConnection
     public readonly Queue<uint> PendingDeaths = new();
     public readonly Queue<S.ObjectStruck> PendingStruck = new();
     public readonly Queue<S.StatsUpdate> PendingStats = new();
+    public readonly Queue<S.LevelChanged> PendingLevelChanges = new();
+    public readonly Queue<decimal> PendingGainedExperience = new();
+    public readonly Queue<decimal> PendingMaxExperience = new();
+    public readonly Queue<S.ManaChanged> PendingManaChanges = new();
+    public readonly Queue<S.FocusChanged> PendingFocusChanges = new();
+    public readonly Queue<S.BuffAdd> PendingBuffAdds = new();
+    public readonly Queue<int> PendingBuffRemoves = new();
+    public readonly Queue<S.BuffChanged> PendingBuffChangeds = new();
+    public readonly Queue<S.BuffTime> PendingBuffTimes = new();
+    public readonly Queue<(int, bool)> PendingBuffPauseds = new();
 
     public void Process(G.Connected p)
     {
@@ -204,9 +227,77 @@ public partial class ServerConnection : BaseConnection
     public void Process(S.StatsUpdate p)
     {
         PendingStats.Enqueue(p);
-        int maxHealth = p.Stats != null ? p.Stats[Stat.Health] : 0;
-        int maxMana = p.Stats != null ? p.Stats[Stat.Mana] : 0;
-        StatsUpdateEvent?.Invoke(maxHealth, maxMana);
+        StatsUpdateEvent?.Invoke(p);
+    }
+
+    public void Process(S.LevelChanged p)
+    {
+        PendingLevelChanges.Enqueue(p);
+        LevelChangedEvent?.Invoke(p);
+    }
+
+    public void Process(S.GainedExperience p)
+    {
+        PendingGainedExperience.Enqueue(p.Amount);
+        GainedExperienceEvent?.Invoke(p.Amount);
+    }
+
+    public void Process(S.InformMaxExperience p)
+    {
+        PendingMaxExperience.Enqueue(p.MaxExperience);
+        InformMaxExperienceEvent?.Invoke(p.MaxExperience);
+    }
+
+    public void Process(S.ManaChanged p)
+    {
+        PendingManaChanges.Enqueue(p);
+        ManaChangedEvent?.Invoke(p.ObjectID, p.Change);
+    }
+
+    public void Process(S.FocusChanged p)
+    {
+        PendingFocusChanges.Enqueue(p);
+        FocusChangedEvent?.Invoke(p.ObjectID, p.Change);
+    }
+
+    public void Process(S.BuffAdd p)
+    {
+        PendingBuffAdds.Enqueue(p);
+        BuffAddEvent?.Invoke(p);
+    }
+
+    public void Process(S.BuffRemove p)
+    {
+        PendingBuffRemoves.Enqueue(p.Index);
+        BuffRemoveEvent?.Invoke(p.Index);
+    }
+
+    public void Process(S.BuffChanged p)
+    {
+        PendingBuffChangeds.Enqueue(p);
+        BuffChangedEvent?.Invoke(p);
+    }
+
+    public void Process(S.BuffTime p)
+    {
+        PendingBuffTimes.Enqueue(p);
+        BuffTimeEvent?.Invoke(p);
+    }
+
+    public void Process(S.BuffPaused p)
+    {
+        PendingBuffPauseds.Enqueue((p.Index, p.Paused));
+        BuffPausedEvent?.Invoke(p.Index, p.Paused);
+    }
+
+    public void Process(S.ChangeAttackMode p)
+    {
+        AttackModeChangedEvent?.Invoke(p.Mode);
+    }
+
+    public void Process(S.ChangePetMode p)
+    {
+        PetModeChangedEvent?.Invoke(p.Mode);
     }
 
     // UI 层调用: 发包

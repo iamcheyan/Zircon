@@ -29,12 +29,51 @@ public partial class DXControl : Control
         {
             if (_enabled == value) return;
             _enabled = value;
-            MouseFilter = value ? MouseFilterEnum.Stop : MouseFilterEnum.Ignore;
+            UpdateMouseFilter();
             QueueRedraw();
         }
     }
 
     public bool IsEnabled => _enabled && (ParentControl == null || ParentControl.IsEnabled);
+
+    /// <summary>原版 IsControl: false 时不接收鼠标 (如纯文本标签)</summary>
+    private bool _isControl = true;
+    public bool IsControl
+    {
+        get => _isControl;
+        set { if (_isControl == value) return; _isControl = value; UpdateMouseFilter(); }
+    }
+
+    /// <summary>鼠标事件穿透到下层控件 (MouseFilter.Ignore 别名)</summary>
+    private bool _passThrough;
+    public bool PassThrough
+    {
+        get => _passThrough;
+        set { if (_passThrough == value) return; _passThrough = value; UpdateMouseFilter(); }
+    }
+
+    /// <summary>裁剪子控件到本控件边界</summary>
+    public bool Clip
+    {
+        get => ClipContents;
+        set => ClipContents = value;
+    }
+
+    /// <summary>鼠标拖拽移动本控件 (原版 DXControl.Movable)</summary>
+    public bool Movable;
+
+    /// <summary>拖拽时不受父控件边界限制 (用于大地图图片)</summary>
+    public bool IgnoreMoveBounds;
+
+    /// <summary>拖拽中每帧触发 (原版 Moving 事件, 供大地图移动同步子控件)</summary>
+    public event EventHandler<EventArgs> Moving;
+
+    private bool _dragging;
+
+    private void UpdateMouseFilter()
+    {
+        MouseFilter = (_enabled && _isControl && !_passThrough) ? MouseFilterEnum.Stop : MouseFilterEnum.Ignore;
+    }
 
     private bool _visible = true;
     public new bool Visible
@@ -95,7 +134,7 @@ public partial class DXControl : Control
 
     // ---- 事件 (签名与旧 DXControl 一致, 抄窗口代码时不用改) ----
     public event EventHandler<EventArgs> MouseEnter, MouseLeave;
-    public event EventHandler<EventArgs> MouseDown, MouseUp, MouseClick, MouseMove;
+    public event EventHandler<EventArgs> MouseDown, MouseUp, MouseClick, MouseDoubleClick, MouseMove;
     public event EventHandler<MouseWheelEventArgs> MouseWheel;
     public event EventHandler<EventArgs> Focus, LostFocus;
     public event EventHandler<EventArgs> BeforeDraw, AfterDraw;
@@ -189,13 +228,24 @@ public partial class DXControl : Control
                     FocusControl = this;
                     Focus?.Invoke(this, EventArgs.Empty);
                     MouseDown?.Invoke(this, EventArgs.Empty);
+
+                    if (Movable && IsEnabled)
+                    {
+                        _dragging = true;
+                    }
                 }
                 else if (IsPressed)
                 {
                     IsPressed = false;
                     MouseUp?.Invoke(this, EventArgs.Empty);
                     MouseClick?.Invoke(this, EventArgs.Empty);
+                    if (mb.DoubleClick) MouseDoubleClick?.Invoke(this, EventArgs.Empty);
+                    _dragging = false;
                 }
+            }
+            else if (mb.Pressed && mb.ButtonIndex == MouseButton.Right)
+            {
+                MouseClick?.Invoke(this, EventArgs.Empty);
             }
             else if (mb.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
             {
@@ -206,8 +256,28 @@ public partial class DXControl : Control
         }
         else if (e is InputEventMouseMotion mm)
         {
+            if (_dragging)
+            {
+                Vector2 target = Position + mm.Relative;
+                if (!IgnoreMoveBounds && GetParent() is Control parent)
+                {
+                    target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, parent.Size.X - Size.X));
+                    target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, parent.Size.Y - Size.Y));
+                }
+                Position = target;
+                Moving?.Invoke(this, EventArgs.Empty);
+            }
             MouseMove?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    /// <summary>移除并释放控件 (原版 Dispose 的 Godot 等价)</summary>
+    public void Dispose()
+    {
+        var parent = ParentControl;
+        if (parent != null) parent.RemoveControl(this);
+        else if (GetParent() is Node p) p.RemoveChild(this);
+        QueueFree();
     }
 }
 
