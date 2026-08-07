@@ -39,6 +39,7 @@ public partial class BigMapDialog : DXWindow
         HasFooter = true;
 
         Panel = new DXControl();
+        Panel.Clip = true;
         AddControl(Panel);
 
         Image = new DXImageControl
@@ -70,10 +71,19 @@ public partial class BigMapDialog : DXWindow
     public override void _Ready()
     {
         base._Ready();
-        Area = new Rect2(0, TitleHeight, Size.X, Size.Y - TitleHeight - FooterHeight);
+        UpdateLayout();
+    }
+
+    private void UpdateLayout()
+    {
+        Area = new Rect2(0, TitleHeight, Size.X,
+            Math.Max(0, Size.Y - TitleHeight - FooterHeight));
         Panel.Location = (Vector2I)Area.Position;
         Panel.Size = Area.Size;
-        RecenterButton.Location = new Vector2I((int)(Size.X - 30 - 80), (int)(Size.Y - 43));
+        RecenterButton.Location = new Vector2I(
+            Math.Max(0, (int)(Size.X - 30 - 80)),
+            Math.Max(0, (int)(Size.Y - 43)));
+        Panel.QueueRedraw();
     }
 
     public void SetMap(MapInfo map, int mapWidth, int mapHeight, uint playerObjectID, bool isCurrentMap)
@@ -97,6 +107,7 @@ public partial class BigMapDialog : DXWindow
             (int)Math.Clamp(img.X, 320, 800),
             (int)Math.Clamp(img.Y + FooterHeight, 240, 520));
         Size = new Vector2I(client.X, (int)(client.Y + TitleHeight + FooterHeight));
+        UpdateLayout();
 
         ScaleX = Image.Size.X / (float)Math.Max(1, mapWidth);
         ScaleY = Image.Size.Y / (float)Math.Max(1, mapHeight);

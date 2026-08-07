@@ -18,6 +18,9 @@ public enum KeyBindAction
     CharacterWindow,   // Q
     InventoryWindow,   // W
     MagicWindow,       // E
+    StorageWindow,     // S
+    BeltWindow,        // Z
+    ItemPickUp,        // Tab
     QuestTrackerWindow,// L
     MapMiniWindow,     // V
     MapBigWindow,      // B
@@ -52,6 +55,9 @@ public static class KeyBindManager
         new KeyBindInfo(KeyBindAction.CharacterWindow, Key.Q),
         new KeyBindInfo(KeyBindAction.InventoryWindow, Key.W),
         new KeyBindInfo(KeyBindAction.MagicWindow, Key.E),
+        new KeyBindInfo(KeyBindAction.StorageWindow, Key.S),
+        new KeyBindInfo(KeyBindAction.BeltWindow, Key.Z),
+        new KeyBindInfo(KeyBindAction.ItemPickUp, Key.Tab),
         new KeyBindInfo(KeyBindAction.QuestTrackerWindow, Key.L),
         new KeyBindInfo(KeyBindAction.MapMiniWindow, Key.V),
         new KeyBindInfo(KeyBindAction.MapBigWindow, Key.B),

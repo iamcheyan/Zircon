@@ -15,6 +15,7 @@ namespace ZirconClient.Controls;
 /// </summary>
 public partial class MiniMapDialog : DXWindow
 {
+    public event Action LayoutChanged;
     public Rect2 Area;
     public DXImageControl Image;
     public DXControl Panel;
@@ -300,6 +301,7 @@ public partial class MiniMapDialog : DXWindow
         Size = IsLarge ? LargeMiniMapSize : DefaultMiniMapSize;
         Location = new Vector2I(right - (int)Size.X, Location.Y);
         UpdateButtonLocations();
+        LayoutChanged?.Invoke();
     }
 
     private void ToggleTransparency()
