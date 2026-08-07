@@ -35,7 +35,7 @@ public partial class MirRopeEffectNode : Node2D
         Vector2 start = Anchor(_source), end = Anchor(_target);
         if (!_landed)
         {
-            float t = Mathf.Clamp((float)(Godot.Time.GetTicksMsec() - _launchStart) / LaunchDuration, 0f, 1.2f);
+            float t = Mathf.Clamp((float)((long)Godot.Time.GetTicksMsec() - _launchStart) / LaunchDuration, 0f, 1.2f);
             Vector2 tip = ThrownTarget(start, end, t);
             int count = Mathf.Max(2, Mathf.CeilToInt(start.DistanceTo(tip) / (LinkLength * .5f)) + 1);
             Rebuild(count, start);
