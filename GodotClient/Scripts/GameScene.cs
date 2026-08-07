@@ -1624,7 +1624,7 @@ public partial class GameScene : Control
         fx.SetStartDelay(imp.StartDelayMs + distanceDelay);
         if (imp.DirectionFromSource && sourceX != int.MinValue)
             fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
-        fx.FrameLight = 10;
+        fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
     }
 
@@ -1645,7 +1645,7 @@ public partial class GameScene : Control
         fx.SetStartDelay(imp.StartDelayMs);
         // Rake 的旧端 StartIndex 已经选到了对应方向组，不能再叠加 Direction*Skip。
         fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
-        fx.FrameLight = 10;
+        fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
     }
 
