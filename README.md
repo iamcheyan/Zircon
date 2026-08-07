@@ -68,7 +68,30 @@
 - **.NET 10 SDK**：`sudo dnf install dotnet-sdk-10.0`（本机已装 10.0.110）
 - **Godot 4.x .NET 版**：Fedora 源的是标准版（无 C# 支持），需从官网下载 `_mono_linux_arm64.zip`（本机已装 4.6.3 mono，软链 `~/.local/bin/godot-mono`）。**不要**用标准版打开 C# 工程。
 - **ServerDb 探测工具**：`dotnet run --project Tools/SystemDbProbe -- <Database目录>`（验证逻辑层 + 数据可读）
-- **启动 Godot 客户端**：`~/.local/bin/godot-mono --path GodotClient/`（需先启动服务端）；headless 测试加 `--headless -- --auto-login`
+- **启动 Godot 客户端**（需先启动服务端）：
+
+  ```bash
+  # 手动登录（有 UI，选角色进游戏）
+  ~/.local/bin/godot-mono --path GodotClient/
+
+  # headless 自动测试（--auto-login 固定 test@test.com/test123，无角色自动建 TestHero 并进游戏）
+  ~/.local/bin/godot-mono --path GodotClient/ --headless -- --auto-login
+
+  # 命令行直连：跳过登录/选角色，直接进指定角色（-- 之后是用户参数）
+  ~/.local/bin/godot-mono --path GodotClient/ -- --user test@test.com --pass test123 --char TestHero
+  ```
+
+  直连参数（`--` 后）：`--user`/`--username` 账号（提供即自动登录，缺省 `test@test.com`）、`--pass`/`--password` 密码（缺省 `test123`）、`--char`/`--character` 角色名（按名精确匹配，缺省进第一个角色）。也支持 `--key=value` 写法。
+
+- **Hyprland 一键直达**（切到新工作区 + 直接进游戏，测试最方便）：
+
+  ```bash
+  # 在新工作区打开客户端并自动登录进 TestHero（客户端窗口会出现在新工作区）
+  hyprctl dispatch 'hl.dsp.focus({ workspace = "empty" })' \
+    && hyprctl dispatch 'hl.dsp.exec_cmd("~/.local/bin/godot-mono --path ~/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero")'
+  ```
+
+  要点：① 必须用 `hyprctl dispatch` 启动（归 hyprland 托管，进程不随终端退出被杀）；② Hyprland 0.55+ 语法为 `hl.dsp.focus({ workspace = "empty" })` 与 `hl.dsp.exec_cmd("...")`（旧 `hyprctl dispatch workspace empty` 已失效）；③ `workspace = "empty"` 是选中一个空工作区，可换成具体编号 `"9"`；④ `exec_cmd` 内命令用**绝对路径**最稳。
 - **一键还原环境**：`bash Tools/setup_environment.sh`（下载 System.db + 全部 Data/Map/Sound 资源到 `Debug/Client/`，并还原环境修复：Map Data 目录重组织、HorseS/MagicEx 落位、Data/System.db 副本；需要 curl，建议装 aria2c 并行）；可选 `--server-dir` 搭建服务端运行目录、`--convert-ogg` 转换音频、`--skip-data` 只拉数据库
 
 ## 六、仓库结构
