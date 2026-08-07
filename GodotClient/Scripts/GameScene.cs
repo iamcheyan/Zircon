@@ -1040,13 +1040,13 @@ public partial class GameScene : Control
             _player.Direction = p.Direction;
             _player.BeginMove(p.Direction, Math.Max(1, p.Distance), _player.Horse != HorseType.None, false);
             ApplyAuthoritativePlayerLocation(p.Location);
-            _player.PlayCombat(p.Magic);
+            _player.PlayDash(p.Magic);
         }
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
         {
             player.Direction = p.Direction;
             player.BeginMove(p.Direction, Math.Max(1, p.Distance), player.Horse != HorseType.None, false);
-            player.PlayCombat(p.Magic);
+            player.PlayDash(p.Magic);
         }
     }
 
