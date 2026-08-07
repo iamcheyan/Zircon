@@ -956,6 +956,16 @@ public partial class GameScene : Control
             var attackTarget = GetMagicTargetNode(targetID);
             if (attackEffect != null && attackTarget != null)
                 SpawnImpactTarget(attackEffect, attackTarget, dir);
+            if (magic == MagicType.Chain && attackTarget != null)
+            {
+                var sourceTarget = GetMagicTargetNode(objectID);
+                if (sourceTarget != null)
+                {
+                    var line = new MirLineEffectNode();
+                    AddChild(line);
+                    line.Setup(sourceTarget, attackTarget, LibraryFile.MagicEx7, 80, 1f, 3000);
+                }
+            }
         }
     }
 
