@@ -24,6 +24,7 @@ public partial class GameScene : Control
     private MapView _mapView;
     private Label _statusLabel;
     private PlayerRenderer _player;
+    private readonly Dictionary<SoundIndex, AudioStream> _actionSounds = new();
     private CombatController _combatController;
     private MapLightLayer _lightLayer;
     private MapWeatherLayer _weatherLayer;
@@ -40,6 +41,9 @@ public partial class GameScene : Control
     private ConfigDialog _configDialog;
     private ChatOptionsDialog _chatOptionsDialog;
     private GuildDialog _guildDialog;
+    private GuildMemberDialog _guildMemberDialog;
+    private MilestoneDialog _milestoneDialog;
+    private readonly Dictionary<int, ClientUserMilestone> _milestones = new();
     private CompanionDialog _companionDialog;
     private RankingDialog _rankingDialog;
     private CommunicationDialog _communicationDialog;
@@ -53,6 +57,7 @@ public partial class GameScene : Control
     private NPCDialog _npcDialog;
     private uint _npcObjectId;
     private GroupDialog _groupDialog;
+    private GroupHealthPanel _groupHealthPanel;
     private double _statusRefreshMs;
 
     // M12: HUD + 键位
@@ -119,8 +124,21 @@ public partial class GameScene : Control
     }
 
     public void OpenGuildDialog() { if (_guildDialog != null) WindowManager.Open(_guildDialog, _uiLayer); }
+    public void OpenGuildMemberDialog(int index, string name, string rank, GuildPermission permission)
+    {
+        if (_guildMemberDialog == null) return;
+        _guildMemberDialog.OpenMember(index, name, rank, permission);
+        WindowManager.Open(_guildMemberDialog, _uiLayer);
+    }
     public void OpenRankingDialog() { if (_rankingDialog != null) WindowManager.Open(_rankingDialog, _uiLayer); }
     public void OpenCompanionDialog() { if (_companionDialog != null) WindowManager.Open(_companionDialog, _uiLayer); }
+    public bool TryRouteItemToNpc(DXItemCell source) => _npcDialog?.TryRouteItem(source) == true;
+    public bool TryRouteItemToTradeOrConsign(DXItemCell source)
+    {
+        if (_tradeDialog?.Visible == true && _tradeDialog.TryRouteItem(source)) return true;
+        if (_consignmentDialog?.Visible == true && _consignmentDialog.TryRouteItem(source)) return true;
+        return false;
+    }
     public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
     public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
@@ -130,6 +148,12 @@ public partial class GameScene : Control
     {
         _editCharacterDialog?.ResetForCurrent();
         if (_editCharacterDialog != null) WindowManager.Open(_editCharacterDialog, _uiLayer);
+    }
+
+    public void OpenEditCharacterDialog(EditCharacterChange change)
+    {
+        OpenEditCharacterDialog();
+        _editCharacterDialog?.SelectChange(change);
     }
 
     public void StartFishing()
@@ -143,6 +167,8 @@ public partial class GameScene : Control
     public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
     public ClientUserItem[] Storage = new ClientUserItem[Globals.StorageSize];
     public ClientUserItem[] PartsStorage = new ClientUserItem[Globals.StorageSize];
+    public ClientUserItem[] CompanionInventory = new ClientUserItem[Globals.InventorySize];
+    public ClientUserItem[] CompanionEquipment = new ClientUserItem[4];
     public List<ClientUserCurrency> Currencies = new();
     public ClientBeltLink[] BeltLinks = new ClientBeltLink[Globals.MaxBeltCount];
     public int StorageSize = Globals.StorageSize;
@@ -150,6 +176,7 @@ public partial class GameScene : Control
 
     public DXItemCell[] InventoryCells = Array.Empty<DXItemCell>();
     public DXItemCell[] EquipmentCells = Array.Empty<DXItemCell>();
+    public DXItemCell[] CompanionEquipmentCells = Array.Empty<DXItemCell>();
 
     // 物品交互状态
     public double UseItemTime;          // 服务端 S.ItemUseDelay 给的下次可用时间 (绝对 ms)
@@ -217,14 +244,11 @@ public partial class GameScene : Control
     private MirDirection _pendingDir;
     private int _pendingX, _pendingY;
     private int _pendingDistance = 1;
-    // 鼠标右键跑步意图。旧客户端由 Moving.Extra[0] 传递；本客户端的鼠标
-    // 回调需要在服务器回包前保留它，避免回包距离被压缩为 1 后退化成走路动画。
-    private bool _pendingMouseRun;
-
     // 移动插值状态
     private System.Drawing.Point _moveFrom;
     private double _moveStartMs;
     private int _moveFrameCount = 1;
+    private bool _runningTestStarted;
     public override void _Ready()
     {
         Game = this;
@@ -242,11 +266,13 @@ public partial class GameScene : Control
         _lightLayer.SetObjectSources(GetObjectLightSources);
         _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
         AddChild(_weatherLayer);
-        _mouseWalker = new MouseWalker(_mapView, (dir, dist, running) =>
+        _mouseWalker = new MouseWalker(_mapView, (dir, dist, _) =>
         {
             if (_net?.Connection?.Connected != true) return;
-            _pendingMouseRun = running;
             _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
+            // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run，
+            // 不等待 S.ObjectMove 回包。否则连续右键会反复以 distance=1 起步。
+            _canRun = true;
         },
         () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
         () =>
@@ -292,6 +318,8 @@ public partial class GameScene : Control
 
         _player = new PlayerRenderer();
         _player.ZIndex = 100;
+        _player.FrameChanged = OnPlayerFrameChanged;
+        _player.SoundCue = OnPlayerSoundCue;
         AddChild(_player);
 
         _statusLabel = new Label();
@@ -522,6 +550,12 @@ public partial class GameScene : Control
             _net.Connection.CurrencyChangedEvent -= OnCurrencyChanged;
             _net.Connection.WeightUpdateEvent -= OnWeightUpdate;
             _net.Connection.StorageSizeEvent -= OnStorageSize;
+            _net.Connection.GroupMemberEvent -= OnGroupMember;
+            _net.Connection.GroupRemoveEvent -= OnGroupRemove;
+            _net.Connection.GroupLFGEvent -= OnGroupLfg;
+            _net.Connection.JoinInstanceEvent -= OnJoinInstance;
+            _net.Connection.UserMilestonesEvent -= OnUserMilestones;
+            _net.Connection.MilestoneEarnedEvent -= OnMilestoneEarned;
         }
 
         if (Game == this) Game = null;
@@ -794,6 +828,8 @@ public partial class GameScene : Control
             return;
         }
         var player = new PlayerRenderer { CellX = p.Location.X, CellY = p.Location.Y };
+        player.FrameChanged = (animation, frame, magic) => { };
+        player.SoundCue = OnPlayerSoundCue;
         player.UpdateAppearance(p);
         AddChild(player);
         _otherPlayers[p.ObjectID] = player;
@@ -848,8 +884,16 @@ public partial class GameScene : Control
         _ => Colors.White,
     };
 
-    private void OnGroupMember(uint objectId, string name) => _groupDialog?.AddMember(objectId, name);
-    private void OnGroupRemove(uint objectId) => _groupDialog?.RemoveMember(objectId);
+    private void OnGroupMember(uint objectId, string name)
+    {
+        _groupDialog?.AddMember(objectId, name);
+        _groupHealthPanel?.AddMember(objectId, name);
+    }
+    private void OnGroupRemove(uint objectId)
+    {
+        _groupDialog?.RemoveMember(objectId);
+        _groupHealthPanel?.RemoveMember(objectId);
+    }
     private void OnGroupLfg(S.GroupLFG packet) => _groupDialog?.SetLfg(packet?.List);
     private void OnMailList(List<ClientMailInfo> mails)
     {
@@ -1178,15 +1222,17 @@ public partial class GameScene : Control
             }
             else if (def.Impact != null)
             {
-                SpawnImpact(def.Impact, x, y);
+                SpawnImpact(def.Impact, x, y, sourceX, sourceY);
             }
             else
             {
-                SpawnCastEffect(def, x, y);
+                SpawnCastEffect(def, x, y, sourceX, sourceY);
             }
             foreach (var extraProjectile in def.AdditionalProjectiles)
                 SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null);
-            foreach (var extra in def.Additional) SpawnImpact(extra, x, y);
+            foreach (var extra in def.Additional) SpawnImpact(extra, x, y, sourceX, sourceY);
+            foreach (var extra in def.AdditionalMapEffects)
+                SpawnImpact(extra, x + extra.OffsetX, y + extra.OffsetY, sourceX, sourceY);
         }
 
         foreach (uint tid in targets)
@@ -1194,12 +1240,16 @@ public partial class GameScene : Control
             var targetNode = GetMagicTargetNode(tid);
             if (targetNode != null)
             {
+                var targetCell = GetTargetCell(targetNode);
+                var targetDirection = def.DirectionFromSource
+                    ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
+                    : MirDirection.Up;
                 if (def.Projectile != null)
                     SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
                 else if (def.Impact != null)
-                    SpawnImpactTarget(def.Impact, targetNode);
+                    SpawnImpactTarget(def.Impact, targetNode, targetDirection);
                 else
-                    SpawnCastEffectTarget(def, targetNode);
+                    SpawnCastEffectTarget(def, targetNode, targetDirection);
                 foreach (var extraProjectile in def.AdditionalProjectiles)
                     SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
                 foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
@@ -1207,17 +1257,106 @@ public partial class GameScene : Control
             else if (_objects.TryGetValue(tid, out var tgt))
             {
                 if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
-                else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY);
-                else SpawnCastEffect(def, tgt.CellX, tgt.CellY);
+                else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY, sourceX, sourceY);
+                else SpawnCastEffect(def, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 foreach (var extraProjectile in def.AdditionalProjectiles)
                     SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, tgt.CellX, tgt.CellY, null);
-                foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY);
+                foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY, sourceX, sourceY);
+                foreach (var extra in def.AdditionalMapEffects)
+                    SpawnImpact(extra, tgt.CellX + extra.OffsetX, tgt.CellY + extra.OffsetY, sourceX, sourceY);
             }
         }
 
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
         if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource)
-            SpawnCastEffect(def, sourceX, sourceY);
+        {
+            SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY);
+            foreach (var extra in def.AdditionalMapEffects)
+                SpawnImpact(extra, sourceX + extra.OffsetX, sourceY + extra.OffsetY, sourceX, sourceY);
+        }
+    }
+
+    // 原版 PlayerObject.FrameIndexChanged 中由动作关键帧触发的本地表现。
+    // 网络魔法包负责目标/轨迹；这里仅补必须与人物挥击帧同步的本地事件。
+    private void OnPlayerFrameChanged(MirAnimation animation, int frame, MagicType magic)
+    {
+        if (_player == null) return;
+        if (animation == MirAnimation.TamingCast && frame == 5 &&
+            _player.TamingObjectID != 0 && _objects.TryGetValue(_player.TamingObjectID, out var tamingTarget))
+        {
+            if (_tamingRopes.Remove(_player.TamingObjectID, out var oldRope)) oldRope.QueueFree();
+            var rope = new MirRopeEffectNode();
+            AddChild(rope);
+            rope.Setup(_player, tamingTarget);
+            _tamingRopes[_player.TamingObjectID] = rope;
+        }
+        if (animation == MirAnimation.FishingCast && frame == 1)
+        {
+            SpawnCastEffect(new MagicEffectTable.CastEffect
+            {
+                File = LibraryFile.MagicEx5, StartIndex = 1400, FrameCount = 6,
+                DelayMs = 120, Blend = true, BlendRate = 0.8f,
+                Colour = MagicEffectTable.None
+            }, _player.FishingLocation.X, _player.FishingLocation.Y);
+        }
+        if (animation == MirAnimation.FishingWait && frame == 1)
+        {
+            SpawnCastEffect(new MagicEffectTable.CastEffect
+            {
+                File = LibraryFile.MagicEx5,
+                StartIndex = _player.FishFound ? 1400 : 1420,
+                FrameCount = 6, DelayMs = 120, Blend = true,
+                BlendRate = 0.8f, Colour = MagicEffectTable.None
+            }, _player.FishingLocation.X, _player.FishingLocation.Y);
+        }
+        if (magic == MagicType.SeismicSlam && frame == 4)
+        {
+            var def = new MagicEffectTable.ImpactDef
+            {
+                File = LibraryFile.MonMagicEx7, StartIndex = 700, FrameCount = 7,
+                DelayMs = 120, Colour = MagicEffectTable.Lightning, BlendRate = 0.8f
+            };
+            var point = Functions.Move(new System.Drawing.Point(_player.CellX, _player.CellY),
+                _player.Direction, 2);
+            SpawnImpact(def, point.X, point.Y);
+        }
+    }
+
+    private void OnPlayerSoundCue(SoundIndex sound)
+    {
+        if (sound == SoundIndex.None) return;
+        if (!_actionSounds.TryGetValue(sound, out var stream))
+        {
+            // DXSoundManager maps player action sounds to numbered WAV files.
+            // Keep the same source files so timing is the only port-specific part.
+            string file = sound switch
+            {
+                SoundIndex.Foot1 => "1.wav", SoundIndex.Foot2 => "2.wav",
+                SoundIndex.Foot3 => "3.wav", SoundIndex.Foot4 => "4.wav",
+                SoundIndex.HorseWalk1 => "33.wav", SoundIndex.HorseWalk2 => "34.wav",
+                SoundIndex.HorseRun => "35.wav", SoundIndex.FishingCast => "84.wav",
+                SoundIndex.FishingBob => "85.wav", SoundIndex.FishingReel => "86.wav",
+                SoundIndex.GenericStruckPlayer => "61.wav",
+                SoundIndex.DaggerSwing => "50.wav", SoundIndex.WoodSwing => "51.wav",
+                SoundIndex.IronSwordSwing => "52.wav", SoundIndex.ShortSwordSwing => "53.wav",
+                SoundIndex.AxeSwing => "54.wav", SoundIndex.ClubSwing => "55.wav",
+                SoundIndex.WandSwing => "56.wav", SoundIndex.FistSwing => "57.wav",
+                SoundIndex.GlaiveAttack => "63.wav", SoundIndex.ClawAttack => "64.wav",
+                SoundIndex.MiningHit => "125.wav", SoundIndex.MiningStruck => "126.wav",
+                SoundIndex.MaleStruck => "138.wav", SoundIndex.FemaleStruck => "139.wav",
+                SoundIndex.MaleDie => "144.wav", SoundIndex.FemaleDie => "145.wav",
+                SoundIndex.DestructiveSurge => "M103-1.wav", SoundIndex.OffensiveBlow => "37400.wav",
+                _ => null,
+            };
+            if (file == null) return;
+            stream = ResourceLoader.Load<AudioStream>("res://../Debug/Client/Sound/" + file);
+            if (stream == null) return;
+            _actionSounds[sound] = stream;
+        }
+        var player = new AudioStreamPlayer { Stream = stream, Bus = "Master" };
+        AddChild(player);
+        player.Finished += player.QueueFree;
+        player.Play();
     }
 
     private void OnObjectProjectile(S.ObjectProjectile packet)
@@ -1353,7 +1492,7 @@ public partial class GameScene : Control
         }
     }
 
-    private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y)
+    private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -1363,11 +1502,18 @@ public partial class GameScene : Control
         fx.BlendRate = def.BlendRate;
         fx.Opacity = def.Opacity;
         fx.Skip = def.Skip;
+        double distanceDelay = sourceX == int.MinValue ? 0 : Functions.Distance(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y)) * def.DistanceDelayMs;
+        fx.SetStartDelay(def.StartDelayMs + distanceDelay);
+        if (def.DirectionFromSource && sourceX != int.MinValue)
+            fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
         fx.FrameLight = 10;
         fx.FrameLightColour = def.Colour;
     }
 
     private void SpawnCastEffectTarget(MagicEffectTable.CastEffect def, Node2D target)
+        => SpawnCastEffectTarget(def, target, MirDirection.Up);
+
+    private void SpawnCastEffectTarget(MagicEffectTable.CastEffect def, Node2D target, MirDirection direction)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -1378,11 +1524,13 @@ public partial class GameScene : Control
         fx.BlendRate = def.BlendRate;
         fx.Opacity = def.Opacity;
         fx.Skip = def.Skip;
+        fx.SetStartDelay(def.StartDelayMs);
+        fx.Direction = direction;
         fx.FrameLight = 10;
         fx.FrameLightColour = def.Colour;
     }
 
-    private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y)
+    private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -1392,6 +1540,10 @@ public partial class GameScene : Control
         fx.BlendRate = imp.BlendRate;
         fx.Opacity = imp.Opacity;
         fx.Skip = imp.Skip;
+        double distanceDelay = sourceX == int.MinValue ? 0 : Functions.Distance(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y)) * imp.DistanceDelayMs;
+        fx.SetStartDelay(imp.StartDelayMs + distanceDelay);
+        if (imp.DirectionFromSource && sourceX != int.MinValue)
+            fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
     }
@@ -1410,6 +1562,7 @@ public partial class GameScene : Control
         fx.BlendRate = imp.BlendRate;
         fx.Opacity = imp.Opacity;
         fx.Skip = imp.Skip;
+        fx.SetStartDelay(imp.StartDelayMs);
         fx.Direction = direction;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
@@ -1436,6 +1589,7 @@ public partial class GameScene : Control
         pn.BlendRate = proj.BlendRate;
         pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
+        pn.SetStartDelay(proj.StartDelayMs);
         // 到达后播落地特效
         if (impact != null)
             pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
@@ -1463,6 +1617,7 @@ public partial class GameScene : Control
         pn.BlendRate = proj.BlendRate;
         pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
+        pn.SetStartDelay(proj.StartDelayMs);
         if (impact != null) pn.CompleteAction = () => SpawnImpactTarget(impact, target);
     }
 
@@ -1473,6 +1628,13 @@ public partial class GameScene : Control
         if (_otherPlayers.TryGetValue(objectID, out var player)) return player;
         return null;
     }
+
+    private static System.Drawing.Point GetTargetCell(Node2D target) => target switch
+    {
+        MapObjectNode ob => new System.Drawing.Point(ob.CellX, ob.CellY),
+        PlayerRenderer player => new System.Drawing.Point(player.CellX, player.CellY),
+        _ => System.Drawing.Point.Empty,
+    };
 
     private int GetTargetRenderY(Node2D target)
     {
@@ -1773,15 +1935,22 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_chatOptionsDialog);
         _guildDialog = new GuildDialog();
         _uiLayer.AddChild(_guildDialog);
+        _guildMemberDialog = new GuildMemberDialog();
+        _uiLayer.AddChild(_guildMemberDialog);
+        _milestoneDialog = new MilestoneDialog();
+        _uiLayer.AddChild(_milestoneDialog);
         _rankingDialog = new RankingDialog(true);
         _uiLayer.AddChild(_rankingDialog);
         _companionDialog = new CompanionDialog();
         _uiLayer.AddChild(_companionDialog);
+        CompanionEquipmentCells = _companionDialog.EquipmentCells;
         _communicationDialog = new CommunicationDialog();
         _uiLayer.AddChild(_communicationDialog);
         _communicationDialog.UnreadChanged += unread => _mainPanel?.SetMailIndicator(unread);
         _groupDialog = new GroupDialog();
         _uiLayer.AddChild(_groupDialog);
+        _groupHealthPanel = new GroupHealthPanel();
+        _uiLayer.AddChild(_groupHealthPanel);
         _gameStoreDialog = new GameStoreDialog();
         _uiLayer.AddChild(_gameStoreDialog);
         _consignmentDialog = new ConsignmentDialog();
@@ -1905,6 +2074,9 @@ public partial class GameScene : Control
             _buffDialog.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 5)), 0);
 
+        if (_groupHealthPanel != null)
+            _groupHealthPanel.Location = new Vector2I(12, 48);
+
         if (_inventoryDialog != null)
             _inventoryDialog.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _inventoryDialog.Size.X)),
@@ -1957,6 +2129,16 @@ public partial class GameScene : Control
             _lootBoxDialog.Location = new Vector2I(
                 Math.Max(0, (int)((vp.X - _lootBoxDialog.Size.X) / 2f)),
                 Math.Max(0, (int)((vp.Y - _lootBoxDialog.Size.Y) / 2f)));
+
+        if (_milestoneDialog != null)
+            _milestoneDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _milestoneDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _milestoneDialog.Size.Y) / 2f)));
+
+        if (_guildMemberDialog != null)
+            _guildMemberDialog.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - _guildMemberDialog.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - _guildMemberDialog.Size.Y) / 2f)));
 
         if (_dungeonFinderDialog != null)
             _dungeonFinderDialog.Location = new Vector2I(
@@ -2440,6 +2622,8 @@ public partial class GameScene : Control
     // ---- 发包转发 (DXItemCell/对话框调用) ----
     public void SendItemMove(GridType fromGrid, GridType toGrid, int fromSlot, int toSlot, bool mergeItem)
         => _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
+    public void SendItemSplit(GridType grid, int slot, long count)
+        => _net.Connection.SendItemSplit(grid, slot, count);
 
     public void SendItemUse(GridType grid, int slot)
         => _net.Connection.SendItemUse(grid, slot);
@@ -2452,6 +2636,11 @@ public partial class GameScene : Control
 
     public void SendItemDelete(GridType grid, int slot)
         => _net.Connection.SendItemDelete(grid, slot);
+    public void SendItemDrop(CellLinkInfo link)
+        => _net.Connection.SendItemDrop(link);
+    public void SendMarriageTeleport()
+        => _net?.Connection?.Enqueue(new C.MarriageTeleport());
+    public void LinkItemToChat(ClientUserItem item) => _chatLog?.LinkItem(item);
 
     public void SendAutoPathWaypoint(int mapIndex, int x, int y)
         => _net?.Connection?.SendAutoPathWaypoint(mapIndex, new System.Drawing.Point(x, y));
@@ -2490,6 +2679,8 @@ public partial class GameScene : Control
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
     public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
+    public void SendMilestoneClaim(int index) => _net?.Connection?.SendMilestoneClaim(index);
+    public void ClaimMilestone(int index) => SendMilestoneClaim(index);
     public void SendGenderChange(MirGender gender, int hairType)
         => _net?.Connection?.SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
     public void SendHairChange(int hairType)
@@ -2506,20 +2697,28 @@ public partial class GameScene : Control
         _statusLabel.Text = p.Success ? "副本加入成功" : $"副本加入失败: {p.Result}";
     }
 
+    private void OnUserMilestones(S.UserMilestones packet)
+    {
+        _milestones.Clear();
+        foreach (var milestone in packet?.Milestones ?? new List<ClientUserMilestone>())
+            if (milestone != null) _milestones[milestone.Index] = milestone;
+    }
+
+    private void OnMilestoneEarned(S.MilestoneEarned packet)
+    {
+        if (packet != null && _milestones.TryGetValue(packet.Index, out var milestone))
+            _milestoneDialog?.ShowMilestone(milestone);
+    }
+
     private void OnObjectTaming(S.ObjectTaming p)
     {
         if (p == null || p.ObjectID != _playerObjectID) return;
-        _player?.PlayTaming(p.State);
+        _player?.PlayTaming(p.State, p.TamingObjectID);
         if (_player != null) _player.Direction = p.Direction;
         _horseTameDialog?.SetState(p.State);
         if (p.State == TamingState.Cast && _objects.TryGetValue(p.TamingObjectID, out var target))
         {
             _horseTameDialog?.SetTarget(p.TamingObjectID, target.Position / UiScale);
-            if (_tamingRopes.Remove(p.TamingObjectID, out var oldRope)) oldRope.QueueFree();
-            var rope = new MirRopeEffectNode();
-            AddChild(rope);
-            rope.Setup(_player, target);
-            _tamingRopes[p.TamingObjectID] = rope;
         }
         else if (p.State == TamingState.Cancel || p.State == TamingState.None)
         {
@@ -2530,7 +2729,7 @@ public partial class GameScene : Control
     private void OnObjectFishing(S.ObjectFishing p)
     {
         if (p == null || p.ObjectID != _playerObjectID) return;
-        _player?.PlayFishing(p.State, p.FishFound);
+        _player?.PlayFishing(p.State, p.FishFound, p.FloatLocation);
         if (_player != null) _player.Direction = p.Direction;
         _fishingCatchDialog?.SetState(p.State, p.FishFound);
         if (p.State == FishingState.None || p.State == FishingState.Cancel)
@@ -2596,6 +2795,10 @@ public partial class GameScene : Control
         {
             FilterClass = new List<MirClass>(), FilterRarity = new List<Rarity>(), FilterItemType = new List<ItemType>(),
         });
+    public void SendGuildEditMember(int index, string rank, GuildPermission permission)
+        => _net?.Connection?.Enqueue(new C.GuildEditMember { Index = index, Rank = rank ?? string.Empty, Permission = permission });
+    public void SendGuildKickMember(int index)
+        => _net?.Connection?.Enqueue(new C.GuildKickMember { Index = index });
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
 
     private void OnFortuneUpdate(S.FortuneUpdate packet)
@@ -3376,9 +3579,12 @@ public partial class GameScene : Control
         _player.OffsetY = (_moveFrom.Y - y) * 32f;
         _player.Direction = dir;
         _pendingDistance = distance;
-        bool running = distance >= 2 || _pendingMouseRun;
-        _pendingMouseRun = false;
-        _player.BeginMove(dir, distance, _playerHorse != HorseType.None, running);
+        // 原版 PlayerObject.SetFrame：Moving.Extra[0] >= 2 才使用 Running。
+        // 右键只是请求跑步，最终动作必须以服务器接受的移动距离为准。
+        _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
+        if (AutoLoginArgs.RunningTest)
+            GD.Print($"[RunningTest] APPLY distance={distance} animation={_player.Animation} " +
+                     $"frameStart={_player.FrameIndex} location=({x},{y})");
         _moveFrameCount = 2;
 
         UpdatePlayerPosition();
@@ -3387,6 +3593,53 @@ public partial class GameScene : Control
         // M12: 地图玩家标记跟随
         _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
         _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
+    }
+
+    private void StartRunningTest()
+    {
+        if (_net?.Connection?.Connected != true || _mapView?.Map == null || _player == null)
+        {
+            GD.PrintErr("[RunningTest] FAIL client is not ready");
+            return;
+        }
+
+        MirDirection walkDirection = FindRunningTestDirection(1);
+        GD.Print($"[RunningTest] SEND phase=walk distance=1 direction={walkDirection} " +
+                 $"location=({_playerLocation.X},{_playerLocation.Y})");
+        _net.Connection.Enqueue(new C.Move { Direction = walkDirection, Distance = 1 });
+
+        GetTree().CreateTimer(0.9).Timeout += () =>
+        {
+            MirDirection runDirection = FindRunningTestDirection(2);
+            GD.Print($"[RunningTest] SEND phase=run distance=2 direction={runDirection} " +
+                     $"location=({_playerLocation.X},{_playerLocation.Y})");
+            _net.Connection.Enqueue(new C.Move { Direction = runDirection, Distance = 2 });
+        };
+
+        GetTree().CreateTimer(1.8).Timeout += () =>
+            GD.Print($"[RunningTest] RESULT animation={_player.Animation} frame={_player.FrameIndex} " +
+                     $"location=({_playerLocation.X},{_playerLocation.Y})");
+    }
+
+    private MirDirection FindRunningTestDirection(int distance)
+    {
+        for (int direction = 0; direction < 8; direction++)
+        {
+            var dir = (MirDirection)direction;
+            bool open = true;
+            for (int step = 1; step <= distance; step++)
+            {
+                var point = Functions.Move(_playerLocation, dir, step);
+                if (point.X < 0 || point.Y < 0 || point.X >= _mapView.Map.Width || point.Y >= _mapView.Map.Height ||
+                    !_mapView.Map.Cells[point.X, point.Y].Flag)
+                {
+                    open = false;
+                    break;
+                }
+            }
+            if (open) return dir;
+        }
+        return _playerDirection;
     }
 
     private void LoadPlayerMap() => LoadPlayerMap(clearObjects: true);
@@ -3450,6 +3703,12 @@ public partial class GameScene : Control
     {
         UpdateViewRange();
 
+        if (AutoLoginArgs.RunningTest && !_runningTestStarted && _startGameShown && _mapView?.Map != null)
+        {
+            _runningTestStarted = true;
+            GetTree().CreateTimer(1.0).Timeout += StartRunningTest;
+        }
+
         // M9: 拿起物品跟随鼠标 + 悬浮提示
         UpdateMouseItem();
         if (_combatController != null)
@@ -3481,6 +3740,10 @@ public partial class GameScene : Control
             }
         }
 
+        // 原版 UserObject.SetAction(Standing)：站定且右键未按下时结束连续跑步状态。
+        if (_moveFrameCount <= 1 && !_autoRun && !Input.IsMouseButtonPressed(MouseButton.Right))
+            _canRun = false;
+
         // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
         if (_moveFrameCount > 1 && _player != null)
         {
@@ -3506,7 +3769,9 @@ public partial class GameScene : Control
             if (t >= 1.0)
             {
                 _moveFrameCount = 1;
-                _canRun = false;
+                // 原版进入 Standing 时，只有右键已松开才清 CanRun。
+                // 连续按住右键时必须保留 true，下一段才会从 Walking 升到 Running。
+                _canRun = Input.IsMouseButtonPressed(MouseButton.Right) || _autoRun;
                 _player.OffsetX = 0f;
                 _player.OffsetY = 0f;
                 _player.SetAnimation(_playerHorse != HorseType.None
@@ -3680,13 +3945,6 @@ public partial class GameScene : Control
 
     public override void _Input(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left
-            && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
-        {
-            _npcObjectId = _combatController.MouseObject.ObjectID;
-            _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
-            return;
-        }
         if (@event is not InputEventKey key || !key.Pressed) return;
         GD.Print($"[Game] KEY {key.Keycode} ctrl={key.CtrlPressed} alt={key.AltPressed} shift={key.ShiftPressed}");
         if (_net?.Connection?.Connected != true) return;
@@ -3769,6 +4027,33 @@ public partial class GameScene : Control
             var img = GetViewport().GetTexture().GetImage();
             img.SavePng("/tmp/game_screenshot.png");
             GD.Print("[Game] 截图保存 /tmp/game_screenshot.png");
+        }
+    }
+
+    // 地图交互放在未处理输入阶段，确保背包/窗口控件先消费点击，
+    // 对齐旧版 ActiveScene 的“UI 优先、地图其次”分发顺序。
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
+            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
+        {
+            _npcObjectId = _combatController.MouseObject.ObjectID;
+            _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        if (@event is InputEventMouseButton dropMouse && dropMouse.Pressed && dropMouse.ButtonIndex == MouseButton.Left)
+        {
+            var cell = DXItemCell.SelectedCell;
+            var item = cell?.Item;
+            if (cell != null && item != null && cell.GridType is GridType.Inventory or GridType.CompanionInventory &&
+                !item.Flags.HasFlag(UserItemFlags.Locked))
+            {
+                SendItemDrop(new CellLinkInfo { GridType = cell.GridType, Slot = cell.Slot, Count = item.Count });
+                DXItemCell.SelectedCell = null;
+                GetViewport().SetInputAsHandled();
+            }
         }
     }
 }
