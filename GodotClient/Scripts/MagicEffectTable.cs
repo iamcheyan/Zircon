@@ -80,6 +80,27 @@ public static class MagicEffectTable
         public double StartDelayMs;
         public int DistanceDelayMs;
         public bool DirectionFromSource;
+        // 旧端按 8 方向分组的起始帧；未配置时使用 StartIndex。
+        public int[] DirectionStartIndices;
+
+        public int ResolveStartIndex(MirDirection direction)
+        {
+            if (DirectionStartIndices == null || DirectionStartIndices.Length < 8)
+                return StartIndex;
+
+            return direction switch
+            {
+                MirDirection.Up => DirectionStartIndices[0],
+                MirDirection.UpLeft => DirectionStartIndices[1],
+                MirDirection.UpRight => DirectionStartIndices[1],
+                MirDirection.Left => DirectionStartIndices[2],
+                MirDirection.Right => DirectionStartIndices[2],
+                MirDirection.DownLeft => DirectionStartIndices[3],
+                MirDirection.DownRight => DirectionStartIndices[3],
+                MirDirection.Down => DirectionStartIndices[4],
+                _ => StartIndex
+            };
+        }
     }
 
     public sealed class OffsetImpactDef : ImpactDef
@@ -112,7 +133,7 @@ public static class MagicEffectTable
         [MagicType.FlamingSword] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1470, FrameCount = 6, Colour = Fire },
         [MagicType.DragonRise] = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2185, FrameCount = 10, Colour = None },
         [MagicType.BladeStorm] = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1780, FrameCount = 10, DelayMs = 60, Colour = None },
-        [MagicType.DefensiveBlow] = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 800, FrameCount = 9, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor },
+        [MagicType.DefensiveBlow] = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 800, FrameCount = 9, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, StartDelayMs = 200 },
         [MagicType.FlameSplash] = new ImpactDef { File = LibraryFile.MagicEx4, StartIndex = 900, FrameCount = 8, Colour = Fire },
         [MagicType.DragonBlood] = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 200, FrameCount = 7, Colour = None },
         [MagicType.SeismicSlam] = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 4900, FrameCount = 6, Colour = Lightning },
@@ -129,6 +150,11 @@ public static class MagicEffectTable
         [MagicType.CursedDoll] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 690, FrameCount = 10, DelayMs = 60, Colour = Fire },
         [MagicType.Spiritualism] = new ImpactDef { File = LibraryFile.MagicEx2, StartIndex = 1580, FrameCount = 11, Colour = None },
         [MagicType.Containment] = new ImpactDef { File = LibraryFile.MagicEx3, StartIndex = 590, FrameCount = 9, DelayMs = 60, Colour = None },
+        [MagicType.Rake] = new ImpactDef
+        {
+            File = LibraryFile.MagicEx4, StartIndex = 1200, FrameCount = 9, Colour = Ice,
+            DirectionStartIndices = new[] { 1200, 1210, 1220, 1230, 1240, 1200, 1200, 1200 }
+        },
     };
 
     private static readonly Dictionary<MagicType, CastEffect> _table = new()

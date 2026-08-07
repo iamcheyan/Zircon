@@ -123,6 +123,9 @@ public partial class GameScene : Control
         if (_chatOptionsDialog != null) WindowManager.Open(_chatOptionsDialog, _uiLayer);
     }
 
+    public bool IsChatTypeEnabled(MessageType type) => _chatLog?.IsTypeEnabled(type) ?? true;
+    public void SetChatFilter(MessageType type, bool enabled) => _chatLog?.SetTypeEnabled(type, enabled);
+
     public void OpenGuildDialog() { if (_guildDialog != null) WindowManager.Open(_guildDialog, _uiLayer); }
     public void OpenGuildMemberDialog(int index, string name, string rank, GuildPermission permission)
     {
@@ -133,10 +136,14 @@ public partial class GameScene : Control
     public void OpenRankingDialog() { if (_rankingDialog != null) WindowManager.Open(_rankingDialog, _uiLayer); }
     public void OpenCompanionDialog() { if (_companionDialog != null) WindowManager.Open(_companionDialog, _uiLayer); }
     public bool TryRouteItemToNpc(DXItemCell source) => _npcDialog?.TryRouteItem(source) == true;
+    public bool BundleBoxVisible => _bundleDialog?.Visible == true;
+    public bool LootBoxVisible => _lootBoxDialog?.Visible == true;
     public bool TryRouteItemToTradeOrConsign(DXItemCell source)
     {
         if (_tradeDialog?.Visible == true && _tradeDialog.TryRouteItem(source)) return true;
         if (_consignmentDialog?.Visible == true && _consignmentDialog.TryRouteItem(source)) return true;
+        if (_communicationDialog?.Visible == true && _communicationDialog.TryRouteItem(source)) return true;
+        if (_guildDialog?.Visible == true && _guildDialog.TryRouteItem(source)) return true;
         return false;
     }
     public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
@@ -169,6 +176,7 @@ public partial class GameScene : Control
     public ClientUserItem[] PartsStorage = new ClientUserItem[Globals.StorageSize];
     public ClientUserItem[] CompanionInventory = new ClientUserItem[Globals.InventorySize];
     public ClientUserItem[] CompanionEquipment = new ClientUserItem[4];
+    public ClientUserCompanion Companion;
     public List<ClientUserCurrency> Currencies = new();
     public ClientBeltLink[] BeltLinks = new ClientBeltLink[Globals.MaxBeltCount];
     public int StorageSize = Globals.StorageSize;
@@ -249,6 +257,8 @@ public partial class GameScene : Control
     private double _moveStartMs;
     private int _moveFrameCount = 1;
     private bool _runningTestStarted;
+    private bool _runningTestRightHeld;
+
     public override void _Ready()
     {
         Game = this;
@@ -266,23 +276,9 @@ public partial class GameScene : Control
         _lightLayer.SetObjectSources(GetObjectLightSources);
         _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
         AddChild(_weatherLayer);
-        _mouseWalker = new MouseWalker(_mapView, (dir, dist, _) =>
-        {
-            if (_net?.Connection?.Connected != true) return;
-            _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
-            // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run，
-            // 不等待 S.ObjectMove 回包。否则连续右键会反复以 distance=1 起步。
-            _canRun = true;
-        },
+        _mouseWalker = new MouseWalker(_mapView, SendMouseMove,
         () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
-        () =>
-        {
-            // 原版 Run: 基础1, 负重允许+1, 骑马+1
-            int steps = _canRun && BagWeight <= _playerStats[Stat.BagWeight]
-                && WearWeight <= _playerStats[Stat.WearWeight] ? 2 : 1;
-            if (steps > 1 && _playerHorse != Library.HorseType.None) steps++;
-            return steps;
-        },
+        GetRunSteps,
         dir =>
         {
             if (_net?.Connection?.Connected == true)
@@ -436,6 +432,13 @@ public partial class GameScene : Control
         _net.Connection.ItemDurabilityEvent += OnItemDurability;
         _net.Connection.ItemExperienceEvent += OnItemExperience;
         _net.Connection.ItemsChangedEvent += OnItemsChanged;
+        _net.Connection.CompanionAdoptEvent += p => { Companion = p?.UserCompanion; _companionDialog?.ApplyCompanion(Companion); };
+        _net.Connection.CompanionUpdateEvent += p => { if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.ApplyCompanion(Companion); } };
+        _net.Connection.CompanionItemsGainedEvent += p => { if (Companion != null) { Companion.Items ??= new(); Companion.Items.AddRange(p.Items ?? new()); Companion.OnComplete(); _companionDialog?.ApplyCompanion(Companion); } };
+        _net.Connection.CompanionWeightUpdateEvent += p => _companionDialog?.ApplyWeight(p.BagWeight, p.MaxBagWeight, p.InventorySize);
+        _net.Connection.CompanionSkillUpdateEvent += p => _companionDialog?.ApplySkills(p.Level15 ?? p.Level13 ?? p.Level10 ?? p.Level7 ?? p.Level5 ?? p.Level3);
+        _net.Connection.GuildNewItemEvent += p => _guildDialog?.SetGuildItem(p.Slot, p.Item);
+        _net.Connection.GuildGetItemEvent += p => _guildDialog?.SetGuildItem(p.Slot, p.Item);
         _net.Connection.CurrencyChangedEvent += OnCurrencyChanged;
         _net.Connection.WeightUpdateEvent += OnWeightUpdate;
         _net.Connection.StorageSizeEvent += OnStorageSize;
@@ -581,6 +584,9 @@ public partial class GameScene : Control
             _pendingY = _playerLocation.Y;
             _pendingDir = _playerDirection;
             _playerHorse = _pendingStartInfo.Horse;
+            // 原版进入地图后 CanRun 已可用；右键按下的第一段就必须是跑步，
+            // 不能先被客户端错误降级成一格走路。
+            _canRun = true;
             DayTime = _pendingStartInfo.DayTime;
             TimeOfDay = _pendingStartInfo.TimeOfDay;
 
@@ -755,6 +761,22 @@ public partial class GameScene : Control
             case KeyBindAction.TradeRequest:
                 _net?.Connection?.Enqueue(new C.TradeRequest());
                 break;
+            case KeyBindAction.GroupTarget:
+                if (_combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player)
+                    _net?.Connection?.Enqueue(new C.GroupInvite { Name = _combatController.MouseObject.Name });
+                break;
+            case KeyBindAction.TradeAllowSwitch:
+                SendChat("@AllowTrade");
+                break;
+            case KeyBindAction.ChangeChatMode:
+                _chatLog?.CycleMode();
+                break;
+            case KeyBindAction.ItemPickUp:
+                SendPickUp();
+                break;
+            case KeyBindAction.PartnerTeleport:
+                SendMarriageTeleport();
+                break;
             case KeyBindAction.MenuWindow:
                 WindowManager.Toggle(_menuDialog, _uiLayer);
                 break;
@@ -869,7 +891,7 @@ public partial class GameScene : Control
         if (p == null || string.IsNullOrWhiteSpace(p.Text)) return;
         string sender = p.ObjectID == _playerObjectID ? (StartInfo?.Name ?? "我") :
             (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : "系统");
-        _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", ChatColour(p.Type));
+        _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", p.Type, ChatColour(p.Type));
         if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
         else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player)) player.SetChat(p.Text);
@@ -1097,9 +1119,10 @@ public partial class GameScene : Control
             else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
 
             var attackEffect = MagicEffectTable.GetAttack(magic);
+            var attackSource = GetMagicTargetNode(objectID);
             var attackTarget = GetMagicTargetNode(targetID);
-            if (attackEffect != null && attackTarget != null)
-                SpawnImpactTarget(attackEffect, attackTarget, dir);
+            if (attackEffect != null && attackSource != null)
+                SpawnImpactTarget(attackEffect, attackSource, dir);
             if (magic == MagicType.Chain && attackTarget != null)
             {
                 var sourceTarget = GetMagicTargetNode(objectID);
@@ -1349,8 +1372,22 @@ public partial class GameScene : Control
                 _ => null,
             };
             if (file == null) return;
-            stream = ResourceLoader.Load<AudioStream>("res://../Debug/Client/Sound/" + file);
-            if (stream == null) return;
+            string resourcePath = "res://../Debug/Client/Sound/" + file;
+            string filePath = ProjectSettings.GlobalizePath(resourcePath);
+            stream = ResourceLoader.Load<AudioStream>(resourcePath);
+            // Debug/Client/Sound is deliberately outside the Godot project and
+            // therefore may not be importable as res:// in a packaged client.
+            // Load the original WAV from its absolute workspace path as a
+            // fallback, preserving the old client's numbered sound assets.
+            if (stream == null)
+            {
+                stream = AudioStreamWav.LoadFromFile(filePath);
+            }
+            if (stream == null)
+            {
+                GD.PrintErr($"[Sound] 无法加载动作音效: {filePath}");
+                return;
+            }
             _actionSounds[sound] = stream;
         }
         var player = new AudioStreamPlayer { Stream = stream, Bus = "Master" };
@@ -1534,7 +1571,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
+        fx.Setup(imp.File, imp.ResolveStartIndex(MirDirection.Up), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = true;
         fx.DrawType = imp.DrawType;
         fx.BlendRate = imp.BlendRate;
@@ -1555,7 +1592,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.SetupTarget(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, target,
+        fx.SetupTarget(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, target,
             () => GetTargetRenderY(target));
         fx.Blend = true;
         fx.DrawType = imp.DrawType;
@@ -2826,14 +2863,14 @@ public partial class GameScene : Control
         => _net.Connection.Enqueue(new C.GroupRequest { Name = name });
     public void SendMailOpened(int index)
         => _net.Connection.Enqueue(new C.MailOpened { Index = index });
-    public void SendMail(string recipient, string subject, string message)
+    public void SendMail(string recipient, string subject, string message, List<CellLinkInfo> links = null)
         => _net.Connection.Enqueue(new C.MailSend
         {
             Recipient = recipient,
             Subject = subject,
             Message = message,
             Gold = 0,
-            Links = new List<CellLinkInfo>(),
+            Links = links ?? new List<CellLinkInfo>(),
         });
     public void SendTradeClose() => _net.Connection.Enqueue(new C.TradeClose());
     public void SendTradeConfirm() => _net.Connection.Enqueue(new C.TradeConfirm());
@@ -3603,23 +3640,55 @@ public partial class GameScene : Control
             return;
         }
 
-        MirDirection walkDirection = FindRunningTestDirection(1);
-        GD.Print($"[RunningTest] SEND phase=walk distance=1 direction={walkDirection} " +
-                 $"location=({_playerLocation.X},{_playerLocation.Y})");
-        _net.Connection.Enqueue(new C.Move { Direction = walkDirection, Distance = 1 });
+        _runningTestRightHeld = true;
+        _canRun = false;
+        int walkSteps = GetRunSteps();
+        MirDirection walkDirection = FindRunningTestDirection(walkSteps);
+        GD.Print($"[RunningTest] INPUT phase=walk canRun={_canRun} steps={walkSteps} " +
+                 $"bag={BagWeight}/{_playerStats[Stat.BagWeight]} " +
+                 $"wear={WearWeight}/{_playerStats[Stat.WearWeight]}");
+        SendMouseMove(walkDirection, walkSteps, walkSteps >= 2);
 
         GetTree().CreateTimer(0.9).Timeout += () =>
         {
-            MirDirection runDirection = FindRunningTestDirection(2);
-            GD.Print($"[RunningTest] SEND phase=run distance=2 direction={runDirection} " +
-                     $"location=({_playerLocation.X},{_playerLocation.Y})");
-            _net.Connection.Enqueue(new C.Move { Direction = runDirection, Distance = 2 });
+            int runSteps = GetRunSteps();
+            MirDirection runDirection = FindRunningTestDirection(runSteps);
+            GD.Print($"[RunningTest] INPUT phase=run canRun={_canRun} steps={runSteps} " +
+                     $"bag={BagWeight}/{_playerStats[Stat.BagWeight]} " +
+                     $"wear={WearWeight}/{_playerStats[Stat.WearWeight]}");
+            SendMouseMove(runDirection, runSteps, runSteps >= 2);
         };
 
         GetTree().CreateTimer(1.8).Timeout += () =>
+        {
+            _runningTestRightHeld = false;
             GD.Print($"[RunningTest] RESULT animation={_player.Animation} frame={_player.FrameIndex} " +
                      $"location=({_playerLocation.X},{_playerLocation.Y})");
+        };
     }
+
+    private void SendMouseMove(MirDirection direction, int distance, bool running)
+    {
+        if (_net?.Connection?.Connected != true) return;
+        _net.Connection.Enqueue(new C.Move { Direction = direction, Distance = distance });
+        // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run。
+        _canRun = true;
+        if (AutoLoginArgs.RunningTest)
+            GD.Print($"[RunningTest] SEND distance={distance} running={running} direction={direction}");
+    }
+
+    private int GetRunSteps()
+    {
+        // 当前服务端已停用 C.Move 的负重禁跑校验（SConnection.Process(C.Move)
+        // 中该检查被注释）。客户端不能继续单方面把所有超重移动压成 1 格，
+        // 否则服务器支持的 Running 动作永远无法触发。
+        int steps = _canRun ? 2 : 1;
+        if (steps > 1 && _playerHorse != Library.HorseType.None) steps++;
+        return steps;
+    }
+
+    private bool IsRunInputHeld()
+        => _runningTestRightHeld || _autoRun || Input.IsMouseButtonPressed(MouseButton.Right);
 
     private MirDirection FindRunningTestDirection(int distance)
     {
@@ -3741,7 +3810,7 @@ public partial class GameScene : Control
         }
 
         // 原版 UserObject.SetAction(Standing)：站定且右键未按下时结束连续跑步状态。
-        if (_moveFrameCount <= 1 && !_autoRun && !Input.IsMouseButtonPressed(MouseButton.Right))
+        if (_moveFrameCount <= 1 && !IsRunInputHeld())
             _canRun = false;
 
         // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
@@ -3771,7 +3840,7 @@ public partial class GameScene : Control
                 _moveFrameCount = 1;
                 // 原版进入 Standing 时，只有右键已松开才清 CanRun。
                 // 连续按住右键时必须保留 true，下一段才会从 Walking 升到 Running。
-                _canRun = Input.IsMouseButtonPressed(MouseButton.Right) || _autoRun;
+                _canRun = IsRunInputHeld();
                 _player.OffsetX = 0f;
                 _player.OffsetY = 0f;
                 _player.SetAnimation(_playerHorse != HorseType.None
@@ -4034,15 +4103,6 @@ public partial class GameScene : Control
     // 对齐旧版 ActiveScene 的“UI 优先、地图其次”分发顺序。
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
-            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
-        {
-            _npcObjectId = _combatController.MouseObject.ObjectID;
-            _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
-            GetViewport().SetInputAsHandled();
-            return;
-        }
-
         if (@event is InputEventMouseButton dropMouse && dropMouse.Pressed && dropMouse.ButtonIndex == MouseButton.Left)
         {
             var cell = DXItemCell.SelectedCell;
@@ -4053,7 +4113,16 @@ public partial class GameScene : Control
                 SendItemDrop(new CellLinkInfo { GridType = cell.GridType, Slot = cell.Slot, Count = item.Count });
                 DXItemCell.SelectedCell = null;
                 GetViewport().SetInputAsHandled();
+                return;
             }
+        }
+
+        if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
+            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
+        {
+            _npcObjectId = _combatController.MouseObject.ObjectID;
+            _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
+            GetViewport().SetInputAsHandled();
         }
     }
 }
