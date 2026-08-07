@@ -1230,7 +1230,8 @@ public partial class GameScene : Control
         if (def.CastAtSource)
         {
             var sourceNode = GetMagicTargetNode(objectID);
-            if (sourceNode != null) SpawnCastEffectTarget(def, sourceNode);
+            if (sourceNode != null)
+                SpawnCastEffectTarget(def, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
             else SpawnCastEffect(def, sourceX, sourceY);
         }
 

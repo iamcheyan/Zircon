@@ -39,6 +39,7 @@ public static class MagicEffectTable
         public double StartDelayMs;
         public int DistanceDelayMs;
         public bool DirectionFromSource;
+        public bool DirectionFromCast;
         // 旧端 Spell 分支中挂在施法者/自身对象上的效果（如 HealStart）。
         public bool CastAtSource;
         // 飞行弹道: 非空表示从施法者飞到目标
@@ -321,7 +322,7 @@ public static class MagicEffectTable
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 3340, FrameCount = 10, Colour = Holy },
         },
         [MagicType.Invisibility] = new CastEffect { File = LibraryFile.Magic, StartIndex = 810, FrameCount = 10, DelayMs = 60, Colour = Phantom, CastAtSource = true },
-        [MagicType.MagicResistance] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 200, FrameCount = 8, Colour = None } },
+        [MagicType.MagicResistance] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, DirectionFromCast = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 200, FrameCount = 8, Colour = None } },
         [MagicType.BloodLust] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = Dark, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = Dark, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 140, FrameCount = 7, Colour = Dark } },
         [MagicType.GreaterEvilSlayer] = new CastEffect
         {
@@ -329,8 +330,8 @@ public static class MagicEffectTable
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 3440, FrameCount = 6, DelayMs = 50, Colour = Holy, Skip = 0 },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 3450, FrameCount = 10, Colour = Holy },
         },
-        [MagicType.Resilience] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 170, FrameCount = 8, Colour = None } },
-        [MagicType.ElementalSuperiority] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1870, FrameCount = 10, Colour = None } },
+        [MagicType.Resilience] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, DirectionFromCast = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 170, FrameCount = 8, Colour = None } },
+        [MagicType.ElementalSuperiority] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, DirectionFromCast = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1870, FrameCount = 10, Colour = None } },
         [MagicType.MassInvisibility] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = Phantom, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = Phantom, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 820, FrameCount = 7, Colour = Phantom } },
         [MagicType.Resurrection] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 320, FrameCount = 7, Colour = Holy },
         [MagicType.StrengthOfFaith] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 370, FrameCount = 10, Colour = Phantom },
