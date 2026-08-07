@@ -184,7 +184,7 @@ public static class MagicEffectTable
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 2960, FrameCount = 6, DelayMs = 50, Colour = Ice },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2970, FrameCount = 10, Colour = Ice },
         },
-        [MagicType.Cyclone] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind, Additional = { new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 2000, FrameCount = 8, Colour = Wind } } },
+        [MagicType.Cyclone] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind, Additional = { new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 2000, FrameCount = 8, StartDelayMs = 500, Colour = Wind } } },
         [MagicType.FireStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 940, FrameCount = 10, DelayMs = 60, Colour = Fire, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 950, FrameCount = 7, Colour = Fire } },
         [MagicType.MagicShield] = new CastEffect { File = LibraryFile.Magic, StartIndex = 830, FrameCount = 19, DelayMs = 60, Colour = Phantom, CastAtSource = true },
         [MagicType.SuperiorMagicShield] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1900, FrameCount = 17, DelayMs = 60, Colour = Fire, CastAtSource = true },
