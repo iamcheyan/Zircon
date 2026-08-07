@@ -44,6 +44,7 @@ public static class MagicEffectTable
         // 落地/命中特效 (目标位置)
         public ImpactDef Impact;
         public List<ImpactDef> Additional = new();
+        public List<OffsetImpactDef> AdditionalMapEffects = new();
         public List<ProjectileDef> AdditionalProjectiles = new();
     }
 
@@ -75,6 +76,12 @@ public static class MagicEffectTable
         public float Opacity = 1f;
         public int Skip = 10;
         public double StartDelayMs;
+    }
+
+    public sealed class OffsetImpactDef : ImpactDef
+    {
+        public int OffsetX;
+        public int OffsetY;
     }
 
     /// <summary>按 MagicType 查施法特效。null 表示该技能尚未完成原版迁移。</summary>
@@ -414,9 +421,9 @@ public static class MagicEffectTable
         [MagicType.SamaProphetFire] = new CastEffect { File = LibraryFile.MonMagicEx9, StartIndex = 5600, FrameCount = 10, Colour = Fire },
         [MagicType.SamaProphetLightning] = new CastEffect { File = LibraryFile.MonMagicEx9, StartIndex = 5200, FrameCount = 10, Colour = Lightning },
         [MagicType.SamaProphetWind] = new CastEffect { File = LibraryFile.MonMagicEx9, StartIndex = 5400, FrameCount = 10, Colour = Wind },
-        [MagicType.DoomClawLeftPinch] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2660, FrameCount = 7, Colour = None },
+        [MagicType.DoomClawLeftPinch] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2660, FrameCount = 7, Colour = None, AdditionalMapEffects = { new OffsetImpactDef { File = LibraryFile.MonMagicEx19, StartIndex = 2680, FrameCount = 9, Colour = None, OffsetX = 5 } } },
         [MagicType.DoomClawLeftSwipe] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2720, FrameCount = 8, Colour = None },
-        [MagicType.DoomClawRightPinch] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2640, FrameCount = 7, Colour = None },
+        [MagicType.DoomClawRightPinch] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2640, FrameCount = 7, Colour = None, AdditionalMapEffects = { new OffsetImpactDef { File = LibraryFile.MonMagicEx19, StartIndex = 2680, FrameCount = 9, Colour = None, OffsetX = 5 } } },
         [MagicType.DoomClawRightSwipe] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2700, FrameCount = 8, Colour = None },
         [MagicType.DoomClawSpit] = new CastEffect { File = LibraryFile.MonMagicEx19, StartIndex = 2500, FrameCount = 7, Colour = None, Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx19, StartIndex = 2500, FrameCount = 7, Colour = None, Skip = 0, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MonMagicEx19, StartIndex = 2520, FrameCount = 8, Colour = None } },
 
