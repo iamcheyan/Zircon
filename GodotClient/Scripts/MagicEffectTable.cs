@@ -7,21 +7,24 @@ namespace ZirconClient.Scripts;
 /// <summary>
 /// 魔法特效定义表 (提取自原版 Client/Models/MapObject.cs:768 的 case MirAction.Spell)。
 /// 每个魔法: 施法站桩特效 + 可选飞行弹道 + 可选落地/命中特效。
-/// 颜色用原版 Globals.*Colour 的近似值。
+/// 颜色直接使用原版 Globals.*Colour，避免 Godot 端手工猜色造成元素特效偏色。
 /// 当前表按原版的施法轨迹维护：投射物、命中特效、地面/范围特效和自身特效分别配置。
 /// 未覆盖的技能不再伪造通用爆炸，由 GameScene 记录诊断，便于继续补齐原版资源。
 /// </summary>
 public static class MagicEffectTable
 {
-    /// <summary>元素颜色 (近似原版 Globals.*Colour)。</summary>
-    public static readonly Color Fire = new(1.0f, 0.27f, 0.0f);       // OrangeRed
-    public static readonly Color Ice = new(0.69f, 0.95f, 0.93f);      // PaleTurquoise
-    public static readonly Color Lightning = new(0.53f, 0.81f, 0.98f);// LightSkyBlue
-    public static readonly Color Wind = new(0.13f, 0.7f, 0.67f);      // LightSeaGreen
-    public static readonly Color Holy = new(0.76f, 0.65f, 0.37f);     // DarkKhaki
-    public static readonly Color Dark = new(0.43f, 0.25f, 0.09f);     // SaddleBrown
-    public static readonly Color Phantom = new(0.63f, 0.13f, 0.94f); // Purple
-    public static readonly Color None = Colors.White;
+    /// <summary>元素颜色 (原版 Globals.*Colour 的 System.Drawing → Godot 转换)。</summary>
+    public static readonly Color Fire = ToGodot(Globals.FireColour);
+    public static readonly Color Ice = ToGodot(Globals.IceColour);
+    public static readonly Color Lightning = ToGodot(Globals.LightningColour);
+    public static readonly Color Wind = ToGodot(Globals.WindColour);
+    public static readonly Color Holy = ToGodot(Globals.HolyColour);
+    public static readonly Color Dark = ToGodot(Globals.DarkColour);
+    public static readonly Color Phantom = ToGodot(Globals.PhantomColour);
+    public static readonly Color None = ToGodot(Globals.NoneColour);
+
+    private static Color ToGodot(System.Drawing.Color colour)
+        => new(colour.R / 255f, colour.G / 255f, colour.B / 255f, colour.A / 255f);
 
     /// <summary>站桩特效 (施法者位置 或 地图位置)。</summary>
     public class CastEffect
@@ -39,6 +42,8 @@ public static class MagicEffectTable
         public double StartDelayMs;
         public int DistanceDelayMs;
         public bool DirectionFromSource;
+        // 旧端目标命中特效有时直接沿 Spell 动作方向绘制，
+        // 而不是按施法者到目标的方向重新选帧。
         public bool DirectionFromCast;
         // 旧端 Spell 分支中挂在施法者/自身对象上的效果（如 HealStart）。
         public bool CastAtSource;
@@ -50,6 +55,9 @@ public static class MagicEffectTable
         public ProjectileDef TargetProjectile;
         // 落地/命中特效 (目标位置)
         public ImpactDef Impact;
+        // 旧端只有部分地图弹道 (Asteroid/IceRain) 在 MapTarget 完成后播落地特效；
+        // 普通火球类的落地特效只挂在对象 Target 上。
+        public ImpactDef MapImpact;
         public List<ImpactDef> Additional = new();
         public List<OffsetImpactDef> AdditionalMapEffects = new();
         public List<ProjectileDef> AdditionalProjectiles = new();
@@ -91,6 +99,7 @@ public static class MagicEffectTable
         public double StartDelayMs;
         public int DistanceDelayMs;
         public bool DirectionFromSource;
+        public bool DirectionFromCast;
         // 旧端按 8 方向分组的起始帧；未配置时使用 StartIndex。
         public int[] DirectionStartIndices;
 
@@ -315,6 +324,7 @@ public static class MagicEffectTable
             File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire,
             Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire, Skip = 0, Explode = true, OriginOffsetX = 4, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 1320, FrameCount = 8, Colour = None },
+            MapImpact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 1320, FrameCount = 8, Colour = None },
         },
         [MagicType.LightningStrike] = new CastEffect
         {
@@ -331,6 +341,7 @@ public static class MagicEffectTable
             ProjectileDelayStepMs = 200,
             Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice, Skip = 0, Explode = true, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 720, FrameCount = 7, Colour = Ice },
+            MapImpact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 720, FrameCount = 7, Colour = Ice },
         },
         [MagicType.IceAura] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, Has16Directions = false } },
         [MagicType.IceDragon] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, Has16Directions = false }, AdditionalProjectiles = { new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2900, FrameCount = 6, Colour = Ice, Has16Directions = false } }, Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 3000, FrameCount = 12, Colour = Ice } },
@@ -416,7 +427,7 @@ public static class MagicEffectTable
         [MagicType.WraithGrip] = new CastEffect { File = LibraryFile.MagicEx4, StartIndex = 1420, FrameCount = 14, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 0.4f },
         [MagicType.HellFire] = new CastEffect { File = LibraryFile.MagicEx4, StartIndex = 1500, FrameCount = 10, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor },
         [MagicType.BurningFire] = new CastEffect { File = LibraryFile.MagicEx6, StartIndex = 900, FrameCount = 10, DelayMs = 60, Colour = Fire },
-        [MagicType.MagicCombustion] = new CastEffect { File = LibraryFile.MagicEx7, StartIndex = 100, FrameCount = 6, Colour = None, Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 100, FrameCount = 6, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 280, FrameCount = 10, Colour = None } },
+        [MagicType.MagicCombustion] = new CastEffect { File = LibraryFile.MagicEx7, StartIndex = 0, FrameCount = 6, Colour = None, Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 0, FrameCount = 6, Colour = None }, TargetProjectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 0, FrameCount = 6, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 280, FrameCount = 10, Colour = None } },
         [MagicType.Chain] = new CastEffect { File = LibraryFile.MagicEx7, StartIndex = 20, FrameCount = 7, Colour = None },
         [MagicType.FourWheels] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 5600, FrameCount = 35, Colour = Fire },
         [MagicType.CrescentMoon] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 5700, FrameCount = 21, Colour = Phantom },
@@ -496,8 +507,9 @@ public static class MagicEffectTable
         [MagicType.GreenSludgeBall] = new CastEffect
         {
             File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f),
-            Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = false },
-            Impact = new ImpactDef { File = LibraryFile.MonMagicEx23, StartIndex = 2780, FrameCount = 6, Colour = new Color(0.6f, 1f, 0.1f) },
+            Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = true },
+            TargetProjectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = false },
+            Impact = new ImpactDef { File = LibraryFile.MonMagicEx23, StartIndex = 2780, FrameCount = 6, Colour = new Color(0.6f, 1f, 0.1f), DirectionFromCast = true },
         },
         // ---- 怪物魔法：旧端同样使用 MapTarget，不能回退到玩家技能的素材 ----
         [MagicType.MonsterScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1930, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3000, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f }, new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor } } },
