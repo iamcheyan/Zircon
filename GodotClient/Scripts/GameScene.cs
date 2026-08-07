@@ -1234,6 +1234,14 @@ public partial class GameScene : Control
                 SpawnCastEffectTarget(def, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
             else SpawnCastEffect(def, sourceX, sourceY);
         }
+        if (def.Source != null)
+        {
+            var sourceNode = GetMagicTargetNode(objectID);
+            if (sourceNode != null)
+                SpawnImpactTarget(def.Source, sourceNode, def.DirectionFromCast ? dir : MirDirection.Up);
+            else
+                SpawnImpact(def.Source, sourceX, sourceY);
+        }
 
         // 旧端按 MagicLocations/AttackTargets 分别挂载特效：
         // MapTarget 使用地面格坐标，Target 使用对象坐标；不能先在施法者
@@ -1292,7 +1300,7 @@ public partial class GameScene : Control
         }
 
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
-        if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource)
+        if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource && def.Source == null)
         {
             SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY);
             foreach (var extra in def.AdditionalMapEffects)
