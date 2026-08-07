@@ -61,6 +61,7 @@ public static class MagicEffectTable
         public List<ImpactDef> Additional = new();
         public List<OffsetImpactDef> AdditionalMapEffects = new();
         public List<ProjectileDef> AdditionalProjectiles = new();
+        public List<ProjectileDef> TargetAdditionalProjectiles = new();
         public double ProjectileDelayStepMs;
     }
 
@@ -344,7 +345,7 @@ public static class MagicEffectTable
             MapImpact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 720, FrameCount = 7, Colour = Ice },
         },
         [MagicType.IceAura] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, Has16Directions = false } },
-        [MagicType.IceDragon] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, Has16Directions = false }, AdditionalProjectiles = { new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2900, FrameCount = 6, Colour = Ice, Has16Directions = false } }, Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 3000, FrameCount = 12, Colour = Ice } },
+        [MagicType.IceDragon] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, Colour = Ice, Has16Directions = false }, TargetProjectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2800, FrameCount = 6, DelayMs = 150, Colour = Ice, Has16Directions = false }, AdditionalProjectiles = { new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2900, FrameCount = 6, Colour = Ice, Has16Directions = false } }, TargetAdditionalProjectiles = { new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2900, FrameCount = 6, DelayMs = 150, Colour = Ice, Has16Directions = false } }, Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 3000, FrameCount = 12, Colour = Ice } },
         [MagicType.IceBreaker] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 5200, FrameCount = 37, Colour = Ice },
         [MagicType.FrozenDragon] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 5300, FrameCount = 41, Colour = Ice },
 

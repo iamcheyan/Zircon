@@ -1294,7 +1294,9 @@ public partial class GameScene : Control
                     SpawnImpactTarget(def.Impact, targetNode, targetDirection);
                 else
                     SpawnCastEffectTarget(def, targetNode, targetDirection);
-                foreach (var extraProjectile in def.AdditionalProjectiles)
+                var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
+                    ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
+                foreach (var extraProjectile in targetAdditionalProjectiles)
                     SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
                 foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
             }
@@ -1303,8 +1305,10 @@ public partial class GameScene : Control
                 if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
                 else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 else SpawnCastEffect(def, tgt.CellX, tgt.CellY, sourceX, sourceY);
-                foreach (var extraProjectile in def.AdditionalProjectiles)
-                    SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, tgt.CellX, tgt.CellY, null);
+                var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
+                    ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
+                foreach (var extraProjectile in targetAdditionalProjectiles)
+                    SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, tgt, null);
                 foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 foreach (var extra in def.AdditionalMapEffects)
                     SpawnImpact(extra, tgt.CellX + extra.OffsetX, tgt.CellY + extra.OffsetY, sourceX, sourceY);
