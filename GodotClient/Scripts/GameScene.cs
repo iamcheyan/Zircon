@@ -274,7 +274,8 @@ public partial class GameScene : Control
         _lightLayer = new MapLightLayer { ZIndex = 900 };
         AddChild(_lightLayer);
         _lightLayer.SetObjectSources(GetObjectLightSources);
-        _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
+        // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
+        _weatherLayer = new MapWeatherLayer { ZIndex = 850 };
         AddChild(_weatherLayer);
         _mouseWalker = new MouseWalker(_mapView, SendMouseMove,
         () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
@@ -3775,6 +3776,7 @@ public partial class GameScene : Control
         }
 
         GD.Print($"[Game] 加载地图: MapIndex={_playerMapIndex} -> {mapInfo.FileName} ({mapInfo.Description})");
+        GD.Print($"[Light] map={mapInfo.FileName} setting={mapInfo.Light} weather={mapInfo.Weather} dayTime={DayTime:0.###}");
         _mapView.LoadMap(mapInfo.FileName, mapInfo.Background);
         _lightLayer?.SetMap(mapInfo, _mapView);
         _lightLayer?.SetDayTime(DayTime);
