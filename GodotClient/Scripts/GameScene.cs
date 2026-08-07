@@ -1283,7 +1283,9 @@ public partial class GameScene : Control
             if (targetNode != null)
             {
                 var targetCell = GetTargetCell(targetNode);
-                var targetDirection = def.DirectionFromSource
+                var targetDirection = def.Impact?.DirectionFromCast == true
+                    ? dir
+                    : def.DirectionFromSource
                     ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
                     : MirDirection.Up;
                 if (def.Projectile != null)
