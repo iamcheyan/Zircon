@@ -278,6 +278,7 @@ static class Program
         bool skipItems = false, skipMagics = false;
         string className = null;
         var magicNames = new List<string>();
+        bool allMagics = false;
         int? amuletCount = null;
         string weaponName = null;
         var binds = new List<(string name, string fkey)>();
@@ -290,8 +291,8 @@ static class Program
                 case "--gold": gold = long.Parse(args[++i]); break;
                 case "--no-items": skipItems = true; break;
                 case "--no-magics": skipMagics = true; break;
-                case "--class": className = args[++i]; break;
                 case "--magic": magicNames.Add(args[++i]); break;
+                case "--all-magics": allMagics = true; break;
                 case "--amulet-count": amuletCount = int.Parse(args[++i]); break;
                 case "--bind":
                     {
@@ -376,6 +377,8 @@ static class Program
         if (!skipItems) BoostItems(ch);
 
         // 4. 技能
+        if (!skipMagics)
+            BoostMagics(ch, allMagics ? null : magicNames, allMagics: allMagics);
         // 5. 快捷键绑定 (绑到 Set1Key, 客户端 MagicBarSpellSet 默认 1)
         if (binds.Count > 0) BindMagics(ch, binds);
 
@@ -532,15 +535,18 @@ static class Program
             Console.WriteLine($"  背包[{nextBag}] += {town.ItemName} x20");
         }
     }
-
-    static void BoostMagics(CharacterInfo ch, List<string> names = null)
+    static void BoostMagics(CharacterInfo ch, List<string> names = null, bool allMagics = false)
     {
         var magics = Session.GetCollection<MagicInfo>().Binding;
-        // 给了 --magic 就只加指定的; 否则按职业全套
-        var classMagics = names != null && names.Count > 0
-            ? magics.Where(x => names.Any(n => x.Name.Contains(n, StringComparison.OrdinalIgnoreCase)
-                                            || x.Magic.ToString().Contains(n, StringComparison.OrdinalIgnoreCase))).ToList()
-            : magics.Where(x => x.Class == ch.Class).ToList();
+        // --all-magics: 加全部 174 个; 给了 --magic 就只加指定的; 否则按职业全套
+        List<MagicInfo> classMagics;
+        if (allMagics)
+            classMagics = magics.ToList();
+        else if (names != null && names.Count > 0)
+            classMagics = magics.Where(x => names.Any(n => x.Name.Contains(n, StringComparison.OrdinalIgnoreCase)
+                                            || x.Magic.ToString().Contains(n, StringComparison.OrdinalIgnoreCase))).ToList();
+        else
+            classMagics = magics.Where(x => x.Class == ch.Class).ToList();
 
         var have = ch.Magics.Select(x => x.Info.Magic).ToHashSet();
         foreach (var m in classMagics.OrderBy(x => x.NeedLevel1))

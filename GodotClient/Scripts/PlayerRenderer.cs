@@ -167,9 +167,12 @@ public partial class PlayerRenderer : Node2D
     public void PlayPushed() => SetAnimation(MirAnimation.Pushed);
 
     public void BeginMove(MirDirection direction, int distance, bool mounted)
+        => BeginMove(direction, distance, mounted, distance >= 2);
+
+    public void BeginMove(MirDirection direction, int distance, bool mounted, bool running)
     {
         Direction = direction;
-        SetAnimation(distance >= 2
+        SetAnimation(running
             ? (mounted ? MirAnimation.HorseRunning : MirAnimation.Running)
             : (mounted ? MirAnimation.HorseWalking : MirAnimation.Walking));
     }
