@@ -2366,6 +2366,13 @@ public partial class GameScene : Control
             if (ob.Light > 0 && !ob.Dead)
                 yield return new MapLightLayer.LightSource(ob.Position + new Vector2(24f, 0f), ob.Light,
                     new Color(1f, 0.86f, 0.55f));
+        foreach (var player in _otherPlayers.Values)
+            if (!player.Dead)
+            {
+                int light = Math.Max(3, player.Light);
+                yield return new MapLightLayer.LightSource(player.Position + new Vector2(24f, 0f), light,
+                    player.Light > 0 ? new Color(1f, 0.86f, 0.55f) : new Color(1f, 1f, 1f, 0.47f));
+            }
         foreach (Node child in GetChildren())
             if (child is MirEffectNode fx && fx.FrameLight > 0)
                 // 旧端 MapControl.Light 对效果光使用 EffectLightScaleDivisor=5，
