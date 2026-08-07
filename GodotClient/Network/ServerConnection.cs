@@ -43,15 +43,17 @@ public partial class ServerConnection : BaseConnection
     public event Action<S.ObjectMonster> ObjectMonsterEvent;
     public event Action<S.ObjectNPC> ObjectNPCEvent;
     public event Action<S.ObjectItem> ObjectItemEvent;
+    public event Action<S.Chat> ChatEvent;
     public event Action<uint> ObjectRemoveEvent;
     public event Action<uint, MirDirection> ObjectTurnEvent;
     // M5 战斗
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, uint> ObjectAttackEvent; // id, dir, loc, magic, targetID
+    public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>> ObjectRangeAttackEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, MagicType, List<uint>, List<System.Drawing.Point>, bool> ObjectMagicEvent; // id, dir, loc, type, targets, locations, cast
     public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
     public event Action<uint, int, int, bool> DataObjectHealthManaEvent; // id, health, mana, dead
     public event Action<uint, int, int> DataObjectMaxHealthManaEvent; // id, maxHealth, maxMana
-    public event Action<uint, int, int, int, bool> DataObjectMonsterEvent; // id, health, maxHealth, monsterIndex, dead
+    public event Action<uint, int, int, int, int, bool> DataObjectMonsterEvent; // id, health, maxHealth, light, monsterIndex, dead
     public event Action<uint> ObjectDiedEvent;
     public event Action<uint, MirDirection, System.Drawing.Point, uint, Element> ObjectStruckEvent; // id, dir, loc, attackerID, element
     public event Action<S.StatsUpdate> StatsUpdateEvent; // 完整属性
@@ -93,6 +95,7 @@ public partial class ServerConnection : BaseConnection
     public readonly Queue<S.ObjectMonster> PendingMonsters = new();
     public readonly Queue<S.ObjectNPC> PendingNPCs = new();
     public readonly Queue<S.ObjectItem> PendingItems = new();
+    public readonly Queue<S.Chat> PendingChats = new();
     public readonly Queue<uint> PendingRemoves = new();
     public readonly Queue<(uint, MirDirection)> PendingTurns = new();
     public readonly Queue<S.ObjectAttack> PendingAttacks = new();
@@ -202,6 +205,12 @@ public partial class ServerConnection : BaseConnection
         ObjectItemEvent?.Invoke(p);
     }
 
+    public void Process(S.Chat p)
+    {
+        PendingChats.Enqueue(p);
+        ChatEvent?.Invoke(p);
+    }
+
     public void Process(S.ObjectRemove p)
     {
         PendingRemoves.Enqueue(p.ObjectID);
@@ -218,6 +227,11 @@ public partial class ServerConnection : BaseConnection
     {
         PendingAttacks.Enqueue(p);
         ObjectAttackEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.AttackMagic, p.TargetID);
+    }
+
+    public void Process(S.ObjectRangeAttack p)
+    {
+        ObjectRangeAttackEvent?.Invoke(p.ObjectID, p.Direction, p.Location, p.AttackMagic, p.Targets);
     }
 
     public void Process(S.ObjectMagic p)
@@ -248,7 +262,8 @@ public partial class ServerConnection : BaseConnection
     {
         PendingDataMonsters.Enqueue(p);
         int maxHealth = p.Stats != null ? p.Stats[Stat.Health] : 0;
-        DataObjectMonsterEvent?.Invoke(p.ObjectID, p.Health, maxHealth, p.MonsterIndex, p.Dead);
+        int light = p.Stats != null ? p.Stats[Stat.Light] : 0;
+        DataObjectMonsterEvent?.Invoke(p.ObjectID, p.Health, maxHealth, light, p.MonsterIndex, p.Dead);
     }
 
     public void Process(S.ObjectDied p)
@@ -533,5 +548,11 @@ public partial class ServerConnection : BaseConnection
     {
         PendingNewMagics.Enqueue(p.Magic);
         NewMagicEvent?.Invoke(p.Magic);
+    }
+
+    // 绑定/解绑技能快捷键 (原版 Image_KeyDown 后发此包持久化)
+    public void SendMagicKey(MagicType magic, SpellKey set1, SpellKey set2, SpellKey set3, SpellKey set4)
+    {
+        Enqueue(new C.MagicKey { Magic = magic, Set1Key = set1, Set2Key = set2, Set3Key = set3, Set4Key = set4 });
     }
 }

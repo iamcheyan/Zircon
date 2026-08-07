@@ -280,6 +280,7 @@ static class Program
         var magicNames = new List<string>();
         int? amuletCount = null;
         string weaponName = null;
+        var binds = new List<(string name, string fkey)>();
         for (int i = 0; i < args.Length; i++)
         {
             switch (args[i])
@@ -292,7 +293,12 @@ static class Program
                 case "--class": className = args[++i]; break;
                 case "--magic": magicNames.Add(args[++i]); break;
                 case "--amulet-count": amuletCount = int.Parse(args[++i]); break;
-                case "--weapon": weaponName = args[++i]; break;
+                case "--bind":
+                    {
+                        var sp = args[++i].Split(':', 2);
+                        if (sp.Length == 2) binds.Add((sp[0], sp[1]));
+                    }
+                    break;
             }
         }
         if (charName == null) { Console.WriteLine("需要 --char <角色名>"); return; }
@@ -370,11 +376,32 @@ static class Program
         if (!skipItems) BoostItems(ch);
 
         // 4. 技能
-        if (!skipMagics) BoostMagics(ch, magicNames);
+        // 5. 快捷键绑定 (绑到 Set1Key, 客户端 MagicBarSpellSet 默认 1)
+        if (binds.Count > 0) BindMagics(ch, binds);
 
         Console.WriteLine("  保存中...");
         Session.Save(true);
         Console.WriteLine("  完成。重启服务端后生效。");
+
+    // 把指定技能绑到 Set1Key 的 F1-F8 槽 (客户端 UseMagicKey: F1->Spell01..F8->Spell08)
+    static void BindMagics(CharacterInfo ch, List<(string name, string fkey)> binds)
+    {
+        foreach (var (name, fkey) in binds)
+        {
+            int fk = fkey.ToUpperInvariant() switch
+            {
+                "F1" => 1, "F2" => 2, "F3" => 3, "F4" => 4,
+                "F5" => 5, "F6" => 6, "F7" => 7, "F8" => 8,
+                _ => -1,
+            };
+            if (fk < 0) { Console.WriteLine($"  绑定: 未知键位 {fkey}, 跳过"); continue; }
+            var spell = (SpellKey)fk;  // Spell01=1..Spell08=8
+            var um = ch.Magics.FirstOrDefault(m => m.Info.Name.Contains(name, StringComparison.OrdinalIgnoreCase)
+                                                || m.Info.Magic.ToString().Contains(name, StringComparison.OrdinalIgnoreCase));
+            if (um == null) { Console.WriteLine($"  绑定: 找不到技能 [{name}], 跳过"); continue; }
+            Console.WriteLine($"  绑定 {um.Info.Name} -> Set1Key={spell} ({fkey})");
+            um.Set1Key = spell;
+        }
     }
 
     static RequiredClass ClassMask(MirClass c) => (RequiredClass)(1 << (int)c);
@@ -526,4 +553,5 @@ static class Program
             have.Add(m.Magic);
         }
     }
+}
 }

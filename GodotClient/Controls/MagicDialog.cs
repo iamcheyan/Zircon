@@ -82,7 +82,91 @@ public partial class MagicCellView : Control
     {
         _magic = magic;
         MouseFilter = MouseFilterEnum.Pass;
+        FocusMode = FocusModeEnum.Click;
         Size = new Vector2(369, 54);
+    }
+
+    // 点击: 解除当前栏组绑定 (原版 Image_MouseClick)
+    public override void _GuiInput(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+        {
+            ClearCurrentSetKey();
+        }
+    }
+
+    // 按键: F1~F8 -> 绑到当前栏组 SetXKey (原版 Image_KeyDown)
+    public override void _UnhandledKeyInput(InputEvent @event)
+    {
+        if (@event is not InputEventKey key || !key.Pressed) return;
+        if (!GetGlobalRect().HasPoint(GetGlobalMousePosition())) return;  // 只在鼠标悬停本行时响应
+
+        Library.SpellKey spellKey = key.Keycode switch
+        {
+            Key.F1 => Library.SpellKey.Spell01,
+            Key.F2 => Library.SpellKey.Spell02,
+            Key.F3 => Library.SpellKey.Spell03,
+            Key.F4 => Library.SpellKey.Spell04,
+            Key.F5 => Library.SpellKey.Spell05,
+            Key.F6 => Library.SpellKey.Spell06,
+            Key.F7 => Library.SpellKey.Spell07,
+            Key.F8 => Library.SpellKey.Spell08,
+            _ => Library.SpellKey.None,
+        };
+        if (spellKey == Library.SpellKey.None) return;
+
+        BindCurrentSetKey(spellKey);
+    }
+
+    private void ClearCurrentSetKey()
+    {
+        var game = GameScene.Game;
+        if (game == null) return;
+        int set = game.MagicBarSpellSet;
+        switch (set)
+        {
+            case 1: _magic.Set1Key = Library.SpellKey.None; break;
+            case 2: _magic.Set2Key = Library.SpellKey.None; break;
+            case 3: _magic.Set3Key = Library.SpellKey.None; break;
+            case 4: _magic.Set4Key = Library.SpellKey.None; break;
+        }
+        SendKeyUpdate(game);
+        GD.Print($"[Magic] 解除 {_magic.Info.Name} 的 Set{set} 绑定");
+        QueueRedraw();
+    }
+
+    private void BindCurrentSetKey(Library.SpellKey spellKey)
+    {
+        var game = GameScene.Game;
+        if (game == null) return;
+        int set = game.MagicBarSpellSet;
+        switch (set)
+        {
+            case 1: _magic.Set1Key = spellKey; break;
+            case 2: _magic.Set2Key = spellKey; break;
+            case 3: _magic.Set3Key = spellKey; break;
+            case 4: _magic.Set4Key = spellKey; break;
+        }
+        // 去重: 其他技能若绑了同键, 清掉 (原版 Image_KeyDown 去重)
+        foreach (var kv in game.UserMagics)
+        {
+            if (kv.Key == _magic.Info) continue;
+            var m = kv.Value;
+            if (set == 1 && m.Set1Key == spellKey) m.Set1Key = Library.SpellKey.None;
+            if (set == 2 && m.Set2Key == spellKey) m.Set2Key = Library.SpellKey.None;
+            if (set == 3 && m.Set3Key == spellKey) m.Set3Key = Library.SpellKey.None;
+            if (set == 4 && m.Set4Key == spellKey) m.Set4Key = Library.SpellKey.None;
+        }
+        SendKeyUpdate(game);
+        GD.Print($"[Magic] 绑定 {_magic.Info.Name} -> Set{set}=F{(int)spellKey}");
+        QueueRedraw();
+    }
+
+    private void SendKeyUpdate(GameScene game)
+    {
+        game.SendMagicKey(_magic.Info.Magic, _magic.Set1Key, _magic.Set2Key, _magic.Set3Key, _magic.Set4Key);
+        // 刷新快捷栏 + 本列表 (用 GameScene 公开方法或事件)
+        game.RefreshMagicBars();
     }
 
     public override void _Ready()

@@ -103,6 +103,7 @@ public partial class GameScene : Control
     private int _pendingMapIndex;
     private MirDirection _pendingDir;
     private int _pendingX, _pendingY;
+    private int _pendingDistance = 1;
 
     // 移动插值状态
     private System.Drawing.Point _moveFrom;
@@ -146,7 +147,18 @@ public partial class GameScene : Control
             (dir, action, magic) =>
             {
                 if (_net?.Connection?.Connected != true) return;
+                if (_player != null)
+                {
+                    _player.Direction = dir;
+                    if (action == MirAction.Attack) _player.PlayCombat(magic);
+                }
                 _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = magic });
+            },
+            (dir, distance) =>
+            {
+                if (_net?.Connection?.Connected != true) return;
+                _player?.BeginMove(dir, distance, _playerHorse != HorseType.None);
+                _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = Math.Max(1, distance) });
             });
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
@@ -185,6 +197,7 @@ public partial class GameScene : Control
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
         _net.Connection.ObjectAttackEvent += OnObjectAttack;
+        _net.Connection.ObjectRangeAttackEvent += OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent += OnObjectMagic;
         _net.Connection.HealthChangedEvent += OnHealthChanged;
         _net.Connection.DataObjectHealthManaEvent += OnDataObjectHealthMana;
@@ -278,7 +291,8 @@ public partial class GameScene : Control
             _net.Connection.ObjectItemEvent -= OnObjectItem;
             _net.Connection.ObjectRemoveEvent -= OnObjectRemove;
             _net.Connection.ObjectTurnEvent -= OnObjectTurn;
-            _net.Connection.ObjectAttackEvent -= OnObjectAttack;
+        _net.Connection.ObjectAttackEvent -= OnObjectAttack;
+            _net.Connection.ObjectRangeAttackEvent -= OnObjectRangeAttack;
             _net.Connection.ObjectMagicEvent -= OnObjectMagic;
             _net.Connection.HealthChangedEvent -= OnHealthChanged;
             _net.Connection.DataObjectHealthManaEvent -= OnDataObjectHealthMana;
@@ -386,6 +400,7 @@ public partial class GameScene : Control
         _pendingDir = dir;
         _pendingX = loc.X;
         _pendingY = loc.Y;
+        _pendingDistance = 1;
         CallDeferred(nameof(ShowUserLocation));
     }
 
@@ -443,6 +458,7 @@ public partial class GameScene : Control
             _pendingDir = dir;
             _pendingX = loc.X;
             _pendingY = loc.Y;
+            _pendingDistance = Math.Max(1, distance);
             CallDeferred(nameof(ShowUserLocation));
             return;
         }
@@ -545,7 +561,12 @@ public partial class GameScene : Control
     {
         if (objectID == _playerObjectID)
         {
-            if (_player != null) _player.PlayCombat(magic);
+            if (_player != null)
+            {
+                _player.Direction = dir;
+                _player.PlayCombat(magic);
+                ApplyAuthoritativePlayerLocation(loc);
+            }
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
@@ -566,13 +587,46 @@ public partial class GameScene : Control
         }
     }
 
+    private void OnObjectRangeAttack(uint objectID, MirDirection dir, System.Drawing.Point loc,
+        MagicType magic, List<uint> targets)
+    {
+        if (objectID == _playerObjectID)
+        {
+            _player.Direction = dir;
+            _player.PlayRangeAttack();
+            ApplyAuthoritativePlayerLocation(loc);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Direction = dir;
+            ob.SetAnimation(MirAnimation.Combat1);
+        }
+
+        foreach (uint targetID in targets ?? Enumerable.Empty<uint>())
+        {
+            if (targetID == _playerObjectID) _player.PlayStruck();
+            else if (_objects.TryGetValue(targetID, out var target)) target.SetAnimation(MirAnimation.Struck);
+        }
+    }
+
+    private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc)
+    {
+        if (_player == null || (_playerLocation.X == loc.X && _playerLocation.Y == loc.Y)) return;
+        _playerLocation = loc;
+        _pendingDistance = 1;
+        _moveFrameCount = 1;
+        _player.CellX = loc.X;
+        _player.CellY = loc.Y;
+        UpdatePlayerPosition();
+    }
+
     // 魔法施放: 施法者播攻击动画, 按 MagicType 查特效表播放站桩/弹道/落地特效
     private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
     {
         // 施法者动画
         if (objectID == _playerObjectID)
         {
-            if (_player != null) _player.PlayCombat(type);
+            if (_player != null) _player.PlaySpell(type);
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
@@ -1240,7 +1294,15 @@ public partial class GameScene : Control
 
     public void SendPickUp()
         => _net.Connection.SendPickUp();
+    public void SendMagicKey(MagicType magic, Library.SpellKey s1, Library.SpellKey s2, Library.SpellKey s3, Library.SpellKey s4)
+        => _net.Connection.SendMagicKey(magic, s1, s2, s3, s4);
 
+    /// <summary>刷新魔法快捷栏和技能列表 (绑键后调用)。</summary>
+    public void RefreshMagicBars()
+    {
+        _magicBar?.Refresh();
+        _magicDialog?.Refresh();
+    }
     // ---- Tab 拾取 (250ms 节流) ----
     private void PickUpItems()
     {
@@ -1912,11 +1974,12 @@ public partial class GameScene : Control
         // 平滑移动: 起点是当前(旧)位置, 终点是服务端新位置
         _moveFrom = _playerLocation;
         _moveStartMs = Godot.Time.GetTicksMsec();
-        _moveFrameCount = 6; // Walking 帧数
+        // 用 6 帧作为每次服务端移动的插值窗口；Distance 只决定走/跑帧表。
+        _moveFrameCount = Math.Max(2, _pendingDistance * 6);
 
         _playerLocation = new System.Drawing.Point(_pendingX, _pendingY);
         _player.Direction = _pendingDir;
-        _player.SetAnimation(MirAnimation.Walking);
+        _player.BeginMove(_pendingDir, _pendingDistance, _playerHorse != HorseType.None);
 
         UpdatePlayerPosition();
         _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
@@ -2024,7 +2087,8 @@ public partial class GameScene : Control
             if (t >= 1.0)
             {
                 _moveFrameCount = 1;
-                _player.SetAnimation(MirAnimation.Standing);
+                _player.SetAnimation(_playerHorse != HorseType.None
+                    ? MirAnimation.HorseStanding : MirAnimation.Standing);
             }
             UpdatePlayerPosition();
         }
