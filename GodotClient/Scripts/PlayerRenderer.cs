@@ -41,6 +41,9 @@ public partial class PlayerRenderer : Node2D
     public string DisplayName;
     public Color NameColour = Colors.White;
     public int Light;
+    public string ChatText;
+    private double _chatUntil;
+    public ExteriorEffect ArmourEffect, EmblemEffect, WeaponEffect, ShieldEffect;
 
     // ---- 动画状态 ----
     public MirDirection Direction;
@@ -65,6 +68,8 @@ public partial class PlayerRenderer : Node2D
     public void UpdateAppearance(StartInformation info)
     {
         Class = info.Class;
+        DisplayName = info.Name;
+        NameColour = info.NameColour == System.Drawing.Color.Empty ? Colors.White : ToGodot(info.NameColour);
         Gender = info.Gender;
         HairType = info.HairType;
         HairColour = ToGodot(info.HairColour);
@@ -77,6 +82,10 @@ public partial class PlayerRenderer : Node2D
         HideHead = info.HideHead;
         Horse = info.Horse;
         HorseShape = info.HorseShape;
+        ArmourEffect = info.ArmourEffect;
+        EmblemEffect = info.EmblemEffect;
+        WeaponEffect = info.WeaponEffect;
+        ShieldEffect = info.ShieldEffect;
         Direction = info.Direction;
         Dead = info.Dead;
         RefreshLibraries();
@@ -87,6 +96,8 @@ public partial class PlayerRenderer : Node2D
     public void UpdateAppearance(Library.Network.ServerPackets.ObjectPlayer info)
     {
         Class = info.Class;
+        DisplayName = info.Name;
+        NameColour = info.NameColour == System.Drawing.Color.Empty ? Colors.White : ToGodot(info.NameColour);
         Gender = info.Gender;
         HairType = info.HairType;
         HairColour = ToGodot(info.HairColour);
@@ -99,6 +110,10 @@ public partial class PlayerRenderer : Node2D
         HideHead = info.HideHead;
         Horse = info.Horse;
         HorseShape = info.HorseShape;
+        ArmourEffect = info.ArmourEffect;
+        EmblemEffect = info.EmblemEffect;
+        WeaponEffect = info.WeaponEffect;
+        ShieldEffect = info.ShieldEffect;
         Direction = info.Direction;
         Dead = info.Dead;
         RefreshLibraries();
@@ -118,19 +133,45 @@ public partial class PlayerRenderer : Node2D
         _currentFrame = GetFrameTable(anim);
         FrameStartMs = Godot.Time.GetTicksMsec(); // 从当前时刻起播, 保证从第 0 帧开始
         FrameIndex = 0;
-        // 一次性动作: 播完回 Standing (Die 保持最后一帧)
+        // 一次性动作: 播完回 Standing；死亡动作保持最后一帧。
         _oneShotAnim = anim is MirAnimation.Combat1 or MirAnimation.Combat2 or MirAnimation.Combat3
             or MirAnimation.Combat4 or MirAnimation.Combat5 or MirAnimation.Combat6 or MirAnimation.Combat7
             or MirAnimation.Combat8 or MirAnimation.Combat9 or MirAnimation.Combat10 or MirAnimation.Combat11
             or MirAnimation.Combat12 or MirAnimation.Combat13 or MirAnimation.Combat14 or MirAnimation.Combat15
-            or MirAnimation.Struck or MirAnimation.Pushed or MirAnimation.Harvest ? anim : MirAnimation.Standing;
+            or MirAnimation.Struck or MirAnimation.Pushed or MirAnimation.Harvest
+            or MirAnimation.FishingCast or MirAnimation.FishingReel or MirAnimation.TamingCast
+            or MirAnimation.Die or MirAnimation.Dead ? anim : MirAnimation.Standing;
         QueueRedraw();
     }
 
     // M5 战斗: 玩家攻击/受击/死亡动画
     public void PlayCombat(MagicType magic)
     {
-        SetAnimation(CombatForMagic(magic));
+        SetAnimation(Functions.GetAttackAnimation(Class, LibraryWeaponShape, magic));
+    }
+
+    public void PlayRangeAttack() => SetAnimation(MirAnimation.Combat1);
+
+    public void PlaySpell(MagicType magic)
+    {
+        MirAnimation anim;
+        try { anim = Functions.GetMagicAnimation(magic); }
+        catch (NotImplementedException) { anim = MirAnimation.Combat1; }
+        // 部分法术沿用战斗库帧；没有玩家专用帧时不能落到怪物帧表。
+        if (!FrameSet.Players.ContainsKey(anim)) anim = MirAnimation.Combat1;
+        SetAnimation(anim);
+    }
+
+    public void PlayHarvest() => SetAnimation(MirAnimation.Harvest);
+
+    public void PlayPushed() => SetAnimation(MirAnimation.Pushed);
+
+    public void BeginMove(MirDirection direction, int distance, bool mounted)
+    {
+        Direction = direction;
+        SetAnimation(distance >= 2
+            ? (mounted ? MirAnimation.HorseRunning : MirAnimation.Running)
+            : (mounted ? MirAnimation.HorseWalking : MirAnimation.Walking));
     }
 
     public void PlayStruck() => SetAnimation(MirAnimation.Struck);
@@ -140,9 +181,6 @@ public partial class PlayerRenderer : Node2D
         SetAnimation(MirAnimation.Die);
         Dead = true;
     }
-
-    // 普通攻击 = Combat3 (战士默认), 技能按原客户端 GetAttackAnimation 简化
-    private static MirAnimation CombatForMagic(MagicType magic) => MirAnimation.Combat3;
 
     private Frame GetFrameTable(MirAnimation anim)
     {
@@ -192,19 +230,30 @@ public partial class PlayerRenderer : Node2D
         if (_currentFrame.FrameCount <= 1) return 0;
 
         double sum = _currentFrame.Sum;
+        if (sum <= 0) return 0;
         double elapsed = nowMs - FrameStartMs;
+        if (loop)
+            elapsed %= sum;
+        else if (elapsed >= sum)
+            return _currentFrame.Reversed ? 0 : _currentFrame.FrameCount - 1;
+
         int frame = 0;
         double acc = 0;
+        if (_currentFrame.Reversed)
+        {
+            for (int i = 0; i < _currentFrame.FrameCount; i++)
+            {
+                int source = _currentFrame.FrameCount - 1 - i;
+                acc += _currentFrame.Delays[source].TotalMilliseconds;
+                if (elapsed < acc) return source;
+            }
+            return 0;
+        }
+
         for (int i = 0; i < _currentFrame.FrameCount; i++)
         {
             acc += _currentFrame.Delays[i].TotalMilliseconds;
-            if (elapsed < acc) { frame = i; break; }
-            frame = i;
-        }
-        if (elapsed >= sum)
-        {
-            if (loop) frame = (int)((elapsed - (elapsed % sum)) / sum) % _currentFrame.FrameCount; // 简单循环
-            else frame = _currentFrame.FrameCount - 1;
+            if (elapsed < acc) return i;
         }
         return frame;
     }
@@ -220,7 +269,8 @@ public partial class PlayerRenderer : Node2D
         }
 
         // 一次性动作播完回 Standing (死亡保持 Die 帧)
-        if (_oneShotAnim != MirAnimation.Standing && !Dead)
+        if (_oneShotAnim != MirAnimation.Standing && _oneShotAnim != MirAnimation.Die
+            && _oneShotAnim != MirAnimation.Dead && !Dead)
         {
             var f = _currentFrame;
             if (f != null && nowMs - FrameStartMs >= f.Sum)
@@ -234,7 +284,33 @@ public partial class PlayerRenderer : Node2D
     // 帧号计算 (4.3 节)
     private int DrawFrame => FrameIndex + _currentFrame.StartIndex + _currentFrame.OffSet * (int)Direction;
     private int ArmourShapeOffSet => Class == MirClass.Assassin ? 3000 : 5000;
-    private int ArmourShift => 0; // 刺客专用, 暂不实现
+    private int ArmourShift => Class != MirClass.Assassin ? 0 : Animation switch
+    {
+        MirAnimation.Standing => 0,
+        MirAnimation.Walking or MirAnimation.Running => 1600,
+        MirAnimation.CreepStanding or MirAnimation.CreepWalkSlow or MirAnimation.CreepWalkFast => 240,
+        MirAnimation.Pushed => 160,
+        MirAnimation.Combat1 => -400,
+        MirAnimation.Combat2 => 0,
+        MirAnimation.Combat3 => 0,
+        MirAnimation.Combat4 => 80,
+        MirAnimation.Combat5 or MirAnimation.Combat6 or MirAnimation.Combat7 => 400,
+        MirAnimation.Combat8 => 720,
+        MirAnimation.Combat9 => -960,
+        MirAnimation.Combat10 => -480,
+        MirAnimation.Combat11 or MirAnimation.Combat12 or MirAnimation.Combat13 => -400,
+        MirAnimation.Combat14 or MirAnimation.DragonRepulseStart
+            or MirAnimation.DragonRepulseMiddle or MirAnimation.DragonRepulseEnd => 0,
+        MirAnimation.Harvest => 160,
+        MirAnimation.TamingCast or MirAnimation.TamingWait => 0,
+        MirAnimation.Stance => 160,
+        MirAnimation.Struck or MirAnimation.Die or MirAnimation.Dead => -400,
+        MirAnimation.HorseStanding or MirAnimation.HorseWalking
+            or MirAnimation.HorseRunning or MirAnimation.HorseStruck
+            or MirAnimation.FishingCast or MirAnimation.FishingWait
+            or MirAnimation.FishingReel => 80,
+        _ => 0,
+    };
     private int ArmourFrame => DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift;
     private int HairFrame => DrawFrame + (HairType - 1) * 5000;
     private int HelmetFrame => DrawFrame + ((HelmetShape - 1) % 10) * ArmourShapeOffSet + ArmourShift;
@@ -259,9 +335,13 @@ public partial class PlayerRenderer : Node2D
                      $"Cell=({CellX},{CellY}) Pos={Position}");
         }
         DrawShadow();
+        DrawExteriorEffects(true);
         DrawPlayerAt(0, 0);
+        DrawExteriorEffects(false);
         if (!string.IsNullOrWhiteSpace(DisplayName))
             RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(0f, -76f), NameColour, 9f);
+        if (!string.IsNullOrWhiteSpace(ChatText) && Godot.Time.GetTicksMsec() < _chatUntil)
+            RenderPrimitives.DrawLabel(this, ChatText, new Vector2(0f, -94f), Colors.White, 9f);
 
         // 玩家头顶血条
         if (ShowHealthBar && !Dead && MaxHealth > 0)
@@ -278,6 +358,13 @@ public partial class PlayerRenderer : Node2D
                 DrawRect(new Rect2(x, y, w * percent, h), col);
             }
         }
+    }
+
+    public void SetChat(string text)
+    {
+        ChatText = text;
+        _chatUntil = Godot.Time.GetTicksMsec() + 5000;
+        QueueRedraw();
     }
 
     // 供 GameScene 调用: 计算本节点屏幕位置
@@ -302,7 +389,7 @@ public partial class PlayerRenderer : Node2D
         if (!hideWeapon)
         {
             if (Direction is MirDirection.Up or MirDirection.DownLeft or MirDirection.Left or MirDirection.UpLeft)
-                DrawLayer(_weaponLib1, WeaponFrame, px, py);
+                DrawLayer(_weaponLib2 ?? _weaponLib1, WeaponFrame, px, py);
 
             // 2. 背盾 (UpRight/Right/DownRight)
             if (ShieldShape >= 0 && Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight)
@@ -331,6 +418,63 @@ public partial class PlayerRenderer : Node2D
         }
     }
 
+    private void DrawExteriorEffects(bool behind)
+    {
+        if (CostumeShape < 0) DrawExteriorEffect(ArmourEffect, behind);
+        DrawExteriorEffect(EmblemEffect, behind);
+        if (!CostumeShapeHideWeapon.Contains(CostumeShape))
+        {
+            DrawExteriorEffect(WeaponEffect, behind);
+            DrawExteriorEffect(ShieldEffect, behind);
+        }
+    }
+
+    private void DrawExteriorEffect(ExteriorEffect effect, bool behind)
+    {
+        if (effect == ExteriorEffect.None) return;
+        bool isWeapon = effect is ExteriorEffect.W_ChaoticHeavenBlade
+            or ExteriorEffect.W_JanitorsScimitar or ExteriorEffect.W_JanitorsDualBlade;
+        bool shouldBehind = !isWeapon && effect is not (ExteriorEffect.A_BlueAura
+            or ExteriorEffect.A_FlameAura or ExteriorEffect.A_WhiteAura);
+        if (behind != shouldBehind) return;
+
+        int tick = (int)(Godot.Time.GetTicksMsec() / 100);
+        int dir = (int)Direction;
+        ZlLibrary lib = null;
+        int frame = 0;
+        float alpha = 1f;
+        switch (effect)
+        {
+            case ExteriorEffect.A_WhiteAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 800 + tick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_FlameAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 820 + tick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_BlueAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 840 + tick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_GreenWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 400 + tick % 15 + dir * 20; break;
+            case ExteriorEffect.A_FlameWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 200 + tick % 15 + dir * 20; break;
+            case ExteriorEffect.A_BlueWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = tick % 15 + dir * 20; break;
+            case ExteriorEffect.A_RedSinWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 600 + tick % 13 + dir * 20; break;
+            case ExteriorEffect.A_FireDragonWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 0 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_SmallYellowWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 10000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_GreenFeatherWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 50000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_RedFeatherWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 60000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_BlueFeatherWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 70000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_WhiteFeatherWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 80000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_PurpleTentacles: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 90000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.A_LionWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_FullEx1); frame = DrawFrame; break;
+            case ExteriorEffect.A_AngelicWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_FullEx1); frame = 10000 + DrawFrame; break;
+            case ExteriorEffect.A_BlueDragonWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_FullEx2); frame = DrawFrame; break;
+            case ExteriorEffect.A_RedWings2: lib = LibraryCache.Get(LibraryFile.EquipEffect_FullEx3); frame = DrawFrame; break;
+            case ExteriorEffect.W_ChaoticHeavenBlade: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 40000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.W_JanitorsScimitar or ExteriorEffect.W_JanitorsDualBlade: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 20000 + (int)Gender * 5000 + DrawFrame; break;
+            case ExteriorEffect.E_RedEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 90 + tick % 24; break;
+            case ExteriorEffect.E_BlueEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 220 + tick % 25; break;
+            case ExteriorEffect.E_GreenSpiralRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 330 + tick % 20; break;
+            case ExteriorEffect.E_Fireworks: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 360 + tick % 10; break;
+            default: return;
+        }
+        if (lib == null || frame < 0 || frame >= lib.Images.Length) return;
+        DrawLayer(lib, frame, 0, 0, new Color(1f, 1f, 1f, alpha));
+    }
+
     private void DrawShadow()
     {
         bool horse = Animation is MirAnimation.HorseStanding or MirAnimation.HorseWalking
@@ -349,7 +493,8 @@ public partial class PlayerRenderer : Node2D
     {
         if (lib == null || frame < 0 || frame >= lib.Images.Length) return false;
         var img = lib.Images[frame];
-        if (img == null || img.ShadowWidth <= 0 || img.ShadowHeight <= 0) return false;
+        if (img == null || !RenderPrimitives.IsUsableResourceShadow(img.ShadowWidth, img.ShadowHeight))
+            return false;
         var texture = lib.GetShadowTexture(frame);
         if (texture == null) return false;
         DrawTextureRectRegion(texture,
