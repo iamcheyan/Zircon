@@ -40,8 +40,9 @@ public partial class GameScene : Control
     private BigMapDialog _bigMap;
     private BuffDialog _buffDialog;
     private QuestTrackerDialog _questTracker;
+    private readonly System.Collections.Generic.Dictionary<int, ClientBuffInfo> _buffs = new();
     private MagicBar _magicBar;
-    private readonly Dictionary<int, ClientBuffInfo> _buffs = new();
+    private MagicDialog _magicDialog;
     private Stats _playerStats = new Stats();
     private int _playerLevel;
     private decimal _playerExperience, _playerMaxExperience;
@@ -121,6 +122,7 @@ public partial class GameScene : Control
         AddChild(_mapView);
         _lightLayer = new MapLightLayer { ZIndex = 900 };
         AddChild(_lightLayer);
+        _lightLayer.SetObjectSources(GetObjectLightSources);
         _weatherLayer = new MapWeatherLayer { ZIndex = 950 };
         AddChild(_weatherLayer);
         _mouseWalker = new MouseWalker(_mapView, (dir, dist) =>
@@ -177,6 +179,7 @@ public partial class GameScene : Control
         _net.Connection.ObjectMoveEvent += OnObjectMove;
         _net.Connection.ObjectMonsterEvent += OnObjectMonster;
         _net.Connection.ObjectNPCEvent += OnObjectNPC;
+        _net.Connection.ChatEvent += OnChat;
         _net.Connection.ObjectMagicEvent += OnObjectMagic;
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
@@ -271,6 +274,7 @@ public partial class GameScene : Control
             _net.Connection.ObjectMoveEvent -= OnObjectMove;
             _net.Connection.ObjectMonsterEvent -= OnObjectMonster;
             _net.Connection.ObjectNPCEvent -= OnObjectNPC;
+            _net.Connection.ChatEvent -= OnChat;
             _net.Connection.ObjectItemEvent -= OnObjectItem;
             _net.Connection.ObjectRemoveEvent -= OnObjectRemove;
             _net.Connection.ObjectTurnEvent -= OnObjectTurn;
@@ -417,8 +421,12 @@ public partial class GameScene : Control
             case KeyBindAction.BeltWindow:
                 WindowManager.Toggle(_beltDialog, _uiLayer);
                 break;
-            case KeyBindAction.ItemPickUp:
-                PickUpItems();
+            case KeyBindAction.MagicWindow:
+                if (_magicDialog is not null)
+                {
+                    WindowManager.Toggle(_magicDialog, _uiLayer);
+                    _magicDialog.Refresh();
+                }
                 break;
             default:
                 // MenuWindow/HelpWindow/ConfigWindow/MagicWindow:
@@ -468,6 +476,13 @@ public partial class GameScene : Control
         if (ob == null) return;
         AddObject(ob, p.ObjectID, zIndex: 30);
         SpawnItemGlow(ob, p.Item);
+    }
+
+    private void OnChat(S.Chat p)
+    {
+        if (p == null || string.IsNullOrWhiteSpace(p.Text)) return;
+        if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
+        else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
     }
 
     // 稀有度光效 (原版 ItemObject: Common+AddedStats / Superior / Elite)
@@ -551,9 +566,10 @@ public partial class GameScene : Control
         }
     }
 
-    // 魔法施放: 施法者播攻击动画, 目标位置显示特效帧
+    // 魔法施放: 施法者播攻击动画, 按 MagicType 查特效表播放站桩/弹道/落地特效
     private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
     {
+        // 施法者动画
         if (objectID == _playerObjectID)
         {
             if (_player != null) _player.PlayCombat(type);
@@ -564,33 +580,90 @@ public partial class GameScene : Control
             ob.SetAnimation(MirAnimation.Combat1);
         }
 
-        // 目标位置放一个短暂魔法特效 (Magic.Zl 帧, 500ms 自删)
-        if (locations.Count > 0)
+        if (!cast) return;  // 原版: !MagicCast 时不播特效
+
+        var def = MagicEffectTable.Get(type);
+
+        // 收集所有目标格 (locations + targets 的位置)
+        var destCells = new List<(int x, int y)>();
+        foreach (var lp in locations) destCells.Add((lp.X, lp.Y));
+        foreach (uint tid in targets)
+            if (_objects.TryGetValue(tid, out var tgt)) destCells.Add((tgt.CellX, tgt.CellY));
+
+        // 目标受击动画
+        foreach (uint tid in targets)
+            if (_objects.TryGetValue(tid, out var tgt)) tgt.SetAnimation(MirAnimation.Struck);
+
+        // 兜底: 查不到特效定义, 用通用爆炸 (保持原占位行为)
+        if (def == null)
         {
-            foreach (var locPt in locations)
-                SpawnEffectAt(locPt.X, locPt.Y);
+            foreach (var (x, y) in destCells) SpawnGenericExplosion(x, y);
+            return;
         }
-        else if (targets.Count > 0)
+
+        // 1. 施法者站桩特效 (原版部分魔法在施法者位置播)
+        if (def.Projectile == null)
+            SpawnCastEffect(def, loc.X, loc.Y);
+
+        // 2. 每个目标格: 弹道 + 落地
+        foreach (var (x, y) in destCells)
         {
-            foreach (uint tid in targets)
+            if (def.Projectile != null)
             {
-                if (_objects.TryGetValue(tid, out var tgt))
-                {
-                    tgt.SetAnimation(MirAnimation.Struck);
-                    SpawnEffectAt(tgt.CellX, tgt.CellY);
-                }
+                SpawnProjectile(def, loc.X, loc.Y, x, y);
+            }
+            else if (def.Impact != null)
+            {
+                SpawnImpact(def.Impact, x, y);
             }
         }
     }
 
-    private void SpawnEffectAt(int cellX, int cellY)
+    private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y)
     {
-        // M6: 通用序列帧特效 (替代 M5 EffectNode 单帧占位)
-        // Magic.Zl 爆炸帧 580 起 10 帧, 每帧 100ms, Blend 半透明 (参考原版火球爆炸)
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
+        fx.Blend = def.Blend;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = def.Colour;
+    }
+
+    private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y)
+    {
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.Setup(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
+        fx.Blend = true;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = imp.Colour;
+    }
+
+    private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY)
+    {
+        var proj = def.Projectile;
+        var pn = new MirProjectileNode();
+        AddChild(pn);
+        pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
+            new System.Drawing.Point(fromX, fromY), (cx, cy) => ComputeObjectScreenPos(cx, cy));
+        pn.Blend = true;
+        pn.FrameLightColour = proj.Colour;
+        // 到达后播落地特效
+        if (def.Impact != null)
+        {
+            var impact = def.Impact;
+            pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
+        }
+    }
+
+    private void SpawnGenericExplosion(int cellX, int cellY)
+    {
         var fx = new MirEffectNode();
         AddChild(fx);
         fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
         fx.Blend = true;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = new Color(1f, 0.62f, 0.25f);
     }
 
     // 血量变化: 受伤扣血并显示血条 (Miss/Block 只播动画不扣)
@@ -599,11 +672,12 @@ public partial class GameScene : Control
         if (objectID == _playerObjectID)
         {
             if (_player == null) return;
-            if (!miss && !block)
-            {
-                _player.Health += change;
-                _currentHP = _player.Health;
-                _mainPanel?.SetHealth(_currentHP);
+        if (!miss && !block)
+        {
+            _player.Health += change;
+            _currentHP = _player.Health;
+            _mainPanel?.SetHealth(_currentHP);
+            SpawnDamagePopup(_player, change, critical);
             }
             _player.ShowHealthBar = true;
             if (!miss && !block) _player.PlayStruck();
@@ -615,7 +689,16 @@ public partial class GameScene : Control
         {
             ob.Health += change;
             ob.SetAnimation(MirAnimation.Struck);
+            SpawnDamagePopup(ob, change, critical);
         }
+    }
+
+    private void SpawnDamagePopup(Node2D target, int value, bool critical)
+    {
+        if (target == null || value == 0) return;
+        var popup = new DamagePopupNode { Position = target.Position + new Vector2(0f, -62f) };
+        AddChild(popup);
+        popup.Setup(value, critical);
     }
 
     private void OnDataObjectHealthMana(uint objectID, int health, int mana, bool dead)
@@ -650,11 +733,12 @@ public partial class GameScene : Control
     }
 
     // DataObjectMonster: 视野内怪物的权威血量 (进游戏时批量发, 血条数据源)
-    private void OnDataObjectMonsterInfo(uint objectID, int health, int maxHealth, int monsterIndex, bool dead)
+    private void OnDataObjectMonsterInfo(uint objectID, int health, int maxHealth, int light, int monsterIndex, bool dead)
     {
         if (!_objects.TryGetValue(objectID, out var ob)) return;
         ob.Health = health;
         ob.MaxHealth = maxHealth;
+        ob.Light = light;
         ob.Dead = dead;
         ob.ShowHealthBar = maxHealth > 0;
     }
@@ -739,6 +823,9 @@ public partial class GameScene : Control
         _magicBar = new MagicBar(this);
         _uiLayer.AddChild(_magicBar);
         _magicBar.Visible = true;
+
+        _magicDialog = new MagicDialog();
+        _uiLayer.AddChild(_magicDialog);
 
         // 数组注入: 先设 ItemGrid 再 CreateGrid (格子建立时快照 ItemGrid)
         _inventoryDialog.Grid.ItemGrid = Inventory;
@@ -871,6 +958,21 @@ public partial class GameScene : Control
         FillItems(info.Items);
         ApplyBeltLinks(info.BeltLinks);
 
+        // 已学技能 (StartInformation.Magics 一次性下发, S.NewMagic 只在学新技能时发)
+        UserMagics.Clear();
+        if (info.Magics != null)
+        {
+            foreach (var m in info.Magics)
+            {
+                if (m?.Info == null)
+                    m?.Complete();  // 反序列化时 Info 未绑定, 手动补
+                if (m?.Info != null)
+                    UserMagics[m.Info] = m;
+            }
+            GD.Print($"[Magic] 加载已有技能 {UserMagics.Count} 个");
+        }
+        _magicBar?.Refresh();
+        _magicDialog?.Refresh();
         Currencies.Clear();
         if (info.Currencies != null) Currencies.AddRange(info.Currencies);
         RefreshCurrency();
@@ -894,8 +996,23 @@ public partial class GameScene : Control
         if (_player == null) return;
         _player.MaxHealth = _playerStats[Stat.Health];
         _player.MaxMana = _playerStats[Stat.Mana];
+        _player.Light = _playerStats[Stat.Light];
         if (_player.Health <= 0) _player.Health = _playerStats[Stat.Health];
         RefreshPlayerBars();
+    }
+
+    private IEnumerable<MapLightLayer.LightSource> GetObjectLightSources()
+    {
+        if (_player != null && _player.Light > 0)
+            yield return new MapLightLayer.LightSource(_player.Position, _player.Light,
+                new Color(1f, 0.86f, 0.55f));
+        foreach (var ob in _objects.Values)
+            if (ob.Light > 0)
+                yield return new MapLightLayer.LightSource(ob.Position, ob.Light,
+                    new Color(1f, 0.86f, 0.55f));
+        foreach (Node child in GetChildren())
+            if (child is MirEffectNode fx && fx.FrameLight > 0)
+                yield return new MapLightLayer.LightSource(fx.Position, fx.FrameLight, fx.FrameLightColour);
     }
 
     private void OnLevelChanged(S.LevelChanged p)
@@ -1649,6 +1766,8 @@ public partial class GameScene : Control
             OnObjectNPC(conn.PendingNPCs.Dequeue());
         while (conn.PendingItems.Count > 0)
             OnObjectItem(conn.PendingItems.Dequeue());
+        while (conn.PendingChats.Count > 0)
+            OnChat(conn.PendingChats.Dequeue());
         while (conn.PendingRemoves.Count > 0)
             OnObjectRemove(conn.PendingRemoves.Dequeue());
         while (conn.PendingAttacks.Count > 0)
@@ -1679,7 +1798,8 @@ public partial class GameScene : Control
         while (conn.PendingDataMonsters.Count > 0)
         {
             var m = conn.PendingDataMonsters.Dequeue();
-            OnDataObjectMonsterInfo(m.ObjectID, m.Health, m.Stats != null ? m.Stats[Stat.Health] : 0, m.MonsterIndex, m.Dead);
+            OnDataObjectMonsterInfo(m.ObjectID, m.Health, m.Stats != null ? m.Stats[Stat.Health] : 0,
+                m.Stats != null ? m.Stats[Stat.Light] : 0, m.MonsterIndex, m.Dead);
         }
         while (conn.PendingDeaths.Count > 0)
             OnObjectDied(conn.PendingDeaths.Dequeue());
@@ -1768,6 +1888,7 @@ public partial class GameScene : Control
         UserMagics[m.Info] = m;
         GD.Print($"[Magic] 学会技能: {m.Info.Name} (Magic={m.Info.Magic}) Set1={m.Set1Key} Level={m.Level}");
         _magicBar?.Refresh();
+        _magicDialog?.Refresh();
     }
 
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
@@ -1866,6 +1987,18 @@ public partial class GameScene : Control
 
         // M9: 拿起物品跟随鼠标 + 悬浮提示
         UpdateMouseItem();
+        if (_combatController != null)
+        {
+            foreach (var ob in _objects.Values)
+            {
+                bool focused = ob.Type == ObjectRenderer.Kind.Item && ob == _combatController.MouseObject;
+                if (ob.Focused != focused)
+                {
+                    ob.Focused = focused;
+                    ob.QueueRedraw();
+                }
+            }
+        }
 
         // M11: 状态窗口节流刷新 (200ms)
         if (_statusWindow != null && _statusWindow.Visible && _player != null)

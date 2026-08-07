@@ -73,6 +73,11 @@ public partial class CharacterDialog : DXWindow
         };
         AddControl(bg);
 
+        // 人物纸娃娃 (在背景之上、装备槽之下, 原版 CharacterTab_BeforeChildrenDraw)
+        var doll = new PaperDoll();
+        doll.Position = new Vector2(130, 251); // 原版 (130,270) 相对 CharacterTab, 减标题栏 19
+        AddChild(doll);
+
         var close = new DXButton
         {
             LibraryFile = LibraryFile.Interface,
