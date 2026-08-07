@@ -1625,6 +1625,7 @@ public partial class GameScene : Control
         pn.DrawType = proj.DrawType;
         pn.BlendRate = proj.BlendRate;
         pn.Opacity = proj.Opacity;
+        pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
         pn.SetStartDelay(proj.StartDelayMs);
         // 到达后播落地特效
@@ -1653,6 +1654,7 @@ public partial class GameScene : Control
         pn.DrawType = proj.DrawType;
         pn.BlendRate = proj.BlendRate;
         pn.Opacity = proj.Opacity;
+        pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
         pn.SetStartDelay(proj.StartDelayMs);
         if (impact != null) pn.CompleteAction = () => SpawnImpactTarget(impact, target);

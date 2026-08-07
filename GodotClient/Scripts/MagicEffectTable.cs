@@ -63,6 +63,8 @@ public static class MagicEffectTable
         public MirEffectNode.EffectLayer DrawType = MirEffectNode.EffectLayer.Object;
         public float BlendRate = 0.7f;
         public float Opacity = 1f;
+        // 旧端 MirProjectile 构造器的 start/end light 默认值为 35。
+        public int FrameLight = 35;
         public double StartDelayMs;
     }
 
