@@ -47,12 +47,26 @@ public partial class SelectScene : Control
 
         RefreshList();
 
-        // headless 自动测试: 没角色就自动建, 有角色就自动进游戏
-        var userArgs = OS.GetCmdlineUserArgs();
-        bool autoTest = System.Array.Exists(userArgs, a => a == "--auto-login");
-        if (autoTest)
+        // headless 自动测试: --auto-login / --user 时自动进游戏; --char 指定角色名
+        if (AutoLoginArgs.AutoLogin)
         {
-            if (_characters.Count == 0)
+            var wantChar = AutoLoginArgs.Character;
+            if (wantChar.Length > 0)
+            {
+                var target = _characters.Find(c => c.CharacterName == wantChar);
+                if (target != null)
+                {
+                    GD.Print($"[Select] 自动进入指定角色: {wantChar} (idx={target.CharacterIndex})");
+                    _autoCharIndex = target.CharacterIndex;
+                    CallDeferred(nameof(AutoStartGame));
+                }
+                else
+                {
+                    GD.Print($"[Select] 指定角色 {wantChar} 不存在, 现有: [{string.Join(", ", _characters.ConvertAll(c => c.CharacterName))}]");
+                    _statusLabel.Text = $"未找到角色 {wantChar}";
+                }
+            }
+            else if (_characters.Count == 0)
             {
                 GD.Print("[Select] 自动建角色 TestHero...");
                 CallDeferred(nameof(AutoCreateCharacter));
@@ -65,14 +79,21 @@ public partial class SelectScene : Control
         }
     }
 
+    private int _autoCharIndex = -1;
+    private int _lastStartIndex = -1;
+
     private void AutoCreateCharacter()
     {
         _net.Connection?.SendNewCharacter("TestHero", MirClass.Warrior, MirGender.Male);
     }
     private void AutoStartGame()
     {
-        GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={_characters[0].CharacterIndex}");
-        _net.Connection?.SendStartGame(_characters[0].CharacterIndex);
+        int idx = _autoCharIndex >= 0 && _autoCharIndex < _characters.Count
+            ? _autoCharIndex
+            : _characters[0].CharacterIndex;
+        _lastStartIndex = idx;
+        GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={idx}");
+        _net.Connection?.SendStartGame(idx);
     }
 
     public void SetCharacters(List<SelectInfo> chars)
@@ -126,8 +147,7 @@ public partial class SelectScene : Control
             RefreshList();
             _statusLabel.Text = "创建成功! 选择角色后进入游戏";
             // headless 自动测试: 建完直接进游戏
-            var userArgs = OS.GetCmdlineUserArgs();
-            if (System.Array.Exists(userArgs, a => a == "--auto-login") && _characters.Count > 0)
+            if (AutoLoginArgs.AutoLogin && _characters.Count > 0)
             {
                 GD.Print("[Select] 自动进入游戏...");
                 CallDeferred(nameof(AutoStartGame));
@@ -147,6 +167,7 @@ public partial class SelectScene : Control
         if (idx >= _characters.Count) return;
         _startBtn.Disabled = true;
         _statusLabel.Text = "进入游戏...";
+        _lastStartIndex = _characters[idx].CharacterIndex;
         _net.Connection?.SendStartGame(_characters[idx].CharacterIndex);
     }
 
@@ -180,8 +201,9 @@ public partial class SelectScene : Control
             timer.Timeout += () =>
             {
                 GD.Print("[Select] 重试 StartGame");
-                GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={_characters[0].CharacterIndex}");
-        _net.Connection?.SendStartGame(_characters[0].CharacterIndex);
+                int retryIdx = _lastStartIndex >= 0 ? _lastStartIndex : _characters[0].CharacterIndex;
+                GD.Print($"[Select] AutoStartGame: 发送 StartGame, charIndex={retryIdx}");
+                _net.Connection?.SendStartGame(retryIdx);
             };
             timer.Start();
         }

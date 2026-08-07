@@ -30,9 +30,8 @@ public partial class LoginScene : Control
 
         // 连接服务端
         _net.Log += OnNetLog;
-        // headless 自动测试: --auto-login 参数时自动登录
-        var args = OS.GetCmdlineUserArgs();
-        bool autoLogin = System.Array.Exists(args, a => a == "--auto-login");
+        // 自动登录: --auto-login 固定测试账号, 或 --user/--pass 指定账号
+        bool autoLogin = AutoLoginArgs.AutoLogin;
         if (!_net.Connect("127.0.0.1", 7000))
         {
             _statusLabel.Text = "无法连接服务端";
@@ -47,8 +46,8 @@ public partial class LoginScene : Control
             CallDeferred(nameof(ShowVersionOK), v);
             if (autoLogin)
             {
-                GD.Print("[Login] 自动登录...");
-                _net.Connection.SendLogin("test@test.com", "test123");
+                GD.Print($"[Login] 自动登录: {AutoLoginArgs.User}");
+                _net.Connection.SendLogin(AutoLoginArgs.User, AutoLoginArgs.Password);
             }
         };
         _net.Connection.LoginResultEvent += OnLoginResult;

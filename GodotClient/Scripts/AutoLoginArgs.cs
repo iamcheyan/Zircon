@@ -1,0 +1,51 @@
+using Godot;
+
+namespace ZirconClient.Scripts;
+
+/// <summary>
+/// 命令行直连测试参数（放在 `--` 之后，Godot 引擎参数之前用 --path 等）：
+///   godot-mono --path GodotClient -- --user <邮箱> --pass <密码> --char <角色名>
+/// 提供 --user（或 --username）即触发自动登录，不再需要 --auto-login；
+/// --char 指定要进入的角色名（缺省进第一个角色）；提供 --char 时若角色不存在会报错留手动。
+/// 兼容旧参数 --auto-login（固定 test@test.com / test123，无角色时自动建 TestHero）。
+/// 也支持 `--user=xxx` 等号写法。
+/// </summary>
+public static class AutoLoginArgs
+{
+    private static readonly string[] Args = OS.GetCmdlineUserArgs();
+
+    public static bool AutoLogin =>
+        Has("--auto-login") || Has("--user") || Has("--username");
+
+    public static string User =>
+        GetValue("--user", "--username") ?? "test@test.com";
+
+    public static string Password =>
+        GetValue("--pass", "--password") ?? "test123";
+
+    public static string Character =>
+        GetValue("--char", "--character") ?? "";
+
+    private static bool Has(string name)
+    {
+        foreach (var a in Args)
+        {
+            if (a == name) return true;
+            if (a.StartsWith(name + "=")) return true;
+        }
+        return false;
+    }
+
+    private static string GetValue(params string[] names)
+    {
+        for (int i = 0; i < Args.Length; i++)
+        {
+            foreach (var n in names)
+            {
+                if (Args[i] == n && i + 1 < Args.Length) return Args[i + 1];
+                if (Args[i].StartsWith(n + "=")) return Args[i].Substring(n.Length + 1);
+            }
+        }
+        return null;
+    }
+}
