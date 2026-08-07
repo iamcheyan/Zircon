@@ -48,6 +48,7 @@ public partial class GameScene : Control
     private FishingDialog _fishingDialog;
     private FishingCatchDialog _fishingCatchDialog;
     private HorseTameDialog _horseTameDialog;
+    private MonsterDialog _monsterDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
     private uint _npcObjectId;
@@ -880,6 +881,12 @@ public partial class GameScene : Control
 
     private void OnObjectRemove(uint objectID)
     {
+        if (_spellEffects.Remove(objectID, out var spellFx)) spellFx.QueueFree();
+        foreach (var key in _objectBuffEffects.Keys.Where(k => k.Item1 == objectID).ToList())
+        {
+            if (_objectBuffEffects.Remove(key, out var buffFx)) buffFx.QueueFree();
+        }
+        if (_objectPoisonEffects.Remove(objectID, out var poisonFx)) poisonFx.QueueFree();
         if (_itemGlows.Remove(objectID, out var fx)) fx.QueueFree();
         if (_otherPlayers.Remove(objectID, out var player)) player.QueueFree();
         if (_objects.Remove(objectID, out var ob)) ob.QueueFree();
@@ -1643,6 +1650,8 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_fishingCatchDialog);
         _horseTameDialog = new HorseTameDialog();
         _uiLayer.AddChild(_horseTameDialog);
+        _monsterDialog = new MonsterDialog();
+        _uiLayer.AddChild(_monsterDialog);
         _tradeDialog = new TradeDialog();
         _uiLayer.AddChild(_tradeDialog);
         _npcDialog = new NPCDialog();
@@ -3198,6 +3207,11 @@ public partial class GameScene : Control
         UpdateMouseItem();
         if (_combatController != null)
         {
+            var hoveredMonster = _combatController.MouseObject?.Type == ObjectRenderer.Kind.Monster ? _combatController.MouseObject : null;
+            _monsterDialog?.SetMonster(hoveredMonster);
+            if (hoveredMonster != null)
+                _monsterDialog.Position = hoveredMonster.Position / UiScale + new Vector2(-93f, -112f);
+            _monsterDialog?.Refresh();
             foreach (var ob in _objects.Values)
             {
                 bool focused = ob.Type == ObjectRenderer.Kind.Item && ob == _combatController.MouseObject;
