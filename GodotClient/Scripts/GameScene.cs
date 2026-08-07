@@ -1069,6 +1069,8 @@ public partial class GameScene : Control
             {
                 SpawnCastEffect(def, x, y);
             }
+            foreach (var extraProjectile in def.AdditionalProjectiles)
+                SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null);
             foreach (var extra in def.Additional) SpawnImpact(extra, x, y);
         }
 
@@ -1083,6 +1085,8 @@ public partial class GameScene : Control
                     SpawnImpactTarget(def.Impact, targetNode);
                 else
                     SpawnCastEffectTarget(def, targetNode);
+                foreach (var extraProjectile in def.AdditionalProjectiles)
+                    SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
                 foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
             }
             else if (_objects.TryGetValue(tid, out var tgt))
@@ -1090,6 +1094,8 @@ public partial class GameScene : Control
                 if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
                 else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY);
                 else SpawnCastEffect(def, tgt.CellX, tgt.CellY);
+                foreach (var extraProjectile in def.AdditionalProjectiles)
+                    SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, tgt.CellX, tgt.CellY, null);
                 foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY);
             }
         }
@@ -1297,6 +1303,12 @@ public partial class GameScene : Control
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY)
     {
         var proj = def.Projectile;
+        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.Impact);
+    }
+
+    private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact)
+    {
+        if (proj == null) return;
         var pn = new MirProjectileNode();
         AddChild(pn);
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
@@ -1310,16 +1322,19 @@ public partial class GameScene : Control
         pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
         // 到达后播落地特效
-        if (def.Impact != null)
-        {
-            var impact = def.Impact;
+        if (impact != null)
             pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
-        }
     }
 
     private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target)
     {
         var proj = def.Projectile;
+        SpawnProjectileDefinitionTarget(proj, fromX, fromY, target, def.Impact);
+    }
+
+    private void SpawnProjectileDefinitionTarget(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, Node2D target, MagicEffectTable.ImpactDef impact)
+    {
+        if (proj == null) return;
         var pn = new MirProjectileNode();
         AddChild(pn);
         pn.SetupProjectileTarget(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs,
@@ -1333,7 +1348,7 @@ public partial class GameScene : Control
         pn.BlendRate = proj.BlendRate;
         pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
-        if (def.Impact != null) pn.CompleteAction = () => SpawnImpactTarget(def.Impact, target);
+        if (impact != null) pn.CompleteAction = () => SpawnImpactTarget(impact, target);
     }
 
     private Node2D GetMagicTargetNode(uint objectID)
