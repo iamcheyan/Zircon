@@ -1586,7 +1586,7 @@ public partial class GameScene : Control
             fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
         else if (def.DirectionFromCast)
             fx.Direction = castDirection;
-        fx.FrameLight = 10;
+        fx.FrameLight = def.FrameLight;
         fx.FrameLightColour = def.Colour;
     }
 
@@ -1606,7 +1606,7 @@ public partial class GameScene : Control
         fx.Skip = def.Skip;
         fx.SetStartDelay(def.StartDelayMs);
         fx.Direction = direction;
-        fx.FrameLight = 10;
+        fx.FrameLight = def.FrameLight;
         fx.FrameLightColour = def.Colour;
     }
 
