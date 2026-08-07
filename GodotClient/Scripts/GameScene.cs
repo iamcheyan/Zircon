@@ -2319,7 +2319,10 @@ public partial class GameScene : Control
                     new Color(1f, 0.86f, 0.55f));
         foreach (Node child in GetChildren())
             if (child is MirEffectNode fx && fx.FrameLight > 0)
-                yield return new MapLightLayer.LightSource(fx.Position + new Vector2(24f, 16f), fx.FrameLight, fx.FrameLightColour);
+                // 旧端 MapControl.Light 对效果光使用 EffectLightScaleDivisor=5，
+                // 不能和人物/物体 Light 共用同一半径，否则技能光圈会放大五倍。
+                yield return new MapLightLayer.LightSource(fx.Position + new Vector2(24f, 16f),
+                    Math.Max(1, fx.FrameLight / 5), fx.FrameLightColour);
     }
 
     private void OnLevelChanged(S.LevelChanged p)
