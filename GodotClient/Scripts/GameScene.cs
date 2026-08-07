@@ -1246,11 +1246,13 @@ public partial class GameScene : Control
         // 旧端按 MagicLocations/AttackTargets 分别挂载特效：
         // MapTarget 使用地面格坐标，Target 使用对象坐标；不能先在施法者
         // 位置统一生成一个 CastEffect 再把它当作所有技能的表现。
+        int destinationIndex = 0;
         foreach (var (x, y) in destCells)
         {
+            double projectileDelay = destinationIndex * def.ProjectileDelayStepMs;
             if (def.Projectile != null)
             {
-                SpawnProjectile(def, sourceX, sourceY, x, y);
+                SpawnProjectile(def, sourceX, sourceY, x, y, projectileDelay);
             }
             else if (def.Impact != null)
             {
@@ -1261,10 +1263,11 @@ public partial class GameScene : Control
                 SpawnCastEffect(def, x, y, sourceX, sourceY);
             }
             foreach (var extraProjectile in def.AdditionalProjectiles)
-                SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null);
+                SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null, projectileDelay);
             foreach (var extra in def.Additional) SpawnImpact(extra, x, y, sourceX, sourceY);
             foreach (var extra in def.AdditionalMapEffects)
                 SpawnImpact(extra, x + extra.OffsetX, y + extra.OffsetY, sourceX, sourceY);
+            destinationIndex++;
         }
 
         foreach (uint tid in targets)
@@ -1609,24 +1612,27 @@ public partial class GameScene : Control
         fx.Opacity = imp.Opacity;
         fx.Skip = imp.Skip;
         fx.SetStartDelay(imp.StartDelayMs);
-        fx.Direction = direction;
+        // Rake 的旧端 StartIndex 已经选到了对应方向组，不能再叠加 Direction*Skip。
+        fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
     }
 
-    private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY)
+    private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
     {
         var proj = def.Projectile;
-        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.Impact);
+        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.Impact, additionalStartDelay);
     }
 
-    private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact)
+    private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact, double additionalStartDelay = 0)
     {
         if (proj == null) return;
         var pn = new MirProjectileNode();
         AddChild(pn);
+        int originX = proj.OriginFromTarget ? toX : fromX;
+        int originY = proj.OriginFromTarget ? toY : fromY;
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
-            new System.Drawing.Point(fromX, fromY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
+            new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
         pn.Blend = true;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
@@ -1636,7 +1642,7 @@ public partial class GameScene : Control
         pn.Opacity = proj.Opacity;
         pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
-        pn.SetStartDelay(proj.StartDelayMs);
+        pn.SetStartDelay(proj.StartDelayMs + additionalStartDelay);
         // 到达后播落地特效
         if (impact != null)
             pn.CompleteAction = () => SpawnImpact(impact, toX, toY);

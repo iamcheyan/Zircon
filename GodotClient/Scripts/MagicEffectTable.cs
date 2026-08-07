@@ -51,6 +51,7 @@ public static class MagicEffectTable
         public List<ImpactDef> Additional = new();
         public List<OffsetImpactDef> AdditionalMapEffects = new();
         public List<ProjectileDef> AdditionalProjectiles = new();
+        public double ProjectileDelayStepMs;
     }
 
     public class ProjectileDef
@@ -68,6 +69,9 @@ public static class MagicEffectTable
         public float Opacity = 1f;
         // 旧端 MirProjectile 构造器的 start/end light 默认值为 35。
         public int FrameLight = 35;
+        public int OriginOffsetX;
+        public int OriginOffsetY;
+        public bool OriginFromTarget;
         public double StartDelayMs;
     }
 
@@ -307,7 +311,7 @@ public static class MagicEffectTable
         [MagicType.Asteroid] = new CastEffect
         {
             File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire,
-            Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire, Skip = 0, Explode = true },
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire, Skip = 0, Explode = true, OriginOffsetX = 4, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 1320, FrameCount = 8, Colour = None },
         },
         [MagicType.LightningStrike] = new CastEffect
@@ -319,7 +323,8 @@ public static class MagicEffectTable
         [MagicType.IceRain] = new CastEffect
         {
             File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice,
-            Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice, Skip = 0, Explode = true },
+            ProjectileDelayStepMs = 200,
+            Projectile = new ProjectileDef { File = LibraryFile.MagicEx7, StartIndex = 700, FrameCount = 7, Colour = Ice, Skip = 0, Explode = true, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx7, StartIndex = 720, FrameCount = 7, Colour = Ice },
         },
         [MagicType.IceAura] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2620, FrameCount = 6, DelayMs = 80, Colour = Ice }, Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 2500, FrameCount = 6, Colour = Ice, Has16Directions = false } },
