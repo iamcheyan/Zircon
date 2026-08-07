@@ -31,7 +31,7 @@ class TestConnection : BaseConnection
         Console.WriteLine("[<-] GoodVersion  *** 版本校验通过, 进入 Login 阶段 ***");
         Console.WriteLine($"    SystemDatabaseVersion={p.SystemDatabaseVersion}");
         Console.WriteLine($"    DatabaseKey={(p.DatabaseKey == null ? "null" : $"{p.DatabaseKey.Length} bytes")}");
-        Enqueue(new C.Login { EMailAddress = "test@test.com", Password = "test" });
+        Enqueue(new C.Login { EMailAddress = "test@test.com", Password = "test123" });
         Console.WriteLine("[->] Login (尝试登录 test@test.com / test)");
     }
     public void Process(G.Disconnect p)

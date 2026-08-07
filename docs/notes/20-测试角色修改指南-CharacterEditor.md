@@ -9,24 +9,34 @@
 
 ## 一、这次改了什么（TestHero 现状）
 
-角色 `TestHero`（战士 / 男 / 创建于 2026-08-06）当前数据：
+角色 `TestHero`（**道士** / 男 / 创建于 2026-08-06）当前数据：
 
 | 项目 | 值 |
 |---|---|
-| 等级 | **70**（HP 3860 / MP 299，按 Lv.70 BaseStat 同步） |
+| 等级 | **70**（HP 3106 / MP 1391，按 Lv.70 道士 BaseStat 同步） |
+| 职业 | **道士**（原战士，2026-08-07 改；战士技能保留） |
 | 金币 | 10,000,000 |
-| 武器 | Nemesis, The Blade of Betrayal（战士，价 800000） |
+| 武器 | Odyn Elemental（道士，道术 105） |
 | 衣服 | Wyvern Armour Of Protection (M) |
 | 头盔 | Lupine Headgear |
 | 项链 | Amulet Of The Dragon Lord |
 | 手镯 ×2 | Glowing Armguard Of Crescent ×2 |
 | 戒指 ×2 | Dragon Ring Of Revival ×2 |
 | 鞋子 | Argent Sabatons Of Comet |
-| 护身符 | Talisman Of Soul |
-| 背包 | Elixir Of Life (V) ×100、Elixir Of Mana (V) ×100、Scroll Of Town Portal ×20 |
-| 技能 | 全 32 个战士技能（Swordsmanship → Elemental Swords），全部 Lv.3 经验 100 万 |
+| 护身符 | **Talisman ×200**（普通护身符，**Shape=0**，召唤魔法消耗用） |
+| 背包 | Elixir Of Life (V) ×200、Elixir Of Mana (V) ×200、Scroll Of Town Portal ×40 |
+| 技能 | 34 个：原 32 战士技能 + **Summon Skeleton（召唤骷髅）** + **Summon Shinsu（召唤神兽）**，全部 Lv.3 经验 100 万 |
 
 原来新手装（Wood Sword / Commoner Outfit / Candle）保留在背包 0-2 槽。
+
+### 召唤测试提示
+
+- 两个召唤魔法都在魔法书里（Lv.3）：
+  - **Summon Skeleton** 消耗 1 个护身符，召唤白骷髅（`MonsterFlag.Skeleton`）
+  - **Summon Shinsu** 消耗 5 个护身符，召唤神兽（`MonsterFlag.Shinsu`）
+- 施法实现（`ServerLibrary/Models/Magics/Taoist/SummonShinsu.cs:33`）要求护身符 **`ItemType.Amulet` 且 `Shape == 0`**（`UseAmulet` 校验），所以 Amulet 槽放的是普通 **Talisman**（Shape=0）而非 Talisman Of Soul（Shape=1）；Talisman 共 200 个可消耗，放完 Amulet 槽的 `--amulet-count` 再补。
+- 召唤物是 `Player.Pets`（同一玩家最多 2 只），会自动跟随并攻击附近目标，用于测试攻击流程。
+- 召唤不需要职业校验（`CanUseMagic` 只查等级），但建议保持道士职业使用（魔法书按职业显示）。
 
 ## 二、工具用法
 
@@ -41,14 +51,21 @@ dotnet run --project Tools/CharacterEditor -- list /tmp/zircon-server/Database t
 dotnet run --project Tools/CharacterEditor -- boost /tmp/zircon-server/Database --char TestHero --level 70 --gold 10000000
 #    只改等级不动装备技能：加 --no-items --no-magics（升完级装备技能已存在时用它）
 
-# 3. 查物品模板（挑装备/看属性）
-dotnet run --project Tools/CharacterEditor -- items /tmp/zircon-server/Database --type Weapon --class Warrior --min 40 --max 55
+# 3. 改职业 / 指定技能 / 换武器 / 补护身符
+dotnet run --project Tools/CharacterEditor -- boost /tmp/zircon-server/Database --char TestHero \
+    --class Taoist --magic SummonSkeleton --magic SummonShinsu \
+    --weapon "Odyn Elemental" --amulet-count 200 --no-items --no-magics
+#    --class 改职业(HP/MP 按新职业 BaseStat 重算); --magic 可重复, 按名字加指定技能(给了就跳过职业全套)
+#    --weapon 强制替换武器槽; --amulet-count 把 Amulet 槽换成 Shape=0 普通护身符并设数量(召唤魔法消耗用)
 
-# 4. 查技能模板
-dotnet run --project Tools/CharacterEditor -- magics /tmp/zircon-server/Database --class Warrior
+# 4. 查物品模板（挑装备/看属性）
+dotnet run --project Tools/CharacterEditor -- items /tmp/zircon-server/Database --type Weapon --class Taoist --min 40 --max 55
 
-# 5. 查各职业/等级的基础 HP/MP 档位（BaseStat）
-dotnet run --project Tools/CharacterEditor -- basestat /tmp/zircon-server/Database --class Warrior
+# 5. 查技能模板
+dotnet run --project Tools/CharacterEditor -- magics /tmp/zircon-server/Database --class Taoist
+
+# 6. 查各职业/等级的基础 HP/MP 档位（BaseStat）
+dotnet run --project Tools/CharacterEditor -- basestat /tmp/zircon-server/Database --class Taoist
 ```
 
 ## 三、数据库结构（改之前必须懂）
