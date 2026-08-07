@@ -185,6 +185,7 @@ public partial class GameScene : Control
     // 周围物体 (怪物/NPC/物品): ObjectID -> 渲染节点
     private readonly System.Collections.Generic.Dictionary<uint, ObjectRenderer> _objects = new();
     private readonly System.Collections.Generic.Dictionary<uint, PlayerRenderer> _otherPlayers = new();
+    private readonly System.Collections.Generic.Dictionary<uint, MirRopeEffectNode> _tamingRopes = new();
 
     // SelectScene 传入的进游戏信息(StartGame 回包在场景创建前已处理完)
     public StartInformation StartInfo { get; set; }
@@ -202,7 +203,9 @@ public partial class GameScene : Control
     public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
-    private bool _canRun = true;
+    // 与原版 GameScene.CanRun 一致：站立后第一次移动先走，收到移动回包后
+    // 才允许下一次右键移动使用跑步距离/动作。
+    private bool _canRun;
 
     // CallDeferred 缓冲
     private StartGameResult _pendingStartResult;
@@ -214,6 +217,9 @@ public partial class GameScene : Control
     private MirDirection _pendingDir;
     private int _pendingX, _pendingY;
     private int _pendingDistance = 1;
+    // 鼠标右键跑步意图。旧客户端由 Moving.Extra[0] 传递；本客户端的鼠标
+    // 回调需要在服务器回包前保留它，避免回包距离被压缩为 1 后退化成走路动画。
+    private bool _pendingMouseRun;
 
     // 移动插值状态
     private System.Drawing.Point _moveFrom;
@@ -239,8 +245,7 @@ public partial class GameScene : Control
         _mouseWalker = new MouseWalker(_mapView, (dir, dist, running) =>
         {
             if (_net?.Connection?.Connected != true) return;
-            // 等服务器 ObjectMove 回包后再播放，避免本地预播与权威位置重复/冲突。
-            _canRun = true;
+            _pendingMouseRun = running;
             _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
         },
         () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
@@ -352,6 +357,11 @@ public partial class GameScene : Control
         _net.Connection.NewMagicEvent += OnNewMagic;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
+        _net.Connection.ObjectHarvestEvent += OnObjectHarvest;
+        _net.Connection.ObjectMountEvent += OnObjectMount;
+        _net.Connection.ObjectDashEvent += OnObjectDash;
+        _net.Connection.ObjectPushedEvent += OnObjectPushed;
+        _net.Connection.ObjectMiningEvent += OnObjectMining;
         _net.Connection.ObjectAttackEvent += OnObjectAttack;
         _net.Connection.ObjectRangeAttackEvent += OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent += OnObjectMagic;
@@ -457,7 +467,12 @@ public partial class GameScene : Control
             _net.Connection.ChatEvent -= OnChat;
             _net.Connection.ObjectItemEvent -= OnObjectItem;
             _net.Connection.ObjectRemoveEvent -= OnObjectRemove;
-            _net.Connection.ObjectTurnEvent -= OnObjectTurn;
+        _net.Connection.ObjectTurnEvent -= OnObjectTurn;
+            _net.Connection.ObjectHarvestEvent -= OnObjectHarvest;
+            _net.Connection.ObjectMountEvent -= OnObjectMount;
+            _net.Connection.ObjectDashEvent -= OnObjectDash;
+            _net.Connection.ObjectPushedEvent -= OnObjectPushed;
+            _net.Connection.ObjectMiningEvent -= OnObjectMining;
         _net.Connection.ObjectAttackEvent -= OnObjectAttack;
             _net.Connection.ObjectRangeAttackEvent -= OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent -= OnObjectMagic;
@@ -888,6 +903,7 @@ public partial class GameScene : Control
 
     private void OnObjectRemove(uint objectID)
     {
+        if (_tamingRopes.Remove(objectID, out var rope)) rope.QueueFree();
         if (_spellEffects.Remove(objectID, out var spellFx)) spellFx.QueueFree();
         foreach (var key in _objectBuffEffects.Keys.Where(k => k.Item1 == objectID).ToList())
         {
@@ -913,6 +929,90 @@ public partial class GameScene : Control
         {
             player.Direction = dir;
             player.QueueRedraw();
+        }
+    }
+
+    private void OnObjectHarvest(S.ObjectHarvest p)
+    {
+        if (p == null) return;
+        if (p.ObjectID == _playerObjectID && _player != null)
+        {
+            _player.Direction = p.Direction;
+            _player.PlayHarvest();
+            ApplyAuthoritativePlayerLocation(p.Location);
+        }
+        else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
+        {
+            player.Direction = p.Direction;
+            player.PlayHarvest();
+        }
+    }
+
+    private void OnObjectMount(S.ObjectMount p)
+    {
+        if (p == null) return;
+        if (p.ObjectID == _playerObjectID && _player != null)
+        {
+            _player.Horse = p.Horse;
+            _player.RefreshAppearanceLibraries();
+            _player.PlayStandingForState();
+            _playerHorse = p.Horse;
+        }
+        else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
+        {
+            player.Horse = p.Horse;
+            player.RefreshAppearanceLibraries();
+            player.PlayStandingForState();
+        }
+    }
+
+    private void OnObjectDash(S.ObjectDash p)
+    {
+        if (p == null) return;
+        if (p.ObjectID == _playerObjectID && _player != null)
+        {
+            _player.Direction = p.Direction;
+            _player.BeginMove(p.Direction, Math.Max(1, p.Distance), _player.Horse != HorseType.None, false);
+            ApplyAuthoritativePlayerLocation(p.Location);
+            _player.PlayCombat(p.Magic);
+        }
+        else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
+        {
+            player.Direction = p.Direction;
+            player.BeginMove(p.Direction, Math.Max(1, p.Distance), player.Horse != HorseType.None, false);
+            player.PlayCombat(p.Magic);
+        }
+    }
+
+    private void OnObjectPushed(S.ObjectPushed p)
+    {
+        if (p == null) return;
+        if (p.ObjectID == _playerObjectID && _player != null)
+        {
+            _player.Direction = p.Direction;
+            _player.PlayPushed();
+            ApplyAuthoritativePlayerLocation(p.Location);
+        }
+        else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
+        {
+            player.Direction = p.Direction;
+            player.PlayPushed();
+        }
+    }
+
+    private void OnObjectMining(S.ObjectMining p)
+    {
+        if (p == null) return;
+        if (p.ObjectID == _playerObjectID && _player != null)
+        {
+            _player.Direction = p.Direction;
+            _player.PlayMining();
+            ApplyAuthoritativePlayerLocation(p.Location);
+        }
+        else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
+        {
+            player.Direction = p.Direction;
+            player.PlayMining();
         }
     }
 
@@ -1053,7 +1153,12 @@ public partial class GameScene : Control
         // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
         // MagicType 会被错误地表现成“所有技能都是火球落地”。
         if (def == null)
+        {
+            GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
+                $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
+                "请按 docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
             return;
+        }
 
         if (def.CastAtSource)
         {
@@ -2038,6 +2143,16 @@ public partial class GameScene : Control
     {
         if (p.Buff == null) return;
         _buffs[p.Buff.Index] = p.Buff;
+        if (_player != null)
+        {
+            switch (p.Buff.Type)
+            {
+                case BuffType.Cloak: _player.Cloaked = true; break;
+                case BuffType.GhostWalk: _player.GhostWalking = true; break;
+                case BuffType.DragonRepulse: _player.DragonRepulsed = true; break;
+                case BuffType.ElementalHurricane: _player.ElementalHurricane = true; break;
+            }
+        }
         if (_buffEffects.Remove(p.Buff.Index, out var oldFx)) oldFx.QueueFree();
         if (_player != null && TryGetBuffEffect(p.Buff.Type, out var def))
         {
@@ -2058,8 +2173,20 @@ public partial class GameScene : Control
     private void OnBuffRemove(int index)
     {
         if (_buffEffects.Remove(index, out var fx)) fx.QueueFree();
-        if (_buffs.Remove(index))
+        if (_buffs.Remove(index, out var removed))
+        {
+            if (_player != null)
+            {
+                switch (removed.Type)
+                {
+                    case BuffType.Cloak: _player.Cloaked = false; break;
+                    case BuffType.GhostWalk: _player.GhostWalking = false; break;
+                    case BuffType.DragonRepulse: _player.DragonRepulsed = false; break;
+                    case BuffType.ElementalHurricane: _player.ElementalHurricane = false; break;
+                }
+            }
             _buffDialog?.BuffsChanged(_buffs);
+        }
     }
 
     private void OnAutoPathChanged(S.AutoPathChanged packet)
@@ -2382,20 +2509,93 @@ public partial class GameScene : Control
     private void OnObjectTaming(S.ObjectTaming p)
     {
         if (p == null || p.ObjectID != _playerObjectID) return;
+        _player?.PlayTaming(p.State);
+        if (_player != null) _player.Direction = p.Direction;
         _horseTameDialog?.SetState(p.State);
         if (p.State == TamingState.Cast && _objects.TryGetValue(p.TamingObjectID, out var target))
+        {
             _horseTameDialog?.SetTarget(p.TamingObjectID, target.Position / UiScale);
+            if (_tamingRopes.Remove(p.TamingObjectID, out var oldRope)) oldRope.QueueFree();
+            var rope = new MirRopeEffectNode();
+            AddChild(rope);
+            rope.Setup(_player, target);
+            _tamingRopes[p.TamingObjectID] = rope;
+        }
+        else if (p.State == TamingState.Cancel || p.State == TamingState.None)
+        {
+            if (_tamingRopes.Remove(p.TamingObjectID, out var rope)) rope.QueueFree();
+        }
     }
 
     private void OnObjectFishing(S.ObjectFishing p)
     {
         if (p == null || p.ObjectID != _playerObjectID) return;
+        _player?.PlayFishing(p.State, p.FishFound);
+        if (_player != null) _player.Direction = p.Direction;
         _fishingCatchDialog?.SetState(p.State, p.FishFound);
         if (p.State == FishingState.None || p.State == FishingState.Cancel)
             WindowManager.Close(_fishingDialog);
     }
     public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem) => _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
     public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3) => _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
+
+    public void SendNPCFragment(List<CellLinkInfo> links)
+        => _net?.Connection?.Enqueue(new C.NPCFragment { Links = links ?? new List<CellLinkInfo>() });
+
+    public void SendNPCRefinementStone(List<CellLinkInfo> iron, List<CellLinkInfo> silver,
+        List<CellLinkInfo> diamond, List<CellLinkInfo> gold, List<CellLinkInfo> crystal)
+        => _net?.Connection?.Enqueue(new C.NPCRefinementStone
+        {
+            IronOres = iron ?? new List<CellLinkInfo>(), SilverOres = silver ?? new List<CellLinkInfo>(),
+            DiamondOres = diamond ?? new List<CellLinkInfo>(), GoldOres = gold ?? new List<CellLinkInfo>(),
+            Crystal = crystal ?? new List<CellLinkInfo>(), Gold = 0,
+        });
+
+    public void SendNPCRefine(RefineType type, RefineQuality quality, List<CellLinkInfo> ores,
+        List<CellLinkInfo> items, List<CellLinkInfo> specials)
+        => _net?.Connection?.Enqueue(new C.NPCRefine
+        {
+            RefineType = type, RefineQuality = quality,
+            Ores = ores ?? new List<CellLinkInfo>(), Items = items ?? new List<CellLinkInfo>(),
+            Specials = specials ?? new List<CellLinkInfo>(),
+        });
+
+    public void SendNPCMasterRefine(List<CellLinkInfo> fragment1, List<CellLinkInfo> fragment2,
+        List<CellLinkInfo> fragment3, List<CellLinkInfo> stones, List<CellLinkInfo> specials)
+        => _net?.Connection?.Enqueue(new C.NPCMasterRefine
+        {
+            RefineType = RefineType.None,
+            Fragment1s = fragment1 ?? new List<CellLinkInfo>(), Fragment2s = fragment2 ?? new List<CellLinkInfo>(),
+            Fragment3s = fragment3 ?? new List<CellLinkInfo>(), Stones = stones ?? new List<CellLinkInfo>(),
+            Specials = specials ?? new List<CellLinkInfo>(),
+        });
+
+    public void RequestNPCRefineList() => GD.Print("[NPC] refine list is supplied by the server");
+    public void SendNPCRefineRetrieve(int index) => _net?.Connection?.Enqueue(new C.NPCRefineRetrieve { Index = index });
+    public void SendNPCAccessoryUpgrade(CellLinkInfo target, RefineType type)
+        => _net?.Connection?.Enqueue(new C.NPCAccessoryUpgrade { Target = target, RefineType = type });
+    public void SendNPCAccessoryLevelUp(CellLinkInfo target, List<CellLinkInfo> links)
+        => _net?.Connection?.Enqueue(new C.NPCAccessoryLevelUp { Target = target, Links = links ?? new List<CellLinkInfo>() });
+    public void SendNPCAccessoryReset(CellLinkInfo target)
+        => _net?.Connection?.Enqueue(new C.NPCAccessoryReset { Cell = target });
+    public void SendNPCAccessoryRefine(CellLinkInfo target, CellLinkInfo oreTarget, List<CellLinkInfo> links)
+        => _net?.Connection?.Enqueue(new C.NPCAccessoryRefine
+        {
+            Target = target, OreTarget = oreTarget, Links = links ?? new List<CellLinkInfo>(), RefineType = RefineType.None,
+        });
+    public void SendNPCWeaponCraft(RequiredClass @class, CellLinkInfo template, CellLinkInfo yellow,
+        CellLinkInfo blue, CellLinkInfo red, CellLinkInfo purple, CellLinkInfo green, CellLinkInfo grey)
+        => _net?.Connection?.Enqueue(new C.NPCWeaponCraft
+        {
+            Class = @class, Template = template, Yellow = yellow, Blue = blue, Red = red,
+            Purple = purple, Green = green, Grey = grey,
+        });
+    public void SendNPCRoll(int type) => _net?.Connection?.Enqueue(new C.NPCRoll { Type = type });
+    public void SendCompanionFilters()
+        => _net?.Connection?.Enqueue(new C.SendCompanionFilters
+        {
+            FilterClass = new List<MirClass>(), FilterRarity = new List<Rarity>(), FilterItemType = new List<ItemType>(),
+        });
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
 
     private void OnFortuneUpdate(S.FortuneUpdate packet)
@@ -3176,7 +3376,9 @@ public partial class GameScene : Control
         _player.OffsetY = (_moveFrom.Y - y) * 32f;
         _player.Direction = dir;
         _pendingDistance = distance;
-        _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
+        bool running = distance >= 2 || _pendingMouseRun;
+        _pendingMouseRun = false;
+        _player.BeginMove(dir, distance, _playerHorse != HorseType.None, running);
         _moveFrameCount = 2;
 
         UpdatePlayerPosition();
@@ -3304,6 +3506,7 @@ public partial class GameScene : Control
             if (t >= 1.0)
             {
                 _moveFrameCount = 1;
+                _canRun = false;
                 _player.OffsetX = 0f;
                 _player.OffsetY = 0f;
                 _player.SetAnimation(_playerHorse != HorseType.None
@@ -3426,18 +3629,36 @@ public partial class GameScene : Control
                 return;
             }
         }
-        // 朝当前目标方向; 无目标朝玩家朝向
-        MirDirection dir = _playerDirection;
         var pCell = _playerLocation;
-        uint targetID = _combatController?.TargetObject?.ObjectID ?? 0;
-        GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} 目标={targetID}");
+        var selected = _combatController?.TargetObject;
+        uint targetID = selected?.ObjectID ?? 0;
+        var mouseCell = _combatController?.MouseCell() ?? new System.Drawing.Point(pCell.X, pCell.Y);
+        var targetCell = selected == null
+            ? mouseCell
+            : new System.Drawing.Point(selected.CellX, selected.CellY);
+
+        // 原版的范围/落点技能即使鼠标下有目标，也把 MapLocation 发给服务端；
+        // 普通锁定投射则使用目标格。没有目标时绝不能回退到玩家当前格。
+        bool useMouseLocation = magic.Info.Magic switch
+        {
+            MagicType.Purification or MagicType.EvilSlayer or MagicType.GreaterEvilSlayer
+                or MagicType.ExplosiveTalisman or MagicType.ImprovedExplosiveTalisman
+                or MagicType.PoisonDust or MagicType.Neutralize or MagicType.BindingTalisman
+                or MagicType.BrainStorm => true,
+            _ => false
+        };
+        var castCell = useMouseLocation || selected == null ? mouseCell : targetCell;
+        MirDirection dir = Functions.DirectionFromPoint(
+            new System.Drawing.Point(pCell.X, pCell.Y), castCell);
+        GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} " +
+            $"目标={targetID} 玩家=({pCell.X},{pCell.Y}) 鼠标=({mouseCell.X},{mouseCell.Y}) 落点=({castCell.X},{castCell.Y}) 方向={dir}");
         _net.Connection.Enqueue(new C.Magic
         {
             Direction = dir,
             Action = MirAction.Spell,
             Type = magic.Info.Magic,
             Target = targetID,
-            Location = new System.Drawing.Point(pCell.X, pCell.Y),
+            Location = castCell,
         });
     }
 
