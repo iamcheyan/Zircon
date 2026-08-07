@@ -991,7 +991,11 @@ public partial class GameScene : Control
         GD.Print($"[Magic] OnObjectMagic type={type} cast={cast} targets={targets?.Count ?? 0} locs={locations?.Count ?? 0} loc=({loc.X},{loc.Y})");
         if (objectID == _playerObjectID)
         {
-            if (_player != null) _player.PlaySpell(type);
+            if (_player != null)
+            {
+                _player.Direction = dir;
+                _player.PlaySpell(type);
+            }
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
