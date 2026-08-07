@@ -126,6 +126,12 @@ public partial class GameScene : Control
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
     public void OpenConsignmentDialog() { if (_consignmentDialog != null) WindowManager.Open(_consignmentDialog, _uiLayer); }
     public void OpenFishingDialog() { if (_fishingDialog != null) WindowManager.Open(_fishingDialog, _uiLayer); }
+    public void OpenEditCharacterDialog()
+    {
+        _editCharacterDialog?.ResetForCurrent();
+        if (_editCharacterDialog != null) WindowManager.Open(_editCharacterDialog, _uiLayer);
+    }
+
     public void StartFishing()
     {
         OpenFishingDialog();
@@ -159,6 +165,7 @@ public partial class GameScene : Control
 
     private InventoryDialog _inventoryDialog;
     private CharacterDialog _characterDialog;
+    private EditCharacterDialog _editCharacterDialog;
     private StorageDialog _storageDialog;
     private BeltDialog _beltDialog;
     public AutoPotionDialog AutoPotionBox { get; private set; }
@@ -1062,6 +1069,7 @@ public partial class GameScene : Control
             {
                 SpawnCastEffect(def, x, y);
             }
+            foreach (var extra in def.Additional) SpawnImpact(extra, x, y);
         }
 
         foreach (uint tid in targets)
@@ -1075,12 +1083,14 @@ public partial class GameScene : Control
                     SpawnImpactTarget(def.Impact, targetNode);
                 else
                     SpawnCastEffectTarget(def, targetNode);
+                foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
             }
             else if (_objects.TryGetValue(tid, out var tgt))
             {
                 if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
                 else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY);
                 else SpawnCastEffect(def, tgt.CellX, tgt.CellY);
+                foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY);
             }
         }
 
@@ -1579,6 +1589,8 @@ public partial class GameScene : Control
         _characterDialog = new CharacterDialog();
         _characterDialog.Location = Vector2I.Zero;
         _uiLayer.AddChild(_characterDialog);
+        _editCharacterDialog = new EditCharacterDialog();
+        _uiLayer.AddChild(_editCharacterDialog);
 
         _storageDialog = new StorageDialog();
         _uiLayer.AddChild(_storageDialog);
@@ -2319,12 +2331,20 @@ public partial class GameScene : Control
     public void SendCaptionChange(string caption) => _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption });
 
     public void SendMarketSearch(string name, MarketPlaceSort sort) => _net?.Connection?.SendMarketSearch(name, sort);
+    public void SendMarketSearchIndex(int index) => _net?.Connection?.SendMarketSearchIndex(index);
     public void SendMarketBuy(long index, long count) => _net?.Connection?.SendMarketBuy(index, count);
     public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
     public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
     public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
+    public void SendGenderChange(MirGender gender, int hairType)
+        => _net?.Connection?.SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+    public void SendHairChange(int hairType)
+        => _net?.Connection?.SendHairChange(hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+    public void SendArmourDye()
+        => _net?.Connection?.SendArmourDye(StartInfo?.ArmourColour ?? System.Drawing.Color.White);
+    public void SendNameChange(string name) => _net?.Connection?.SendNameChange(name);
 
     public void SendJoinInstance(int index) => _net?.Connection?.SendJoinInstance(index);
 
