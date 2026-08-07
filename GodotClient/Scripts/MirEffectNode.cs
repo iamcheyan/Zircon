@@ -60,6 +60,9 @@ public partial class MirEffectNode : Node2D
     // 附加偏移
     public int AdditionalOffX, AdditionalOffY;
 
+    /// <summary>对应旧端 MirEffect.StartTime，和每帧 Delay 完全独立。</summary>
+    public void SetStartDelay(double delayMs) => _startMs = Godot.Time.GetTicksMsec() + Math.Max(0, delayMs);
+
     /// <summary>
     /// 初始化特效。
     /// file: 图库; startIndex/frameCount: 起始帧与帧数; frameDelayMs: 每帧毫秒;
@@ -142,7 +145,7 @@ public partial class MirEffectNode : Node2D
         QueueRedraw();
     }
 
-    private void UpdateRenderLayer()
+    protected void UpdateRenderLayer()
     {
         ZIndex = DrawType switch
         {
@@ -151,6 +154,8 @@ public partial class MirEffectNode : Node2D
             _ => 100 + (_targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY),
         };
     }
+
+    protected int CurrentRenderY => _targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY;
 
     protected int GetFrame(double now)
     {
