@@ -194,7 +194,7 @@ public partial class GameScene : Control
     public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
-    private bool _canRun;
+    private bool _canRun = true;
 
     // CallDeferred 缓冲
     private StartGameResult _pendingStartResult;
@@ -231,7 +231,7 @@ public partial class GameScene : Control
         _mouseWalker = new MouseWalker(_mapView, (dir, dist, running) =>
         {
             if (_net?.Connection?.Connected != true) return;
-            _player?.BeginMove(dir, dist, _playerHorse != HorseType.None, running);
+            // 等服务器 ObjectMove 回包后再播放，避免本地预播与权威位置重复/冲突。
             _canRun = true;
             _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = dist });
         },
@@ -348,6 +348,8 @@ public partial class GameScene : Control
         _net.Connection.ObjectRangeAttackEvent += OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent += OnObjectMagic;
         _net.Connection.ObjectProjectileEvent += OnObjectProjectile;
+        _net.Connection.ObjectSpellEvent += OnObjectSpell;
+        _net.Connection.ObjectSpellChangedEvent += OnObjectSpellChanged;
         _net.Connection.ObjectEffectEvent += OnObjectEffect;
         _net.Connection.MapEffectEvent += OnMapEffect;
         _net.Connection.ObjectBuffAddEvent += OnObjectBuffAdd;
@@ -452,6 +454,8 @@ public partial class GameScene : Control
             _net.Connection.ObjectRangeAttackEvent -= OnObjectRangeAttack;
         _net.Connection.ObjectMagicEvent -= OnObjectMagic;
             _net.Connection.ObjectProjectileEvent -= OnObjectProjectile;
+            _net.Connection.ObjectSpellEvent -= OnObjectSpell;
+            _net.Connection.ObjectSpellChangedEvent -= OnObjectSpellChanged;
             _net.Connection.ObjectEffectEvent -= OnObjectEffect;
             _net.Connection.MapEffectEvent -= OnMapEffect;
             _net.Connection.ObjectBuffAddEvent -= OnObjectBuffAdd;
@@ -743,12 +747,8 @@ public partial class GameScene : Control
     {
         if (objectID == _playerObjectID)
         {
-            _pendingDir = dir;
-            _pendingX = loc.X;
-            _pendingY = loc.Y;
-            _pendingDistance = Math.Max(1, distance);
             _canRun = true;
-            CallDeferred(nameof(ShowUserLocation));
+            CallDeferred(nameof(ShowUserLocation), (int)dir, loc.X, loc.Y, Math.Max(1, distance));
             return;
         }
 
@@ -2958,6 +2958,8 @@ public partial class GameScene : Control
             OnObjectMagic(m.ObjectID, m.Direction, m.CurrentLocation, m.Type, m.Targets, m.Locations, m.Cast);
         }
         while (conn.PendingProjectiles.Count > 0) OnObjectProjectile(conn.PendingProjectiles.Dequeue());
+        while (conn.PendingSpells.Count > 0) OnObjectSpell(conn.PendingSpells.Dequeue());
+        while (conn.PendingSpellChanges.Count > 0) OnObjectSpellChanged(conn.PendingSpellChanges.Dequeue());
         while (conn.PendingObjectEffects.Count > 0)
         {
             var e = conn.PendingObjectEffects.Dequeue();
@@ -3099,25 +3101,28 @@ public partial class GameScene : Control
         _bigMap?.UpdateObject(objectID, ob.CellX, ob.CellY, ob.Type);
     }
 
-    private void ShowUserLocation()
+    private void ShowUserLocation(int direction, int x, int y, int distance)
     {
-        _playerDirection = _pendingDir;
+        if (_player == null) return;
+        MirDirection dir = (MirDirection)direction;
+        _playerDirection = dir;
 
         // 原版 MovingOffSet：权威格立即切到终点，视觉位置从起点回拉。
         _moveFrom = _playerLocation;
         _moveStartMs = Godot.Time.GetTicksMsec();
 
-        _playerLocation = new System.Drawing.Point(_pendingX, _pendingY);
-        _player.CellX = _pendingX;
-        _player.CellY = _pendingY;
-        _player.OffsetX = (_moveFrom.X - _pendingX) * 48f;
-        _player.OffsetY = (_moveFrom.Y - _pendingY) * 32f;
-        _player.Direction = _pendingDir;
-        _player.BeginMove(_pendingDir, _pendingDistance, _playerHorse != HorseType.None);
+        _playerLocation = new System.Drawing.Point(x, y);
+        _player.CellX = x;
+        _player.CellY = y;
+        _player.OffsetX = (_moveFrom.X - x) * 48f;
+        _player.OffsetY = (_moveFrom.Y - y) * 32f;
+        _player.Direction = dir;
+        _pendingDistance = distance;
+        _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
         _moveFrameCount = 2;
 
         UpdatePlayerPosition();
-        _statusLabel.Text = $"位置: ({_pendingX},{_pendingY}) 方向: {_pendingDir}";
+        _statusLabel.Text = $"位置: ({x},{y}) 方向: {dir}";
 
         // M12: 地图玩家标记跟随
         _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
