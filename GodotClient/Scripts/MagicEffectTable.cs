@@ -8,7 +8,8 @@ namespace ZirconClient.Scripts;
 /// 魔法特效定义表 (提取自原版 Client/Models/MapObject.cs:768 的 case MirAction.Spell)。
 /// 每个魔法: 施法站桩特效 + 可选飞行弹道 + 可选落地/命中特效。
 /// 颜色用原版 Globals.*Colour 的近似值。
-/// 不覆盖全部 174 个, 先做常见 ~30 个; 查不到的回落到通用爆炸特效。
+/// 当前表按原版的施法轨迹维护：投射物、命中特效、地面/范围特效和自身特效分别配置。
+/// 未覆盖的技能不再伪造通用爆炸，由 GameScene 记录诊断，便于继续补齐原版资源。
 /// </summary>
 public static class MagicEffectTable
 {
@@ -73,7 +74,7 @@ public static class MagicEffectTable
         public int Skip = 10;
     }
 
-    /// <summary>按 MagicType 查施法特效。null=用通用爆炸兜底。</summary>
+    /// <summary>按 MagicType 查施法特效。null 表示该技能尚未完成原版迁移。</summary>
     public static CastEffect Get(MagicType type)
     {
         if (_table.TryGetValue(type, out var def)) return def;
@@ -267,14 +268,15 @@ public static class MagicEffectTable
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 3340, FrameCount = 10, Colour = Holy },
         },
         [MagicType.Invisibility] = new CastEffect { File = LibraryFile.Magic, StartIndex = 810, FrameCount = 10, DelayMs = 60, Colour = Phantom, CastAtSource = true },
-        [MagicType.MagicResistance] = new CastEffect { File = LibraryFile.Magic, StartIndex = 200, FrameCount = 8, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true } },
+        [MagicType.MagicResistance] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 200, FrameCount = 8, Colour = None } },
         [MagicType.GreaterEvilSlayer] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 3440, FrameCount = 6, DelayMs = 50, Colour = Holy,
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 3440, FrameCount = 6, DelayMs = 50, Colour = Holy, Skip = 0 },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 3450, FrameCount = 10, Colour = Holy },
         },
-        [MagicType.Resilience] = new CastEffect { File = LibraryFile.Magic, StartIndex = 170, FrameCount = 8, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true } },
+        [MagicType.Resilience] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = None, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = None, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 170, FrameCount = 8, Colour = None } },
+        [MagicType.MassInvisibility] = new CastEffect { File = LibraryFile.Magic, StartIndex = 2080, FrameCount = 6, DelayMs = 80, Colour = Phantom, CastAtSource = true, Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 980, FrameCount = 3, Colour = Phantom, Explode = true }, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 820, FrameCount = 7, Colour = Phantom } },
         [MagicType.Resurrection] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 320, FrameCount = 7, Colour = Holy },
         [MagicType.StrengthOfFaith] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 370, FrameCount = 10, Colour = Phantom },
         [MagicType.CelestialLight] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 290, FrameCount = 9, Colour = Holy },
