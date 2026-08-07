@@ -27,6 +27,7 @@ public partial class MapWeatherLayer : Node2D
         public float Scale;
         public float Rotation;
         public float AngularVelocity;
+        public Color Colour = Colors.White;
         public double AgeMs;
         public double LifeMs;
         public bool Grounded;
@@ -90,14 +91,17 @@ public partial class MapWeatherLayer : Node2D
             p.AgeMs += ms;
             // 旧端粒子速度按约 60 ticks/s 的逻辑帧计算；Godot 的 delta 是秒。
             if (!p.Grounded) p.Position += p.Velocity * (float)delta * 60f;
-            p.Rotation += p.AngularVelocity * (float)delta;
+            // 旧端粒子每次约 10ms 更新，AngularVelocity 也是按逻辑 tick 计算。
+            p.Rotation += p.AngularVelocity * (float)delta * 60f;
 
             if (p.TextureIndex == 509 && p.AgeMs >= p.LifeMs && !p.Grounded)
             {
                 p.Grounded = true;
                 p.TextureIndex = 510;
                 p.AgeMs = 0;
-                p.LifeMs = 500;
+                // MirRainParticle switches 509 -> 510 on the next 10ms tick;
+                // every splash frame thereafter is 100ms.
+                p.LifeMs = 100;
                 p.Velocity = Vector2.Zero;
             }
             else if (p.Grounded && p.TextureIndex >= 510 && p.TextureIndex < 514 && p.AgeMs >= 100)
@@ -155,8 +159,10 @@ public partial class MapWeatherLayer : Node2D
             : 1f;
         DrawSetTransform(p.Position, p.Rotation, Vector2.One * Math.Max(0.01f, p.Scale));
         DrawTextureRectRegion(tex,
-            new Rect2(img.OffSetX, img.OffSetY, img.Width, img.Height),
-            new Rect2(0, 0, img.Width, img.Height), new Color(1, 1, 1, opacity));
+            // Particle.DrawBlendCentered(..., useOffSet:false) places the
+            // texture center at Position; weather must not use sprite offsets.
+            new Rect2(-img.Width / 2f, -img.Height / 2f, img.Width, img.Height),
+            new Rect2(0, 0, img.Width, img.Height), new Color(p.Colour, opacity));
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 
@@ -181,7 +187,8 @@ public partial class MapWeatherLayer : Node2D
             TextureIndex = 500,
             Position = new Vector2(_rng.RandfRange(0, size.X), 0),
             Velocity = new Vector2(_rng.RandiRange(-1, 0), 1),
-            Scale = _rng.RandfRange(0.05f, 1.5f), AngularVelocity = 0.1f,
+            // old SnowParticle: random.NextDouble() * 1.5F
+            Scale = _rng.RandfRange(0f, 1.5f), AngularVelocity = 0.1f,
             LifeMs = _rng.RandiRange(4000, 10000), Fade = true
         });
     }
@@ -195,7 +202,7 @@ public partial class MapWeatherLayer : Node2D
             {
                 TextureIndex = 550,
                 Position = new Vector2(size.X / 2f - i * fogWidth * 4f, size.Y / 2f),
-                Velocity = new Vector2(1, 0), Scale = 4f,
+                Velocity = new Vector2(1, 0), Scale = 4f, Colour = Colors.DarkGray,
                 LifeMs = 3600000
             });
     }
