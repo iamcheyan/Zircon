@@ -1039,6 +1039,10 @@ public partial class GameScene : Control
         AddChild(fx);
         fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = def.Blend;
+        fx.DrawType = def.DrawType;
+        fx.BlendRate = def.BlendRate;
+        fx.Opacity = def.Opacity;
+        fx.Skip = def.Skip;
         fx.FrameLight = 10;
         fx.FrameLightColour = def.Colour;
     }
@@ -1050,6 +1054,10 @@ public partial class GameScene : Control
         fx.SetupTarget(def.File, def.StartIndex, def.FrameCount, def.DelayMs, target,
             () => GetTargetRenderY(target));
         fx.Blend = def.Blend;
+        fx.DrawType = def.DrawType;
+        fx.BlendRate = def.BlendRate;
+        fx.Opacity = def.Opacity;
+        fx.Skip = def.Skip;
         fx.FrameLight = 10;
         fx.FrameLightColour = def.Colour;
     }
@@ -1060,6 +1068,10 @@ public partial class GameScene : Control
         AddChild(fx);
         fx.Setup(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = true;
+        fx.DrawType = imp.DrawType;
+        fx.BlendRate = imp.BlendRate;
+        fx.Opacity = imp.Opacity;
+        fx.Skip = imp.Skip;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
     }
@@ -1071,6 +1083,10 @@ public partial class GameScene : Control
         fx.SetupTarget(imp.File, imp.StartIndex, imp.FrameCount, imp.DelayMs, target,
             () => GetTargetRenderY(target));
         fx.Blend = true;
+        fx.DrawType = imp.DrawType;
+        fx.BlendRate = imp.BlendRate;
+        fx.Opacity = imp.Opacity;
+        fx.Skip = imp.Skip;
         fx.FrameLight = 10;
         fx.FrameLightColour = imp.Colour;
     }
@@ -1083,6 +1099,12 @@ public partial class GameScene : Control
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
             new System.Drawing.Point(fromX, fromY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
         pn.Blend = true;
+        pn.Skip = proj.Skip;
+        pn.Has16Directions = proj.Has16Directions;
+        pn.Explode = proj.Explode;
+        pn.DrawType = proj.DrawType;
+        pn.BlendRate = proj.BlendRate;
+        pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
         // 到达后播落地特效
         if (def.Impact != null)
@@ -1101,6 +1123,12 @@ public partial class GameScene : Control
             target, () => GetTargetRenderY(target), new System.Drawing.Point(fromX, fromY),
             (cx, cy) => ComputeEffectScreenPos(cx, cy));
         pn.Blend = true;
+        pn.Skip = proj.Skip;
+        pn.Has16Directions = proj.Has16Directions;
+        pn.Explode = proj.Explode;
+        pn.DrawType = proj.DrawType;
+        pn.BlendRate = proj.BlendRate;
+        pn.Opacity = proj.Opacity;
         pn.FrameLightColour = proj.Colour;
         if (def.Impact != null) pn.CompleteAction = () => SpawnImpactTarget(def.Impact, target);
     }
