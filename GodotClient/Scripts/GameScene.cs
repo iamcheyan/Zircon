@@ -1261,9 +1261,9 @@ public partial class GameScene : Control
             {
                 SpawnProjectile(def, sourceX, sourceY, x, y, projectileDelay);
             }
-            else if (def.Impact != null)
+            else if ((def.MapImpact ?? def.Impact) != null)
             {
-                SpawnImpact(def.Impact, x, y, sourceX, sourceY);
+                SpawnImpact(def.MapImpact ?? def.Impact, x, y, sourceX, sourceY);
             }
             else if (def.Source == null)
             {
@@ -1283,32 +1283,48 @@ public partial class GameScene : Control
             if (targetNode != null)
             {
                 var targetCell = GetTargetCell(targetNode);
-                var targetDirection = def.Impact?.DirectionFromCast == true
+                var targetDirection = def.TargetEffect?.DirectionFromCast == true || def.Impact?.DirectionFromCast == true
                     ? dir
                     : def.DirectionFromSource
                     ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
                     : MirDirection.Up;
-                if (def.Projectile != null)
+                if (def.TargetEffect != null)
+                    SpawnImpactTarget(def.TargetEffect, targetNode, targetDirection);
+                else if (def.Projectile != null)
                     SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
                 else if (def.Impact != null)
                     SpawnImpactTarget(def.Impact, targetNode, targetDirection);
                 else
                     SpawnCastEffectTarget(def, targetNode, targetDirection);
-                var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
-                    ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
-                foreach (var extraProjectile in targetAdditionalProjectiles)
-                    SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
+                if (def.TargetEffect == null)
+                {
+                    var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
+                        ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
+                    foreach (var extraProjectile in targetAdditionalProjectiles)
+                        SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
+                }
                 foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
             }
             else if (_objects.TryGetValue(tid, out var tgt))
             {
-                if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
-                else if (def.Impact != null) SpawnImpact(def.Impact, tgt.CellX, tgt.CellY, sourceX, sourceY);
-                else SpawnCastEffect(def, tgt.CellX, tgt.CellY, sourceX, sourceY);
-                var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
-                    ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
-                foreach (var extraProjectile in targetAdditionalProjectiles)
-                    SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, tgt, null);
+                var targetCell = new System.Drawing.Point(tgt.CellX, tgt.CellY);
+                var targetDirection = def.TargetEffect?.DirectionFromCast == true || def.Impact?.DirectionFromCast == true
+                    ? dir
+                    : def.DirectionFromSource
+                    ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
+                    : MirDirection.Up;
+                if (def.TargetEffect != null)
+                    SpawnImpactTarget(def.TargetEffect, tgt, targetDirection);
+                else if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
+                else if (def.Impact != null) SpawnImpactTarget(def.Impact, tgt, targetDirection);
+                else SpawnCastEffectTarget(def, tgt, targetDirection);
+                if (def.TargetEffect == null)
+                {
+                    var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
+                        ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
+                    foreach (var extraProjectile in targetAdditionalProjectiles)
+                        SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, tgt, null);
+                }
                 foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 foreach (var extra in def.AdditionalMapEffects)
                     SpawnImpact(extra, tgt.CellX + extra.OffsetX, tgt.CellY + extra.OffsetY, sourceX, sourceY);
@@ -1636,7 +1652,7 @@ public partial class GameScene : Control
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
     {
         var proj = def.Projectile;
-        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.Impact, additionalStartDelay);
+        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact, additionalStartDelay);
     }
 
     private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact, double additionalStartDelay = 0)
