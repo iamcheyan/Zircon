@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 using Library;
 using Library.SystemModels;
@@ -10,11 +11,24 @@ namespace ZirconClient.Scripts;
 public partial class MapLightLayer : Node2D
 {
     private const float WorldScale = 2f;
-    // 客户端不使用旧端 Night 的近乎纯黑亮度；最低使用 Twilight 档。
+    // Godot 客户端不使用旧端约 15/255 的极暗档；最低环境光固定为
+    // Twilight 的 100/255，避免夜间整张地图不可见。
     private const float MinimumAmbient = 100f / 255f;
+    private const int MaxLights = 64;
     private MapInfo _mapInfo;
     private MapView _mapView;
     private float _dayTime = 1f;
+    private Func<IEnumerable<LightSource>> _sources;
+    private ShaderMaterial _lightMaterial;
+
+    public readonly struct LightSource
+    {
+        public readonly Vector2 Position;
+        public readonly int Radius;
+        public readonly Color Colour;
+        public LightSource(Vector2 position, int radius, Color colour)
+        { Position = position; Radius = radius; Colour = colour; }
+    }
 
     public void SetMap(MapInfo info, MapView view)
     {
@@ -23,9 +37,53 @@ public partial class MapLightLayer : Node2D
         QueueRedraw();
     }
 
+    public override void _Ready()
+    {
+        // SCREEN_TEXTURE lets the light layer darken the already-rendered map and
+        // restore it around light sources. A translucent DrawCircle painted over a
+        // black rectangle cannot reveal the map underneath.
+        var shader = new Shader
+        {
+            Code = @"
+shader_type canvas_item;
+render_mode unshaded;
+uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
+uniform float ambient = 1.0;
+uniform int light_count = 0;
+uniform vec2 viewport_size = vec2(1.0);
+uniform vec2 light_positions[64];
+uniform float light_radii[64];
+uniform vec3 light_colours[64];
+
+void fragment() {
+    vec4 scene = texture(screen_texture, SCREEN_UV);
+    vec2 point = UV * viewport_size;
+    float brightness = ambient;
+    vec3 tint = vec3(1.0);
+    for (int i = 0; i < 64; i++) {
+        if (i >= light_count) break;
+        float influence = 1.0 - smoothstep(light_radii[i] * 0.35, light_radii[i],
+            distance(point, light_positions[i]));
+        brightness = max(brightness, ambient + influence * (1.0 - ambient));
+        tint = mix(tint, light_colours[i], influence * 0.22);
+    }
+    COLOR = vec4(scene.rgb * brightness * tint, scene.a);
+}
+"
+        };
+        _lightMaterial = new ShaderMaterial { Shader = shader };
+        Material = _lightMaterial;
+    }
+
     public void SetDayTime(float dayTime)
     {
         _dayTime = Math.Clamp(dayTime, 0f, 1f);
+        QueueRedraw();
+    }
+
+    public void SetObjectSources(Func<IEnumerable<LightSource>> sources)
+    {
+        _sources = sources;
         QueueRedraw();
     }
 
@@ -47,10 +105,30 @@ public partial class MapLightLayer : Node2D
             _ => Math.Max(MinimumAmbient, _dayTime),
         };
 
-        if (ambient < 0.999f)
-            DrawRect(new Rect2(Vector2.Zero, viewport), new Color(0f, 0f, 0f, 1f - ambient));
+        if (ambient >= 0.999f) return;
 
-        // 格子光用柔和圆形叠加近似原版 LightLayer 的光晕。
+        var positions = new Godot.Collections.Array<Vector2>();
+        var radii = new Godot.Collections.Array<float>();
+        var colours = new Godot.Collections.Array<Color>();
+
+        if (_sources != null)
+        {
+            foreach (var source in _sources())
+            {
+                if (source.Radius <= 0 || positions.Count >= MaxLights) continue;
+                positions.Add(source.Position);
+                // 原端使用 1024x768 的径向光纹理；当前的圆形近似此前按
+                // 1x 视觉尺寸估算，放到 2x 世界后光圈明显偏小。坐标仍
+                // 保持逻辑坐标，只扩大半径，父节点再负责最终 2x 输出。
+                // 原版光纹理为 1024x768，物体光的 scale 为
+                // 0.1 + Light * 0.02 * 2。这里的 shader 半径使用逻辑坐标，
+                // 因此把原版纹理直径除以两倍世界缩放，保持光圈覆盖范围。
+                radii.Add(256f * (0.1f + source.Radius * 0.04f));
+                colours.Add(new Color(source.Colour.R, source.Colour.G, source.Colour.B));
+            }
+        }
+
+        // 格子光使用与旧端相同的 LightScale/TileLightScaleMultiplier 量级。
         int minX = Math.Max(0, _mapView.CenterX - _mapView.ViewRangeX - 15);
         int maxX = Math.Min(_mapView.Map.Width - 1, _mapView.CenterX + _mapView.ViewRangeX + 15);
         int minY = Math.Max(0, _mapView.CenterY - _mapView.ViewRangeY - 15);
@@ -62,10 +140,20 @@ public partial class MapLightLayer : Node2D
             ref var cell = ref _mapView.Map.Cells[x, y];
             if (cell.Light <= 0) continue;
 
+            if (positions.Count >= MaxLights) break;
             Vector2 center = _mapView.CellToScreen(x, y, false) + new Vector2(24, 16);
-            float radius = 18f + cell.Light * 30f * 0.02f;
-            float alpha = Math.Clamp(cell.Light * 0.018f, 0.05f, 0.35f);
-            DrawCircle(center, radius, new Color(1f, 0.9f, 0.62f, alpha));
+            positions.Add(center);
+            // 原版格子光 scale = 0.1 + Light * 30 * 0.02。
+            radii.Add(256f * (0.1f + cell.Light * 0.6f));
+            colours.Add(Colors.White);
         }
+
+        _lightMaterial.SetShaderParameter("ambient", ambient);
+        _lightMaterial.SetShaderParameter("light_count", positions.Count);
+        _lightMaterial.SetShaderParameter("viewport_size", viewport);
+        _lightMaterial.SetShaderParameter("light_positions", positions);
+        _lightMaterial.SetShaderParameter("light_radii", radii);
+        _lightMaterial.SetShaderParameter("light_colours", colours);
+        DrawRect(new Rect2(Vector2.Zero, viewport), Colors.White);
     }
 }
