@@ -125,3 +125,6 @@
 - 其它辅助库也已完成：`MiniGames` 113、`CastleFlag` 120、`MiniMapIcon` 138、`Background` 6、`NPCImage` 93、`MonImage` 141、`PEquipB1` 752、`PEquipH1` 1128、`HorseS` 有效空库；全部 `cornerPollution=0`。
 - 三套主题地图库现已全部取得单库终点：Sand（`Animationsc/Cliffsc/Dungeonsc/Furnituresc/Housesc/Innersc/SmObjectsc/SmTilesc/Tiles5c/Tiles30c/Tilesc/Wallsc` = 148/630/14461/0/1734/0/3409/0/35/0/8570/1729 帧）、Snow（880/14122/18482/117/11234/1903/9851/224/60/520/8545/3334 帧）、Wood（1131/28913/8495/4675/13869/3749/10098/0/60/338/12997/7329 帧）；全部 `cornerPollution=0`，其中 0 帧项均为有效空库。
 - 技能辅助库 `MagicEx10` 207 帧全量通过、`MagicEx11` 为有效空库；两者均 `cornerPollution=0`。
+- 2026-08-08：P1 战斗动作回归——窗口化 Vulkan 实服 S16 审计（`GameScene --operation-audit-ext`）真实 `C.Attack` 发包节奏与 `ComputeAttackIntervalMs` 公式一致（gap=1359/1371/1386ms vs expect=1359ms）；`S.ObjectDied` 后尸体保留期内 `TargetObject` 保持指向死亡怪（D15）；`--combat-audit` 静态矩阵（攻击 800 地板/AS 减免/超重 x2、采矿 x3/x2、Shuriken 真值表、行走动画集合、转向防重）PASS。攻击动作仍由 Combat1-Combat15 承担（`MirAnimation` 无 Attack 成员，与原版一致）。
+- 2026-08-08：影子动画审计复核——`--shadow-audit` 当前代码重跑 PASS（110 库 698,766 帧；5268 帧含 Shadow 元数据全部可用；thinContent=0、longContent=0；ShadowType 49 fallback=1856、50/176/177=0），空 Shadow payload 已按原版 ShadowType 兜底而非静默丢弃。
+- 2026-08-08：UI 全套窗口审计当前代码重跑 PASS（Xvfb+llvmpipe Vulkan）：`--ui-audit` 12 项 + 扩展 30 组合计 42 PASS、0 FAIL，截图 `/tmp/ui_test.png`（1152x648）；窗口边框、字体、客户区、滚动条、按钮状态与 2x 点击命中断言全部通过。

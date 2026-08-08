@@ -13,17 +13,16 @@
 - 角色施法或场景中的动态对象更新后，人物会进一步消失；
 - 网络对象仍然正常收到，图库也没有整体加载失败。
 
-## 根因
+## 根因（最终结论）
 
-最近加入了 `MapLightLayer` 全屏光照合成。该节点使用 `SCREEN_TEXTURE` 读取已经绘制的画面，再通过一个覆盖整个视口的矩形进行环境光计算。
+`MapLightLayer` 使用 `hint_screen_texture`（SCREEN_TEXTURE）读取已绘制的画面。Godot 2D 的整屏拷贝语义是：**同一画布绘制过程中，只在第一个使用 screen_texture 的节点绘制前自动做一次整屏拷贝，后续所有使用它的节点共享这一次拷贝**（官方文档：后续节点不会再有新的拷贝；`renderer_canvas_render_rd.cpp` 中 `material_screen_texture_cached` 是每次 `canvas_render_items`（即每个 CanvasLayer）调用内的局部变量）。
 
-原来的节点顺序是：
+因此拷贝点被"劫持"：任何更早绘制的 screen_texture 用户都会把拷贝时刻固定在它自己的绘制位置，之后才绘制的画面不包含在采样里。劫持源包括：
 
-1. 地图；
-2. 角色、怪物和动态特效；
-3. `MapLightLayer` 全屏矩形。
+- 地形 Blend 行（`MapTerrainRow.BlendOnly`，`ZIndex = TerrainMiddle(y) = y*4`，很低）——角色**移动**时新滚动进视口的行；
+- 施法/命中特效（`fx.Blend=true`，`ZIndex = ObjectEffect(y) = y*4+3`）——**施法**时。
 
-同时，角色和动态对象的 Z 值仍然低于光照层（光照层为 `RenderOrder.FinalEffects + 1`）。在 Godot 的 CanvasItem 绘制流程中，光照 Shader 读取到的屏幕内容并不可靠地包含其后续动态节点。全屏矩形随后覆盖了角色和动态对象，因此造成“图库已加载但人物不见”的假象。
+若光照层仍在世界画布内（哪怕 ZIndex=3401 最大），它采样到的拷贝缺少其后绘制的对象/特效，再用该残缺画面覆盖全屏 → 表现为"移动或施法时所有贴图消失"，静止时（无 blend 行、无特效）光照层是第一个用户 → 亮度正常。旧客户端不存在此问题：LLayer 是在 DrawObjects()（地形+对象+特效）全部完成后的独立全屏合成。
 
 这不是地图 `.map` 文件损坏，也不是 ZL 贴图批量丢失。生产日志确认：
 
@@ -33,28 +32,52 @@
 
 角色日志也确认身体、头发、头盔和武器图库均成功加载。
 
-## 修复
+## 修复（最终方案）
 
-在 `GodotClient/Scripts/GameScene.cs` 中，将光照层从所有动态对象之上移到地图底层之后：
+把光照层移入**独立 CanvasLayer（Layer=1）**，并在其上挂载 `MapLightLayer`：
 
 ```csharp
-_lightLayer = new MapLightLayer
+var lightCanvas = new CanvasLayer
 {
-    ZIndex = RenderOrder.TerrainBase + 1
+    Layer = 1,
+    Transform = new Transform2D(0f, Vector2.One * WorldScale, 0f, Vector2.Zero),
 };
+_lightLayer = new MapLightLayer { ZIndex = RenderOrder.LightOverlay };
+lightCanvas.AddChild(_lightLayer);
+AddChild(lightCanvas);
 ```
 
-修复后的绘制关系为：
+绘制关系为：
 
-1. 地图基础层；
-2. `MapLightLayer`；
-3. 地形中层和前景；
-4. 角色、怪物、NPC、物品；
-5. 动态特效和 UI。
+1. 世界画布（默认层）：地图、地形 Blend 行、对象、天气粒子、施法特效——完整绘制；
+2. `CanvasLayer(Layer=1)`：光照层在此触发**一次全新的整屏拷贝**，必然采样到完整世界，再叠加环境光与光源光斑；
+3. `CanvasLayer(Layer=10)`：UI 窗口。
 
-这样全屏光照矩形不会再覆盖角色和动态对象。地图建筑、前景和角色继续由各自的渲染节点正常绘制。
+关键点：
 
-## 验证
+- CanvasLayer 按层索引排序、每层独立渲染，`canvas_render_items` 每层各调用一次 → 拷贝标志每层重置，层内首个 screen_texture 用户（光照层）拿到的是本层绘制点的新拷贝，不受世界画布内低 ZIndex 劫持源影响；
+- 世界画布内 Blend 行/特效自身的自动拷贝语义不变（它们只需采样身后地形），不会退化；
+- CanvasLayer Transform 用 2x 与根节点 `Scale = WorldScale` 一致，`MapLightLayer._Draw` 仍用逻辑坐标，无需改动；`ZIndex = LightOverlay` 保留层内排序；
+- UI（小地图/大地图/窗口）在 Layer=10，位于光照层之上，不受影响（与原版 HUD 在 LLayer 之后一致）。
+
+## 验证（2026-08-08 重做）
+
+真实 Vulkan 视口（Wayland，viewport 2304x1296）`--light-render-audit` 三档全 PASS，新增"拷贝点劫持探针"（低 Z 黑底 + screen_texture 劫持灰块 + 白板）读数与环境光精确一致——证明白板被正确压暗（采样含全部对象）：
+
+```text
+[LightRenderAudit] PASS night   ambient=0.250 probe=(0x404040ff) lum=0.251
+[LightRenderAudit] PASS twilight ambient=0.392 probe=(0x646464ff) lum=0.392
+[LightRenderAudit] PASS default ambient=0.420 probe=(0x6b6b6bff) lum=0.420
+```
+
+若光照层仍在世界画布末尾，探针读数会落到黑底（≈0）而 FAIL。headless 回归：
+
+- `[ProjectileAudit] stage0 PASS travel=200.3px duration=198ms≈192ms`、`stage1 PASS pos=(192,64)`；
+- `[DeadTargetAudit] PASS dead-target fallback at destCells + corpse anchored parity`；
+- `[LayerOrderAudit] PASS`、`[ActionAudit] PASS all action sequences`（27 序列）、`[MagicFrameAudit] PASS skills=142`；
+- `dotnet build GodotClient/ZirconClient.csproj --no-incremental`：0 警告、0 错误。
+
+### 中间状态验证（TerrainBase+1 方案，已被上方 CanvasLayer 方案取代）
 
 使用真实服务器和图形后端重新进入 Bichon Town，并生成生产截图：
 
@@ -79,11 +102,11 @@ _lightLayer = new MapLightLayer
 
 ## 防止回归
 
-- 使用 `SCREEN_TEXTURE` 的全屏 CanvasItem 不能默认放在角色和动态对象之上；
-- 修改渲染层级后，必须运行真实图形截图，而不能只依赖 headless 日志；
-- 地图、角色和特效应分别检查“资源是否加载”和“节点是否实际出现在最终画面”两类问题；
-- 生产截图审计应保留角色、建筑、怪物和施法特效作为固定检查项；
-- 如果以后要让环境光影响角色和特效，应改为统一的最终合成方案，不能简单把全屏 Shader 再移回所有对象之上。
+- 全屏 `hint_screen_texture` 节点必须放在**独立 CanvasLayer** 中，让每层渲染触发一次新的整屏拷贝；放在世界画布内（无论 ZIndex 多大）都会因首用户劫持拷贝点而采样残缺画面；
+- `--light-render-audit` 的"拷贝点劫持探针"（低 Z 黑底 + screen_texture 劫持灰块 + 白板）会断言白板读数 ≈ ambient，作为本回归的固定检查项；任何把光照层移回世界画布的改动都会使其 FAIL；
+- 修改渲染层级后，必须运行真实图形截图（`--light-render-audit`、`--render-audit`），不能只依赖 headless 日志；
+- 地图、角色和特效应分别检查"资源是否加载"和"节点是否实际出现在最终画面"两类问题；
+- 生产截图审计应保留角色、建筑、怪物和施法特效作为固定检查项。
 
 ## 后续技能贴图回归：方形背景、偏移和火球残影
 

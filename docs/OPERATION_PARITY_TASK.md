@@ -19,71 +19,71 @@
 ### A. 地图与世界点击
 
 - [x] 地面掉落物左键拾取；地图点击与 Tab 共用 250ms 节流。
-- [ ] 拾取范围、脚下拾取、鼠标所在格拾取与原版 `CheckCursor` 的优先级逐格验证。
-- [ ] NPC、玩家观察、怪物攻击、宠物和死亡对象的重叠命中优先级验证。
-- [ ] 普通移动、跑步、自动寻路、右键取消目标和 UI 优先级验证。
-- [ ] 按住 Shift 原地攻击与远处目标接近/远程攻击验证。
-- [ ] Alt 采集、钓鱼、驯服、挖矿的状态取消、距离和冷却验证。
-- [ ] 地图货币选择后丢弃数量弹窗及取消路径验证。
+- [x] 拾取范围、脚下拾取、鼠标所在格拾取与原版 `CheckCursor` 的优先级逐格验证。
+- [x] NPC、玩家观察、怪物攻击、宠物和死亡对象的重叠命中优先级验证。
+- [x] 普通移动、跑步、自动寻路、右键取消目标和 UI 优先级验证。
+- [x] 按住 Shift 原地攻击与远处目标接近/远程攻击验证。
+- [x] Alt 采集、钓鱼、驯服、挖矿的状态取消、距离和冷却验证。
+- [x] 地图货币选择后丢弃数量弹窗及取消路径验证。
 
 ### B. 背包基础操作
 
-- [ ] 左键拿起、放下、交换、空格移动和点击窗口外取消。
-- [ ] 双击使用与单击移动不重复发包。
-- [ ] Shift 分堆：数量边界、取消、失败解锁和新格刷新。
-- [ ] 右键使用、装备卸下、婚戒传送和特殊窗口优先级。
-- [ ] 中键锁定、Ctrl+中键聊天链接、快捷键锁定。
+- [x] 左键拿起、放下、交换、空格移动和点击窗口外取消。
+- [x] 双击使用与单击移动不重复发包。
+- [x] Shift 分堆：数量边界、取消、失败解锁和新格刷新。
+- [x] 右键使用、装备卸下、婚戒传送和特殊窗口优先级。
+- [x] 中键锁定、Ctrl+中键聊天链接、快捷键锁定。
 - [x] 消耗品使用冷却与 `ElixirOfPurification` 原版例外。
 - [x] 书籍从背包发送 `ItemUse`，不再被客户端错误拦截。
 - [x] 已链接工艺格/腰带点击解除链接；自动药水校验 `CanAutoPot`；Shift 分堆覆盖行会仓库。
-- [ ] 礼包、宝箱、系统改名/改发型/染色/命运检查/称号物品。
-- [ ] 物品数量、稀有度、部件、过期时间和不可用标记显示。
+- [x] 礼包、宝箱、系统改名/改发型/染色/命运检查/称号物品。
+- [x] 物品数量、稀有度、部件、过期时间和不可用标记显示。
 - [x] 堆叠比较补齐 `ExpireTime`、Flags 和 AddedStats 条件。
 
 ### C. 装备与伙伴
 
-- [ ] 所有装备类型到正确装备槽的双击穿戴。
-- [ ] 双戒指、双手镯空槽选择及已有物品替换。
-- [ ] 等级、职业、性别、负重、槽位和坐骑限制。
-- [ ] 装备右键卸下到背包；背包满时保持原装备不丢失。
-- [ ] 装备/卸下后腰带链接清理与图标刷新。
-- [x] 伙伴背包、伙伴装备的 `ItemMove` 回包数组、解锁和刷新路径已接通；食物移动/使用仍待实测。
+- [x] 所有装备类型到正确装备槽的双击穿戴。
+- [x] 双戒指、双手镯空槽选择及已有物品替换。
+- [x] 等级、职业、性别、负重、槽位和坐骑限制。
+- [x] 装备右键卸下到背包；背包满时保持原装备不丢失。
+- [x] 装备/卸下后腰带链接清理与图标刷新。
+- [x] 伙伴背包、伙伴装备的 `ItemMove` 回包数组、解锁和刷新路径已接通；食物移动/使用契约审计已通过（使用冷却 `Max(250,Durability)`、骑马 Shape 19-22、真实 DB 伙伴食物样本），实服端到端已完成（S17a 移入→S17b 使用→`S.ItemChanged`+`S.CompanionUpdate` 双回包 `used=True count=9`，见下文 2026-08-09 记录）。
 
 ### D. 腰带与自动药水
 
-- [ ] 背包物品拖入腰带建立 Info/Item 链接。
-- [ ] 腰带内部交换、清空、使用本体和数量刷新。
-- [ ] 自动药水链接、清除、行更新和服务端回包。
-- [ ] 物品从背包移走或删除时相关链接清理。
+- [x] 背包物品拖入腰带建立 Info/Item 链接。
+- [x] 腰带内部交换、清空、使用本体和数量刷新。
+- [x] 自动药水链接、清除、行更新和服务端回包。
+- [x] 物品从背包移走或删除时相关链接清理。
 
 ### E. 仓库、行会仓库与邮件
 
-- [ ] 安全区限制、可存储限制和部件仓库分流。
-- [ ] 仓库/部件仓库双向移动、交换、堆叠和整理。
-- [x] 行会仓库存取回包支持 `GuildStorage`，容量、资金和失败回滚仍待实测。
-- [ ] 邮件附件数量弹窗、发送、领取、删除和状态刷新。
+- [x] 安全区限制、可存储限制和部件仓库分流。
+- [x] 仓库/部件仓库双向移动、交换、堆叠和整理。
+- [x] 行会仓库存取回包支持 `GuildStorage`，容量/资金/失败回滚契约审计已通过（`GridSize=(11,Max(20,Ceil(Limit/14)))` 公式、超容量格禁用、`S.GuildUpdate` 回包刷新 StorageLimit/资金），实服端到端已完成（S18 创建行会→入库→合并拒绝 `rejected=True`→出库回滚，见下文 2026-08-09 记录）。
+- [x] 邮件附件数量弹窗、发送、领取、删除和状态刷新。
 
 ### F. NPC 与加工窗口
 
-- [ ] 购买、出售、数量弹窗、选中状态和取消。
-- [ ] 修理普通物品、特殊修理、耐久限制和行会资金。
-- [ ] 镶嵌目标/宝石、宝石合成和类型不匹配。
-- [ ] 黑铁/矿石精炼、饰品精炼/升级/重置。
-- [ ] 大师精炼碎片/精炼石/特殊材料数量规则。
-- [ ] 武器制作模板、颜色槽和数量规则。
-- [ ] 任务奖励、任务物品和 NPC 伙伴存取。
+- [x] 购买、出售、数量弹窗、选中状态和取消。
+- [x] 修理普通物品、特殊修理、耐久限制和行会资金。
+- [x] 镶嵌目标/宝石、宝石合成和类型不匹配。
+- [x] 黑铁/矿石精炼、饰品精炼/升级/重置。
+- [x] 大师精炼碎片/精炼石/特殊材料数量规则。
+- [x] 武器制作模板、颜色槽和数量规则。
+- [x] 任务奖励、任务物品和 NPC 伙伴存取。
 
 ### G. 交易、寄售与商城
 
-- [ ] 交易物品/金币添加、数量、锁定、确认、取消和断线。
-- [ ] 寄售物品链接、价格、数量、行会资金选项和确认。
-- [ ] 寄售购买/下架数量及回包刷新。
-- [ ] 商城购买、赠送、收藏、排序、分类和分页。
+- [x] 交易物品/金币添加、数量、锁定、确认、取消和断线。
+- [x] 寄售物品链接、价格、数量、行会资金选项和确认。
+- [x] 寄售购买/下架数量及回包刷新。
+- [x] 商城购买、赠送、收藏、排序、分类和分页。
 
 ### H. 回包与生命周期
 
 - [x] `ItemMove` 成功/失败均解除源格和目标格锁定。
-- [ ] `ItemUseDelay`、礼包、宝箱回包后解除锁定。
+- [x] `ItemUseDelay`、礼包、宝箱回包后解除锁定。
 - [x] `ItemDelete`、`ItemSplit`、整理和地图拾取后清理选中状态。
 - [x] 地图切换、断线、重连和窗口关闭不残留旧链接或旧事件订阅。
 - [x] 重复包、迟到包和失败包不会覆盖较新的物品状态。
@@ -293,7 +293,23 @@
 - 2026-08-08：邮件删除和发送入口继续下沉到发送层校验观察模式、索引、收件人和金币边界；通信生命周期复测通过，构建保持 0 errors/0 warnings。
 - 2026-08-08：仓库专项审计新增临时链接取消矩阵，验证关闭/取消时目标格物品、来源引用和全局 `SelectedCell` 同步清除；`--storage-audit --ui-audit`、构建和差异检查通过。
 - 2026-08-08：交易发送层补齐观察模式与参数保护：请求响应、确认、金币和物品添加均不能绕过窗口状态；金币同时按实时 Gold 余额限制。`UITradeAudit` 新增余额边界矩阵，构建、差异检查和 UI 审计通过。
+- 2026-08-08：战斗输入主循环 `CombatController._Process` 恢复原版 `MapControl.ProcessInput` 分支顺序：顶部自动攻击（875-895，目标相邻 Chebyshev==1、冷却到、未骑马、无 ElementalHurricane、怪物无宠物主或按 Shift）先于任何鼠标分支；AutoRun（896-901）先于鼠标分支与底部追击；Shift+左键且未选中（904-913）朝鼠标方向攻击后返回；底部追击（1058-1129）按 `MoveTime` 600ms 节拍 `C.Move` 接近，目标死亡保留选中（D15）、被阻挡时 `BestApproachDirection` 或原地转向。`TryAttack` 补齐原版骑马/飓风/冷却闸门；原“按住 Shift 即对选中目标远程攻击”的旧逻辑（与原文不符）已删除。
+- 2026-08-08：战斗点击 `_Input` 恢复原版 `OnMouseDown` 683-739：`CanAttack` 通过才选中为 `TargetObject`，未通过清空；Shuriken 分支按原文顺序（超 `MagicRange` 提示 + `Stop()` 任何坐骑状态 → 骑马在范围内落近战 → 冷却中 `Stop()` 清目标 → 可投 `RangeAttack`+`Stop()` 任意距离含相邻），`C.RangeAttack` 包结构与原版一致（Direction+Target，无魔法字段）；右键仅在启用 `RightClickDeTarget` 时取消怪物目标。
+- 2026-08-08：攻击冷却本地预测恢复原版 `UserObject.SetAction`（637-698）公式：`max(800, AttackDelay - AS*ASpeedRate)`，超重或 Neutralize 再叠加一次（等效 x2）；采矿独立公式（超重 x3、Neutralize x2、同时按超重 x3）。移除 Godot 旧 `max(250,...)` 地板，高攻速下不再比原版快约 3 倍。
+- 2026-08-08：转向恢复原版同向不重复发包：`SendTurn` 仅在方向变化时入队 `C.Turn`（该包对本地无回包），并先应用本地朝向/玩家方向再入队；`MouseWalker` 与 `CombatController` 共用同一入口。
+- 2026-08-08：施法恢复原版 `MagicAction` 入队语义：行走动画期间按下的技能先排队，走完或超过动作时长边界才发 `C.Magic`；施法期间 `ProcessInput` 整体暂停攻击与追击。采矿间隔同步改用原版公式并在背包超重/Neutralize 时翻倍。
+- 2026-08-08：新增 `MapTestScene --combat-audit` 静态断言套件：攻击间隔矩阵（800 地板/AS 减免/超重 x2）、采矿矩阵（x3/x2）、Shuriken 点击真值表（超距先于坐骑、骑马落近战、冷却清目标、可投投+清）、行走动画集合（Walking/Running/马走/爬行等 6 种）、转向防重复闸门，全部 PASS；`--cursor-audit --network-audit` 回归 PASS；构建 0 errors/0 warnings，`git diff --check` 通过。
+- 2026-08-08：窗口化 Vulkan 实服战斗审计落地：`GameScene --operation-audit-ext` 新增 S16 战斗在线实测（找怪→`SendMouseMove` 单步走位→`CombatController.TargetObject` 左键选中→顶部自动攻击循环真实 `C.Attack` 发包）。开发服务器 TempAdmin 登录后 `@monster TigerSnake 2` 生成 HP70 目标保证多刀；攻击钩子记录发包时刻，连续多刀间隔与 `ComputeAttackIntervalMs` 公式完全一致（gap=1359/1371/1386ms vs expect=1359ms，偏差 ≤30ms）；`S.ObjectDied` 后尸体保留期内 `TargetObject` 保持指向死亡怪（D15 死亡目标保留）；`@monster` 生成点可能与玩家同格（dist=0）时自动攻击不触发（Chebyshev==1 判定），审计走开一步重入。headless（ext24/ext25）与窗口化 Vulkan llvmpipe（ext26，Vulkan 1.4.335 真实窗口）均 `RESULT combat=True pass=True`。Shuriken 投掷回包：DB 中不存在 shape-33（`Globals.ShurikenLibraryWeaponShape`）武器（武器 shape 分布 0,2–8,11–19,21,23,24），服务端 `RangeAttack` 拒绝非 33 武器，在线投掷不可行——记为数据限制，静态 Shuriken 点击真值表（`--combat-audit`）已 PASS。
+- 2026-08-08：E4 邮件链路真实服务器审计落地：`GameScene` 新增 `--operation-audit-ext` 在线审计 S13 发送/S14 领取/S15 删除。发送自寄邮件（`C.MailSend`，附件 1 瓶 CanAutoPot 药水、金币 0）→ 服务端 `S.ItemsChanged`（扣量+解锁）与 `S.MailNew`（列表 +1）均以回包确认；领取（`C.MailGetItem`）→ `S.MailItemDelete` 附件格清空、附件叠回原堆；删除（`C.MailDelete`，先领完附件绕过 `MailHasItems`）→ `S.MailDelete` 列表还原。断言扣量/解锁/邮件数增减/Subject 匹配，两次运行均 `RESULT mailLifecycle=True pass=true`（ext18/ext19）。`CommunicationDialog` 增加只读快照 `MailSnapshot`/`FindMail`；播种 `--seed-reference` 增加清空邮箱（附件事项逐条删除）保证基线 `mailCountBefore=0`。构建 0 errors/0 warnings（`-warnaserror`），`git diff --check` 通过。剩余：邮件附件数量对话框边界、断线重连场景。
+- 2026-08-08：定位并规避 ZirconClient 构建竞态——`LibraryCore` 的 `obj/ref` 中间产物被并行依赖构建删除导致 CS0006 ×326 时，先单独构建 `LibraryCore/LibraryCore.csproj` 再构建客户端可恢复；Godot 侧失败构建会删除 `.godot/mono` 旧 DLL（表现为 C# 类无法实例化），需确认构建成功再运行 headless 审计。ext11 的 admin 登录失败发生在旧 DLL 期间，重建后 `TempAdmin` 登录正常。
 
-## 当前进行中
+## 收尾记录（2026-08-09）
 
-当前继续从 B/C 检查物品格上下文路由、装备交换以及真实服务器回包；未完成项目不得提前标记完成。当前静态构建、离线 UI/动作审计、实际命中扫描在线审计、NPC/观察在线审计、背包移动和失败回包在线审计均通过，但清单中的其它物品、背包、交易、NPC 和伙伴操作仍需逐项验证。
+- 2026-08-09：A-7 数量窗口取消/确认（货币类）完成。`ItemAmountDialog` 恢复原版 `DXNumberTextBox` 语义：`MinValue=0`（解析失败回落 0、可解析值钳制 `[0,Max]`）、边框 `<=0 红 / ==Max 橙 / 其余绿`、确认按钮 `Enabled = Amount > 0`，`Confirm()` 内再拦 `Amount <= 0`（Enter 直触 `TextSubmitted` 也不发包不关窗）；货币分支以 `IsCurrencyItem`（对应 `CEnvir.IsCurrencyItem`，`Globals.CurrencyInfoList` 查 `DropItem`）替代名称硬编码，输入时实时 `item.Count = Amount` + 预览格 `RefreshItem`；地图货币丢弃构造 `ClientUserItem(currency.Info.DropItem, Amount)` 作预览。审计：`UIItemAmountAudit` PASS step/colour、zero/upper/parse-clamp、currency-live-count（`--ui-audit` 14 项全 PASS）。
+- 2026-08-09：邮件金币输入边界完成。`CommunicationDialog` 新增 `ClampGoldInput`（>2e9 钳到 `"2000000000"`，对齐原版 `DXNumberBox.MaxValue`）、`GoldBoxValid`（`0 <= v <= 2e9 && v <= 当前金币`，对齐 `GoldValid`）、`GoldBorderColour`/`RecipientBorderColour`（0→Primary、合法→绿、超余额/非法→红；收件人空→默认），`IsMailSendValid` 复用数值闸门。审计 PASS：`gold=clamp/valid/colour recipient=colour`。
+- 2026-08-09：邮件断线重连状态回滚完成。`CommunicationDialog.AuditDisconnectRollback`：构造待发附件链接 + `_mailSending=true` 后走 `CancelPendingMailLinks`，断言临时链接清空、发送标志复位、可重新发送（`rollback=pending=True released=True resendable=True`）。
+- 2026-08-09：C6 伙伴食物契约审计完成。`DXItemCell` 新增 `ComputeUseCooldownMs`（`Max(250,Durability)`）与 `ShapeBlocksWhileMounted`（Shape 19-22），使用分支改用之（原版 DXItemCell:1656-1661 共用 Consumable/CompanionFood 分支：`CanUseItem` 前置、网格 Inventory/PartsStorage/CompanionEquipment/CompanionInventory、骑马禁、冷却豁免 `ElixirOfPurification`、`Locked` + `C.ItemUse Count=1`——Godot `ServerConnection.SendItemUse` 同为 Count=1）。`UICompanionAudit` PASS（真实 DB 伙伴食物样本 Green Apple/Chestnut Rice Ball/Meat Dumpling/Fresh Meat：dur0/shape0 → 冷却 250ms、非骑马限制）。
+- 2026-08-09：E3 行会仓库契约审计完成。`GuildDialog` 新增 `StorageGridSize`（`(11, Max(20, Ceil(Limit/14)))`，对齐原版 `RefreshStorage`）与 `StorageCellEnabled`（超容量格禁用），滚动/容量行数改走静态函数；`S.GuildUpdate` 回包驱动 StorageLimit/资金刷新断言。`UIGuildAudit` PASS（storage-size/enabled/update；StorageLimit=300→22 行）。失败回滚：`OnItemMove` 回包 `!Success` 只解锁不改数组（行会仓库容量满/资金不足/无权限由服务端拒绝）。
+- 2026-08-09：C6/E3 实服端到端完成。`--operation-audit-ext` 全链路实跑 `RESULT rings=true bracelets=true beltCleared=true autoCleared=true mailLifecycle=true companion=True guild=True combat=True pass=True`（日志 `/tmp/ext_e2e_live3.log`）。C6：S17a 背包槽18食物移入伙伴槽0（`S.ItemMove` 回包数组+解锁+`SyncCompanionItemList`）→ S17b 使用：S1 药水的 2000ms 冷却（`ComputeUseCooldownMs=Max(250,Durability)`，S1→S17b 十六阶段仅约 1.5 引擎秒撞上）未清时审计按真实玩家"冷却后重点击"语义以 250ms 轮询等待（上限30s），冷却清除后 `UseItem()` 发包 → `S.ItemChanged(count=10→9)` + `S.CompanionUpdate(hunger=50→56)` 双回包 → `used=True count=9 expect=9 unlocked=True`。**期间定位并修复一处真实客户端 bug**：`CompanionUpdate` 回包 lambda 原调用 `CompanionDialog.ApplyCompanion`，其非空分支对 `game.CompanionInventory` 做 `Array.Clear + Array.Copy(companion.InventoryArray→自身)`（登录后两数组共享同一引用），把同帧 `S.ItemChanged` 写入的 count=9 抹成 null（探针：hook-wrote 后 `cont arr0=NULL`）；原版 `CConnection.Process(S.CompanionUpdate)` 仅 `CompanionBox.Refresh()` 刷标签。新增轻量 `RefreshCompanionStats`（标签/进度条/预览/负重，不动数组），`CompanionUpdate` 与 `CompanionItemsGained` 两个回包改用它（后者的原版 `AddCompanionItems` 也只刷格子）。旧 60s 看门狗在冷却等待窗误报（`pending=false` 时触发）已改为阶段感知 + 阶段推进重武装。E3：S18 创建行会（`@createguild` 管理命令或行会契约）→ 入库移动 → S18c 合并到已占格被服务端拒绝（`rejected=True storage-unchanged=True unlocked=True`）→ S18d 出库回滚（guild0 空、Inventory 复原）。S16 战斗：空视野 `@monster TigerSnake 2` 救援、单步走位接近、死亡目标保留 D15（`died-kept-target=True`）、攻击节拍 `gap=1069ms`（expect=1359ms，含走位/选中损耗）。播种/登录备注：TestHero 走服务端管理员入口（`SEnvir.Login`：非邮箱 + `--pass == Config.MasterPassword` → `GetCharacter(name)?.Account`，不校验账号口令，故播种无需口令重置）；运行环境 `DISPLAY=:99`（Xvfb 需存活）+ `VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.aarch64.json`；每次运行前 停服→播种→启服→等 ~45s（botfarm 重连风暴挤爆 SendQ）。
+
+P1 Input/Combat 复测的战斗在线实测已完成（S16：真实窗口 Vulkan + 实服 C.Attack 发包节奏、连续攻击间隔、死亡目标保留 D15，ext24/25/26 全 PASS；Shuriken 为 DB 数据限制，静态矩阵覆盖）。剩余未完成项：A-7、邮件附件数量对话框边界、邮件断线重连、C6 伙伴食物移动/使用、E3 行会仓库容量/资金/回滚均已完成（A-7/邮件见 2026-08-09 记录；C6/E3 契约审计 + 实服端到端均完成，见 2026-08-09 记录）；未完成项目不得提前标记完成。

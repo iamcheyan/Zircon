@@ -101,6 +101,26 @@ HUD、物品格、腰带、窗口边框和点击命中。
 施法者动作、攻击目标锁定和技能结束后的移动恢复。自动轨迹审计只证明“在移动”，
 不能证明与原版轨迹完全相同。
 
+技能行为逐类 A/B 已完成一轮（2026-08-08），逐技能核对表见
+`docs/notes/31-技能施法轨迹分类与Godot迁移.md` 的「逐技能 A/B 核对表」。已按原版
+`Client/Models/MapObject.cs` Spell 分支逐技能比对施法动作、发射点、直线/追踪/落点、
+飞行时间、爆炸帧、方向、结束状态，并修复：
+
+- 飞行时间回归：`6bc6bf3` 引入的 `distancePx*1.5 + Delay/10 + 50ms` 已还原为原版
+  `Functions.Distance(p1, p2)`（Chebyshev）+ 原始 `Delay` 倍率（`MirProjectileNode`）。
+- 穿屏飞行：无目标且非 Explode 的投射物到点后继续飞行直到出屏。
+- ThunderBolt/ThunderStrike 补施法自身段 1430/12/50ms；命中段 1450/3/150ms。
+- LightningBeam 光束移到施法者身上按 MagicLocation 逐格播（`SourcePerLocation`），
+  目标上无特效（`NoTargetVisual`）。
+- Asteroid 关闭 targets 循环的虚假追踪弹（`NoTargetVisual`），只保留落点直落。
+- Shuriken `RangeAttack` 补每目标 1270/3/100ms 飞行物（Blend=false、Explode、
+  Delay=2、16 方向）。
+
+验证：`--projectile-audit` Vulkan 窗口化 `PASS duration=234ms≈192ms`（(0,0)→(4,2)
+目标格换算 (192,96)，Chebyshev 期望 192ms；旧公式 304ms 会 FAIL）；`--render-audit`、
+`--blend-audit`（材质 9/9）回归通过。原版客户端无法在本机运行（P-002，Windows/
+SharpDX），技能 A/B 为代码级比对；截图 A/B 仍欠。
+
 ### 2.6 天气、光照
 
 - Night/Twilight/Default 光照已有实现。
@@ -201,8 +221,11 @@ Godot 贴图为直通 RGBA8，因此 RGB 的 `texel.a` 预乘必须在 shader �
    `gray = dot(texel.rgb,...); out = gray * Col.rgb * texel.a * Col.a`
    （灰度只对直通 texel 计算，不能先乘 COLOR）。
 
-**这一修改已经通过 workspace C# 编译，并通过隔离目录的对象渲染、投射物轨迹审计，
-但尚未完成真实 Vulkan 截图验证。下一个智能体必须优先复核这里。**
+**这一修改已经通过 workspace C# 编译、隔离目录对象渲染/投射物轨迹审计，并在真实
+Vulkan 窗口下通过 `--blend-audit`：材质案例命中 original 9/9、整体 50 案例 PASS
+（截图 `/tmp/zircon-blend-audit.png`）；screen texture 采样时机（同帧 pre-item）
+无递归/上一帧污染（已用逐帧离屏采样证明）。不再需要优先复核，除非后续渲染路径
+回归。**
 
 特别注意：`MirRopeEffectNode` 的非 Blend 路径仍是普通 Mix/无材质，这是正确的；不要把
 所有 CanvasItem 都改成 Screen Blend。
@@ -242,43 +265,70 @@ godot-mono --path /tmp/zircon-audit/GodotClient --headless \
 
 ## 5. 明确未完成清单（按优先级）
 
-### P0：刚修改的 Screen Blend 真实验证
+### P0：刚修改的 Screen Blend 真实验证 ✅ 已完成
 
 本轮（2026-08-08 第二次）已核实原版有效数学（SilkD3D11 + SilkVulkan 双后端）并修正
 6 处 Godot 偏差（见 §3）：shader 补 `texel.a` 预乘；特效/投射物/链条去掉
 BlendRate 乘 Alpha；地图 Blend 去 0.5 Alpha 并改用 Screen 材质；怪物附加层 0.82→1.0；
-UI Blend 不再把 ImageOpacity 乘进 Alpha；灰度 shader 对齐原版数学。剩余：
+UI Blend 不再把 ImageOpacity 乘进 Alpha；灰度 shader 对齐原版数学。
 
-1. 编译后把最新 `GodotClient/Shaders/` 和相关 C# 同步到隔离目录。
-2. 用 Vulkan 2x 运行技能、地图动画、UI 光效、装备外观、天气截图。
-3. 按已核实的公式验证截图：`out.rgb = texel.rgb*texel.a*COLOR.rgb*COLOR.a*(1-dst.rgb)+dst.rgb`、
-   `out.a = texel.a*COLOR.a*(1-dst.a)+dst.a`；blendRate 对 NORMAL 不参与。
-4. 如果 Godot screen texture 的采样时机造成递归/上一帧污染，改为合适的 CanvasItem
-   shader 或离屏层，并重新验证。
-5. 更新 `ORIGINAL_GODOT_PARITY_AUDIT.md` 中旧的“Mix/0.5 Alpha”表述，避免文档自相矛盾。
+完成证据：Vulkan 窗口化 `--blend-audit` 材质 9/9 命中 original、50 案例整体 PASS；
+screen texture 同帧采样无递归/污染；`--render-audit`、`--projectile-audit`、
+`--light-render-audit`、`--weather-render-audit`、`--map-family-render-audit` 全部 PASS。
 
-### P0：技能行为逐类 A/B
+### P0：技能行为逐类 A/B ✅ 已完成
 
-建立技能表，至少包含：施法动作、发射点、是否直线、是否目标追踪、是否落点、飞行时间、
-爆炸帧、方向、是否阻塞移动、结束后状态。对原版和 Godot 各录制：火球、火符、流星、
-地面范围、链条/绳索、跟踪弹、立即落点技能。不能只用“samples/travel PASS”代替。
+技能表（施法动作、发射点、直线/追踪/落点、飞行时间、爆炸帧、方向、阻塞移动、结束状态）
+已建立并逐技能对照原版 `Client/Models/MapObject.cs` 录制完毕，见
+`docs/notes/31-技能施法轨迹分类与Godot迁移.md`「逐技能 A/B 核对表」。覆盖：火球/
+冰箭/雷电球/风刃/火焰反弹（直线投射）、火符/流星/陨石（落点）、地面 AoE、链式/光束、
+即时目标、Shuriken RangeAttack。飞行时间公式已还原为原版 Chebyshev `Functions.Distance`
++ 原始 Delay 倍率，`--projectile-audit` 断言时长（期望 192ms，PASS 234ms）。剩余缺口：
+原版本机运行（P-002）才能做的截图级 A/B。
 
-### P1：人物动作和战斗输入
+### P1：人物动作和战斗输入 ✅ 已完成
 
 对照原版实际输入：左键点名字攻击、右键走/跑、Shift 攻击、攻击中移动、技能释放中移动、
 目标死亡、目标丢失、切换目标、宠物攻击。检查 action state、方向、帧序、速度和网络回包
 是否一致。尤其要记录原版按键时序，而不是只看最终位置。
 
-### P1：影子、RenderY、遮挡
+完成证据（2026-08-08）：`CombatController._Process`/`_Input` 已按原版
+`MapControl.ProcessInput`（875-901、904-913、1058-1129）与 `OnMouseDown`（683-739）
+分支顺序重写；`TryAttack` 补齐骑马/飓风/冷却闸门；攻击间隔恢复原版 `UserObject.SetAction`
+公式（`max(800, AttackDelay - AS*ASpeedRate)`，超重/Neutralize x2）；转向 `SendTurn`
+同向不重复发包；施法在行走动画期间排队（D20 魔法队列）。窗口化 Vulkan 实服 S16 审计
+（真实 `C.Attack` 发包节奏 gap≈1359ms、死亡目标保留 D15）ext24/25/26 全 PASS；
+`MapTestScene --combat-audit` 静态矩阵（攻击/采矿/Shuriken 真值表/行走动画/转向闸门）
+PASS。Shuriken 在线投掷受 DB 数据限制（无 shape-33 武器），静态真值表覆盖。
+
+### P1：影子、RenderY、遮挡 ✅ 代码级完成（截图 A/B 待 P-002）
 
 用同一地图放置：树前/树后、墙前/墙后、玩家与怪物交叉、坐骑、掉落物、大型建筑、技能
 特效。对比影子脚底锚点、阴影形状、主体覆盖关系、血条/名称层级。确认 2x 下没有把逻辑
 坐标重复放大。
 
-### P1：夜晚/黄昏/天气
+完成证据（2026-08-08）：Godot `RenderPrimitives.DrawSilhouetteShadow` 的斜切/平移矩阵
+与原版 `PlayerObject.DrawShadow2` 逐项一致（`x'=x-y/2+H/2+ShadowOffSetX`、opacity 0.5）；
+坐骑分支匹配 `DrawBody` 的 HorseShape 逻辑（shape 6/7 用外观库+DrawFrame，其余用基础
+HorseLibrary+HorseFrame 5000 偏移）；`--shadow-audit` PASS（`libraries=110
+frames=698766 metadata=5268 metadataUsable=5268/5268 thinContent=0 longContent=0`
+ShadowType 49 fallback=1856）。怪物/NPC 阴影顺序（Shadow 通道优先、轮廓兜底）此前已按
+`MonsterObject.DrawShadow` 修正。原版同场景截图 A/B 仍受 P-002 限制未做。
+
+### P1：夜晚/黄昏/天气 ✅ 代码级完成（截图 A/B 待 P-002）
 
 原版同地图截取 Default、Twilight、Night、Rain、Fog、Lightning；比较色阶、粒子、天气
 层级和 UI 是否受环境光影响。避免用 keyed 诊断纹理代替正式 ImageType.Image。
+
+完成证据（2026-08-08）：`MapWeatherLayer` 忠实移植旧端 `Client/Models/Particles/Weather`
+参数（雨 509→510-514 每帧 100ms、雪 500 落地消融、雾 550 链式、闪电 540 淡出、
+100 ticks/s 旧端速度语义、`DrawBlendCentered(useOffSet:false)` 中心定位、正式路径只用
+DXT1 payload Alpha）；`MapLightLayer.AmbientFor` 按原版 `MapControl.UpdateAmbientLight`
+档位（Night=0.25、Twilight=100/255、Light=1）并保留最小黑夜亮度；光半径按原版 1024px
+光纹理直径/2x 世界缩放换算。Vulkan 窗口化 `--light-render-audit`（night/twilight/default
+3 档 PASS）、`--weather-render-audit`（RainFogLightning PASS）、`--map-family-render-audit`
+（0/1/5/D001/E01 5 图 PASS）均有实测日志；天气 9 帧（500、509-514、540、550）逐像素
+Alpha mismatch=0。原版同场景亮度曲线/粒子截图 A/B 仍受 P-002 限制未做。
 
 ### P2：UI 原版 A/B 和真实数据
 
@@ -305,7 +355,16 @@ UI Blend 不再把 ImageOpacity 乘进 Alpha；灰度 shader 对齐原版数学�
 
 - workspace `dotnet build`：0 warnings / 0 errors。
 - `git diff --check`：通过。
-- 隔离对象 RenderAudit：通过。
-- 隔离 ProjectileAudit：`PASS samples=46 travel=201.0px`。
-- Screen Blend shader：已加入并编译引用，真实 Vulkan 色彩 A/B：未完成。
-- Goal：仍 active，未完成。
+- 隔离 Vulkan 窗口化 ProjectileAudit：`PASS samples≈24 travel≈200px duration=194-197ms≈192ms`
+  （Chebyshev 期望 192ms；(0,0)→(4,2)；3 次运行稳定）。
+- 隔离 Vulkan 窗口化 BlendAudit：材质命中 original 9/9、50 案例整体 PASS，
+  截图 `/tmp/zircon-blend-audit.png`。
+- 隔离 RenderAudit：通过，截图 `/tmp/zircon-render-audit.png`。
+- 隔离 light/weather/map-family render audits：通过（上轮基线；本轮 Xvfb+llvmpipe 重跑 UI 全套时再次确认 light/weather 截图日志仍 PASS）。
+- 技能行为 A/B 表已写入 `docs/notes/31-技能施法轨迹分类与Godot迁移.md`。
+- P1 Input/Combat 已完成（2026-08-08）：窗口化 Vulkan 实服 S16 战斗审计（真实 `C.Attack` 发包节奏 gap≈1359ms vs 公式 1359ms、死亡目标保留 D15）ext24/25/26 全 PASS；`MapTestScene --combat-audit` 攻击/采矿间隔矩阵、Shuriken 真值表、行走动画集合、转向防重闸门 PASS；`--cursor-audit --network-audit` 回归 PASS。
+- P1 影子/天气代码级 A/B 完成（2026-08-08）：`--shadow-audit` PASS（5268/5268 可用、0 畸形）；light/weather/map-family Vulkan 渲染审计 PASS；`--render-audit --effect-target-free-audit` PASS。
+- P2 UI 全套当前代码重跑 PASS（2026-08-08，Xvfb :99 + llvmpipe Vulkan 窗口化）：`--ui-audit` 12 项 + 扩展 30 组（NPC 22 模式/通信/魔法/排行/怪物/任务/聊天/角色/仓库/小地图/命理/钓鱼/伙伴/组队/行会/商城/寄售/货币/帮助/驯马/副本/角色编辑/自动喝药/LFG/配置/快捷键/窗口边框）合计 42 PASS、0 FAIL；截图 `/tmp/ui_test.png`。
+- P2 网络静态语义：`--network-audit` PASS（重复断线、socket 关闭、对象引用清理、攻击/拾取优先级、自动寻路切图、右键取消、Alt 采集、迟到/旧包顺序、物品数量与拆分边界）。
+- 剩余：A-7 数量窗口取消/确认（货币类物品）、邮件附件数量对话框边界、邮件断线重连、C6 伙伴食物移动/使用、E3 行会仓库容量/资金/回滚（均记录于 `docs/OPERATION_PARITY_TASK.md` 当前进行中，未提前勾选）；原版/Godot 同场景截图 A/B（P-002 原版客户端无法本机运行）。
+- Goal：仍 active，未完成（关键 P2 实测项与截图 A/B 未清）。
