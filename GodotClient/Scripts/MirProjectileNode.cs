@@ -77,12 +77,17 @@ public partial class MirProjectileNode : MirEffectNode
 
         Direction = Functions.DirectionFromPoint(origin, target);
         Direction16 = Functions.Direction16(origin, target);
-        float distancePx = originScreen.DistanceTo(targetScreen);
-        long duration = (long)(distancePx * 1.5f);
-        if (Delay > 0) duration = (long)(duration * (Delay / 10.0f));
-        duration = Math.Max(50, duration);
+        // 原版 MirProjectile.Process(): duration = Distance(p1, p2) * 1ms,
+        // 其中 p = (x, y/32*48) 即等距 48 单位坐标；Delay 是原始倍率
+        // (Shuriken Delay=2 → 2 倍慢)，不是百分比。Godot 本地坐标 == 旧端
+        // 48/32 像素，因此 ToLegacyProjectilePoint 后的 Distance 直接就是
+        // 毫秒数。曾误用 distancePx*1.5 + Delay/10 + 50ms 下限，导致飞行
+        // 比原版慢 1.5 倍且同格投掷被拖延——已按原版公式修正。
+        long duration = Functions.Distance(origin, target);
+        if (Delay > 0) duration *= Delay;
         if (!Has16Directions) Direction16 /= 2;
 
+        // 原版 location == Origin 时立即完成 (duration == 0 分支)。
         if (duration <= 0)
         {
             CompleteAction?.Invoke();
@@ -98,7 +103,14 @@ public partial class MirProjectileNode : MirEffectNode
             FrameIndexChanged?.Invoke(frame);
         }
 
-        double t = Math.Clamp((now - _startMs) / duration, 0, 1);
+        // 原版: Target==null 且非 Explode 的投射物 (如火球的地面落点弹道)
+        // 到达后不截停在落点，继续沿直线飞出屏幕才结束；只有挂对象或
+        // Explode 的投射物才在 duration 到达点结束。t 不做钳制即可复现。
+        // 例外: 带 CompleteAction 的投射物 (有 MapImpact/着弹特效) 必须
+        // 在落点截停并触发，否则爆炸会延迟到飞出屏幕外才播。
+        double elapsed = now - _startMs;
+        bool flyPast = _targetNode == null && _target == null && !Explode && CompleteAction == null;
+        double t = flyPast ? elapsed / duration : Math.Clamp(elapsed / duration, 0, 1);
         Position = originScreen.Lerp(targetScreen, (float)t);
 
         Position += new Vector2(AdditionalOffX, AdditionalOffY);
@@ -116,8 +128,15 @@ public partial class MirProjectileNode : MirEffectNode
             UpdateRenderLayer();
         }
 
-        if (now - _startMs >= duration)
+        if (elapsed >= duration)
         {
+            // 原版: 无 Target 且非 Explode 时若精灵仍在屏内则继续飞行，
+            // 完全出屏后才 Complete+Remove。
+            if (flyPast && IsProjectileVisible())
+            {
+                QueueRedraw();
+                return;
+            }
             CompleteAction?.Invoke();
             QueueFree();
             return;

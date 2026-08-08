@@ -399,9 +399,51 @@ public partial class UITestScene : Control
         bool borderRed = ItemAmountDialog.BorderColourFor(0, 10).R > .9f;
         bool borderOrange = ItemAmountDialog.BorderColourFor(10, 10).R > .9f && ItemAmountDialog.BorderColourFor(10, 10).G < .75f;
         bool borderGreen = ItemAmountDialog.BorderColourFor(5, 10).G > .8f;
+
+        // A-7: 原版 DXNumberTextBox.TextChanged 语义 —— 可解析值钳制到
+        // [MinValue=0, MaxValue]，解析失败回落到 0（红框 + 确认禁用）；
+        // 只有确认回调处才要求 Amount > 0（原版各调用点 `if (window.Amount <= 0) return;`）。
+        var dialog = new ItemAmountDialog("Audit", 5, 1, _ => { }, new ClientUserItem());
+        // Godot headless 下 LineEdit.Text setter 不派发 text_changed，直接用
+        // 生产解析路径 ApplyText（等价用户输入）驱动实例状态。
+        bool zeroAllowed = dialog.Amount == 1;      // 初始值 1
+        dialog.ApplyText("0");
+        bool zeroClamps = dialog.Amount == 0 && !dialog.OkEnabled; // 0 合法、确认禁用
+        dialog.ApplyText("7");
+        bool maxClamps = dialog.Amount == 5;        // 钳到 MaxValue
+        dialog.ApplyText("abc");
+        bool parseFallback = dialog.Amount == 0;    // 解析失败回落到 0
+        bool staticClamps = ItemAmountDialog.ParseClamp("0", 5) == 0
+            && ItemAmountDialog.ParseClamp("7", 5) == 5
+            && ItemAmountDialog.ParseClamp("abc", 5) == 0;
+        dialog.QueueFree();
+
         GD.Print(step && borderRed && borderOrange && borderGreen
             ? $"[UIItemAmountAudit] PASS step/colour step={ItemAmountDialog.ComputeStep(10)}"
             : $"[UIItemAmountAudit] FAIL step={step} red={borderRed} orange={borderOrange} green={borderGreen}");
+        GD.Print(zeroAllowed && zeroClamps && maxClamps && parseFallback && staticClamps
+            ? "[UIItemAmountAudit] PASS zero/upper/parse-clamp"
+            : $"[UIItemAmountAudit] FAIL zero={zeroAllowed}/{zeroClamps} max={maxClamps} parse={parseFallback} static={staticClamps}");
+
+        // A-7 货币分支：原版 CEnvir.IsCurrencyItem —— 任意货币 DropItem 物品，
+        // 输入数量时实时写入 item.Count（预览数量跟随输入）。
+        var currencyInfo = Globals.CurrencyInfoList?.Binding?.FirstOrDefault(x => x?.DropItem != null);
+        if (currencyInfo?.DropItem == null)
+        {
+            GD.Print("[UIItemAmountAudit] SKIP currency-live-count (no DB currency)");
+        }
+        else
+        {
+            var currencyItem = new ClientUserItem(currencyInfo.DropItem, 100);
+            bool isCurrency = ItemAmountDialog.IsCurrencyItem(currencyItem.Info);
+            var curDialog = new ItemAmountDialog(currencyItem, _ => { });
+            curDialog.ApplyText("42");
+            bool liveCount = curDialog.Amount == 42 && currencyItem.Count == 42;
+            curDialog.QueueFree();
+            GD.Print(isCurrency && liveCount
+                ? $"[UIItemAmountAudit] PASS currency-live-count cur={currencyInfo.Name}"
+                : $"[UIItemAmountAudit] FAIL currency-live-count isCurrency={isCurrency} count={currencyItem.Count} amount={curDialog.Amount}");
+        }
 
         // B5: 中键/快捷键 ItemLock 反相（原版可解锁已锁物品）。
         bool lockToggle = GameScene.ComputeItemLockTarget(false) && !GameScene.ComputeItemLockTarget(true);
@@ -650,6 +692,7 @@ public partial class UITestScene : Control
         bool layout = dialog.AuditLayout(out string details);
         bool pages = dialog.AuditPages(out string pageDetails);
         bool lifecycle = dialog.AuditMailSendLifecycle(out string lifecycleDetails);
+        bool rollback = dialog.AuditDisconnectRollback(out string rollbackDetails);
         bool opened = CommunicationDialog.ShouldSendMailOpened(false)
             && !CommunicationDialog.ShouldSendMailOpened(true)
             && CommunicationDialog.CanGetMailItem(new ClientUserItem()) == true
@@ -659,8 +702,27 @@ public partial class UITestScene : Control
         bool deleteGuard = !CommunicationDialog.CanDeleteMail(withItems)
             && CommunicationDialog.CanDeleteMail(new ClientMailInfo())
             && CommunicationDialog.CanDeleteMail(new ClientMailInfo { Items = new List<ClientUserItem>() });
-        bool valid = layout && pages && lifecycle && opened && deleteGuard;
-        GD.Print(valid ? $"[UICommunicationAudit] PASS {details} {pageDetails} mail={lifecycleDetails}" : $"[UICommunicationAudit] FAIL {details} {pageDetails} mail={lifecycleDetails}");
+        // 邮件金币输入边界：原版 DXNumberBox.MaxValue=2000000000 钳制 + GoldValid
+        // (0<=v<=可用金币) + 边框色（0 原色/合法绿/非法红）；收件人边框色同源。
+        bool goldClamp = CommunicationDialog.ClampGoldInput("3000000000") == "2000000000"
+            && CommunicationDialog.ClampGoldInput("100") == "100"
+            && CommunicationDialog.ClampGoldInput("abc") == "abc";
+        bool goldValid = CommunicationDialog.GoldBoxValid("0", 5000)
+            && CommunicationDialog.GoldBoxValid("5000", 5000)
+            && !CommunicationDialog.GoldBoxValid("5001", 5000)
+            && !CommunicationDialog.GoldBoxValid("-1", 5000)
+            && !CommunicationDialog.GoldBoxValid("2000000001", 999_999_999_999L);
+        bool goldColour = CommunicationDialog.GoldBorderColour("0", 5000).Equals(DXTextInput.DefaultBorderColour)
+            && CommunicationDialog.GoldBorderColour("100", 5000).G > .8f
+            && CommunicationDialog.GoldBorderColour("5001", 5000).R > .9f;
+        bool recipientColour = CommunicationDialog.RecipientBorderColour("").Equals(DXTextInput.DefaultBorderColour)
+            && CommunicationDialog.RecipientBorderColour("TestHero").G > .8f
+            && CommunicationDialog.RecipientBorderColour("not a name!").R > .9f;
+        bool valid = layout && pages && lifecycle && opened && deleteGuard
+            && rollback && goldClamp && goldValid && goldColour && recipientColour;
+        GD.Print(valid
+            ? $"[UICommunicationAudit] PASS {details} {pageDetails} mail={lifecycleDetails} rollback={rollbackDetails} gold=clamp/valid/colour recipient=colour"
+            : $"[UICommunicationAudit] FAIL {details} {pageDetails} mail={lifecycleDetails} rollback={rollbackDetails} goldC={goldClamp} goldV={goldValid} goldCol={goldColour} recCol={recipientColour}");
         dialog.QueueFree();
     }
 
@@ -704,9 +766,14 @@ public partial class UITestScene : Control
         bool operationGuards = GameScene.CanSendQuestOperation(false, 0)
             && !GameScene.CanSendQuestOperation(true, 0)
             && !GameScene.CanSendQuestOperation(false, -1);
+        bool rewardGuard = NPCQuestDialog.CanComplete(0, -1)          // 无可选奖励 → 直接完成
+            && !NPCQuestDialog.CanComplete(2, -1)                      // 有可选奖励未选 → 拒绝
+            && !NPCQuestDialog.CanComplete(2, 5)                       // 越界 → 拒绝
+            && NPCQuestDialog.CanComplete(2, 1);                       // 已选中 → 允许
         valid &= operationGuards;
-        GD.Print(valid ? $"[UIQuestAudit] PASS {details} operation=observer/index-guard"
-            : $"[UIQuestAudit] FAIL {details} operation={operationGuards}");
+        valid &= rewardGuard;
+        GD.Print(valid ? $"[UIQuestAudit] PASS {details} operation=observer/index-guard reward=selected-guard"
+            : $"[UIQuestAudit] FAIL {details} operation={operationGuards} reward={rewardGuard}");
         dialog.QueueFree();
     }
 
@@ -791,7 +858,21 @@ public partial class UITestScene : Control
         valid &= GameScene.CanSendCompanionOperation(false, 0)
             && !GameScene.CanSendCompanionOperation(true, 0)
             && !GameScene.CanSendCompanionOperation(false, -1);
-        details += " operation=selected-index/observer-guard";
+        // C6 伙伴食物: 使用冷却 Max(250, Durability) 与骑马 Shape 19-22 限制
+        // (原版 DXItemCell 消耗品/CompanionFood 共用分支)。DBObject 属性
+        // setter 需已附加 Session，不能用 new ItemInfo 构造，改用真实 DB 物品。
+        var foods = Globals.ItemInfoList?.Binding.Where(x => x?.ItemType == ItemType.CompanionFood).ToList();
+        bool cooldown = foods is { Count: > 0 }
+            && foods.All(f => DXItemCell.ComputeUseCooldownMs(f) == Math.Max(250, f.Durability))
+            && DXItemCell.ComputeUseCooldownMs(null) == 250;
+        bool mounted = foods is { Count: > 0 }
+            && foods.All(f => DXItemCell.ShapeBlocksWhileMounted(f) == (f.Shape is 19 or 20 or 21 or 22))
+            && !DXItemCell.ShapeBlocksWhileMounted(null);
+        valid &= cooldown && mounted;
+        string foodSample = foods == null || foods.Count == 0
+            ? "none"
+            : string.Join(",", foods.Take(4).Select(f => $"{f.ItemName}:dur{f.Durability}/shape{f.Shape}"));
+        details += $" operation=selected-index/observer-guard food-cooldown={cooldown} mounted-shape={mounted} foods={foodSample}";
         GD.Print(valid ? $"[UICompanionAudit] PASS {details}" : $"[UICompanionAudit] FAIL {details}");
         dialog.QueueFree();
     }
@@ -809,7 +890,25 @@ public partial class UITestScene : Control
         var dialog = new GuildDialog();
         bool valid = dialog.AuditLayout(out string details);
         bool pages = dialog.AuditPageLayouts(out string pageDetails);
-        GD.Print(valid && pages ? $"[UIGuildAudit] PASS {details} pages={pageDetails}" : $"[UIGuildAudit] FAIL {details} pages={pageDetails}");
+        // E3 行会仓库: 容量决定网格尺寸 (原版 RefreshStorage 11 列,
+        // 行数 = Max(20, Ceil(StorageLimit/14)))，超出容量的格禁用；
+        // S.GuildUpdate 回包驱动 StorageLimit/资金刷新。
+        bool size = GuildDialog.StorageGridSize(20).Y == 20
+            && GuildDialog.StorageGridSize(280).Y == 20
+            && GuildDialog.StorageGridSize(281).Y == 21
+            && GuildDialog.StorageGridSize(0).Y == 20
+            && GuildDialog.StorageGridSize(22).X == 11;
+        bool enabled = GuildDialog.StorageCellEnabled(0, 20)
+            && !GuildDialog.StorageCellEnabled(20, 20)
+            && GuildDialog.StorageCellEnabled(21, 22)
+            && !GuildDialog.StorageCellEnabled(0, 0);
+        var update = new S.GuildUpdate { StorageLimit = 300, GuildFunds = 999_999 };
+        dialog.ApplyGuildUpdate(update);
+        bool refresh = dialog.StorageLimit == 300 && dialog.GuildFunds == 999_999
+            && GuildDialog.StorageGridSize(300).Y == 22;
+        GD.Print(valid && pages && size && enabled && refresh
+            ? $"[UIGuildAudit] PASS {details} pages={pageDetails} storage-size/enabled/update"
+            : $"[UIGuildAudit] FAIL {details} pages={pageDetails} size={size} enabled={enabled} refresh={refresh}");
         dialog.QueueFree();
     }
 

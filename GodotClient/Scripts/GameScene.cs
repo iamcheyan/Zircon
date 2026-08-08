@@ -769,6 +769,8 @@ public partial class GameScene : Control
     private readonly HashSet<MagicType> _enabledToggleMagics = new();
     // 原版 GameScene.ToggleTime：切换/蓄力技能共用的防连点时间。
     public DateTime ToggleTime { get; private set; } = DateTime.MinValue;
+    // 原版 GameScene.OutputTime：技能超距提示的防刷屏时间。
+    private DateTime _magicTooFarAt = DateTime.MinValue;
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     public bool ShowMagicBarFrames { get; private set; } = true;
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
@@ -776,6 +778,13 @@ public partial class GameScene : Control
     public bool RightClickDeTarget => _rightClickDeTarget;
     private bool _escapeCloseAll;
     public bool EscapeCloseAll => _escapeCloseAll;
+
+    // 原版 UserObject.MagicAction：移动中按下技能只入队，等动作结束
+    // （NextActionTime 到期且 ActionQueue 清空）才在 ProcessInput 第二步
+    // 真正发包。直接发包会被服务端 DelayedAction 队列挂到走完，效果等同
+    // 但本地状态（MP/NextCast）提前扣减，且攻击分支不会被暂停。
+    private C.Magic _pendingMagicPacket;
+    private double _pendingMagicCastAtMs;
     // 与原版 GameScene.CanRun 一致：站立后第一次移动先走，收到移动回包后
     // 才允许下一次右键移动使用跑步距离/动作。
     private bool _canRun;
@@ -811,6 +820,43 @@ public partial class GameScene : Control
     private int _operationAuditTargetSlot = -1;
     private int _operationAuditEquipmentSlot = -1;
     private ClientUserItem _operationAuditOriginalEquipment;
+    // --operation-audit-ext: 真实服务器矩阵 (B2 使用解锁 / B5 锁定 / C2 双戒指双手镯 / D1 腰带 / D3 自动药水 / E4 邮件)
+    private bool _operationAuditExtStarted;
+    private bool _operationAuditExtResponsePending;
+    private bool _operationAuditExtLastSuccess;
+    private int _operationAuditExtStage;
+    private int _operationAuditExtSlotA = -1;
+    private int _operationAuditExtSlotB = -1;
+    private int _operationAuditExtFromSlot = -1;
+    private int _operationAuditExtToSlot = -1;
+    private ClientUserItem _operationAuditExtOriginalA;
+    private ClientUserItem _operationAuditExtOriginalB;
+    private int _auditMailCountBefore = -1;
+    private int _auditMailIndex = -1;
+    private bool _auditMailNewReceived;
+    private int _auditMailSendCount = -1;
+    // S17 伙伴食物 / S18 行会仓库 (C6/E3 实服端到端)
+    private int _operationAuditExtCompanionSubStage;
+    private int _operationAuditExtCompanionFoodCount = -1;
+    private int _operationAuditExtCompanionHungerBefore = -1;
+    private int _operationAuditExtCompanionHungerAfter = -1;
+    private bool _operationAuditExtCompanionItemChanged;
+    private int _operationAuditExtS17bRetries;
+    private bool _operationAuditExtCompanionPass;
+    private bool _operationAuditExtGuildPass;
+    private int _operationAuditExtGuildSubStage;
+    private long _auditGuildGoldBefore = -1;
+    // S16 战斗在线实测: 真实 C.Attack 发包节拍与死亡目标保留 (D15)
+    private ObjectRenderer _operationAuditExtCombatTarget;
+    private uint _operationAuditExtCombatTargetId;
+    private readonly List<double> _operationAuditExtAttackTimes = new();
+    private bool _operationAuditExtCombatDied;
+    private bool _operationAuditExtCombatKeptTarget;
+    private bool _operationAuditExtCombatSelected;
+    private bool _operationAuditExtCombatSecond;
+    private bool _operationAuditExtSpawnAttempted;
+    private int _operationAuditExtWalkSteps;
+    private System.Drawing.Point _operationAuditExtLastWalkPos;
     // 删除回包不带物品 Index；记录发包时的 Index，防止旧回包删除同一槽位后来
     // 放入的新物品。没有本地待确认请求的删除仍按服务端权威事件处理。
     private readonly Dictionary<(GridType Grid, int Slot), long> _pendingItemDeletes = new();
@@ -864,12 +910,22 @@ public partial class GameScene : Control
         AddChild(_mapView);
         // 原版 LLayer 在 DrawObjects()(地形+对象+天气粒子)之后最后绘制全屏
         // 光纹理: 夜晚环境光盖住包括动物/怪物/树在内的所有世界内容, 光源
-        // 光斑再恢复亮度。因此光照层必须挂在所有世界 ZIndex 之上
-        // (LightOverlay = FinalEffects+1), hint_screen_texture 才能采样到
-        // 完整场景; 之前挂在 TerrainBase+1 只压住了地形, 对象全部露在
-        // 夜晚亮度之外。
+        // 光斑再恢复亮度。光照层挂在独立 CanvasLayer(Layer=1, UI=10 之下),
+        // 其 Transform 用 2x 与世界根节点 Scale 一致, 层内保持逻辑坐标。
+        // CanvasLayer 按层索引排序、每层独立渲染: 整个世界(默认画布)先完整
+        // 绘制, 该层再触发一次全新的 hint_screen_texture 整屏拷贝, 采样必然
+        // 包含全部对象/特效。不能放在世界层末尾: Godot 只在第一个使用
+        // screen_texture 的节点绘制前自动整屏拷贝, 地形 Blend 行或施法特效
+        // (低 ZIndex)会劫持该拷贝点, 光照层随后采样到残缺画面并覆盖全屏,
+        // 表现为移动/施法时所有贴图消失。
+        var lightCanvas = new CanvasLayer
+        {
+            Layer = 1,
+            Transform = new Transform2D(0f, Vector2.One * WorldScale, 0f, Vector2.Zero),
+        };
         _lightLayer = new MapLightLayer { ZIndex = RenderOrder.LightOverlay };
-        AddChild(_lightLayer);
+        lightCanvas.AddChild(_lightLayer);
+        AddChild(lightCanvas);
         _lightLayer.SetObjectSources(GetObjectLightSources);
         // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
         _weatherLayer = new MapWeatherLayer { ZIndex = RenderOrder.Particles };
@@ -881,11 +937,7 @@ public partial class GameScene : Control
                     && !(_combatController.MouseObject.Type == ObjectRenderer.Kind.Monster
                         && !string.IsNullOrWhiteSpace(_combatController.MouseObject.PetOwner)))),
         GetRunSteps,
-        dir =>
-        {
-            if (_net?.Connection?.Connected == true)
-                _net.Connection.Enqueue(new C.Turn { Direction = dir });
-        },
+        SendTurn,
         () => IsMouseOverUi(),
         IsMovementCellBlocked,
         CanPlayerMove,
@@ -909,6 +961,8 @@ public partial class GameScene : Control
                 _canRun = false;
                 MagicType attackMagic = magic != MagicType.None ? magic : _attackMagic;
                 GD.Print($"[Combat] enqueue C.Attack action={action} magic={attackMagic} direction={dir}");
+                if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 16)
+                    _operationAuditExtAttackTimes.Add(Godot.Time.GetTicksMsec());
                 _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = attackMagic });
             },
             (dir, distance) =>
@@ -919,7 +973,9 @@ public partial class GameScene : Control
                 _canRun = true; // 原版 AttemptAction(Moving) 后立即允许下一次 Run
                 _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = Math.Max(1, distance) });
             },
-            () => Math.Max(250.0, Globals.AttackDelay - PlayerStats[Stat.AttackSpeed] * Globals.ASpeedRate),
+            () => ComputeAttackIntervalMs(Globals.AttackDelay, PlayerStats[Stat.AttackSpeed],
+                Globals.ASpeedRate, BagWeight > _playerStats[Stat.BagWeight],
+                _playerPoison.HasFlag(PoisonType.Neutralize)),
             target => _player?.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape && _playerHorse == HorseType.None,
             (direction, target) =>
             {
@@ -929,7 +985,13 @@ public partial class GameScene : Control
             () => _rightClickDeTarget,
             IsMouseOverUi,
             () => !IsFishingActive && !IsTamingActive,
-            () => ReceiveChat("Unable to throw Shuriken, Your target is too far.", MessageType.Hint));
+            () => ReceiveChat("Unable to throw Shuriken, Your target is too far.", MessageType.Hint),
+            () => _player?.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape,
+            () => _playerHorse != HorseType.None,
+            () => _player?.ElementalHurricane == true,
+            () => _mouseWalker?.AutoRun == true,
+            () => _pendingMagicPacket != null,
+            SendTurn);
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
@@ -1224,7 +1286,23 @@ public partial class GameScene : Control
             p => { Companion = p?.UserCompanion; if (Companion != null && !Companions.Exists(x => x.Index == Companion.Index)) Companions.Add(Companion); _companionDialog?.ApplyCompanion(Companion); _npcCompanionStorageDialog?.AddCompanion(Companion); });
         TrackEvent<S.CompanionUpdate>(h => _net.Connection.CompanionUpdateEvent += h,
             h => _net.Connection.CompanionUpdateEvent -= h,
-            p => { if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.ApplyCompanion(Companion); } });
+            p =>
+            {
+                // 原版 CConnection.Process(S.CompanionUpdate) 只刷新 CompanionBox 标签,
+                // 不做数组同步; ApplyCompanion 的 Clear+Copy 会抹掉同帧已写入的协议状态。
+                if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.RefreshCompanionStats(Companion); }
+                // S17b: S.ItemChanged 先入队 (服务端 6298), S.CompanionUpdate 后发 -> 双包齐后 Continue
+                if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 17)
+                {
+                    GD.Print($"[OperationAuditExt] S17b raw CompanionUpdate level={p.Level} hunger={p.Hunger} itemChanged={_operationAuditExtCompanionItemChanged}");
+                    _operationAuditExtCompanionHungerAfter = Companion?.Hunger ?? -1;
+                    if (_operationAuditExtCompanionItemChanged)
+                    {
+                        _operationAuditExtResponsePending = true;
+                        CallDeferred(nameof(ContinueOperationAuditExt));
+                    }
+                }
+            });
         TrackEvent<S.CompanionItemsGained>(h => _net.Connection.CompanionItemsGainedEvent += h,
             h => _net.Connection.CompanionItemsGainedEvent -= h,
             p =>
@@ -1323,6 +1401,61 @@ public partial class GameScene : Control
             _statusLabel.Text = "等待进入游戏...";
         }
     }
+
+    /// <summary>
+    /// 原版 AttemptAction(Standing) 的 C.Turn 出口（MouseWalker 转向 +
+    /// CombatController 追击被阻挡时的原地转向共用）。
+    /// 原版 C.Turn 对本地玩家无回包：PlayerObject.Turn 只向其他玩家
+    /// Broadcast(S.ObjectTurn)（拒绝才回 S.UserLocation）。面向因此必须
+    /// 在发包同时本地应用，否则服务端从不校正本地朝向（原版在
+    /// AttemptAction(Standing) 里同步设置 Direction）。
+    /// </summary>
+    private void SendTurn(MirDirection dir)
+    {
+        if (_net?.Connection?.Connected != true) return;
+        if (!CanPlayerTurn() || _player == null) return;
+        if (!ShouldSendTurn(_player.Direction, dir)) return;
+        _playerDirection = dir;
+        _player.Direction = dir;
+        _net.Connection.Enqueue(new C.Turn { Direction = dir });
+    }
+
+    /// <summary>
+    /// 原版 UserObject.SetAction Attack/RangeAttack 间隔（UserObject.cs:638-653）：
+    /// base = max(800, AttackDelay - AttackSpeed*ASpeedRate)；超重或 Neutralize
+    /// 时 AttackTime 再叠加一次 base（等效间隔 x2）。Godot 之前的
+    /// max(250, ...) 既没有 800 地板也没有超重翻倍，高攻速下最多快 ~3 倍。
+    /// </summary>
+    public static double ComputeAttackIntervalMs(double attackDelayBase, int attackSpeed, int aspeedRate,
+        bool overweight, bool neutralize)
+    {
+        double delay = Math.Max(800.0, attackDelayBase - attackSpeed * aspeedRate);
+        if (overweight || neutralize) delay *= 2.0;
+        return delay;
+    }
+
+    /// <summary>
+    /// 原版 UserObject.SetAction Mining 间隔：超重时再额外叠加一次 base
+    /// （等效 x3），Neutralize 叠加一次（x2）；两者同时按超重 x3。
+    /// </summary>
+    public static double ComputeMiningIntervalMs(double attackDelayBase, int attackSpeed, int aspeedRate,
+        bool overweight, bool neutralize)
+    {
+        double delay = Math.Max(800.0, attackDelayBase - attackSpeed * aspeedRate);
+        if (overweight) delay *= 3.0;
+        else if (neutralize) delay *= 2.0;
+        return delay;
+    }
+
+    public static bool ShouldSendTurn(MirDirection current, MirDirection requested)
+        => current != requested;
+
+    /// <summary>当前移动动画集合（原版 AttemptAction(Moving) 期间）。
+    /// 用于把 C.Magic 延迟到走完（原版 MagicAction 队列）。</summary>
+    public static bool IsWalkAnimation(MirAnimation animation)
+        => animation is MirAnimation.Walking or MirAnimation.Running
+            or MirAnimation.HorseWalking or MirAnimation.HorseRunning
+            or MirAnimation.CreepWalkSlow or MirAnimation.CreepWalkFast;
 
     public override void _ExitTree()
     {
@@ -1651,7 +1784,6 @@ public partial class GameScene : Control
 
     private void OnUserLocation(MirDirection dir, System.Drawing.Point loc)
     {
-        GD.Print($"[Game] USERLOC dir={dir} loc=({loc.X},{loc.Y})");
         // S.UserLocation 是服务端对非法/过早移动的纠正，不是 S.ObjectMove。
         // 原客户端收到它会校正格子并停止当前移动，不能再播放一次 Walking。
         if (_player == null) return;
@@ -2369,7 +2501,17 @@ public partial class GameScene : Control
         ReceiveChat($"商城赠送结果: {packet.Result}", packet.Result == GameStoreGiftResult.Success ? MessageType.Announcement : MessageType.System);
     }
 
-    private void OnGuildInfo(S.GuildInfo packet) => _guildDialog?.ApplyGuild(packet?.Guild);
+    private void OnGuildInfo(S.GuildInfo packet)
+    {
+        _guildDialog?.ApplyGuild(packet?.Guild);
+        // S18a: 建会响应是 S.GuildInfo (服务端 SendGuildInfo, 非 S.GuildUpdate)
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 18 && _operationAuditExtGuildSubStage == 0)
+        {
+            _operationAuditExtLastSuccess = true;
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
+        }
+    }
     private void OnGuildNoticeChanged(S.GuildNoticeChanged packet) => _guildDialog?.SetGuildNotice(packet?.Notice);
     private void OnGuildUpdate(S.GuildUpdate packet) => _guildDialog?.ApplyGuildUpdate(packet);
     private void OnGuildMemberOffline(S.GuildMemberOffline packet) => _guildDialog?.SetMemberOnline(packet?.Index ?? -1, false, string.Empty);
@@ -2556,13 +2698,37 @@ public partial class GameScene : Control
     {
         _communicationDialog?.AddMail(mail);
         _mainPanel?.SetMailIndicator(true);
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 13)
+        {
+            _auditMailNewReceived = true;
+            if (_operationAuditExtLastSuccess)
+            {
+                _operationAuditExtResponsePending = true;
+                CallDeferred(nameof(ContinueOperationAuditExt));
+            }
+        }
     }
     private void OnMailDelete(int index)
     {
         _communicationDialog?.RemoveMail(index);
         _mainPanel?.SetMailIndicator(_communicationDialog?.HasUnread == true);
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 15)
+        {
+            _operationAuditExtLastSuccess = true;
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
+        }
     }
-    private void OnMailItemDelete(int index, int slot) => _communicationDialog?.RemoveMailItem(index, slot);
+    private void OnMailItemDelete(int index, int slot)
+    {
+        _communicationDialog?.RemoveMailItem(index, slot);
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 14)
+        {
+            _operationAuditExtLastSuccess = true;
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
+        }
+    }
     private void OnFriendUpdate(S.FriendUpdate packet) => _communicationDialog?.ApplyFriend(packet?.Info);
     private void OnFriendAdd(S.FriendAdd packet) => _communicationDialog?.ApplyFriend(packet?.Info);
     private void OnFriendRemove(S.FriendRemove packet) => _communicationDialog?.RemoveFriend(packet?.Index ?? -1);
@@ -2850,6 +3016,30 @@ public partial class GameScene : Control
                 target.PlayStruckSound();
             }
         }
+
+        // 原版 RangeAttack 的 Shuriken: MirProjectile(1270,3,100ms,MagicEx,
+        // light 1,5,NoneColour, 施法者格){ Blend=false, Explode=true,
+        // Delay=2 (2 倍慢), Has16Directions=true, MapTarget=目标格 }。
+        // 旧端遗漏了这枚飞行物，只播了挥击/受击动画。
+        if (magic == MagicType.Shuriken)
+        {
+            foreach (uint targetID in targets ?? Enumerable.Empty<uint>())
+            {
+                System.Drawing.Point targetCell;
+                if (targetID == _playerObjectID) targetCell = _playerLocation;
+                else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer))
+                    targetCell = new System.Drawing.Point(targetPlayer.CellX, targetPlayer.CellY);
+                else if (_objects.TryGetValue(targetID, out var target))
+                    targetCell = new System.Drawing.Point(target.CellX, target.CellY);
+                else continue;
+                SpawnProjectileDefinition(new MagicEffectTable.ProjectileDef
+                {
+                    File = LibraryFile.MagicEx, StartIndex = 1270, FrameCount = 3,
+                    Colour = MagicEffectTable.None, Explode = true, Has16Directions = true,
+                    FrameLight = 1,
+                }, loc.X, loc.Y, targetCell.X, targetCell.Y, null, blend: false, delay: 2);
+            }
+        }
     }
 
     private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc, TimeSpan slow = default)
@@ -2873,73 +3063,84 @@ public partial class GameScene : Control
     private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
     {
         GD.Print($"[Magic] OnObjectMagic type={type} cast={cast} targets={targets?.Count ?? 0} locs={locations?.Count ?? 0} loc=({loc.X},{loc.Y})");
+        Node2D renderer = null;
+        int spellInstance = 0;
         if (objectID == _playerObjectID)
         {
             if (_player != null)
             {
                 _player.Direction = dir;
-                _player.PlaySpell(type);
+                renderer = _player;
+                spellInstance = _player.PlaySpell(type);
             }
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
-            player.Direction = dir; player.PlaySpell(type);
+            player.Direction = dir;
+            renderer = player;
+            spellInstance = player.PlaySpell(type);
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.PlaySpell(type);
+            renderer = ob;
+            spellInstance = ob.PlaySpell(type);
         }
 
-        if (cast)
-            foreach (var sound in MagicSoundCatalog.ResolveAll(type, MagicSoundPhase.Start))
-                PlaySound(sound);
+        // 原版 SetFrame 的 start switch (MapObject.cs:3627+) 不检查 MagicCast:
+        // 抬手特效与音效无条件播放；!cast 只跳过 release switch。
+        RenderObjectMagicStart(objectID, dir, loc, type, locations);
 
-        if (!cast) return;  // 原版: !MagicCast 时不播特效
+        if (!cast) return;  // 原版: !MagicCast 时不播释放特效
 
-        // 原版普通施法动作的释放点在第 4 帧附近；按当前动作帧表的
-        // 实际延迟计算，避免把不同职业/动作硬编码成同一个总时长。
-        double releaseDelay = objectID == _playerObjectID
-            ? _player?.SpellReleaseDelayMs ?? 300.0
-            : _objects.TryGetValue(objectID, out var spellMonster) ? spellMonster.SpellReleaseDelayMs
-            : _otherPlayers.TryGetValue(objectID, out var spellPlayer) ? spellPlayer.SpellReleaseDelayMs
-            : 300.0;
-        GetTree().CreateTimer(Math.Max(0.0, releaseDelay / 1000.0)).Timeout += () =>
-            RenderObjectMagic(objectID, dir, loc, type, targets, locations);
+        if (renderer != null && spellInstance != 0)
+        {
+            // 原版释放 = Spell 动作结束 (SetAction 进入下一个动作时执行 release
+            // switch)。用施法实例号过滤，避免快速连放/动画排队时旧释放被误触发。
+            void Handler(int instance, MagicType ended)
+            {
+                if (instance != spellInstance || ended != type) return;
+                if (renderer is PlayerRenderer p) p.SpellAnimEnded -= Handler;
+                else if (renderer is MapObjectNode m) m.SpellAnimEnded -= Handler;
+                RenderObjectMagic(objectID, dir, loc, type, targets, locations);
+            }
+            if (renderer is PlayerRenderer rp) rp.SpellAnimEnded += Handler;
+            else if (renderer is MapObjectNode rm) rm.SpellAnimEnded += Handler;
+        }
+        else
+        {
+            // 无渲染器 (施法者已消失): 退化为固定延迟后播放释放。
+            GetTree().CreateTimer(0.3).Timeout += () =>
+                RenderObjectMagic(objectID, dir, loc, type, targets, locations);
+        }
     }
 
-    private void RenderObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc,
-        MagicType type, List<uint> targets, List<System.Drawing.Point> locations)
+    private void RenderObjectMagicStart(uint objectID, MirDirection dir, System.Drawing.Point loc,
+        MagicType type, List<System.Drawing.Point> locations)
     {
-
+        // 原版 MapObject.SetAction Spell 的 start switch (MapObject.cs:3627+) 不检查
+        // MagicCast —— 抬手特效与音效无条件播放；!cast 只跳过 release switch。
         var def = MagicEffectTable.Get(type);
 
         // 旧端 SetAction 使用动作包中的 CurrentLocation 作为施法者当前格。
         int sourceX = loc.X;
         int sourceY = loc.Y;
 
+        // 原版 start switch 的种族门控: Race != ObjectType.Monster 才进
+        // ScortchedEarth 的抬手特效与 LavaStrikeStart (怪物不播抬手)。
+        if (objectID != _playerObjectID && !_otherPlayers.ContainsKey(objectID)
+            && type == MagicType.ScortchedEarth) return;
+
+        // Start 音效: 无条件播放 (含 ThunderKick 的双音效 start 表)。
+        foreach (var sound in MagicSoundCatalog.ResolveAll(type, MagicSoundPhase.Start))
+            PlaySound(sound);
+
+        if (def == null) return;  // 纯音效 case (WaningMoon/CalamityOfFullMoon 等)
+
         // MapLocations 和 AttackTargets 在旧端是两条不同的锚定路径：
         // 前者是 MapTarget 地面坐标，后者是实时 Target 对象坐标。
         var destCells = new List<(int x, int y)>();
         foreach (var lp in locations) destCells.Add((lp.X, lp.Y));
-
-        // 目标受击动画
-        foreach (uint tid in targets)
-            if (_otherPlayers.TryGetValue(tid, out var targetPlayer)) targetPlayer.PlayStruck();
-        foreach (uint tid in targets)
-            if (_objects.TryGetValue(tid, out var tgt)) tgt.SetAnimation(MirAnimation.Struck);
-
-        // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
-        // MagicType 会被错误地表现成“所有技能都是火球落地”。
-        if (def == null && !MagicEffectTable.IsNoVisualSpellCase(type))
-        {
-            GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
-                $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
-                "请按 docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
-            return;
-        }
-
-        if (def == null) return;
 
         if (def.CastAtSource)
         {
@@ -2967,30 +3168,107 @@ public partial class GameScene : Control
         // 旧端按 MagicLocations/AttackTargets 分别挂载特效：
         // MapTarget 使用地面格坐标，Target 使用对象坐标；不能先在施法者
         // 位置统一生成一个 CastEffect 再把它当作所有技能的表现。
+        if (def.SourcePerLocation.Count > 0)
+        {
+            // 原版 LightningBeam: 每个 MagicLocation 在施法者身上各播一次
+            // MirEffect(1180,4,...){ Target=this, Direction=DirectionFromPoint(施法者, 格) }。
+            // 必须挂在施法者节点 (光束从施法者指向格子)，不能播在地面格上。
+            var sourceNode = GetMagicTargetNode(objectID);
+            if (sourceNode != null)
+            {
+                var sourceCell = GetTargetCell(sourceNode);
+                foreach (var (x, y) in destCells)
+                {
+                    foreach (var perLoc in def.SourcePerLocation)
+                    {
+                        var fx = new MirEffectNode();
+                        AddChild(fx);
+                        // 原版是 Target=this + Direction*Skip 选帧 (MirEffect.Draw)，
+                        // 不是按方向分组帧，因此用 StartIndex 原值，方向交给 fx.Direction。
+                        fx.SetupTarget(perLoc.File, perLoc.StartIndex, perLoc.FrameCount,
+            perLoc.DelayMs, sourceNode, () => GetTargetRenderY(sourceNode));
+                        fx.Blend = true;
+                        fx.DrawType = perLoc.DrawType;
+                        fx.BlendRate = perLoc.BlendRate;
+                        fx.Opacity = perLoc.Opacity;
+                        fx.Skip = perLoc.Skip;
+                        fx.SetStartDelay(perLoc.StartDelayMs);
+                        fx.Direction = Functions.DirectionFromPoint(
+                            new System.Drawing.Point(sourceCell.X, sourceCell.Y), new System.Drawing.Point(x, y));
+                        fx.FrameLight = perLoc.FrameLight;
+                        fx.FrameLightColour = perLoc.Colour;
+                    }
+                }
+            }
+        }
+
+    }
+
+    // 原版 SetAction 离开 Spell 动作 (动画播完/被打断) 时执行 release switch。
+    // 名字与签名保持不变: DeadTargetAudit 直接反射调用它。
+    private void RenderObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc,
+        MagicType type, List<uint> targets, List<System.Drawing.Point> locations)
+    {
+        var def = MagicEffectTable.Get(type);
+
+        // 旧端 SetAction 使用动作包中的 CurrentLocation 作为施法者当前格。
+        int sourceX = loc.X;
+        int sourceY = loc.Y;
+
+        var destCells = new List<(int x, int y)>();
+        foreach (var lp in locations) destCells.Add((lp.X, lp.Y));
+
+        // 目标受击动画
+        foreach (uint tid in targets)
+            if (_otherPlayers.TryGetValue(tid, out var targetPlayer)) targetPlayer.PlayStruck();
+        foreach (uint tid in targets)
+            if (_objects.TryGetValue(tid, out var tgt)) tgt.SetAnimation(MirAnimation.Struck);
+
+        // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
+        // MagicType 会被错误地表现成“所有技能都是火球落地”。
+        if (def == null && !MagicEffectTable.IsNoVisualSpellCase(type))
+        {
+            GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
+                $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
+                "请按 docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
+            return;
+        }
+
+        if (def == null) return;
+
+        // ==== 地面格 (MagicLocations) 特效 ====
         int destinationIndex = 0;
         foreach (var (x, y) in destCells)
         {
             double projectileDelay = destinationIndex * def.ProjectileDelayStepMs;
-            if (def.Projectile != null)
+            if (!def.NoLocationVisual)
             {
-                SpawnProjectile(def, sourceX, sourceY, x, y, projectileDelay);
+                if (def.Projectile != null)
+                {
+                    // 原版地面格弹道 + CompleteAction 落点特效 (MapImpact)。
+                    // BlowEarth 的弹道只到最后一个 MagicLocation (逐点后移)。
+                    if (!def.ProjectileLastLocationOnly || destinationIndex == destCells.Count - 1)
+                        SpawnProjectileDefinition(def.Projectile, sourceX, sourceY, x, y, def.MapImpact, projectileDelay);
+                }
+                else if (def.MapImpact != null)
+                {
+                    SpawnImpact(def.MapImpact, x, y, sourceX, sourceY);
+                }
+                else if (def.Source == null && !def.CastAtSource)
+                {
+                    SpawnCastEffect(def, x, y, sourceX, sourceY, dir);
+                }
+                foreach (var extraProjectile in def.AdditionalProjectiles)
+                    SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null, projectileDelay);
+                foreach (var extra in def.Additional) SpawnImpact(extra, x, y, sourceX, sourceY);
+                foreach (var extra in def.AdditionalMapEffects)
+                    SpawnImpact(extra, x + extra.OffsetX, y + extra.OffsetY, sourceX, sourceY);
             }
-            else if ((def.MapImpact ?? def.Impact) != null)
-            {
-                SpawnImpact(def.MapImpact ?? def.Impact, x, y, sourceX, sourceY);
-            }
-            else if (def.Source == null)
-            {
-                SpawnCastEffect(def, x, y, sourceX, sourceY, dir);
-            }
-            foreach (var extraProjectile in def.AdditionalProjectiles)
-                SpawnProjectileDefinition(extraProjectile, sourceX, sourceY, x, y, null, projectileDelay);
-            foreach (var extra in def.Additional) SpawnImpact(extra, x, y, sourceX, sourceY);
-            foreach (var extra in def.AdditionalMapEffects)
-                SpawnImpact(extra, x + extra.OffsetX, y + extra.OffsetY, sourceX, sourceY);
             destinationIndex++;
         }
 
+        // ==== 目标 (AttackTargets) 特效 ====
+        int targetIndex = 0;
         foreach (uint tid in targets)
         {
             var targetNode = GetMagicTargetNode(tid);
@@ -3002,22 +3280,24 @@ public partial class GameScene : Control
                     : def.DirectionFromSource
                     ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
                     : MirDirection.Up;
-                if (def.TargetEffect != null)
-                    SpawnImpactTarget(def.TargetEffect, targetNode, targetDirection);
-                else if (def.Projectile != null)
-                    SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
-                else if (def.Impact != null)
-                    SpawnImpactTarget(def.Impact, targetNode, targetDirection);
-                else
-                    SpawnCastEffectTarget(def, targetNode, targetDirection);
-                if (def.TargetEffect == null)
+                if (!def.NoTargetVisual)
                 {
+                    if (def.TargetEffect != null)
+                        SpawnImpactTarget(def.TargetEffect, targetNode, targetDirection);
+                    else if (def.TargetProjectile != null)
+                        SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
+                    else if (def.Projectile != null)
+                        SpawnProjectileTarget(def, sourceX, sourceY, targetNode);
+                    else if (def.Impact != null)
+                        SpawnImpactTarget(def.Impact, targetNode, targetDirection);
+                    // 原版对 AttackTargets 无特效的 spell (纯 per-loc/per-caster,
+                    // 如怪物风暴/Sama 系) 不在这里伪造 SpawnCastEffect。
                     var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
                         ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
                     foreach (var extraProjectile in targetAdditionalProjectiles)
                         SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, targetNode, null);
+                    foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
                 }
-                foreach (var extra in def.Additional) SpawnImpactTarget(extra, targetNode);
             }
             else if (_objects.TryGetValue(tid, out var tgt))
             {
@@ -3027,31 +3307,60 @@ public partial class GameScene : Control
                     : def.DirectionFromSource
                     ? Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), targetCell)
                     : MirDirection.Up;
-                if (def.TargetEffect != null)
-                    SpawnImpactTarget(def.TargetEffect, tgt, targetDirection);
-                else if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
-                else if (def.Impact != null) SpawnImpactTarget(def.Impact, tgt, targetDirection);
-                else SpawnCastEffectTarget(def, tgt, targetDirection);
-                if (def.TargetEffect == null)
+                if (!def.NoTargetVisual)
                 {
+                    if (def.TargetEffect != null)
+                        SpawnImpactTarget(def.TargetEffect, tgt, targetDirection);
+                    else if (def.TargetProjectile != null) SpawnProjectileTarget(def, sourceX, sourceY, tgt);
+                    else if (def.Projectile != null) SpawnProjectile(def, sourceX, sourceY, tgt.CellX, tgt.CellY);
+                    else if (def.Impact != null) SpawnImpactTarget(def.Impact, tgt, targetDirection);
                     var targetAdditionalProjectiles = def.TargetAdditionalProjectiles.Count > 0
                         ? def.TargetAdditionalProjectiles : def.AdditionalProjectiles;
                     foreach (var extraProjectile in targetAdditionalProjectiles)
                         SpawnProjectileDefinitionTarget(extraProjectile, sourceX, sourceY, tgt, null);
+                    foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 }
-                foreach (var extra in def.Additional) SpawnImpact(extra, tgt.CellX, tgt.CellY, sourceX, sourceY);
                 foreach (var extra in def.AdditionalMapEffects)
                     SpawnImpact(extra, tgt.CellX + extra.OffsetX, tgt.CellY + extra.OffsetY, sourceX, sourceY);
             }
+            else
+            {
+                // 目标已被完全移除 (不在场景节点也不在 _objects 缓存)，
+                // 退回到对应格子保底播放 Impact/Projectile，避免命中特效凭空消失。
+                if (!def.NoTargetVisual && destCells.Count > 0)
+                {
+                    int cellIndex = Math.Min(targetIndex, destCells.Count - 1);
+                    var (fallbackX, fallbackY) = destCells[cellIndex];
+                    if (def.TargetEffect != null)
+                        SpawnImpact(def.TargetEffect, fallbackX, fallbackY, sourceX, sourceY);
+                    else if (def.Projectile != null)
+                        SpawnProjectile(def, sourceX, sourceY, fallbackX, fallbackY);
+                    else if (def.Impact != null)
+                        SpawnImpact(def.Impact, fallbackX, fallbackY, sourceX, sourceY);
+                    else
+                        SpawnCastEffect(def, fallbackX, fallbackY, sourceX, sourceY, dir);
+                }
+            }
+            targetIndex++;
         }
 
+        // 释放阶段挂在施法者自身 (原版 release 的 Target=this, 如 DarkSoulPrison 600,9)。
+        if (def.ReleaseAtCaster)
+        {
+            SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY, dir);
+        }
         // 没有目标/地点的站桩类技能才挂在施法者当前位置。
-        if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource && def.Source == null)
+        else if (destCells.Count == 0 && def.Projectile == null && !def.CastAtSource && def.Source == null)
         {
             SpawnCastEffect(def, sourceX, sourceY, sourceX, sourceY, dir);
             foreach (var extra in def.AdditionalMapEffects)
                 SpawnImpact(extra, sourceX + extra.OffsetX, sourceY + extra.OffsetY, sourceX, sourceY);
         }
+
+        // 释放结束音效 (原版 release switch 末尾的 Play, 按 Locations/Targets 门控)。
+        foreach (var spec in MagicSoundCatalog.ResolveSpecs(type, MagicSoundPhase.End))
+            if (MagicSoundCatalog.GateSatisfied(spec.Gate, locations?.Count > 0, targets?.Count > 0))
+                PlaySound(spec.Sound);
     }
 
     // 原版 PlayerObject.FrameIndexChanged 中由动作关键帧触发的本地表现。
@@ -3188,29 +3497,62 @@ public partial class GameScene : Control
         if (IsInstanceValid(player)) player.QueueFree();
     }
 
+    // 原版 CConnection.Process(S.ObjectProjectile) 只处理这 4 个 MagicType，
+    // 其余类型静默忽略；不再用 def.Projectile 泛化渲染 (会漏掉 ChainLightning
+    // 的逐点落雷和 ElementalSwords 的两段式起手)。
     private void OnObjectProjectile(S.ObjectProjectile packet)
     {
-        if (!_objects.TryGetValue(packet.ObjectID, out var source) && packet.ObjectID != _playerObjectID) return;
-        foreach (var sound in MagicSoundCatalog.ResolveAll(packet.Type, MagicSoundPhase.Travel))
-            PlaySound(sound);
-        foreach (var sound in MagicSoundCatalog.ResolveAll(packet.Type, MagicSoundPhase.End))
-            if (packet.Type is MagicType.ChainLightning && packet.Locations.Count > 0 ||
-                packet.Type is MagicType.LightningStrike && packet.Targets.Count > 0 ||
-                packet.Type is MagicType.ElementalSwords && packet.Targets.Count > 0)
-                PlaySound(sound);
+        if (!_objects.ContainsKey(packet.ObjectID) && packet.ObjectID != _playerObjectID) return;
         int sourceX = packet.CurrentLocation.X;
         int sourceY = packet.CurrentLocation.Y;
         var def = MagicEffectTable.Get(packet.Type);
-        if (def?.Projectile == null) return;
 
-        foreach (var p in packet.Locations)
-            SpawnProjectile(def, sourceX, sourceY, p.X, p.Y);
-        foreach (uint id in packet.Targets)
+        switch (packet.Type)
         {
-            var target = GetMagicTargetNode(id);
-            if (target != null)
-                SpawnProjectileTarget(def, sourceX, sourceY, target,
-                    packet.Type == MagicType.FireBounce ? SoundIndex.GreaterFireBallEnd : SoundIndex.None);
+            case MagicType.ChainLightning:
+                // 每个 MagicLocation 一个 MirEffect(470,10) + ChainLightningEnd。
+                if (def?.MapImpact != null)
+                    foreach (var p in packet.Locations)
+                        SpawnImpact(def.MapImpact, p.X, p.Y, sourceX, sourceY);
+                if (packet.Locations.Count > 0) PlaySound(SoundIndex.ChainLightningEnd);
+                break;
+            case MagicType.LightningStrike:
+                // 每个 AttackTarget 一个 MirProjectile(500,8 Skip0)，落地特效由
+                // release 包承担 (LightningStrikeEnd 已随 release 播过)。
+                if (def != null)
+                    foreach (uint id in packet.Targets)
+                    {
+                        var target = GetMagicTargetNode(id);
+                        if (target != null)
+                            SpawnProjectileDefinitionTarget(def.TargetProjectile ?? def.Projectile,
+                                sourceX, sourceY, target, null, SoundIndex.LightningBeamEnd);
+                    }
+                if (packet.Targets.Count > 0) PlaySound(SoundIndex.LightningBeamEnd);
+                break;
+            case MagicType.FireBounce:
+                // 每个 AttackTarget 一个 MirProjectile(1640,6) + 落地
+                // MirEffect(1800,10) + GreaterFireBallEnd；有目标时再播 Travel。
+                if (def != null)
+                    foreach (uint id in packet.Targets)
+                    {
+                        var target = GetMagicTargetNode(id);
+                        if (target != null)
+                            SpawnProjectileTarget(def, sourceX, sourceY, target, SoundIndex.GreaterFireBallEnd);
+                    }
+                if (packet.Targets.Count > 0) PlaySound(SoundIndex.GreaterFireBallTravel);
+                break;
+            case MagicType.ElementalSwords:
+                // 每个 AttackTarget: MirEffect(300,5 MagicEx10 0,0 Skip10,
+                // Direction=施法者朝向, MapTarget=当前格) 完成后再朝目标发
+                // MirProjectile(0,3 MagicEx10 Has16Directions) + ElementalSwordsEnd。
+                foreach (uint id in packet.Targets)
+                {
+                    var target = GetMagicTargetNode(id);
+                    if (target != null)
+                        SpawnElementalSwords(packet, target, sourceX, sourceY);
+                    PlaySound(SoundIndex.ElementalSwordsEnd);
+                }
+                break;
         }
     }
 
@@ -3494,14 +3836,12 @@ public partial class GameScene : Control
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
     {
         var proj = def.Projectile;
-        // MapTarget and Target are separate branches in the legacy client.
-        // A normal Impact belongs to an object Target; it must not be replayed
-        // at every ground cell.  Only explicitly declared MapImpact is a
-        // ground-position completion effect (FireBall uses this distinction).
-        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact, additionalStartDelay);
+        // 地面格弹道优先用 MapImpact；未显式声明时回退到 Impact，
+        // 保证无目标实体的地面落点弹道也能正常播放着弹特效。
+        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact ?? def.Impact, additionalStartDelay);
     }
 
-    private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact, double additionalStartDelay = 0)
+    private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact, double additionalStartDelay = 0, bool blend = true, int delay = 0)
     {
         if (proj == null) return;
         var pn = new MirProjectileNode();
@@ -3510,7 +3850,8 @@ public partial class GameScene : Control
         int originY = proj.OriginFromTarget ? toY : fromY;
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
             new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
-        pn.Blend = true;
+        pn.Blend = blend;
+        pn.Delay = delay;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
         pn.Explode = proj.Explode;
@@ -3520,9 +3861,16 @@ public partial class GameScene : Control
         pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
         pn.SetStartDelay(proj.StartDelayMs + additionalStartDelay);
-        // 到达后播落地特效
-        if (impact != null)
-            pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
+        // 到达后播落地特效 + 逐点到达音效 (原版 MirProjectile CompleteAction)。
+        if (impact != null || proj.Arrival != null || proj.ArrivalSound != SoundIndex.None
+            || proj.CompletionSound != SoundIndex.None)
+            pn.CompleteAction = () =>
+            {
+                if (proj.ArrivalSound != SoundIndex.None) PlaySound(proj.ArrivalSound);
+                if (proj.CompletionSound != SoundIndex.None) PlaySound(proj.CompletionSound);
+                if (impact != null) SpawnImpact(impact, toX, toY);
+                else if (proj.Arrival != null) SpawnImpact(proj.Arrival, toX, toY);
+            };
     }
 
     private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target,
@@ -3551,12 +3899,40 @@ public partial class GameScene : Control
         pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
         pn.SetStartDelay(proj.StartDelayMs);
-        if (impact != null || completionSound != SoundIndex.None)
+        var arrivalSound = completionSound != SoundIndex.None ? completionSound : proj.CompletionSound;
+        if (impact != null || proj.Arrival != null || proj.ArrivalSound != SoundIndex.None
+            || arrivalSound != SoundIndex.None)
             pn.CompleteAction = () =>
             {
-                if (completionSound != SoundIndex.None) PlaySound(completionSound);
+                if (proj.ArrivalSound != SoundIndex.None) PlaySound(proj.ArrivalSound);
+                if (arrivalSound != SoundIndex.None) PlaySound(arrivalSound);
                 if (impact != null) SpawnImpactTarget(impact, target);
+                else if (proj.Arrival != null) SpawnImpactTarget(proj.Arrival, target);
             };
+    }
+
+    // 原版 ElementalSwords (CConnection.cs:1424-1448): 每个目标先在施法者当前格
+    // 播 MirEffect(300,5 MagicEx10 0,0 Skip10 Direction=施法者朝向)，完成后
+    // 再朝目标发 MirProjectile(0,3 MagicEx10 Has16Directions)。
+    private void SpawnElementalSwords(S.ObjectProjectile packet, Node2D target, int sourceX, int sourceY)
+    {
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.Setup(LibraryFile.MagicEx10, 300, 5, 100, null, sourceX, sourceY,
+            () => ComputeEffectScreenPos(sourceX, sourceY));
+        fx.Skip = 10;
+        fx.Direction = packet.Direction;
+        fx.Blend = true;
+        fx.CompleteAction = () =>
+        {
+            var pn = new MirProjectileNode();
+            AddChild(pn);
+            pn.SetupProjectileTarget(LibraryFile.MagicEx10, 0, 3, 100, target,
+                () => GetTargetRenderY(target), new System.Drawing.Point(sourceX, sourceY),
+                (cx, cy) => ComputeEffectScreenPos(cx, cy));
+            pn.Blend = true;
+            pn.Has16Directions = true;
+        };
     }
 
     private Node2D GetMagicTargetNode(uint objectID)
@@ -5542,6 +5918,8 @@ public partial class GameScene : Control
     {
         double until = Godot.Time.GetTicksMsec() + ms;
         if (until > UseItemTime) UseItemTime = until;
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage != 0)
+            GD.Print($"[OperationAuditExt] COOLDOWN-SET ms={ms} until={until} prev={UseItemTime - until}");
     }
 
     // ---- 数据填充 ----
@@ -5777,7 +6155,9 @@ public partial class GameScene : Control
         }
 
         SyncCompanionItemList();
-        _companionDialog?.ApplyCompanion(Companion);
+        // 原版 CConnection.Process(S.CompanionItemsGained) -> AddCompanionItems 只刷新格子,
+        // 不做 ApplyCompanion 全量同步; 共享数组时 Clear+Copy 会把刚写入的物品抹空。
+        _companionDialog?.RefreshCompanionStats(Companion);
         RefreshItemGrids();
     }
 
@@ -5817,6 +6197,29 @@ public partial class GameScene : Control
             _operationAuditLastSuccess = p.Success;
             _operationAuditResponsePending = true;
             CallDeferred(nameof(ContinueOperationAudit));
+        }
+        // S17: Inventory->CompanionInventory (食物入背包); S18: Inventory<->GuildStorage (仓库移动)
+        // S18b/c: Inventory->GuildStorage 槽0 (b 用 _FromSlot, c 用 _SlotB 打不同物品);
+        // S18d: GuildStorage 槽0 -> Inventory (From/To 相对 b 互换)
+        bool operationExtMove =
+            ((_operationAuditExtStage is >= 4 and <= 8 || _operationAuditExtStage == 12)
+                && p.FromSlot == _operationAuditExtFromSlot && p.ToSlot == _operationAuditExtToSlot)
+            || (_operationAuditExtStage == 17
+                && p.FromGrid == GridType.Inventory && p.ToGrid == GridType.CompanionInventory
+                && p.FromSlot == _operationAuditExtFromSlot && p.ToSlot == _operationAuditExtToSlot)
+            || (_operationAuditExtStage == 18
+                && ((_operationAuditExtGuildSubStage is 1 or 2
+                        && p.FromGrid == GridType.Inventory && p.ToGrid == GridType.GuildStorage
+                        && p.FromSlot == (_operationAuditExtGuildSubStage == 1 ? _operationAuditExtFromSlot : _operationAuditExtSlotB)
+                        && p.ToSlot == _operationAuditExtToSlot)
+                    || (_operationAuditExtGuildSubStage == 3
+                        && p.FromGrid == GridType.GuildStorage && p.ToGrid == GridType.Inventory
+                        && p.FromSlot == _operationAuditExtToSlot && p.ToSlot == _operationAuditExtFromSlot)));
+        if (AutoLoginArgs.OperationAuditExt && operationExtMove)
+        {
+            _operationAuditExtLastSuccess = p.Success;
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
         }
         UnlockCell(p.FromGrid, p.FromSlot);
         UnlockCell(p.ToGrid, p.ToSlot);
@@ -6004,12 +6407,21 @@ public partial class GameScene : Control
         if (p.Locked) item.Flags |= UserItemFlags.Locked;
         else item.Flags &= ~UserItemFlags.Locked;
         RefreshItemGrids();
+        if (AutoLoginArgs.OperationAuditExt && p.Grid == GridType.Inventory
+            && p.Slot == _operationAuditExtSlotA && (_operationAuditExtStage == 2 || _operationAuditExtStage == 3))
+        {
+            _operationAuditExtLastSuccess = true;
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
+        }
     }
 
     // 使用延迟: 服务端给的绝对冷却 (下次可用时间)
     private void OnItemUseDelay(S.ItemUseDelay p)
     {
         UseItemTime = Godot.Time.GetTicksMsec() + p.Delay.TotalMilliseconds;
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage != 0)
+            GD.Print($"[OperationAuditExt] COOLDOWN-DELAY delayMs={p.Delay.TotalMilliseconds}");
     }
 
     // 数量变更 (使用消耗/拆分结果)
@@ -6043,9 +6455,30 @@ public partial class GameScene : Control
         if (p.Link.Count == 0) arr[p.Link.Slot] = null;
         else item.Count = p.Link.Count;
 
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 17)
+            GD.Print($"[OperationAuditExt] S17b hook-wrote arr0={arr[0]?.Info?.ItemName ?? "null"} cnt={arr[0]?.Count} slot={p.Link.Slot} pcnt={p.Link.Count}");
+
         if (p.Link.GridType is GridType.CompanionInventory or GridType.CompanionEquipment)
             SyncCompanionItemList();
         RefreshItemGrids();
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 17)
+            GD.Print($"[OperationAuditExt] S17b raw ItemChanged grid={p.Link.GridType} slot={p.Link.Slot} success={p.Success} count={p.Link.Count} subStage={_operationAuditExtCompanionSubStage}");
+        if (AutoLoginArgs.OperationAuditExt && p.Success
+            && ((_operationAuditExtStage == 1
+                    && p.Link.GridType == GridType.Inventory && p.Link.Slot == _operationAuditExtSlotA)
+                || (_operationAuditExtStage == 17 && _operationAuditExtCompanionSubStage == 1
+                    && p.Link.GridType == GridType.CompanionInventory && p.Link.Slot == _operationAuditExtToSlot)))
+        {
+            _operationAuditExtLastSuccess = p.Success;
+            if (_operationAuditExtStage == 17)
+            {
+                // 等 S.CompanionUpdate (后发) 提供 Hunger 再判
+                _operationAuditExtCompanionItemChanged = true;
+                if (_operationAuditExtCompanionHungerAfter < 0) return;
+            }
+            _operationAuditExtResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAuditExt));
+        }
     }
 
     // 属性变更 (附魔等)
@@ -6125,6 +6558,8 @@ public partial class GameScene : Control
             if (link.Slot < 0 || link.Slot >= arr.Length) continue;
 
             var item = arr[link.Slot];
+            if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 17 && link.GridType == GridType.CompanionInventory)
+                GD.Print($"[OperationAuditExt] S17b raw ItemsChanged slot={link.Slot} cnt={link.Count} success={p.Success} cur={(item == null ? "null" : item.Count.ToString())}");
             if (item == null || !p.Success) continue;
 
             if (!item.Info.ShouldLinkInfo)
@@ -6138,6 +6573,22 @@ public partial class GameScene : Control
         if (p.Links.Any(x => x?.GridType is GridType.CompanionInventory or GridType.CompanionEquipment))
             SyncCompanionItemList();
         RefreshItemGrids();
+        if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 13)
+        {
+            if (p.Success != true)
+            {
+                _operationAuditExtLastSuccess = false;
+                _operationAuditExtResponsePending = true;
+                CallDeferred(nameof(ContinueOperationAuditExt));
+                return;
+            }
+            _operationAuditExtLastSuccess = true;
+            if (_auditMailNewReceived)
+            {
+                _operationAuditExtResponsePending = true;
+                CallDeferred(nameof(ContinueOperationAuditExt));
+            }
+        }
     }
 
     public static bool TryConsumeItemCount(ClientUserItem item, long count, out bool remove)
@@ -6359,6 +6810,14 @@ public partial class GameScene : Control
             ob.Dead = true;
             ob.SetAnimation(MirAnimation.Die);
             ob.PlayDieSound();
+            if (AutoLoginArgs.OperationAuditExt && _operationAuditExtStage == 16
+                && objectID == _operationAuditExtCombatTargetId)
+            {
+                // D15: 目标死亡保留选中 (尸体高亮), 直到 ObjectRemove/切图/右键才清除
+                _operationAuditExtCombatDied = true;
+                _operationAuditExtCombatKeptTarget = _combatController?.TargetObject == ob;
+                GD.Print($"[OperationAuditExt] S16 died-kept-target={_operationAuditExtCombatKeptTarget} target={_combatController?.TargetObject?.DisplayName ?? "null"}");
+            }
             var renderer = ob;
             GetTree().CreateTimer(1.2).Timeout += () =>
             {
@@ -6647,6 +7106,7 @@ public partial class GameScene : Control
             _runningTestRightHeld = false;
             GD.Print($"[RunningTest] RESULT animation={_player.Animation} frame={_player.FrameIndex} " +
                      $"location=({_playerLocation.X},{_playerLocation.Y})");
+            GetTree().Quit();
         };
     }
 
@@ -6675,6 +7135,7 @@ public partial class GameScene : Control
         {
             _runningTestRightHeld = false;
             GD.Print($"[RightRunTest] RESULT animation={_player.Animation} location=({_playerLocation.X},{_playerLocation.Y})");
+            GetTree().Quit();
         };
     }
 
@@ -6836,6 +7297,21 @@ public partial class GameScene : Control
 
     public override void _Process(double delta)
     {
+        // 原版 ProcessInput 第一步：MagicAction 队列在动作边界释放。
+        // 释放条件：行动作已结束（当前帧不在移动动画），或超过走完期限
+        // （覆盖自动寻路连续走、被击退打断等边界）。
+        if (_pendingMagicPacket != null && CanPlayerTurn())
+        {
+            bool walking = IsPlayerWalking();
+            if (!walking || Godot.Time.GetTicksMsec() >= _pendingMagicCastAtMs)
+            {
+                if (_net?.Connection?.Connected == true)
+                    _net.Connection.Enqueue(_pendingMagicPacket);
+                else
+                    GD.Print("[Magic] 排队技能未发送：连接已断开");
+                _pendingMagicPacket = null;
+            }
+        }
         TryContinueMining();
         ProcessPendingAutoPathMove();
         UpdateViewRange();
@@ -6870,6 +7346,12 @@ public partial class GameScene : Control
         {
             _operationAuditStarted = true;
             GetTree().CreateTimer(1.0).Timeout += StartOperationAudit;
+        }
+
+        if (AutoLoginArgs.OperationAuditExt && !_operationAuditExtStarted && _startGameShown && _mapView?.Map != null)
+        {
+            _operationAuditExtStarted = true;
+            GetTree().CreateTimer(1.0).Timeout += StartOperationAuditExt;
         }
 
         // M9: 拿起物品跟随鼠标 + 悬浮提示
@@ -7041,7 +7523,6 @@ public partial class GameScene : Control
             GetTree().Quit();
             return;
         }
-
         _operationAuditSourceSlot = source.Slot;
         _operationAuditTargetSlot = target.Slot;
         var equipment = EquipmentCells.FirstOrDefault(c => c?.Item != null && c.Enabled
@@ -7206,6 +7687,993 @@ public partial class GameScene : Control
             $"failedDeletePreserved={failedDeletePreserved} pass={pass}");
         _operationAuditStage = 0;
         GetTree().Quit();
+    }
+
+    // ---- --operation-audit-ext: 真实服务器矩阵 (B2 使用解锁 / B5 锁定 / C2 双戒指双手镯 / D1 腰带 / D3 自动药水) ----
+    // 每阶段驱动真实 UI 交互 -> 等服务端回包 (或短延迟确认持久化) -> 断言解锁/状态。
+    private void StartOperationAuditExt()
+    {
+        var potion = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked && c.Item.Info != null
+            && c.Item.Info.CanAutoPot && c.Item.Info.ItemType == ItemType.Consumable && c.Item.Count > 0);
+        if (potion == null)
+        {
+            foreach (var c in InventoryCells.Where(c => c?.Item != null))
+                GD.Print($"[OperationAuditExt] inventory slot={c.Slot} item={c.Item.Info?.ItemName} count={c.Item.Count} canAutoPot={c.Item.Info?.CanAutoPot} effect={c.Item.Info?.ItemEffect}");
+            GD.PrintErr("[OperationAuditExt] FAIL no auto-potion consumable in inventory");
+            GetTree().Quit();
+            return;
+        }
+        var empty = InventoryCells.FirstOrDefault(c => c != null && c.Item == null && !c.Locked && c.Enabled);
+        if (empty == null)
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL no empty inventory slot");
+            GetTree().Quit();
+            return;
+        }
+        var lockCell = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked && c.Item.Info != null
+            && !c.Item.Flags.HasFlag(UserItemFlags.Locked));
+        if (lockCell == null)
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL no unlockable inventory item");
+            GetTree().Quit();
+            return;
+        }
+
+        _operationAuditExtStage = 1;
+        _operationAuditExtResponsePending = false;
+        _operationAuditExtLastSuccess = false;
+        _operationAuditExtSlotA = potion.Slot;
+        GD.Print($"[OperationAuditExt] S1 USE_POTION slot={potion.Slot} item={potion.Item.Info.ItemName} count={potion.Item.Count} durability={potion.Item.Info.Durability}");
+        // 双击使用背包药水: 真实发 C.ItemUse -> 服务端 S.ItemChanged (扣 1) -> OnItemChanged 解锁
+        potion.UseItem();
+        GD.Print($"[OperationAuditExt] S1 use-sent-cooldown-now={UseItemTime - Godot.Time.GetTicksMsec()}");
+        // 看门狗: 阶段感知 + 每次阶段推进重新武装, 60s 内同阶段无回包且无挂起才判定挂起
+        // (S17b 会等待 S1 药水的 2s 冷却再发包, 期间 pending=false — 旧看门狗会误报)
+        ArmOperationAuditExtWatchdog();
+    }
+
+    private void ArmOperationAuditExtWatchdog()
+    {
+        int stageAtCreate = _operationAuditExtStage;
+        GetTree().CreateTimer(60.0).Timeout += () =>
+        {
+            if (_operationAuditExtStage == 0) return;                 // 审计已完成
+            if (_operationAuditExtStage != stageAtCreate)             // 已推进到新阶段: 重新武装
+            {
+                ArmOperationAuditExtWatchdog();
+                return;
+            }
+            if (!_operationAuditExtResponsePending)
+            {
+                GD.PrintErr($"[OperationAuditExt] FAIL timeout waiting for stage {_operationAuditExtStage} response");
+                GetTree().Quit();
+            }
+        };
+    }
+
+    private void ContinueOperationAuditExt()
+    {
+        if (!_operationAuditExtResponsePending) return;
+        _operationAuditExtResponsePending = false;
+        // S18c 预期服务端拒绝 (不同物品 merge 打占用的槽) -> !Success 即 PASS, 由 case 18 判定
+        if (!_operationAuditExtLastSuccess
+            && !(_operationAuditExtStage == 18 && _operationAuditExtGuildSubStage == 2))
+        {
+            GD.PrintErr($"[OperationAuditExt] FAIL stage={_operationAuditExtStage} server_success=false");
+            GetTree().Quit();
+            return;
+        }
+
+        switch (_operationAuditExtStage)
+        {
+            case 1:
+            {
+                // S1 使用药水: 回包后来源格必须解锁 (B2)
+                bool unlocked = !InventoryCells[_operationAuditExtSlotA].Locked;
+                GD.Print($"[OperationAuditExt] S1 use-unlock={unlocked} count={Inventory[_operationAuditExtSlotA]?.Count}");
+                if (!unlocked)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL potion cell still locked after ItemChanged");
+                    GetTree().Quit();
+                    return;
+                }
+                // 继续 S2: 锁定背包格
+                _operationAuditExtSlotA = lockCellForExt();
+                if (_operationAuditExtSlotA < 0)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no item to lock");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtStage = 2;
+                GD.Print($"[OperationAuditExt] S2 LOCK slot={_operationAuditExtSlotA}");
+                InventoryCells[_operationAuditExtSlotA].ToggleLock();
+                return;
+            }
+            case 2:
+            {
+                // S2 锁定: 服务端 S.ItemLock 回包后 Flags.Locked 必须置位 (B5)
+                bool locked = Inventory[_operationAuditExtSlotA]?.Flags.HasFlag(UserItemFlags.Locked) == true;
+                GD.Print($"[OperationAuditExt] S2 locked={locked}");
+                if (!locked)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL item not locked after ItemLock response");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtStage = 3;
+                GD.Print($"[OperationAuditExt] S3 UNLOCK slot={_operationAuditExtSlotA}");
+                InventoryCells[_operationAuditExtSlotA].ToggleLock();
+                return;
+            }
+            case 3:
+            {
+                // S3 解锁 (B5 反向)
+                bool unlocked = Inventory[_operationAuditExtSlotA]?.Flags.HasFlag(UserItemFlags.Locked) != true;
+                GD.Print($"[OperationAuditExt] S3 unlocked={unlocked}");
+                if (!unlocked)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL item still locked after unlock");
+                    GetTree().Quit();
+                    return;
+                }
+                // S4: 卸下 RingL 到空背包格 (C4)
+                var ringL = EquipmentCells.FirstOrDefault(c => c?.Item != null && c.Slot == (int)EquipmentSlot.RingL);
+                var emptyInv = InventoryCells.FirstOrDefault(c => c != null && c.Item == null && !c.Locked && c.Enabled);
+                if (ringL == null || emptyInv == null)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no RingL equipment or no empty inventory slot for C4");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtFromSlot = ringL.Slot;     // 7
+                _operationAuditExtToSlot = emptyInv.Slot;    // 背包空槽
+                _operationAuditExtSlotB = emptyInv.Slot;
+                _operationAuditExtOriginalA = ringL.Item;
+                _operationAuditExtStage = 4;
+                GD.Print($"[OperationAuditExt] S4 UNEQUIP_RINGL eqSlot={ringL.Slot} to={emptyInv.Slot}");
+                ringL.MoveItem(emptyInv);
+                return;
+            }
+            case 4:
+            {
+                // S4 卸下 RingL: 装备空、背包有 (C4 部分)
+                bool removed = Equipment[(int)EquipmentSlot.RingL] == null
+                    && Inventory[_operationAuditExtSlotB] != null
+                    && !EquipmentCells[(int)EquipmentSlot.RingL].Locked
+                    && !InventoryCells[_operationAuditExtSlotB].Locked;
+                GD.Print($"[OperationAuditExt] S4 removed={removed}");
+                if (!removed)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL ring not removed to inventory");
+                    GetTree().Quit();
+                    return;
+                }
+                // S5: 穿到 RingR (已占用) -> 替换路径 (C2 replace)
+                _operationAuditExtFromSlot = _operationAuditExtSlotB;  // 背包
+                _operationAuditExtToSlot = (int)EquipmentSlot.RingR;   // 8
+                _operationAuditExtOriginalB = Equipment[(int)EquipmentSlot.RingR];
+                _operationAuditExtStage = 5;
+                GD.Print($"[OperationAuditExt] S5 EQUIP_RINGR_REPLACE from={_operationAuditExtSlotB} to={EquipmentSlot.RingR}");
+                EquipmentCells[(int)EquipmentSlot.RingR].ToEquipment(InventoryCells[_operationAuditExtSlotB]);
+                return;
+            }
+            case 5:
+            {
+                // S5 替换: RingR 有换入物品, 被换下的原 RingR 物品回到背包 from 槽 (C2 replace)
+                bool replaced = Equipment[(int)EquipmentSlot.RingR] != null
+                    && !ReferenceEquals(Equipment[(int)EquipmentSlot.RingR], _operationAuditExtOriginalB)
+                    && !EquipmentCells[(int)EquipmentSlot.RingR].Locked;
+                GD.Print($"[OperationAuditExt] S5 replaced={replaced} ringR={Equipment[(int)EquipmentSlot.RingR]?.Info?.ItemName}");
+                if (!replaced)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL ring replace on RingR failed");
+                    GetTree().Quit();
+                    return;
+                }
+                // S6: 从背包 (原 RingR 物品所在) 穿到 RingL 空槽 -> 空槽优先路径 (C2 empty)
+                _operationAuditExtFromSlot = _operationAuditExtSlotB;
+                _operationAuditExtToSlot = (int)EquipmentSlot.RingL;   // 7
+                _operationAuditExtStage = 6;
+                GD.Print($"[OperationAuditExt] S6 EQUIP_RINGL_EMPTY from={_operationAuditExtSlotB} to={EquipmentSlot.RingL}");
+                EquipmentCells[(int)EquipmentSlot.RingL].ToEquipment(InventoryCells[_operationAuditExtSlotB]);
+                return;
+            }
+            case 6:
+            {
+                // S6 空槽优先: RingL 有, 背包 from 槽空 (C2 empty priority)
+                bool equipped = Equipment[(int)EquipmentSlot.RingL] != null
+                    && Inventory[_operationAuditExtSlotB] == null
+                    && !EquipmentCells[(int)EquipmentSlot.RingL].Locked;
+                GD.Print($"[OperationAuditExt] S6 equipped-empty={equipped} ringL={Equipment[(int)EquipmentSlot.RingL]?.Info?.ItemName}");
+                if (!equipped)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL ring empty-slot equip failed");
+                    GetTree().Quit();
+                    return;
+                }
+                // S7: 卸下 BraceletL (C4 手镯)
+                var braceL = EquipmentCells.FirstOrDefault(c => c?.Item != null && c.Slot == (int)EquipmentSlot.BraceletL);
+                var emptyInv2 = InventoryCells.FirstOrDefault(c => c != null && c.Item == null && !c.Locked && c.Enabled);
+                if (braceL == null || emptyInv2 == null)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no BraceletL or empty slot for C4 bracelet");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtFromSlot = braceL.Slot;     // 5
+                _operationAuditExtToSlot = emptyInv2.Slot;    // 背包空槽
+                _operationAuditExtSlotB = emptyInv2.Slot;
+                _operationAuditExtOriginalA = braceL.Item;
+                _operationAuditExtStage = 7;
+                GD.Print($"[OperationAuditExt] S7 UNEQUIP_BRACELETL eqSlot={braceL.Slot} to={emptyInv2.Slot}");
+                braceL.MoveItem(emptyInv2);
+                return;
+            }
+            case 7:
+            {
+                // S7 卸下 BraceletL: 装备空 (C4 手镯)
+                bool removed = Equipment[(int)EquipmentSlot.BraceletL] == null
+                    && Inventory[_operationAuditExtSlotB] != null
+                    && !EquipmentCells[(int)EquipmentSlot.BraceletL].Locked;
+                GD.Print($"[OperationAuditExt] S7 bracelet-removed={removed}");
+                if (!removed)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL bracelet not removed");
+                    GetTree().Quit();
+                    return;
+                }
+                // S8: 穿到 BraceletR (已占用) -> 替换路径 (C2 bracelet replace)
+                _operationAuditExtFromSlot = _operationAuditExtSlotB;
+                _operationAuditExtToSlot = (int)EquipmentSlot.BraceletR;  // 6
+                _operationAuditExtOriginalB = Equipment[(int)EquipmentSlot.BraceletR];
+                _operationAuditExtStage = 8;
+                GD.Print($"[OperationAuditExt] S8 EQUIP_BRACELETR_REPLACE from={_operationAuditExtSlotB} to={EquipmentSlot.BraceletR}");
+                EquipmentCells[(int)EquipmentSlot.BraceletR].ToEquipment(InventoryCells[_operationAuditExtSlotB]);
+                return;
+            }
+            case 8:
+            {
+                // S8 替换: BraceletR 有换入物品 (C2 bracelet replace)
+                bool replaced = Equipment[(int)EquipmentSlot.BraceletR] != null
+                    && !ReferenceEquals(Equipment[(int)EquipmentSlot.BraceletR], _operationAuditExtOriginalB)
+                    && !EquipmentCells[(int)EquipmentSlot.BraceletR].Locked;
+                GD.Print($"[OperationAuditExt] S8 bracelet-replaced={replaced}");
+                if (!replaced)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL bracelet replace failed");
+                    GetTree().Quit();
+                    return;
+                }
+                // S9: 腰带链接 (D1) — 拖背包物品到空腰带格
+                var linkable = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked && c.Item.Info != null);
+                var beltCell = _beltDialog?.Grid?.Cells?.FirstOrDefault(c => c?.QuickItem == null && c.QuickInfo == null);
+                if (linkable == null || beltCell == null)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no linkable inventory item or empty belt slot for D1");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtSlotA = linkable.Slot;
+                _operationAuditExtSlotB = beltCell.Slot;
+                _operationAuditExtOriginalA = linkable.Item;
+                _operationAuditExtStage = 9;
+                GD.Print($"[OperationAuditExt] S9 BELT_LINK from={linkable.Slot} to=belt={beltCell.Slot} item={linkable.Item.Info.ItemName}");
+                linkable.MoveItem(beltCell);
+                // 无回包: 本地即时断言; 服务端持久化由下一轮审计 S.CharacterInfo 重载验证
+                _operationAuditExtResponsePending = true;
+                ContinueOperationAuditExt();
+                return;
+            }
+            case 9:
+            {
+                // S9 腰带链接: BeltLinks[slot] 已指向物品 Index (D1 本地即时)
+                bool linked = BeltLinks[_operationAuditExtSlotB].LinkItemIndex == _operationAuditExtOriginalA.Index
+                    || BeltLinks[_operationAuditExtSlotB].LinkInfoIndex > 0;
+                GD.Print($"[OperationAuditExt] S9 belt-linked={linked} linkItem={BeltLinks[_operationAuditExtSlotB].LinkItemIndex} expect={_operationAuditExtOriginalA.Index}");
+                if (!linked)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL belt link not established");
+                    GetTree().Quit();
+                    return;
+                }
+                // S10: 自动药水链接 (D3) — 拖药水到 AutoPotion 行
+                var autoCell = AutoPotionBox?.Rows?.FirstOrDefault(r => r?.ItemCell?.QuickInfo == null);
+                var potion2 = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked
+                    && c.Item.Info.CanAutoPot && c.Item.Info.ItemType == ItemType.Consumable);
+                if (autoCell == null || potion2 == null)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no auto-potion row or potion for D3");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtSlotA = potion2.Slot;
+                _operationAuditExtSlotB = autoCell.Slot;
+                _operationAuditExtOriginalB = potion2.Item;
+                _operationAuditExtStage = 10;
+                GD.Print($"[OperationAuditExt] S10 AUTO_POTION from={potion2.Slot} to=row={autoCell.Slot} item={potion2.Item.Info.ItemName}");
+                potion2.MoveItem(autoCell.ItemCell);
+                _operationAuditExtResponsePending = true;
+                ContinueOperationAuditExt();
+                return;
+            }
+            case 10:
+            {
+                // S10 自动药水链接: AutoPotionBox.Rows[slot].ItemCell.QuickInfo == 药水 Info (D3)
+                var row = AutoPotionBox.Rows[_operationAuditExtSlotB];
+                bool linked = ReferenceEquals(row.ItemCell.QuickInfo, _operationAuditExtOriginalB.Info);
+                GD.Print($"[OperationAuditExt] S10 auto-linked={linked} info={row.ItemCell.QuickInfo?.ItemName}");
+                if (!linked)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL auto-potion link not established");
+                    GetTree().Quit();
+                    return;
+                }
+                // S11: 清理
+                CleanupOperationAuditExt();
+                return;
+            }
+            case 11:
+            {
+                // S11 清理完成
+                bool ringsRestored = Equipment[(int)EquipmentSlot.RingL] != null && Equipment[(int)EquipmentSlot.RingR] != null;
+                bool braceletsRestored = Equipment[(int)EquipmentSlot.BraceletL] != null && Equipment[(int)EquipmentSlot.BraceletR] != null;
+                bool beltCleared = !BeltLinks.Any(l => l.LinkItemIndex > 0 || l.LinkInfoIndex > 0);
+                bool autoCleared = !AutoPotionBox.Links.Any(l => l.LinkInfoIndex > 0);
+                GD.Print($"[OperationAuditExt] S11 cleanup rings={ringsRestored} bracelets={braceletsRestored} " +
+                    $"beltCleared={beltCleared} autoCleared={autoCleared}");
+                if (!(ringsRestored && braceletsRestored && beltCleared && autoCleared))
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL cleanup incomplete");
+                    GetTree().Quit();
+                    return;
+                }
+                // S13 (E4 邮件): 管理员登录下自寄带附件邮件 -> 等 S.MailSend 阶段回包 +
+                // S.ItemsChanged(成功扣量解锁) + S.MailNew(收件方=自己 -> 同连接, 列表刷新)
+                var mailPotion = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked && c.Item.Info != null
+                    && c.Item.Info.CanAutoPot && c.Item.Info.ItemType == ItemType.Consumable && c.Item.Count > 0);
+                if (mailPotion == null)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL no potion for mail attachment");
+                    GetTree().Quit();
+                    return;
+                }
+                _auditMailCountBefore = _communicationDialog?.MailSnapshot().Count ?? -1;
+                _auditMailNewReceived = false;
+                _auditMailSendCount = (int)mailPotion.Item.Count;
+                _operationAuditExtSlotA = mailPotion.Slot;
+                _operationAuditExtOriginalA = mailPotion.Item;
+                _operationAuditExtStage = 13;
+                _operationAuditExtResponsePending = false;
+                _operationAuditExtLastSuccess = false;
+                GD.Print($"[OperationAuditExt] S13 MAIL_SEND from={mailPotion.Slot} item={mailPotion.Item.Info.ItemName} count={mailPotion.Item.Count} recipient={AutoLoginArgs.Character} mailCountBefore={_auditMailCountBefore}");
+                SendMail(AutoLoginArgs.Character, "operation-audit-ext", "operation audit ext",
+                    new List<CellLinkInfo> { new CellLinkInfo { GridType = GridType.Inventory, Slot = mailPotion.Slot, Count = 1 } }, 0);
+                return;
+            }
+            case 13:
+            {
+                // S13 发送: S.ItemsChanged(Success) 扣量+解锁, S.MailNew 列表加 1
+                bool sent = _operationAuditExtLastSuccess && _auditMailNewReceived;
+                bool unlocked = !InventoryCells[_operationAuditExtSlotA].Locked;
+                bool deducted = Inventory[_operationAuditExtSlotA]?.Count == (_auditMailSendCount - 1);
+                int mailCount = _communicationDialog?.MailSnapshot().Count ?? -1;
+                GD.Print($"[OperationAuditExt] S13 mail-sent={sent} unlocked={unlocked} deducted={deducted} count={Inventory[_operationAuditExtSlotA]?.Count} expect={_auditMailSendCount - 1} mailCount={mailCount} expect={_auditMailCountBefore + 1}");
+                var mail = _communicationDialog?.MailSnapshot().FirstOrDefault(x => x.Subject == "operation-audit-ext");
+                if (!(sent && unlocked && deducted && mailCount == _auditMailCountBefore + 1 && mail != null))
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL mail send not confirmed");
+                    GetTree().Quit();
+                    return;
+                }
+                _auditMailIndex = mail.Index;
+                _operationAuditExtStage = 14;
+                _operationAuditExtResponsePending = false;
+                _operationAuditExtLastSuccess = false;
+                GD.Print($"[OperationAuditExt] S14 MAIL_GETITEM index={_auditMailIndex} slot=0 attachments={mail.Items?.Count ?? -1}");
+                SendMailGetItem(_auditMailIndex, 0);
+                return;
+            }
+            case 14:
+            {
+                // S14 领取附件: S.MailItemDelete 后附件格清空, 药水经 S.ItemsGained 叠回背包
+                var mail = _communicationDialog?.FindMail(_auditMailIndex);
+                bool claimed = mail == null || (mail.Items?.Count ?? 0) == 0;
+                bool stacked = Inventory[_operationAuditExtSlotA]?.Count == _auditMailSendCount;
+                GD.Print($"[OperationAuditExt] S14 mail-claimed={claimed} attachments={mail?.Items?.Count ?? -1} stacked={stacked} count={Inventory[_operationAuditExtSlotA]?.Count} expect={_auditMailSendCount}");
+                if (!(claimed && stacked))
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL mail attachment claim failed");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtStage = 15;
+                _operationAuditExtResponsePending = false;
+                _operationAuditExtLastSuccess = false;
+                GD.Print($"[OperationAuditExt] S15 MAIL_DELETE index={_auditMailIndex}");
+                SendMailDelete(_auditMailIndex);
+                return;
+            }
+            case 15:
+            {
+                // S15 删除空邮件: S.MailDelete 后列表回到发送前数量
+                bool gone = (_communicationDialog?.MailSnapshot().Count ?? -1) == _auditMailCountBefore;
+                GD.Print($"[OperationAuditExt] S15 mail-deleted={gone} mailCount={_communicationDialog?.MailSnapshot().Count ?? -1} expect={_auditMailCountBefore}");
+                if (!gone)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL mail delete failed");
+                    GetTree().Quit();
+                    return;
+                }
+                // S17: 伙伴食物移动/使用 (C6 实服端到端), 完成后接 S18 行会仓库
+                StartOperationAuditExtCompanion();
+                return;
+            }
+            case 17:
+            {
+                if (_operationAuditExtCompanionSubStage == 0)
+                {
+                    // S17a 移动回包: 食物已在伴侣背包槽0, 背包来源槽空, 双格解锁
+                    bool moved = _operationAuditExtLastSuccess
+                        && CompanionInventory[_operationAuditExtToSlot]?.Info?.ItemType == ItemType.CompanionFood
+                        && Inventory[_operationAuditExtFromSlot] == null
+                        && !InventoryCells[_operationAuditExtFromSlot].Locked
+                        && !CompanionInventoryCells[_operationAuditExtToSlot].Locked;
+                    GD.Print($"[OperationAuditExt] S17 moved={moved} food={CompanionInventory[_operationAuditExtToSlot]?.Info?.ItemName ?? "empty"} count={CompanionInventory[_operationAuditExtToSlot]?.Count} hunger={Companion?.Hunger}");
+                    if (!moved)
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL companion food move failed");
+                        GetTree().Quit();
+                        return;
+                    }
+                    _operationAuditExtCompanionSubStage = 1;
+                    _operationAuditExtCompanionItemChanged = false;
+                    _operationAuditExtCompanionHungerBefore = Companion?.Hunger ?? -1;
+                    _operationAuditExtCompanionHungerAfter = -1;
+                    _operationAuditExtResponsePending = false;
+                    _operationAuditExtLastSuccess = false;
+                    GD.Print($"[OperationAuditExt] S17b USE_FOOD slot={_operationAuditExtToSlot} hungerBefore={_operationAuditExtCompanionHungerBefore}");
+                    // 冷却: S1 药水使用设置了 2s 冷却 (ItemInfo.Durability), 原版客户端对
+                    // CompanionFood 走同款闸门 (Client/Controls/DXItemCell.cs Consumable case) —
+                    // 真玩家此时点击无效, 冷却结束后重点击即可。此处模拟: 等待冷却结束再发包。
+                    var foodItem = CompanionInventory[_operationAuditExtToSlot];
+                    if (IsUseItemOnCooldown(foodItem))
+                    {
+                        _operationAuditExtS17bRetries = 0;
+                        GetTree().CreateTimer(0.25).Timeout += RetryOperationAuditExtUseCompanionFood;
+                        return;
+                    }
+                    TryOperationAuditExtUseCompanionFood();
+                    return;
+                }
+                // S17b 双包齐 (S.ItemChanged + S.CompanionUpdate): count-1 + 解锁 + 饥饿严格增加
+                GD.Print($"[OperationAuditExt] S17b cont arr0={(CompanionInventory[_operationAuditExtToSlot] == null ? "NULL" : CompanionInventory[_operationAuditExtToSlot].Info.ItemName)} itemsN={Companion?.Items?.Count}");
+                bool used = _operationAuditExtLastSuccess
+                    && CompanionInventory[_operationAuditExtToSlot]?.Count == _operationAuditExtCompanionFoodCount - 1
+                    && !CompanionInventoryCells[_operationAuditExtToSlot].Locked
+                    && _operationAuditExtCompanionHungerAfter > _operationAuditExtCompanionHungerBefore;
+                GD.Print($"[OperationAuditExt] S17 used={used} count={CompanionInventory[_operationAuditExtToSlot]?.Count} expect={_operationAuditExtCompanionFoodCount - 1} hunger={_operationAuditExtCompanionHungerBefore}->{_operationAuditExtCompanionHungerAfter} unlocked={!CompanionInventoryCells[_operationAuditExtToSlot].Locked}");
+                if (!used)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL companion food use failed");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtCompanionPass = true;
+                StartOperationAuditExtGuild();
+                return;
+            }
+            case 18:
+            {
+                if (_operationAuditExtGuildSubStage == 0)
+                {
+                    // S18a 建会回包 (S.GuildInfo): StorageLimit=10、GuildFunds=0、扣 7.5M、仓库页启用格=10
+                    long goldAfter = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold)?.Amount ?? -1;
+                    bool limitOk = _guildDialog?.StorageLimit == 10;
+                    bool fundsOk = _guildDialog?.GuildFunds == 0;
+                    bool goldOk = _auditGuildGoldBefore > 0 && goldAfter == _auditGuildGoldBefore - 7_500_000;
+                    _guildDialog.SelectTab(2);
+                    var storageCells = _guildDialog?.GuildStorageCells;
+                    int enabled = storageCells?.Count(c => c.Enabled) ?? -1;
+                    GD.Print($"[OperationAuditExt] S18a created limit={_guildDialog?.StorageLimit} funds={_guildDialog?.GuildFunds} gold={_auditGuildGoldBefore}->{goldAfter} enabledCells={enabled} expect=10");
+                    if (!(limitOk && fundsOk && goldOk && enabled == 10))
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL guild create contract");
+                        GetTree().Quit();
+                        return;
+                    }
+                    // S18b: 生产路径移一个可交易消耗品进仓库槽0
+                    var tradeItem = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked
+                        && c.Item.Info?.CanTrade == true && c.Item.Info?.ItemType == ItemType.Consumable);
+                    if (tradeItem == null || storageCells == null || storageCells.Length == 0 || !storageCells[0].IsEnabled)
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL no tradeable item or storage cell");
+                        GetTree().Quit();
+                        return;
+                    }
+                    _operationAuditExtFromSlot = tradeItem.Slot;
+                    _operationAuditExtToSlot = 0;
+                    _operationAuditExtGuildSubStage = 1;
+                    _operationAuditExtResponsePending = false;
+                    _operationAuditExtLastSuccess = false;
+                    GD.Print($"[OperationAuditExt] S18b MOVE_IN from={tradeItem.Slot} item={tradeItem.Item.Info.ItemName}");
+                    tradeItem.MoveItem(storageCells[0]);
+                    return;
+                }
+                if (_operationAuditExtGuildSubStage == 1)
+                {
+                    // S18b 回包: 仓库槽0有物品、背包来源槽空、双格解锁
+                    bool moved = _operationAuditExtLastSuccess
+                        && _guildDialog?.GuildStorageItems?[0] != null
+                        && Inventory[_operationAuditExtFromSlot] == null
+                        && !InventoryCells[_operationAuditExtFromSlot].Locked
+                        && !_guildDialog.GuildStorageCells[0].Locked;
+                    GD.Print($"[OperationAuditExt] S18b moved={moved} guild0={_guildDialog?.GuildStorageItems?[0]?.Info?.ItemName ?? "empty"}");
+                    if (!moved)
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL guild storage move-in failed");
+                        GetTree().Quit();
+                        return;
+                    }
+                    // S18c: 用不同物品 merge 打占用的槽0 -> 服务端拒绝 (toItem.Info != fromItem.Info return)
+                    var failItem = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked
+                        && c.Item.Info?.CanTrade == true && c.Item.Info != _guildDialog.GuildStorageItems[0].Info);
+                    if (failItem == null)
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL no second tradeable item for merge-reject");
+                        GetTree().Quit();
+                        return;
+                    }
+                    _operationAuditExtSlotB = failItem.Slot;
+                    _operationAuditExtGuildSubStage = 2;
+                    _operationAuditExtResponsePending = false;
+                    _operationAuditExtLastSuccess = false;
+                    GD.Print($"[OperationAuditExt] S18c FAIL_MERGE from={failItem.Slot} item={failItem.Item.Info.ItemName} -> guild0");
+                    SendItemMove(GridType.Inventory, GridType.GuildStorage, failItem.Slot, 0, true);
+                    return;
+                }
+                if (_operationAuditExtGuildSubStage == 2)
+                {
+                    // S18c 回包: 服务端拒绝 (!Success), 仓库槽0保持原物品、背包不同物品仍在、双格解锁
+                    bool rejected = !_operationAuditExtLastSuccess;
+                    bool storageUnchanged = _guildDialog?.GuildStorageItems?[0] != null
+                        && Inventory[_operationAuditExtSlotB] != null;
+                    bool unlocked = !InventoryCells[_operationAuditExtSlotB].Locked
+                        && !_guildDialog.GuildStorageCells[0].Locked;
+                    GD.Print($"[OperationAuditExt] S18c rejected={rejected} storage-unchanged={storageUnchanged} unlocked={unlocked}");
+                    if (!(rejected && storageUnchanged && unlocked))
+                    {
+                        GD.PrintErr("[OperationAuditExt] FAIL guild storage merge-reject contract");
+                        GetTree().Quit();
+                        return;
+                    }
+                    // S18d: 生产路径把仓库槽0移回原背包槽
+                    _operationAuditExtGuildSubStage = 3;
+                    _operationAuditExtResponsePending = false;
+                    _operationAuditExtLastSuccess = false;
+                    GD.Print($"[OperationAuditExt] S18d MOVE_OUT guild0 -> inv{_operationAuditExtFromSlot}");
+                    _guildDialog.GuildStorageCells[0].MoveItem(InventoryCells[_operationAuditExtFromSlot]);
+                    return;
+                }
+                // S18d 回包: 背包槽恢复物品、仓库槽0空、双格解锁
+                bool restored = _operationAuditExtLastSuccess
+                    && Inventory[_operationAuditExtFromSlot] != null
+                    && _guildDialog?.GuildStorageItems?[0] == null
+                    && !InventoryCells[_operationAuditExtFromSlot].Locked
+                    && !_guildDialog.GuildStorageCells[0].Locked;
+                GD.Print($"[OperationAuditExt] S18d restored={restored} inv={Inventory[_operationAuditExtFromSlot]?.Info?.ItemName ?? "empty"} guild0-empty={_guildDialog?.GuildStorageItems?[0] == null}");
+                if (!restored)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL guild storage move-out failed");
+                    GetTree().Quit();
+                    return;
+                }
+                _operationAuditExtGuildPass = true;
+                // S16: 战斗在线实测 (真实窗口 + 实服)
+                StartOperationAuditExtCombat();
+                return;
+            }
+            case 12:
+            {
+                // S12 还原 BraceletL: 装备槽有原手镯, 背包 from 槽空
+                bool restored = Equipment[(int)EquipmentSlot.BraceletL] != null
+                    && Inventory[_operationAuditExtFromSlot] == null
+                    && !EquipmentCells[(int)EquipmentSlot.BraceletL].Locked;
+                GD.Print($"[OperationAuditExt] S12 bracelet-restored={restored} eq={Equipment[(int)EquipmentSlot.BraceletL]?.Info?.ItemName} bagSlot{_operationAuditExtFromSlot}={Inventory[_operationAuditExtFromSlot]?.Info?.ItemName ?? "empty"}");
+                if (!restored)
+                {
+                    GD.PrintErr("[OperationAuditExt] FAIL bracelet restore failed");
+                    GetTree().Quit();
+                    return;
+                }
+                // 清腰带链接 (D1 清理): QuickItem/QuickInfo setter 只改本地, 必须显式发服务端
+                foreach (var link in BeltLinks)
+                {
+                    if (link.LinkItemIndex <= 0 && link.LinkInfoIndex <= 0) continue;
+                    var cell = _beltDialog?.Grid?.Cells != null && link.Slot >= 0 && link.Slot < _beltDialog.Grid.Cells.Length
+                        ? _beltDialog.Grid.Cells[link.Slot] : null;
+                    if (cell != null)
+                    {
+                        cell.QuickItem = null;
+                        cell.QuickInfo = null;
+                        SendBeltLinkChanged(link.Slot, -1, -1);
+                    }
+                }
+                // 清自动药水行 (D3 清理): 显式发服务端
+                for (int i = 0; i < AutoPotionBox.Rows.Length; i++)
+                {
+                    var row = AutoPotionBox.Rows[i];
+                    if (row.ItemCell.QuickInfo == null) continue;
+                    row.ItemCell.QuickInfo = null;
+                    row.Health.Value = 0;
+                    row.Mana.Value = 0;
+                    row.EnabledCheck.Checked = false;
+                    AutoPotionBox.SendRowUpdate(i);
+                }
+                _operationAuditExtStage = 11;
+                _operationAuditExtResponsePending = true;
+                ContinueOperationAuditExt();
+                return;
+            }
+            default:
+                GD.PrintErr($"[OperationAuditExt] FAIL unexpected stage={_operationAuditExtStage}");
+                GetTree().Quit();
+                return;
+        }
+    }
+
+    private int lockCellForExt()
+    {
+        var c = InventoryCells.FirstOrDefault(x => x?.Item != null && !x.Locked && x.Item.Info != null
+            && !x.Item.Flags.HasFlag(UserItemFlags.Locked));
+        return c?.Slot ?? -1;
+    }
+
+    // ---- S16 战斗在线实测 (真实窗口 + 实服): 找怪 -> 走到相邻 -> 选中攻击 ->
+    // 真实 C.Attack 发包节拍 (原版公式门控) + 死亡目标保留 (D15) ----
+    // S17 (C6): 伙伴食物移动/使用端到端。食物入伴侣背包槽0, 等 S.ItemMove 回包
+    private void StartOperationAuditExtCompanion()
+    {
+        var food = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked
+            && c.Item.Info?.ItemType == ItemType.CompanionFood);
+        var target = CompanionInventoryCells.FirstOrDefault(c => c != null && c.IsEnabled && c.Item == null);
+        if (food == null || target == null || Companion == null)
+        {
+            GD.PrintErr($"[OperationAuditExt] FAIL no companion food ({(food?.Item?.Info?.ItemName ?? "null")}) or free companion slot ({target?.Slot ?? -1}) or companion ({Companion?.Name ?? "null"})");
+            GetTree().Quit();
+            return;
+        }
+        _operationAuditExtFromSlot = food.Slot;
+        _operationAuditExtToSlot = target.Slot;
+        _operationAuditExtCompanionSubStage = 0;
+        _operationAuditExtCompanionFoodCount = (int)food.Item.Count;
+        _operationAuditExtStage = 17;
+        _operationAuditExtResponsePending = false;
+        _operationAuditExtLastSuccess = false;
+        GD.Print($"[OperationAuditExt] S17a MOVE_FOOD from={food.Slot} item={food.Item.Info.ItemName} count={food.Item.Count} -> companion{target.Slot} hunger={Companion.Hunger}");
+        food.MoveItem(target);
+    }
+
+    // S17b: 冷却结束后真实双击使用伴侣食物 (原版闸门语义: 冷却中点击静默无效, 冷却后重点击生效)
+    private void TryOperationAuditExtUseCompanionFood()
+    {
+        if (_operationAuditExtStage != 17 || _operationAuditExtCompanionSubStage != 1) return;
+        bool useSent = CompanionInventoryCells[_operationAuditExtToSlot].UseItem();
+        GD.Print($"[OperationAuditExt] S17b use-sent={useSent} locked={CompanionInventoryCells[_operationAuditExtToSlot].Locked} canUse={CanUseItem(CompanionInventory[_operationAuditExtToSlot])}");
+        if (!useSent)
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL companion food use blocked after cooldown");
+            GetTree().Quit();
+        }
+    }
+
+    private void RetryOperationAuditExtUseCompanionFood()
+    {
+        if (_operationAuditExtStage != 17 || _operationAuditExtCompanionSubStage != 1) return;
+        var foodItem = CompanionInventory[_operationAuditExtToSlot];
+        if (foodItem == null)
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL companion food vanished during cooldown wait");
+            GetTree().Quit();
+            return;
+        }
+        if (IsUseItemOnCooldown(foodItem))
+        {
+            if (++_operationAuditExtS17bRetries > 120) // 0.25s x 120 = 30s 上限
+            {
+                GD.PrintErr("[OperationAuditExt] FAIL companion food cooldown never cleared");
+                GetTree().Quit();
+                return;
+            }
+            GetTree().CreateTimer(0.25).Timeout += RetryOperationAuditExtUseCompanionFood;
+            return;
+        }
+        GD.Print($"[OperationAuditExt] S17b cooldown-cleared remain={UseItemTime - Godot.Time.GetTicksMsec()}");
+        TryOperationAuditExtUseCompanionFood();
+    }
+
+    // S18 (E3): 行会创建/仓库移动/失败回滚端到端
+    private void StartOperationAuditExtGuild()
+    {
+        _auditGuildGoldBefore = Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold)?.Amount ?? -1;
+        _operationAuditExtGuildSubStage = 0;
+        _operationAuditExtStage = 18;
+        _operationAuditExtResponsePending = false;
+        _operationAuditExtLastSuccess = false;
+        GD.Print($"[OperationAuditExt] S18a GUILD_CREATE name=E3AuditGuild gold={_auditGuildGoldBefore}");
+        SendGuildCreate("E3AuditGuild", true, 0, 0);
+    }
+
+    private void StartOperationAuditExtCombat()
+    {
+        int dcMin = PlayerStats[Stat.MinDC];
+        int dcMax = PlayerStats[Stat.MaxDC];
+        int aspeed = PlayerStats[Stat.AttackSpeed];
+        double interval = ComputeAttackIntervalMs(Globals.AttackDelay, aspeed, Globals.ASpeedRate,
+            BagWeight > PlayerStats[Stat.BagWeight], _playerPoison.HasFlag(PoisonType.Neutralize));
+        GD.Print($"[OperationAuditExt] S16 COMBAT dc={dcMin}-{dcMax} as={aspeed} interval={interval}ms loc={_playerLocation}");
+
+        var monsters = _objects.Values
+            .Where(o => o.Type == ObjectRenderer.Kind.Monster && !o.Dead
+                && string.IsNullOrWhiteSpace(o.PetOwner) && (o.MonsterInfo?.AI ?? -1) >= 0)
+            .Select(m => (M: m, HP: m.MonsterInfo?.MonsterInfoStats.FirstOrDefault(s => s.Stat == Stat.Health).Amount ?? 0))
+            .Where(t => t.HP <= 150) // 排除 Oma Hero(500, DC25-125 能打死 Lv70) 等碾压怪
+            // 优先 HP>=40 (两刀以上可测真实间隔), 再按距离
+            .OrderBy(t => t.HP >= 40 ? 0 : 1)
+            .ThenBy(t => ChebyshevDistance(t.M.CellX, t.M.CellY, _playerLocation.X, _playerLocation.Y))
+            .ToList();
+        if (monsters.Count == 0)
+        {
+            // 空视野: 先 @monster 召怪重试一次 (TestHero 是 TempAdmin), 仍空才 FAIL
+            if (!_operationAuditExtSpawnAttempted)
+            {
+                _operationAuditExtSpawnAttempted = true;
+                GD.Print("[OperationAuditExt] S16 no monster in view, requesting @monster TigerSnake 3 (TempAdmin)");
+                SendChat("@monster TigerSnake 3");
+                GetTree().CreateTimer(4.0).Timeout += StartOperationAuditExtCombat;
+                return;
+            }
+            GD.PrintErr("[OperationAuditExt] FAIL no monster in view for combat audit");
+            GetTree().Quit();
+            return;
+        }
+        foreach (var t in monsters.Take(3))
+        {
+            GD.Print($"[OperationAuditExt] S16 monster {t.M.DisplayName} id={t.M.ObjectID} dist={ChebyshevDistance(t.M.CellX, t.M.CellY, _playerLocation.X, _playerLocation.Y)} Lv={t.M.MonsterInfo?.Level ?? -1} HP={t.HP}");
+        }
+
+        _operationAuditExtCombatTarget = monsters[0].M;
+        _operationAuditExtCombatTargetId = monsters[0].M.ObjectID;
+        _operationAuditExtAttackTimes.Clear();
+        _operationAuditExtCombatDied = false;
+        _operationAuditExtCombatKeptTarget = false;
+        _operationAuditExtCombatSelected = false;
+        _operationAuditExtCombatSecond = false;
+        _operationAuditExtWalkSteps = 0;
+        _operationAuditExtStage = 16;
+        _operationAuditExtResponsePending = false;
+        GD.Print($"[OperationAuditExt] S16 target={_operationAuditExtCombatTarget.DisplayName} id={_operationAuditExtCombatTargetId}");
+
+        // 视野内无 HP>=40 怪 (秒杀路径拿不到连续多刀节拍): 开发服务器 TempAdmin
+        // 登录时用 @monster 生成 TigerSnake (HP70, 2-3 刀) 重入一次。
+        if (!_operationAuditExtSpawnAttempted && !monsters.Any(t => t.HP >= 40))
+        {
+            _operationAuditExtSpawnAttempted = true;
+            GD.Print("[OperationAuditExt] S16 no high-HP monster in view, requesting @monster TigerSnake 2 (TempAdmin)");
+            SendChat("@monster TigerSnake 2");
+            GetTree().CreateTimer(3.0).Timeout += StartOperationAuditExtCombat;
+            return;
+        }
+
+        GetTree().CreateTimer(0.5).Timeout += CombatAuditWalkStep;
+    }
+
+    private int ChebyshevDistance(int x1, int y1, int x2, int y2)
+        => Math.Max(Math.Abs(x1 - x2), Math.Abs(y1 - y2));
+
+    private void CombatAuditWalkStep()
+    {
+        if (!IsInstanceValid(_operationAuditExtCombatTarget))
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL combat target removed during approach");
+            GetTree().Quit();
+            return;
+        }
+        // 目标死亡/已相邻 -> 选中攻击
+        int dist = ChebyshevDistance(_operationAuditExtCombatTarget.CellX, _operationAuditExtCombatTarget.CellY,
+            _playerLocation.X, _playerLocation.Y);
+        if (_operationAuditExtCombatTarget.Dead || dist <= 1)
+        {
+            CombatAuditSelectTarget();
+            return;
+        }
+        if (_operationAuditExtWalkSteps >= 80)
+        {
+            GD.PrintErr($"[OperationAuditExt] FAIL could not approach monster (dist={dist} steps=80)");
+            GetTree().Quit();
+            return;
+        }
+        // 上一步没动 (被挡/回包没到) 时重试同方向; 动了就按新位置走
+        var dir = Functions.DirectionFromPoint(_playerLocation,
+            new System.Drawing.Point(_operationAuditExtCombatTarget.CellX, _operationAuditExtCombatTarget.CellY));
+        _operationAuditExtLastWalkPos = _playerLocation;
+        SendMouseMove(dir, 1, false);
+        _operationAuditExtWalkSteps++;
+        GD.Print($"[OperationAuditExt] S16 walk step={_operationAuditExtWalkSteps} dir={dir} loc={_playerLocation} dist={dist}");
+        GetTree().CreateTimer(0.6).Timeout += CombatAuditWalkStep;
+    }
+
+    private void CombatAuditSelectTarget()
+    {
+        if (_operationAuditExtCombatSelected) return;
+        if (!IsInstanceValid(_operationAuditExtCombatTarget))
+        {
+            GD.PrintErr("[OperationAuditExt] FAIL combat target gone before select");
+            GetTree().Quit();
+            return;
+        }
+        int dist = ChebyshevDistance(_operationAuditExtCombatTarget.CellX, _operationAuditExtCombatTarget.CellY,
+            _playerLocation.X, _playerLocation.Y);
+        if (dist == 0)
+        {
+            // @monster 生成点可能与玩家同格 (dist=0), 自动攻击要求 Chebyshev==1: 走开一步再重入
+            GD.Print("[OperationAuditExt] S16 target same-cell, stepping away");
+            SendMouseMove((MirDirection)2, 1, false);
+            GetTree().CreateTimer(0.8).Timeout += CombatAuditSelectTarget;
+            return;
+        }
+        _operationAuditExtCombatSelected = true;
+        GD.Print($"[OperationAuditExt] S16 select {_operationAuditExtCombatTarget.DisplayName} id={_operationAuditExtCombatTargetId} dist={dist} dead={_operationAuditExtCombatTarget.Dead}");
+        // 左键选中 = 纯客户端状态 (服务端无包): 与 OnMouseDown 选中路径一致
+        _combatController.TargetObject = _operationAuditExtCombatTarget;
+        // 顶部自动攻击分支每帧跑: 相邻 + 冷却到 -> C.Attack (钩子记录时刻)
+        GetTree().CreateTimer(2.0).Timeout += CombatAuditProgressCheck;
+        GetTree().CreateTimer(25.0).Timeout += CombatAuditTimeout;
+    }
+
+    private void CombatAuditProgressCheck()
+    {
+        if (_operationAuditExtStage != 16) return;
+        int attacks = _operationAuditExtAttackTimes.Count;
+        bool targetDead = _operationAuditExtCombatDied;
+        GD.Print($"[OperationAuditExt] S16 progress attacks={attacks} died={targetDead} kept={_operationAuditExtCombatKeptTarget}");
+        if (attacks == 0 && !targetDead)
+        {
+            // 没出刀也没死: 可能没相邻 (怪移动了) 或节拍未到 -> 重试
+            GD.PrintErr("[OperationAuditExt] FAIL no C.Attack sent within 2s of selecting adjacent target");
+            GetTree().Quit();
+            return;
+        }
+        if (!targetDead)
+        {
+            // 怪还活着: 继续等 (可能多次攻击), 2s 后再查
+            GetTree().CreateTimer(2.0).Timeout += CombatAuditProgressCheck;
+            return;
+        }
+        // 目标已死: D15 断言已由 OnObjectDied 钩子记录, 等移除后收尾
+        GetTree().CreateTimer(1.8).Timeout += CombatAuditFinish;
+    }
+
+    private void CombatAuditPickSecondTarget()
+    {
+        // 第一只秒杀 (仅 1 刀): 换最近存活怪再打, 用攻击钩子记录的 t1 验证
+        // 真实节拍间隔 (原版 _nextAttackMs 门控: 第二刀最早在 t0+interval)。
+        var next = _objects.Values
+            .Where(o => o.Type == ObjectRenderer.Kind.Monster && !o.Dead
+                && string.IsNullOrWhiteSpace(o.PetOwner) && (o.MonsterInfo?.AI ?? -1) >= 0
+                && o.ObjectID != _operationAuditExtCombatTargetId)
+            .OrderBy(o => ChebyshevDistance(o.CellX, o.CellY, _playerLocation.X, _playerLocation.Y))
+            .FirstOrDefault();
+        if (next == null)
+        {
+            GD.Print("[OperationAuditExt] S16 no second monster in view for cadence retest");
+            CombatAuditFinish();
+            return;
+        }
+        _operationAuditExtCombatTarget = next;
+        _operationAuditExtCombatTargetId = next.ObjectID;
+        _operationAuditExtCombatSecond = true;
+        _operationAuditExtCombatDied = false;
+        _operationAuditExtCombatKeptTarget = false;
+        _operationAuditExtCombatSelected = false;
+        _operationAuditExtWalkSteps = 0;
+        GD.Print($"[OperationAuditExt] S16 second-target={next.DisplayName} id={next.ObjectID}");
+        CombatAuditWalkStep();
+    }
+
+    private void CombatAuditTimeout()
+    {
+        if (_operationAuditExtStage != 16) return;
+        GD.PrintErr($"[OperationAuditExt] FAIL combat audit timeout attacks={_operationAuditExtAttackTimes.Count} died={_operationAuditExtCombatDied}");
+        GetTree().Quit();
+    }
+
+    private void CombatAuditFinish()
+    {
+        if (_operationAuditExtStage != 16) return;
+        if (!_operationAuditExtCombatSecond && _operationAuditExtCombatDied
+            && _operationAuditExtCombatKeptTarget && _operationAuditExtAttackTimes.Count == 1)
+        {
+            // 秒杀: 打第二只拿节拍间隔 (t1-t0); 不满足则直接收尾
+            CombatAuditPickSecondTarget();
+            return;
+        }
+        double interval = ComputeAttackIntervalMs(Globals.AttackDelay, PlayerStats[Stat.AttackSpeed],
+            Globals.ASpeedRate, BagWeight > PlayerStats[Stat.BagWeight],
+            _playerPoison.HasFlag(PoisonType.Neutralize));
+        bool cadence = true;
+        string cadenceDetail = _operationAuditExtAttackTimes.Count switch
+        {
+            0 => "no-attack",
+            1 => "single-hit(one-shot)",
+            _ => "multi-hit"
+        };
+        if (_operationAuditExtAttackTimes.Count >= 2)
+        {
+            double gap = _operationAuditExtAttackTimes[1] - _operationAuditExtAttackTimes[0];
+            if (_operationAuditExtCombatSecond)
+            {
+                // 第二目标: 走位间隔污染, 断言门控下界 (任何后续攻击不得早于 t0+interval)
+                cadence = gap >= interval - 100.0;
+                cadenceDetail = $"multi-target lower-bound gap={gap:F0}ms >= expect={interval:F0}ms";
+            }
+            else
+            {
+                cadence = Math.Abs(gap - interval) <= 300.0;
+                cadenceDetail = $"gap={gap:F0}ms expect={interval:F0}ms";
+            }
+        }
+        bool pass = _operationAuditExtCombatKeptTarget && _operationAuditExtCombatDied && cadence;
+        GD.Print($"[OperationAuditExt] S16 combat-died={_operationAuditExtCombatDied} kept-target={_operationAuditExtCombatKeptTarget} cadence={cadence} ({cadenceDetail}) attacks={_operationAuditExtAttackTimes.Count}");
+        GD.Print($"[OperationAuditExt] RESULT rings=true bracelets=true beltCleared=true autoCleared=true mailLifecycle=true companion={_operationAuditExtCompanionPass} guild={_operationAuditExtGuildPass} combat={pass} pass={pass}");
+        _operationAuditExtStage = 0;
+        GetTree().Quit();
+    }
+
+    private void CleanupOperationAuditExt()
+    {
+        // 还原装备: S5/S6 已把双戒指换位归位; S7/S8 把 BraceletL 物品换入 BraceletR,
+        // 被换下的原 BraceletR 物品在背包 from 槽 -> 移回 BraceletL (真实回包驱动)。
+        var bagged = _operationAuditExtFromSlot >= 0 && _operationAuditExtFromSlot < Inventory.Length
+            ? Inventory[_operationAuditExtFromSlot] : null;
+        if (bagged != null && Equipment[(int)EquipmentSlot.BraceletL] == null)
+        {
+            var bagCell = InventoryCells[_operationAuditExtFromSlot];
+            var braceLCell = EquipmentCells[(int)EquipmentSlot.BraceletL];
+            _operationAuditExtFromSlot = bagCell.Slot;
+            _operationAuditExtToSlot = braceLCell.Slot;
+            _operationAuditExtStage = 12;
+            GD.Print($"[OperationAuditExt] S12 RESTORE_BRACELETL from={bagCell.Slot} to={EquipmentSlot.BraceletL}");
+            braceLCell.ToEquipment(bagCell);
+            return;
+        }
+        // 清腰带链接 (D1 清理): QuickItem/QuickInfo setter 只改本地, 必须显式发服务端
+        foreach (var link in BeltLinks)
+        {
+            if (link.LinkItemIndex <= 0 && link.LinkInfoIndex <= 0) continue;
+            var cell = _beltDialog?.Grid?.Cells != null && link.Slot >= 0 && link.Slot < _beltDialog.Grid.Cells.Length
+                ? _beltDialog.Grid.Cells[link.Slot] : null;
+            if (cell != null)
+            {
+                cell.QuickItem = null;
+                cell.QuickInfo = null;
+                SendBeltLinkChanged(link.Slot, -1, -1);
+            }
+        }
+        // 清自动药水行 (D3 清理): 显式发服务端
+        for (int i = 0; i < AutoPotionBox.Rows.Length; i++)
+        {
+            var row = AutoPotionBox.Rows[i];
+            if (row.ItemCell.QuickInfo == null) continue;
+            row.ItemCell.QuickInfo = null;
+            row.Health.Value = 0;
+            row.Mana.Value = 0;
+            row.EnabledCheck.Checked = false;
+            AutoPotionBox.SendRowUpdate(i);
+        }
+        _operationAuditExtStage = 11;
+        _operationAuditExtResponsePending = true;
+        ContinueOperationAuditExt();
     }
 
     private void StartInteractionAudit()
@@ -7433,12 +8901,32 @@ public partial class GameScene : Control
                 return;
         }
         var pCell = _playerLocation;
+        // 原版 UseMagic 目标解析：悬停目标 (MouseObject) 优先——悬停即可
+        // 锁定，无需点击选中；其次点击选中的目标 (TargetObject 承担原版
+        // MagicObject 上次目标记忆的角色，左键选中后持续保留)。两者都
+        // 不可攻击时 Target=0，服务端按纯地面落点处理 (与原版一致)。
+        // 只发点击选中目标的话，悬停施法会变成 Target=0 的地面落点，
+        // 服务端不结算伤害——特效命中但怪物不掉血。
+        var hovered = _combatController?.MouseObject;
         var selected = _combatController?.TargetObject;
-        uint targetID = selected?.ObjectID ?? 0;
+        ObjectRenderer target = CombatController.CanAttackObject(hovered) ? hovered
+            : CombatController.CanAttackObject(selected) ? selected : null;
+        uint targetID = target?.ObjectID ?? 0;
         var mouseCell = _combatController?.MouseCell() ?? new System.Drawing.Point(pCell.X, pCell.Y);
-        var targetCell = selected == null
+        var targetCell = target == null
             ? mouseCell
-            : new System.Drawing.Point(selected.CellX, selected.CellY);
+            : new System.Drawing.Point(target.CellX, target.CellY);
+
+        // 原版 UseMagic 超距检查：目标超出技能范围时提示并拒绝施法。
+        // 不检查的话服务端会把超距目标静默降级为纯地面落点 (特效命中
+        // 但无伤害)，看起来像打中却没掉血。
+        if (target != null && !Functions.InRange(pCell, targetCell, Globals.MagicRange))
+        {
+            if (Library.Time.Now < _magicTooFarAt) return;
+            _magicTooFarAt = Library.Time.Now.AddSeconds(1);
+            ReceiveChat($"目标距离过远，无法施放 {magic.Info.Name}。", MessageType.Hint);
+            return;
+        }
 
         // 原版的范围/落点技能即使鼠标下有目标，也把 MapLocation 发给服务端；
         // 普通锁定投射则使用目标格。没有目标时绝不能回退到玩家当前格。
@@ -7450,7 +8938,7 @@ public partial class GameScene : Control
                 or MagicType.BrainStorm => true,
             _ => false
         };
-        var castCell = useMouseLocation || selected == null ? mouseCell : targetCell;
+        var castCell = useMouseLocation || target == null ? mouseCell : targetCell;
         if (magic.Info.School == MagicSchool.Toggle)
         {
             if (Library.Time.Now < ToggleTime)
@@ -7467,15 +8955,30 @@ public partial class GameScene : Control
             new System.Drawing.Point(pCell.X, pCell.Y), castCell);
         GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} " +
             $"目标={targetID} 玩家=({pCell.X},{pCell.Y}) 鼠标=({mouseCell.X},{mouseCell.Y}) 落点=({castCell.X},{castCell.Y}) 方向={dir}");
-        _net.Connection.Enqueue(new C.Magic
+        var packet = new C.Magic
         {
             Direction = dir,
             Action = MirAction.Spell,
             Type = magic.Info.Magic,
             Target = targetID,
             Location = castCell,
-        });
+        };
+        if (IsPlayerWalking())
+        {
+            // 原版 UseMagic 只设置 User.MagicAction；真正发包在 ProcessInput
+            // 第二步，等 NextActionTime 到期且 ActionQueue 清空（当前动作
+            // 走完或被中断）。移动中直接发包，动作结束前 CombatController
+            // 的自动攻击也不会像原版那样被队列暂停。
+            _pendingMagicPacket = packet;
+            _pendingMagicCastAtMs = _player.FrameStartMs + _player.MovementDurationMs;
+            GD.Print($"[Magic] 排队 {magic.Info.Name}：等待当前移动结束 (castAt={_pendingMagicCastAtMs:0}ms)");
+            return;
+        }
+        _net.Connection.Enqueue(packet);
     }
+
+    private bool IsPlayerWalking()
+        => _player != null && IsWalkAnimation(_player.Animation);
 
     // 兼容旧调用点；统一走同一条释放链路。
     private void UseMagicKey(int slot)
@@ -7505,7 +9008,6 @@ public partial class GameScene : Control
     public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventKey key || !key.Pressed) return;
-        GD.Print($"[Game] KEY {key.Keycode} ctrl={key.CtrlPressed} alt={key.AltPressed} shift={key.ShiftPressed}");
         if (_net?.Connection?.Connected != true) return;
 
         if (_chatTextBox?.HandleGlobalKey(key) == true)
@@ -7560,7 +9062,6 @@ public partial class GameScene : Control
 
         if (dir != null)
         {
-            GD.Print($"[Game] MOVE {dir.Value}");
             if (CanPlayerMove())
                 SendMouseMove(dir.Value, 1, false);
         }
@@ -7635,8 +9136,12 @@ public partial class GameScene : Control
         {
             var currency = _selectedCurrency;
             _selectedCurrency = null;
+            // 原版 MapControl：`new DXItemAmountWindow("Drop Item", new ClientUserItem(DropItem, Amount))`
+            // —— 预览格显示货币掉落物，输入数量时按 IsCurrencyItem 分支实时更新 Count。
+            var dropItem = currency.Info?.DropItem;
+            var preview = dropItem == null ? null : new ClientUserItem(dropItem, currency.Amount);
             var dialog = new ItemAmountDialog("Drop Item", currency.Amount, 1,
-                amount => SendCurrencyDrop(currency.CurrencyIndex, amount));
+                amount => SendCurrencyDrop(currency.CurrencyIndex, amount), preview);
             WindowManager.Open(dialog, _uiLayer);
             GetViewport().SetInputAsHandled();
             return;
@@ -7899,8 +9404,12 @@ public partial class GameScene : Control
         var dir = Functions.DirectionFromPoint(_playerLocation, _miningPoint);
         if (_net?.Connection?.Connected == true)
             _net.Connection.Enqueue(new C.Mining { Direction = dir });
-        // 原版 Mining 走 AttemptAction 的 AttackTime 冷却（AttackDelay 计算）。
-        _nextMiningMs = now + Math.Max(250.0,
-            Globals.AttackDelay - PlayerStats[Stat.AttackSpeed] * Globals.ASpeedRate);
+        // 原版 Mining 走 AttemptAction 的 AttackTime 冷却，且超重惩罚
+        // 再翻倍（UserObject.cs Mining 分支：base + overweight + neutralize
+        // 叠加，超重 = x3）。采矿间隔与普通攻击不同，不能共用攻击公式。
+        _nextMiningMs = now + ComputeMiningIntervalMs(Globals.AttackDelay,
+            PlayerStats[Stat.AttackSpeed], Globals.ASpeedRate,
+            BagWeight > _playerStats[Stat.BagWeight],
+            _playerPoison.HasFlag(PoisonType.Neutralize));
     }
 }

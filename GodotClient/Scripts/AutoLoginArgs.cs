@@ -30,6 +30,7 @@ public static class AutoLoginArgs
     public static bool RightRunTest => Has("--test-right-run");
     public static bool InteractionAudit => Has("--interaction-audit");
     public static bool OperationAudit => Has("--operation-audit");
+    public static bool OperationAuditExt => Has("--operation-audit-ext");
     public static bool ScreenshotAfterEnter => Has("--screenshot-after-enter");
 
     private static bool Has(string name)

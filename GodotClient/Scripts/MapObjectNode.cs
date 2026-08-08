@@ -39,6 +39,28 @@ public partial class MapObjectNode : Node2D
     // 打断标记: Standing/Dead 立即打断当前动画; 其他动作播完再切 (原版 SetFrame 的 Interupt)
     private bool _interupt = true;
 
+    // ---- 施法动画结束事件 (原版 SetAction 用 OLD 动作跑 release switch 的移植) ----
+    // 原版任何一次离开 Spell 动作的切换 (播完 DoNextAction / Standing/Dead 打断)
+    // 都会执行该技能的 release 分支。Godot 端在 SetAnimation 顶部对"当前播放中的
+    // 施法实例"触发 SpellAnimEnded; 实例号让 GameScene 能把释放特效匹配到具体施法。
+    public event Action<int, MagicType> SpellAnimEnded;
+    private int _spellInstanceCounter;
+    private int _pendingSpellInstance;
+    private MagicType _pendingSpellType = MagicType.None;
+    private int _lastSpellInstance;
+    private MagicType _lastSpellType = MagicType.None;
+    public int LastSpellInstance => _lastSpellInstance;
+
+    // 施法开始: 分配实例号。PlaySpell 调用后紧跟 SetAnimation, 该实例在
+    // SetAnimation 顶部成为"播放中", 动画结束时以同一实例号触发 SpellAnimEnded。
+    public int BeginSpell(MagicType magic)
+    {
+        _spellInstanceCounter++;
+        _pendingSpellInstance = _spellInstanceCounter;
+        _pendingSpellType = magic;
+        return _pendingSpellInstance;
+    }
+
     // 缩放百分比 (原版 SetScale, -50..50)
     private int _scalePercent;
 
@@ -67,6 +89,19 @@ public partial class MapObjectNode : Node2D
     // 立即切换动画 (原版 SetAnimation + SetFrame 的 Interupt 规则)
     public virtual void SetAnimation(MirAnimation anim)
     {
+        // 离开上一个施法动作 → 释放 (原版 SetAction 的 OLD 动作 release switch)
+        if (_lastSpellInstance != 0)
+        {
+            SpellAnimEnded?.Invoke(_lastSpellInstance, _lastSpellType);
+            _lastSpellInstance = 0;
+        }
+        // BeginSpell 预留的施法实例在动画真正开始时成为"播放中"
+        if (_pendingSpellInstance != 0)
+        {
+            _lastSpellInstance = _pendingSpellInstance;
+            _lastSpellType = _pendingSpellType;
+            _pendingSpellInstance = 0;
+        }
         Animation = anim;
         _currentFrame = FrameTable?.TryGetValue(anim, out var f) == true && f != null
             ? f

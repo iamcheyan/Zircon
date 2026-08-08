@@ -73,6 +73,9 @@ public static class MagicEffectTable
     public static readonly Color Dark = ToGodot(Globals.DarkColour);
     public static readonly Color Phantom = ToGodot(Globals.PhantomColour);
     public static readonly Color None = ToGodot(Globals.NoneColour);
+    // 原版 Globals 无这两个颜色常量，个别特效直接使用 System.Drawing 色值。
+    public static readonly Color Purple = ToGodot(System.Drawing.Color.Purple);
+    public static readonly Color GreenYellow = ToGodot(System.Drawing.Color.GreenYellow);
 
     private static Color ToGodot(System.Drawing.Color colour)
         => new(colour.R / 255f, colour.G / 255f, colour.B / 255f, colour.A / 255f);
@@ -102,6 +105,20 @@ public static class MagicEffectTable
         // 三段技能的施法者起手特效；与 Projectile/Impact 素材独立。
         public ImpactDef Source;
         public List<ImpactDef> SourceAdditional = new();
+        // 旧端 LightningBeam 等: MirEffect(...){ Target=this, Direction=
+        // DirectionFromPoint(施法者, 格) }——每个 MagicLocation 在施法者身上
+        // 各播一次，方向指向该格；目标上不挂魔法特效 (命中表现走 Struck)。
+        public List<ImpactDef> SourcePerLocation = new();
+        // 旧端该技能对 AttackTargets 不创建任何魔法特效 (如 Asteroid 只有
+        // 地面落点弹道)；置 true 时 targets 循环不播放回退特效。
+        public bool NoTargetVisual;
+        // 旧端该技能对 MagicLocations 不创建特效 (DarkSoulPrison 的 release 是
+        // Target=this，只挂在施法者身上)。
+        public bool NoLocationVisual;
+        // 旧端 release 挂在施法者自身 (Target=this) 的整段特效 (DarkSoulPrison 600,9)。
+        public bool ReleaseAtCaster;
+        // 旧端弹道只到最后一个 MagicLocation (BlowEarth 的弹道逐点后移)。
+        public bool ProjectileLastLocationOnly;
         // 飞行弹道: 非空表示从施法者飞到目标
         public ProjectileDef Projectile;
         public ProjectileDef TargetProjectile;
@@ -138,6 +155,12 @@ public static class MagicEffectTable
         public int OriginOffsetY;
         public bool OriginFromTarget;
         public double StartDelayMs;
+        // 落地特效 (旧端 CompleteAction 里的 MirEffect)。
+        public ImpactDef Arrival;
+        // 到达音效 (旧端 CompleteAction 内的 Play，如各弹道的 *End)。
+        public SoundIndex ArrivalSound = SoundIndex.None;
+        // 完成音效 (旧端 CompleteAction 末尾的 Play)。
+        public SoundIndex CompletionSound = SoundIndex.None;
     }
 
     public class ImpactDef
@@ -157,6 +180,9 @@ public static class MagicEffectTable
         public int DistanceDelayMs;
         public bool DirectionFromSource;
         public bool DirectionFromCast;
+        // 特效播放到该帧时播一次音效 (原版攻击表/MirEffect.FrameIndexChanged 的帧音效)。
+        public int SoundFrame = -1;
+        public SoundIndex SoundFrameSound = SoundIndex.None;
         // 旧端按 8 方向分组的起始帧；未配置时使用 StartIndex。
         public int[] DirectionStartIndices;
 
@@ -281,8 +307,21 @@ public static class MagicEffectTable
             File = LibraryFile.Magic, StartIndex = 10, FrameCount = 10, Colour = Lightning,
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 10, FrameCount = 10, Colour = Lightning },
         },
-        [MagicType.ThunderBolt] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning },
-        [MagicType.ThunderStrike] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning },
+        // 原版有两段: 施法自身上段 MirEffect(1430,12,50ms){Target=this} +
+        // 命中段 MirEffect(1450,3,150ms,light 150,50) 挂在 MagicLocations/
+        // AttackTargets。旧实现把命中段当作施法特效，漏掉 1430 起手。
+        [MagicType.ThunderBolt] = new CastEffect
+        {
+            File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning,
+            CastAtSource = true,
+            Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning, FrameLight = 150 },
+        },
+        [MagicType.ThunderStrike] = new CastEffect
+        {
+            File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning,
+            CastAtSource = true,
+            Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning, FrameLight = 150 },
+        },
         [MagicType.FireBounce] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 1640, FrameCount = 6, Colour = Fire,
@@ -359,7 +398,16 @@ public static class MagicEffectTable
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 580, FrameCount = 10, Colour = Fire },
         },
         [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
-        [MagicType.LightningBeam] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1180, FrameCount = 4, Colour = Lightning, DirectionFromSource = true, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1970, FrameCount = 10, DelayMs = 30, Colour = Lightning } },
+        // 原版: 起手 MirEffect(1970,10,30ms){Target=this}；光束 MirEffect
+        // (1180,4,100ms,light 150){Target=this, Direction=施法者→格} 每个
+        // MagicLocation 各播一次，目标上无特效。旧实现把光束挂到目标上。
+        [MagicType.LightningBeam] = new CastEffect
+        {
+            File = LibraryFile.MagicEx, StartIndex = 1180, FrameCount = 4, Colour = Lightning,
+            Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1970, FrameCount = 10, DelayMs = 30, Colour = Lightning },
+            SourcePerLocation = { new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1180, FrameCount = 4, Colour = Lightning, FrameLight = 150 } },
+            NoTargetVisual = true,
+        },
         [MagicType.FrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice }, TargetEffect = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice, DirectionFromCast = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, DistanceDelayMs = 50, Colour = Ice, FrameLight = 20, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, DistanceDelayMs = 50, Colour = Ice, FrameLight = 0, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.BlowEarth] = new CastEffect
         {
@@ -378,12 +426,16 @@ public static class MagicEffectTable
         [MagicType.DragonTornado] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1030, FrameCount = 10, DelayMs = 60, Colour = Wind, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1040, FrameCount = 16, Colour = Wind } },
         [MagicType.GreaterFrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice }, TargetEffect = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice, DirectionFromCast = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, DistanceDelayMs = 50, Colour = Ice, FrameLight = 20, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, DistanceDelayMs = 50, Colour = None, FrameLight = 0, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.ChainLightning] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 470, FrameCount = 10, Colour = Lightning, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning } },
+        // 原版只有地面落点弹道 (Origin=落点+(4,-10) 的直落陨石)，对
+        // AttackTargets 不创建任何魔法特效；旧实现会在 targets 循环里从
+        // 施法者再发一枚追踪弹。NoTargetVisual 关闭该回退。
         [MagicType.Asteroid] = new CastEffect
         {
             File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire,
             Projectile = new ProjectileDef { File = LibraryFile.MagicEx5, StartIndex = 1300, FrameCount = 10, Colour = Fire, Skip = 0, Explode = true, OriginOffsetX = 4, OriginOffsetY = -10, OriginFromTarget = true },
             Impact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 1320, FrameCount = 8, Colour = None, FrameLight = 100 },
             MapImpact = new ImpactDef { File = LibraryFile.MagicEx5, StartIndex = 1320, FrameCount = 8, Colour = None, FrameLight = 100 },
+            NoTargetVisual = true,
         },
         [MagicType.LightningStrike] = new CastEffect
         {
@@ -525,7 +577,6 @@ public static class MagicEffectTable
         [MagicType.Concentration] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 300, FrameCount = 15, Colour = None, CastAtSource = true },
         [MagicType.Containment] = new CastEffect { File = LibraryFile.MagicEx3, StartIndex = 590, FrameCount = 9, DelayMs = 60, Colour = None, CastAtSource = true },
         [MagicType.Assault] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 740, FrameCount = 3, Colour = None, CastAtSource = true },
-        [MagicType.ElementalSwords] = new CastEffect { File = LibraryFile.MagicEx10, StartIndex = 300, FrameCount = 5, Colour = None },
         [MagicType.HundredFist] = new CastEffect { File = LibraryFile.MagicEx5, StartIndex = 2100, FrameCount = 5, DelayMs = 200, Colour = Fire, CastAtSource = true },
         [MagicType.ThunderKick] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1190, FrameCount = 10, Colour = None },
         [MagicType.CorpseExploder] = new CastEffect

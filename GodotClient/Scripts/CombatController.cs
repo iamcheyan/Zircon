@@ -13,12 +13,17 @@ namespace ZirconClient.Scripts;
 ///
 /// 职责:
 ///   1. 鼠标悬停 -> 高亮最近可点物体 (MouseObject)，由 GameScene/各主体渲染器绘制原版轮廓
-///   2. 左键点怪物 -> 选中为 TargetObject (服务端无包, 纯客户端状态)
-///   3. 选中后靠近 (距离=1) 且冷却到 -> 自动平砍 (C.Attack)
-///   4. Shift + 左键 -> 原地攻击 (朝鼠标方向, 不论是否选中)
-///   5. 右键 -> 取消选中 (RightClickDeTarget)
+///   2. 左键点怪物 -> 选中为 TargetObject (服务端无包, 纯客户端状态)；
+///      Shuriken 点击分支 (超距提示/冷却取消/投掷后清目标) 就地处理
+///   3. 顶部自动攻击分支: 选中目标相邻 (距离=1) 且冷却到 -> 平砍 (C.Attack)
+///      —— 原版 ProcessInput 顺序，先于任何鼠标分支
+///   4. Shift + 左键且未选中目标 -> 朝鼠标方向原地攻击；已选中则走正常流程
+///   5. 底部追击: 选中目标 >1 格 -> 按 MoveTime(600ms) 节拍 C.Move 接近；
+///      目标死亡保留选中，被阻挡时原地转向
+///   6. 右键 -> 取消选中 (RightClickDeTarget)
 ///
-/// 攻击冷却: 使用原版 Globals.AttackDelay - Stats[AttackSpeed] * ASpeedRate 的本地预测，服务端回包仍是最终校验。
+/// 攻击冷却: 使用原版 max(800, AttackDelay - Stats[AttackSpeed]*ASpeedRate)
+/// 且超重/Neutralize 翻倍的本地预测，服务端回包仍是最终校验。
 /// </summary>
 public partial class CombatController : Node2D
 {
@@ -42,6 +47,18 @@ public partial class CombatController : Node2D
     // 原版 Shuriken 超距提示（MapControl.OnMouseDown 683-692 的 ReceiveChat
     // "Unable to throw Shuriken, Your target is too far." + Stop()）。
     private readonly Action _notifyRangeAttackTooFar;
+    // 纯形状判定（不含坐骑）：超距提示分支在任何坐骑状态下都先触发。
+    private readonly Func<bool> _isShurikenShape;
+    // 骑马状态：顶部自动攻击与 TryAttack 的 Horse == None 门控。
+    private readonly Func<bool> _isMounted;
+    // ElementalHurricane buff：原版 ProcessInput 顶部攻击/移动分支门控。
+    private readonly Func<bool> _isHurricane;
+    // 原版 AutoRun 分支先于鼠标分支与底部追击；开启时由 MouseWalker 持续 Run。
+    private readonly Func<bool> _isAutoRun;
+    // 原版 MagicAction 入队期间 ProcessInput 整体 return，暂停攻击/追击。
+    private readonly Func<bool> _isMagicPending;
+    // 追击被阻挡时的原地转向（原版 AttemptAction(Standing)）。
+    private readonly Action<MirDirection> _sendTurn;
 
     public bool Enabled = true;
 
@@ -88,6 +105,31 @@ public partial class CombatController : Node2D
     public static bool ShouldSelectOnly(bool isPlayer, bool hasPetOwner, bool shift)
         => (isPlayer || hasPetOwner) && !shift;
 
+    public enum ShurikenClickResult
+    {
+        /// <summary>非飞镖武器/骑马在范围内 → 落入普通近战选中流程。</summary>
+        Melee,
+        /// <summary>超 MagicRange（任何坐骑状态）→ 提示 + Stop() 清目标。</summary>
+        HintAndClear,
+        /// <summary>冷却中 → Stop() 清目标，不发。</summary>
+        ClearOnly,
+        /// <summary>可投 → RangeAttack + Stop() 清目标。</summary>
+        ThrowAndClear,
+    }
+
+    /// <summary>
+    /// 原版 MapControl.OnMouseDown Shuriken 分支（683-739）的纯判定。
+    /// 分支顺序与原文一致：超距提示先于坐骑检查；坐骑在范围内落入近战。
+    /// </summary>
+    public static ShurikenClickResult ShurikenClick(bool isShurikenShape, bool canThrow,
+        bool outOfMagicRange, bool onCooldown)
+    {
+        if (!isShurikenShape) return ShurikenClickResult.Melee;
+        if (outOfMagicRange) return ShurikenClickResult.HintAndClear;
+        if (!canThrow) return ShurikenClickResult.Melee;  // 骑马：走普通近战
+        return onCooldown ? ShurikenClickResult.ClearOnly : ShurikenClickResult.ThrowAndClear;
+    }
+
     private double _nextAttackMs;
 
     /// <summary>
@@ -115,7 +157,13 @@ public partial class CombatController : Node2D
         Func<bool> rightClickDeTarget = null,
         Func<bool> mouseOverUi = null,
         Func<bool> canUseCombatInput = null,
-        Action notifyRangeAttackTooFar = null)
+        Action notifyRangeAttackTooFar = null,
+        Func<bool> isShurikenShape = null,
+        Func<bool> isMounted = null,
+        Func<bool> isHurricane = null,
+        Func<bool> isAutoRun = null,
+        Func<bool> isMagicPending = null,
+        Action<MirDirection> sendTurn = null)
     {
         _mapView = mapView;
         _getObjects = getObjects;
@@ -130,6 +178,12 @@ public partial class CombatController : Node2D
         _mouseOverUi = mouseOverUi;
         _canUseCombatInput = canUseCombatInput;
         _notifyRangeAttackTooFar = notifyRangeAttackTooFar;
+        _isShurikenShape = isShurikenShape;
+        _isMounted = isMounted;
+        _isHurricane = isHurricane;
+        _isAutoRun = isAutoRun;
+        _isMagicPending = isMagicPending;
+        _sendTurn = sendTurn;
         SetProcessAlways();
     }
 
@@ -143,86 +197,111 @@ public partial class CombatController : Node2D
 
         if (_canUseCombatInput?.Invoke() == false)
             return;
-
-        // 原版是“按住 Shift + 左键”持续尝试攻击，而不是只在按键瞬间攻击。
-        if (Input.IsKeyPressed(Key.Shift) && Input.IsMouseButtonPressed(MouseButton.Left))
-        {
-            var shiftCell = _getPlayerCell();
-            if (TargetObject != null && !TargetObject.Dead && IsAttackableMonster(TargetObject))
-            {
-                int targetDistance = Math.Max(Math.Abs(TargetObject.CellX - shiftCell.X),
-                    Math.Abs(TargetObject.CellY - shiftCell.Y));
-                if (targetDistance == 1)
-                    TryAttack(Functions.DirectionFromPoint(shiftCell,
-                        new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY)));
-                else if (targetDistance > 1)
-                {
-                    var rangeDirection = Functions.DirectionFromPoint(shiftCell,
-                        new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY));
-                    if (_canRangeAttack?.Invoke(TargetObject) == true)
-                        _sendRangeAttack?.Invoke(rangeDirection, TargetObject.ObjectID);
-                    else
-                        _sendMove?.Invoke(rangeDirection, 1);
-                    _nextAttackMs = Godot.Time.GetTicksMsec() + 120.0;
-                }
-            }
-            else
-            {
-                TryAttack(DirectionToMouse(shiftCell));
-            }
-            return;
-        }
-
-        // 原版 MapControl：鼠标左右键分支拥有优先级；目标自动接近只在
-        // 没有鼠标移动输入时运行。点击目标的瞬间由 _Input 的
-        // AttackOrApproach 处理，不能在同一帧再叠加自动移动。
-        if (Input.IsMouseButtonPressed(MouseButton.Left)
-            || Input.IsMouseButtonPressed(MouseButton.Right))
+        // 原版 MagicAction 入队期间 ProcessInput 整体 return（等待动作
+        // 边界），攻击与追击都暂停，由 GameScene._Process 在走完后释放。
+        if (_isMagicPending?.Invoke() == true)
             return;
 
-        // 自动攻击: 选中目标 + 距离=1 + 冷却到
-        if (TargetObject == null || !IsInstanceValid(TargetObject) || TargetObject.Dead)
-        {
-            TargetObject = null;
-            return;
-        }
-        if (TargetObject.Type == ObjectRenderer.Kind.Monster &&
-            (TargetObject.MonsterInfo?.AI ?? -1) < 0)
-        {
-            TargetObject = null;
-            return;
-        }
-        // 原版普通左键允许选中宠物，但 ProcessInput 不会对宠物自动
-        // 接近/攻击；只有 Shift 分支才会继续走攻击判定。
-        if (TargetObject.Type == ObjectRenderer.Kind.Monster &&
-            !string.IsNullOrWhiteSpace(TargetObject.PetOwner))
-            return;
-
+        bool shift = Input.IsKeyPressed(Key.Shift);
+        bool leftHeld = Input.IsMouseButtonPressed(MouseButton.Left);
+        bool rightHeld = Input.IsMouseButtonPressed(MouseButton.Right);
         var playerCell = _getPlayerCell();
-        int dist = Math.Max(Math.Abs(TargetObject.CellX - playerCell.X), Math.Abs(TargetObject.CellY - playerCell.Y));
         double now = Godot.Time.GetTicksMsec();
-        if (now < _nextAttackMs) return;
 
-        // MapControl.ProcessInput handles the player's current cell first
-        // (PickUp); a target occupying that cell must not produce a local
-        // attack from the independent combat loop.
-        if (dist == 0) return;
-
-        MirDirection dir = Functions.DirectionFromPoint(playerCell, new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY));
-        if (dist > 1)
+        // 原版 ProcessInput 顶部自动攻击分支（MapControl.cs:875-895）：
+        // 在任何鼠标分支之前、不受鼠标按键影响。目标必须相邻（Chebyshev
+        // == 1，同一格不砍——拾取优先）、冷却到、未骑马、无元素飓风。
+        if (_isHurricane?.Invoke() != true
+            && TargetObject != null && IsInstanceValid(TargetObject) && !TargetObject.Dead
+            && ((TargetObject.Type == ObjectRenderer.Kind.Monster
+                    && string.IsNullOrWhiteSpace(TargetObject.PetOwner))
+                || shift)
+            && Functions.Distance(new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY),
+                playerCell) == 1
+            && now >= _nextAttackMs && _isMounted?.Invoke() != true)
         {
-            // 选中目标后自动接近。之前这里直接 return，导致“选中了但永远不能攻击”。
-            _sendMove?.Invoke(BestApproachDirection(playerCell, TargetObject), 1);
-            _nextAttackMs = now + 120.0;
+            _sendAttack(Functions.DirectionFromPoint(playerCell,
+                new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY)),
+                MirAction.Attack, MagicType.None);
+            _nextAttackMs = now + GetAttackInterval();
             return;
         }
 
-        // 原版骑马不能进行普通近战攻击；保留目标，等待下马。
-        // 坐骑状态在发送端控制，这里不重复猜测。
-        // 朝目标方向砍；本地先播动作，服务端回包会再次校正。
-        _sendAttack(dir, MirAction.Attack, MagicType.None);
-        _nextAttackMs = now + GetAttackInterval();
+        // 原版 AutoRun 分支（896-901）先于鼠标分支；开启时由 MouseWalker
+        // 持续 Run，底部追击不再运行。
+        if (_isAutoRun?.Invoke() == true)
+            return;
+
+        // 原版鼠标分支 case Left（904-913）：Shift 且未选中目标 →
+        // 朝鼠标方向攻击后无条件返回（骑马/飓风/冷却在 TryAttack 内门控）。
+        if (shift && TargetObject == null && leftHeld)
+        {
+            TryAttack(DirectionToMouse(playerCell));
+            return;
+        }
+
+        if (rightHeld)
+            return;
+
+        // 原版 case Left（926-927）：悬停是活着的非物品（怪物/玩家/宠物）
+        // 时 break 落到底部追击；其余情况（拾取/采矿/普通行走）由
+        // GameScene._UnhandledInput / MouseWalker 处理，这里不接管。
+        if (leftHeld && !IsHoverLiveNonItem())
+            return;
+
+        // 底部追击分支（MapControl.cs:1058-1129）。
+        if (TargetObject == null || !IsInstanceValid(TargetObject))
+        {
+            TargetObject = null;
+            return;
+        }
+        // D15：目标死亡保留选中（尸体高亮），等 ObjectRemove / 自身死亡 /
+        // 切图 / 右键 DeTarget 才清除——与原版一致，绝不在这里主动清空。
+        if (TargetObject.Dead)
+            return;
+        // 防御性跳过 AI<0 的怪物（原版 CanAttack 拒绝后不可能成为目标）。
+        if (TargetObject.Type == ObjectRenderer.Kind.Monster
+            && (TargetObject.MonsterInfo?.AI ?? -1) < 0)
+            return;
+        // 玩家/宠物目标：未按 Shift 只选中不追击（原版 1060-1061）。
+        if ((TargetObject.Type == ObjectRenderer.Kind.Player
+                || !string.IsNullOrWhiteSpace(TargetObject.PetOwner)) && !shift)
+            return;
+        // 相邻交给顶部自动攻击分支。
+        if (Functions.Distance(new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY),
+                playerCell) <= 1)
+            return;
+
+        MirDirection dir = Functions.DirectionFromPoint(playerCell,
+            new System.Drawing.Point(TargetObject.CellX, TargetObject.CellY));
+
+        // 原版 1063-1071：直行被挡或飓风 → DirectionBest；若没有更好的
+        // 方向则原地转向目标（AttemptAction Standing），不发移动。
+        if (!CanStep(playerCell, dir) || _isHurricane?.Invoke() == true)
+        {
+            var best = BestApproachDirection(playerCell, TargetObject);
+            if (best == dir)
+            {
+                _sendTurn?.Invoke(dir);
+                return;
+            }
+            dir = best;
+        }
+        if (_isHurricane?.Invoke() == true)
+            return;
+
+        // 原版 AttemptAction(Moving) 的 NextActionTime 门控 ≈ 600ms/次
+        // （walk 帧表 Delays 之和）。之前 120ms 的追击节奏相对原版是
+        // 5 倍 C.Move 发包量：服务端限速但客户端每次都会重启走动画、
+        // 松开鼠标后 DelayedAction 队列还会幽灵走位，必须按 MoveTime 节拍。
+        _sendMove?.Invoke(dir, 1);
+        _nextAttackMs = now + Globals.MoveTime.TotalMilliseconds;
     }
+
+    private bool IsHoverLiveNonItem()
+        => MouseObject != null
+            && MouseObject.Type != ObjectRenderer.Kind.Item
+            && !MouseObject.Dead;
 
     public override void _Draw()
     {
@@ -249,36 +328,58 @@ public partial class CombatController : Node2D
 
             if (mb.ButtonIndex == MouseButton.Left)
             {
-                // Shift+左键 = 原地攻击 (朝鼠标方向)
-                if (mb.ShiftPressed || Input.IsKeyPressed(Key.Shift))
-                {
-                    TryAttack(DirectionToMouse(_getPlayerCell()));
-                    return;
-                }
-
-                // 原版 CanAttack 同时允许活着的怪物和其他玩家；远处先接近，
-                // 近处立即攻击。怪物仍需满足 AI>=0，玩家不走该守卫。
+                bool shiftHeld = mb.ShiftPressed || Input.IsKeyPressed(Key.Shift);
                 ObjectRenderer hit = PickObjectAtMouse();
-                if (ShouldDeferForMapPickup(MouseCell(), _getPlayerCell(), false))
+                // 同格拾取优先：非 Shift 时把普通左键让给 GameScene._UnhandledInput。
+                // Shift 点击脚下格不拾取（原版 case Left 的 Shift 分支先返回）。
+                if (ShouldDeferForMapPickup(MouseCell(), _getPlayerCell(), shiftHeld))
                     return;
+
+                // 原版 OnMouseDown（683-739）：CanAttack 通过 → 选中并走
+                // Shuriken 分支；未通过 → 取消选中。Shift 点击不在这里
+                // 特判：选中/清空与普通点击一致，持续攻击由 _Process 的
+                // Shift 分支（TargetObject == null 时朝鼠标）驱动。
                 bool attackable = CanAttackObject(hit);
-                if (attackable)
+                if (!attackable)
                 {
-                    TargetObject = hit;
-                    GD.Print($"[Combat] 选中目标: {hit.DisplayName} ObjectID={hit.ObjectID}");
-                    // 原版 MapControl.ProcessInput 底部接近分支：
-                    // (Race == Player || 有宠物) && !Shift → 只选中，不接近不攻击。
-                    bool isPlayer = hit.Type == ObjectRenderer.Kind.Player;
-                    bool hasPetOwner = !string.IsNullOrWhiteSpace(hit.PetOwner);
-                    bool shiftHeld = mb.ShiftPressed || Input.IsKeyPressed(Key.Shift);
-                    if (!ShouldSelectOnly(isPlayer, hasPetOwner, shiftHeld))
-                        AttackOrApproach(hit);
-                }
-                else
-                {
-                    // 点空地 -> 取消选中
                     TargetObject = null;
+                    QueueRedraw();
+                    return;
                 }
+                TargetObject = hit;
+                GD.Print($"[Combat] 选中目标: {hit.DisplayName} ObjectID={hit.ObjectID}");
+
+                var pCell = _getPlayerCell();
+                var hitCell = new System.Drawing.Point(hit.CellX, hit.CellY);
+                var result = ShurikenClick(_isShurikenShape?.Invoke() == true,
+                    _canRangeAttack?.Invoke(hit) == true,
+                    !Functions.InRange(hitCell, pCell, Globals.MagicRange),
+                    Godot.Time.GetTicksMsec() < _nextAttackMs);
+                if (result == ShurikenClickResult.HintAndClear)
+                {
+                    _notifyRangeAttackTooFar?.Invoke();
+                    TargetObject = null;
+                    QueueRedraw();
+                    return;
+                }
+                if (result == ShurikenClickResult.ClearOnly)
+                {
+                    TargetObject = null;
+                    QueueRedraw();
+                    return;
+                }
+                if (result == ShurikenClickResult.ThrowAndClear)
+                {
+                    _sendRangeAttack?.Invoke(Functions.DirectionFromPoint(pCell, hitCell),
+                        hit.ObjectID);
+                    _nextAttackMs = Godot.Time.GetTicksMsec() + GetAttackInterval();
+                    TargetObject = null;
+                    QueueRedraw();
+                    return;
+                }
+                // 普通近战选中：不立即移动/攻击。追击与相邻攻击由 _Process
+                // 每帧驱动（原版 OnMouseDown 选中后同样等下一帧 ProcessInput，
+                // 顶部攻击分支/底部追击接管）。
             }
             else if (mb.ButtonIndex == MouseButton.Right)
             {
@@ -293,6 +394,9 @@ public partial class CombatController : Node2D
 
     private void TryAttack(MirDirection direction)
     {
+        // 原版 Shift 分支（915-916）：Horse == None && !hurricane 才攻击。
+        if (_isHurricane?.Invoke() == true) return;
+        if (_isMounted?.Invoke() == true) return;
         double now = Godot.Time.GetTicksMsec();
         if (now < _nextAttackMs) return;
         GD.Print($"[Combat] ATTACK direction={direction} target={TargetObject?.ObjectID ?? 0}");
@@ -300,11 +404,10 @@ public partial class CombatController : Node2D
         _nextAttackMs = now + GetAttackInterval();
     }
 
-    private static bool IsAttackableMonster(ObjectRenderer target)
-        => target?.Type != ObjectRenderer.Kind.Monster || (target.MonsterInfo?.AI ?? -1) >= 0;
-
+    /// <summary>攻击间隔完全交给 GameScene 的原版公式（800 地板 +
+    /// AS 减免 + 超重/Neutralize 翻倍）；这里只做 800ms 兜底。</summary>
     private double GetAttackInterval()
-        => Math.Max(250.0, _getAttackInterval?.Invoke() ?? AttackIntervalMs);
+        => _getAttackInterval?.Invoke() ?? AttackIntervalMs;
 
     private MirDirection BestApproachDirection(System.Drawing.Point from, ObjectRenderer target)
     {
@@ -330,39 +433,6 @@ public partial class CombatController : Node2D
             return false;
         return !_mapView.Map.Cells[next.X, next.Y].Flag
             && !(_cellBlocked?.Invoke(next.X, next.Y) ?? false);
-    }
-
-    private void AttackOrApproach(ObjectRenderer target)
-    {
-        var pCell = _getPlayerCell();
-        int dist = Math.Max(Math.Abs(target.CellX - pCell.X), Math.Abs(target.CellY - pCell.Y));
-        MirDirection dir = Functions.DirectionFromPoint(pCell,
-            new System.Drawing.Point(target.CellX, target.CellY));
-        double now = Godot.Time.GetTicksMsec();
-        if (now < _nextAttackMs) return;
-        if (dist > 1)
-        {
-            if (_canRangeAttack?.Invoke(target) == true)
-            {
-                // 原版 MapControl.OnMouseDown 683-692：Shuriken 超
-                // Globals.MagicRange 时提示 "Unable to throw ... too far."
-                // 并取消目标，不发 RangeAttack。
-                if (!Functions.InRange(pCell, new System.Drawing.Point(target.CellX, target.CellY), Globals.MagicRange))
-                {
-                    _notifyRangeAttackTooFar?.Invoke();
-                    TargetObject = null;
-                    return;
-                }
-                _sendRangeAttack?.Invoke(dir, target.ObjectID);
-            }
-            else
-                _sendMove?.Invoke(BestApproachDirection(pCell, target), 1);
-            _nextAttackMs = now + 120.0;
-        }
-        else
-        {
-            TryAttack(dir);
-        }
     }
 
     /// <summary>鼠标位置下方最近的可点物体 (怪物/NPC/物品), 1 格内才算命中。</summary>

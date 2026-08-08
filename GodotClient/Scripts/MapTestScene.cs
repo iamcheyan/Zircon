@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using Godot;
 using GTime = Godot.Time;
@@ -31,6 +32,7 @@ public partial class MapTestScene : Control
     private bool _shadowAudit;
     private bool _pixelAudit;
     private bool _projectileAudit;
+    private bool _deadTargetAudit;
     private bool _lightRenderAudit;
     private bool _weatherRenderAudit;
     private bool _mapFamilyRenderAudit;
@@ -60,12 +62,19 @@ public partial class MapTestScene : Control
     private Vector2 _auditProjectileStart;
     private float _auditProjectileMaxTravel;
     private int _auditProjectileSamples;
+    private double _auditProjectileStartMs;
+    private int _auditProjectileStage;
     private bool _projectileScreenshotSaved;
     private MapView _lightAuditMapView;
     private MapLightLayer _lightAuditLayer;
     private MapInfo _lightAuditMapInfo;
     private int _lightAuditStage;
     private int _lightAuditFrames;
+    // 拷贝点劫持探针区域 (逻辑坐标, 根节点 Scale=2 后落在视口内)。
+    private static readonly Rect2 LightProbeArea = new(700, 350, 48, 32);
+    private ColorRect? _probeBackdrop;
+    private ColorRect? _probeHijacker;
+    private ColorRect? _probeWhite;
     private MapWeatherLayer _weatherAuditLayer;
     private int _weatherAuditFrames;
     private MapView _mapFamilyView;
@@ -100,6 +109,7 @@ public partial class MapTestScene : Control
         _shadowAudit = OS.GetCmdlineUserArgs().Contains("--shadow-audit");
         _pixelAudit = OS.GetCmdlineUserArgs().Contains("--pixel-audit");
         _projectileAudit = OS.GetCmdlineUserArgs().Contains("--projectile-audit");
+        _deadTargetAudit = OS.GetCmdlineUserArgs().Contains("--dead-target-audit");
         bool playerMatrixAudit = OS.GetCmdlineUserArgs().Contains("--player-matrix-audit");
         bool lightAudit = OS.GetCmdlineUserArgs().Contains("--light-audit");
         _lightRenderAudit = OS.GetCmdlineUserArgs().Contains("--light-render-audit");
@@ -108,6 +118,7 @@ public partial class MapTestScene : Control
         _blendAudit = OS.GetCmdlineUserArgs().Contains("--blend-audit");
         bool networkAudit = OS.GetCmdlineUserArgs().Contains("--network-audit");
         bool cursorAudit = OS.GetCmdlineUserArgs().Contains("--cursor-audit");
+        bool combatAudit = OS.GetCmdlineUserArgs().Contains("--combat-audit");
         _effectFreeAudit = OS.GetCmdlineUserArgs().Contains("--effect-target-free-audit");
         bool fullTextureAudit = OS.GetCmdlineUserArgs().Contains("--full-texture-audit");
         bool weatherTextureDump = OS.GetCmdlineUserArgs().Contains("--weather-texture-dump");
@@ -148,6 +159,7 @@ public partial class MapTestScene : Control
             if (_shadowAudit) CallDeferred(nameof(RunShadowAudit));
             if (_pixelAudit) CallDeferred(nameof(RunPixelAudit));
             if (_projectileAudit) CallDeferred(nameof(RunProjectileAudit));
+            if (_deadTargetAudit) CallDeferred(nameof(RunDeadTargetFallbackAudit));
             if (playerMatrixAudit) CallDeferred(nameof(RunPlayerMatrixAudit));
             if (lightAudit) CallDeferred(nameof(RunLightAudit));
             if (_lightRenderAudit) CallDeferred(nameof(BeginLightRenderAudit));
@@ -159,6 +171,7 @@ public partial class MapTestScene : Control
                 CallDeferred(nameof(RunAnomalyReplayAudit));
             }
             if (cursorAudit) CallDeferred(nameof(RunCursorAudit));
+            if (combatAudit) CallDeferred(nameof(RunCombatAudit));
             if (_effectFreeAudit) CallDeferred(nameof(BeginEffectTargetFreeAudit));
             if (fullTextureAudit) CallDeferred(nameof(RunTransparencyAudit));
             if (_blendAudit) CallDeferred(nameof(BeginBlendAudit));
@@ -243,6 +256,71 @@ public partial class MapTestScene : Control
             : $"[CursorAudit] FAIL selected={selected?.ObjectID}");
     }
 
+    /// <summary>
+    /// P1 输入/战斗静态语义审计。原版参考：
+    ///   - UserObject.SetAction Attack/RangeAttack（UserObject.cs:638-653）：
+    ///     base = max(800, AttackDelay - AttackSpeed*ASpeedRate)，超重/Neutralize
+    ///     时 AttackTime 再叠加一次 base（等效 x2）。
+    ///   - UserObject.SetAction Mining：超重再叠加一次（x3）、Neutralize 叠加一次（x2）。
+    ///   - MapControl.OnMouseDown 683-739 Shuriken 分支：超 MagicRange 先提示+Stop()
+    ///     （任何坐骑状态），Horse==None 且飞镖才投，冷却点击/投掷后都 Stop() 清目标。
+    ///   - MapControl.ProcessInput 顶部攻击分支 875-895、AutoRun 896-901、
+    ///     Standing 转向（C.Turn 无本地回包，同向不发）。
+    /// </summary>
+    private static void RunCombatAudit()
+    {
+        // B1: 攻击间隔 = max(800, 1500 - AS*47)，超重/Neutralize x2（两者也是 x2）。
+        // AS=0 → 1500（地板只在 AS>=15 生效）；AS=15 → 800（地板）。
+        bool attackMatrix =
+            GameScene.ComputeAttackIntervalMs(1500, 0, 47, false, false) == 1500.0
+            && GameScene.ComputeAttackIntervalMs(1500, 14, 47, false, false) == 842.0
+            && GameScene.ComputeAttackIntervalMs(1500, 15, 47, false, false) == 800.0
+            && GameScene.ComputeAttackIntervalMs(1500, 14, 47, true, false) == 1684.0
+            && GameScene.ComputeAttackIntervalMs(1500, 14, 47, false, true) == 1684.0
+            && GameScene.ComputeAttackIntervalMs(1500, 14, 47, true, true) == 1684.0;
+        // B2: 采矿间隔独立公式：超重 x3、Neutralize x2、同时按超重 x3。
+        // AS=0 → 1500（同攻击公式的无 AS 情形）。
+        bool miningMatrix =
+            GameScene.ComputeMiningIntervalMs(1500, 0, 47, false, false) == 1500.0
+            && GameScene.ComputeMiningIntervalMs(1500, 14, 47, true, false) == 2526.0
+            && GameScene.ComputeMiningIntervalMs(1500, 14, 47, false, true) == 1684.0
+            && GameScene.ComputeMiningIntervalMs(1500, 14, 47, true, true) == 2526.0;
+        // B3: ShurikenClick 真值表（原版 683-739 判定顺序：非飞镖→近战；
+        // 超距提示先于坐骑/冷却；骑马在范围内→近战；冷却→清目标；可投→投+清）。
+        var melee = CombatController.ShurikenClickResult.Melee;
+        var hint = CombatController.ShurikenClickResult.HintAndClear;
+        var clear = CombatController.ShurikenClickResult.ClearOnly;
+        var throwAndClear = CombatController.ShurikenClickResult.ThrowAndClear;
+        bool shurikenMatrix =
+            CombatController.ShurikenClick(false, true, false, false) == melee
+            && CombatController.ShurikenClick(false, false, true, true) == melee
+            && CombatController.ShurikenClick(true, true, true, false) == hint
+            && CombatController.ShurikenClick(true, false, true, true) == hint
+            && CombatController.ShurikenClick(true, false, false, false) == melee
+            && CombatController.ShurikenClick(true, true, false, true) == clear
+            && CombatController.ShurikenClick(true, true, false, false) == throwAndClear;
+        // B4: 移动动画集合（原版 AttemptAction(Moving) 期间，C.Magic 排队等待）。
+        bool walkAnimations =
+            GameScene.IsWalkAnimation(MirAnimation.Walking)
+            && GameScene.IsWalkAnimation(MirAnimation.Running)
+            && GameScene.IsWalkAnimation(MirAnimation.HorseWalking)
+            && GameScene.IsWalkAnimation(MirAnimation.HorseRunning)
+            && GameScene.IsWalkAnimation(MirAnimation.CreepWalkSlow)
+            && GameScene.IsWalkAnimation(MirAnimation.CreepWalkFast)
+            && !GameScene.IsWalkAnimation(MirAnimation.Standing)
+            && !GameScene.IsWalkAnimation(MirAnimation.Combat1)
+            && !GameScene.IsWalkAnimation(MirAnimation.Pushed);
+        // B5: 转向闸门——同向不重复发包（C.Turn 对本地无回包）。
+        bool turnMatrix =
+            !GameScene.ShouldSendTurn(MirDirection.Up, MirDirection.Up)
+            && GameScene.ShouldSendTurn(MirDirection.Up, MirDirection.Down);
+        bool pass = attackMatrix && miningMatrix && shurikenMatrix && walkAnimations && turnMatrix;
+        if (pass)
+            GD.Print("[CombatAudit] PASS attack floor/AS/overweight matrix, mining overweight x3/neutralize x2 matrix, Shuriken range-horse-cooldown truth table, walk animation set, turn no-spam gate");
+        else
+            GD.PrintErr($"[CombatAudit] FAIL attackMatrix={attackMatrix} miningMatrix={miningMatrix} shurikenMatrix={shurikenMatrix} walkAnimations={walkAnimations} turnMatrix={turnMatrix}");
+    }
+
     private static void RunLightAudit()
     {
         const float epsilon = 0.0001f;
@@ -284,9 +362,50 @@ public partial class MapTestScene : Control
             GD.PrintErr("[LightRenderAudit] FAIL no loaded MapInfo");
             return;
         }
-        _lightAuditLayer = new MapLightLayer { ZIndex = 2000 };
-        AddChild(_lightAuditLayer);
+        // 与生产 GameScene 相同的独立 CanvasLayer 布局: 整个世界先绘制,
+        // 该层再触发一次全新的 hint_screen_texture 拷贝。Transform 用 2x
+        // 与本场景根节点 Scale 一致, 层内保持逻辑坐标。
+        var lightCanvas = new CanvasLayer
+        {
+            Layer = 1,
+            Transform = new Transform2D(0f, Vector2.One * WorldScale, 0f, Vector2.Zero),
+        };
+        _lightAuditLayer = new MapLightLayer { ZIndex = RenderOrder.LightOverlay };
+        lightCanvas.AddChild(_lightAuditLayer);
+        AddChild(lightCanvas);
         _lightAuditLayer.SetMap(_lightAuditMapInfo, _lightAuditMapView);
+
+        // 拷贝点劫持回归探针: 低 ZIndex 的 screen_texture 节点(模拟地形
+        // Blend 行或施法特效)是世界画布内第一个 hint_screen_texture 用户,
+        // 整屏拷贝在它绘制前发生。若光照层仍留在世界画布末尾, 它采样到的
+        // 拷贝缺了其后绘制的白板 → 探针读数≈0; 移入独立 CanvasLayer 后
+        // 层内重新拷贝, 白板被正确压暗 → 读数≈ambient(夜晚 0.25)。
+        _probeBackdrop = new ColorRect
+        {
+            Position = LightProbeArea.Position,
+            Size = LightProbeArea.Size,
+            Color = Colors.Black,
+            ZIndex = 50,
+        };
+        AddChild(_probeBackdrop);
+        _probeHijacker = new ColorRect
+        {
+            Position = LightProbeArea.Position,
+            Size = LightProbeArea.Size,
+            Color = new Color(0.5f, 0.5f, 0.5f),
+            Material = LegacyBlendMaterial.Create(),
+            ZIndex = 100,
+        };
+        AddChild(_probeHijacker);
+        _probeWhite = new ColorRect
+        {
+            Position = LightProbeArea.Position,
+            Size = LightProbeArea.Size,
+            Color = Colors.White,
+            ZIndex = 200,
+        };
+        AddChild(_probeWhite);
+
         _lightAuditStage = 0;
         _lightAuditFrames = 0;
         ApplyLightRenderStage();
@@ -319,6 +438,18 @@ public partial class MapTestScene : Control
             GD.PrintErr($"[LightRenderAudit] FAIL {stage.Name}: save={error}");
         else
             GD.Print($"[LightRenderAudit] PASS {stage.Name} ambient={MapLightLayer.AmbientFor(stage.Setting, stage.DayTime):0.000} viewport={image.GetWidth()}x{image.GetHeight()} path={path}");
+
+        // 白板中心读数 = 环境光 × 白板, 与 stage 环境光一致; 若光照层被低
+        // ZIndex 的 screen_texture 节点劫持拷贝点, 白板不在采样画面内,
+        // 读数会落到黑底(≈0)。阈值 0.1 远低于最低环境光 0.25。
+        int probeX = Math.Min((int)(LightProbeArea.Position.X + LightProbeArea.Size.X / 2) * 2, image.GetWidth() - 2);
+        int probeY = Math.Min((int)(LightProbeArea.Position.Y + LightProbeArea.Size.Y / 2) * 2, image.GetHeight() - 2);
+        var probePixel = image.GetPixel(probeX, probeY);
+        float probeLum = probePixel.R * 0.299f + probePixel.G * 0.587f + probePixel.B * 0.114f;
+        if (probeLum < 0.1f)
+            GD.PrintErr($"[LightRenderAudit] FAIL {stage.Name} probe=(0x{probePixel.ToHtml()}) lum={probeLum:0.000} < 0.1 (拷贝点被劫持?)");
+        else
+            GD.Print($"[LightRenderAudit] PASS {stage.Name} probe=(0x{probePixel.ToHtml()}) lum={probeLum:0.000}");
 
         _lightAuditStage++;
         if (_lightAuditStage >= LightRenderStages.Length)
@@ -1330,12 +1461,175 @@ public partial class MapTestScene : Control
         // 到达点结束；非 Explode 的“穿屏继续飞行”由运行时路径覆盖。
         _auditProjectile.Explode = true;
         _projectileScreenshotSaved = false;
+        _auditProjectileStartMs = Godot.Time.GetTicksMsec();
         _auditProjectile.CompleteAction = () =>
-            GD.Print(_auditProjectileMaxTravel > 20f
-                ? $"[ProjectileAudit] PASS samples={_auditProjectileSamples} travel={_auditProjectileMaxTravel:0.0}px"
-                : $"[ProjectileAudit] FAIL travel={_auditProjectileMaxTravel:0.0}px");
+        {
+            double actualMs = Godot.Time.GetTicksMsec() - _auditProjectileStartMs;
+            // 原版 MirProjectile.Process(): duration = Distance(p1, p2) * 1ms,
+            // p = (x, y/32*48)。共享 Functions.Distance 是 Chebyshev 距离
+            // (max(|dx|,|dy|))，不是欧氏距离。审计目标格 (4,2) → p2=(192,
+            // 64/32*48=96)，p1=(0,0) → 期望 = max(192,96) = 192ms。
+            // 曾用 distancePx*1.5 (=304ms) 导致飞行慢 ~1.6 倍，这里直接
+            // 断言时长而不是只测位移。
+            double expectedMs = Math.Max(192.0, 96.0);
+            bool travelOk = _auditProjectileMaxTravel > 20f;
+            bool speedOk = Math.Abs(actualMs - expectedMs) <= 60.0;
+            if (travelOk && speedOk)
+                GD.Print($"[ProjectileAudit] stage0 PASS samples={_auditProjectileSamples} travel={_auditProjectileMaxTravel:0.0}px duration={actualMs:0}ms≈{expectedMs:0}ms");
+            else
+                GD.PrintErr($"[ProjectileAudit] stage0 FAIL travel={_auditProjectileMaxTravel:0.0}px duration={actualMs:0}ms expected≈{expectedMs:0}ms");
+            // 截图延迟在 CompleteAction 里做：在采样循环里做会把读回阻塞到
+            // 完成帧，污染时长/位移测量（曾把 duration 从 ~208ms 推到 306ms）。
+            if (!_projectileScreenshotSaved && DisplayServer.GetName() != "headless")
+            {
+                var image = GetViewport().GetTexture()?.GetImage();
+                if (image != null && image.SavePng("/tmp/zircon-projectile-audit.png") == Error.Ok)
+                {
+                    _projectileScreenshotSaved = true;
+                    GD.Print($"[ProjectileRenderAudit] PASS viewport={image.GetWidth()}x{image.GetHeight()} " +
+                             "path=/tmp/zircon-projectile-audit.png");
+                }
+            }
+            RunProjectileAuditStage1();
+        };
         _auditProjectileStart = _auditProjectile.Position;
     }
+
+    // stage1: 无目标、非 Explode 但挂 CompleteAction 的投射物（地面落点弹道，
+    // 如火球）。修复前 flyPast 逻辑会把爆炸推迟到飞出屏幕才触发；现在必须在
+    // 到达目标格时截停并触发 CompleteAction（着弹特效在格上播放）。
+    private void RunProjectileAuditStage1()
+    {
+        _auditProjectileStage = 1;
+        _auditProjectile = new MirProjectileNode();
+        AddChild(_auditProjectile);
+        _auditProjectile.SetupProjectile(LibraryFile.Magic, 420, 5, 100,
+            null, 4, 2, new System.Drawing.Point(0, 0),
+            (x, y) => new Vector2(x * CellWidth, y * CellHeight));
+        _auditProjectile.Blend = true;
+        _auditProjectile.Has16Directions = true;
+        // 与运行时 FireBall 地面落点一致: 无 Target、非 Explode、挂 CompleteAction。
+        _auditProjectile.Explode = false;
+        _auditProjectileStartMs = Godot.Time.GetTicksMsec();
+        _auditProjectile.CompleteAction = () =>
+        {
+            double actualMs = Godot.Time.GetTicksMsec() - _auditProjectileStartMs;
+            // 目标格 (4,2) 的屏幕坐标 = (4*48, 2*32) = (192,64)；
+            // ToLegacyProjectilePoint 把 Y 换算成 48 高度 (64/32*48=96)。
+            // 修复后 flyPast 不再截留: 到达即触发, 时长仍为 Chebyshev 距离
+            // max(192,96)=192ms。若仍走旧的 flyPast 分支, duration 不会
+            // 在到达点结束, 会继续飞离屏幕后才触发 (时长远大于 192ms)。
+            double expectedMs = Math.Max(192.0, 96.0);
+            var pos = _auditProjectile.Position;
+            bool endAtCell = Math.Abs(pos.X - 192f) < 0.1f && Math.Abs(pos.Y - 64f) < 0.1f;
+            bool speedOk = Math.Abs(actualMs - expectedMs) <= 60.0;
+            if (endAtCell && speedOk)
+                GD.Print($"[ProjectileAudit] stage1 PASS pos={pos} duration={actualMs:0}ms≈{expectedMs:0}ms (ground-cell stop+impact)");
+            else
+                GD.PrintErr($"[ProjectileAudit] stage1 FAIL pos={pos} expected=(192,64) duration={actualMs:0}ms expected≈{expectedMs:0}ms");
+            GetTree().Quit();
+        };
+    }
+
+    // 回归审计: 目标已完全移除 (场景节点与 _objects 缓存都查不到该 id) 时,
+    // RenderObjectMagic 的 targets 循环必须回退到 destCells[targetIndex]
+    // 对应格子播 Impact, 而不是整段丢弃命中特效。直接反射驱动真实私有方法
+    // (裸 GameScene 不进树), 统计目标格子上的 MirEffectNode 数量。
+    private void RunDeadTargetFallbackAudit()
+    {
+        var method = typeof(GameScene).GetMethod("RenderObjectMagic",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        if (method == null)
+        {
+            GD.PrintErr("[DeadTargetAudit] FAIL RenderObjectMagic 反射查找失败");
+            GetTree().Quit();
+            return;
+        }
+
+        int failures = 0;
+
+        // 用例1 基线: 无目标, 只有地面格 (10,12) -> 落点 1 个 Impact。
+        int baseline = CountCellImpacts(method, new uint[0], new[] { (10, 12) }, null);
+        if (baseline != 1)
+        {
+            failures++;
+            GD.PrintErr($"[DeadTargetAudit] FAIL 基线落点 Impact 数={baseline} 期望=1");
+        }
+
+        // 用例2 目标完全移除: 回退到同一格补播 1 个 Impact -> 2 个。
+        int absent = CountCellImpacts(method, new uint[] { 9999 }, new[] { (10, 12) }, null);
+        if (absent != baseline + 1)
+        {
+            failures++;
+            GD.PrintErr($"[DeadTargetAudit] FAIL 目标移除回退 Impact 数={absent} 期望={baseline + 1}");
+        }
+
+        // 用例3 多目标夹取: 2 个无效目标, 1 个格子 -> Math.Min 夹到索引 0,
+        // 两个目标各补 1 个 -> 落点 3 个 (1 地面 + 2 回退)。
+        int clamped = CountCellImpacts(method, new uint[] { 9999, 8888 }, new[] { (10, 12) }, null);
+        if (clamped != baseline + 2)
+        {
+            failures++;
+            GD.PrintErr($"[DeadTargetAudit] FAIL 多目标夹取 Impact 数={clamped} 期望={baseline + 2}");
+        }
+
+        // 用例4 尸体仍在 _objects (目标死亡但未被移除): GetMagicTargetNode
+        // 命中缓存, 走对象锚定分支 (MapCell 保持 0), 不再叠加格子回退。
+        // -> 落点 1 个 + 锚定 1 个。
+        var corpseScene = BuildScene(method, new uint[] { 9999 }, new[] { (10, 12) },
+            new ObjectRenderer { ObjectID = 9999, CellX = 7, CellY = 8 });
+        int corpseCell = CountAt(corpseScene, 10, 12);
+        int corpseAnchored = CountAt(corpseScene, 0, 0);
+        if (corpseCell != 1 || corpseAnchored != 1)
+        {
+            failures++;
+            GD.PrintErr($"[DeadTargetAudit] FAIL 尸体锚定 cell={corpseCell} anchored={corpseAnchored} 期望=1/1");
+        }
+
+        // 用例5 无地面格: destCells 为空, 回退守卫不触发, 不产生格特效。
+        // (旧端纯目标技能同样不发送 Locations, 移除目标后无格表现。)
+        int noLoc = CountCellImpacts(method, new uint[] { 9999 }, new (int, int)[0], null);
+        if (noLoc != 0)
+        {
+            failures++;
+            GD.PrintErr($"[DeadTargetAudit] FAIL 空地面格回退 Impact 数={noLoc} 期望=0");
+        }
+
+        if (failures == 0)
+            GD.Print("[DeadTargetAudit] PASS dead-target fallback at destCells + corpse anchored parity");
+        else
+            GD.PrintErr($"[DeadTargetAudit] FAIL failures={failures}");
+        GetTree().Quit();
+    }
+
+    private static GameScene BuildScene(MethodInfo method, uint[] targets, (int X, int Y)[] locations,
+        ObjectRenderer? corpse)
+    {
+        var scene = new GameScene();
+        if (corpse != null)
+        {
+            var objectsField = typeof(GameScene).GetField("_objects", BindingFlags.NonPublic | BindingFlags.Instance);
+            ((System.Collections.Generic.Dictionary<uint, ObjectRenderer>)objectsField!.GetValue(scene)!).Add(
+                corpse.ObjectID, corpse);
+        }
+        method.Invoke(scene, new object[]
+        {
+            1u, MirDirection.Up, new System.Drawing.Point(5, 5), MagicType.ElectricShock,
+            targets.ToList(),
+            locations.Select(l => new System.Drawing.Point(l.X, l.Y)).ToList(),
+        });
+        return scene;
+    }
+
+    private static int CountCellImpacts(MethodInfo method, uint[] targets, (int X, int Y)[] locations,
+        ObjectRenderer? corpse)
+    {
+        var scene = BuildScene(method, targets, locations, corpse);
+        return locations.Length == 0 ? CountAt(scene, 10, 12) : locations.Select(l => CountAt(scene, l.X, l.Y)).Sum();
+    }
+
+    private static int CountAt(GameScene scene, int x, int y)
+        => scene.GetChildren().OfType<MirEffectNode>().Count(fx => fx.MapCellX == x && fx.MapCellY == y);
 
     private static void RunPlayerMatrixAudit()
     {
@@ -1352,17 +1646,6 @@ public partial class MapTestScene : Control
         _auditProjectileSamples++;
         _auditProjectileMaxTravel = Math.Max(_auditProjectileMaxTravel,
             _auditProjectile.Position.DistanceTo(_auditProjectileStart));
-        if (!_projectileScreenshotSaved && _auditProjectileSamples >= 8
-            && DisplayServer.GetName() != "headless")
-        {
-            var image = GetViewport().GetTexture()?.GetImage();
-            if (image != null && image.SavePng("/tmp/zircon-projectile-audit.png") == Error.Ok)
-            {
-                _projectileScreenshotSaved = true;
-                GD.Print($"[ProjectileRenderAudit] PASS viewport={image.GetWidth()}x{image.GetHeight()} " +
-                         "path=/tmp/zircon-projectile-audit.png");
-            }
-        }
     }
 
     // 回归审计：目标节点在特效播放中被释放（S.ObjectRemove 后怪物节点
@@ -1965,9 +2248,22 @@ public partial class MapTestScene : Control
             && RenderOrder.LocalPlayer < RenderOrder.Particles
             && RenderOrder.Particles < RenderOrder.LocalPlayerEffect
             && RenderOrder.LocalPlayerEffect < RenderOrder.FinalEffects;
-        GD.Print(rows && postObject
-            ? "[LayerOrderAudit] PASS legacy row/local-player ordering"
-            : $"[LayerOrderAudit] FAIL rows={rows} postObject={postObject}");
+        // 旧端 MapControl 把 DrawType.Floor 特效画在底色与所有地形行之间，
+        // 因此必须低于每一行的对象（否则火墙压住角色）且低于行 1+ 的地形
+        // （否则被地砖盖住）。行 0 与底色同槽，靠树序（MapView 先加入，
+        // 特效后加入）排在地形行 0 之上、底色之上。
+        bool floorBelowObjects = true;
+        bool floorBelowRows = true;
+        for (int y = 0; y <= 64; y++)
+        {
+            floorBelowObjects &= RenderOrder.FloorEffects < RenderOrder.Object(y);
+            if (y >= 1) floorBelowRows &= RenderOrder.FloorEffects < RenderOrder.TerrainMiddle(y);
+        }
+        bool floorAboveBase = RenderOrder.FloorEffects >= RenderOrder.TerrainBase;
+        GD.Print(rows && postObject && floorBelowObjects && floorBelowRows && floorAboveBase
+            ? "[LayerOrderAudit] PASS legacy row/local-player ordering + floor-below-rows-and-objects"
+            : $"[LayerOrderAudit] FAIL rows={rows} postObject={postObject} " +
+              $"floorBelowObjects={floorBelowObjects} floorBelowRows={floorBelowRows} floorAboveBase={floorAboveBase}");
     }
 
     private void RunSoundAssetAudit()

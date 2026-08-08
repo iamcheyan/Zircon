@@ -65,6 +65,25 @@ public partial class PlayerRenderer : Node2D
     private MirAnimation _oneShotAnim = MirAnimation.Standing;
     private MagicType _spellType = MagicType.None;
     private bool _rangeAttack;
+
+    // ---- 施法动画结束事件 (原版 SetAction 用 OLD 动作跑 release switch 的移植) ----
+    // 玩家动画有"忙碌则入队"的衔接逻辑, 施法实例必须和 _animationQueue 对齐:
+    // 每个入队动作带一个 pending 记录, ApplyAnimation 应用动作时先触发上一个
+    // 播放中的施法实例, 再消费本动作的 pending 记录成为新的"播放中"。
+    public event Action<int, MagicType> SpellAnimEnded;
+    private int _spellInstanceCounter;
+    private (int Instance, MagicType Magic) _pendingSpell;
+    private readonly Queue<(int Instance, MagicType Magic)> _pendingSpellQueue = new();
+    private int _lastSpellInstance;
+    private MagicType _lastSpellType = MagicType.None;
+    public int LastSpellInstance => _lastSpellInstance;
+
+    public int BeginSpell(MagicType magic)
+    {
+        _spellInstanceCounter++;
+        _pendingSpell = (_spellInstanceCounter, magic);
+        return _spellInstanceCounter;
+    }
     private double _stanceUntilMs;
     private readonly Queue<MirAnimation> _animationQueue = new();
     private bool _animationComplete = true;
@@ -223,13 +242,27 @@ public partial class PlayerRenderer : Node2D
             && anim is not (MirAnimation.Standing or MirAnimation.Dead))
         {
             _animationQueue.Enqueue(anim);
+            _pendingSpellQueue.Enqueue(_pendingSpell);
+            _pendingSpell = (0, MagicType.None);
             return;
         }
-        ApplyAnimation(anim);
+        ApplyAnimation(anim, _pendingSpell);
+        _pendingSpell = (0, MagicType.None);
     }
 
-    private void ApplyAnimation(MirAnimation anim)
+    private void ApplyAnimation(MirAnimation anim, (int Instance, MagicType Magic) pending)
     {
+        // 离开上一个施法动作 → 释放 (原版 SetAction 的 OLD 动作 release switch)
+        if (_lastSpellInstance != 0)
+        {
+            SpellAnimEnded?.Invoke(_lastSpellInstance, _lastSpellType);
+            _lastSpellInstance = 0;
+        }
+        if (pending.Instance != 0)
+        {
+            _lastSpellInstance = pending.Instance;
+            _lastSpellType = pending.Magic;
+        }
         DrawWeapon = true;
         Animation = anim;
         _currentFrame = GetFrameTable(anim);
@@ -272,7 +305,7 @@ public partial class PlayerRenderer : Node2D
             : Functions.GetAttackAnimation(Class, LibraryWeaponShape, magic));
     }
 
-    public void PlaySpell(MagicType magic)
+    public int PlaySpell(MagicType magic)
     {
         _spellType = magic;
         _stanceUntilMs = Godot.Time.GetTicksMsec() + 3000.0;
@@ -290,10 +323,12 @@ public partial class PlayerRenderer : Node2D
             GD.PrintErr($"[PlayerSpell] 缺少玩家动作帧表: Magic={magic}, Animation={anim}");
             anim = MirAnimation.Combat1;
         }
+        int instance = BeginSpell(magic);
         SetAnimation(anim);
         if (magic == MagicType.PoisonousCloud)
             DrawWeapon = false;
         QueueRedraw();
+        return instance;
     }
 
     public void PlayHarvest() => SetAnimation(MirAnimation.Harvest);
@@ -677,11 +712,14 @@ public partial class PlayerRenderer : Node2D
                 if (Animation == MirAnimation.ChannellingStart &&
                     _spellType == MagicType.ElementalHurricane)
                 {
-                    ApplyAnimation(MirAnimation.ChannellingMiddle);
+                    ApplyAnimation(MirAnimation.ChannellingMiddle, (0, MagicType.None));
                 }
                 else if (_animationQueue.Count > 0)
                 {
-                    ApplyAnimation(_animationQueue.Dequeue());
+                    var record = _pendingSpellQueue.Count > 0
+                        ? _pendingSpellQueue.Dequeue()
+                        : (0, MagicType.None);
+                    ApplyAnimation(_animationQueue.Dequeue(), record);
                 }
                 else
                 {

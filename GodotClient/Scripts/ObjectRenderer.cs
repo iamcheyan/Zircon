@@ -177,7 +177,7 @@ public partial class ObjectRenderer : MapObjectNode
     /// 玩家按 MagicType 选择的 Combat1/Combat2；DragonRepulse 才有专用
     /// 起始动作，而且只有当前怪物帧表提供时才使用。
     /// </summary>
-    public void PlaySpell(MagicType magic)
+    public int PlaySpell(MagicType magic)
     {
         var animation = MirAnimation.Combat3;
         if (magic == MagicType.DragonRepulse)
@@ -192,7 +192,9 @@ public partial class ObjectRenderer : MapObjectNode
             MagicType.DoomClawLeftSwipe => MirAnimation.Combat5,
             _ => animation,
         };
+        int instance = BeginSpell(magic);
         SetAnimation(animation);
+        return instance;
     }
 
     public void PlayRangeAttack() => SetAnimation(MirAnimation.Combat2);
