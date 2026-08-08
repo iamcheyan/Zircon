@@ -93,6 +93,7 @@
 - 已使用 `/home/tetsuya/.local/bin/godot-mono`（Godot 4.6.3 Mono）成功启动 `Scenes/MapTestScene.tscn`，实际加载 `System.db`、`0.map`（350×350）并完成 20×20 地图区域绘制；headless 无可读回纹理，仍不能替代带窗口的逐像素截图对比。
 - 已使用同一 C# Godot Mono 启动 `Scenes/UITestScene.tscn --ui-audit`：窗口、按钮、中文字体和 Interface 贴图均成功加载，`UIAudit PASS scale=2 logical anchors preserved`，并生成 `/tmp/ui_test.png`；该 headless 截图可验证资源加载/缩放锚点，最终窗口阴影模糊半径仍需真实显示环境确认。
 - 最近一次 UI 回归还通过 `UIHudAudit`、`UIItemGridAudit`、`UIBeltPotionAudit`：HUD 面板/按钮点击命中、物品格只读/联动/清除传播、腰带缩放/滚轮范围/行交换均通过。
+- 本轮最终回归再次通过：`dotnet build` 0 警告/0 错误、`git diff --check` 通过；`MapTestScene --render-audit --action-audit` 的天气 9/9、层级、技能覆盖、技能帧、音效、释放时序和全部动作序列均通过；`UITestScene --ui-audit` 的 2x 锚点、HUD 点击、物品格和腰带审计均通过。
 - 已查看 `/tmp/ui_test.png`：窗口边缘可见独立阴影，Interface 金色边框和透明区域未出现天气类黑色矩形；右侧/底部灰色区域来自 headless 的 64×64 逻辑 viewport 与输出纹理尺寸不一致，是测试环境伪影，不作为贴图缺陷。
 - 最近一次完整天气审计已逐帧通过：`500、509、510、511、512、513、514、540、550` 共 9/9，分别使用 Weather/Fog 专用透明缓存并检查透明像素与可见像素均大于 0。
 - 最近一次标准运行时回归的全库 Alpha 抽样覆盖 `libraries=312 frames=3189 transparentFrames=2499 cornerPollution=0`；`MagicCoverageAudit` 为 `castConfigured=142 attackOnly=11 missingOriginalSpell=0`，`SpellTimingAudit` 的 `Combat1` 释放延迟 400ms、总时长 600ms，全部 `ActionAudit` 动作序列通过。

@@ -6,7 +6,6 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GodotSharp" Version="4.6.3" />
     <PackageReference Include="BCnEncoder.NET" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>

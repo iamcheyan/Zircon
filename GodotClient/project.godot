@@ -5,6 +5,10 @@ config/name="ZirconClient"
 run/main_scene="res://Scenes/LoginScene.tscn"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+
 [autoload]
 
 NetworkManager="*res://Network/NetworkManager.cs"
