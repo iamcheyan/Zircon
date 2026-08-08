@@ -149,6 +149,7 @@ static class Program
                     if (EnsureTorch(existingCharacter)) updated++;
                     if (EnsureClassSupplies(existingCharacter)) updated++;
                     if (EnsureClassMagics(existingCharacter)) updated++;
+                    if (EnsureEquipmentMatches(existingCharacter)) updated++;
                     if (EnsureCurrency(existingAccount, i)) updated++;
                     if (i % 5 == 0 && EnsureMiningTool(existingCharacter)) updated++;
                     if (EnsureHorse(existingAccount, i)) updated++;
@@ -247,6 +248,7 @@ static class Program
 
     static void SeedEquipment(CharacterInfo character, MirClass cls, int level, int salt)
     {
+        var genderFlag = character.Gender == MirGender.Male ? RequiredGender.Male : RequiredGender.Female;
         var types = new[] { (ItemType.Weapon, EquipmentSlot.Weapon), (ItemType.Armour, EquipmentSlot.Armour),
             (ItemType.Helmet, EquipmentSlot.Helmet), (ItemType.Necklace, EquipmentSlot.Necklace),
             (ItemType.Bracelet, EquipmentSlot.BraceletL), (ItemType.Bracelet, EquipmentSlot.BraceletR),
@@ -254,9 +256,19 @@ static class Program
             (ItemType.Shoes, EquipmentSlot.Shoes) };
         foreach (var (type, slot) in types)
         {
-            var candidates = Session.GetCollection<ItemInfo>().Binding.Where(x => x.ItemType == type && (x.RequiredType != RequiredType.Level || x.RequiredAmount <= level))
-                .Where(x => Compatible(x.RequiredClass, cls)).OrderBy(x => x.RequiredType == RequiredType.Level ? x.RequiredAmount : 0).ToList();
-            if (candidates.Count == 0) continue;
+            // 性别必须匹配：衣服类装备在数据库中严格区分男女款(RequiredGender 非 None)，
+            // 服务端 CanUseItem/CanStartWith 会拒绝性别不符的穿戴，种子若随机到异性款
+            // 角色就会穿着异性衣服进游戏。
+            var all = Session.GetCollection<ItemInfo>().Binding.Where(x => x.ItemType == type && (x.RequiredType != RequiredType.Level || x.RequiredAmount <= level))
+                .Where(x => Compatible(x.RequiredClass, cls))
+                .Where(x => x.RequiredGender == RequiredGender.None || (x.RequiredGender & genderFlag) != 0)
+                .OrderBy(x => x.RequiredType == RequiredType.Level ? x.RequiredAmount : 0).ToList();
+            if (all.Count == 0) continue;
+            // 武器/衣服优先职业专属款（RequiredClass 精确等于本职业），没有等级可用的
+            // 专属款才退回 WarWizTao/All 等通用款，保证机器人拿的是本职业特色装备。
+            var classFlag = (RequiredClass)(1 << (int)cls);
+            var exact = all.Where(x => x.RequiredClass == classFlag).ToList();
+            var candidates = exact.Count > 0 ? exact : all;
             var info = candidates[Math.Min(candidates.Count - 1, salt % Math.Max(1, candidates.Count))];
             AddItem(character, info, 1000 + (int)slot, 1);
         }
@@ -386,6 +398,54 @@ static class Program
         }
     }
 
+    // 修复历史建号缺陷：SeedEquipment 曾不按性别筛选，随机选中的衣服若与角色性别
+    // 相反，会作为装备槽物品直接写入数据库（不经过服务端 CanUseItem 穿戴校验），
+    // 导致男角色穿女款、女角色穿男款。此函数把性别/职业不符的装备槽物品替换为
+    // 同类型、同职业、性别匹配且等级可用的替代品；另外武器/衣服把 WarWizTao/All
+    // 等通用款升级为本职业专属款（若等级可用）。已匹配的槽位保持不变。
+    // 挖矿镐(PickAxe)占武器槽是 BotRunner 运行时的换装状态，不属于种子缺陷，跳过。
+    static bool EnsureEquipmentMatches(CharacterInfo character)
+    {
+        bool changed = false;
+        var genderFlag = character.Gender == MirGender.Male ? RequiredGender.Male : RequiredGender.Female;
+        var classFlag = (RequiredClass)(1 << (int)character.Class);
+        foreach (var item in character.Items.Where(x => x.Slot >= Globals.EquipmentOffSet).ToList())
+        {
+            if (item.Info == null) continue;
+            if (item.Info.ItemEffect == ItemEffect.PickAxe) continue;
+            bool genderOk = item.Info.RequiredGender == RequiredGender.None || (item.Info.RequiredGender & genderFlag) != 0;
+            bool classOk = Compatible(item.Info.RequiredClass, character.Class);
+            bool wantsExclusive = (item.Info.ItemType == ItemType.Weapon || item.Info.ItemType == ItemType.Armour) &&
+                                  item.Info.RequiredClass != classFlag;
+            if (genderOk && classOk && !wantsExclusive) continue;
+
+            var all = Session.GetCollection<ItemInfo>().Binding
+                .Where(x => x.ItemType == item.Info.ItemType)
+                .Where(x => x.RequiredType != RequiredType.Level || x.RequiredAmount <= character.Level)
+                .Where(x => Compatible(x.RequiredClass, character.Class))
+                .Where(x => x.RequiredGender == RequiredGender.None || (x.RequiredGender & genderFlag) != 0)
+                .ToList();
+            // 武器/衣服优先职业专属款，没有等级可用的专属款才退回通用款。
+            var exact = all.Where(x => x.RequiredClass == classFlag).ToList();
+            var replacement = (exact.Count > 0 ? exact : all)
+                .OrderByDescending(x => x.RequiredType == RequiredType.Level ? x.RequiredAmount : 0)
+                .FirstOrDefault();
+            if (replacement == null || replacement == item.Info)
+            {
+                Console.WriteLine($"[warn] {character.CharacterName} 装备槽 {item.Info.ItemName} 无更匹配替代品，保留原状");
+                continue;
+            }
+
+            string slotName = Enum.GetName(typeof(EquipmentSlot), item.Slot - Globals.EquipmentOffSet) ?? "?";
+            Console.WriteLine($"[fix] {character.CharacterName} {slotName}: {item.Info.ItemName} -> {replacement.ItemName} (gender={replacement.RequiredGender} class={replacement.RequiredClass})");
+            item.Info = replacement;
+            item.CurrentDurability = replacement.Durability;
+            item.MaxDurability = replacement.Durability;
+            changed = true;
+        }
+        return changed;
+    }
+
     static bool EnsureClassSupplies(CharacterInfo character)
     {
         if (character.Class != MirClass.Taoist) return false;
@@ -397,10 +457,12 @@ static class Program
             return false;
         }
 
+        var genderFlag = character.Gender == MirGender.Male ? RequiredGender.Male : RequiredGender.Female;
         var info = Session.GetCollection<ItemInfo>().Binding
             .Where(x => x.ItemType == ItemType.Amulet && x.Shape == 0)
             .Where(x => x.RequiredType != RequiredType.Level || x.RequiredAmount <= character.Level)
             .Where(x => Compatible(x.RequiredClass, character.Class))
+            .Where(x => x.RequiredGender == RequiredGender.None || (x.RequiredGender & genderFlag) != 0)
             .OrderBy(x => x.RequiredType == RequiredType.Level ? x.RequiredAmount : 0)
             .FirstOrDefault();
         if (info == null) return false;
