@@ -56,6 +56,10 @@ godot-mono --headless --path GodotClient --scene Scenes/MapTestScene.tscn -- --a
 
 后续审计如果发现某个资源确实没有 alpha，必须按旧端的具体 `ImageType` 和资源类型加入例外，不能按“特效”名称整体启用黑键。
 
+## 环境光与 2x 光圈
+
+Godot 按需求移除旧端最黑的 `15/255` 夜间档，`Night` 和第三档 `Twilight` 均使用 `100/255`；默认环境光仍跟随服务器 `DayTime`，明亮档为 `255/255`。光源位置和半径先以逻辑 1x 坐标计算，再由世界根节点统一 2x 放大；因此人物中心不会因缩放产生二次偏移，光圈半径也不会缩小一半。
+
 ## 绘制顺序审计
 
 旧端 `MapControl.DrawObjects` 每个地图行严格执行：

@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Godot;
 using GTime = Godot.Time;
 using Library;
 using S = Library.Network.ServerPackets;
 using ZirconClient.Formats;
+using ZirconClient.Network;
 
 namespace ZirconClient.Scripts;
 
@@ -54,6 +57,7 @@ public partial class MapTestScene : Control
         _shadowAudit = OS.GetCmdlineUserArgs().Contains("--shadow-audit");
         _projectileAudit = OS.GetCmdlineUserArgs().Contains("--projectile-audit");
         bool lightAudit = OS.GetCmdlineUserArgs().Contains("--light-audit");
+        bool networkAudit = OS.GetCmdlineUserArgs().Contains("--network-audit");
         bool fullTextureAudit = OS.GetCmdlineUserArgs().Contains("--full-texture-audit");
 
         // 与实际 GameScene 保持一致：地图、对象、特效都在逻辑 48x32
@@ -90,6 +94,7 @@ public partial class MapTestScene : Control
             if (_shadowAudit) CallDeferred(nameof(RunShadowAudit));
             if (_projectileAudit) CallDeferred(nameof(RunProjectileAudit));
             if (lightAudit) CallDeferred(nameof(RunLightAudit));
+            if (networkAudit) CallDeferred(nameof(RunNetworkAudit));
             if (fullTextureAudit) CallDeferred(nameof(RunTransparencyAudit));
         }
         catch (Exception ex)
@@ -102,16 +107,57 @@ public partial class MapTestScene : Control
     private static void RunLightAudit()
     {
         const float epsilon = 0.0001f;
-        bool pass = Math.Abs(MapLightLayer.AmbientFor(LightSetting.Night, 1f) - 15f / 255f) < epsilon
+        bool pass = Math.Abs(MapLightLayer.AmbientFor(LightSetting.Night, 1f) - 100f / 255f) < epsilon
             && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Twilight, 1f) - 100f / 255f) < epsilon
             && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Light, 0f) - 1f) < epsilon
-            && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Default, 0.42f) - 0.42f) < epsilon;
+            && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Default, 0.42f) - 0.42f) < epsilon
+            && Math.Abs(MapLightLayer.ObjectLightRadius(3) - 56.32f) < epsilon
+            && Math.Abs(MapLightLayer.TileLightRadius(1) - 179.2f) < epsilon
+            && Math.Abs(MapLightLayer.EffectLightRadius(35) - 97.28f) < epsilon;
         if (pass)
-            GD.Print("[LightAudit] PASS Night=15/255 Twilight=100/255 Light=255/255 Default=DayTime");
+            GD.Print("[LightAudit] PASS Night=100/255 Twilight=100/255 Light=255/255 Default=DayTime");
         else
             GD.PrintErr($"[LightAudit] FAIL Night={MapLightLayer.AmbientFor(LightSetting.Night, 1f)} " +
                 $"Twilight={MapLightLayer.AmbientFor(LightSetting.Twilight, 1f)} " +
                 $"Light={MapLightLayer.AmbientFor(LightSetting.Light, 0f)}");
+    }
+
+    private static void RunNetworkAudit()
+    {
+        TcpListener listener = null;
+        TcpClient client = null;
+        TcpClient accepted = null;
+        try
+        {
+            listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            client = new TcpClient();
+            client.Connect(IPAddress.Loopback, port);
+            accepted = listener.AcceptTcpClient();
+
+            var connection = new ServerConnection(client);
+            int disconnectEvents = 0;
+            connection.DisconnectedEvent += () => disconnectEvents++;
+            connection.NotifyDisconnected(closeTransport: true);
+            connection.NotifyDisconnected(closeTransport: true);
+            connection.Disconnect();
+
+            bool pass = !connection.Connected && disconnectEvents == 1;
+            if (pass)
+                GD.Print("[NetworkAudit] PASS duplicate disconnect collapsed to one event and transport closed");
+            else
+                GD.PrintErr($"[NetworkAudit] FAIL connected={connection.Connected} disconnectEvents={disconnectEvents}");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[NetworkAudit] FAIL {ex.GetType().Name}: {ex.Message}");
+        }
+        finally
+        {
+            try { accepted?.Close(); } catch { }
+            try { listener?.Stop(); } catch { }
+        }
     }
 
     public override void _Process(double delta)

@@ -11,9 +11,10 @@ namespace ZirconClient.Scripts;
 public partial class MapLightLayer : Node2D
 {
     private const float WorldScale = 2f;
-    // Godot 客户端不使用旧端约 15/255 的极暗档；最低环境光固定为
-    // Twilight 的 100/255，避免夜间整张地图不可见。
-    private const float MinimumAmbient = 100f / 255f;
+    // Godot 客户端不使用旧端最黑的 15/255 档；按最终视觉要求，
+    // 夜间最低使用环境光第三档 100/255，避免地图完全不可见。
+    private const float NightAmbient = 100f / 255f;
+    private const float TwilightAmbient = 100f / 255f;
     private const int MaxLights = 64;
     private MapInfo _mapInfo;
     private MapView _mapView;
@@ -92,18 +93,35 @@ void fragment() {
         if (_mapInfo != null) QueueRedraw();
     }
 
+    // Kept as a pure function so the fixed original LightSetting mapping can
+    // be regression-tested without requiring a live viewport or map scene.
+    public static float AmbientFor(LightSetting setting, float dayTime)
+        => setting switch
+        {
+            LightSetting.Light => 1f,
+            LightSetting.Night => NightAmbient,
+            LightSetting.Twilight => TwilightAmbient,
+            _ => Math.Clamp(dayTime, 0f, 1f),
+        };
+
+    // The legacy light texture is 1024px wide. Its destination is rendered at
+    // 2x in the old client, while this shader receives logical (1x) coordinates,
+    // hence the 1024 / 2 texture radius divided by WorldScale.
+    public static float ObjectLightRadius(int light)
+        => 256f * (0.1f + Math.Max(0, light) * 0.04f);
+
+    public static float TileLightRadius(int light)
+        => 256f * (0.1f + Math.Max(0, light) * 0.6f);
+
+    public static float EffectLightRadius(int frameLight)
+        => ObjectLightRadius(Math.Max(1, frameLight / 5));
+
     public override void _Draw()
     {
         if (_mapInfo == null || _mapView?.Map == null) return;
 
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
-        float ambient = _mapInfo.Light switch
-        {
-            LightSetting.Light => 1f,
-            LightSetting.Night => MinimumAmbient,
-            LightSetting.Twilight => MinimumAmbient,
-            _ => Math.Max(MinimumAmbient, _dayTime),
-        };
+        float ambient = AmbientFor(_mapInfo.Light, _dayTime);
 
         if (ambient >= 0.999f) return;
 
@@ -123,7 +141,7 @@ void fragment() {
                 // 原版光纹理为 1024x768，物体光的 scale 为
                 // 0.1 + Light * 0.02 * 2。这里的 shader 半径使用逻辑坐标，
                 // 因此把原版纹理直径除以两倍世界缩放，保持光圈覆盖范围。
-                radii.Add(256f * (0.1f + source.Radius * 0.04f));
+                radii.Add(ObjectLightRadius(source.Radius));
                 colours.Add(new Color(source.Colour.R, source.Colour.G, source.Colour.B));
             }
         }
@@ -144,7 +162,7 @@ void fragment() {
             Vector2 center = _mapView.CellToScreen(x, y, false) + new Vector2(24, 16);
             positions.Add(center);
             // 原版格子光 scale = 0.1 + Light * 30 * 0.02。
-            radii.Add(256f * (0.1f + cell.Light * 0.6f));
+            radii.Add(TileLightRadius(cell.Light));
             colours.Add(Colors.White);
         }
 
