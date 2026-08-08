@@ -3165,7 +3165,7 @@ public partial class GameScene : Control
         AddChild(fx);
         fx.Setup(config.Item1, config.Item2, config.Item3, config.Item4, null,
             packet.Location.X, packet.Location.Y,
-            () => ComputeEffectScreenPos(packet.Location.X, packet.Location.Y));
+            () => ComputeObjectScreenPos(packet.Location.X, packet.Location.Y));
         fx.Direction = packet.Direction;
         fx.Loop = true;
         fx.Blend = config.Item5 < 1f;
@@ -3310,7 +3310,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
+        fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
         fx.Blend = def.Blend;
         fx.DrawType = def.DrawType;
         fx.BlendRate = def.BlendRate;
@@ -3354,7 +3354,7 @@ public partial class GameScene : Control
 
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
+        fx.Setup(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
         fx.Blend = true;
         fx.DrawType = imp.DrawType;
         fx.BlendRate = imp.BlendRate;
@@ -3417,7 +3417,7 @@ public partial class GameScene : Control
         int originX = proj.OriginFromTarget ? toX : fromX;
         int originY = proj.OriginFromTarget ? toY : fromY;
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
-            new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
+            new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeObjectScreenPos(cx, cy));
         pn.Blend = true;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
@@ -3448,7 +3448,7 @@ public partial class GameScene : Control
         AddChild(pn);
         pn.SetupProjectileTarget(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs,
             target, () => GetTargetRenderY(target), new System.Drawing.Point(fromX, fromY),
-            (cx, cy) => ComputeEffectScreenPos(cx, cy));
+            (cx, cy) => ComputeObjectScreenPos(cx, cy));
         pn.Blend = true;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
@@ -3496,7 +3496,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeEffectScreenPos(cellX, cellY));
+        fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
         fx.Blend = true;
         fx.FrameLight = 10;
         fx.FrameLightColour = new Color(1f, 0.62f, 0.25f);
@@ -6994,14 +6994,6 @@ public partial class GameScene : Control
         if (_mapView?.Map == null) return Vector2.Zero;
 
         return _mapView.CellToScreen(cellX, cellY, true);
-    }
-
-    // 旧端 MirEffect/MirProjectile 的 MapTarget 坐标：不使用对象基线，
-    // 对应 MapObject.cs 中的 PixelOffsetY + (MapTarget.Y + OffSetY)*CellHeight。
-    private Vector2 ComputeEffectScreenPos(int cellX, int cellY)
-    {
-        if (_mapView?.Map == null) return Vector2.Zero;
-        return _mapView.CellToScreen(cellX, cellY, false);
     }
 
     // F1~F12 -> Spell01~12, Shift+F1~F12 -> Spell13~24。
