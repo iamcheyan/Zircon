@@ -1419,6 +1419,12 @@ namespace Server.Models
 
             TradeClose();
 
+            if (NPC != null && !Functions.InRange(NPC.CurrentLocation, CurrentLocation, Config.NPCInteractionRange))
+            {
+                NPC = null;
+                NPCPage = null;
+            }
+
             if (CurrentCell == null) return;
 
             if (Companion != null)
@@ -10083,7 +10089,7 @@ namespace Server.Models
             foreach (NPCObject ob in CurrentMap.NPCs)
             {
                 if (ob.ObjectID != objectID) continue;
-                if (!Functions.InRange(ob.CurrentLocation, CurrentLocation, Config.MaxViewRange)) return;
+                if (!Functions.InRange(ob.CurrentLocation, CurrentLocation, Config.NPCInteractionRange)) return;
 
                 ob.NPCCall(this, ob.NPCInfo.EntryPage);
                 return;

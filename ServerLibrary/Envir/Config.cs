@@ -94,6 +94,10 @@ namespace Server.Envir
 
         [ConfigSection("Players")]
         public static int MaxViewRange { get; set; } = 18;
+        // Opening or continuing an NPC transaction requires the player to
+        // remain within normal interaction distance. Visibility alone is not
+        // sufficient for buying, repairing or quest operations.
+        public static int NPCInteractionRange { get; set; } = 2;
         public static TimeSpan ShoutDelay { get; set; } = TimeSpan.FromSeconds(10);
         public static TimeSpan GlobalDelay { get; set; } = TimeSpan.FromSeconds(60);
         public static int MaxLevel { get; set; } = 10;
@@ -133,7 +137,9 @@ namespace Server.Envir
         public static int MaxStrength { get; set; } = 5;
         public static int StrengthAddRate { get; set; } = 10;
         public static int StrengthLossRate { get; set; } = 20;
-        public static bool DropVisibleOtherPlayers { get; set; } = false;
+        // Test-world PvP drops are visible to other players, while the normal
+        // ownership/group/guild grace periods in ItemObject still apply.
+        public static bool DropVisibleOtherPlayers { get; set; } = true;
         public static bool EnableFortune { get; set; } = true;
         public static bool AdminStartInGamemasterMode { get; set; } = true;
         public static bool AdminStartInObserverMode { get; set; } = true;
