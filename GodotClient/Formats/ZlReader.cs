@@ -11,6 +11,11 @@ namespace ZirconClient.Formats;
 // 支持旧格式（version 0/1）与 ZL2 压缩容器（version 2, Deflate 压缩, 按 entry 索引）
 public sealed class ZlLibrary : IDisposable
 {
+    // 仅对明确需要颜色键的天气/诊断路径使用透明键。旧端的 MirEffect、
+    // 投射物和外观附加层调用 ImageType.Image，不能按“特效”名称统一抠除。
+    private const byte EffectTransparentKeyTolerance = 32;
+    private const byte WeatherTransparentKeyTolerance = 96;
+    private const byte FogTransparentKeyTolerance = 192;
     public int Version;
     public ZlImage[] Images;
     private readonly FileStream _stream;
@@ -18,6 +23,12 @@ public sealed class ZlLibrary : IDisposable
     public string FileName { get; }
 
     private readonly Dictionary<int, ImageTexture> _texCache = new();
+    private readonly Dictionary<int, ImageTexture> _effectTexCache = new();
+    private readonly Dictionary<int, ImageTexture> _weatherTexCache = new();
+    private readonly Dictionary<int, ImageTexture> _lightningTexCache = new();
+    private readonly Dictionary<int, ImageTexture> _fogTexCache = new();
+    private readonly Dictionary<int, ImageTexture> _shadowTexCache = new();
+    private readonly Dictionary<int, ImageTexture> _overlayTexCache = new();
 
     private readonly Dictionary<int, Zl2Entry> _zl2Entries = new();
     private bool _isZl2;
@@ -203,6 +214,26 @@ public sealed class ZlLibrary : IDisposable
         return GetPartTexture(index, ZlImagePart.Image);
     }
 
+    // 特效库沿用原客户端的黑色透明键。普通地图/角色贴图不能使用该
+    // 规则，因为它们可能合法地包含黑色细节。
+    public ImageTexture GetEffectTexture(int index)
+    {
+        return GetPartTexture(index, ZlImagePart.Image, true);
+    }
+
+    public ImageTexture GetWeatherTexture(int index)
+    {
+        // ProgUse 540 的雷电帧背景不是纯黑，而是压缩后较深的蓝黑色；
+        // 旧端透明键会把这块背景清掉，不能按雨雪的普通阈值处理。
+        return GetPartTexture(index, ZlImagePart.Image, true,
+            index == 540 ? (byte)180 : WeatherTransparentKeyTolerance);
+    }
+
+    public ImageTexture GetFogTexture(int index)
+    {
+        return GetPartTexture(index, ZlImagePart.Image, true, FogTransparentKeyTolerance);
+    }
+
     public ImageTexture GetShadowTexture(int index)
     {
         return GetPartTexture(index, ZlImagePart.Shadow);
@@ -213,12 +244,49 @@ public sealed class ZlLibrary : IDisposable
         return GetPartTexture(index, ZlImagePart.Overlay);
     }
 
-    private ImageTexture GetPartTexture(int index, ZlImagePart part)
+    /// <summary>
+    /// 释放审计产生的所有特殊透明纹理引用。正式渲染不调用此方法；
+    /// 审计逐帧读取大型图库时使用，避免把天气/特效缓存永久留在内存中。
+    /// </summary>
+    public void ClearAuditEffectTextureCache()
+    {
+        foreach (var tex in _effectTexCache.Values) tex?.Dispose();
+        foreach (var tex in _weatherTexCache.Values) tex?.Dispose();
+        foreach (var tex in _lightningTexCache.Values) tex?.Dispose();
+        foreach (var tex in _fogTexCache.Values) tex?.Dispose();
+        _effectTexCache.Clear();
+        _weatherTexCache.Clear();
+        _lightningTexCache.Clear();
+        _fogTexCache.Clear();
+    }
+
+    /// <summary>返回正式透明处理后的 RGBA8 数据，但不创建纹理对象。</summary>
+    public byte[] GetAuditImageData(int index, bool effectTransparency)
+    {
+        if (index < 0 || index >= Images.Length || Images[index] == null) return null;
+        var img = Images[index];
+        if (img.Width <= 0 || img.Height <= 0) return null;
+        return BuildRgbaData(GetPartData(index, ZlImagePart.Image), img.Width, img.Height,
+            effectTransparency, EffectTransparentKeyTolerance);
+    }
+
+    private ImageTexture GetPartTexture(int index, ZlImagePart part, bool effectTransparency = false,
+        byte transparentKeyTolerance = EffectTransparentKeyTolerance)
     {
         if (index < 0 || index >= Images.Length) return null;
         if (Images[index] == null) return null;
 
-        if (part == ZlImagePart.Image && _texCache.TryGetValue(index, out var cached)) return cached;
+        var cache = effectTransparency
+            ? transparentKeyTolerance == FogTransparentKeyTolerance ? _fogTexCache
+                : transparentKeyTolerance >= 180 ? _lightningTexCache
+                : transparentKeyTolerance == WeatherTransparentKeyTolerance ? _weatherTexCache : _effectTexCache
+            : part switch
+        {
+            ZlImagePart.Shadow => _shadowTexCache,
+            ZlImagePart.Overlay => _overlayTexCache,
+            _ => _texCache,
+        };
+        if (cache.TryGetValue(index, out var cached)) return cached;
 
         ZlImage img = Images[index];
         int width = part == ZlImagePart.Shadow ? img.ShadowWidth : part == ZlImagePart.Overlay ? img.OverlayWidth : img.Width;
@@ -227,22 +295,80 @@ public sealed class ZlLibrary : IDisposable
         byte[] bgra = GetPartData(index, part);
         if (bgra == null) return null;
 
-        int expected = width * height * 4;
-        if (bgra.Length < expected) return null;
-        // BGRA → RGBA (Godot 用 RGBA8)
-        byte[] rgba = new byte[bgra.Length];
-        for (int i = 0; i < bgra.Length; i += 4)
-        {
-            rgba[i] = bgra[i + 2];     // R <- B
-            rgba[i + 1] = bgra[i + 1]; // G
-            rgba[i + 2] = bgra[i];     // B <- R
-            rgba[i + 3] = bgra[i + 3]; // A
-        }
+        byte[] rgba = BuildRgbaData(bgra, width, height, effectTransparency, transparentKeyTolerance);
+        if (rgba == null) return null;
 
         var godotImage = Image.CreateFromData(width, height, false, Image.Format.Rgba8, rgba);
+        if (part == ZlImagePart.Shadow && godotImage.GetUsedRect().Size.X <= 0)
+        {
+            // 很多旧版 ZL 帧保留了 Shadow 尺寸，但 payload 是全透明占位数据。
+            // 必须缓存 null，让 ObjectRenderer 继续走原版 ShadowType/轮廓 fallback，
+            // 不能把这个空资源当成“已经绘制了影子”。
+            cache[index] = null;
+            return null;
+        }
         var texture = ImageTexture.CreateFromImage(godotImage);
-        if (part == ZlImagePart.Image) _texCache[index] = texture;
+        cache[index] = texture;
         return texture;
+    }
+
+    private static byte[] BuildRgbaData(byte[] bgra, int width, int height,
+        bool effectTransparency, byte transparentKeyTolerance)
+    {
+        int expected = width * height * 4;
+        if (bgra == null || bgra.Length < expected) return null;
+        if (effectTransparency)
+        {
+            int connectedTolerance = transparentKeyTolerance == FogTransparentKeyTolerance
+                ? 40 : transparentKeyTolerance >= 180 ? 72 : 72;
+            RemoveConnectedEffectBackground(bgra, width, height, connectedTolerance);
+        }
+        byte[] rgba = new byte[expected];
+        for (int i = 0; i < expected; i += 4)
+        {
+            if (effectTransparency && bgra[i + 3] != 0
+                && bgra[i] <= transparentKeyTolerance
+                && bgra[i + 1] <= transparentKeyTolerance
+                && bgra[i + 2] <= transparentKeyTolerance)
+                bgra[i + 3] = 0;
+            rgba[i] = bgra[i + 2];
+            rgba[i + 1] = bgra[i + 1];
+            rgba[i + 2] = bgra[i];
+            rgba[i + 3] = bgra[i + 3];
+        }
+        return rgba;
+    }
+
+    // 天气帧有些版本不是纯黑透明键，而是以压缩后的边缘颜色作为背景。
+    // 只从四角向内清除相近且连通的区域，避免把云/雷光主体误删。
+    private static void RemoveConnectedEffectBackground(byte[] bgra, int width, int height, int tolerance)
+    {
+        var visited = new bool[width * height];
+        var pending = new Queue<int>();
+        int[][] seeds = { new[] { 0, 0 }, new[] { width - 1, 0 }, new[] { 0, height - 1 }, new[] { width - 1, height - 1 } };
+
+        foreach (var seed in seeds)
+        {
+            int sx = seed[0], sy = seed[1], seedIndex = sy * width + sx;
+            int seedOffset = seedIndex * 4;
+            byte sb = bgra[seedOffset], sg = bgra[seedOffset + 1], sr = bgra[seedOffset + 2];
+            pending.Enqueue(seedIndex);
+            while (pending.Count > 0)
+            {
+                int current = pending.Dequeue();
+                if (visited[current]) continue;
+                int offset = current * 4;
+                int db = bgra[offset] - sb, dg = bgra[offset + 1] - sg, dr = bgra[offset + 2] - sr;
+                if (db * db + dg * dg + dr * dr > tolerance * tolerance) continue;
+                visited[current] = true;
+                bgra[offset + 3] = 0;
+                int x = current % width, y = current / width;
+                if (x > 0) pending.Enqueue(current - 1);
+                if (x + 1 < width) pending.Enqueue(current + 1);
+                if (y > 0) pending.Enqueue(current - width);
+                if (y + 1 < height) pending.Enqueue(current + width);
+            }
+        }
     }
 
     private byte[] GetPartData(int index, ZlImagePart part)
@@ -304,7 +430,25 @@ public sealed class ZlLibrary : IDisposable
     {
         foreach (var tex in _texCache.Values)
             tex?.Dispose();
+        foreach (var tex in _effectTexCache.Values)
+            tex?.Dispose();
+        foreach (var tex in _weatherTexCache.Values)
+            tex?.Dispose();
+        foreach (var tex in _lightningTexCache.Values)
+            tex?.Dispose();
+        foreach (var tex in _fogTexCache.Values)
+            tex?.Dispose();
+        foreach (var tex in _shadowTexCache.Values)
+            tex?.Dispose();
+        foreach (var tex in _overlayTexCache.Values)
+            tex?.Dispose();
         _texCache.Clear();
+        _effectTexCache.Clear();
+        _weatherTexCache.Clear();
+        _lightningTexCache.Clear();
+        _fogTexCache.Clear();
+        _shadowTexCache.Clear();
+        _overlayTexCache.Clear();
         _reader?.Dispose();
         _stream?.Dispose();
     }
@@ -352,6 +496,8 @@ public sealed class ZlImage
         };
 
         img.ImageCodec = version == 0 ? ZlImageCodec.Dxt1 : ZlImageCodec.Dxt5;
+        img.ShadowCodec = img.ImageCodec;
+        img.OverlayCodec = img.ImageCodec;
 
         if (version >= 2)
         {
@@ -382,9 +528,9 @@ public sealed class ZlImage
         {
             ZlImageCodec.Bgra32 => Width * Height * 4,
             ZlImageCodec.Png => 0, // PNG 大小不固定，需读到文件末尾或用 StoredImageDataSize
-            ZlImageCodec.Dxt1 => Math.Max(1, Width / 4) * Math.Max(1, Height / 4) * 8,
-            ZlImageCodec.Dxt5 => Math.Max(1, Width / 4) * Math.Max(1, Height / 4) * 16,
-            ZlImageCodec.Bc7 => Math.Max(1, Width / 4) * Math.Max(1, Height / 4) * 16,
+            ZlImageCodec.Dxt1 => ((Width + 3) / 4) * ((Height + 3) / 4) * 8,
+            ZlImageCodec.Dxt5 => ((Width + 3) / 4) * ((Height + 3) / 4) * 16,
+            ZlImageCodec.Bc7 => ((Width + 3) / 4) * ((Height + 3) / 4) * 16,
             _ => Width * Height * 4,
         };
     }
@@ -405,9 +551,9 @@ public sealed class ZlImage
         return codec switch
         {
             ZlImageCodec.Bgra32 => width * height * 4,
-            ZlImageCodec.Dxt1 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 8,
-            ZlImageCodec.Dxt5 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 16,
-            ZlImageCodec.Bc7 => Math.Max(1, width / 4) * Math.Max(1, height / 4) * 16,
+            ZlImageCodec.Dxt1 => ((width + 3) / 4) * ((height + 3) / 4) * 8,
+            ZlImageCodec.Dxt5 => ((width + 3) / 4) * ((height + 3) / 4) * 16,
+            ZlImageCodec.Bc7 => ((width + 3) / 4) * ((height + 3) / 4) * 16,
             _ => 0,
         };
     }
@@ -507,10 +653,7 @@ public static class ZlImageCodecUtil
 
     private static byte[] DecodeBCn(byte[] buffer, ZlImageCodec codec, short width, short height)
     {
-        // 用 BCnEncoder.NET 解码 DXT1/5/BC7
-        // 暂时返回空，等加 NuGet 包
-        // TODO: 加 BCnEncoder.NET 包
+        // 用 BCnEncoder.NET 解码 DXT1/5/BC7。
         return BcnDecoder.Decode(buffer, codec, width, height);
-        return Array.Empty<byte>();
     }
 }
