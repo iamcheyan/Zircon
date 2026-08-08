@@ -42,12 +42,20 @@ public partial class MapTestScene : Control
     private int _blendAuditParityHits;
     private ColorRect? _blendAuditBackdrop;
     private TextureRect? _blendAuditQuad;
+    private ColorRect? _blendAuditProbe;
     private int _auditFrames;
     private PlayerRenderer _auditPlayer;
     private int _actionIndex;
     private double _actionDeadline;
     private bool _actionAuditFinished;
     private int _mapTextureDiagnostics;
+    private bool _effectFreeAudit;
+    private int _effectFreeAuditStage;
+    private int _effectFreeAuditFrames;
+    private Node2D _effectFreeTarget;
+    private MirEffectNode _effectFreeFx;
+    private MirProjectileNode _effectFreeProjectile;
+    private Vector2 _effectFreeLastPosition;
     private MirProjectileNode _auditProjectile;
     private Vector2 _auditProjectileStart;
     private float _auditProjectileMaxTravel;
@@ -100,11 +108,11 @@ public partial class MapTestScene : Control
         _blendAudit = OS.GetCmdlineUserArgs().Contains("--blend-audit");
         bool networkAudit = OS.GetCmdlineUserArgs().Contains("--network-audit");
         bool cursorAudit = OS.GetCmdlineUserArgs().Contains("--cursor-audit");
+        _effectFreeAudit = OS.GetCmdlineUserArgs().Contains("--effect-target-free-audit");
         bool fullTextureAudit = OS.GetCmdlineUserArgs().Contains("--full-texture-audit");
         bool weatherTextureDump = OS.GetCmdlineUserArgs().Contains("--weather-texture-dump");
         bool progUseEffectDump = OS.GetCmdlineUserArgs().Contains("--proguse-effect-dump");
         bool sludgeDump = OS.GetCmdlineUserArgs().Contains("--green-sludge-dump");
-        bool magicTextureDump = OS.GetCmdlineUserArgs().Contains("--magic-texture-dump");
 
         // 与实际 GameScene 保持一致：地图、对象、特效都在逻辑 48x32
         // 坐标绘制，根世界统一放大 2 倍。否则审计截图只能验证 1x。
@@ -151,12 +159,12 @@ public partial class MapTestScene : Control
                 CallDeferred(nameof(RunAnomalyReplayAudit));
             }
             if (cursorAudit) CallDeferred(nameof(RunCursorAudit));
+            if (_effectFreeAudit) CallDeferred(nameof(BeginEffectTargetFreeAudit));
             if (fullTextureAudit) CallDeferred(nameof(RunTransparencyAudit));
             if (_blendAudit) CallDeferred(nameof(BeginBlendAudit));
             if (weatherTextureDump) CallDeferred(nameof(DumpWeatherTextures));
             if (progUseEffectDump) CallDeferred(nameof(DumpProgUseEffectTextures));
             if (sludgeDump) CallDeferred(nameof(DumpGreenSludgeTextures));
-            if (magicTextureDump) CallDeferred(nameof(DumpMagicTextures));
         }
         catch (Exception ex)
         {
@@ -221,21 +229,6 @@ public partial class MapTestScene : Control
             GD.Print($"[GreenSludgeDump] frame={frame} size={meta?.Width}x{meta?.Height} offset={meta?.OffSetX},{meta?.OffSetY}");
         }
         GD.Print($"[GreenSludgeDump] PASS resourceFrames={library.Images.Length} range=2780..2799");
-        GetTree().Quit();
-    }
-
-    private void DumpMagicTextures()
-    {
-        var library = LibraryCache.Get(LibraryFile.Magic);
-        if (library == null) return;
-        foreach (int frame in new[] { 420, 421, 422, 423, 424, 580, 581, 582, 1820, 1821 })
-        {
-            library.GetImageTexture(frame)?.GetImage()?.SavePng($"/tmp/zircon-magic-{frame}-ordinary.png");
-            library.GetEffectTexture(frame)?.GetImage()?.SavePng($"/tmp/zircon-magic-{frame}-keyed.png");
-            var meta = library.Images[frame];
-            GD.Print($"[MagicTextureDump] frame={frame} size={meta?.Width}x{meta?.Height} offset={meta?.OffSetX},{meta?.OffSetY}");
-        }
-        GD.Print("[MagicTextureDump] PASS path=/tmp/zircon-magic-<frame>-{ordinary,keyed}.png");
         GetTree().Quit();
     }
 
@@ -811,6 +804,7 @@ public partial class MapTestScene : Control
         ProcessWeatherRenderAudit();
         ProcessMapFamilyRenderAudit();
         ProcessBlendAudit();
+        ProcessEffectTargetFreeAudit();
         if (_actionAudit) ProcessActionAudit();
         if (_projectileAudit) ProcessProjectileAudit();
         if (!_renderAudit || ++_auditFrames != 3) return;
@@ -1371,6 +1365,77 @@ public partial class MapTestScene : Control
         }
     }
 
+    // 回归审计：目标节点在特效播放中被释放（S.ObjectRemove 后怪物节点
+    // QueueFree）不得触发 ObjectDisposedException。原版 MirEffect.Target 是
+    // 托管 MapObject，目标移除后效果冻结在最后 DrawX/DrawY 继续播完；
+    // Godot 侧必须用 IsInstanceValid 守卫并冻结最后位置（MirEffectNode 与
+    // MirProjectileNode 共用该语义）。
+    private void BeginEffectTargetFreeAudit()
+    {
+        _effectFreeTarget = new Node2D { Position = new Vector2(200, 300) };
+        AddChild(_effectFreeTarget);
+
+        // 300 帧 × 50ms = 15s：审计期间帧序列不会播完（自删），因此
+        // “目标释放后特效仍存活”证明的是冻结语义，而非自然完成。
+        _effectFreeFx = new MirEffectNode();
+        AddChild(_effectFreeFx);
+        _effectFreeFx.SetupTarget(LibraryFile.ProgUse, 100, 300, 50, _effectFreeTarget, null);
+        _effectFreeFx.Blend = true;
+
+        _effectFreeProjectile = new MirProjectileNode();
+        AddChild(_effectFreeProjectile);
+        _effectFreeProjectile.SetupProjectileTarget(LibraryFile.Magic, 420, 5, 50, _effectFreeTarget, null,
+            new System.Drawing.Point(0, 0), (x, y) => new Vector2(x * 48, y * 32));
+        _effectFreeProjectile.Explode = true;
+
+        GD.Print("[EffectTargetFreeAudit] START target=(200,300) fx+projectile anchored");
+        _effectFreeAuditStage = 0;
+        _effectFreeAuditFrames = 0;
+    }
+
+    private void ProcessEffectTargetFreeAudit()
+    {
+        if (!_effectFreeAudit) return;
+        switch (_effectFreeAuditStage)
+        {
+            case 0: // 锚定阶段：目标有效，特效每帧跟随
+                if (++_effectFreeAuditFrames < 3) return;
+                _effectFreeLastPosition = _effectFreeFx.Position;
+                GD.Print($"[EffectTargetFreeAudit] follow ok pos={_effectFreeFx.Position}");
+                _effectFreeAuditStage = 1;
+                _effectFreeAuditFrames = 0;
+                break;
+            case 1: // 立即释放目标（等价于已 QueueFree 的节点，访问即抛）
+                if (IsInstanceValid(_effectFreeTarget)) _effectFreeTarget.Free();
+                if (++_effectFreeAuditFrames < 3) return;
+                if (!IsInstanceValid(_effectFreeFx))
+                {
+                    GD.Print("[EffectTargetFreeAudit] FAIL effect freed unexpectedly");
+                    GetTree().Quit();
+                    return;
+                }
+                Vector2 now = _effectFreeFx.Position;
+                bool frozen = Math.Abs(now.X - _effectFreeLastPosition.X) < 0.01f &&
+                              Math.Abs(now.Y - _effectFreeLastPosition.Y) < 0.01f;
+                GD.Print(frozen
+                    ? $"[EffectTargetFreeAudit] PASS effect alive after target free, position frozen at {now}"
+                    : $"[EffectTargetFreeAudit] FAIL position drifted {_effectFreeLastPosition} -> {now}");
+                _effectFreeAuditStage = 2;
+                _effectFreeAuditFrames = 0;
+                break;
+            case 2: // 再跑几帧确认特效与飞行物都不再触碰已释放目标
+                if (++_effectFreeAuditFrames < 5) return;
+                bool projectileAlive = IsInstanceValid(_effectFreeProjectile);
+                GD.Print(projectileAlive
+                    ? "[EffectTargetFreeAudit] PASS projectile survived target free (grid fallback)"
+                    : "[EffectTargetFreeAudit] PASS projectile completed via grid fallback after target free");
+                GD.Print("[EffectTargetFreeAudit] PASS all (no ObjectDisposedException)");
+                _effectFreeAudit = false;
+                GetTree().Quit();
+                break;
+        }
+    }
+
     // 原版 Screen Blend（BlendMode.NORMAL）数学的确定性像素验证（真实 Vulkan 读回）：
     //   src.rgb = texel.rgb * texel.a * COLOR.rgb * COLOR.a
     //   src.a   = texel.a * COLOR.a
@@ -1401,6 +1466,55 @@ public partial class MapTestScene : Control
         (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.125f, 0.125f, 0.125f, 1f), new Color(0.25f, 0.25f, 0.25f, 1f), 1),
         // 灰度非 Blend：original out = l + dst*(1-a) = 0.25；current(旧 alpha<1 版) = 0.125（ONE/INV 假设）
         (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.125f, 0.125f, 0.125f, 1f), new Color(0.25f, 0.25f, 0.25f, 1f), 2),
+        // 诊断：emit 纯白 (alpha=1) → got = 混合因子（texel.a 或 1）；emit texel.rgb → got = texel.rgb×混合因子
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(1f, 1f, 1f, 1f),            new Color(1f, 1f, 1f, 1f), 3),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.25f, 0.25f, 0.25f, 1f),    new Color(0.25f, 0.25f, 0.25f, 1f), 4),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(1f, 1f, 1f, 1f),            new Color(1f, 1f, 1f, 1f), 3),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 4),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 5),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 5),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 6),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 6),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 7),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 7),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 8),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 8),
+        // kind 9-13: USES screen_texture → 强制 screen pass；emit 常量/l/a 测混合因子
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 9),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 10),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 11),
+        (new Color(0f, 1f, 0f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 12),
+        (new Color(1f, 0.5f, 0f, 0.5f),     Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 13),
+        // kind 14-17: 真正使用 destination（1.0 - destination.r）→ screen pass；
+        // 黑底 → output=1.0，got = 混合因子；绿底 → got.r=因子, got.g 揭示 dst 系数
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 14),
+        (new Color(0f, 1f, 0f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 14),
+        (new Color(1f, 0.5f, 0f, 0.5f),     Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 14),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 14),
+        // kind 15: dump destination.rgb；kind 16: dump texel.rgb*texel.a (预乘检测)
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 15),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 15),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 16),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 16),
+        // kind 17/18: screen pass 直接 dump texel.rgb / texel.a（dest 已采样）
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 17),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 17),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 18),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 18),
+        // kind 19/20: destination 参与输出（真实 screen pass）→ got = texel + dest*0.25，
+        // dest=(1,0,0) → texel.r = got.r − 0.25, texel.g = got.g, texel.a = got.g
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 19),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 19),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 20),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 20),
+        // kind 21/22: 真实 screen pass 中 COLOR 的 a / rgb（dest×0.25 保持 copy 生效；g/b 通道不受污染）
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 21),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 21),
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 22),
+        (new Color(1f, 1f, 1f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 22),
+        // kind 23/24: 直通 vs 预乘判别（红 a0.5：直通 1.0 → got.r≈1.25 截断 1.0，预乘 0.5 → 0.75）
+        (new Color(1f, 0f, 0f, 0.5f),       Colors.White,           new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 23),
+        (new Color(0.75f, 0.75f, 0.75f, 0.5f), Colors.White,        new Color(0.5f, 0.5f, 0.5f, 1f),      new Color(0.5f, 0.5f, 0.5f, 1f), 24),
     };
     // mix 语义探针（普通 TextureRect，无 screen blend 材质）：
     //   白 α0.5 纹理（预乘后 texel.rgb=0.5, a=0.5）：
@@ -1481,15 +1595,78 @@ public partial class MapTestScene : Control
             px[k + 3] = (byte)Mathf.RoundToInt(texel.A * 255f);
         }
         img.SetData(4, 4, false, Image.Format.Rgba8, px);
+        ShaderMaterial? mat = isProbe ? null
+            : kind == 0 ? LegacyBlendMaterial.Create()
+            : kind == 1 ? DXImageControl.CreateGrayMaterial(true)
+            : kind == 2 ? DXImageControl.CreateGrayMaterial(false)
+            : new ShaderMaterial
+            {
+                Shader = new Shader
+                {
+                    Code = kind == 3
+                        ? "shader_type canvas_item;\nvoid fragment() {\n    COLOR = vec4(1.0);\n}"
+                        : kind == 4
+                            ? "shader_type canvas_item;\nvoid fragment() {\n    COLOR = vec4(texture(TEXTURE, UV).rgb, 1.0);\n}"
+                            : kind == 5
+                                ? "shader_type canvas_item;\nvoid fragment() {\n    COLOR = vec4(vec3(texture(TEXTURE, UV).a), 1.0);\n}"
+                                : kind == 6
+                                    ? "shader_type canvas_item;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    float l = dot(texel.rgb, vec3(0.299, 0.587, 0.114));\n    COLOR = vec4(vec3(l), 1.0);\n}"
+                                    : kind == 7
+                                        ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    COLOR = vec4(texture(TEXTURE, UV).rgb, 1.0);\n}"
+                                        : kind == 8
+                                            ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    COLOR = vec4(vec3(texture(TEXTURE, UV).a), 1.0);\n}"
+                                            : kind == 9
+                                                ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    float l = dot(texel.rgb, vec3(0.299, 0.587, 0.114));\n    COLOR = vec4(vec3(l), 1.0);\n}"
+                                                : kind == 10
+                                                    ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(vec3(texel.a), 1.0);\n}"
+                                                    : kind == 11
+                                                        ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(1.0);\n}"
+                                                        : kind == 12
+                                                            ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(1.0);\n}"
+                                                            : kind == 13
+                                                                ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(1.0);\n}"
+                                                                : kind == 14
+                                                                    ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(vec3(1.0 - destination.r), 1.0);\n}"
+                                                                    : kind == 15
+                                                                        ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(destination.rgb, 1.0);\n}"
+                                                                        : kind == 16
+                                                                            ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb * texel.a, 1.0);\n}"
+                                                                            : kind == 17
+                                                                                ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb, 1.0);\n}"
+                                                                                : kind == 18
+                                                                                    ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(vec3(texel.a), 1.0);\n}"
+                                                                                    : kind == 19
+                                                                                        ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb + destination.rgb * 0.25, 1.0);\n}"
+                                                                                        : kind == 20
+                                                                                            ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(vec3(texel.a) + destination.rgb * 0.25, 1.0);\n}"
+                                                                                            : kind == 21
+                                                                                                ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(vec3(COLOR.a) + destination.rgb * 0.25, 1.0);\n}"
+                                                                                                : kind == 22
+                                                                                                    ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(COLOR.rgb + destination.rgb * 0.25, 1.0);\n}"
+                                                                                                    : kind == 23
+                                                                                                        ? "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb + destination.rgb * 0.25, 1.0);\n}"
+                                                                                                        : "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb + destination.rgb * 0.25, 1.0);\n}",
+                },
+            };
+        if (!isProbe)
+            GD.Print($"[BlendAudit] case={i} kind={kind} shader={(mat?.Shader as Shader)?.Code?.Replace("\n", " | ")}");
+        if (!isProbe)
+        {
+            // 判定 screen_texture 内容：红探针垫在 quad 下方 (ZIndex 200)，
+            // 若 copy 包含探针则 kind15 的 destination 应为红。
+            _blendAuditProbe = new ColorRect
+            {
+                Color = new Color(1f, 0f, 0f, 1f),
+                Position = center,
+                Size = new Vector2(80, 80),
+                ZIndex = 200,
+            };
+            AddChild(_blendAuditProbe);
+        }
         _blendAuditQuad = new TextureRect
         {
             Texture = ImageTexture.CreateFromImage(img),
-            // 探针（probeIndex==0）不加 blend 材质，测 Godot 普通 mix 语义；
-            // 其余按 Kind 选材质：0 = LegacyScreenBlend, 1 = 灰度 Blend, 2 = 灰度非 Blend
-            Material = isProbe ? null
-                : kind == 0 ? LegacyBlendMaterial.Create()
-                : kind == 1 ? DXImageControl.CreateGrayMaterial(true)
-                : DXImageControl.CreateGrayMaterial(false),
+            Material = mat,
             Modulate = modulate,
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
