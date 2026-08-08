@@ -293,7 +293,7 @@ public sealed class BotAgent
         }
         if (World.Dead)
         {
-            if (now >= _nextAttack) { _connection.Enqueue(new C.TownRevive()); _nextAttack = now.AddSeconds(15); }
+            if (now >= _nextAttack) { _connection.Enqueue(new C.TownRevive()); _nextAttack = now.AddSeconds(5); }
             return;
         }
 
@@ -355,7 +355,7 @@ public sealed class BotAgent
                 {
                     Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
                 });
-                _nextPotion = now.AddSeconds(5);
+                _nextPotion = now.AddSeconds(1.0 + _random.NextDouble() * 1.5);
             }
         }
 
@@ -367,7 +367,7 @@ public sealed class BotAgent
 
         if (now >= _nextProfessionAction && TryProfessionPreparation(now))
         {
-            _nextProfessionAction = now.AddSeconds(8 + _random.NextDouble() * 8);
+            _nextProfessionAction = now.AddSeconds(12 + _random.NextDouble() * 8);
             goto AfterMovement;
         }
 
@@ -407,7 +407,7 @@ public sealed class BotAgent
                 if (distance <= 2)
                 {
                     _connection.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
-                    _nextRepairAction = now.AddSeconds(45);
+                    _nextRepairAction = now.AddSeconds(8);
                 }
                 else if (now >= _nextMove)
                 {
@@ -431,7 +431,7 @@ public sealed class BotAgent
                 if (distance <= 2)
                 {
                     _connection.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
-                    _nextQuestAction = now.AddSeconds(60);
+                    _nextQuestAction = now.AddSeconds(10);
                 }
                 else if (!npcPriorityMove && now >= _nextMove)
                 {
@@ -479,11 +479,17 @@ public sealed class BotAgent
                     _attackActions++;
                 }
                 _combatActions++;
-                _nextAttack = now.AddSeconds(1.2 + _random.NextDouble() * 1.8);
-                if (_combatActions % 3 == 0 && now >= _nextMove)
+                // 物理职业按武器节奏连击(0.9~1.3s, 服务端 AttackTime 下限 800ms);
+                // 法师/道士施法受 MagicDelay=2000ms 节流, 2.2~3.2s 一次。
+                bool casting = World.Class is MirClass.Wizard or MirClass.Taoist;
+                _nextAttack = now.AddSeconds(casting
+                    ? 2.2 + _random.NextDouble()
+                    : 0.9 + _random.NextDouble() * 0.4);
+                // 真人连击会绕目标走位再打, 不是机械每 3 刀就巡逻走开。
+                if (_combatActions >= 3 && _random.NextDouble() < 0.25 && now >= _nextMove)
                 {
-                    _patrolTarget = Point.Empty;
-                    Patrol(now);
+                    _combatActions = 0;
+                    MoveToward(FlankPoint(target.Location), 1, now);
                     goto AfterMovement;
                 }
             }
@@ -501,14 +507,14 @@ public sealed class BotAgent
             if (corpse != null && now >= _nextHarvest)
             {
                 _connection.Enqueue(new C.Harvest { Direction = DirectionTo(World.Location, corpse.Location) });
-                _nextHarvest = now.AddSeconds(2 + _random.NextDouble() * 2);
+                _nextHarvest = now.AddSeconds(0.3 + _random.NextDouble() * 0.5);
                 goto AfterMovement;
             }
 
             var leader = World.GroupMembers.Contains("Bot01")
                 ? World.Players.Values.FirstOrDefault(x => x.Name.Equals("Bot01", StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (leader != null && Distance(World.Location, leader.Location) > 4)
+            if (leader != null && Distance(World.Location, leader.Location) > 3)
             {
                 MoveToward(leader.Location, 1, now);
                 goto AfterMovement;
@@ -549,7 +555,7 @@ public sealed class BotAgent
         if (now >= _nextChat)
         {
             _connection.Enqueue(new C.Chat { Text = $"{_config.ChatPrefix}，我叫{Name}。" });
-            _nextChat = now.AddSeconds(Math.Max(60, _config.ChatIntervalSeconds) + _random.NextDouble() * 60);
+            _nextChat = now.AddSeconds(Math.Max(30, _config.ChatIntervalSeconds) + _random.NextDouble() * 45);
         }
 
         var item = World.Items.Values.OrderBy(x => Distance(World.Location, x.Location)).FirstOrDefault(x => Distance(World.Location, x.Location) <= 1);
@@ -654,8 +660,15 @@ public sealed class BotAgent
             _attackActions++;
         }
         _pvpActions++;
-        _nextPvpAction = now.AddSeconds(1.2 + _random.NextDouble() * 1.8);
-        if (_pvpActions % 3 == 0) { _nextMove = now; Patrol(now); }
+        bool casting = World.Class is MirClass.Wizard or MirClass.Taoist;
+        _nextPvpAction = now.AddSeconds(casting
+            ? 2.2 + _random.NextDouble()
+            : 0.9 + _random.NextDouble() * 0.4);
+        if (_pvpActions >= 3 && _random.NextDouble() < 0.25)
+        {
+            _pvpActions = 0;
+            if (now >= _nextMove) { _nextMove = now; MoveToward(FlankPoint(target.Location), 1, now); }
+        }
         return true;
     }
 
@@ -706,13 +719,34 @@ public sealed class BotAgent
 
     private void MoveToward(Point location, int distance, DateTime now)
     {
+        int remaining = Distance(World.Location, location);
+        if (remaining <= 1) return; // 已在目标旁, 不空走一格
+
         var direction = ChooseWalkDirection(location);
+        // 目标较远且前方两格都可行走时跑步(distance=2), 否则步行。
+        // 服务器对每步逐格做阻挡校验, 两格可达性验证避免跑步撞墙触发
+        // UserLocation 纠正的闪动。
+        bool run = remaining > 4 && CanWalkTwo(World.Location, direction);
+        int step = run ? 2 : 1;
+        if (step >= remaining) step = 1; // 一步不越过目标点
+
         _connection.Enqueue(new C.Turn { Direction = direction });
-        // 服务器地图可能存在阻挡格，短步移动比一次跨两格更容易得到
-        // 权威位置更新，也不会在目标点附近来回越过目标。
-        _connection.Enqueue(new C.Move { Direction = direction, Distance = Math.Min(1, distance) });
+        _connection.Enqueue(new C.Move { Direction = direction, Distance = step });
         _moveActions++;
-        _nextMove = now.AddSeconds(Math.Max(1.0, _config.MoveIntervalSeconds * 0.35) + _random.NextDouble());
+        // 真人步频带自然抖动, 不是节拍器: 走 0.65~0.8s/格, 跑 0.6~0.75s/2格。
+        // 服务端 MoveTime=600ms 是硬下限, 此区间不会触发排队或纠正。
+        double interval = (run ? _config.RunIntervalSeconds : _config.WalkIntervalSeconds)
+            + _random.NextDouble() * 0.15;
+        _nextMove = now.AddSeconds(interval);
+    }
+
+    private bool CanWalkTwo(Point from, MirDirection direction)
+    {
+        var map = CurrentMap();
+        if (map == null) return false;
+        var first = NextPoint(from, direction);
+        if (!map.CanWalk(first)) return false;
+        return map.CanWalk(NextPoint(first, direction));
     }
 
     private MirDirection ChooseWalkDirection(Point target)
@@ -766,11 +800,31 @@ public sealed class BotAgent
 
     private void Patrol(DateTime now)
     {
+        // 真人闲逛会偶发驻足(看路/犹豫), 让节奏不像精确节拍器。
+        if (_random.NextDouble() < 0.08)
+        {
+            _nextMove = now.AddSeconds(0.4 + _random.NextDouble() * 0.9);
+            return;
+        }
         if (_patrolTarget == Point.Empty || Distance(World.Location, _patrolTarget) <= 1)
         {
             _patrolTarget = ChoosePatrolPoint();
         }
         MoveToward(_patrolTarget, 1, now);
+    }
+
+    private Point FlankPoint(Point center)
+    {
+        // 战斗走位: 绕目标横向 1~2 格取可行走点, 造成"边走边打",
+        // 而不是机械地每 N 刀巡逻去远处。
+        int side = _random.Next(2) == 0 ? -1 : 1;
+        var map = CurrentMap();
+        for (int i = 0; i < 6; i++)
+        {
+            var p = new Point(center.X + side * (1 + _random.Next(2)), center.Y + _random.Next(-2, 3));
+            if (map == null || map.CanWalk(p)) return p;
+        }
+        return center;
     }
 
     private Point ChoosePatrolPoint()
@@ -799,8 +853,8 @@ public sealed class BotAgent
                     Type = shield.Info.Magic, Target = World.SelfObjectId, Location = World.Location });
                 _magicActions++;
                 Console.WriteLine($"[{Name}] skill: maintain {shield.Info.Magic}");
-                _nextMove = now;
-                Patrol(now);
+                // 真人护盾是持续时间型, 按护盾时长节奏补, 补完继续做自己的事,
+                // 不会被强制"补盾→立刻挪步"。
                 return true;
             }
         }
@@ -816,8 +870,6 @@ public sealed class BotAgent
                     Type = summon.Info.Magic, Target = 0, Location = World.Location });
                 _magicActions++;
                 Console.WriteLine($"[{Name}] skill: summon {summon.Info.Magic}");
-                _nextMove = now;
-                Patrol(now);
                 return true;
             }
         }
@@ -864,31 +916,31 @@ public sealed class BotAgent
     private void ScheduleNextActions()
     {
         var now = DateTime.UtcNow;
-        _nextMove = now.AddSeconds(2 + _random.NextDouble() * 4);
-        _nextAttack = now.AddSeconds(3 + _random.NextDouble() * 4);
-        _nextChat = now.AddSeconds(10 + _random.NextDouble() * 20);
-        _nextPotion = now.AddSeconds(3);
+        _nextMove = now.AddSeconds(0.5 + _random.NextDouble());
+        _nextAttack = now.AddSeconds(1 + _random.NextDouble());
+        _nextChat = now.AddSeconds(8 + _random.NextDouble() * 12);
+        _nextPotion = now.AddSeconds(2 + _random.NextDouble());
         _patrolTarget = Point.Empty;
         _targetMonsterId = 0;
         _nextGroupAction = now.AddSeconds(8);
         _nextTorchAction = now.AddSeconds(4);
-        _nextRepairAction = now.AddSeconds(20);
-        _nextQuestAction = now.AddSeconds(30);
-        _nextHarvest = now.AddSeconds(4 + _random.NextDouble() * 4);
-        _nextInventorySort = now.AddSeconds(45 + _random.NextDouble() * 30);
-        _nextSupport = now.AddSeconds(5 + _random.NextDouble() * 5);
-        _nextSupplyAction = now.AddSeconds(55 + _random.NextDouble() * 35);
-        _nextSellAction = now.AddSeconds(95 + _random.NextDouble() * 45);
+        _nextRepairAction = now.AddSeconds(15);
+        _nextQuestAction = now.AddSeconds(20);
+        _nextHarvest = now.AddSeconds(2 + _random.NextDouble() * 2);
+        _nextInventorySort = now.AddSeconds(40 + _random.NextDouble() * 20);
+        _nextSupport = now.AddSeconds(4 + _random.NextDouble() * 4);
+        _nextSupplyAction = now.AddSeconds(40 + _random.NextDouble() * 20);
+        _nextSellAction = now.AddSeconds(60 + _random.NextDouble() * 30);
         _supplyPurchasePending = false;
         _shopPurchases = 0;
         _shopSales = 0;
-        _nextResourceAction = now.AddSeconds(30 + _random.NextDouble() * 30);
+        _nextResourceAction = now.AddSeconds(20 + _random.NextDouble() * 20);
         _resourceTripEnd = DateTime.MinValue;
         _resourcePathToMine = false;
         _resourcePathHome = false;
         _resourceSwapPending = false;
         _groupInviteAttempted = false;
-        _nextTradeAction = now.AddSeconds(20 + _random.NextDouble() * 20);
+        _nextTradeAction = now.AddSeconds(15 + _random.NextDouble() * 15);
         _tradeRequestSent = false;
         _tradeActive = false;
         _tradePathRequested = false;
@@ -896,14 +948,14 @@ public sealed class BotAgent
         _tradeFacingPrimed = false;
         _nextGuildAction = now.AddSeconds(15 + _random.NextDouble() * 20);
         _starterGuildAttempted = false;
-        _nextMountAction = now.AddSeconds(30 + _random.NextDouble() * 30);
+        _nextMountAction = now.AddSeconds(25 + _random.NextDouble() * 20);
         _mountStarted = DateTime.MinValue;
         _nextContainerAction = now.AddSeconds(45 + _random.NextDouble() * 30);
         _containerSlot = -1;
-        _nextFishingAction = now.AddSeconds(60 + _random.NextDouble() * 60);
+        _nextFishingAction = now.AddSeconds(40 + _random.NextDouble() * 30);
         _fishingActive = false;
         _fishingPoint = Point.Empty;
-        _nextInstanceAction = now.AddSeconds(90 + _random.NextDouble() * 60);
+        _nextInstanceAction = now.AddSeconds(60 + _random.NextDouble() * 40);
         _nextPvpAction = now.AddSeconds(Math.Max(5, _config.PvPStartDelaySeconds) + _random.NextDouble() * 15);
         _pvpRoundEnd = DateTime.MinValue;
         _pvpStagingPoint = Point.Empty;
@@ -996,7 +1048,7 @@ public sealed class BotAgent
             CaughtFish = false
         });
         _fishingActive = true;
-        _nextFishingAction = now.AddSeconds(30);
+        _nextFishingAction = now.AddSeconds(20);
         Console.WriteLine($"[{Name}] life: cast fishing at {_fishingPoint}");
         return true;
     }
@@ -1020,7 +1072,7 @@ public sealed class BotAgent
                 FloatLocation = packet.FloatLocation,
                 CaughtFish = true
             });
-            _nextFishingAction = DateTime.UtcNow.AddSeconds(15 + _random.NextDouble() * 20);
+            _nextFishingAction = DateTime.UtcNow.AddSeconds(1.5 + _random.NextDouble() * 2);
         }
     }
 
@@ -1243,7 +1295,7 @@ public sealed class BotAgent
             if (now < _resourceTripEnd)
             {
                 _connection.Enqueue(new C.Mining { Direction = (MirDirection)_random.Next(8) });
-                _nextResourceAction = now.AddSeconds(3 + _random.NextDouble() * 3);
+                _nextResourceAction = now.AddSeconds(1.1 + _random.NextDouble() * 0.7);
                 return true;
             }
 

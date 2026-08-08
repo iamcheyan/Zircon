@@ -7,7 +7,10 @@ public sealed class BotConfig
     public string Host { get; set; } = "127.0.0.1";
     public int Port { get; set; } = 7000;
     public int TickMilliseconds { get; set; } = 250;
-    public int MoveIntervalSeconds { get; set; } = 5;
+    // 真人步频。服务端 Globals.MoveTime=600ms 是每步硬下限, 250ms 决策
+    // tick 会把实际步间隔量化到 ~750ms; 0.65s/格步行、0.6s/2格跑步。
+    public double WalkIntervalSeconds { get; set; } = 0.65;
+    public double RunIntervalSeconds { get; set; } = 0.6;
     public int PatrolRadius { get; set; } = 12;
     public bool VerboseNetworkLogging { get; set; } = false;
     public bool EnableBotPvP { get; set; } = true;
