@@ -10,6 +10,7 @@ using G = Library.Network.GeneralPackets;
 using S = Library.Network.ServerPackets;
 using C = Library.Network.ClientPackets;
 using ZirconClient.Controls;
+using ZirconClient.Formats;
 
 namespace ZirconClient.Scripts;
 
@@ -17,15 +18,10 @@ public partial class GameScene : Control
 {
     private const float UiScale = 2f;
     private const float WorldScale = 2f;
-    // 仅用于当前 Godot 客户端测试：主要城镇每次进入时随机天气，便于验证四类粒子。
-    private const bool TownWeatherTestMode = true;
-    private static readonly HashSet<string> TownWeatherTestMaps = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "0", "1", "2", "3", "4"
-    };
-
+    private const string UiAuditArgument = "--ui-layout-audit";
     public float DayTime { get; private set; } = 1f;
     public TimeOfDay TimeOfDay { get; private set; } = TimeOfDay.Day;
+    public bool DrawWeather { get; private set; } = true;
 
     private Network.NetworkManager _net;
     private MapView _mapView;
@@ -35,8 +31,14 @@ public partial class GameScene : Control
     public IReadOnlyDictionary<int, string> CastleOwners => _castleOwners;
     public DateTime? GetCastleWarDate(int index) => _castleWarDates.TryGetValue(index, out var date) ? date : null;
     private Label _statusLabel;
+    private Label _debugLabel;
     private PlayerRenderer _player;
     private readonly Dictionary<SoundIndex, AudioStream> _actionSounds = new();
+    private readonly Dictionary<SoundIndex, AudioStreamPlayer> _loopingSounds = new();
+    private readonly Dictionary<uint, SoundIndex> _durationSoundByObject = new();
+    private SoundIndex _mapMusic = SoundIndex.None;
+    private bool _leavingGame;
+    private List<SelectInfo> _pendingLogoutCharacters;
     private CombatController _combatController;
     private MapLightLayer _lightLayer;
     private MapWeatherLayer _weatherLayer;
@@ -98,6 +100,7 @@ public partial class GameScene : Control
     private decimal _playerExperience, _playerMaxExperience;
     private int _currentHP, _currentMP, _currentFP;
     private AttackMode _attackMode;
+    private MagicType _attackMagic;
     private PetMode _petMode;
 
     // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
@@ -109,6 +112,8 @@ public partial class GameScene : Control
     public void SetQuestTrackerVisible(bool visible)
     {
         QuestTrackerVisible = visible;
+        ClientSettings.QuestTrackerVisible = visible;
+        ClientSettings.Save();
         if (_questTracker == null) return;
         _questTracker.TrackingEnabled = visible;
         if (visible) _questTracker.PopulateQuests(_userQuests.Values);
@@ -225,6 +230,18 @@ public partial class GameScene : Control
 
     public void LeaveGame()
     {
+        if (_leavingGame) return;
+        _leavingGame = true;
+        // 原版这里仅发送 C.Logout，等待服务端返回 S.GameLogout 后再切回角色选择。
+        // 连接必须保留在 Select 阶段，否则角色列表回包会在客户端切场景前丢失。
+        _net?.Connection?.SendLogout();
+        WindowManager.Close(_exitDialog);
+    }
+
+    public void ExitClient()
+    {
+        // “退出客户端”和“返回角色选择”是两个不同的原版操作：前者关闭进程，
+        // 后者等待 GameLogout 回包并复用当前登录连接。
         _net?.Connection?.SendLogout();
         _net?.Disconnect();
         GetTree().Quit();
@@ -260,7 +277,10 @@ public partial class GameScene : Control
         => _net?.Connection?.SendGameStoreGift(index, count, useHuntGold, recipient);
     public void SendGameStoreFavourite(int index)
         => _net?.Connection?.SendGameStoreFavourite(index);
-    public void ReceiveChat(string text, MessageType type = MessageType.System) => _chatLog?.AddMessage(text, type, Colors.Yellow);
+    public void ReceiveChat(string text, MessageType type = MessageType.System, List<ClientUserItem> linkedItems = null)
+        => _chatLog?.AddMessage(text, type, Colors.Yellow, linkedItems);
+
+    public void StartPrivateMessage(string name) => _chatTextBox?.StartPM(name);
 
     public void OpenExitDialog()
     {
@@ -276,6 +296,22 @@ public partial class GameScene : Control
     public void OpenConfigDialog()
     {
         if (_configDialog != null) WindowManager.Open(_configDialog, _uiLayer);
+    }
+
+    public void SetDrawWeather(bool enabled)
+    {
+        DrawWeather = enabled;
+        ClientSettings.DrawWeather = enabled;
+        ClientSettings.Save();
+        _weatherLayer?.SetEnabled(enabled);
+    }
+
+    public void SetHideChatBar(bool hidden)
+    {
+        ClientSettings.HideChatBar = hidden;
+        ClientSettings.Save();
+        if (_chatLog != null) _chatLog.Visible = !hidden;
+        if (_chatTextBox != null) _chatTextBox.Visible = !hidden;
     }
 
     public void OpenChatOptionsDialog()
@@ -301,6 +337,8 @@ public partial class GameScene : Control
     public void OpenGuildDialog() { if (_guildDialog != null) WindowManager.Open(_guildDialog, _uiLayer); }
     public bool HasGuild => _guildDialog?.HasGuild == true;
     public long GuildFunds => _guildDialog?.GuildFunds ?? 0;
+    public int GuildFlag => _guildDialog?.GuildFlag ?? -1;
+    public System.Drawing.Color GuildColour => _guildDialog?.GuildColour ?? System.Drawing.Color.White;
     public IEnumerable<DXItemCell> GuildStorageCells => _guildDialog?.GuildStorageCells ?? Array.Empty<DXItemCell>();
     public void OpenGuildMemberDialog(int index, string name, string rank, GuildPermission permission)
     {
@@ -309,12 +347,18 @@ public partial class GameScene : Control
         WindowManager.Open(_guildMemberDialog, _uiLayer);
     }
     public void OpenRankingDialog() { if (_rankingDialog != null) { WindowManager.Open(_rankingDialog, _uiLayer); RequestRankings(0, false); } }
-    public void RequestRankings(int startIndex, bool onlineOnly)
-        => _net?.Connection?.Enqueue(new C.RankRequest { Class = RequiredClass.None, OnlineOnly = onlineOnly, StartIndex = startIndex });
+    public void RequestRankings(int startIndex, bool onlineOnly, RequiredClass classFilter = RequiredClass.None)
+        => _net?.Connection?.Enqueue(new C.RankRequest { Class = classFilter, OnlineOnly = onlineOnly, StartIndex = startIndex });
     public void SendQuestAccept(int index)
-        => _net?.Connection?.Enqueue(new C.QuestAccept { Index = index });
+    {
+        PlaySound(SoundIndex.QuestTake);
+        _net?.Connection?.Enqueue(new C.QuestAccept { Index = index });
+    }
     public void SendQuestComplete(int index, int choiceIndex = 0)
-        => _net?.Connection?.Enqueue(new C.QuestComplete { Index = index, ChoiceIndex = choiceIndex });
+    {
+        PlaySound(SoundIndex.QuestComplete);
+        _net?.Connection?.Enqueue(new C.QuestComplete { Index = index, ChoiceIndex = choiceIndex });
+    }
     public void SendQuestTrack(int index, bool track)
         => _net?.Connection?.Enqueue(new C.QuestTrack { Index = index, Track = track });
     public void SendQuestAbandon(int index)
@@ -337,12 +381,35 @@ public partial class GameScene : Control
     public void SendObservable(bool allow) => _net?.Connection?.SendObservable(allow);
     public void SendTownRevive() => _net?.Connection?.SendTownRevive();
     private ClientUserCurrency _selectedCurrency;
-    public void SelectCurrency(ClientUserCurrency currency) => _selectedCurrency = currency?.Info?.DropItem != null && currency.Amount > 0 ? currency : null;
+    /// <summary>原版 GameScene.CurrencyPickedUp：选中货币后，物品格点击只能继续处理丢弃数量。</summary>
+    public bool CurrencyPickedUp => _selectedCurrency != null;
+    public void SelectCurrency(ClientUserCurrency currency)
+    {
+        // 原版 InventoryDialog：拿起任意货币后再次点击货币标签只取消，
+        // 不会在一次操作中把选中货币偷偷切换到另一种；拿起物品时货币标签
+        // 也不抢占 SelectedCell。CanPickup 同时校验 DropItem.CanDrop。
+        if (DXItemCell.SelectedCell != null) return;
+        if (_selectedCurrency != null)
+        {
+            _selectedCurrency = null;
+            return;
+        }
+        if (currency?.CanPickup == true && currency.Amount > 0)
+            _selectedCurrency = currency;
+    }
+
+    public void ToggleCurrencyWindow()
+    {
+        WindowManager.Toggle(_currencyDialog, _uiLayer);
+        _currencyDialog?.RefreshCurrencies(Currencies);
+    }
     public void SendObserverRequest(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) return;
         _net?.Connection?.Enqueue(new C.ObserverRequest { Name = name.Trim() });
     }
+    public void SendRankingInspect(int index)
+        => _net?.Connection?.Enqueue(new C.Inspect { Index = index, Ranking = true });
     public void OpenCompanionDialog() { if (_companionDialog != null) WindowManager.Open(_companionDialog, _uiLayer); }
     public void OpenNPCCompanionStorage()
     {
@@ -356,6 +423,47 @@ public partial class GameScene : Control
     }
     public bool TryRouteItemToNpc(DXItemCell source)
         => TryRouteItemToSocket(source) || _npcDialog?.TryRouteItem(source) == true;
+
+    public bool TrySelectItemForNpcSale(DXItemCell source)
+        => _npcDialog?.TrySelectItemForSale(source) == true;
+
+    public void ShowInventoryForNpcSale()
+    {
+        if (_inventoryDialog != null)
+            _inventoryDialog.Visible = true;
+    }
+
+    public bool CanRouteAdvancedItem(DXItemCell source, DXItemCell target)
+        => _npcDialog?.CanAcceptAdvancedLink(source, target) ?? true;
+
+    public bool CanRouteRepairItem(DXItemCell source)
+        => _npcDialog?.CanAcceptRepairLink(source) ?? true;
+
+    /// <summary>原版 CompanionBox 可见时，背包右键把物品投放到伙伴背包。</summary>
+    public bool TryRouteItemToCompanion(DXItemCell source)
+    {
+        if (_companionDialog?.BagVisible != true || source?.GridType != GridType.Inventory || source.Item == null)
+            return false;
+        return _companionDialog.InventoryGrid != null && source.MoveItem(_companionDialog.InventoryGrid);
+    }
+
+    public void UnlockItemLink(CellLinkInfo link)
+    {
+        if (link == null) return;
+        var cells = link.GridType switch
+        {
+            GridType.Inventory => InventoryCells,
+            GridType.Equipment => EquipmentCells,
+            GridType.Storage => StorageCells,
+            GridType.PartsStorage => PartsStorageCells,
+            GridType.GuildStorage => GuildStorageItemCells,
+            GridType.CompanionInventory => CompanionInventoryCells,
+            GridType.CompanionEquipment => CompanionEquipmentCells,
+            _ => Array.Empty<DXItemCell>(),
+        };
+        if (link.Slot < 0 || link.Slot >= cells.Length) return;
+        cells[link.Slot].UnlockForTrade();
+    }
 
     public bool TryRouteItemToSocket(DXItemCell source)
     {
@@ -381,12 +489,15 @@ public partial class GameScene : Control
 
     public void CloseNPCSocketDialogs()
     {
+        _npcSocketDialog?.Panel.Reset();
+        _npcSocketCombineDialog?.Panel.Reset();
         if (_npcSocketDialog != null) WindowManager.Close(_npcSocketDialog);
         if (_npcSocketCombineDialog != null) WindowManager.Close(_npcSocketCombineDialog);
     }
 
     public void CloseNPCDialog()
     {
+        _npcDialog?.CancelUnsubmittedLinks();
         CloseNPCSocketDialogs();
         if (_npcQuestListDialog != null) WindowManager.Close(_npcQuestListDialog);
         if (_npcQuestDialog != null) WindowManager.Close(_npcQuestDialog);
@@ -418,9 +529,22 @@ public partial class GameScene : Control
     public bool LootBoxVisible => _lootBoxDialog?.Visible == true;
     public bool TryRouteItemToTradeOrConsign(DXItemCell source)
     {
-        if (_tradeDialog?.Visible == true && _tradeDialog.TryRouteItem(source)) return true;
         if (_consignmentDialog?.Visible == true && _consignmentDialog.TryRouteItem(source)) return true;
         if (_communicationDialog?.Visible == true && _communicationDialog.TryRouteItem(source)) return true;
+        // 原版 DXItemCell.OnMouseClick 的背包分支先尝试仓库，
+        // 再尝试交易/行会仓库；多个窗口同时可见时不能让交易抢走仓库存取。
+        if (source?.Item != null && source.GridType == GridType.Inventory &&
+            _storageDialog?.Visible == true)
+        {
+            if (source.Item.Info?.ItemEffect == ItemEffect.ItemPart)
+            {
+                if (_storageDialog.PartGrid?.Visible == true && source.MoveItem(_storageDialog.PartGrid))
+                    return true;
+            }
+            else if (_storageDialog.Grid?.Visible == true && source.MoveItem(_storageDialog.Grid))
+                return true;
+        }
+        if (_tradeDialog?.Visible == true && _tradeDialog.TryRouteItem(source)) return true;
         if (_guildDialog?.Visible == true && _guildDialog.TryRouteItem(source)) return true;
         return false;
     }
@@ -467,7 +591,10 @@ public partial class GameScene : Control
     public DXItemCell[] InventoryCells = Array.Empty<DXItemCell>();
     public DXItemCell[] EquipmentCells = Array.Empty<DXItemCell>();
     public DXItemCell[] CompanionEquipmentCells = Array.Empty<DXItemCell>();
+    public DXItemCell[] CompanionInventoryCells => _companionDialog?.InventoryGrid?.Cells ?? Array.Empty<DXItemCell>();
+    public DXItemCell[] GuildStorageItemCells => _guildDialog?.GuildStorageCells ?? Array.Empty<DXItemCell>();
     public DXItemCell[] StorageCells => _storageDialog?.StorageCells ?? Array.Empty<DXItemCell>();
+    public DXItemCell[] PartsStorageCells => _storageDialog?.PartGrid?.Cells ?? Array.Empty<DXItemCell>();
 
     // 物品交互状态
     public double UseItemTime;          // 服务端 S.ItemUseDelay 给的下次可用时间 (绝对 ms)
@@ -488,6 +615,7 @@ public partial class GameScene : Control
     private StorageDialog _storageDialog;
     private BeltDialog _beltDialog;
     public AutoPotionDialog AutoPotionBox { get; private set; }
+    public DXItemCell[] BeltCells => _beltDialog?.Grid?.Cells ?? Array.Empty<DXItemCell>();
     private CurrencyDialog _currencyDialog;
     private FilterDropDialog _filterDropDialog;
     private BundleDialog _bundleDialog;
@@ -511,17 +639,52 @@ public partial class GameScene : Control
 
     private uint _playerObjectID;
     private int _playerMapIndex;
+    private int _playerInstanceIndex = -1;
+    public int CurrentInstanceIndex => _playerInstanceIndex;
+    public InstanceInfo CurrentInstanceInfo => Globals.InstanceInfoList?.Binding
+        .FirstOrDefault(x => x.Index == _playerInstanceIndex);
     private readonly List<AutoPathRoute> _autoPathRoutes = new();
     private int _autoPathProgressMap = -1;
     private int _autoPathProgressPoint = -1;
+    private bool _autoPathCancelPending;
+    private PendingAutoPathMove _pendingAutoPathMove;
+
+    private sealed class PendingAutoPathMove
+    {
+        public MirDirection Direction;
+        public System.Drawing.Point Location;
+        public int Distance;
+        public TimeSpan Slow;
+    }
+
+    /// <summary>与原版 TryQueueAutoPathMove 一致：切图移动立即过渡，其余移动暂存。</summary>
+    public static bool ShouldQueueAutoPathMove(bool autoPathActive, bool mapChanged)
+        => autoPathActive && !mapChanged;
+
+    public static bool ShouldCancelMapRightClick(bool hasSelectedItem, bool hasSelectedCurrency)
+        => hasSelectedItem || hasSelectedCurrency;
+
+    public static bool ShouldCancelGatheringForMapClick(bool altPressed, bool fishingActive, bool tamingActive)
+        => !altPressed && (fishingActive || tamingActive);
+
+    /// <summary>原版 MapControl.ProcessInput 的拾取前置状态闸门。</summary>
+    public static bool CanSendMapPickup(bool observer, bool dead, bool paralyzed,
+        bool contained, bool dragonRepulsed)
+        => !observer && !dead && !paralyzed && !contained && !dragonRepulsed;
+
+    public static bool CanBeginItemDrop(DXItemCell source)
+        => source?.Item != null && !source.Locked
+            && source.GridType is GridType.Inventory or GridType.CompanionInventory;
     private System.Drawing.Point _playerLocation;
     private MirDirection _playerDirection;
     private Library.HorseType _playerHorse = Library.HorseType.None;
     private double _runCooldownUntilMs;
     private double _nextNpcCallMs;
+    private uint _pendingNpcClickObjectId;
     private double _nextInspectMs;
     private PoisonType _playerPoison;
     private bool _observer;
+    public bool IsObserver => _observer;
     public bool InSafeZone { get; private set; }
     public double CombatUntilMs { get; private set; }
     public double ItemReviveUntilMs { get; private set; }
@@ -531,6 +694,8 @@ public partial class GameScene : Control
     // 玩家已学技能: MagicInfo -> ClientUserMagic (S.NewMagic 维护)
     public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
     private readonly HashSet<MagicType> _enabledToggleMagics = new();
+    // 原版 GameScene.ToggleTime：切换/蓄力技能共用的防连点时间。
+    public DateTime ToggleTime { get; private set; } = DateTime.MinValue;
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     public bool ShowMagicBarFrames { get; private set; } = true;
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
@@ -541,11 +706,13 @@ public partial class GameScene : Control
     // 与原版 GameScene.CanRun 一致：站立后第一次移动先走，收到移动回包后
     // 才允许下一次右键移动使用跑步距离/动作。
     private bool _canRun;
+    private long _nextObjectHitOrder;
 
     // CallDeferred 缓冲
     private StartGameResult _pendingStartResult;
     private StartInformation _pendingStartInfo;
     private int _pendingMapIndex;
+    private int _pendingInstanceIndex = -1;
     private bool _startGameShown;
     private bool _waitingStartupMap;
     private bool _hasPendingMapChanged;
@@ -559,9 +726,22 @@ public partial class GameScene : Control
     private bool _runningTestStarted;
     private bool _interactionAuditStarted;
     private int _interactionInspectSent;
+    private int _interactionInspectLeftSent;
     private int _interactionInspectReceived;
     private bool _interactionNpcSent;
     private double _interactionAuditDeadline;
+    private bool _operationAuditStarted;
+    private bool _operationAuditResponsePending;
+    private bool _operationAuditLastSuccess;
+    private int _operationAuditStage;
+    private int _operationAuditSourceSlot = -1;
+    private int _operationAuditTargetSlot = -1;
+    private int _operationAuditEquipmentSlot = -1;
+    private ClientUserItem _operationAuditOriginalEquipment;
+    // 删除回包不带物品 Index；记录发包时的 Index，防止旧回包删除同一槽位后来
+    // 放入的新物品。没有本地待确认请求的删除仍按服务端权威事件处理。
+    private readonly Dictionary<(GridType Grid, int Slot), long> _pendingItemDeletes = new();
+    private readonly Dictionary<(GridType Grid, int Slot), long> _pendingItemUses = new();
     private bool _runningTestRightHeld;
     private readonly List<Action> _trackedEventUnsubscribers = new();
     // S.StartGame 后原版通常还会发送 S.MapChanged；不能用过短的固定延迟
@@ -583,7 +763,17 @@ public partial class GameScene : Control
 
     public override void _Ready()
     {
+        ClientSettings.Load();
+        KeyBindManager.Load();
+        ClientSettings.ApplyDisplaySettings();
+        SoundPlayback.Stop(SoundIndex.LoginScene);
+        SoundPlayback.Stop(SoundIndex.SelectScene);
         Game = this;
+        ShowMagicBarFrames = ClientSettings.ShowMagicBarFrames;
+        _rightClickDeTarget = ClientSettings.RightClickDeTarget;
+        _escapeCloseAll = ClientSettings.EscapeCloseAll;
+        DrawWeather = ClientSettings.DrawWeather;
+        QuestTrackerVisible = ClientSettings.QuestTrackerVisible;
 
         // 世界坐标使用原版 48x32 逻辑格，最终整体按 2 倍输出。
         // UI CanvasLayer 有独立缩放，不会被这里重复缩放。
@@ -632,8 +822,9 @@ public partial class GameScene : Control
                     if (action == MirAction.Attack) _player.PlayCombat(magic);
                 }
                 _canRun = false;
-                GD.Print($"[Combat] enqueue C.Attack action={action} magic={magic} direction={dir}");
-                _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = magic });
+                MagicType attackMagic = magic != MagicType.None ? magic : _attackMagic;
+                GD.Print($"[Combat] enqueue C.Attack action={action} magic={attackMagic} direction={dir}");
+                _net.Connection.Enqueue(new C.Attack { Direction = dir, Action = action, AttackMagic = attackMagic });
             },
             (dir, distance) =>
             {
@@ -650,7 +841,9 @@ public partial class GameScene : Control
                 if (CanPlayerTurn()) _net?.Connection?.SendRangeAttack(direction, target);
             },
             IsMovementCellBlocked,
-            () => _rightClickDeTarget);
+            () => _rightClickDeTarget,
+            IsMouseOverUi,
+            () => !IsFishingActive && !IsTamingActive);
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
@@ -658,7 +851,7 @@ public partial class GameScene : Control
         _player = new PlayerRenderer();
         _player.ZIndex = RenderOrder.LocalPlayer;
         _player.FrameChanged = (animation, frame, magic) => OnPlayerFrameChanged(_player, animation, frame, magic);
-        _player.SoundCue = OnPlayerSoundCue;
+            _player.SoundCue = PlaySound;
         AddChild(_player);
 
         _statusLabel = new Label();
@@ -672,15 +865,27 @@ public partial class GameScene : Control
         _uiLayer.Layer = 10;
         _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
         AddChild(_uiLayer);
+        _debugLabel = new Label
+        {
+            Position = new Vector2(5, 5),
+            Size = new Vector2(430, 36),
+            ZIndex = 100,
+            Visible = ClientSettings.DebugLabel,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+        };
+        _uiLayer.AddChild(_debugLabel);
 
         _statusWindow = new StatusWindow(); // 初始隐藏, F2 打开
         CreateHud();
         Resized += OnGameResized;
         CallDeferred(nameof(LayoutHud));
+        if (OS.GetCmdlineUserArgs().Contains(UiAuditArgument))
+            CallDeferred(nameof(RunUiLayoutAudit));
 
         if (_net?.Connection != null)
         {
         _net.Connection.StartGameResultEvent += OnStartGameResult;
+        _net.Connection.GameLogoutEvent += OnGameLogout;
         _net.Connection.MapChangedEvent += OnMapChanged;
         _net.Connection.UserLocationEvent += OnUserLocation;
         _net.Connection.ObjectMoveEvent += OnObjectMove;
@@ -776,7 +981,16 @@ public partial class GameScene : Control
             h => _net.Connection.DisconnectedEvent -= h,
             () =>
         {
+            _communicationDialog?.CancelPendingMailLinks();
+            _communicationDialog?.MailSendResult();
+            _npcDialog?.CancelPendingLinks();
+            _npcSocketDialog?.Panel.CancelPending();
+            _npcSocketCombineDialog?.Panel.CancelPending();
+            _consignmentDialog?.CancelPendingLinks();
             _tradeDialog?.ClearTrade();
+            _pendingItemDeletes.Clear();
+            _pendingItemUses.Clear();
+            _pendingNpcClickObjectId = 0;
             DXItemCell.SelectedCell = null;
             while (WindowManager.CloseTop()) { }
         });
@@ -804,7 +1018,7 @@ public partial class GameScene : Control
         });
         TrackEvent<S.NPCRepair>(h => _net.Connection.NPCRepairEvent += h,
             h => _net.Connection.NPCRepairEvent -= h,
-            packet => _npcDialog?.RepairResult(packet?.Success == true));
+            packet => _npcDialog?.RepairResult(packet));
         TrackEvent<S.BundleOpen>(h => _net.Connection.BundleOpenEvent += h,
             h => _net.Connection.BundleOpenEvent -= h,
             p => _bundleDialog?.Open(p.Slot, p.Items));
@@ -924,7 +1138,12 @@ public partial class GameScene : Control
             p => { if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.ApplyCompanion(Companion); } });
         TrackEvent<S.CompanionItemsGained>(h => _net.Connection.CompanionItemsGainedEvent += h,
             h => _net.Connection.CompanionItemsGainedEvent -= h,
-            p => { if (Companion != null) { Companion.Items ??= new(); Companion.Items.AddRange(p.Items ?? new()); Companion.OnComplete(); _companionDialog?.ApplyCompanion(Companion); } });
+            p =>
+            {
+                var items = p?.Items ?? new List<ClientUserItem>();
+                MarkGainedItems(items, true);
+                AddCompanionItems(items);
+            });
         TrackEvent<S.CompanionWeightUpdate>(h => _net.Connection.CompanionWeightUpdateEvent += h,
             h => _net.Connection.CompanionWeightUpdateEvent -= h,
             p => _companionDialog?.ApplyWeight(p.BagWeight, p.MaxBagWeight, p.InventorySize));
@@ -935,7 +1154,18 @@ public partial class GameScene : Control
         _net.Connection.CompanionReleaseEvent += OnCompanionRelease;
         TrackEvent<S.CompanionStore>(h => _net.Connection.CompanionStoreEvent += h,
             h => _net.Connection.CompanionStoreEvent -= h,
-            p => { Companion = null; _companionDialog?.ApplyCompanion(null); _npcCompanionStorageDialog?.Refresh(); ReceiveChat("伙伴已收起", MessageType.System); });
+            p =>
+            {
+                if (Companion != null)
+                {
+                    SyncCompanionItemList();
+                    Companion.CharacterName = null;
+                }
+                Companion = null;
+                _companionDialog?.ApplyCompanion(null);
+                _npcCompanionStorageDialog?.Refresh();
+                ReceiveChat("伙伴已收起", MessageType.System);
+            });
         TrackEvent<S.CompanionUnlock>(h => _net.Connection.CompanionUnlockEvent += h,
             h => _net.Connection.CompanionUnlockEvent -= h,
             p => ReceiveChat($"伙伴槽位 {p?.Index ?? 0} 已解锁", MessageType.System));
@@ -990,6 +1220,7 @@ public partial class GameScene : Control
 
         // StartGame 突发包在 _Ready 前已被 Process 处理(订阅未生效), 一次性排空积压队列
         DrainPendingObjects();
+        _net?.Connection?.StopPendingPacketBuffering();
 
         if (StartInfo != null)
         {
@@ -1013,6 +1244,7 @@ public partial class GameScene : Control
             _trackedEventUnsubscribers.Clear();
 
             _net.Connection.StartGameResultEvent -= OnStartGameResult;
+            _net.Connection.GameLogoutEvent -= OnGameLogout;
             _net.Connection.MapChangedEvent -= OnMapChanged;
             _net.Connection.UserLocationEvent -= OnUserLocation;
             _net.Connection.ObjectMoveEvent -= OnObjectMove;
@@ -1194,6 +1426,32 @@ public partial class GameScene : Control
         CallDeferred(nameof(ShowStartGameResult));
     }
 
+    private void OnGameLogout(S.GameLogout packet)
+    {
+        if (!_leavingGame) return;
+        _leavingGame = false;
+        _pendingLogoutCharacters = packet?.Characters ?? new List<SelectInfo>();
+        CallDeferred(nameof(ReturnToCharacterSelect));
+    }
+
+    private void ReturnToCharacterSelect()
+    {
+        if (!IsInsideTree()) return;
+
+        SoundPlayback.Stop(SoundIndex.LoginScene);
+        SoundPlayback.Stop(SoundIndex.SelectScene);
+        while (WindowManager.CloseTop()) { }
+
+        var selectScene = ResourceLoader.Load<PackedScene>("res://Scenes/SelectScene.tscn");
+        if (selectScene == null) return;
+
+        var select = selectScene.Instantiate<SelectScene>();
+        select.SetCharacters(_pendingLogoutCharacters ?? new List<SelectInfo>());
+        _pendingLogoutCharacters = null;
+        GetTree().Root.AddChild(select);
+        QueueFree();
+    }
+
     private void ShowStartGameResult()
     {
         if (_pendingStartResult == StartGameResult.Success && _pendingStartInfo != null)
@@ -1201,6 +1459,7 @@ public partial class GameScene : Control
             StartInfo = _pendingStartInfo;
             _playerObjectID = _pendingStartInfo.ObjectID;
             _playerMapIndex = _pendingStartInfo.MapIndex;
+            _playerInstanceIndex = _pendingStartInfo.InstanceIndex;
             _playerLocation = _pendingStartInfo.Location;
             _playerDirection = _pendingStartInfo.Direction;
             _pendingX = _playerLocation.X;
@@ -1225,6 +1484,7 @@ public partial class GameScene : Control
             {
                 _hasPendingMapChanged = false;
                 _playerMapIndex = _pendingMapIndex;
+                _playerInstanceIndex = _pendingInstanceIndex;
                 LoadPlayerMap(clearObjects: false);
             }
             else
@@ -1243,7 +1503,9 @@ public partial class GameScene : Control
 
     private void OnMapChanged(int mapIndex, int instanceIndex)
     {
+        _pendingNpcClickObjectId = 0;
         _pendingMapIndex = mapIndex;
+        _pendingInstanceIndex = instanceIndex;
         _hasPendingMapChanged = true;
         if (_startGameShown)
         {
@@ -1257,7 +1519,9 @@ public partial class GameScene : Control
         if (!_waitingStartupMap || !IsInsideTree() || _pendingStartInfo == null) return;
         _waitingStartupMap = false;
         _playerMapIndex = _pendingStartInfo.MapIndex;
+        _playerInstanceIndex = _pendingStartInfo.InstanceIndex;
         LoadPlayerMap(clearObjects: false);
+        UpdateMapMusic();
     }
 
     private void OnDayTimeChanged(float dayTime)
@@ -1277,9 +1541,23 @@ public partial class GameScene : Control
     {
         _hasPendingMapChanged = false;
         _playerMapIndex = _pendingMapIndex;
-        GD.Print($"[Game] 地图切换: MapIndex={_pendingMapIndex}");
+        _playerInstanceIndex = _pendingInstanceIndex;
+        GD.Print($"[Game] 地图切换: MapIndex={_pendingMapIndex} InstanceIndex={_pendingInstanceIndex}");
+        DXItemCell.SelectedCell = null;
+        _pendingNpcClickObjectId = 0;
         LoadPlayerMap();
+        UpdateMapMusic();
         UpdateAutoPathProgress();
+    }
+
+    private void UpdateMapMusic()
+    {
+        var map = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+        var next = map?.Music ?? SoundIndex.None;
+        if (next == _mapMusic) return;
+        if (_mapMusic != SoundIndex.None) StopSound(_mapMusic);
+        _mapMusic = next;
+        PlaySound(_mapMusic);
     }
 
     private void OnUserLocation(MirDirection dir, System.Drawing.Point loc)
@@ -1384,7 +1662,9 @@ public partial class GameScene : Control
                 if (_mouseWalker != null) _mouseWalker.AutoRun = _autoRun;
                 break;
             case KeyBindAction.ToggleItemLock:
-                DXItemCell.SelectedCell?.ToggleLock();
+                // 旧版 DXItemCell.OnKeyDown: 悬停格 (MouseControl==this) 按 Scroll Lock 锁定,
+                // 不是 SelectedCell (拿起) 格。
+                (DXControl.MouseControl as DXItemCell)?.ToggleLock();
                 break;
             case KeyBindAction.TradeRequest:
                 _net?.Connection?.Enqueue(new C.TradeRequest());
@@ -1456,6 +1736,27 @@ public partial class GameScene : Control
         ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
+            bool autoPathActive = _autoPathRoutes.Count > 0 || _autoPathCancelPending;
+            if (autoPathActive)
+            {
+                if (mapChanged)
+                {
+                    // 原版 ApplyAutoPathMapTransition：跨地图时丢弃旧步进，
+                    // 让随后的 MapChanged 成为唯一的地图切换来源。
+                    _pendingAutoPathMove = null;
+                    ApplyAuthoritativePlayerLocation(loc, slow);
+                    return;
+                }
+
+                _pendingAutoPathMove = new PendingAutoPathMove
+                {
+                    Direction = dir,
+                    Location = loc,
+                    Distance = Math.Max(1, distance),
+                    Slow = slow,
+                };
+                return;
+            }
             _canRun = true;
             _mouseWalker?.AddMoveDelay(slow);
             CallDeferred(nameof(ShowUserLocation), (int)dir, loc.X, loc.Y, Math.Max(1, distance));
@@ -1464,13 +1765,30 @@ public partial class GameScene : Control
 
         // 其他玩家/怪物移动 (M4)
         if (_objects.TryGetValue(objectID, out var ob))
+        {
+            // 原版移动会把对象从旧 Cell.Objects 移除后追加到新格末尾，
+            // 使其在 CheckCursor 的逆序扫描中成为最新优先项。
+            ob.HitOrder = ++_nextObjectHitOrder;
             ob.QueueMove(loc, dir, Math.Max(1, distance));
+        }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.StartMove(new System.Drawing.Point(loc.X, loc.Y), dir,
                 Math.Max(1, distance), player.Horse != HorseType.None);
             UpdateOtherPlayerPosition(player);
         }
+    }
+
+    private void ProcessPendingAutoPathMove()
+    {
+        if (_pendingAutoPathMove == null || _player == null || !_startGameShown) return;
+
+        var move = _pendingAutoPathMove;
+        _pendingAutoPathMove = null;
+        _canRun = true;
+        _mouseWalker?.AddMoveDelay(move.Slow);
+        CallDeferred(nameof(ShowUserLocation), (int)move.Direction,
+            move.Location.X, move.Location.Y, move.Distance);
     }
 
     private void OnObjectIdle(S.ObjectIdle packet)
@@ -1657,6 +1975,7 @@ public partial class GameScene : Control
 
     private void OnMarriageInfo(S.MarriageInfo packet)
     {
+        _characterDialog?.SetPartner(packet?.Partner?.Name);
         if (packet?.Partner != null) ReceiveChat($"伴侣：{packet.Partner.Name}", MessageType.System);
     }
 
@@ -1679,16 +1998,23 @@ public partial class GameScene : Control
         if (packet != null) ReceiveChat(packet.ObjectID == 0 ? "伴侣已离线" : "伴侣上线了", MessageType.System);
     }
 
-    private void OnMailSend(S.MailSend packet) => ReceiveChat("邮件发送完成", MessageType.System);
+    private void OnMailSend(S.MailSend packet)
+    {
+        _communicationDialog?.MailSendResult();
+        // 原版 S.MailSend 只是请求阶段回包，真正结果随后由
+        // ItemsChanged.Success 表示；不能在这里提前提示“发送完成”。
+    }
     private void OnMarketPlaceStoreBuy(S.MarketPlaceStoreBuy packet) => ReceiveChat("商城购买请求已处理", MessageType.System);
     private void OnMountFailed(S.MountFailed packet) => ReceiveChat("无法使用当前坐骑", MessageType.System);
     private void OnTradeAddItem(S.TradeAddItem packet)
     {
+        _tradeDialog?.ApplyTradeAddItem(packet);
         if (packet != null && !packet.Success) ReceiveChat("交易物品添加失败", MessageType.System);
     }
     private void OnTradeAddGold(S.TradeAddGold packet)
     {
-        if (packet != null) ReceiveChat($"交易金币：{packet.Gold:#,##0}", MessageType.System);
+        if (packet == null) return;
+        _tradeDialog?.SetPlayerGold(packet.Gold);
     }
 
     private void OnDataObjectLocation(S.DataObjectLocation packet)
@@ -1753,12 +2079,18 @@ public partial class GameScene : Control
 
     private void OnInspect(S.Inspect packet)
     {
-        if (packet == null || _characterDialog == null) return;
+        if (packet == null) return;
         if (AutoLoginArgs.InteractionAudit)
         {
             _interactionInspectReceived++;
             GD.Print($"[InteractionAudit] INSPECT_RESPONSE name={packet.Name} items={packet.Items?.Count ?? 0}");
         }
+        if (packet.Ranking)
+        {
+            _rankingDialog?.ApplyInspect(packet);
+            return;
+        }
+        if (_characterDialog == null) return;
         _characterDialog.ApplyInspect(packet);
         WindowManager.Open(_characterDialog, _uiLayer);
     }
@@ -1778,7 +2110,7 @@ public partial class GameScene : Control
         var player = new PlayerRenderer { CellX = p.Location.X, CellY = p.Location.Y };
         player.CharacterIndex = p.Index;
         player.FrameChanged = (animation, frame, magic) => OnPlayerFrameChanged(player, animation, frame, magic);
-        player.SoundCue = OnPlayerSoundCue;
+        player.SoundCue = PlaySound;
         player.UpdateAppearance(p);
         AddChild(player);
         _otherPlayers[p.ObjectID] = player;
@@ -1793,6 +2125,7 @@ public partial class GameScene : Control
             CellX = p.Location.X,
             CellY = p.Location.Y,
             Visible = false,
+            HitOrder = ++_nextObjectHitOrder,
         };
         AddChild(hit);
         _objects[p.ObjectID] = hit;
@@ -1887,20 +2220,13 @@ public partial class GameScene : Control
         if (p == null || string.IsNullOrWhiteSpace(p.Text)) return;
         string sender = p.ObjectID == _playerObjectID ? (StartInfo?.Name ?? "我") :
             (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : "系统");
-        _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", p.Type, ChatColour(p.Type));
+        _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", p.Type, ChatColour(p.Type), p.LinkedItems);
         if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
         else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player)) player.SetChat(p.Text);
     }
 
-    private static Color ChatColour(MessageType type) => type switch
-    {
-        MessageType.Shout or MessageType.Global => new Color(1f, 0.75f, 0.3f),
-        MessageType.WhisperIn or MessageType.WhisperOut or MessageType.GMWhisperIn => new Color(0.85f, 0.65f, 1f),
-        MessageType.System or MessageType.Announcement => new Color(1f, 0.85f, 0.45f),
-        MessageType.Group or MessageType.Guild => new Color(0.55f, 0.9f, 1f),
-        _ => Colors.White,
-    };
+    private static Color ChatColour(MessageType type) => ClientSettings.ChatForeColour(type);
 
     private void OnGroupMember(uint objectId, string name)
     {
@@ -1920,7 +2246,10 @@ public partial class GameScene : Control
 
     private void OnGameStoreData(S.GameStoreData packet)
     {
-        _gameStoreDialog?.SetFavourites(packet?.Favourites);
+        if (packet == null) return;
+        // 原版一个 GameStoreData 同时携带收藏和热销商品，不能只应用前者。
+        _gameStoreDialog?.SetFavourites(packet.Favourites);
+        _gameStoreDialog?.SetTopItems(packet.TopItems);
     }
 
     private void OnGameStoreTopItems(S.GameStoreTopItems packet)
@@ -2014,30 +2343,42 @@ public partial class GameScene : Control
         _guildDialog?.RefreshWarPage();
     }
 
-    private void ConsumeNpcLinks(params IEnumerable<CellLinkInfo>[] groups)
+    private void ConsumeNpcLinks(bool success, params IEnumerable<CellLinkInfo>[] groups)
     {
         var links = groups.Where(x => x != null).SelectMany(x => x).Where(x => x != null).ToList();
-        if (links.Count > 0) OnItemsChanged(new S.ItemsChanged { Links = links, Success = true });
+        if (links.Count == 0) return;
+        _npcDialog?.ClearAdvancedLinks(links);
+        OnItemsChanged(new S.ItemsChanged { Links = links, Success = success });
+    }
+
+    private void ReleaseNpcLinksWithoutConsuming(params IEnumerable<CellLinkInfo>[] groups)
+    {
+        var links = groups.Where(x => x != null).SelectMany(x => x).Where(x => x != null).ToList();
+        if (links.Count == 0) return;
+        _npcDialog?.ClearAdvancedLinks(links);
+        foreach (var link in links) UnlockCell(link.GridType, link.Slot);
+        DXItemCell.SelectedCell = null;
     }
 
     private void OnNPCRefinementStone(S.NPCRefinementStone packet)
     {
         if (packet == null) return;
-        ConsumeNpcLinks(packet.IronOres, packet.SilverOres, packet.DiamondOres, packet.GoldOres, packet.Crystal);
+        // 该包本身没有 Success；现行服务端通过后续 ItemsChanged 回包表达成功/失败。
+        ConsumeNpcLinks(true, packet.IronOres, packet.SilverOres, packet.DiamondOres, packet.GoldOres, packet.Crystal);
         ReceiveChat("精炼石制作完成", MessageType.System);
     }
 
     private void OnNPCRefine(S.NPCRefine packet)
     {
         if (packet == null) return;
-        ConsumeNpcLinks(packet.Ores, packet.Items, packet.Specials);
+        ConsumeNpcLinks(packet.Success, packet.Ores, packet.Items, packet.Specials);
         ReceiveChat(packet.Success ? "精炼成功" : "精炼失败", MessageType.System);
     }
 
     private void OnNPCMasterRefine(S.NPCMasterRefine packet)
     {
         if (packet == null) return;
-        ConsumeNpcLinks(packet.Fragment1s, packet.Fragment2s, packet.Fragment3s, packet.Stones, packet.Specials);
+        ConsumeNpcLinks(packet.Success, packet.Fragment1s, packet.Fragment2s, packet.Fragment3s, packet.Stones, packet.Specials);
         ReceiveChat(packet.Success ? "高级精炼成功" : "高级精炼失败", MessageType.System);
     }
 
@@ -2046,7 +2387,7 @@ public partial class GameScene : Control
         if (packet == null) return;
         var links = packet.Links?.ToList() ?? new List<CellLinkInfo>();
         if (packet.Target != null) links.Add(packet.Target);
-        ConsumeNpcLinks(links);
+        ReleaseNpcLinksWithoutConsuming(links);
     }
 
     private void OnNPCAccessoryUpgrade(S.NPCAccessoryUpgrade packet)
@@ -2058,19 +2399,23 @@ public partial class GameScene : Control
         var links = packet.Links?.ToList() ?? new List<CellLinkInfo>();
         if (packet.Target != null) links.Add(packet.Target);
         if (packet.OreTarget != null) links.Add(packet.OreTarget);
-        ConsumeNpcLinks(links);
+        ReleaseNpcLinksWithoutConsuming(links);
         ReceiveChat(packet.Success ? "饰品精炼成功" : "饰品精炼失败", MessageType.System);
     }
 
     private void OnNPCWeaponCraft(S.NPCWeaponCraft packet)
     {
         if (packet == null) return;
-        ConsumeNpcLinks(new[] { packet.Template, packet.Yellow, packet.Blue, packet.Red, packet.Purple, packet.Green, packet.Grey });
+        ConsumeNpcLinks(packet.Success, new[] { packet.Template, packet.Yellow, packet.Blue, packet.Red, packet.Purple, packet.Green, packet.Grey });
         ReceiveChat(packet.Success ? "武器制作成功" : "武器制作失败", MessageType.System);
     }
 
     private void OnNPCRefineRetrieve(S.NPCRefineRetrieve packet)
-        => ReceiveChat($"已取回精炼物品 #{packet?.Index ?? 0}", MessageType.System);
+    {
+        if (packet == null) return;
+        _npcDialog?.RemoveRefine(packet.Index);
+        ReceiveChat($"已取回精炼物品 #{packet.Index}", MessageType.System);
+    }
 
     private void OnItemAcessoryRefined(S.ItemAcessoryRefined packet)
     {
@@ -2163,9 +2508,15 @@ public partial class GameScene : Control
 
     private void OnObjectRemove(uint objectID)
     {
+        // 与原版 CConnection.Process(S.ObjectRemove) 一致：先断开所有
+        // 目标/悬停引用，再释放节点，避免自动攻击或悬停框访问迟到对象。
+        _combatController?.RemoveObjectReference(objectID);
         ClearMovementEffect(objectID);
         if (_tamingRopes.Remove(objectID, out var rope)) rope.QueueFree();
         if (_spellEffects.Remove(objectID, out var spellFx)) spellFx.QueueFree();
+        if (_durationSoundByObject.Remove(objectID, out var durationSound) &&
+            !_durationSoundByObject.Values.Contains(durationSound))
+            StopSound(durationSound);
         foreach (var key in _objectBuffEffects.Keys.Where(k => k.Item1 == objectID).ToList())
         {
             if (_objectBuffEffects.Remove(key, out var buffFx)) buffFx.QueueFree();
@@ -2258,7 +2609,7 @@ public partial class GameScene : Control
             ApplyAuthoritativePlayerLocation(p.Location);
             _player.PlayDash(p.Magic);
             SetMovementEffect(p.ObjectID, p.Magic, _player);
-            if (p.Magic == MagicType.Assault) OnPlayerSoundCue(SoundIndex.AssaultStart);
+            if (p.Magic == MagicType.Assault) PlaySound(SoundIndex.AssaultStart);
         }
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
         {
@@ -2266,7 +2617,7 @@ public partial class GameScene : Control
             player.BeginMove(p.Direction, Math.Max(1, p.Distance), player.Horse != HorseType.None, false);
             player.PlayDash(p.Magic);
             SetMovementEffect(p.ObjectID, p.Magic, player);
-            if (p.Magic == MagicType.Assault) OnPlayerSoundCue(SoundIndex.AssaultStart);
+            if (p.Magic == MagicType.Assault) PlaySound(SoundIndex.AssaultStart);
         }
     }
 
@@ -2323,10 +2674,10 @@ public partial class GameScene : Control
                     ApplyAuthoritativePlayerLocation(loc, p.Slow);
             }
         }
-        else if (_objects.TryGetValue(objectID, out var ob))
-        {
-            ob.Direction = dir;
-            ob.PlayRangeAttack();
+            else if (_objects.TryGetValue(objectID, out var ob))
+            {
+                ob.Direction = dir;
+                ob.PlayRangeAttack();
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -2342,6 +2693,7 @@ public partial class GameScene : Control
             else if (_objects.TryGetValue(targetID, out var tgt))
             {
                 tgt.SetAnimation(MirAnimation.Struck);
+                tgt.PlayStruckSound();
             }
             else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
 
@@ -2390,7 +2742,11 @@ public partial class GameScene : Control
         foreach (uint targetID in targets ?? Enumerable.Empty<uint>())
         {
             if (targetID == _playerObjectID) _player.PlayStruck();
-            else if (_objects.TryGetValue(targetID, out var target)) target.SetAnimation(MirAnimation.Struck);
+            else if (_objects.TryGetValue(targetID, out var target))
+            {
+                target.SetAnimation(MirAnimation.Struck);
+                target.PlayStruckSound();
+            }
             else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
         }
     }
@@ -2433,6 +2789,10 @@ public partial class GameScene : Control
         {
             player.Direction = dir; player.PlaySpell(type);
         }
+
+        if (cast)
+            foreach (var sound in MagicSoundCatalog.ResolveAll(type, MagicSoundPhase.Start))
+                PlaySound(sound);
 
         if (!cast) return;  // 原版: !MagicCast 时不播特效
 
@@ -2669,35 +3029,17 @@ public partial class GameScene : Control
         }
     }
 
-    private void OnPlayerSoundCue(SoundIndex sound)
+    public void PlaySound(SoundIndex sound)
     {
         if (sound == SoundIndex.None) return;
+        if (!SoundCatalog.TryGet(sound, out var entry))
+        {
+            GD.PrintErr($"[Sound] 原版音效索引没有迁移映射: {sound}");
+            return;
+        }
         if (!_actionSounds.TryGetValue(sound, out var stream))
         {
-            // DXSoundManager maps player action sounds to numbered WAV files.
-            // Keep the same source files so timing is the only port-specific part.
-            string file = sound switch
-            {
-                SoundIndex.Foot1 => "1.wav", SoundIndex.Foot2 => "2.wav",
-                SoundIndex.Foot3 => "3.wav", SoundIndex.Foot4 => "4.wav",
-                SoundIndex.HorseWalk1 => "33.wav", SoundIndex.HorseWalk2 => "34.wav",
-                SoundIndex.HorseRun => "35.wav", SoundIndex.FishingCast => "84.wav",
-                SoundIndex.FishingBob => "85.wav", SoundIndex.FishingReel => "86.wav",
-                SoundIndex.GenericStruckPlayer => "61.wav",
-                SoundIndex.DaggerSwing => "50.wav", SoundIndex.WoodSwing => "51.wav",
-                SoundIndex.IronSwordSwing => "52.wav", SoundIndex.ShortSwordSwing => "53.wav",
-                SoundIndex.AxeSwing => "54.wav", SoundIndex.ClubSwing => "55.wav",
-                SoundIndex.WandSwing => "56.wav", SoundIndex.FistSwing => "57.wav",
-                SoundIndex.GlaiveAttack => "63.wav", SoundIndex.ClawAttack => "64.wav",
-                SoundIndex.MiningHit => "125.wav", SoundIndex.MiningStruck => "126.wav",
-                SoundIndex.MaleStruck => "138.wav", SoundIndex.FemaleStruck => "139.wav",
-                SoundIndex.MaleDie => "144.wav", SoundIndex.FemaleDie => "145.wav",
-                SoundIndex.DestructiveSurge => "M103-1.wav", SoundIndex.OffensiveBlow => "37400.wav",
-                SoundIndex.AssaultStart => "M109-1.wav", SoundIndex.HundredFist => "37380.wav",
-                _ => null,
-            };
-            if (file == null) return;
-            string resourcePath = "res://../Debug/Client/Sound/" + file;
+            string resourcePath = "res://../Debug/Client/Sound/" + entry.FileName;
             string filePath = ProjectSettings.GlobalizePath(resourcePath);
             // Prefer the original WAV on disk; asking ResourceLoader to resolve
             // an outside-res:// path emits a noisy loader error before fallback.
@@ -2714,20 +3056,47 @@ public partial class GameScene : Control
             }
             if (stream == null)
             {
-                GD.PrintErr($"[Sound] 无法加载动作音效: {filePath}");
+                GD.PrintErr($"[Sound] 无法加载音效 {sound} ({entry.FileName}): {filePath}");
                 return;
             }
             _actionSounds[sound] = stream;
         }
+        if (entry.Loop && _loopingSounds.TryGetValue(sound, out var activeLoop) && IsInstanceValid(activeLoop))
+            return;
+        if (entry.Loop && stream is AudioStreamWav loopWav)
+            loopWav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
         var player = new AudioStreamPlayer { Stream = stream, Bus = "Master" };
         AddChild(player);
-        player.Finished += player.QueueFree;
+        if (entry.Loop)
+        {
+            _loopingSounds[sound] = player;
+            player.Finished += () =>
+            {
+                _loopingSounds.Remove(sound);
+                player.QueueFree();
+            };
+        }
+        else
+            player.Finished += player.QueueFree;
         player.Play();
+    }
+
+    public void StopSound(SoundIndex sound)
+    {
+        if (!_loopingSounds.Remove(sound, out var player)) return;
+        if (IsInstanceValid(player)) player.QueueFree();
     }
 
     private void OnObjectProjectile(S.ObjectProjectile packet)
     {
         if (!_objects.TryGetValue(packet.ObjectID, out var source) && packet.ObjectID != _playerObjectID) return;
+        foreach (var sound in MagicSoundCatalog.ResolveAll(packet.Type, MagicSoundPhase.Travel))
+            PlaySound(sound);
+        foreach (var sound in MagicSoundCatalog.ResolveAll(packet.Type, MagicSoundPhase.End))
+            if (packet.Type is MagicType.ChainLightning && packet.Locations.Count > 0 ||
+                packet.Type is MagicType.LightningStrike && packet.Targets.Count > 0 ||
+                packet.Type is MagicType.ElementalSwords && packet.Targets.Count > 0)
+                PlaySound(sound);
         int sourceX = packet.CurrentLocation.X;
         int sourceY = packet.CurrentLocation.Y;
         var def = MagicEffectTable.Get(packet.Type);
@@ -2738,12 +3107,30 @@ public partial class GameScene : Control
         foreach (uint id in packet.Targets)
         {
             var target = GetMagicTargetNode(id);
-            if (target != null) SpawnProjectileTarget(def, sourceX, sourceY, target);
+            if (target != null)
+                SpawnProjectileTarget(def, sourceX, sourceY, target,
+                    packet.Type == MagicType.FireBounce ? SoundIndex.GreaterFireBallEnd : SoundIndex.None);
         }
     }
 
     private void OnObjectSpell(S.ObjectSpell packet)
     {
+        var durationSound = packet.Effect switch
+        {
+            SpellEffect.FireWall => SoundIndex.FireWallDuration,
+            SpellEffect.Tempest => SoundIndex.TempestDuration,
+            SpellEffect.PoisonousCloud => SoundIndex.PoisonousCloudStart,
+            SpellEffect.DarkSoulPrison => SoundIndex.DarkSoulPrison,
+            SpellEffect.MonsterDeathCloud => SoundIndex.JinchonDevilAttack3,
+            SpellEffect.Rubble => SoundIndex.MiningStruck,
+            _ => SoundIndex.None,
+        };
+        PlaySound(durationSound);
+        if (_durationSoundByObject.Remove(packet.ObjectID, out var oldDuration) &&
+            oldDuration != durationSound && !_durationSoundByObject.Values.Contains(oldDuration))
+            StopSound(oldDuration);
+        if (durationSound != SoundIndex.None)
+            _durationSoundByObject[packet.ObjectID] = durationSound;
         if (_spellEffects.Remove(packet.ObjectID, out var oldFx)) oldFx.QueueFree();
         var config = packet.Effect switch
         {
@@ -2795,6 +3182,7 @@ public partial class GameScene : Control
     {
         var target = GetMagicTargetNode(objectID);
         if (target == null) return;
+        PlayEffectSound(effect);
         var def = effect switch
         {
             Effect.TeleportOut => new MagicEffectTable.ImpactDef { File = LibraryFile.Magic, StartIndex = 110, FrameCount = 10, Colour = Colors.White, BlendRate = 0.6f },
@@ -2824,7 +3212,12 @@ public partial class GameScene : Control
         };
         if (def == null) return;
         if (effect != Effect.TeleportOut)
-            SpawnImpactTarget(def, target);
+        {
+            if (effect == Effect.ChainOfFireExplode)
+                SpawnImpactTarget(def, target, MirDirection.Up, SoundIndex.ChainofFireExplode, 8);
+            else
+                SpawnImpactTarget(def, target);
+        }
         if (effect == Effect.TeleportOut)
         {
             // 旧端 TeleportOut 倒放，保持同一目标锚点。
@@ -2837,8 +3230,34 @@ public partial class GameScene : Control
         }
     }
 
+    private void PlayEffectSound(Effect effect)
+    {
+        var sound = effect switch
+        {
+            Effect.TeleportOut => SoundIndex.TeleportOut,
+            Effect.TeleportIn => SoundIndex.TeleportIn,
+            Effect.ThunderBolt => SoundIndex.LightningStrikeEnd,
+            Effect.FullBloom => SoundIndex.FullBloom,
+            Effect.WhiteLotus => SoundIndex.WhiteLotus,
+            Effect.RedLotus => SoundIndex.RedLotus,
+            Effect.SweetBrier => SoundIndex.SweetBrier,
+            Effect.Karma => SoundIndex.Karma,
+            Effect.DanceOfSwallow => SoundIndex.DanceOfSwallowsEnd,
+            Effect.FlashOfLight => SoundIndex.FlashOfLightEnd,
+            Effect.ParasiteExplode => SoundIndex.ParasiteExplode,
+            Effect.FrostBiteEnd => SoundIndex.FireStormEnd,
+            Effect.ChainOfFireExplode => SoundIndex.None,
+            Effect.MirrorImage => SoundIndex.SummonSkeletonEnd,
+            Effect.HundredFist => SoundIndex.HundredFist,
+            Effect.IceAuraEnd => SoundIndex.GreaterIceBoltEnd,
+            _ => SoundIndex.None,
+        };
+        PlaySound(sound);
+    }
+
     private void OnMapEffect(System.Drawing.Point location, Effect effect, MirDirection direction)
     {
+        PlayMapEffectSound(effect);
         var def = effect switch
         {
             Effect.SummonSkeleton => new MagicEffectTable.CastEffect { File = LibraryFile.Magic, StartIndex = 750, FrameCount = 10, Colour = MagicEffectTable.Phantom },
@@ -2856,6 +3275,22 @@ public partial class GameScene : Control
             var fx = GetChildren().OfType<MirEffectNode>().LastOrDefault();
             if (fx != null) fx.Direction = direction;
         }
+    }
+
+    private void PlayMapEffectSound(Effect effect)
+    {
+        var sound = effect switch
+        {
+            Effect.SummonSkeleton => SoundIndex.SummonSkeletonEnd,
+            Effect.SummonShinsu => SoundIndex.SummonShinsuEnd,
+            Effect.CursedDoll => SoundIndex.CursedDollEnd,
+            Effect.UndeadSoul => SoundIndex.SummonDeadEnd,
+            Effect.BurningFireExplode => SoundIndex.FireStormEnd,
+            Effect.HundredFist => SoundIndex.HundredFist,
+            Effect.IceAuraEnd => SoundIndex.GreaterIceBoltEnd,
+            _ => SoundIndex.None,
+        };
+        PlaySound(sound);
     }
 
     private void SpawnCastEffect(MagicEffectTable.CastEffect def, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue, MirDirection castDirection = MirDirection.Up)
@@ -2924,7 +3359,8 @@ public partial class GameScene : Control
     private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target)
         => SpawnImpactTarget(imp, target, MirDirection.Up);
 
-    private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target, MirDirection direction)
+    private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target, MirDirection direction,
+        SoundIndex frameSound = SoundIndex.None, int soundFrame = -1)
     {
         var fx = new MirEffectNode();
         AddChild(fx);
@@ -2940,6 +3376,18 @@ public partial class GameScene : Control
         fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
         fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
+        if (frameSound != SoundIndex.None && soundFrame >= 0)
+        {
+            bool played = false;
+            fx.FrameIndexChanged = frame =>
+            {
+                if (!played && frame == soundFrame)
+                {
+                    played = true;
+                    PlaySound(frameSound);
+                }
+            };
+        }
     }
 
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
@@ -2972,13 +3420,15 @@ public partial class GameScene : Control
             pn.CompleteAction = () => SpawnImpact(impact, toX, toY);
     }
 
-    private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target)
+    private void SpawnProjectileTarget(MagicEffectTable.CastEffect def, int fromX, int fromY, Node2D target,
+        SoundIndex completionSound = SoundIndex.None)
     {
         var proj = def.TargetProjectile ?? def.Projectile;
-        SpawnProjectileDefinitionTarget(proj, fromX, fromY, target, def.Impact);
+        SpawnProjectileDefinitionTarget(proj, fromX, fromY, target, def.Impact, completionSound);
     }
 
-    private void SpawnProjectileDefinitionTarget(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, Node2D target, MagicEffectTable.ImpactDef impact)
+    private void SpawnProjectileDefinitionTarget(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, Node2D target,
+        MagicEffectTable.ImpactDef impact, SoundIndex completionSound = SoundIndex.None)
     {
         if (proj == null) return;
         var pn = new MirProjectileNode();
@@ -2996,7 +3446,12 @@ public partial class GameScene : Control
         pn.FrameLight = proj.FrameLight;
         pn.FrameLightColour = proj.Colour;
         pn.SetStartDelay(proj.StartDelayMs);
-        if (impact != null) pn.CompleteAction = () => SpawnImpactTarget(impact, target);
+        if (impact != null || completionSound != SoundIndex.None)
+            pn.CompleteAction = () =>
+            {
+                if (completionSound != SoundIndex.None) PlaySound(completionSound);
+                if (impact != null) SpawnImpactTarget(impact, target);
+            };
     }
 
     private Node2D GetMagicTargetNode(uint objectID)
@@ -3045,7 +3500,7 @@ public partial class GameScene : Control
             _player.Health += change;
             _currentHP = _player.Health;
             _mainPanel?.SetHealth(_currentHP);
-            SpawnDamagePopup(_player, change, critical);
+            if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(_player, change, critical);
             }
             _player.ShowHealthBar = true;
             if (!miss && !block) _player.PlayStruck();
@@ -3058,7 +3513,7 @@ public partial class GameScene : Control
             {
                 ob.Health += change;
                 ob.SetAnimation(MirAnimation.Struck);
-                SpawnDamagePopup(ob, change, critical);
+                if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(ob, change, critical);
             }
             _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
             return;
@@ -3070,7 +3525,7 @@ public partial class GameScene : Control
             {
                 player.Health += change;
                 player.PlayStruck();
-                SpawnDamagePopup(player, change, critical);
+                if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(player, change, critical);
             }
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
@@ -3182,6 +3637,7 @@ public partial class GameScene : Control
             ob.CellY = loc.Y;
             ob.Direction = dir;
             ob.SetAnimation(MirAnimation.Struck);
+            ob.PlayStruckSound();
             ob.Position = ComputeObjectScreenPos(loc.X, loc.Y);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
@@ -3242,7 +3698,7 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_chatLog);
         _chatTextBox = new ChatTextBox();
         _uiLayer.AddChild(_chatTextBox);
-        _chatTextBox.Visible = true;
+        _chatTextBox.Visible = !ClientSettings.HideChatBar;
 
         _miniMap = new MiniMapDialog();
         _uiLayer.AddChild(_miniMap);
@@ -3252,7 +3708,7 @@ public partial class GameScene : Control
 
         _questTracker = new QuestTrackerDialog();
         _uiLayer.AddChild(_questTracker);
-        _questTracker.Visible = true;
+        _questTracker.Visible = ClientSettings.QuestTrackerVisible;
 
         _questDialog = new QuestDialog();
         _uiLayer.AddChild(_questDialog);
@@ -3264,6 +3720,10 @@ public partial class GameScene : Control
         _bigMap = new BigMapDialog();
         _bigMap.SetRecenterMapProvider(() => GetMapInfo(_playerMapIndex), OpenBigMapForMap);
         _uiLayer.AddChild(_bigMap);
+        // 原版进入地图时只显示右上角小地图；大地图只能由 M 键/小地图按钮主动打开。
+        // DXWindow 的默认隐藏状态不能作为 HUD 初始化后的唯一不变量，显式复位避免
+        // 子控件 Ready/布局或网络初始化过程中把窗口带回可见状态。
+        _bigMap.Visible = false;
 
         // ---- M9: 背包/角色/仓库/腰带对话框 ----
         _inventoryDialog = new InventoryDialog();
@@ -3430,6 +3890,62 @@ public partial class GameScene : Control
     }
 
     /// <summary>
+    /// 2 倍 UI 的回归审计。所有 HUD 控件都以旧客户端的逻辑像素布局，
+    /// CanvasLayer 负责最终放大；这里同时检查视觉锚点、按钮命中开关和
+    /// MagicBar 的输入层，防止“看起来在这里、实际点不到”的回归。
+    /// </summary>
+    private void RunUiLayoutAudit()
+    {
+        Vector2 viewport = GetViewport().GetVisibleRect().Size;
+        Vector2 logicalViewport = viewport / UiScale;
+        bool pass = _uiLayer != null
+            && Mathf.IsEqualApprox(_uiLayer.Transform.X.X, UiScale)
+            && Mathf.IsEqualApprox(_uiLayer.Transform.Y.Y, UiScale)
+            && _mainPanel != null && _magicBar != null;
+
+        if (pass)
+        {
+            pass &= _mainPanel.CharacterButton.Position.IsEqualApprox(new Vector2(650, 23));
+            pass &= _mainPanel.InventoryButton.Position.IsEqualApprox(new Vector2(689, 23));
+            pass &= _mainPanel.SpellButton.Position.IsEqualApprox(new Vector2(728, 23));
+            pass &= _mainPanel.MenuButton.Position.IsEqualApprox(new Vector2(923, 23));
+            pass &= _mainPanel.CashShopButton.Position.IsEqualApprox(new Vector2(972, 16));
+            pass &= _mainPanel.CharacterButton.MouseFilter == Control.MouseFilterEnum.Stop;
+            pass &= _mainPanel.InventoryButton.MouseFilter == Control.MouseFilterEnum.Stop;
+            pass &= _mainPanel.SpellButton.MouseFilter == Control.MouseFilterEnum.Stop;
+            pass &= _magicBar.MouseFilter == Control.MouseFilterEnum.Stop;
+
+            // headless Godot 使用 64x64 的虚拟视口，无法验证真实窗口边界；
+            // 真实窗口审计仍检查完整的锚点和命中区域。
+            if (viewport.X > 128 && viewport.Y > 128)
+            {
+                Rect2 panel = _mainPanel.GetRect();
+                pass &= panel.Position.X >= 0 && panel.End.X <= logicalViewport.X + 1
+                    && panel.Position.Y >= 0 && panel.End.Y <= logicalViewport.Y + 1;
+            }
+            foreach (var button in new[]
+                     {
+                         _mainPanel.CharacterButton, _mainPanel.InventoryButton,
+                         _mainPanel.SpellButton, _mainPanel.QuestButton,
+                         _mainPanel.MailButton, _mainPanel.BeltButton,
+                         _mainPanel.GroupButton, _mainPanel.MenuButton,
+                         _mainPanel.CashShopButton,
+                     })
+            {
+                Rect2 local = button.GetRect();
+                pass &= local.Position.X >= 0 && local.Position.Y >= 0
+                    && local.End.X <= _mainPanel.Size.X + 1
+                    && local.End.Y <= _mainPanel.Size.Y + 1;
+            }
+        }
+
+        GD.Print(pass
+            ? $"[UILayoutAudit] PASS scale={UiScale} viewport={viewport} logical={logicalViewport}"
+            : $"[UILayoutAudit] FAIL scale={_uiLayer?.Transform} viewport={viewport} logical={logicalViewport}"
+              + $" panel={_mainPanel?.Position}/{_mainPanel?.Size} magic={_magicBar?.Position}/{_magicBar?.Size}");
+    }
+
+    /// <summary>
     /// 鼠标是否悬停在游戏 UI 上 (所有窗口/面板都在 _uiLayer 下)。
     /// UI 上的左/右键是操作界面, 不是移动角色 —— MouseWalker 据此屏蔽移动。
     /// 等价原版 MapControl.ProcessInput 的 MouseControl == this 判断。
@@ -3461,13 +3977,26 @@ public partial class GameScene : Control
 
     private bool BlockLeftMouseMovement()
     {
+        // 原版 MapControl.OnMouseDown 优先处理已拾起的货币并打开数量窗口；
+        // MouseWalker 独立运行时也必须屏蔽同一帧的普通移动请求。
+        if (_selectedCurrency != null || DXItemCell.SelectedCell != null) return true;
         var mouseObject = _combatController?.MouseObject;
         if (IsFishingActive || IsTamingActive)
             return true;
-        if (mouseObject != null && (mouseObject.Type == ObjectRenderer.Kind.Item
-            || (!mouseObject.Dead && !(mouseObject.Type == ObjectRenderer.Kind.Monster
-                && !string.IsNullOrWhiteSpace(mouseObject.PetOwner)))))
-            return true;
+        if (mouseObject != null)
+        {
+            // 原版只有鼠标所在格就是玩家当前格时才拾取；远处的掉落物
+            // 仍允许左键持续走近，否则点击远处物品会立即发一个必失败的
+            // PickUp，同时 MouseWalker 又被拦截，表现为“不能捡东西”。
+            if (mouseObject.Type == ObjectRenderer.Kind.Item)
+            {
+                if (mouseObject.CellX == _playerLocation.X && mouseObject.CellY == _playerLocation.Y)
+                    return true;
+                // 原版采矿分支允许矿点上有掉落物；继续执行下方的矿点判断。
+            }
+            else if (!mouseObject.Dead)
+                return true;
+        }
 
         // 只有满足原版采矿条件时才拦截移动；普通相邻空地点击仍然是走路。
         var target = _combatController?.MouseCell() ?? _playerLocation;
@@ -3542,19 +4071,19 @@ public partial class GameScene : Control
 
         if (_miniMap != null)
             _miniMap.Location = new Vector2I(
-                Math.Max(0, (int)(vp.X - _miniMap.Size.X)), 0);
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X - 4)), 8);
 
         if (_questTracker != null)
             _questTracker.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _questTracker.Size.X)),
-                (int)_miniMap.Size.Y + 5);
+                (int)_miniMap.Size.Y + 13);
 
         if (_questDialog != null)
             Center(_questDialog);
 
         if (_buffDialog != null)
             _buffDialog.Location = new Vector2I(
-                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 5)), 0);
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 10)), 8);
 
         if (_groupHealthPanel != null)
             _groupHealthPanel.Location = new Vector2I(12, 48);
@@ -3672,11 +4201,25 @@ public partial class GameScene : Control
         if (map == null) return;
         var vp = GetViewport().GetVisibleRect().Size / UiScale;
         bool isCurrent = map.Index == _playerMapIndex;
-        _bigMap.SetMap(map, _mapView.Map?.Width ?? 0, _mapView.Map?.Height ?? 0, _playerObjectID, isCurrent);
+        int mapWidth = _mapView.Map?.Width ?? 0;
+        int mapHeight = _mapView.Map?.Height ?? 0;
+        string mapPath = ProjectSettings.GlobalizePath($"res://../Debug/Client/Map/{map.FileName}.map");
+        if (!MirMap.TryGetDimensions(mapPath, out int selectedWidth, out int selectedHeight))
+        {
+            selectedWidth = mapWidth;
+            selectedHeight = mapHeight;
+        }
+        _bigMap.SetMap(map, selectedWidth, selectedHeight, _playerObjectID, isCurrent);
         _bigMap.Location = new Vector2I(
             Math.Max(0, (int)((vp.X - _bigMap.Size.X) / 2f)),
             Math.Max(0, (int)((vp.Y - _bigMap.Size.Y) / 2f)));
         _bigMap.Visible = true;
+    }
+
+    public void OpenQuestMap(NPCInfo npc)
+    {
+        if (npc?.Region?.Map != null)
+            OpenBigMapForMap(npc.Region.Map);
     }
 
     // StartGame 数据 -> HUD (等级/职业/属性/血蓝/经验/Buff/任务/攻击宠物模式)
@@ -3913,6 +4456,7 @@ public partial class GameScene : Control
     {
         _autoPathRoutes.Clear();
         if (packet?.Routes != null) _autoPathRoutes.AddRange(packet.Routes);
+        _autoPathCancelPending = false;
         UpdateAutoPathProgress();
     }
 
@@ -4107,6 +4651,9 @@ public partial class GameScene : Control
             case GridType.Equipment: return Equipment;
             case GridType.Storage: return Storage;
             case GridType.PartsStorage: return PartsStorage;
+            case GridType.GuildStorage: return _guildDialog?.GuildStorageItems;
+            case GridType.CompanionInventory: return CompanionInventory;
+            case GridType.CompanionEquipment: return CompanionEquipment;
             default: return null;
         }
     }
@@ -4127,19 +4674,31 @@ public partial class GameScene : Control
             GridType.Equipment => EquipmentCells,
             GridType.Belt => _beltDialog?.Grid?.Cells,
             GridType.Storage => _storageDialog?.Grid?.Cells,
+            GridType.PartsStorage => _storageDialog?.PartGrid?.Cells,
+            GridType.GuildStorage => GuildStorageItemCells,
+            GridType.CompanionInventory => CompanionInventoryCells,
+            GridType.CompanionEquipment => CompanionEquipmentCells,
             _ => null,
         };
         if (cells != null && slot >= 0 && slot < cells.Length && cells[slot] != null)
+        {
             cells[slot].Locked = false;
+            cells[slot].Selected = false;
+            cells[slot].UpdateBorder();
+        }
     }
 
     // 批量变更后刷新所有可见格
-    private void RefreshItemGrids()
+    public void RefreshItemGrids()
     {
         foreach (var c in InventoryCells) c?.RefreshItem();
         foreach (var c in EquipmentCells) c?.RefreshItem();
         _beltDialog?.Grid?.RefreshGrid();
         _storageDialog?.Grid?.RefreshGrid();
+        _storageDialog?.PartGrid?.RefreshGrid();
+        _companionDialog?.InventoryGrid?.RefreshGrid();
+        foreach (var c in CompanionEquipmentCells) c?.RefreshItem();
+        foreach (var c in GuildStorageItemCells) c?.RefreshItem();
     }
 
     // 背包权重重算 (服务端未发 WeightUpdate 时的本地兜底)
@@ -4208,7 +4767,24 @@ public partial class GameScene : Control
     public void SendItemMove(GridType fromGrid, GridType toGrid, int fromSlot, int toSlot, bool mergeItem)
         => _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
     public void SendItemSplit(GridType grid, int slot, long count)
-        => _net.Connection.SendItemSplit(grid, slot, count);
+    {
+        if (IsObserver || count <= 0) return;
+        DXItemCell[] cells = grid switch
+        {
+            GridType.Inventory => InventoryCells,
+            GridType.Storage => StorageCells,
+            GridType.PartsStorage => PartsStorageCells,
+            GridType.GuildStorage => GuildStorageItemCells,
+            GridType.CompanionInventory => CompanionInventoryCells,
+            _ => null,
+        };
+        if (cells == null || slot < 0 || slot >= cells.Length || cells[slot] == null || cells[slot].Item == null)
+            return;
+        if (cells[slot].Locked) return;
+        cells[slot].Locked = true;
+        cells[slot].UpdateBorder();
+        _net.Connection.SendItemSplit(grid, slot, count);
+    }
     public void OpenItemSplitDialog(ClientUserItem item, GridType grid, int slot)
     {
         var dialog = new ItemAmountDialog(item, count => SendItemSplit(grid, slot, count));
@@ -4216,7 +4792,14 @@ public partial class GameScene : Control
     }
 
     public void SendItemUse(GridType grid, int slot)
-        => _net.Connection.SendItemUse(grid, slot);
+    {
+        var item = ItemAt(grid, slot);
+        if (item == null || item.Index == 0) return;
+        var key = (grid, slot);
+        if (_pendingItemUses.ContainsKey(key)) return;
+        _pendingItemUses[key] = item.Index;
+        _net.Connection.SendItemUse(grid, slot);
+    }
 
     public void SendItemLock(GridType grid, int slot, bool locked)
         => _net.Connection.SendItemLock(grid, slot, locked);
@@ -4225,7 +4808,14 @@ public partial class GameScene : Control
         => _net.Connection.SendItemSort(grid);
 
     public void SendItemDelete(GridType grid, int slot)
-        => _net.Connection.SendItemDelete(grid, slot);
+    {
+        var item = ItemAt(grid, slot);
+        if (item == null || item.Index == 0) return;
+        var key = (grid, slot);
+        if (_pendingItemDeletes.ContainsKey(key)) return;
+        _pendingItemDeletes[key] = item.Index;
+        _net.Connection.SendItemDelete(grid, slot);
+    }
     public void SendItemDrop(CellLinkInfo link)
         => _net.Connection.SendItemDrop(link);
     public void SendMarriageTeleport()
@@ -4237,7 +4827,21 @@ public partial class GameScene : Control
         _net?.Connection?.SendAutoPathWaypoint(mapIndex, new System.Drawing.Point(x, y));
         _net?.Connection?.SendAutoPathMoveStarted();
     }
-    public void CancelAutoPath() => _net?.Connection?.SendAutoPathCancel();
+
+    /// <summary>旧版大图双击 NPC 图标: 自动寻路到该 NPC。</summary>
+    public void SendAutoPathStart(int npcIndex)
+    {
+        _net?.Connection?.SendAutoPathStart(npcIndex);
+        _net?.Connection?.SendAutoPathMoveStarted();
+    }
+    public void CancelAutoPath()
+    {
+        _autoPathCancelPending = true;
+        _autoPathRoutes.Clear();
+        _pendingAutoPathMove = null;
+        UpdateAutoPathProgress();
+        _net?.Connection?.SendAutoPathCancel();
+    }
 
     public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
         => _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
@@ -4274,6 +4878,8 @@ public partial class GameScene : Control
         => _net?.Connection?.SendMarketConsign(grid, slot, count, price, guildFunds);
     public void SendMarketHistory(int index, int partIndex, int display) => _net?.Connection?.SendMarketHistory(index, partIndex, display);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
+    public void SendFishingCast(FishingState state, bool caughtFish)
+        => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y), caughtFish);
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
     public void CancelTaming() => _net?.Connection?.SendTaming(_tamingTargetObjectID, TamingState.Cancel, _playerDirection);
     public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
@@ -4283,11 +4889,17 @@ public partial class GameScene : Control
     public void SendMilestoneActive(int index, bool active) => _net?.Connection?.SendMilestoneActive(index, active);
     public void SendSelectLanguage(string language) => _net?.Connection?.SendSelectLanguage(language);
     public void SendGenderChange(MirGender gender, int hairType)
-        => _net?.Connection?.SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+        => SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+    public void SendGenderChange(MirGender gender, int hairType, System.Drawing.Color hairColour)
+        => _net?.Connection?.SendGenderChange(gender, hairType, hairColour);
     public void SendHairChange(int hairType)
-        => _net?.Connection?.SendHairChange(hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+        => SendHairChange(hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
+    public void SendHairChange(int hairType, System.Drawing.Color hairColour)
+        => _net?.Connection?.SendHairChange(hairType, hairColour);
     public void SendArmourDye()
-        => _net?.Connection?.SendArmourDye(StartInfo?.ArmourColour ?? System.Drawing.Color.White);
+        => SendArmourDye(StartInfo?.ArmourColour ?? System.Drawing.Color.White);
+    public void SendArmourDye(System.Drawing.Color colour)
+        => _net?.Connection?.SendArmourDye(colour);
     public void SendNameChange(string name) => _net?.Connection?.SendNameChange(name);
 
     public void SendJoinInstance(int index) => _net?.Connection?.SendJoinInstance(index);
@@ -4407,8 +5019,14 @@ public partial class GameScene : Control
             FilterClass = classes ?? new List<MirClass>(), FilterRarity = rarities ?? new List<Rarity>(), FilterItemType = itemTypes ?? new List<ItemType>(),
         });
     public void SendCompanionStore() { if (Companion != null) _net?.Connection?.SendCompanionStore(Companion.Index); }
-    public void SendCompanionRetrieve() { if (Companion != null) _net?.Connection?.SendCompanionRetrieve(Companion.Index); }
-    public void SendCompanionRelease() { if (Companion != null) _net?.Connection?.SendCompanionRelease(Companion.Index); }
+    public void SendCompanionRetrieve(int index)
+    {
+        if (index >= 0) _net?.Connection?.SendCompanionRetrieve(index);
+    }
+    public void SendCompanionRelease(int index)
+    {
+        if (index >= 0) _net?.Connection?.SendCompanionRelease(index);
+    }
     public void SendCompanionUnlock(int index) => _net?.Connection?.SendCompanionUnlock(index);
     public void SendCompanionAdopt(int index, string name) => _net?.Connection?.SendCompanionAdopt(index, name);
     public void SendGuildEditMember(int index, string rank, GuildPermission permission)
@@ -4450,12 +5068,30 @@ public partial class GameScene : Control
         _fortuneDialog?.Search();
     }
 
+    /// <summary>原版 MapControl 的拾取节流同时适用于鼠标点击和 Tab。</summary>
     public void SendPickUp()
-        => _net.Connection.SendPickUp();
+    {
+        double now = Godot.Time.GetTicksMsec();
+        if (now < _pickUpNextMs) return;
+        _pickUpNextMs = now + 250.0;
+        _net?.Connection?.SendPickUp();
+    }
     public void SendGroupSwitch(bool allow)
         => _net.Connection.Enqueue(new C.GroupSwitch { Allow = allow });
     public void SendGroupInvite(string name)
-        => _net.Connection.Enqueue(new C.GroupInvite { Name = name });
+        => _net?.Connection?.Enqueue(new C.GroupInvite { Name = name });
+
+    /// <summary>旧版 GuildDialog 成员行右键: 在大地图上定位成员 (仅同地图在线成员有本地数据;
+    /// 旧版靠 DataDictionary 全服位置缓存, Godot 仅维护当前地图对象)。</summary>
+    public void ShowGuildMemberOnMap(ClientGuildMemberInfo member)
+    {
+        if (_bigMap == null || member == null) return;
+        if (_objects.TryGetValue(member.ObjectID, out var ob) && ob.Type != ObjectRenderer.Kind.Item)
+        {
+            OpenBigMap();
+            _bigMap.SetPlayerLocation(ob.CellX, ob.CellY);
+        }
+    }
     public void SendGroupRemove(uint objectId)
     {
         if (_objects.TryGetValue(objectId, out var member))
@@ -4516,18 +5152,28 @@ public partial class GameScene : Control
     {
         if (ShowMagicBarFrames == value) return;
         ShowMagicBarFrames = value;
+        ClientSettings.ShowMagicBarFrames = value;
+        ClientSettings.Save();
         RefreshMagicBars();
     }
 
-    public void SetRightClickDeTarget(bool value) => _rightClickDeTarget = value;
-    public void SetEscapeCloseAll(bool value) => _escapeCloseAll = value;
+    public void SetRightClickDeTarget(bool value)
+    {
+        _rightClickDeTarget = value;
+        ClientSettings.RightClickDeTarget = value;
+        ClientSettings.Save();
+    }
+
+    public void SetEscapeCloseAll(bool value)
+    {
+        _escapeCloseAll = value;
+        ClientSettings.EscapeCloseAll = value;
+        ClientSettings.Save();
+    }
     // ---- Tab 拾取 (250ms 节流) ----
     private void PickUpItems()
     {
-        double now = Godot.Time.GetTicksMsec();
-        if (now < _pickUpNextMs) return;
-        _pickUpNextMs = now + 250;
-        _net.Connection.SendPickUp();
+        SendPickUp();
     }
 
     // ---- 使用冷却 ----
@@ -4614,7 +5260,8 @@ public partial class GameScene : Control
                 link.LinkItemIndex = replaceItem.Index;
                 if (cell != null) cell.QuickItem = replaceItem;
             }
-            SendBeltLinkChanged(link.Slot, link.LinkInfoIndex, link.LinkItemIndex);
+            if (!IsObserver)
+                SendBeltLinkChanged(link.Slot, link.LinkInfoIndex, link.LinkItemIndex);
         }
     }
 
@@ -4623,7 +5270,42 @@ public partial class GameScene : Control
     // 拾取获得/系统发放
     private void OnItemsGained(S.ItemsGained p)
     {
-        AddItems(p.Items ?? new List<ClientUserItem>());
+        var items = p?.Items ?? new List<ClientUserItem>();
+        MarkGainedItems(items, false);
+        AddItems(items);
+    }
+
+    private void MarkGainedItems(IEnumerable<ClientUserItem> items, bool companion)
+    {
+        foreach (var item in items ?? Enumerable.Empty<ClientUserItem>())
+        {
+            if (!MarkGainedItemForAudit(item)) continue;
+            // 原版获得提示对部件显示其 AddedStats.ItemIndex 对应的真实物品名，
+            // 而不是显示通用的“物品部件”壳信息。
+            var displayInfo = GainedDisplayInfo(item);
+            var name = displayInfo?.ItemName ?? item.Info.ItemName ?? string.Empty;
+            var suffix = item.Count > 1 ? $" x{item.Count}" : string.Empty;
+            if (item.Flags.HasFlag(UserItemFlags.QuestItem)) suffix += " (任务)";
+            if (item.Info.ItemEffect == ItemEffect.ItemPart) suffix += " [部件]";
+            ReceiveChat($"{(companion ? "伙伴获得" : "获得")}: {name}{suffix}", MessageType.Combat);
+        }
+    }
+
+    public static ItemInfo GainedDisplayInfo(ClientUserItem item)
+    {
+        if (item?.Info == null) return null;
+        if (item.Info.ItemEffect != ItemEffect.ItemPart || item.AddedStats == null) return item.Info;
+        int partIndex = item.AddedStats[Stat.ItemIndex];
+        return partIndex > 0
+            ? Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == partIndex) ?? item.Info
+            : item.Info;
+    }
+
+    public static bool MarkGainedItemForAudit(ClientUserItem item)
+    {
+        if (item?.Info == null || item.Info.ItemEffect == ItemEffect.Experience) return false;
+        item.New = true;
+        return true;
     }
 
     public void AddItems(List<ClientUserItem> items)
@@ -4652,6 +5334,7 @@ public partial class GameScene : Control
                     if ((cellItem.Flags & UserItemFlags.Bound) != (item.Flags & UserItemFlags.Bound)) continue;
                     if ((cellItem.Flags & UserItemFlags.Worthless) != (item.Flags & UserItemFlags.Worthless)) continue;
                     if ((cellItem.Flags & UserItemFlags.NonRefinable) != (item.Flags & UserItemFlags.NonRefinable)) continue;
+                    if (cellItem.ExpireTime != item.ExpireTime) continue;
                     if (!cellItem.AddedStats.Compare(item.AddedStats)) continue;
 
                     if (cellItem.Count + item.Count <= item.Info.StackSize)
@@ -4677,17 +5360,112 @@ public partial class GameScene : Control
         RefreshItemGrids();
     }
 
+    /// <summary>
+    /// 原版 AddCompanionItems：伙伴获得物品包是在服务端合并前发送的，
+    /// 因此客户端必须按现有伙伴背包重新堆叠，不能把临时回包直接追加到
+    /// ClientUserCompanion.Items 后按 Slot 重建，否则合并物品常会覆盖 0 格。
+    /// </summary>
+    public void AddCompanionItems(List<ClientUserItem> items)
+    {
+        if (Companion == null || items == null) return;
+
+        foreach (var item in items)
+        {
+            if (item?.Info == null || item.Info.ItemEffect == ItemEffect.Experience) continue;
+
+            var currency = Currencies.FirstOrDefault(x => x?.Info?.DropItem == item.Info);
+            if (currency != null)
+            {
+                currency.Amount += item.Count;
+                RefreshCurrency();
+                continue;
+            }
+
+            bool handled = false;
+            if (item.Info.StackSize > 1 && !item.Flags.HasFlag(UserItemFlags.Expirable))
+            {
+                for (int i = 0; i < CompanionInventory.Length; i++)
+                {
+                    var existing = CompanionInventory[i];
+                    if (existing == null || existing.Info != item.Info ||
+                        existing.Count >= existing.Info.StackSize ||
+                        existing.Flags.HasFlag(UserItemFlags.Expirable) != item.Flags.HasFlag(UserItemFlags.Expirable) ||
+                        existing.Flags.HasFlag(UserItemFlags.Bound) != item.Flags.HasFlag(UserItemFlags.Bound) ||
+                        existing.Flags.HasFlag(UserItemFlags.Worthless) != item.Flags.HasFlag(UserItemFlags.Worthless) ||
+                        existing.Flags.HasFlag(UserItemFlags.NonRefinable) != item.Flags.HasFlag(UserItemFlags.NonRefinable) ||
+                        !existing.AddedStats.Compare(item.AddedStats)) continue;
+
+                    if (existing.Count + item.Count <= existing.Info.StackSize)
+                    {
+                        existing.Count += item.Count;
+                        handled = true;
+                        break;
+                    }
+
+                    item.Count -= existing.Info.StackSize - existing.Count;
+                    existing.Count = existing.Info.StackSize;
+                }
+            }
+            if (handled) continue;
+
+            for (int i = 0; i < CompanionInventory.Length; i++)
+            {
+                if (CompanionInventory[i] != null) continue;
+                CompanionInventory[i] = item;
+                item.Slot = i;
+                break;
+            }
+        }
+
+        SyncCompanionItemList();
+        _companionDialog?.ApplyCompanion(Companion);
+        RefreshItemGrids();
+    }
+
+    private void SyncCompanionItemList()
+    {
+        if (Companion == null) return;
+        Companion.Items = new List<ClientUserItem>();
+        foreach (var item in CompanionInventory)
+            if (item != null) Companion.Items.Add(item);
+        for (int i = 0; i < CompanionEquipment.Length; i++)
+        {
+            var item = CompanionEquipment[i];
+            if (item == null) continue;
+            item.Slot = Globals.EquipmentOffSet + i;
+            Companion.Items.Add(item);
+        }
+    }
+
     // 物品移动 (服务端权威, 直接执行; 原版无双向确认)
     private void OnItemMove(S.ItemMove p)
     {
+        if (p == null) return;
+        bool operationMove =
+            (p.FromGrid == GridType.Inventory && p.ToGrid == GridType.Inventory
+                && ((p.FromSlot == _operationAuditSourceSlot && p.ToSlot == _operationAuditTargetSlot && _operationAuditStage == 1)
+                    || (p.FromSlot == _operationAuditTargetSlot && p.ToSlot == _operationAuditSourceSlot && _operationAuditStage == 2)))
+            || (p.FromGrid == GridType.Inventory && p.ToGrid == GridType.Equipment
+                && p.FromSlot == _operationAuditSourceSlot && p.ToSlot == _operationAuditEquipmentSlot && _operationAuditStage == 4)
+            || (p.FromGrid == GridType.Equipment && p.ToGrid == GridType.Inventory
+                && p.FromSlot == _operationAuditEquipmentSlot && p.ToSlot == _operationAuditTargetSlot && _operationAuditStage == 3)
+            || (p.FromGrid == GridType.Equipment && p.ToGrid == GridType.Inventory
+                && p.FromSlot == _operationAuditEquipmentSlot && p.ToSlot == _operationAuditSourceSlot && _operationAuditStage == 5)
+            || (p.FromGrid == GridType.Inventory && p.ToGrid == GridType.Equipment
+                && p.FromSlot == _operationAuditTargetSlot && p.ToSlot == _operationAuditEquipmentSlot && _operationAuditStage == 6);
+        if (AutoLoginArgs.OperationAudit && operationMove)
+        {
+            _operationAuditLastSuccess = p.Success;
+            _operationAuditResponsePending = true;
+            CallDeferred(nameof(ContinueOperationAudit));
+        }
+        UnlockCell(p.FromGrid, p.FromSlot);
+        UnlockCell(p.ToGrid, p.ToSlot);
         var fromArr = GetGrid(p.FromGrid);
         var toArr = GetGrid(p.ToGrid);
         if (fromArr == null || toArr == null) return;
         if (p.FromSlot < 0 || p.FromSlot >= fromArr.Length) return;
         if (p.ToSlot < 0 || p.ToSlot >= toArr.Length) return;
-
-        UnlockCell(p.FromGrid, p.FromSlot);
-        UnlockCell(p.ToGrid, p.ToSlot);
 
         var fromItem = fromArr[p.FromSlot];
         var toItem = toArr[p.ToSlot];
@@ -4695,9 +5473,9 @@ public partial class GameScene : Control
         // 背包<->装备移动: 清理旧物品的腰带链接
         if (p.FromGrid != p.ToGrid && p.Success)
         {
-            if (p.FromGrid == GridType.Inventory && fromItem != null && !fromItem.Info.ShouldLinkInfo)
+            if (p.FromGrid is GridType.Inventory or GridType.CompanionInventory && fromItem != null && !fromItem.Info.ShouldLinkInfo)
                 ClearBeltLinkItem(fromItem.Index, p.ToGrid == GridType.Equipment ? toItem : null);
-            else if (p.ToGrid == GridType.Inventory && toItem != null && !toItem.Info.ShouldLinkInfo)
+            else if (p.ToGrid is GridType.Inventory or GridType.CompanionInventory && toItem != null && !toItem.Info.ShouldLinkInfo)
                 ClearBeltLinkItem(toItem.Index, null);
         }
 
@@ -4706,6 +5484,7 @@ public partial class GameScene : Control
         if (p.MergeItem)
         {
             if (fromItem == null || toItem == null) return;
+            if (fromItem.Info != toItem.Info || !DXItemCell.CanMergeItems(fromItem, toItem)) return;
             if (toItem.Count + fromItem.Count <= toItem.Info.StackSize)
             {
                 toItem.Count += fromItem.Count;
@@ -4721,12 +5500,26 @@ public partial class GameScene : Control
         {
             toArr[p.ToSlot] = fromItem;
             fromArr[p.FromSlot] = toItem;
-            if (fromItem != null) fromItem.Slot = p.ToSlot;
-            if (toItem != null) toItem.Slot = p.FromSlot;
+            // 服务端 ClientUserItem.Slot 使用协议槽位：装备/伙伴装备和碎片
+            // 仓库分别带 EquipmentOffSet/PartsStorageOffset；界面数组则使用
+            // 从 0 开始的本地槽位。回包交换后必须按目标网格恢复协议槽位，
+            // 否则下一次伙伴同步、临时链接或仓库回包会引用错误位置。
+            if (fromItem != null) fromItem.Slot = ProtocolItemSlot(p.ToGrid, p.ToSlot);
+            if (toItem != null) toItem.Slot = ProtocolItemSlot(p.FromGrid, p.FromSlot);
         }
 
+        if (p.FromGrid is GridType.CompanionInventory or GridType.CompanionEquipment ||
+            p.ToGrid is GridType.CompanionInventory or GridType.CompanionEquipment)
+            SyncCompanionItemList();
         RefreshItemGrids();
     }
+
+    private static int ProtocolItemSlot(GridType grid, int slot) => grid switch
+    {
+        GridType.Equipment or GridType.CompanionEquipment => slot + Globals.EquipmentOffSet,
+        GridType.PartsStorage => slot + Globals.PartsStorageOffset,
+        _ => slot,
+    };
 
     // 整理 (清空重排)
     private void OnItemSort(S.ItemSort p)
@@ -4734,9 +5527,34 @@ public partial class GameScene : Control
         var arr = GetGrid(p.Grid);
         if (arr == null) return;
 
-        for (int i = 0; i < arr.Length; i++) arr[i] = null;
+        var cells = p.Grid switch
+        {
+            GridType.Inventory => InventoryCells,
+            GridType.Storage => StorageCells,
+            GridType.PartsStorage => PartsStorageCells,
+            GridType.GuildStorage => GuildStorageItemCells,
+            GridType.CompanionInventory => CompanionInventoryCells,
+            GridType.CompanionEquipment => CompanionEquipmentCells,
+            _ => Array.Empty<DXItemCell>(),
+        };
+        for (int i = 0; i < arr.Length; i++)
+        {
+            if (i < cells.Length && cells[i] != null)
+            {
+                cells[i].Locked = false;
+                cells[i].Selected = false;
+                cells[i].UpdateBorder();
+            }
+        }
 
-        if (p.Success && p.Items != null)
+        DXItemCell.SelectedCell = null;
+        // 失败/异常整理回包只能解除客户端锁，不能清空当前权威物品数组。
+        if (!p.Success) return;
+
+        for (int i = 0; i < arr.Length; i++)
+            arr[i] = null;
+
+        if (p.Items != null)
         {
             foreach (var item in p.Items)
             {
@@ -4746,35 +5564,64 @@ public partial class GameScene : Control
                 arr[slot] = item;
             }
         }
+        if (p.Grid is GridType.CompanionInventory or GridType.CompanionEquipment)
+            SyncCompanionItemList();
         RefreshItemGrids();
     }
 
     // 拆分
     private void OnItemSplit(S.ItemSplit p)
     {
+        if (p == null) return;
+        UnlockCell(p.Grid, p.Slot);
         var arr = GetGrid(p.Grid);
         if (arr == null) return;
         if (p.Slot < 0 || p.Slot >= arr.Length) return;
-        UnlockCell(p.Grid, p.Slot);
         if (!p.Success) return;
 
         var fromItem = arr[p.Slot];
         if (fromItem == null) return;
         if (p.NewSlot < 0 || p.NewSlot >= arr.Length) return;
+        // 迟到/重复拆分回包不能覆盖新操作已经写入的目标格，
+        // 也不能把当前堆叠拆出超过现有数量的副本。
+        if (!TryApplyItemSplit(fromItem, arr, p.Slot, p.NewSlot, p.Count)) return;
 
-        arr[p.NewSlot] = new ClientUserItem(fromItem, p.Count) { Slot = p.NewSlot };
-        if (p.Count >= fromItem.Count) arr[p.Slot] = null;
-        else fromItem.Count -= p.Count;
-
+        if (p.Grid == GridType.CompanionInventory) SyncCompanionItemList();
         RefreshItemGrids();
+    }
+
+    public static bool TryApplyItemSplit(ClientUserItem source, ClientUserItem[] grid,
+        int sourceSlot, int newSlot, long count)
+    {
+        if (source == null || grid == null || sourceSlot < 0 || sourceSlot >= grid.Length ||
+            newSlot < 0 || newSlot >= grid.Length || sourceSlot == newSlot ||
+            !ReferenceEquals(grid[sourceSlot], source) || grid[newSlot] != null ||
+            count <= 0 || count > source.Count)
+            return false;
+
+        grid[newSlot] = new ClientUserItem(source, count) { Slot = newSlot };
+        if (count == source.Count) grid[sourceSlot] = null;
+        else source.Count -= count;
+        return true;
     }
 
     // 删除 (丢弃/移除)
     private void OnItemDelete(S.ItemDelete p)
     {
+        if (p == null) return;
         var arr = GetGrid(p.Grid);
         if (arr == null) return;
         if (p.Slot < 0 || p.Slot >= arr.Length) return;
+
+        var key = (p.Grid, p.Slot);
+        if (_pendingItemDeletes.TryGetValue(key, out var expectedIndex))
+        {
+            _pendingItemDeletes.Remove(key);
+            // ItemDelete 没有携带物品身份。若服务端回包已经落后于一次
+            // 槽位复用，旧删除只能被忽略，且不能解锁当前的新物品。
+            if (arr[p.Slot]?.Index != expectedIndex) return;
+        }
+
         UnlockCell(p.Grid, p.Slot);
         DXItemCell.SelectedCell = null;
         if (!p.Success) return;
@@ -4786,6 +5633,7 @@ public partial class GameScene : Control
             ClearBeltLinkItem(item.Index, null);
 
         arr[p.Slot] = null;
+        if (p.Grid == GridType.CompanionInventory) SyncCompanionItemList();
         RefreshItemGrids();
     }
 
@@ -4808,10 +5656,23 @@ public partial class GameScene : Control
     // 数量变更 (使用消耗/拆分结果)
     private void OnItemChanged(S.ItemChanged p)
     {
+        if (p?.Link == null) return;
         var arr = GetGrid(p.Link.GridType);
         if (arr == null) return;
         if (p.Link.Slot < 0 || p.Link.Slot >= arr.Length) return;
+
+        var key = (p.Link.GridType, p.Link.Slot);
+        if (_pendingItemUses.TryGetValue(key, out var expectedIndex))
+        {
+            _pendingItemUses.Remove(key);
+            // ItemChanged 只包含槽位和数量，不包含物品 Index。槽位在请求发出后
+            // 若已被移动/交换，迟到的扣数量回包不能写入当前新物品。
+            if (arr[p.Link.Slot]?.Index != expectedIndex) return;
+        }
+
         UnlockCell(p.Link.GridType, p.Link.Slot);
+        _consignmentDialog?.ItemChanged(p);
+        _npcDialog?.ClearAdvancedLinks(new[] { p.Link });
         if (!p.Success) return;
 
         var item = arr[p.Link.Slot];
@@ -4823,6 +5684,8 @@ public partial class GameScene : Control
         if (p.Link.Count == 0) arr[p.Link.Slot] = null;
         else item.Count = p.Link.Count;
 
+        if (p.Link.GridType is GridType.CompanionInventory or GridType.CompanionEquipment)
+            SyncCompanionItemList();
         RefreshItemGrids();
     }
 
@@ -4860,15 +5723,31 @@ public partial class GameScene : Control
     {
         var item = ItemAt(p.Target.GridType, p.Target.Slot);
         if (item == null) return;
-        item.Experience = p.Experience;
-        item.Level = p.Level;
-        if (p.Level > 0) item.Flags |= UserItemFlags.Bound;
+        ApplyItemExperience(item, p.Experience, p.Level, p.Flags);
         RefreshItemGrids();
+    }
+
+    /// <summary>
+    /// 应用服务端完整的武器熟练度回包。
+    /// 原版直接覆盖 Flags；不能只在升级时追加 Bound，否则降级/失败回包
+    /// 会把旧的绑定状态残留在客户端，进而错误阻止交易、精炼或穿戴。
+    /// </summary>
+    public static void ApplyItemExperience(ClientUserItem item, decimal experience,
+        int level, UserItemFlags flags)
+    {
+        if (item == null) return;
+        item.Experience = experience;
+        item.Level = level;
+        item.Flags = flags;
     }
 
     // 批量变更 (仓库/交易等; Count == 当前 Count 表示整格移除)
     private void OnItemsChanged(S.ItemsChanged p)
     {
+        if (p == null) return;
+        _npcDialog?.ItemsChanged(p?.Links);
+        _npcDialog?.ClearAdvancedLinks(p?.Links);
+        _communicationDialog?.ItemsChanged(p?.Links, p?.Success == true);
         if (p.Links == null)
         {
             DXItemCell.SelectedCell = null;
@@ -4877,10 +5756,13 @@ public partial class GameScene : Control
 
         foreach (var link in p.Links)
         {
+            if (link == null) continue;
+            // 先解锁再校验数组/槽位：仓库、邮件、NPC 等批量操作的异常或迟到回包
+            // 不能把来源格永久留在 Locked 状态。
+            UnlockCell(link.GridType, link.Slot);
             var arr = GetGrid(link.GridType);
             if (arr == null) continue;
             if (link.Slot < 0 || link.Slot >= arr.Length) continue;
-            UnlockCell(link.GridType, link.Slot);
 
             var item = arr[link.Slot];
             if (item == null || !p.Success) continue;
@@ -4888,11 +5770,27 @@ public partial class GameScene : Control
             if (!item.Info.ShouldLinkInfo)
                 ClearBeltLinkItem(item.Index, null);
 
-            if (link.Count == item.Count) arr[link.Slot] = null;
-            else item.Count -= link.Count;
+            if (!TryConsumeItemCount(item, link.Count, out bool remove))
+                continue;
+            if (remove) arr[link.Slot] = null;
         }
         DXItemCell.SelectedCell = null;
+        if (p.Links.Any(x => x?.GridType is GridType.CompanionInventory or GridType.CompanionEquipment))
+            SyncCompanionItemList();
         RefreshItemGrids();
+    }
+
+    public static bool TryConsumeItemCount(ClientUserItem item, long count, out bool remove)
+    {
+        remove = false;
+        if (item == null || count <= 0 || count > item.Count) return false;
+        if (count == item.Count)
+        {
+            remove = true;
+            return true;
+        }
+        item.Count -= count;
+        return true;
     }
 
     // 货币变更
@@ -4900,6 +5798,8 @@ public partial class GameScene : Control
     {
         var currency = Currencies.FirstOrDefault(x => x.CurrencyIndex == currencyIndex);
         if (currency != null) currency.Amount = amount;
+        if (currency?.Info?.Type == CurrencyType.Gold)
+            PlaySound(SoundIndex.GoldGained);
         RefreshCurrency();
         _currencyDialog?.RefreshCurrencies(Currencies);
     }
@@ -4932,12 +5832,21 @@ public partial class GameScene : Control
     {
         if (item?.Info == null) return false;
 
-        if (item.Info.RequiredGender != RequiredGender.None &&
-            item.Info.RequiredGender != (RequiredGender)StartInfo?.Gender)
+        if (StartInfo == null) return false;
+
+        RequiredGender gender = StartInfo.Gender == MirGender.Male ? RequiredGender.Male : RequiredGender.Female;
+        if (!item.Info.RequiredGender.HasFlag(gender))
             return false;
 
-        if (item.Info.RequiredClass != RequiredClass.None &&
-            item.Info.RequiredClass != (RequiredClass)StartInfo?.Class)
+        RequiredClass requiredClass = StartInfo.Class switch
+        {
+            MirClass.Warrior => RequiredClass.Warrior,
+            MirClass.Wizard => RequiredClass.Wizard,
+            MirClass.Taoist => RequiredClass.Taoist,
+            MirClass.Assassin => RequiredClass.Assassin,
+            _ => RequiredClass.None,
+        };
+        if (!item.Info.RequiredClass.HasFlag(requiredClass))
             return false;
 
         switch (item.Info.RequiredType)
@@ -4946,20 +5855,60 @@ public partial class GameScene : Control
                 if (_playerLevel < item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
                 break;
             case RequiredType.MaxLevel:
-                if (_playerLevel > item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
+                if (_playerLevel > item.Info.RequiredAmount || _playerStats[Stat.Rebirth] > 0) return false;
+                break;
+            case RequiredType.AC:
+                if (_playerStats[Stat.MaxAC] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.MR:
+                if (_playerStats[Stat.MaxMR] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.DC:
+                if (_playerStats[Stat.MaxDC] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.MC:
+                if (_playerStats[Stat.MaxMC] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.SC:
+                if (_playerStats[Stat.MaxSC] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.Health:
+                if (_playerStats[Stat.Health] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.Mana:
+                if (_playerStats[Stat.Mana] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.Accuracy:
+                if (_playerStats[Stat.Accuracy] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.Agility:
+                if (_playerStats[Stat.Agility] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.CompanionLevel:
+                if (Companion == null || Companion.Level < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.MaxCompanionLevel:
+                if (Companion == null || Companion.Level > item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.RebirthLevel:
+                if (_playerStats[Stat.Rebirth] < item.Info.RequiredAmount) return false;
+                break;
+            case RequiredType.MaxRebirthLevel:
+                if (_playerStats[Stat.Rebirth] > item.Info.RequiredAmount) return false;
                 break;
         }
 
-        // 负重检查 (原版 User.CheckWeight)
-        int weight = BagWeight + WearWeight + item.Weight;
-        if (weight > _playerStats[Stat.BagWeight] + _playerStats[Stat.WearWeight])
+        if (item.Info.ItemType == ItemType.Book)
         {
-            GD.Print($"[Item] 负重不足, 无法使用 {item.Info.ItemName}");
-            return false;
+            var magic = Globals.MagicInfoList?.Binding.FirstOrDefault(x => x.Index == item.Info.Shape);
+            if (magic == null || magic.School == MagicSchool.None) return false;
+            if (UserMagics.TryGetValue(magic, out var learned) &&
+                (learned.Level < 3 || item.Flags.HasFlag(UserItemFlags.NonRefinable))) return false;
         }
-
-        // Book 类: 魔法系统 (M13) 未移植, 客户端直接拦
-        if (item.Info.ItemType == ItemType.Book) return false;
+        else if (item.Info.ItemType == ItemType.Consumable && item.Info.Shape == 1 &&
+                 _buffs.Values.Any(x => x.Type == BuffType.ItemBuff && x.ItemIndex == item.Info.Index &&
+                                        x.RemainingTime == TimeSpan.MaxValue))
+            return false;
 
         return true;
     }
@@ -4967,6 +5916,7 @@ public partial class GameScene : Control
     public bool CanWearItem(ClientUserItem item, EquipmentSlot slot)
     {
         if (item?.Info == null) return false;
+        if (!CanUseItem(item)) return false;
 
         // 类型与槽位匹配 (原版 CorrectSlot 校验, 客户端先行)
         if (!Functions.CorrectSlot(item.Info.ItemType, slot))
@@ -4975,23 +5925,10 @@ public partial class GameScene : Control
             return false;
         }
 
-        if (item.Info.RequiredGender != RequiredGender.None &&
-            item.Info.RequiredGender != (RequiredGender)StartInfo?.Gender)
+        // 钓鱼配件必须在鱼竿装备时才能穿戴。
+        if (slot is EquipmentSlot.Hook or EquipmentSlot.Float or EquipmentSlot.Bait or EquipmentSlot.Finder or EquipmentSlot.Reel &&
+            Equipment[(int)EquipmentSlot.Weapon]?.Info?.ItemEffect != ItemEffect.FishingRod)
             return false;
-
-        if (item.Info.RequiredClass != RequiredClass.None &&
-            item.Info.RequiredClass != (RequiredClass)StartInfo?.Class)
-            return false;
-
-        switch (item.Info.RequiredType)
-        {
-            case RequiredType.Level:
-                if (_playerLevel < item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
-                break;
-            case RequiredType.MaxLevel:
-                if (_playerLevel > item.Info.RequiredAmount && _playerStats[Stat.Rebirth] == 0) return false;
-                break;
-        }
 
         // 负重: 手持槽 (Weapon/Torch/Shield) 查 HandWeight, 其余查 WearWeight; 卸下旧装备减重
         ClientUserItem old = Equipment[(int)slot];
@@ -5013,6 +5950,28 @@ public partial class GameScene : Control
         return true;
     }
 
+    /// <summary>
+    /// 原版 CanCompanionWearItem：伙伴装备除了物品槽位外，还必须有当前伙伴，
+    /// 并满足 CompanionLevel/MaxCompanionLevel 限制。
+    /// </summary>
+    public bool CanCompanionWearItem(ClientUserItem item, CompanionSlot slot)
+    {
+        if (Companion == null || item?.Info == null) return false;
+        if (!Functions.CorrectSlot(item.Info.ItemType, slot)) return false;
+        return CanCompanionUseItem(item.Info);
+    }
+
+    public bool CanCompanionUseItem(ItemInfo info)
+    {
+        if (info == null || Companion == null) return false;
+        return info.RequiredType switch
+        {
+            RequiredType.CompanionLevel => Companion.Level >= info.RequiredAmount,
+            RequiredType.MaxCompanionLevel => Companion.Level <= info.RequiredAmount,
+            _ => true,
+        };
+    }
+
     // 死亡: 播 Die 动画后延迟移除
     private void OnObjectDied(uint objectID)
     {        if (objectID == _playerObjectID)
@@ -5024,6 +5983,7 @@ public partial class GameScene : Control
         {
             ob.Dead = true;
             ob.SetAnimation(MirAnimation.Die);
+            ob.PlayDieSound();
             var renderer = ob;
             GetTree().CreateTimer(1.2).Timeout += () =>
             {
@@ -5241,9 +6201,11 @@ public partial class GameScene : Control
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
     {
         ob.ObjectID = objectID;
+        ob.HitOrder = ++_nextObjectHitOrder;
         ob.ZIndex = zIndex;
         AddChild(ob);
         _objects[objectID] = ob;
+        ob.SoundCue = PlaySound;
         UpdateObjectPositions();
         GD.Print($"[Game] 添加物体: {ob.Type} '{ob.DisplayName}' ObjectID={objectID} Cell=({ob.CellX},{ob.CellY})");
 
@@ -5423,6 +6385,7 @@ public partial class GameScene : Control
         _lightLayer?.SetMap(mapInfo, _mapView);
         _lightLayer?.SetDayTime(DayTime);
         _weatherLayer?.SetWeather(weather);
+        _weatherLayer?.SetEnabled(DrawWeather);
 
         // M12: 小地图/大地图换图 (清动态标记, 重建静态 NPC/出口)
         if (_mapView.Map != null)
@@ -5434,6 +6397,7 @@ public partial class GameScene : Control
         // 换图: 清空旧地图的周围物体 (首次进图时 _objects 里是 Drain 的新图对象, 不清)
         if (clearObjects)
         {
+            _combatController?.RemoveObjectReference(_combatController.TargetObject?.ObjectID ?? 0);
             foreach (var fx in _itemGlows.Values)
                 fx.QueueFree();
             _itemGlows.Clear();
@@ -5442,6 +6406,8 @@ public partial class GameScene : Control
             _objects.Clear();
             foreach (var player in _otherPlayers.Values) player.QueueFree();
             _otherPlayers.Clear();
+            _combatController.TargetObject = null;
+            _combatController.MouseObject = null;
         }
         else
         {
@@ -5461,21 +6427,59 @@ public partial class GameScene : Control
         // M12: 玩家标记 (小地图居中/大地图复位)
         _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
         _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
+
+        if (AutoLoginArgs.ScreenshotAfterEnter)
+            GetTree().CreateTimer(1.0).Timeout += SaveProductionAuditScreenshot;
+    }
+
+    private void SaveProductionAuditScreenshot()
+    {
+        if (!IsInsideTree() || _mapView?.Map == null)
+        {
+            GD.PrintErr("[ProductionScreenshot] FAIL game scene is not ready");
+            GetTree().Quit();
+            return;
+        }
+
+        if (DisplayServer.GetName() == "headless")
+        {
+            GD.PrintErr("[ProductionScreenshot] FAIL viewport image is unavailable (headless renderer)");
+            GetTree().Quit();
+            return;
+        }
+
+        var texture = GetViewport().GetTexture();
+        var image = texture?.GetImage();
+        if (image == null)
+        {
+            // Headless/dummy renderer 可以提供 Texture RID，但没有可读回的 Image。
+            // 生产截图只在有实际渲染后端时成立，不能让回调抛 NullReferenceException。
+            GD.PrintErr("[ProductionScreenshot] FAIL viewport image is unavailable (headless renderer)");
+            GetTree().Quit();
+            return;
+        }
+        const string output = "/tmp/zircon-game-audit.png";
+        image.SavePng(output);
+        GD.Print($"[ProductionScreenshot] PASS map={_playerMapIndex} instance={_playerInstanceIndex} " +
+            $"viewport={image.GetWidth()}x{image.GetHeight()} path={output}");
+        GetTree().Quit();
     }
 
     private static Weather ResolveMapWeather(MapInfo mapInfo)
-    {
-        if (TownWeatherTestMode && mapInfo != null && TownWeatherTestMaps.Contains(mapInfo.FileName))
-            return (Weather)Random.Shared.Next(1, 16);
-
-        return mapInfo?.Weather ?? Weather.None;
-    }
+        => mapInfo?.Weather ?? Weather.None;
 
     public override void _Process(double delta)
     {
+        ProcessPendingAutoPathMove();
         UpdateViewRange();
+        // Remote PlayerRenderer advances movement offsets in its own _Process;
+        // refresh both the rendered node and its hit proxy in the same frame.
+        foreach (var remotePlayer in _otherPlayers.Values)
+            UpdateOtherPlayerPosition(remotePlayer);
 
-        if (AutoLoginArgs.InteractionAudit && !_interactionAuditStarted && _startGameShown && _mapView?.Map != null)
+        if (AutoLoginArgs.InteractionAudit && !_interactionAuditStarted && _startGameShown && _mapView?.Map != null
+            && _objects.Values.Any(x => x?.Type == ObjectRenderer.Kind.NPC)
+            && _objects.Values.Any(x => x?.Type == ObjectRenderer.Kind.Player))
         {
             _interactionAuditStarted = true;
             GetTree().CreateTimer(1.0).Timeout += StartInteractionAudit;
@@ -5484,8 +6488,8 @@ public partial class GameScene : Control
             && Godot.Time.GetTicksMsec() >= _interactionAuditDeadline)
         {
             _interactionAuditDeadline = 0;
-            bool pass = _interactionNpcSent && _interactionInspectSent == 2 && _interactionInspectReceived > 0;
-            GD.Print($"[InteractionAudit] RESULT npcSent={_interactionNpcSent} inspectSent={_interactionInspectSent} inspectReceived={_interactionInspectReceived} pass={pass}");
+            bool pass = _interactionNpcSent && _interactionInspectSent == 1 && _interactionInspectReceived > 0;
+            GD.Print($"[InteractionAudit] RESULT npcSent={_interactionNpcSent} ctrlLeftSent={_interactionInspectLeftSent} ctrlRightSent={_interactionInspectSent} inspectReceived={_interactionInspectReceived} pass={pass}");
             GetTree().Quit();
         }
 
@@ -5495,14 +6499,33 @@ public partial class GameScene : Control
             GetTree().CreateTimer(1.0).Timeout += (AutoLoginArgs.RightRunTest ? StartRightRunTest : StartRunningTest);
         }
 
+        if (AutoLoginArgs.OperationAudit && !_operationAuditStarted && _startGameShown && _mapView?.Map != null)
+        {
+            _operationAuditStarted = true;
+            GetTree().CreateTimer(1.0).Timeout += StartOperationAudit;
+        }
+
         // M9: 拿起物品跟随鼠标 + 悬浮提示
         UpdateMouseItem();
+
+        // 旧版 GameScene.cs:1073-1079: Ctrl 按住 + 悬停地面物品 -> 显示物品名 (MouseItem)。
+        // Godot: _hoverLabel 复用, Ctrl 松开即清。
+        if (_combatController?.MouseObject?.Type == ObjectRenderer.Kind.Item
+            && Input.IsKeyPressed(Key.Ctrl))
+        {
+            _hoverLabel.Visible = true;
+            _hoverLabel.Text = _combatController.MouseObject.DisplayName;
+            var p = GetGlobalMousePosition() / UiScale;
+            _hoverLabel.Position = new Vector2(p.X + 14, p.Y + 10);
+        }
+        else if (_hoverItem == null)
+        {
+            _hoverLabel.Visible = false;
+        }
         if (_combatController != null)
         {
             var hoveredMonster = _combatController.MouseObject?.Type == ObjectRenderer.Kind.Monster ? _combatController.MouseObject : null;
             _monsterDialog?.SetMonster(hoveredMonster);
-            if (hoveredMonster != null)
-                _monsterDialog.Position = hoveredMonster.Position / UiScale + new Vector2(-93f, -112f);
             _monsterDialog?.Refresh();
             foreach (var ob in _objects.Values)
             {
@@ -5512,6 +6535,46 @@ public partial class GameScene : Control
                     ob.Focused = focused;
                     ob.QueueRedraw();
                 }
+
+                bool highlighted = ClientSettings.ShowTargetOutline
+                    && ob == _combatController.MouseObject
+                    && ob.Type is ObjectRenderer.Kind.Monster or ObjectRenderer.Kind.NPC;
+                Color outline = highlighted ? GetTargetOutlineColour(ob) : Colors.Transparent;
+                if (ob.TargetHighlighted != highlighted || ob.TargetOutlineColour != outline)
+                {
+                    ob.TargetHighlighted = highlighted;
+                    ob.TargetOutlineColour = outline;
+                    ob.QueueRedraw();
+                }
+            }
+
+            uint hoveredPlayerId = _combatController.MouseObject?.Type == ObjectRenderer.Kind.Player
+                ? _combatController.MouseObject.ObjectID : 0;
+            foreach (var pair in _otherPlayers)
+            {
+                bool highlighted = ClientSettings.ShowTargetOutline && pair.Key == hoveredPlayerId;
+                Color outline = highlighted
+                    ? (_groupDialog?.IsMember(pair.Key) == true
+                        ? ClientSettings.TargetPlayerFriendlyColour
+                        : ClientSettings.TargetPlayerEnemyColour)
+                    : Colors.Transparent;
+                var player = pair.Value;
+                if (player.TargetHighlighted != highlighted || player.TargetOutlineColour != outline)
+                {
+                    player.TargetHighlighted = highlighted;
+                    player.TargetOutlineColour = outline;
+                    player.QueueRedraw();
+                }
+            }
+        }
+
+        if (_debugLabel != null)
+        {
+            _debugLabel.Visible = ClientSettings.DebugLabel;
+            if (_debugLabel.Visible)
+            {
+                string map = Globals.MapInfoList?.Binding.FirstOrDefault(x => x.Index == _playerMapIndex)?.FileName ?? $"Map{_playerMapIndex}";
+                _debugLabel.Text = $"FPS: {Engine.GetFramesPerSecond():0}  Map: {map}  Pos: ({_playerLocation.X},{_playerLocation.Y})";
             }
         }
 
@@ -5533,9 +6596,18 @@ public partial class GameScene : Control
         // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
         if (_moveFrameCount > 1 && _player != null)
         {
-            double moveMs = _player.MovementDurationMs;
-            double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) / moveMs, 0.0, 1.0);
-            double k = 1.0 - t;
+            double k;
+            if (ClientSettings.SmoothMove)
+            {
+                double moveMs = _player.MovementDurationMs;
+                double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) / moveMs, 0.0, 1.0);
+                k = 1.0 - t;
+            }
+            else
+            {
+                k = Math.Max(0.0, (_player.MovementFrameCount - (_player.MovementFrame + 1)) /
+                    (double)Math.Max(1, _player.MovementFrameCount));
+            }
             float xStep = 48f * _player.MoveDistance * (float)k;
             float yStep = 32f * _player.MoveDistance * (float)k;
             _player.OffsetX = 0f;
@@ -5552,7 +6624,7 @@ public partial class GameScene : Control
                 case MirDirection.UpLeft: _player.OffsetX = xStep; _player.OffsetY = yStep; break;
             }
 
-            if (t >= 1.0)
+            if (k <= 0.0)
             {
                 _moveFrameCount = 1;
                 // 原版进入 Standing 时，只有右键已松开才清 CanRun。
@@ -5574,15 +6646,213 @@ public partial class GameScene : Control
         }
     }
 
+    private Color GetTargetOutlineColour(ObjectRenderer ob)
+    {
+        if (ob == null) return Colors.Transparent;
+        if (ob.Type == ObjectRenderer.Kind.NPC)
+            return ClientSettings.TargetNPCColour;
+        if (ob.Type != ObjectRenderer.Kind.Monster)
+            return Colors.Transparent;
+        if (!string.IsNullOrWhiteSpace(ob.PetOwner) && ob.PetOwner == StartInfo?.Name)
+            return ClientSettings.TargetMonsterFriendlyColour;
+
+        int levelDiff = PlayerLevel - ob.Level;
+        return levelDiff > 2
+            ? ClientSettings.TargetMonsterLowLevelColour
+            : levelDiff >= 0
+                ? ClientSettings.TargetMonsterSameLevelColour
+                : ClientSettings.TargetMonsterHighLevelColour;
+    }
+
+    private void StartOperationAudit()
+    {
+        var source = InventoryCells.FirstOrDefault(c => c?.Item != null && !c.Locked && c.Item.Info != null);
+        var target = InventoryCells.FirstOrDefault(c => c != null && c.Item == null && !c.Locked && c.Enabled);
+        if (source == null || target == null)
+        {
+            GD.PrintErr("[OperationAudit] FAIL no movable inventory item and empty target slot");
+            GetTree().Quit();
+            return;
+        }
+
+        _operationAuditSourceSlot = source.Slot;
+        _operationAuditTargetSlot = target.Slot;
+        var equipment = EquipmentCells.FirstOrDefault(c => c?.Item != null && c.Enabled
+            && c.Slot >= 0 && c.Slot < Equipment.Length
+            && !c.Item.Flags.HasFlag(UserItemFlags.Marriage)
+            && Functions.CorrectSlot(source.Item.Info.ItemType, (EquipmentSlot)c.Slot)
+            && CanWearItem(source.Item, (EquipmentSlot)c.Slot));
+        if (equipment == null)
+        {
+            GD.PrintErr($"[OperationAudit] FAIL no compatible occupied equipment slot itemType={source.Item.Info.ItemType} " +
+                $"item={source.Item.Info.ItemName}");
+            GetTree().Quit();
+            return;
+        }
+        _operationAuditEquipmentSlot = equipment.Slot;
+        _operationAuditOriginalEquipment = equipment.Item;
+        _operationAuditStage = 1;
+        _operationAuditResponsePending = false;
+        GD.Print($"[OperationAudit] MOVE_FORWARD from={source.Slot} to={target.Slot} item={source.Item.Info.ItemName}");
+        source.MoveItem(target);
+        GetTree().CreateTimer(5.0).Timeout += () =>
+        {
+            if (_operationAuditStage != 0 && !_operationAuditResponsePending)
+            {
+                GD.PrintErr("[OperationAudit] FAIL timeout waiting for ItemMove response");
+                GetTree().Quit();
+            }
+        };
+    }
+
+    private void ContinueOperationAudit()
+    {
+        if (!_operationAuditResponsePending) return;
+        _operationAuditResponsePending = false;
+        if (!_operationAuditLastSuccess)
+        {
+            GD.PrintErr($"[OperationAudit] FAIL stage={_operationAuditStage} server_success=false");
+            GetTree().Quit();
+            return;
+        }
+
+        if (_operationAuditStage == 1)
+        {
+            bool moved = Inventory[_operationAuditSourceSlot] == null
+                && Inventory[_operationAuditTargetSlot] != null
+                && !InventoryCells[_operationAuditSourceSlot].Locked
+                && !InventoryCells[_operationAuditTargetSlot].Locked;
+            if (!moved)
+            {
+                GD.PrintErr("[OperationAudit] FAIL forward local state mismatch");
+                GetTree().Quit();
+                return;
+            }
+
+            _operationAuditStage = 2;
+            GD.Print($"[OperationAudit] MOVE_REVERSE from={_operationAuditTargetSlot} to={_operationAuditSourceSlot}");
+            InventoryCells[_operationAuditTargetSlot].MoveItem(InventoryCells[_operationAuditSourceSlot]);
+            return;
+        }
+
+        bool restored = Inventory[_operationAuditSourceSlot] != null
+            && Inventory[_operationAuditTargetSlot] == null
+            && !InventoryCells[_operationAuditSourceSlot].Locked
+            && !InventoryCells[_operationAuditTargetSlot].Locked;
+
+        if (_operationAuditStage == 2)
+        {
+            _operationAuditStage = 3;
+            GD.Print($"[OperationAudit] UNEQUIP_EXISTING from={_operationAuditEquipmentSlot} to={_operationAuditTargetSlot}");
+            EquipmentCells[_operationAuditEquipmentSlot].MoveItem(InventoryCells[_operationAuditTargetSlot]);
+            return;
+        }
+
+        if (_operationAuditStage == 3)
+        {
+            bool movedExisting = Inventory[_operationAuditTargetSlot] != null
+                && Equipment[_operationAuditEquipmentSlot] == null
+                && !InventoryCells[_operationAuditSourceSlot].Locked
+                && !InventoryCells[_operationAuditTargetSlot].Locked
+                && !EquipmentCells[_operationAuditEquipmentSlot].Locked;
+            if (!movedExisting)
+            {
+                GD.PrintErr("[OperationAudit] FAIL existing equipment removal mismatch");
+                GetTree().Quit();
+                return;
+            }
+            _operationAuditStage = 4;
+            GD.Print($"[OperationAudit] EQUIP from={_operationAuditSourceSlot} to={_operationAuditEquipmentSlot}");
+            EquipmentCells[_operationAuditEquipmentSlot].ToEquipment(InventoryCells[_operationAuditSourceSlot]);
+            return;
+        }
+
+        if (_operationAuditStage == 4)
+        {
+            bool equipped = Inventory[_operationAuditSourceSlot] == null
+                && Equipment[_operationAuditEquipmentSlot] != null
+                && !EquipmentCells[_operationAuditEquipmentSlot].Locked;
+            if (!equipped)
+            {
+                GD.PrintErr("[OperationAudit] FAIL equipment local state mismatch");
+                GetTree().Quit();
+                return;
+            }
+            _operationAuditStage = 5;
+            GD.Print($"[OperationAudit] UNEQUIP from={_operationAuditEquipmentSlot} to={_operationAuditSourceSlot}");
+            EquipmentCells[_operationAuditEquipmentSlot].MoveItem(InventoryCells[_operationAuditSourceSlot]);
+            return;
+        }
+
+        if (_operationAuditStage == 5)
+        {
+            bool unequipped = Inventory[_operationAuditSourceSlot] != null
+                && Equipment[_operationAuditEquipmentSlot] == null
+                && !InventoryCells[_operationAuditSourceSlot].Locked
+                && !EquipmentCells[_operationAuditEquipmentSlot].Locked;
+            if (!unequipped)
+            {
+                GD.PrintErr("[OperationAudit] FAIL equipment removal mismatch");
+                GetTree().Quit();
+                return;
+            }
+            _operationAuditStage = 6;
+            GD.Print($"[OperationAudit] RESTORE_EXISTING from={_operationAuditTargetSlot} to={_operationAuditEquipmentSlot}");
+            EquipmentCells[_operationAuditEquipmentSlot].ToEquipment(InventoryCells[_operationAuditTargetSlot]);
+            return;
+        }
+
+        if (_operationAuditStage != 6)
+        {
+            GD.PrintErr($"[OperationAudit] FAIL unexpected stage={_operationAuditStage}");
+            GetTree().Quit();
+            return;
+        }
+
+        bool equipmentRestored = restored
+            && Inventory[_operationAuditTargetSlot] == null
+            && ReferenceEquals(Equipment[_operationAuditEquipmentSlot], _operationAuditOriginalEquipment);
+        bool equipmentSlotCanonical = Equipment[_operationAuditEquipmentSlot]?.Slot ==
+            Globals.EquipmentOffSet + _operationAuditEquipmentSlot;
+        var beforeFailedSort = Inventory[_operationAuditSourceSlot];
+        OnItemSort(new S.ItemSort { Grid = GridType.Inventory, Success = false });
+        bool failedSortPreserved = ReferenceEquals(beforeFailedSort, Inventory[_operationAuditSourceSlot]);
+        OnItemSplit(new S.ItemSplit
+        {
+            Grid = GridType.Inventory,
+            Slot = _operationAuditSourceSlot,
+            Count = 1,
+            Success = false,
+        });
+        bool failedSplitPreserved = ReferenceEquals(beforeFailedSort, Inventory[_operationAuditSourceSlot]);
+        OnItemDelete(new S.ItemDelete
+        {
+            Grid = GridType.Inventory,
+            Slot = _operationAuditSourceSlot,
+            Success = false,
+        });
+        bool failedDeletePreserved = ReferenceEquals(beforeFailedSort, Inventory[_operationAuditSourceSlot]);
+        bool pass = equipmentRestored && equipmentSlotCanonical && failedSortPreserved && failedSplitPreserved && failedDeletePreserved;
+        GD.Print($"[OperationAudit] RESULT forward={pass} reverse={restored} equipmentRestored={equipmentRestored} " +
+            $"equipmentSlotCanonical={equipmentSlotCanonical} " +
+            $"failedSortPreserved={failedSortPreserved} failedSplitPreserved={failedSplitPreserved} " +
+            $"failedDeletePreserved={failedDeletePreserved} pass={pass}");
+        _operationAuditStage = 0;
+        GetTree().Quit();
+    }
+
     private void StartInteractionAudit()
     {
         var npc = _objects.Values.FirstOrDefault(x => x?.Type == ObjectRenderer.Kind.NPC && x.Visible);
         if (npc != null)
         {
-            _combatController.MouseObject = npc;
+            var hitNpc = _combatController.PickObjectAtCellForAudit(new System.Drawing.Point(npc.CellX, npc.CellY));
+            _combatController.MouseObject = hitNpc;
             _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
-            _interactionNpcSent = _npcObjectId == npc.ObjectID;
-            GD.Print($"[InteractionAudit] NPC_CLICK object={npc.ObjectID} sent={_interactionNpcSent}");
+            bool npcDeferred = _npcObjectId != npc.ObjectID;
+            _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false });
+            _interactionNpcSent = npcDeferred && hitNpc?.ObjectID == npc.ObjectID && _npcObjectId == npc.ObjectID;
+            GD.Print($"[InteractionAudit] NPC_CLICK object={npc.ObjectID} hit={hitNpc?.ObjectID ?? 0} sent={_interactionNpcSent}");
         }
         else
             GD.PrintErr("[InteractionAudit] FAIL no visible NPC in current map");
@@ -5591,18 +6861,34 @@ public partial class GameScene : Control
             && x.ObjectID != _playerObjectID);
         if (player != null)
         {
-            _combatController.MouseObject = player;
-            foreach (var button in new[] { MouseButton.Left, MouseButton.Right })
+            var hitPlayer = _combatController.PickObjectAtCellForAudit(new System.Drawing.Point(player.CellX, player.CellY));
+            _combatController.MouseObject = hitPlayer;
+            if (AutoLoginArgs.InteractionAudit && _otherPlayers.TryGetValue(player.ObjectID, out var visiblePlayer))
             {
-                _nextInspectMs = 0;
-                _UnhandledInput(new InputEventMouseButton
-                {
-                    ButtonIndex = button,
-                    Pressed = true,
-                    CtrlPressed = true,
-                });
+                GD.Print($"[InteractionAudit] COORD cell=({player.CellX},{player.CellY}) " +
+                    $"proxyLocal={player.Position} proxyCanvas={player.GetGlobalTransformWithCanvas().Origin} " +
+                    $"playerLocal={visiblePlayer.Position} playerCanvas={visiblePlayer.GetGlobalTransformWithCanvas().Origin} " +
+                    $"boxLogical={_mapView.CellToScreen(player.CellX, player.CellY, true)} " +
+                    $"viewport={GetViewport().GetVisibleRect().Size} gameScale={Scale}");
             }
-            GD.Print($"[InteractionAudit] PLAYER_CTRL_CLICK object={player.ObjectID} sent={_interactionInspectSent}/2");
+            _nextInspectMs = 0;
+            int beforeLeft = _interactionInspectSent;
+            _UnhandledInput(new InputEventMouseButton
+            {
+                ButtonIndex = MouseButton.Left,
+                Pressed = true,
+                CtrlPressed = true,
+            });
+            _interactionInspectLeftSent = _interactionInspectSent - beforeLeft;
+
+            _nextInspectMs = 0;
+            _UnhandledInput(new InputEventMouseButton
+            {
+                ButtonIndex = MouseButton.Right,
+                Pressed = true,
+                CtrlPressed = true,
+            });
+            GD.Print($"[InteractionAudit] PLAYER_CTRL_CLICK object={player.ObjectID} hit={hitPlayer?.ObjectID ?? 0} leftSent={_interactionInspectLeftSent} rightSent={_interactionInspectSent}");
         }
         else
             GD.PrintErr("[InteractionAudit] FAIL no other player in current map");
@@ -5659,7 +6945,12 @@ public partial class GameScene : Control
 
     private void UpdateOtherPlayerPosition(PlayerRenderer player)
     {
-        player.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX, _mapView.ViewRangeY, 0, 0);
+        // Keep remote players on the same camera-centred transform as map
+        // objects, the local player, and the hidden mouse-picking proxy.
+        // PlayerRenderer's legacy helper omits MapView's viewport-centering
+        // offset, causing a visible player and its hit box to drift apart.
+        player.Position = _mapView.CellToScreen(player.CellX, player.CellY, true)
+            + new Vector2(player.OffsetX, player.OffsetY);
         player.ZIndex = RenderOrder.Object(player.RenderY);
 
         // The visible player uses PlayerRenderer, while mouse picking uses the
@@ -5674,6 +6965,8 @@ public partial class GameScene : Control
             proxy.Direction = player.Direction;
             proxy.Dead = player.Dead;
             proxy.Visible = player.Visible;
+            proxy.OffsetX = player.OffsetX;
+            proxy.OffsetY = player.OffsetY;
             proxy.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX,
                 _mapView.ViewRangeY, 0, 0, _mapView);
             proxy.ZIndex = RenderOrder.Object(proxy.RenderY);
@@ -5702,6 +6995,9 @@ public partial class GameScene : Control
     public void UseMagicSlot(int slot)
     {
         if (slot < 0 || slot > 23) return;
+        if (_observer || _player == null || IsMounted || _player.Dead || _player.DragonRepulsed ||
+            _playerPoison.HasFlag(PoisonType.Paralysis) || _playerPoison.HasFlag(PoisonType.Silenced))
+            return;
         if (_net?.Connection?.Connected != true)
         {
             GD.Print("[Magic] 未释放：网络尚未连接");
@@ -5733,6 +7029,40 @@ public partial class GameScene : Control
                 return;
             }
         }
+        if (PlayerLevel < magic.Info.NeedLevel1) return;
+        if (magic.ItemRequired && !Equipment.Any(x => x?.Info?.ItemEffect == ItemEffect.MagicRing
+                                                       && x.Info.Shape == magic.Info.Index))
+            return;
+
+        switch (magic.Info.Magic)
+        {
+            case MagicType.Swordsmanship:
+            case MagicType.SpiritSword:
+            case MagicType.VineTreeDance:
+            case MagicType.WillowDance:
+                return;
+            case MagicType.Thrusting:
+            case MagicType.HalfMoon:
+            case MagicType.DestructiveSurge:
+            case MagicType.FlameSplash:
+                if (Library.Time.Now < ToggleTime) return;
+                ToggleTime = Library.Time.Now.AddSeconds(1);
+                bool enabled = !_enabledToggleMagics.Contains(magic.Info.Magic);
+                if (enabled) _enabledToggleMagics.Add(magic.Info.Magic);
+                else _enabledToggleMagics.Remove(magic.Info.Magic);
+                SendMagicToggle(magic.Info.Magic, enabled);
+                return;
+            case MagicType.FullBloom:
+            case MagicType.WhiteLotus:
+            case MagicType.RedLotus:
+            case MagicType.SweetBrier:
+            case MagicType.Karma:
+                if (Library.Time.Now < ToggleTime || Library.Time.Now < magic.NextCast) return;
+                if (!_buffs.Values.Any(x => x?.Type == BuffType.Cloak)) return;
+                _attackMagic = magic.Info.Magic;
+                ToggleTime = Library.Time.Now.AddMilliseconds(magic.Info.Magic == MagicType.Karma ? 500 : 200);
+                return;
+        }
         var pCell = _playerLocation;
         var selected = _combatController?.TargetObject;
         uint targetID = selected?.ObjectID ?? 0;
@@ -5754,12 +7084,16 @@ public partial class GameScene : Control
         var castCell = useMouseLocation || selected == null ? mouseCell : targetCell;
         if (magic.Info.School == MagicSchool.Toggle)
         {
+            if (Library.Time.Now < ToggleTime)
+                return;
+            ToggleTime = Library.Time.Now.AddSeconds(1);
             bool enabled = !_enabledToggleMagics.Contains(magic.Info.Magic);
             if (enabled) _enabledToggleMagics.Add(magic.Info.Magic); else _enabledToggleMagics.Remove(magic.Info.Magic);
             SendMagicToggle(magic.Info.Magic, enabled);
             RefreshMagicBars();
             return;
         }
+        if (Library.Time.Now < magic.NextCast || magic.Cost > _currentMP) return;
         MirDirection dir = Functions.DirectionFromPoint(
             new System.Drawing.Point(pCell.X, pCell.Y), castCell);
         GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} " +
@@ -5784,11 +7118,20 @@ public partial class GameScene : Control
     {
         if (slot < 0 || slot >= (_beltDialog?.Grid?.Cells?.Length ?? 0)) return;
         var cell = _beltDialog.Grid.Cells[slot];
+        if (IsObserver) return;
+        // 原版 GameScene.OnKeyDown：快捷键首先把当前拿起的物品
+        // 投放到目标腰带格；没有拿起物品时才调用腰带格 UseItem。
+        if (ShouldRouteSelectedItemToBelt(DXItemCell.SelectedCell != null))
+        {
+            DXItemCell.SelectedCell.MoveItem(cell);
+            return;
+        }
         if (cell?.Item == null) return;
-        if (!CanUseItem(cell.Item)) return;
-        SendItemUse(GridType.Belt, slot);
-        GD.Print($"[Belt] 使用腰带槽 {slot + 1}: {cell.Item.Info?.ItemName}");
+        if (cell.UseItem())
+            GD.Print($"[Belt] 使用腰带槽 {slot + 1}: {cell.Item.Info?.ItemName}");
     }
+
+    public static bool ShouldRouteSelectedItemToBelt(bool hasSelectedCell) => hasSelectedCell;
 
     public override void _Input(InputEvent @event)
     {
@@ -5799,32 +7142,6 @@ public partial class GameScene : Control
         if (_chatTextBox?.HandleGlobalKey(key) == true)
             return;
 
-        // M11: F2 开关状态窗口, Esc 关闭最上层窗口
-        // 原版：Ctrl+F1~F4 切换技能栏，其余 F1~F12 释放当前栏技能。
-        if (key.Keycode >= Key.F1 && key.Keycode <= Key.F12)
-        {
-            if (key.CtrlPressed)
-            {
-                int set = key.Keycode switch
-                {
-                    Key.F1 => 1, Key.F2 => 2, Key.F3 => 3, Key.F4 => 4,
-                    _ => 0,
-                };
-                if (set > 0)
-                {
-                    MagicBarSpellSet = set;
-                    _magicBar?.Refresh();
-                    GD.Print($"[Magic] 切换栏组 -> Set{set}");
-                }
-                return;
-            }
-            if (!key.AltPressed)
-            {
-                int slot = (int)(key.Keycode - Key.F1) + (key.ShiftPressed ? 12 : 0);
-                UseMagicKey(slot);
-                return;
-            }
-        }
         if (key.Keycode == Key.Escape)
         {
             if (WindowManager.CloseTop())
@@ -5890,17 +7207,55 @@ public partial class GameScene : Control
     // 对齐旧版 ActiveScene 的“UI 优先、地图其次”分发顺序。
     public override void _UnhandledInput(InputEvent @event)
     {
+        // 原版 MapControl.OnMouseDown 首行直接拒绝观察模式；否则脚下拾取、
+        // NPC 调用、观察和拖物品到地图等地图级分支会绕过物品格的 observer guard。
+        if (_observer && @event is InputEventMouseButton)
+            return;
+
+        // 原版 NPC 点击由 MouseClick(抬起)派发；脚下格的 MouseDown 仍先
+        // 发送 PickUp。保存这个特殊重叠场景，避免脚下掉落物把 NPC 点击吞掉。
+        if (@event is InputEventMouseButton npcRelease && !npcRelease.Pressed &&
+            npcRelease.ButtonIndex == MouseButton.Left && _pendingNpcClickObjectId != 0)
+        {
+            uint objectId = _pendingNpcClickObjectId;
+            _pendingNpcClickObjectId = 0;
+            if (_combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC &&
+                _combatController.MouseObject.ObjectID == objectId)
+            {
+                TrySendNpcCall(objectId);
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+        }
+
+        // 原版 TargetForm.OnMouseDown 的最前置分支：地图右键先取消
+        // 已拿起物品/货币，不能继续落入自动寻路、目标取消或普通移动。
+        if (@event is InputEventMouseButton cancelMouse && cancelMouse.Pressed &&
+            cancelMouse.ButtonIndex == MouseButton.Right &&
+            ShouldCancelMapRightClick(DXItemCell.SelectedCell != null, _selectedCurrency != null))
+        {
+            DXItemCell.SelectedCell = null;
+            _selectedCurrency = null;
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
         if (@event is InputEventMouseButton stateMouse && stateMouse.Pressed &&
             (stateMouse.ButtonIndex == MouseButton.Left || stateMouse.ButtonIndex == MouseButton.Right))
         {
             CancelAutoPath();
-            if (IsFishingActive)
+            bool altLeft = stateMouse.ButtonIndex == MouseButton.Left &&
+                (stateMouse.AltPressed || Input.IsKeyPressed(Key.Alt));
+            // 原版 Alt 分支在 Fishing/Taming 状态下直接返回；它不会把
+            // Alt 采集点击误解释为普通左键取消动作。
+            bool cancelGathering = ShouldCancelGatheringForMapClick(altLeft, IsFishingActive, IsTamingActive);
+            if (cancelGathering && IsFishingActive)
             {
                 SendFishingCast(FishingState.Cancel);
                 GetViewport().SetInputAsHandled();
                 return;
             }
-            if (IsTamingActive)
+            if (cancelGathering && IsTamingActive)
             {
                 CancelTaming();
                 GetViewport().SetInputAsHandled();
@@ -5911,7 +7266,7 @@ public partial class GameScene : Control
         {
             var currency = _selectedCurrency;
             _selectedCurrency = null;
-            var dialog = new ItemAmountDialog("Drop Currency", currency.Amount, currency.Amount,
+            var dialog = new ItemAmountDialog("Drop Currency", currency.Amount, 1,
                 amount => _net?.Connection?.SendCurrencyDrop(currency.CurrencyIndex, amount));
             WindowManager.Open(dialog, _uiLayer);
             GetViewport().SetInputAsHandled();
@@ -5949,12 +7304,19 @@ public partial class GameScene : Control
                     return;
                 }
                 var source = cell;
-                var amount = new ItemAmountDialog(item, count => SendItemDrop(new CellLinkInfo
+                var amount = new ItemAmountDialog(item, count =>
                 {
-                    GridType = source.GridType,
-                    Slot = source.Slot,
-                    Count = (int)Math.Clamp(count, 1L, (long)item.Count),
-                }));
+                    if (!CanBeginItemDrop(source))
+                        return;
+                    source.Locked = true;
+                    source.UpdateBorder();
+                    SendItemDrop(new CellLinkInfo
+                    {
+                        GridType = source.GridType,
+                        Slot = source.Slot,
+                        Count = (int)Math.Clamp(count, 1L, (long)source.Item.Count),
+                    });
+                });
                 DXItemCell.SelectedCell = null;
                 WindowManager.Open(amount, _uiLayer);
                 GetViewport().SetInputAsHandled();
@@ -5977,9 +7339,10 @@ public partial class GameScene : Control
             var direction = Functions.DirectionFromPoint(_playerLocation, target);
             int distance = Math.Max(Math.Abs(target.X - _playerLocation.X),
                 Math.Abs(target.Y - _playerLocation.Y));
-            var tool = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.FishingRod
-                || x?.Info?.ItemEffect == ItemEffect.TamingLasso);
-            var armour = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.FishingRobe);
+            // 原版只读取人物武器槽和护甲槽；不能从其它装备槽捞出
+            // FishingRod/TamingLasso 伪造采集配置。
+            var tool = Equipment.ElementAtOrDefault((int)EquipmentSlot.Weapon);
+            var armour = Equipment.ElementAtOrDefault((int)EquipmentSlot.Armour);
             var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
 
             bool fishingSetup = tool?.Info?.ItemEffect == ItemEffect.FishingRod && armour != null;
@@ -5993,15 +7356,27 @@ public partial class GameScene : Control
                 GetViewport().SetInputAsHandled();
                 return;
             }
-            if (fishingSetup) return;
+            if (fishingSetup)
+            {
+                // 已装备钓鱼配置但地点/距离不合法时，原版不移动、不采集。
+                GetViewport().SetInputAsHandled();
+                return;
+            }
 
             var monster = _combatController?.MouseObject;
-            if (tool?.Info?.ItemEffect == ItemEffect.TamingLasso && monster?.Type == ObjectRenderer.Kind.Monster
-                && monster.MonsterInfo?.AI == 135 && distance <= Globals.TamingDistance)
+            bool lassoTarget = tool?.Info?.ItemEffect == ItemEffect.TamingLasso
+                && monster?.Type == ObjectRenderer.Kind.Monster
+                && monster.MonsterInfo?.AI == 135;
+            if (lassoTarget)
             {
-                _tamingTargetObjectID = monster.ObjectID;
-                _playerDirection = direction;
-                _net?.Connection?.SendTaming(monster.ObjectID, TamingState.Cast, direction);
+                if (distance <= Globals.TamingDistance)
+                {
+                    _tamingTargetObjectID = monster.ObjectID;
+                    _playerDirection = direction;
+                    _net?.Connection?.SendTaming(monster.ObjectID, TamingState.Cast, direction);
+                    GetViewport().SetInputAsHandled();
+                }
+                // 超距离: 旧版同样无操作 (AI135 怪物在鼠标下, 移动/采集均被拦截)
                 GetViewport().SetInputAsHandled();
                 return;
             }
@@ -6013,17 +7388,29 @@ public partial class GameScene : Control
         }
 
         if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
-            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Item)
+            _combatController?.MouseCell() == _playerLocation)
         {
-            // 旧版 MapControl：左键点击地面掉落物（或玩家脚下）发送 PickUp，
-            // 不把掉落物当作普通目标/攻击对象。
+            if (!CanSendMapPickup(_observer, _player?.Dead == true,
+                    _playerPoison.HasFlag(PoisonType.Paralysis),
+                    _playerPoison.HasFlag(PoisonType.Containment),
+                    _player?.DragonRepulsed == true))
+            {
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+            // 旧版 MapControl：点击玩家当前逻辑格时无论该帧是否成功命中
+            // 掉落物都发送 PickUp；不能把“鼠标对象必须是 Item”作为前置，
+            // 否则脚下掉落物未被渲染/命中时就会变成普通移动。
+            _pendingNpcClickObjectId = _combatController.MouseObject?.Type == ObjectRenderer.Kind.NPC
+                ? _combatController.MouseObject.ObjectID
+                : 0;
             SendPickUp();
             GetViewport().SetInputAsHandled();
             return;
         }
 
         if (@event is InputEventMouseButton inspectMouse && inspectMouse.Pressed &&
-            (inspectMouse.ButtonIndex == MouseButton.Left || inspectMouse.ButtonIndex == MouseButton.Right) &&
+            inspectMouse.ButtonIndex == MouseButton.Right &&
             (inspectMouse.CtrlPressed || Input.IsKeyPressed(Key.Ctrl)) &&
             _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player &&
             _combatController.MouseObject.ObjectID != _playerObjectID)
@@ -6048,24 +7435,22 @@ public partial class GameScene : Control
         if (@event is InputEventMouseButton npcMouse && npcMouse.Pressed && npcMouse.ButtonIndex == MouseButton.Left &&
             _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
         {
-            double now = Godot.Time.GetTicksMsec();
-            if (now < _nextNpcCallMs)
-            {
-                GetViewport().SetInputAsHandled();
-                return;
-            }
             _autoRun = false;
             if (_mouseWalker != null) _mouseWalker.AutoRun = false;
-            _npcObjectId = _combatController.MouseObject.ObjectID;
-            _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
-            _nextNpcCallMs = now + 1000.0;
+            // 原版 MapControl 把 NPC 调用放在 MouseClick/左键释放阶段；
+            // 按下只记录对象，若用户按住后移出 NPC，则不应误触发对话。
+            _pendingNpcClickObjectId = _combatController.MouseObject.ObjectID;
             GetViewport().SetInputAsHandled();
             return;
         }
 
         if (@event is InputEventMouseButton miningMouse && miningMouse.Pressed && miningMouse.ButtonIndex == MouseButton.Left &&
-            _combatController != null && _combatController.MouseObject == null)
+            _combatController != null)
         {
+            var mouseObject = _combatController.MouseObject;
+            // 原版仅活着的非掉落对象会抢占矿点；掉落物和死亡对象不阻止挖矿。
+            if (mouseObject != null && mouseObject.Type != ObjectRenderer.Kind.Item && !mouseObject.Dead)
+                return;
             var pickaxe = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.PickAxe);
             var target = _combatController.MouseCell();
             int distance = Math.Max(Math.Abs(target.X - _playerLocation.X), Math.Abs(target.Y - _playerLocation.Y));
@@ -6073,7 +7458,8 @@ public partial class GameScene : Control
             bool validMiningPoint = mapInfo?.CanMine == true && _mapView?.Map != null
                 && target.X >= 0 && target.Y >= 0 && target.X < _mapView.Map.Width && target.Y < _mapView.Map.Height
                 && _mapView.Map.Cells[target.X, target.Y].Flag;
-            if (pickaxe != null && distance == 1 && validMiningPoint)
+            if (pickaxe?.Info != null && (pickaxe.CurrentDurability > 0 || pickaxe.Info.Durability == 0)
+                && !IsMounted && distance == 1 && validMiningPoint)
             {
                 var direction = Functions.DirectionFromPoint(_playerLocation, target);
                 _net?.Connection?.Enqueue(new C.Mining { Direction = direction });
@@ -6081,5 +7467,15 @@ public partial class GameScene : Control
             }
         }
 
+    }
+
+    private bool TrySendNpcCall(uint objectId)
+    {
+        double now = Godot.Time.GetTicksMsec();
+        if (now < _nextNpcCallMs) return false;
+        _npcObjectId = objectId;
+        _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = objectId });
+        _nextNpcCallMs = now + 1000.0;
+        return true;
     }
 }

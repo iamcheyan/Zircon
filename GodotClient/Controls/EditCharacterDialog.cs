@@ -63,7 +63,9 @@ public sealed partial class EditCharacterDialog : DXWindow
     {
         var info = GameScene.Game?.StartInfo;
         _name.Text = info?.Name ?? string.Empty;
-        _hair.Text = (info?.HairType ?? 1).ToString();
+        _hair.Text = NormalizeHairType(info?.HairType ?? 1, info?.Class ?? MirClass.Warrior, info?.Gender ?? MirGender.Male).ToString();
+        _hairColour.BackColour = ToGodotColour(info?.HairColour ?? System.Drawing.Color.Black);
+        _armourColour.BackColour = ToGodotColour(info?.ArmourColour ?? System.Drawing.Color.White);
         SelectGender(info?.Gender ?? MirGender.Male);
         _change = EditCharacterChange.Gender;
         _description.Text = $"当前: {info?.Gender} / {info?.Class}";
@@ -85,6 +87,15 @@ public sealed partial class EditCharacterDialog : DXWindow
             && _name.Location == new Vector2I(75, 478);
     }
 
+    public static bool CanConfirmGender(MirGender current, MirGender selected)
+        => current != selected;
+
+    public static int NormalizeHairType(int hair, MirClass characterClass, MirGender gender)
+    {
+        int max = characterClass == MirClass.Assassin ? 5 : gender == MirGender.Female ? 11 : 10;
+        return Math.Clamp(hair, 0, max);
+    }
+
     private void SelectGender(MirGender gender)
     {
         _selectedGender = gender;
@@ -98,10 +109,13 @@ public sealed partial class EditCharacterDialog : DXWindow
     private void Confirm()
     {
         if (GameScene.Game == null) return;
+        var info = GameScene.Game.StartInfo;
         if (!int.TryParse(_hair.Text, out int hair)) hair = 1;
+        hair = NormalizeHairType(hair, info?.Class ?? MirClass.Warrior, _selectedGender);
         switch (_change)
         {
             case EditCharacterChange.Gender:
+                if (info != null && !CanConfirmGender(info.Gender, _selectedGender)) return;
                 GameScene.Game.SendGenderChange(_selectedGender, hair, ToDrawingColour(_hairColour.BackColour));
                 break;
             case EditCharacterChange.Hair:
@@ -132,6 +146,9 @@ public sealed partial class EditCharacterDialog : DXWindow
     private static System.Drawing.Color ToDrawingColour(Color colour)
         => System.Drawing.Color.FromArgb(
             Mathf.RoundToInt(colour.R * 255f), Mathf.RoundToInt(colour.G * 255f), Mathf.RoundToInt(colour.B * 255f));
+
+    private static Color ToGodotColour(System.Drawing.Color colour)
+        => new(colour.R / 255f, colour.G / 255f, colour.B / 255f, colour.A / 255f);
 }
 
 public enum EditCharacterChange : byte

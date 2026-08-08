@@ -1,7 +1,10 @@
 using System;
+using System.Linq;
 using Godot;
 using Library;
+using Library.SystemModels;
 using ZirconClient.Controls;
+using S = Library.Network.ServerPackets;
 
 namespace ZirconClient.Scripts;
 
@@ -12,8 +15,76 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class UITestScene : Control
 {
+    private bool _uiAudit;
+    private bool _npcAudit;
+    private bool _communicationAudit;
+    private bool _magicAudit;
+    private bool _rankingAudit;
+    private bool _monsterAudit;
+    private bool _questAudit;
+    private bool _chatAudit;
+    private bool _characterAudit;
+    private bool _storageAudit;
+    private bool _miniMapAudit;
+    private bool _fortuneAudit;
+    private bool _fishingAudit;
+    private bool _companionAudit;
+    private bool _groupAudit;
+    private bool _guildAudit;
+    private bool _gameStoreAudit;
+    private bool _consignmentAudit;
+    private bool _currencyAudit;
+    private bool _helpAudit;
+    private bool _horseAudit;
+    private bool _dungeonAudit;
+    private bool _editCharacterAudit;
+    private bool _autoPotionAudit;
+    private bool _groupLfgAudit;
+    private bool _configAudit;
+    private bool _keyBindAudit;
+    private bool _windowChromeAudit;
+    private CanvasLayer _uiLayer;
+
     public override void _Ready()
     {
+        _uiAudit = OS.GetCmdlineUserArgs().Contains("--ui-audit");
+        _npcAudit = OS.GetCmdlineUserArgs().Contains("--npc-audit");
+        _communicationAudit = OS.GetCmdlineUserArgs().Contains("--communication-audit");
+        _magicAudit = OS.GetCmdlineUserArgs().Contains("--magic-audit");
+        _rankingAudit = OS.GetCmdlineUserArgs().Contains("--ranking-audit");
+        _monsterAudit = OS.GetCmdlineUserArgs().Contains("--monster-audit");
+        _questAudit = OS.GetCmdlineUserArgs().Contains("--quest-audit");
+        _chatAudit = OS.GetCmdlineUserArgs().Contains("--chat-audit");
+        _characterAudit = OS.GetCmdlineUserArgs().Contains("--character-audit");
+        _storageAudit = OS.GetCmdlineUserArgs().Contains("--storage-audit");
+        _miniMapAudit = OS.GetCmdlineUserArgs().Contains("--minimap-audit");
+        _fortuneAudit = OS.GetCmdlineUserArgs().Contains("--fortune-audit");
+        _fishingAudit = OS.GetCmdlineUserArgs().Contains("--fishing-audit");
+        _companionAudit = OS.GetCmdlineUserArgs().Contains("--companion-audit");
+        _groupAudit = OS.GetCmdlineUserArgs().Contains("--group-audit");
+        _guildAudit = OS.GetCmdlineUserArgs().Contains("--guild-audit");
+        _gameStoreAudit = OS.GetCmdlineUserArgs().Contains("--gamestore-audit");
+        _consignmentAudit = OS.GetCmdlineUserArgs().Contains("--consignment-audit");
+        _currencyAudit = OS.GetCmdlineUserArgs().Contains("--currency-audit");
+        _helpAudit = OS.GetCmdlineUserArgs().Contains("--help-audit");
+        _horseAudit = OS.GetCmdlineUserArgs().Contains("--horse-audit");
+        _dungeonAudit = OS.GetCmdlineUserArgs().Contains("--dungeon-audit");
+        _editCharacterAudit = OS.GetCmdlineUserArgs().Contains("--edit-character-audit");
+        _autoPotionAudit = OS.GetCmdlineUserArgs().Contains("--auto-potion-audit");
+        _groupLfgAudit = OS.GetCmdlineUserArgs().Contains("--group-lfg-audit");
+        _configAudit = OS.GetCmdlineUserArgs().Contains("--config-audit");
+        _keyBindAudit = OS.GetCmdlineUserArgs().Contains("--keybind-audit");
+        _windowChromeAudit = OS.GetCmdlineUserArgs().Contains("--window-chrome-audit");
+        if (_uiAudit)
+        {
+            _uiLayer = new CanvasLayer
+            {
+                Transform = Transform2D.Identity.Scaled(Vector2.One * 2f),
+                Layer = 10,
+            };
+            AddChild(_uiLayer);
+        }
+
         GD.Print($"[UITest] viewport={GetViewport().GetVisibleRect().Size}");
 
         // 深色背景模拟游戏画面
@@ -24,6 +95,19 @@ public partial class UITestScene : Control
             MouseFilter = MouseFilterEnum.Ignore,
         };
         AddChild(bg);
+        Node uiParent = _uiLayer != null ? (Node)_uiLayer : this;
+
+        // HUD 专项回归：用真实 MainPanel 检查底图、文字/血条子控件和九个
+        // 功能按钮是否仍处于同一逻辑坐标系，并用 Godot 输入事件验证命中。
+        MainPanel hud = null;
+        if (_uiAudit)
+        {
+            hud = new MainPanel { Position = new Vector2(10, 700) };
+            uiParent.AddChild(hud);
+            hud.SetHealth(100);
+            hud.SetMana(80);
+            hud.SetFocus(30);
+        }
 
         // 1. 一个窗口: 背景贴图 + 标题 + 关闭按钮
         var win = new TestWindow
@@ -32,7 +116,7 @@ public partial class UITestScene : Control
             Size = new Vector2(420, 300),
             Text = "背包 (测试窗口)",
         };
-        win.ShowWindow(this);
+        win.ShowWindow(uiParent);
 
         // 窗口背景 = 一张 Interface 贴图 (旧客户端窗口都用这个模式)
         win.AddControl(new DXImageControl
@@ -65,7 +149,7 @@ public partial class UITestScene : Control
             Position = new Vector2(160, 470),
             FixedSize = true,
         };
-        AddChild(btn1);
+        uiParent.AddChild(btn1);
 
         var btn2 = new DXButton
         {
@@ -74,7 +158,7 @@ public partial class UITestScene : Control
             Size = new Vector2(160, 36),
             FixedSize = true,
         };
-        AddChild(btn2);
+        uiParent.AddChild(btn2);
 
         btn2.MouseClick += (o, e) => GD.Print("[UITest] 点击了测试按钮");
 
@@ -93,18 +177,562 @@ public partial class UITestScene : Control
 
         // 自检: 打印关键信息
         SelfCheck(win, btn1, btn2);
+        if (hud != null) AuditHud(hud);
+        if (_uiAudit) AuditItemGridPropagation();
+        if (_uiAudit) AuditBeltAndAutoPotion();
+        if (_npcAudit) AuditNpcPanels();
+        if (_npcAudit) AuditNpcOperationGuards();
+        if (_communicationAudit) AuditCommunication();
+        if (_magicAudit) AuditMagic();
+        if (_rankingAudit) AuditRanking();
+        if (_monsterAudit) AuditMonster();
+        if (_questAudit) AuditQuest();
+        if (_chatAudit) AuditChat();
+        if (_characterAudit) AuditCharacter();
+        if (_storageAudit) AuditStorage();
+        if (_miniMapAudit) AuditMiniMap();
+        if (_fortuneAudit) AuditFortune();
+        if (_fishingAudit) AuditFishing();
+        if (_companionAudit) AuditCompanion();
+        if (_groupAudit) AuditGroup();
+        if (_guildAudit) AuditGuild();
+        if (_gameStoreAudit) AuditGameStore();
+        if (_consignmentAudit) AuditConsignment();
+        if (_currencyAudit) AuditCurrency();
+        if (_helpAudit) AuditHelp();
+        if (_horseAudit) AuditHorse();
+        if (_dungeonAudit) AuditDungeonFinder();
+        if (_editCharacterAudit) AuditEditCharacter();
+        if (_autoPotionAudit) AuditAutoPotion();
+        if (_groupLfgAudit) AuditGroupLfg();
+        if (_configAudit) AuditConfig();
+        if (_keyBindAudit) AuditKeyBind();
+        if (_windowChromeAudit) AuditWindowChrome();
 
         // 等 10 帧后截图一次 (供我分析), 然后挂起等用户按键
         ScreenshotThenWait();
+    }
+
+    private static void AuditHud(MainPanel hud)
+    {
+        bool clicked = false;
+        hud.CharacterButton.MouseClick += (_, _) => clicked = true;
+        hud.CharacterButton._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+        hud.CharacterButton._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false });
+
+        bool layout = hud.CharacterButton.Position.IsEqualApprox(new Vector2(650, 23))
+            && hud.InventoryButton.Position.IsEqualApprox(new Vector2(689, 23))
+            && hud.SpellButton.Position.IsEqualApprox(new Vector2(728, 23))
+            && hud.MenuButton.Position.IsEqualApprox(new Vector2(923, 23))
+            && hud.CashShopButton.Position.IsEqualApprox(new Vector2(972, 16));
+        GD.Print(layout && clicked
+            ? $"[UIHudAudit] PASS panel={hud.Size} buttons=9 click=hit"
+            : $"[UIHudAudit] FAIL panel={hud.Size} character={hud.CharacterButton.Position} click={clicked}");
+    }
+
+    private static void AuditItemGridPropagation()
+    {
+        var grid = new DXItemGrid
+        {
+            GridSize = new Vector2I(1, 1),
+            GridType = GridType.Storage,
+            ReadOnly = true,
+        };
+        bool initial = grid.Cells?.Length == 1 && grid.Cells[0].GridType == GridType.Storage && grid.Cells[0].ReadOnly;
+        grid.GridType = GridType.Inventory;
+        grid.ReadOnly = false;
+        bool changed = grid.Cells[0].GridType == GridType.Inventory && !grid.Cells[0].ReadOnly;
+        var trade = new DXItemGrid { GridSize = new Vector2I(5, 2), GridType = GridType.TradeUser };
+        var tradeDialog = new TradeDialog();
+        bool tradeGold = tradeDialog.AuditGoldRouting(out string tradeGoldDetails);
+        GD.Print(tradeGold
+            ? $"[UITradeAudit] PASS local/remote gold routing {tradeGoldDetails}"
+            : $"[UITradeAudit] FAIL local/remote gold routing {tradeGoldDetails}");
+        var linked = new ClientUserItem(new ItemInfo(), 1);
+        DXItemCell.SetCellItem(trade.Cells[7], linked);
+        bool linkSlot = trade.Cells[7].Item == linked;
+        DXItemCell.SelectedCell = trade.Cells[7];
+        bool selectionPropagation = trade.Cells[7].Selected;
+        DXItemCell.SelectedCell = null;
+        selectionPropagation &= !trade.Cells[7].Selected;
+        var readOnlyCell = new DXItemCell { ReadOnly = true };
+        int clickCount = 0;
+        readOnlyCell.MouseClick += (_, _) => clickCount++;
+        readOnlyCell._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+        readOnlyCell._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false });
+        bool readOnlyClick = clickCount == 1 && DXItemCell.SelectedCell == null;
+        var linkedTarget = new DXItemCell { GridType = GridType.Repair, ItemGrid = new ClientUserItem[1], Slot = 0, LinkedSourceGrid = GridType.Inventory, LinkedSourceSlot = 3 };
+        linkedTarget.ItemGrid[0] = linked;
+        linkedTarget._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+        bool linkedClear = linkedTarget.Item == null && linkedTarget.LinkedSourceSlot < 0 && DXItemCell.SelectedCell == null;
+        var altGrid = new DXItemGrid { GridSize = new Vector2I(1, 1), GridType = GridType.Inventory };
+        DXItemCell.SetCellItem(altGrid.Cells[0], linked);
+        int normalCellClickCount = 0;
+        altGrid.Cells[0].MouseClick += (_, _) => normalCellClickCount++;
+        altGrid.Cells[0]._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, AltPressed = true });
+        altGrid.Cells[0]._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = false, AltPressed = true });
+        bool altLinkDoesNotPickUp = DXItemCell.SelectedCell == null;
+        bool normalCellEvent = normalCellClickCount == 1;
+        bool itemDropGuard = GameScene.CanBeginItemDrop(altGrid.Cells[0]);
+        altGrid.Cells[0].Locked = true;
+        bool lockedDropRejected = !GameScene.CanBeginItemDrop(altGrid.Cells[0]);
+        altGrid.Cells[0].Locked = false;
+        altGrid.Cells[0].Enabled = false;
+        altGrid.Cells[0].UpdateBorder();
+        bool disabledVisual = altGrid.Cells[0].BackColour.A > 0f && !altGrid.Cells[0].IsEnabled;
+        bool itemBadgeTextures = MirSkin.GetTexture(LibraryFile.Interface, 47) != null
+            && MirSkin.GetTexture(LibraryFile.Interface, 48) != null
+            && MirSkin.GetTexture(LibraryFile.Interface, 49) != null
+            && MirSkin.GetTexture(LibraryFile.Interface, 103) != null;
+        bool lootBoxLockedTexture = MirSkin.GetTexture(LibraryFile.GameInter2, 2930) != null;
+        linked.New = false;
+        bool gainedBadge = GameScene.MarkGainedItemForAudit(linked);
+        var experienceInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.Experience);
+        var experience = experienceInfo == null ? null : new ClientUserItem(experienceInfo, 1) { New = false };
+        // Experience packets are displayed as progress, not as a newly usable item.
+        bool experienceIgnored = experience != null && !GameScene.MarkGainedItemForAudit(experience);
+        bool experienceFlags = experience != null;
+        if (experience != null)
+        {
+            experience.Flags = UserItemFlags.Bound | UserItemFlags.NonRefinable;
+            GameScene.ApplyItemExperience(experience, 12.5m, 0, UserItemFlags.Worthless);
+            experienceFlags = experience.Experience == 12.5m && experience.Level == 0
+                && experience.Flags == UserItemFlags.Worthless;
+        }
+        bool gainVisual = gainedBadge && linked.New && experienceIgnored && !experience.New && experienceFlags;
+        GD.Print(initial && changed && linkSlot && selectionPropagation && readOnlyClick && linkedClear && altLinkDoesNotPickUp && normalCellEvent && itemDropGuard && lockedDropRejected && disabledVisual && itemBadgeTextures && lootBoxLockedTexture && gainVisual
+            ? "[UIItemGridAudit] PASS type/read-only, linked-slot, selection, linked-clear, Alt-link, normal-cell event, item-drop guard, disabled visual, Interface badges, loot-box lock texture, gained-item badge, experience flags and read-only-click propagation"
+            : $"[UIItemGridAudit] FAIL type={grid.Cells?[0].GridType} readOnly={grid.Cells?[0].ReadOnly} linkSlot={linkSlot} selection={selectionPropagation} linkedClear={linkedClear} altLink={altLinkDoesNotPickUp} normalEvent={normalCellClickCount} dropGuard={itemDropGuard}/{lockedDropRejected} disabledVisual={disabledVisual} badges={itemBadgeTextures} lootLock={lootBoxLockedTexture} gainVisual={gainVisual} experienceFlags={experienceFlags} readOnlyClick={clickCount}/{DXItemCell.SelectedCell != null}");
+        grid.QueueFree();
+        trade.QueueFree();
+        readOnlyCell.QueueFree();
+        linkedTarget.QueueFree();
+        altGrid.QueueFree();
+        tradeDialog.QueueFree();
+    }
+
+    private static void AuditBeltAndAutoPotion()
+    {
+        var belt = new BeltDialog();
+        var potion = new AutoPotionDialog();
+        bool beltShape = belt.GetAcceptableResize(new Vector2(420, 60)).X >= DXItemCell.CellWidth
+            && belt.GetAcceptableResize(new Vector2(60, 420)).Y >= DXItemCell.CellHeight;
+        bool scroll = potion.ScrollBar.MaxValue == Globals.MaxAutoPotionCount * 50 - 2;
+        potion.Rows[0].Health.Value = 1200;
+        potion.Rows[1].Mana.Value = 2300;
+        potion.SwapRows(0, 1);
+        bool swapped = potion.Rows[0].Health.Value == 0 && potion.Rows[0].Mana.Value == 2300
+            && potion.Rows[1].Health.Value == 1200 && potion.Rows[1].Mana.Value == 0;
+        bool beltKeyPriority = GameScene.ShouldRouteSelectedItemToBelt(true)
+            && !GameScene.ShouldRouteSelectedItemToBelt(false);
+        GD.Print(beltShape && scroll && swapped && beltKeyPriority
+            ? "[UIBeltPotionAudit] PASS resize, panel-wheel range, row swap state and selected-item shortcut priority"
+            : $"[UIBeltPotionAudit] FAIL belt={beltShape} scroll={potion.ScrollBar.MaxValue} swap={swapped} keyPriority={beltKeyPriority}");
+        belt.QueueFree();
+        potion.QueueFree();
+    }
+
+    private static void AuditNpcPanels()
+    {
+        var panel = new NPCAdvancedPanel { Visible = true };
+        bool valid = true;
+        foreach (NPCDialogType mode in Enum.GetValues(typeof(NPCDialogType)))
+        {
+            try
+            {
+                panel.Configure(mode);
+                bool sizeValid = panel.Size.X > 0 && panel.Size.Y > 0;
+                valid &= sizeValid;
+                GD.Print($"[UINPCAudit] mode={mode} size={panel.Size} controls={panel.Controls.Count} valid={sizeValid}");
+                panel.HidePanel();
+            }
+            catch (Exception ex)
+            {
+                valid = false;
+                GD.PrintErr($"[UINPCAudit] FAIL mode={mode} error={ex.GetType().Name}: {ex.Message}");
+            }
+        }
+        panel.QueueFree();
+        GD.Print(valid ? "[UINPCAudit] PASS all NPC modes construct with positive geometry" : "[UINPCAudit] FAIL NPC mode geometry");
+    }
+
+    private static void AuditNpcOperationGuards()
+    {
+        var panel = new NPCAdvancedPanel();
+        bool pass = panel.AuditAccessoryMaterialMatching(out string details);
+        GD.Print(pass
+            ? $"[UINPCOperationAudit] PASS accessory material matching {details}"
+            : $"[UINPCOperationAudit] FAIL accessory material matching {details}");
+        var goods = new NPCGoodsPanel();
+        bool salePass = goods.AuditSaleSelection(out string saleDetails);
+        GD.Print(salePass
+            ? $"[UINPCSaleAudit] PASS sell-mode selection toggle {saleDetails}"
+            : $"[UINPCSaleAudit] FAIL sell-mode selection toggle {saleDetails}");
+        bool buyGuard = NPCGoodsPanel.CanAttemptPurchase(false, 0, 1)
+            && !NPCGoodsPanel.CanAttemptPurchase(true, 0, 1)
+            && !NPCGoodsPanel.CanAttemptPurchase(false, -1, 1)
+            && !NPCGoodsPanel.CanAttemptPurchase(false, 1, 1);
+        GD.Print(buyGuard
+            ? "[UINPCBuyAudit] PASS observer and invalid-selection purchase guards"
+            : "[UINPCBuyAudit] FAIL observer and invalid-selection purchase guards");
+        goods.QueueFree();
+        panel.QueueFree();
+    }
+
+    private static void AuditCommunication()
+    {
+        var dialog = new CommunicationDialog();
+        bool layout = dialog.AuditLayout(out string details);
+        bool pages = dialog.AuditPages(out string pageDetails);
+        bool lifecycle = dialog.AuditMailSendLifecycle(out string lifecycleDetails);
+        bool opened = CommunicationDialog.ShouldSendMailOpened(false)
+            && !CommunicationDialog.ShouldSendMailOpened(true)
+            && CommunicationDialog.CanGetMailItem(new ClientUserItem()) == true
+            && !CommunicationDialog.CanGetMailItem(null);
+        bool valid = layout && pages && lifecycle && opened;
+        GD.Print(valid ? $"[UICommunicationAudit] PASS {details} {pageDetails} mail={lifecycleDetails}" : $"[UICommunicationAudit] FAIL {details} {pageDetails} mail={lifecycleDetails}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditMagic()
+    {
+        var dialog = new MagicDialog();
+        bool valid = dialog.AuditLayout(out string details)
+            && EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Female)
+            && !EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Male)
+            && EditCharacterDialog.NormalizeHairType(99, MirClass.Warrior, MirGender.Male) == 10
+            && EditCharacterDialog.NormalizeHairType(-1, MirClass.Assassin, MirGender.Female) == 0;
+        details += " guards=same-gender,hair-range";
+        GD.Print(valid ? $"[UIMagicAudit] PASS {details}" : $"[UIMagicAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditRanking()
+    {
+        var dialog = new RankingDialog(true);
+        dialog.ApplyInspect(new S.Inspect
+        {
+            Name = "Audit",
+            GuildName = "Guild",
+            GuildRank = "Rank",
+            Level = 1,
+            Class = MirClass.Warrior,
+            Items = new System.Collections.Generic.List<ClientUserItem>(),
+        });
+        bool valid = dialog.AuditInspectLayout(out string details);
+        GD.Print(valid ? $"[UIRankingAudit] PASS {details}" : $"[UIRankingAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditMonster()
+    {
+        var dialog = new MonsterDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIMonsterAudit] PASS {details}" : $"[UIMonsterAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditQuest()
+    {
+        var dialog = new QuestDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIQuestAudit] PASS {details}" : $"[UIQuestAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditChat()
+    {
+        var panel = new ChatLogPanel();
+        bool valid = panel.AuditLinkedItems(out string details);
+        GD.Print(valid ? $"[UIChatAudit] PASS {details}" : $"[UIChatAudit] FAIL {details}");
+        panel.QueueFree();
+    }
+
+    private static void AuditCharacter()
+    {
+        var dialog = new CharacterDialog();
+        bool own = dialog.AuditLayout(out string details);
+        bool tabs = dialog.AuditTabs(out string tabDetails);
+        bool stats = dialog.AuditStats(out string statsDetails);
+        dialog.ApplyInspect(new S.Inspect
+        {
+            Name = "Audit",
+            Partner = "Partner",
+            GuildFlag = 2,
+            GuildColour = System.Drawing.Color.CornflowerBlue,
+            Class = MirClass.Warrior,
+            Level = 1,
+            Items = new System.Collections.Generic.List<ClientUserItem>(),
+        });
+        bool inspect = dialog.Size == new Vector2(331, 374)
+            && dialog.Grid.Length == 17;
+        GD.Print(own && tabs && stats && inspect
+            ? $"[UICharacterAudit] PASS own={details} tabs={tabDetails} stats={statsDetails} inspectSize={dialog.Size}"
+            : $"[UICharacterAudit] FAIL own={own} tabs={tabs}/{tabDetails} stats={stats}/{statsDetails} inspect={inspect} details={details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditStorage()
+    {
+        var dialog = new StorageDialog();
+        dialog.RefreshStorage();
+        bool valid = dialog.AuditLayout(out string details);
+        bool capacity = dialog.AuditCapacity(23, out string capacityDetails);
+        GD.Print(valid && capacity
+            ? $"[UIStorageAudit] PASS {details} {capacityDetails}"
+            : $"[UIStorageAudit] FAIL {details} {capacityDetails}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditMiniMap()
+    {
+        var dialog = new MiniMapDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIMiniMapAudit] PASS {details}" : $"[UIMiniMapAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditFortune()
+    {
+        var dialog = new FortuneCheckerDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIFortuneAudit] PASS {details}" : $"[UIFortuneAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditFishing()
+    {
+        var equipment = new FishingDialog();
+        var catchDialog = new FishingCatchDialog();
+        bool equipmentOk = equipment.AuditLayout(out string equipmentDetails);
+        bool catchOk = catchDialog.AuditLayout(out string catchDetails);
+        GD.Print(equipmentOk && catchOk
+            ? $"[UIFishingAudit] PASS equipment={equipmentDetails} catch={catchDetails}"
+            : $"[UIFishingAudit] FAIL equipment={equipmentOk}/{equipmentDetails} catch={catchOk}/{catchDetails}");
+        equipment.QueueFree();
+        catchDialog.QueueFree();
+    }
+
+    private static void AuditCompanion()
+    {
+        var dialog = new CompanionDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UICompanionAudit] PASS {details}" : $"[UICompanionAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditGroup()
+    {
+        var dialog = new GroupDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIGroupAudit] PASS {details}" : $"[UIGroupAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditGuild()
+    {
+        var dialog = new GuildDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        bool pages = dialog.AuditPageLayouts(out string pageDetails);
+        GD.Print(valid && pages ? $"[UIGuildAudit] PASS {details} pages={pageDetails}" : $"[UIGuildAudit] FAIL {details} pages={pageDetails}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditGameStore()
+    {
+        var dialog = new GameStoreDialog();
+        var topIndexes = Globals.StoreInfoList?.Binding
+            .Where(x => x?.Item != null)
+            .Take(5)
+            .Select(x => x.Index);
+        dialog.SetTopItems(topIndexes);
+        bool valid = dialog.AuditLayout()
+            && GameStoreDialog.CanAttemptGift(false, true, 1)
+            && !GameStoreDialog.CanAttemptGift(true, true, 1)
+            && !GameStoreDialog.CanAttemptGift(false, false, 1)
+            && !GameStoreGiftDialog.CanConfirm(true, "Test")
+            && !GameStoreGiftDialog.CanConfirm(false, "Invalid Recipient ###")
+            && LootBoxDialog.CanRevealWithoutPrompt(0)
+            && !LootBoxDialog.CanRevealWithoutPrompt(1)
+            && LootBoxDialog.CanSpend(100, 50)
+            && !LootBoxDialog.CanSpend(49, 50)
+            && !LootBoxDialog.CanSpend(-1, 0);
+        GD.Print(valid
+            ? $"[UIGameStoreAudit] PASS size={dialog.Size} list={dialog.ItemListGeometry} top={dialog.TopItemsGeometry} rows={dialog.TopItemRowCount}"
+            : $"[UIGameStoreAudit] FAIL size={dialog.Size} list={dialog.ItemListGeometry} top={dialog.TopItemsGeometry} rows={dialog.TopItemRowCount}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditConsignment()
+    {
+        var dialog = new ConsignmentDialog();
+        bool valid = dialog.AuditBuyGuard(out string details);
+        GD.Print(valid
+            ? $"[UIConsignmentAudit] PASS {details}"
+            : $"[UIConsignmentAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditCurrency()
+    {
+        var dialog = new CurrencyDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UICurrencyAudit] PASS {details}" : $"[UICurrencyAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditHelp()
+    {
+        var dialog = new HelpDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIHelpAudit] PASS {details}" : $"[UIHelpAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditHorse()
+    {
+        var dialog = new HorseTameDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIHorseAudit] PASS {details}" : $"[UIHorseAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditDungeonFinder()
+    {
+        var dialog = new DungeonFinderDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIDungeonAudit] PASS {details}" : $"[UIDungeonAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditEditCharacter()
+    {
+        var dialog = new EditCharacterDialog();
+        bool valid = dialog.AuditLayout(out string details)
+            && EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Female)
+            && !EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Male)
+            && EditCharacterDialog.NormalizeHairType(99, MirClass.Warrior, MirGender.Male) == 10
+            && EditCharacterDialog.NormalizeHairType(-1, MirClass.Assassin, MirGender.Female) == 0;
+        details += " guards=same-gender,hair-range";
+        GD.Print(valid ? $"[UIEditCharacterAudit] PASS {details}" : $"[UIEditCharacterAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditAutoPotion()
+    {
+        var dialog = new AutoPotionDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIAutoPotionAudit] PASS {details}" : $"[UIAutoPotionAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditGroupLfg()
+    {
+        var dialog = new GroupLfgInputDialog(null, (_, _, _, _) => { });
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIGroupLfgAudit] PASS {details}" : $"[UIGroupLfgAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditConfig()
+    {
+        var dialog = new ConfigDialog();
+        bool valid = dialog.AuditLayout(out string details);
+        GD.Print(valid ? $"[UIConfigAudit] PASS {details}" : $"[UIConfigAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private static void AuditKeyBind()
+    {
+        var dialog = new KeyBindDialog();
+        var probe = KeyBindManager.KeyBinds[0];
+        Key oldKey2 = probe.Key2;
+        bool oldControl2 = probe.Control2, oldAlt2 = probe.Alt2, oldShift2 = probe.Shift2;
+        probe.Key2 = Key.F24;
+        probe.Control2 = probe.Alt2 = probe.Shift2 = false;
+        bool secondKey = KeyBindManager.GetAction(new InputEventKey { Keycode = Key.F24 }) == probe.Action;
+        probe.Key2 = oldKey2;
+        probe.Control2 = oldControl2;
+        probe.Alt2 = oldAlt2;
+        probe.Shift2 = oldShift2;
+        bool valid = dialog.AuditLayout(out string details) && secondKey;
+        details += $" secondKey={secondKey}";
+        GD.Print(valid ? $"[UIKeyBindAudit] PASS {details}" : $"[UIKeyBindAudit] FAIL {details}");
+        dialog.QueueFree();
+    }
+
+    private void AuditWindowChrome()
+    {
+        var standard = new CaptionDialog();
+        standard.ShowWindow(this);
+        var milestone = new MilestoneDialog();
+        milestone.ShowWindow(this);
+
+        var floating = new BuffDialog();
+        floating.ShowWindow(this);
+        var belt = new BeltDialog();
+        belt.ShowWindow(this);
+        var chat = new ChatTextBox();
+        chat.ShowWindow(this);
+        var monster = new MonsterDialog();
+        monster.ShowWindow(this);
+        var miniMap = new MiniMapDialog();
+        miniMap.ShowWindow(this);
+        var tracker = new QuestTrackerDialog();
+        tracker.ShowWindow(this);
+
+        bool standardClose = standard.DefaultCloseButton != null
+            && standard.DefaultCloseButton.Index == 15
+            && standard.DefaultCloseButton.TooltipText == "关闭"
+            && milestone.DefaultCloseButton != null;
+        bool floatingHidden = floating.DefaultCloseButton == null
+            && belt.DefaultCloseButton == null
+            && chat.DefaultCloseButton == null
+            && monster.DefaultCloseButton == null
+            && miniMap.DefaultCloseButton == null
+            && tracker.DefaultCloseButton == null;
+
+        GD.Print(standardClose && floatingHidden
+            ? "[UIWindowChromeAudit] PASS default close/hint and no-chrome exceptions"
+            : $"[UIWindowChromeAudit] FAIL standard={standardClose} hidden={floatingHidden}");
+
+        foreach (var window in new DXWindow[] { standard, milestone, floating, belt, chat, monster, miniMap, tracker })
+            window.QueueFree();
     }
 
     private void SelfCheck(DXWindow win, DXButton btn1, DXButton btn2)
     {
         GD.Print($"[UITest] 窗口可见={win.Visible} 位置={win.Position} 尺寸={win.Size}");
         GD.Print($"[UITest] 背景贴图164={MirSkin.GetTexture(LibraryFile.Interface, 164) != null} 尺寸={MirSkin.GetSize(LibraryFile.Interface, 164)}");
+        GD.Print($"[UITest] Character backgrounds 110={MirSkin.GetSize(LibraryFile.Interface, 110)} 111={MirSkin.GetSize(LibraryFile.Interface, 111)} 112={MirSkin.GetSize(LibraryFile.Interface, 112)} 115={MirSkin.GetSize(LibraryFile.Interface, 115)}");
+        GD.Print($"[UITest] complex backgrounds 121={MirSkin.GetSize(LibraryFile.Interface, 121)} 125={MirSkin.GetSize(LibraryFile.Interface, 125)} 300={MirSkin.GetSize(LibraryFile.Interface, 300)} 301={MirSkin.GetSize(LibraryFile.Interface, 301)} 310={MirSkin.GetSize(LibraryFile.Interface, 310)}");
+        GD.Print($"[UITest] inventory/companion backgrounds 130={MirSkin.GetSize(LibraryFile.Interface, 130)} 141={MirSkin.GetSize(LibraryFile.Interface, 141)} 200={MirSkin.GetSize(LibraryFile.Interface, 200)} 209={MirSkin.GetSize(LibraryFile.Interface, 209)} 212={MirSkin.GetSize(LibraryFile.Interface, 212)}");
+        GD.Print($"[UITest] social backgrounds 240={MirSkin.GetSize(LibraryFile.Interface, 240)} 260={MirSkin.GetSize(LibraryFile.Interface, 260)} 261={MirSkin.GetSize(LibraryFile.Interface, 261)} 262={MirSkin.GetSize(LibraryFile.Interface, 262)} 263={MirSkin.GetSize(LibraryFile.Interface, 263)} 264={MirSkin.GetSize(LibraryFile.Interface, 264)} 265={MirSkin.GetSize(LibraryFile.Interface, 265)} 266={MirSkin.GetSize(LibraryFile.Interface, 266)}");
+        GD.Print($"[UITest] auxiliary backgrounds 279={MirSkin.GetSize(LibraryFile.Interface, 279)} 280={MirSkin.GetSize(LibraryFile.Interface, 280)} 281={MirSkin.GetSize(LibraryFile.Interface, 281)} 282={MirSkin.GetSize(LibraryFile.Interface, 282)} 291={MirSkin.GetSize(LibraryFile.Interface, 291)} 292={MirSkin.GetSize(LibraryFile.Interface, 292)} 293={MirSkin.GetSize(LibraryFile.Interface, 293)} 303={MirSkin.GetSize(LibraryFile.Interface, 303)} 304={MirSkin.GetSize(LibraryFile.Interface, 304)} 305={MirSkin.GetSize(LibraryFile.Interface, 305)} 306={MirSkin.GetSize(LibraryFile.Interface, 306)}");
+        GD.Print($"[UITest] loot/bundle assets 2900={MirSkin.GetSize(LibraryFile.GameInter2, 2900)} 2920={MirSkin.GetSize(LibraryFile.GameInter2, 2920)} 2925={MirSkin.GetSize(LibraryFile.GameInter2, 2925)} 2926={MirSkin.GetSize(LibraryFile.GameInter2, 2926)} 2927={MirSkin.GetSize(LibraryFile.GameInter2, 2927)}");
+        GD.Print($"[UITest] bundle background 3350={MirSkin.GetSize(LibraryFile.GameInter, 3350)}");
+        GD.Print($"[UITest] help background 9300={MirSkin.GetSize(LibraryFile.GameInter, 9300)} menu buttons 9310={MirSkin.GetSize(LibraryFile.GameInter, 9310)} 9311={MirSkin.GetSize(LibraryFile.GameInter, 9311)}");
+        GD.Print($"[UITest] window frame 0={MirSkin.GetSize(LibraryFile.Interface, 0)} 2={MirSkin.GetSize(LibraryFile.Interface, 2)} 3={MirSkin.GetSize(LibraryFile.Interface, 3)} 10={MirSkin.GetSize(LibraryFile.Interface, 10)} 126={MirSkin.GetSize(LibraryFile.Interface, 126)}");
+        GD.Print($"[UITest] fishing 220={MirSkin.GetSize(LibraryFile.Interface, 220)} 230={MirSkin.GetSize(LibraryFile.Interface, 230)} horse 7600={MirSkin.GetSize(LibraryFile.GameInter, 7600)} 7610={MirSkin.GetSize(LibraryFile.GameInter, 7610)} 7620={MirSkin.GetSize(LibraryFile.GameInter, 7620)} 7630={MirSkin.GetSize(LibraryFile.GameInter, 7630)} 7631={MirSkin.GetSize(LibraryFile.GameInter, 7631)}");
+        GD.Print($"[UITest] fishing assets 231={MirSkin.GetSize(LibraryFile.Interface, 231)} 232={MirSkin.GetSize(LibraryFile.Interface, 232)} 234={MirSkin.GetSize(LibraryFile.Interface, 234)} fish=4500:{MirSkin.GetSize(LibraryFile.GameInter, 4500)} 4501:{MirSkin.GetSize(LibraryFile.GameInter, 4501)} 4510:{MirSkin.GetSize(LibraryFile.GameInter, 4510)}");
+        GD.Print($"[UITest] NPC assets 5700={MirSkin.GetSize(LibraryFile.GameInter, 5700)} 5701={MirSkin.GetSize(LibraryFile.GameInter, 5701)} 380={MirSkin.GetSize(LibraryFile.GameInter, 380)} 381={MirSkin.GetSize(LibraryFile.GameInter, 381)} 382={MirSkin.GetSize(LibraryFile.GameInter, 382)}");
+        GD.Print($"[UITest] NPC panels 142={MirSkin.GetSize(LibraryFile.Interface, 142)} 143={MirSkin.GetSize(LibraryFile.Interface, 143)} 146={MirSkin.GetSize(LibraryFile.Interface, 146)} 147={MirSkin.GetSize(LibraryFile.Interface, 147)} 201={MirSkin.GetSize(LibraryFile.Interface, 201)} 202={MirSkin.GetSize(LibraryFile.Interface, 202)} 203={MirSkin.GetSize(LibraryFile.Interface, 203)} 204={MirSkin.GetSize(LibraryFile.Interface, 204)} 205={MirSkin.GetSize(LibraryFile.Interface, 205)}");
+        GD.Print($"[UITest] store controls 4830={MirSkin.GetSize(LibraryFile.GameInter, 4830)} 4835={MirSkin.GetSize(LibraryFile.GameInter, 4835)} 4840={MirSkin.GetSize(LibraryFile.GameInter, 4840)} 4845={MirSkin.GetSize(LibraryFile.GameInter, 4845)} 4855={MirSkin.GetSize(LibraryFile.GameInter, 4855)} 4857={MirSkin.GetSize(LibraryFile.GameInter, 4857)} 4872={MirSkin.GetSize(LibraryFile.GameInter, 4872)}");
         GD.Print($"[UITest] 按钮1贴图210={MirSkin.GetTexture(LibraryFile.Interface, 210) != null} 尺寸={MirSkin.GetSize(LibraryFile.Interface, 210)}");
+        GD.Print($"[UITest] MainPanel底图50={MirSkin.GetSize(LibraryFile.GameInter, 50)} 经验条51={MirSkin.GetSize(LibraryFile.GameInter, 51)}");
         GD.Print($"[UITest] 按钮2尺寸={btn2.Size} 中文字体={MirSkin.GetFont() != null}");
         GD.Print($"[UITest] 字体尺寸测试='攻击'={MirSkin.MeasureText("攻击", 14)}");
+        if (_uiAudit)
+        {
+            bool scaleOk = _uiLayer != null
+                && Mathf.IsEqualApprox(_uiLayer.Transform.X.X, 2f)
+                && Mathf.IsEqualApprox(_uiLayer.Transform.Y.Y, 2f);
+            bool logicalAnchorOk = win.Position.IsEqualApprox(new Vector2(160, 120))
+                && btn1.Position.IsEqualApprox(new Vector2(160, 470));
+            GD.Print(scaleOk && logicalAnchorOk
+                ? "[UIAudit] PASS scale=2 logical anchors preserved"
+                : $"[UIAudit] FAIL transform={_uiLayer?.Transform} win={win.Position} btn={btn1.Position}");
+        }
     }
 
     private async void ScreenshotThenWait()
