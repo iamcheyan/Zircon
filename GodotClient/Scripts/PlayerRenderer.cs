@@ -476,26 +476,31 @@ public partial class PlayerRenderer : Node2D
     private void DrawExteriorEffect(ExteriorEffect effect, bool behind)
     {
         if (effect == ExteriorEffect.None) return;
-        bool isWeapon = effect is ExteriorEffect.W_ChaoticHeavenBlade
-            or ExteriorEffect.W_JanitorsScimitar or ExteriorEffect.W_JanitorsDualBlade;
-        bool shouldBehind = !isWeapon && effect is not (ExteriorEffect.A_BlueAura
-            or ExteriorEffect.A_FlameAura or ExteriorEffect.A_WhiteAura);
-        if (behind != shouldBehind) return;
+        if (behind != DrawExteriorEffectBehind(Direction, effect)) return;
 
         int tick = (int)(Godot.Time.GetTicksMsec() / 100);
+        int slowTick = tick / 2; // old ExteriorEffectManager uses Animation / 2
         int dir = (int)Direction;
+        float drawX = 0f, drawY = 0f;
+        DetermineExteriorOffset(effect, out drawX, out drawY);
         ZlLibrary lib = null;
         int frame = 0;
         float alpha = 1f;
         switch (effect)
         {
-            case ExteriorEffect.A_WhiteAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 800 + tick % 13; alpha = 0.7f; break;
-            case ExteriorEffect.A_FlameAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 820 + tick % 13; alpha = 0.7f; break;
-            case ExteriorEffect.A_BlueAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 840 + tick % 13; alpha = 0.7f; break;
-            case ExteriorEffect.A_GreenWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 400 + tick % 15 + dir * 20; break;
-            case ExteriorEffect.A_FlameWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 200 + tick % 15 + dir * 20; break;
-            case ExteriorEffect.A_BlueWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = tick % 15 + dir * 20; break;
-            case ExteriorEffect.A_RedSinWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 600 + tick % 13 + dir * 20; break;
+            case ExteriorEffect.A_WhiteAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 800 + slowTick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_FlameAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 820 + slowTick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_BlueAura: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 840 + slowTick % 13; alpha = 0.7f; break;
+            case ExteriorEffect.A_FlameAura2: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = (Gender == MirGender.Male ? 1700 : 1720) + tick % 10; break;
+            case ExteriorEffect.A_GreenWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 400 + slowTick % 15 + dir * 20; break;
+            case ExteriorEffect.A_FlameWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 200 + slowTick % 15 + dir * 20; break;
+            case ExteriorEffect.A_BlueWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = slowTick % 15 + dir * 20; break;
+            case ExteriorEffect.A_RedSinWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 600 + slowTick % 13 + dir * 20; break;
+            case ExteriorEffect.A_PurpleTentacles2: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 4454 + slowTick % 4 + dir * 9; break;
+            case ExteriorEffect.A_DiamondFireWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 4566 + slowTick % 4 + dir * 9; break;
+            case ExteriorEffect.A_PhoenixWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 4062 + slowTick % 8 + dir * 20; break;
+            case ExteriorEffect.A_IceKingWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 4258 + slowTick % 8 + dir * 20; break;
+            case ExteriorEffect.A_BlueButterflyWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Part); frame = 4678 + slowTick % 8 + dir * 20; break;
             case ExteriorEffect.A_FireDragonWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 0 + (int)Gender * 5000 + DrawFrame; break;
             case ExteriorEffect.A_SmallYellowWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 10000 + (int)Gender * 5000 + DrawFrame; break;
             case ExteriorEffect.A_GreenFeatherWings: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 50000 + (int)Gender * 5000 + DrawFrame; break;
@@ -509,14 +514,92 @@ public partial class PlayerRenderer : Node2D
             case ExteriorEffect.A_RedWings2: lib = LibraryCache.Get(LibraryFile.EquipEffect_FullEx3); frame = DrawFrame; break;
             case ExteriorEffect.W_ChaoticHeavenBlade: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 40000 + (int)Gender * 5000 + DrawFrame; break;
             case ExteriorEffect.W_JanitorsScimitar or ExteriorEffect.W_JanitorsDualBlade: lib = LibraryCache.Get(LibraryFile.EquipEffect_Full); frame = 20000 + (int)Gender * 5000 + DrawFrame; break;
-            case ExteriorEffect.E_RedEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 90 + tick % 24; break;
-            case ExteriorEffect.E_BlueEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 220 + tick % 25; break;
-            case ExteriorEffect.E_GreenSpiralRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 330 + tick % 20; break;
-            case ExteriorEffect.E_Fireworks: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 360 + tick % 10; break;
+            case ExteriorEffect.E_RedEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 90 + slowTick % 24; break;
+            case ExteriorEffect.E_BlueEyeRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 220 + slowTick % 25; break;
+            case ExteriorEffect.E_GreenSpiralRing: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 330 + slowTick % 20; break;
+            case ExteriorEffect.E_Fireworks: lib = LibraryCache.Get(LibraryFile.MonMagicEx26); frame = 360 + slowTick % 10; break;
+            case ExteriorEffect.S_WarThurible: DrawThurible(LibraryFile.EquipEffect_Part, 900, 1000, tick, dir, drawX, drawY, behind); return;
+            case ExteriorEffect.S_PenanceThurible: DrawThurible(LibraryFile.EquipEffect_Part, 1100, 1200, tick, dir, drawX, drawY, behind); return;
+            case ExteriorEffect.S_CensorshipThurible: DrawThurible(LibraryFile.EquipEffect_Part, 1300, 1400, tick, dir, drawX, drawY, behind); return;
+            case ExteriorEffect.S_PetrichorThurible: DrawThurible(LibraryFile.EquipEffect_Part, 1500, 1600, tick, dir, drawX, drawY, behind); return;
             default: return;
         }
         if (lib == null || frame < 0 || frame >= lib.Images.Length) return;
-        DrawLayer(lib, frame, 0, 0, new Color(1f, 1f, 1f, alpha));
+        // 旧端 ExteriorEffectManager 使用 ImageType.Image；外观素材的黑色
+        // 像素可能是合法细节，不能套用技能特效的黑色透明键。
+        DrawExteriorBlendLayer(lib, frame, alpha, behind, drawX, drawY);
+    }
+
+    private void DrawThurible(LibraryFile file, int first, int second, int tick, int dir,
+        float drawX, float drawY, bool behind)
+    {
+        var lib = LibraryCache.Get(file);
+        if (lib == null) return;
+        int frame = tick % 4 + dir * 10;
+        // 旧端第一层是 Draw(Image)，第二层才是 DrawBlend(Image)。
+        DrawExteriorBlendLayer(lib, first + frame, 1f, behind, drawX, drawY, false);
+        DrawExteriorBlendLayer(lib, second + frame, 1f, behind, drawX, drawY, true);
+    }
+
+    private void DrawExteriorBlendLayer(ZlLibrary lib, int frame, float alpha, bool behind,
+        float offsetX = 0f, float offsetY = 0f, bool additive = true)
+    {
+        BlendImageLayerNode layer = null;
+        foreach (var candidate in _exteriorBlendLayers)
+        {
+            if (!candidate.Visible) { layer = candidate; break; }
+        }
+        if (layer == null)
+        {
+            layer = new BlendImageLayerNode();
+            _exteriorBlendLayers.Add(layer);
+            AddChild(layer);
+        }
+        layer.Configure(lib, frame, new Color(1f, 1f, 1f, alpha), behind ? -1 : 1, offsetX, offsetY, additive);
+    }
+
+    private bool DrawExteriorEffectBehind(MirDirection direction, ExteriorEffect effect)
+    {
+        if (effect is ExteriorEffect.E_BlueEyeRing or ExteriorEffect.E_RedEyeRing
+            or ExteriorEffect.E_GreenSpiralRing)
+            return true;
+        if (effect is ExteriorEffect.A_BlueAura or ExteriorEffect.A_FlameAura
+            or ExteriorEffect.A_WhiteAura or ExteriorEffect.A_FlameAura2)
+            return false;
+        if (effect is ExteriorEffect.W_ChaoticHeavenBlade or ExteriorEffect.W_JanitorsScimitar
+            or ExteriorEffect.W_JanitorsDualBlade)
+            return direction is MirDirection.Up or MirDirection.UpLeft or MirDirection.Left or MirDirection.DownLeft;
+        if (effect is ExteriorEffect.S_WarThurible or ExteriorEffect.S_PenanceThurible
+            or ExteriorEffect.S_CensorshipThurible or ExteriorEffect.S_PetrichorThurible)
+            return direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight;
+        return direction is MirDirection.DownRight or MirDirection.Down or MirDirection.DownLeft;
+    }
+
+    private void DetermineExteriorOffset(ExteriorEffect effect, out float x, out float y)
+    {
+        x = 0f; y = 0f;
+        if (Horse == HorseType.None) return;
+        if (effect is ExteriorEffect.A_WhiteAura or ExteriorEffect.A_BlueAura
+            or ExteriorEffect.A_FlameAura or ExteriorEffect.A_FlameAura2)
+        {
+            if (Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight) x = 7f;
+            else if (Direction is MirDirection.DownLeft or MirDirection.Left or MirDirection.UpLeft) x = -8f;
+            y = -25f;
+            return;
+        }
+        if (effect is ExteriorEffect.A_GreenWings or ExteriorEffect.A_BlueWings
+            or ExteriorEffect.A_FlameWings or ExteriorEffect.A_RedSinWings
+            or ExteriorEffect.A_DiamondFireWings or ExteriorEffect.A_PurpleTentacles2
+            or ExteriorEffect.A_PhoenixWings or ExteriorEffect.A_IceKingWings
+            or ExteriorEffect.A_BlueButterflyWings)
+        {
+            float movement = Animation == MirAnimation.HorseWalking ? 4f
+                : Animation == MirAnimation.HorseRunning ? 8f : 0f;
+            if (Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight) x = 7f + movement;
+            else if (Direction == MirDirection.DownLeft) x = -5f - movement;
+            else if (Direction is MirDirection.Left or MirDirection.UpLeft) x = -8f - movement;
+            y = Direction is MirDirection.Down or MirDirection.DownLeft or MirDirection.DownRight ? -16f : -30f;
+        }
     }
 
     private void DrawShadow()
