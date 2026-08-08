@@ -3,32 +3,31 @@ using ZirconClient.Formats;
 
 namespace ZirconClient.Scripts;
 
-// Additive layer for legacy DrawBlend calls whose source is an ordinary image
-// (not a black-key effect texture).  Used by player exterior equipment.
+// Mix layer for legacy DrawBlend calls whose source is an ordinary image
+// (not a black-key effect texture). Used by player exterior equipment.
 public partial class BlendImageLayerNode : Node2D
 {
-    private readonly CanvasItemMaterial _material = new();
-
     private ZlLibrary _library;
     private int _frame = -1;
     private float _offsetX;
     private float _offsetY;
     private Color _colour = Colors.White;
-
     public BlendImageLayerNode()
     {
-        Material = _material;
+        Material = LegacyBlendMaterial.Create();
     }
 
     public void Configure(ZlLibrary library, int frame, Color colour, int zIndex,
-        float offsetX = 0f, float offsetY = 0f, bool additive = true)
+        float offsetX = 0f, float offsetY = 0f, bool blend = true)
     {
         _library = library;
         _frame = frame;
         _colour = colour;
         _offsetX = offsetX;
         _offsetY = offsetY;
-        _material.BlendMode = additive ? CanvasItemMaterial.BlendModeEnum.Add : CanvasItemMaterial.BlendModeEnum.Mix;
+        // Preserve the old call site: Draw(Image) is ordinary source-over,
+        // while DrawBlend(Image) uses the legacy NORMAL screen blend state.
+        Material = blend ? LegacyBlendMaterial.Create() : null;
         ZIndex = zIndex;
         Visible = library != null && frame >= 0;
         QueueRedraw();

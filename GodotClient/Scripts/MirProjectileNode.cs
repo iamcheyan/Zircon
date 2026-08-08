@@ -72,8 +72,10 @@ public partial class MirProjectileNode : MirEffectNode
 
         Direction = Functions.DirectionFromPoint(origin, target);
         Direction16 = Functions.Direction16(origin, target);
-        long duration = Functions.Distance(origin, target);
-        if (Delay > 0) duration *= Delay;
+        float distancePx = originScreen.DistanceTo(targetScreen);
+        long duration = (long)(distancePx * 1.5f);
+        if (Delay > 0) duration = (long)(duration * (Delay / 10.0f));
+        duration = Math.Max(50, duration);
         if (!Has16Directions) Direction16 /= 2;
 
         if (duration <= 0)
@@ -83,8 +85,6 @@ public partial class MirProjectileNode : MirEffectNode
             return;
         }
 
-        // MirProjectile 的帧序列与普通 MirEffect 不同：飞行期间循环播放，
-        // 到达目标才结束，而不是播放完 frameCount 就提前消失。
         int frame = GetProjectileFrame(now);
         if (Reversed) frame = FrameCount - frame - 1;
         if (frame != _frameIndex)
@@ -98,29 +98,21 @@ public partial class MirProjectileNode : MirEffectNode
 
         Position += new Vector2(AdditionalOffX, AdditionalOffY);
 
-        // 投射物在飞行过程中跨越多个地图行，必须和地形/角色共享动态
-        // RenderY 排序；只在 Setup 时计算一次会导致火球穿过建筑或角色。
         if (DrawType == EffectLayer.Object)
         {
             int renderY = (int)MathF.Round(Mathf.Lerp(Origin.Y, CurrentRenderY, (float)t));
-            ZIndex = 100 + renderY;
+            // Keep projectiles in the same per-row slot as MirEffectNode.
+            // The old 100 + y value is not compatible with the compact
+            // terrain/object ordering and lets terrain rows cover the sprite.
+            ZIndex = RenderOrder.ObjectEffect(renderY);
         }
         else
         {
             UpdateRenderLayer();
         }
 
-        // 原版 MirProjectile 的结束条件不是“一到 duration 就删除”：
-        // 没有对象目标且未设置 Explode 的直线投射物，要继续绘制到完全
-        // 离开视口。否则长距离/穿屏技能会在目标格突然消失。
-        if (now - _startMs > duration)
+        if (now - _startMs >= duration)
         {
-            if (_targetNode == null && !Explode && IsProjectileVisible())
-            {
-                QueueRedraw();
-                return;
-            }
-
             CompleteAction?.Invoke();
             QueueFree();
             return;
@@ -162,20 +154,21 @@ public partial class MirProjectileNode : MirEffectNode
         return FrameCount - 1;
     }
 
+    private static readonly ShaderMaterial _blendMaterial = LegacyBlendMaterial.Create();
+
     public override void _Draw()
     {
-        // MirProjectile ultimately calls the same legacy DrawBlend path as
-        // MirEffect, whose blend mode is normal alpha compositing.
-        Material = null;
+        Material = Blend ? _blendMaterial : null;
         if (_lib == null || _frameIndex < 0) return;
-        // 投射物帧: frame + StartIndex + Direction16 * Skip (16 向)
         int df = _frameIndex + StartIndex + Direction16 * Skip;
         if (df < 0 || df >= _lib.Images.Length) return;
 
         var img = _lib.Images[df];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
-        // Legacy MirEffect/MirProjectile also renders ImageType.Image.
-        var tex = _lib.GetImageTexture(df);
+        // Projectile frames use the same legacy colour-key transparency as
+        // MirEffect.  The raw image would draw the frame's rectangular key
+        // background over terrain and make the fireball look incomplete.
+        var tex = _lib.GetEffectTexture(df);
         if (tex == null) return;
 
         // MirProjectile 继承旧版 MirEffect.Draw：useOffSet=false 时，传入
@@ -187,9 +180,12 @@ public partial class MirProjectileNode : MirEffectNode
         var destRect = new Rect2(ox, oy, img.Width, img.Height);
         var srcRect = new Rect2(0, 0, img.Width, img.Height);
 
+        // 原版 MirProjectile 继承 MirEffect.Draw 的 Blend 路径：NORMAL 混合
+        // 忽略 blendRate，顶点 Alpha = DrawColour.A/255 * _opacity(=1F)，
+        // 元素颜色均不透明 → 全 Alpha Screen Blend。
         Color c = Blend
             ? new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                BlendRate * FrameLightColour.A)
+                FrameLightColour.A)
             : new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
                 Opacity * FrameLightColour.A);
         DrawTextureRectRegion(tex, destRect, srcRect, c);

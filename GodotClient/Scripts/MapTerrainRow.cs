@@ -11,15 +11,12 @@ public partial class MapTerrainRow : Node2D
     public bool FrontLayer;
     public bool BlendOnly;
 
-    private readonly CanvasItemMaterial _blendMaterial = new()
-    {
-        // Legacy map DrawBlend uses normal alpha blending with rate 0.5.
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Mix
-    };
-
     public override void _Ready()
     {
-        if (BlendOnly) Material = _blendMaterial;
+        // 原版 Middle/FrontAnimationBlend = DrawBlend → BlendMode.NORMAL =
+        // Screen Blend（blendRate 0.5F 被忽略，全 Alpha）。必须用
+        // LegacyScreenBlend 材质，而不是普通 Mix。
+        if (BlendOnly) Material = LegacyBlendMaterial.Create();
     }
 
     public override void _Draw()

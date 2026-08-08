@@ -210,14 +210,11 @@ public partial class MirEffectNode : Node2D
 
     public int DrawFrame => _frameIndex + StartIndex + (int)Direction * Skip;
 
-    private static readonly CanvasItemMaterial _addMaterial = new()
-    {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-    };
+    private static readonly ShaderMaterial _blendMaterial = LegacyBlendMaterial.Create();
 
     public override void _Draw()
     {
-        Material = Blend ? _addMaterial : null;
+        Material = Blend ? _blendMaterial : null;
         if (_lib == null || _frameIndex < 0) return;
         int df = DrawFrame;
         if (df < 0 || df >= _lib.Images.Length) return;
@@ -225,10 +222,11 @@ public partial class MirEffectNode : Node2D
         var img = _lib.Images[df];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
 
-        // Client/Models/MirEffect.Draw uses ImageType.Image for every effect.
-        // The effect black-key path is not equivalent to the legacy renderer
-        // and can remove the subject beneath shield/overlay frames.
-        var tex = _lib.GetImageTexture(df);
+        // Legacy ImageType.Image still applies the library's colour-key
+        // transparency before the DirectX blend.  GetImageTexture() is the
+        // raw decoded frame in Godot and leaves the rectangular key colour
+        // visible, which is why skill frames can appear as shifted squares.
+        var tex = _lib.GetEffectTexture(df);
         if (tex == null) return;
 
         // MirLibrary.Draw uses the supplied position as the top-left when
@@ -241,9 +239,13 @@ public partial class MirEffectNode : Node2D
 
         if (Blend)
         {
-            // Godot 混合: 用 BlendRate 降 alpha (近似原版 DrawBlend)
+            // 原版 MirEffect.Draw → Library.DrawBlend → DrawTextureBlend 的
+            // BlendMode.NORMAL：blendRate 被忽略（AppliesBlendRateToVertexColour
+            // 只覆盖 COLORFY/MASK/EFFECTMASK/LIGHTMAP），顶点 Alpha =
+            // DrawColour.A/255 * _opacity(=1F)。元素颜色均不透明 → 全 Alpha
+            // Screen Blend，不能把 BlendRate 乘进顶点 Alpha。
             Color c = new(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                BlendRate * FrameLightColour.A);
+                FrameLightColour.A);
             DrawTextureRectRegion(tex, destRect, srcRect, c);
         }
         else

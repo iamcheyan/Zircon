@@ -10,24 +10,20 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class MirLineEffectNode : Node2D
 {
-    private readonly CanvasItemMaterial _blendMaterial = new()
-    {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-    };
+    private readonly ShaderMaterial _blendMaterial = LegacyBlendMaterial.Create();
     private Node2D _source;
     private Node2D _target;
     private ZlLibrary _library;
     private int _startIndex;
     private float _imageScale;
     private float _opacity = 1f;
-    private float _blendRate = 0.7f;
     private bool _blend;
     private double _expireAt;
     private Vector2[] _points = System.Array.Empty<Vector2>();
     private Vector2[] _velocities = System.Array.Empty<Vector2>();
     private bool _initialized;
 
-    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs, bool blend = false, float opacity = 1f, float blendRate = 0.7f)
+    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs, bool blend = false, float opacity = 1f)
     {
         _source = source;
         _target = target;
@@ -35,7 +31,6 @@ public partial class MirLineEffectNode : Node2D
         _startIndex = startIndex;
         _imageScale = Mathf.Max(0.01f, imageScale);
         _opacity = Mathf.Clamp(opacity, 0f, 1f);
-        _blendRate = Mathf.Clamp(blendRate, 0f, 1f);
         _blend = blend;
         _expireAt = Godot.Time.GetTicksMsec() + lifetimeMs;
         ZIndex = 10000;
@@ -102,7 +97,12 @@ public partial class MirLineEffectNode : Node2D
             Vector2 middle = (p1 + p2) * 0.5f;
             DrawSetTransform(middle, Mathf.Atan2(delta.Y, delta.X) + Mathf.Pi / 2f,
                 new Vector2(_imageScale, length / 30f));
-            float alpha = _blend ? _opacity * _blendRate : _opacity;
+            // 原版 MirLineEffect.Draw：Blend 路径调用
+            // Library.DrawBlendScaled(..., Opacity, ...) —— Opacity 落在
+            // DrawTextureBlend 的 blendRate 参数上，NORMAL 混合忽略 blendRate；
+            // 顶点 Alpha 始终是 DrawColour.A/255 * _opacity(=1F) = 1.0。
+            // 因此 Blend 与非 Blend 路径的顶点 Alpha 相同（都是 _opacity）。
+            float alpha = _opacity;
             DrawTextureRectRegion(texture,
                 new Rect2(-image.Width / 2f, -image.Height / 2f, image.Width, image.Height),
                 new Rect2(0, 0, image.Width, image.Height), new Color(1, 1, 1, alpha));

@@ -4,16 +4,11 @@ using ZirconClient.Formats;
 namespace ZirconClient.Scripts;
 
 /// <summary>
-/// 单独的亮化序列帧层。Godot 的 CanvasItemMaterial 作用于整个节点，
-/// 因此需要把原版 DrawBlend 的附加层拆成子节点，不能把主体也一起 Add。
+/// 单独的混合序列帧层。Godot 的 CanvasItemMaterial 作用于整个节点，
+/// 因此需要把原版 DrawBlend 的附加层拆成子节点，不能把主体也一起混合。
 /// </summary>
 public partial class BlendLayerNode : Node2D
 {
-    private readonly CanvasItemMaterial _blendMaterial = new()
-    {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-    };
-
     private ZlLibrary _library;
     private int _frame = -1;
     private float _offsetX;
@@ -22,7 +17,7 @@ public partial class BlendLayerNode : Node2D
 
     public BlendLayerNode()
     {
-        Material = _blendMaterial;
+        Material = LegacyBlendMaterial.Create();
         ZIndex = 1;
     }
 
@@ -46,7 +41,8 @@ public partial class BlendLayerNode : Node2D
         if (image == null || image.Width <= 0 || image.Height <= 0)
             return;
 
-        // ExteriorEffectManager calls DrawBlend(..., ImageType.Image).
+        // MapControl.DrawBlend also passes ImageType.Image. This node only
+        // represents the separate Mix layer; it must not apply a color key.
         var texture = _library.GetImageTexture(_frame);
         if (texture == null)
             return;
