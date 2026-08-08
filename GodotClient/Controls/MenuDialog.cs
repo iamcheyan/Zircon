@@ -1,0 +1,86 @@
+using System;
+using Godot;
+using Library;
+using ZirconClient.Scripts;
+
+namespace ZirconClient.Controls;
+
+/// <summary>原版 Client/Scenes/Views/MenuDialog.cs 的菜单窗口。</summary>
+public partial class MenuDialog : DXWindow
+{
+    public DXButton SettingsButton, HelpButton, GuildButton, StorageButton,
+        RankingButton, CompanionButton, LeaveButton;
+
+    public MenuDialog()
+    {
+        HasTitle = false;
+        Movable = true;
+        HasFooter = false;
+        Size = new Vector2I(152, 260);
+
+        AddControl(new DXImageControl
+        {
+            LibraryFile = LibraryFile.Interface,
+            Index = 279,
+            FixedSize = true,
+            Size = Size,
+            MouseFilter = MouseFilterEnum.Ignore,
+        });
+
+        var close = new DXButton
+        {
+            LibraryFile = LibraryFile.Interface,
+            Index = 15,
+            Location = new Vector2I(Mathf.RoundToInt(Size.X) - 30, 3),
+        };
+        close.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(close);
+
+        var title = new DXLabel
+        {
+            Text = "菜单",
+            FontSize = 11,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            AutoSize = false,
+            Size = new Vector2I(Mathf.RoundToInt(Size.X), 24),
+            IsControl = false,
+        };
+        AddControl(title);
+
+        SettingsButton = AddMenuButton("设置", 40);
+        HelpButton = AddMenuButton("帮助", 70);
+        GuildButton = AddMenuButton("行会", 100);
+        StorageButton = AddMenuButton("仓库", 130);
+        RankingButton = AddMenuButton("排行", 160);
+        CompanionButton = AddMenuButton("伙伴", 190);
+        LeaveButton = AddMenuButton("退出游戏", 220);
+
+        StorageButton.MouseClick += (o, e) => GameScene.Game?.ToggleStorageWindow();
+        SettingsButton.MouseClick += (o, e) => GameScene.Game?.OpenConfigDialog();
+        HelpButton.MouseClick += (o, e) => GameScene.Game?.OpenHelpDialog();
+        GuildButton.MouseClick += (o, e) => GameScene.Game?.OpenGuildDialog();
+        RankingButton.MouseClick += (o, e) => GameScene.Game?.OpenRankingDialog();
+        CompanionButton.MouseClick += (o, e) => GameScene.Game?.OpenCompanionDialog();
+        LeaveButton.MouseClick += (o, e) => GameScene.Game?.OpenExitDialog();
+    }
+
+    private DXButton AddMenuButton(string text, int y)
+    {
+        var button = new DXButton
+        {
+            Text = text,
+            FontSize = 10,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            Size = new Vector2I(100, 25),
+            Location = new Vector2I(26, y),
+            LibraryFile = LibraryFile.Interface,
+            Index = -1,
+        };
+        AddControl(button);
+        return button;
+    }
+}

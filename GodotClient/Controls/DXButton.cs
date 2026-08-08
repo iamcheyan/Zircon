@@ -17,6 +17,12 @@ public partial class DXButton : DXImageControl
         YellowButton,
         GreenButton,
         Default,
+        SelectedTab,
+        DeselectedTab,
+        AddButton,
+        RemoveButton,
+        LFGButton,
+        OptionsButton,
     }
 
     public ButtonType Type = ButtonType.Normal;
@@ -27,6 +33,13 @@ public partial class DXButton : DXImageControl
     private DXLabel _label;
 
     public DXLabel Label => _label;
+
+    public DXButton()
+    {
+        // 原版 DXButton 构造函数默认 Sound = ButtonA；特殊控件仍可
+        // 覆盖为 ButtonB/ButtonC/None。
+        Sound = Library.SoundIndex.ButtonA;
+    }
 
     public override void _Ready()
     {
@@ -114,12 +127,73 @@ public partial class DXButton : DXImageControl
 
     protected override void DrawControl()
     {
-        base.DrawControl();
-        // 按钮文字画在贴图上; 若贴图缺失则画一个底色框保证可见
-        if (MirSkin.GetTexture(LibraryFile, GetCurrentIndex()) == null)
+        int index = GetCurrentIndex();
+        if (index >= 0)
         {
-            Color back = IsHovered ? new Color(0.4f, 0.4f, 0.6f, 0.8f) : new Color(0.25f, 0.25f, 0.3f, 0.8f);
-            DrawRect(new Rect2(Vector2.Zero, Size), back);
+            base.DrawControl();
+            // 按钮文字画在贴图上; 若贴图缺失则画一个底色框保证可见
+            if (MirSkin.GetTexture(LibraryFile, index) == null)
+                DrawFallbackButton();
+            return;
         }
+
+        // 原版 DXButton 在 Index 未指定时并不是空矩形，而是由 Interface
+        // 的左右端片和可拉伸中片拼成的按钮。这里保留同一套端片索引，
+        // 使 Default/SmallButton/Tab 以及功能图标按钮在所有窗口中一致。
+        if (!DrawGeneratedButton())
+            DrawFallbackButton();
+    }
+
+    private void DrawFallbackButton()
+    {
+        Color back = IsHovered ? new Color(0.4f, 0.4f, 0.6f, 0.8f) : new Color(0.25f, 0.25f, 0.3f, 0.8f);
+        DrawRect(new Rect2(Vector2.Zero, Size), back);
+    }
+
+    private bool DrawGeneratedButton()
+    {
+        if (LibraryFile != Library.LibraryFile.Interface || Size.X <= 0 || Size.Y <= 0)
+            return false;
+
+        switch (Type)
+        {
+            case ButtonType.AddButton: return DrawSingleButtonTexture(241);
+            case ButtonType.RemoveButton: return DrawSingleButtonTexture(242);
+            case ButtonType.LFGButton: return DrawSingleButtonTexture(243);
+            case ButtonType.OptionsButton: return DrawSingleButtonTexture(245);
+            case ButtonType.SmallButton: return DrawButtonParts(41, 43, 42);
+            case ButtonType.SelectedTab: return DrawButtonParts(56, 58, 57);
+            case ButtonType.DeselectedTab: return DrawButtonParts(53, 55, 54);
+            case ButtonType.Default:
+            case ButtonType.Normal:
+            default: return DrawButtonParts(16, 18, 17);
+        }
+    }
+
+    private bool DrawSingleButtonTexture(int index)
+    {
+        var texture = MirSkin.GetTexture(Library.LibraryFile.Interface, index);
+        if (texture == null) return false;
+        DrawTextureRect(texture, new Rect2(Vector2.Zero, Size), false,
+            IsEnabled ? Colors.White : new Color(.32f, .32f, .32f, 1f));
+        return true;
+    }
+
+    private bool DrawButtonParts(int leftIndex, int middleIndex, int rightIndex)
+    {
+        var left = MirSkin.GetTexture(Library.LibraryFile.Interface, leftIndex);
+        var middle = MirSkin.GetTexture(Library.LibraryFile.Interface, middleIndex);
+        var right = MirSkin.GetTexture(Library.LibraryFile.Interface, rightIndex);
+        if (left == null || middle == null || right == null) return false;
+
+        float leftWidth = left.GetWidth();
+        float rightWidth = right.GetWidth();
+        float middleWidth = Mathf.Max(0f, Size.X - leftWidth - rightWidth);
+        Color tint = IsEnabled ? Colors.White : new Color(.32f, .32f, .32f, 1f);
+        DrawTextureRect(left, new Rect2(0, 0, leftWidth, Size.Y), false, tint);
+        if (middleWidth > 0)
+            DrawTextureRect(middle, new Rect2(leftWidth, 0, middleWidth, Size.Y), false, tint);
+        DrawTextureRect(right, new Rect2(Size.X - rightWidth, 0, rightWidth, Size.Y), false, tint);
+        return true;
     }
 }

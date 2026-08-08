@@ -18,6 +18,7 @@ public partial class MiniMapDialog : DXWindow
     public event Action LayoutChanged;
     public Rect2 Area;
     public DXImageControl Image;
+    public DXImageControl TimeOfDayImage;
     public DXControl Panel;
     public DXButton SizeButton, TransparencyButton, BigMapButton;
 
@@ -30,11 +31,14 @@ public partial class MiniMapDialog : DXWindow
 
     // 动态标记: ObjectID -> 色点 (怪物/物品/其他玩家); NPC/出口标记在 SetMap 重建
     private readonly Dictionary<uint, DXMapInfoControl> _objectMarkers = new();
+    private readonly List<Node> _staticMarkers = new();
+    private readonly AutoPathRouteControl _routeLayer;
 
     private int _mapWidth, _mapHeight;
     private int _mapIndex;
     private uint _playerObjectID;
     private bool _hasPlayer;
+    private int _originalMiniMapHeight;
 
     private Action _onBigMapRequest;
 
@@ -42,18 +46,30 @@ public partial class MiniMapDialog : DXWindow
     {
         base._Ready();
         UpdateButtonLocations();
-        Area = new Rect2(0, TitleHeight, Size.X, Size.Y - TitleHeight);
+        // 原版使用 DXWindow.ClientArea，并向四周扩大 6 像素；这会让地图
+        // 与标题栏/边框的相对位置保持和旧客户端一致。
+        Area = ClientArea;
+        Area.Position -= new Vector2(6, 6);
+        Area.Size += new Vector2(12, 12);
         Panel.Location = (Vector2I)Area.Position;
         Panel.Size = Area.Size;
+        Resized += OnResized;
     }
 
     public MiniMapDialog()
     {
         BackColour = Colors.Black;
         HasFooter = false;
+        ShowCloseButton = false;
+        AllowResize = true;
         Size = DefaultMiniMapSize;
 
-        Panel = new DXControl();
+        Panel = new DXControl
+        {
+            // 原版 MiniMap 的 Panel 是客户区裁剪容器，地图贴图超出 200/300
+            // 像素窗口时只能显示窗口内部分，不能把整张 MiniMap 溢出到场景。
+            Clip = true,
+        };
         AddControl(Panel);
 
         Image = new DXImageControl
@@ -64,6 +80,8 @@ public partial class MiniMapDialog : DXWindow
         };
         Image.Moving += (o, e) => ClipMap();
         Panel.AddControl(Image);
+        _routeLayer = new AutoPathRouteControl { ZIndex = 20 };
+        Image.AddControl(_routeLayer);
 
         SizeButton = new DXButton
         {
@@ -91,6 +109,15 @@ public partial class MiniMapDialog : DXWindow
         };
         BigMapButton.MouseClick += (o, e) => _onBigMapRequest?.Invoke();
         AddControl(BigMapButton);
+
+        TimeOfDayImage = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = 0,
+            IsControl = false,
+        };
+        AddControl(TimeOfDayImage);
+        UpdateButtonLocations();
     }
 
     public void SetBigMapRequestHandler(Action handler) => _onBigMapRequest = handler;
@@ -110,12 +137,31 @@ public partial class MiniMapDialog : DXWindow
         Image.Index = map.MiniMap;
         Image.Location = Vector2I.Zero;
 
+        if (Image.Index <= 0)
+        {
+            if (_originalMiniMapHeight <= 0) _originalMiniMapHeight = (int)Size.Y;
+            Size = new Vector2I((int)Size.X, 32);
+            AllowResize = false;
+        }
+        else if (_originalMiniMapHeight > 0)
+        {
+            Size = new Vector2I((int)Size.X, _originalMiniMapHeight);
+            _originalMiniMapHeight = 0;
+            AllowResize = true;
+        }
+
         foreach (var m in _objectMarkers.Values)
             m.Dispose();
         _objectMarkers.Clear();
+        foreach (var marker in _staticMarkers)
+        {
+            if (IsInstanceValid(marker)) marker.QueueFree();
+        }
+        _staticMarkers.Clear();
 
         ScaleX = Image.Size.X / (float)Math.Max(1, mapWidth);
         ScaleY = Image.Size.Y / (float)Math.Max(1, mapHeight);
+        _routeLayer.Size = Image.Size;
 
         foreach (var npc in Globals.NPCInfoList?.Binding ?? Enumerable.Empty<NPCInfo>())
             UpdateStatic(npc);
@@ -125,6 +171,20 @@ public partial class MiniMapDialog : DXWindow
         QueueRedraw();
     }
 
+    public bool AuditLayout(out string details)
+    {
+        bool valid = Size.X >= DefaultMiniMapSize.X
+            && Size.Y >= DefaultMiniMapSize.Y
+            && AllowResize
+            && Panel != null
+            && SizeButton != null
+            && TransparencyButton != null
+            && BigMapButton != null
+            && SizeButton.Position.Y == (HasTitle ? TitleHeight : 0);
+        details = $"size={Size} area={Area} panel={Panel?.Size} resize={AllowResize} buttons={SizeButton?.Size}@{SizeButton?.Position}/{TransparencyButton?.Size}@{TransparencyButton?.Position}/{BigMapButton?.Size}@{BigMapButton?.Position}";
+        return valid;
+    }
+
     private void UpdateStatic(NPCInfo npc)
     {
         if (npc.Region?.Map?.Index != _mapIndex) return;
@@ -132,19 +192,26 @@ public partial class MiniMapDialog : DXWindow
         var c = RegionCenter(npc.Region.PointList);
         if (c == null) return;
 
-        var dot = new DXMapInfoControl
-        {
-            BackColour = Colors.White,
-            Size = new Vector2I(3, 3),
-        };
-        dot.Location = new Vector2I((int)(ScaleX * c.Value.X) - 1, (int)(ScaleY * c.Value.Y) - 1);
-        Image.AddControl(dot);
+        var marker = MapMarkerFactory.CreateNpcMarker(npc);
+        marker.Location = new Vector2I(
+            (int)(ScaleX * c.Value.X) - (int)marker.Size.X / 2,
+            (int)(ScaleY * c.Value.Y) - (int)marker.Size.Y / 2);
+        Image.AddControl(marker);
+        _staticMarkers.Add(marker);
     }
 
     private void UpdateStatic(MovementInfo mv)
     {
         if (mv.SourceRegion?.Map?.Index != _mapIndex) return;
         if (mv.DestinationRegion?.Map == null || mv.Icon == MapIcon.None) return;
+        var instance = GameScene.Game?.CurrentInstanceInfo;
+        if (instance != null)
+        {
+            bool sourceInInstance = instance.Maps?.Any(x => x.Map == mv.SourceRegion.Map) == true;
+            bool destinationInInstance = instance.Maps?.Any(x => x.Map == mv.DestinationRegion.Map) == true;
+            if ((!sourceInInstance || !destinationInInstance) && mv.NeedInstance == null)
+                return;
+        }
         if (mv.SourceRegion.PointList == null) mv.SourceRegion.CreatePoints(_mapWidth);
         var c = RegionCenter(mv.SourceRegion.PointList);
         if (c == null) return;
@@ -155,6 +222,7 @@ public partial class MiniMapDialog : DXWindow
             (int)(ScaleX * c.Value.X) - (int)icon.Size.X / 2,
             (int)(ScaleY * c.Value.Y) - (int)icon.Size.Y / 2);
         Image.AddControl(icon);
+        _staticMarkers.Add(icon);
     }
 
     /// <summary>出口/洞穴图标着色 (移植自原版 GameScene.UpdateMapIcon)</summary>
@@ -226,6 +294,7 @@ public partial class MiniMapDialog : DXWindow
         {
             ObjectRenderer.Kind.Monster => Colors.Red,
             ObjectRenderer.Kind.Item => new Color(0.0f, 0.0f, 0.55f), // DarkBlue
+            ObjectRenderer.Kind.Player => Colors.Cyan,
             _ => Colors.White,
         };
         dot.Location = new Vector2I(
@@ -239,6 +308,12 @@ public partial class MiniMapDialog : DXWindow
     {
         _hasPlayer = true;
         UpdatePlayerMarker(cellX, cellY);
+    }
+
+    public void UpdateAutoPathRoutes(IReadOnlyList<AutoPathRoute> routes, int currentMap, int progressMap, int progressPoint)
+    {
+        _routeLayer.Size = Image.Size;
+        _routeLayer.SetRoutes(routes, _mapIndex, progressMap, progressPoint, ScaleX, ScaleY);
     }
 
     private void UpdatePlayerMarker(int cellX, int cellY)
@@ -298,16 +373,64 @@ public partial class MiniMapDialog : DXWindow
     {
         int right = Location.X + (int)Size.X;
         IsLarge = !IsLarge;
+        // 原版 MiniMapDialog: 大图模式 AllowResize=true (可拖边缩放), 小图固定尺寸。
+        AllowResize = IsLarge;
         Size = IsLarge ? LargeMiniMapSize : DefaultMiniMapSize;
         Location = new Vector2I(right - (int)Size.X, Location.Y);
         UpdateButtonLocations();
         LayoutChanged?.Invoke();
     }
 
+    private void OnResized()
+    {
+        // 通用边缘缩放后刷新客户区/面板/地图裁剪
+        Area = ClientArea;
+        Area.Position -= new Vector2(6, 6);
+        Area.Size += new Vector2(12, 12);
+        if (Panel != null)
+        {
+            Panel.Location = (Vector2I)Area.Position;
+            Panel.Size = Area.Size;
+        }
+        UpdateButtonLocations();
+        ClipMap();
+        LayoutChanged?.Invoke();
+    }
+
+    public override Vector2I GetAcceptableResize(Vector2 requested)
+    {
+        // 原版大图模式缩放范围 150~300
+        int w = Mathf.Clamp((int)requested.X, 150, 300);
+        int h = Mathf.Clamp((int)requested.Y, 150, 300);
+        return new Vector2I(w, h);
+    }
+
     private void ToggleTransparency()
     {
         IsTransparent = !IsTransparent;
         Opacity = IsTransparent ? TransparentOpacity : 1F;
+        ApplyOpacityToMapLayers();
+    }
+
+    private void ApplyOpacityToMapLayers()
+    {
+        float opacity = Opacity;
+        TransparencyButton.Index = IsTransparent ? 131 : 130;
+        foreach (Node child in GetChildren())
+        {
+            if (child is DXControl control)
+                control.Opacity = opacity;
+        }
+        foreach (DXMapInfoControl marker in _objectMarkers.Values)
+            marker.Opacity = opacity;
+        foreach (Node marker in _staticMarkers)
+        {
+            if (marker is DXControl control)
+                control.Opacity = opacity;
+        }
+        Image.Opacity = opacity;
+        Image.ImageOpacity = opacity;
+        _routeLayer.Opacity = opacity;
     }
 
     public override void Process()
@@ -317,14 +440,25 @@ public partial class MiniMapDialog : DXWindow
         SizeButton.Visible = hovered;
         TransparencyButton.Visible = hovered;
         BigMapButton.Visible = hovered;
+        TimeOfDayImage.Location = new Vector2I(3, (int)Size.Y - 29);
+        TimeOfDayImage.Index = GameScene.Game?.TimeOfDay switch
+        {
+            TimeOfDay.Dawn => 215,
+            TimeOfDay.Dusk => 217,
+            TimeOfDay.Night => 218,
+            TimeOfDay.Day => 216,
+            _ => 0,
+        };
     }
+
+    public override void _Process(double delta) => Process();
 
     private void UpdateButtonLocations()
     {
         if (SizeButton == null || TransparencyButton == null || BigMapButton == null) return;
 
         const int rightPadding = 3;
-        int top = TitleHeight;
+        int top = HasTitle ? TitleHeight : 0;
         SizeButton.Location = new Vector2I((int)(Size.X - SizeButton.Size.X) - rightPadding, top);
         TransparencyButton.Location = new Vector2I(
             (int)(Size.X - TransparencyButton.Size.X) - rightPadding,

@@ -5,7 +5,7 @@ using Library;
 namespace ZirconClient.Controls;
 
 /// <summary>
-/// 垂直滚动条 (移植自 Client/Controls/DXVScrollBar.cs, 简化版)。
+/// 垂直滚动条 (移植自 Client/Controls/DXVScrollBar.cs)。
 /// 上/下箭头 (Interface 44/46) + 可拖动滑块 (Interface 45);
 /// Value 钳位在 [MinValue, MaxValue - VisibleSize]。
 /// </summary>

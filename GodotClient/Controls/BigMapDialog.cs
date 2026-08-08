@@ -10,8 +10,8 @@ namespace ZirconClient.Controls;
 
 /// <summary>
 /// 大地图 (移植自 Client/Scenes/Views/BigMapDialog.cs)。
-/// 可拖动/缩放适配的 MiniMap 大图; 当前地图时以玩家为中心, Recenter 按钮复位。
-/// M12 不移植双击寻路。
+/// 可拖动/缩放适配的 MiniMap 大图; 当前地图时以玩家为中心, Recenter 按钮复位；
+/// 右键传送戒指、左键双击自动寻路按原版地图坐标发包。
 /// </summary>
 public partial class BigMapDialog : DXWindow
 {
@@ -27,8 +27,11 @@ public partial class BigMapDialog : DXWindow
     private bool _isCurrentMap;
     private uint _playerObjectID;
     private int _playerCellX, _playerCellY;
+    private readonly LegacyWindowFrame _frame;
 
     private readonly Dictionary<uint, DXMapInfoControl> _objectMarkers = new();
+    private readonly List<Node> _staticMarkers = new();
+    private readonly AutoPathRouteControl _routeLayer;
 
     private Func<MapInfo> _recenterMapProvider = () => null;
     private Action<MapInfo> _openBigMap = _ => { };
@@ -37,6 +40,12 @@ public partial class BigMapDialog : DXWindow
     {
         BackColour = Colors.Black;
         HasFooter = true;
+
+        _frame = new LegacyWindowFrame { HasTitle = true, HasFooter = true };
+        AddControl(_frame);
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(0, 3) };
+        close.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(close);
 
         Panel = new DXControl();
         Panel.Clip = true;
@@ -50,6 +59,21 @@ public partial class BigMapDialog : DXWindow
             Clip = true,
         };
         Panel.AddControl(Image);
+        _routeLayer = new AutoPathRouteControl { ZIndex = 20 };
+        Image.AddControl(_routeLayer);
+        Image.MouseDoubleClick += (o, e) =>
+        {
+            var point = GetMapPoint();
+            int x = point.X;
+            int y = point.Y;
+            GameScene.Game?.SendAutoPathWaypoint(_mapIndex, x, y);
+        };
+        Image.GuiInput += input =>
+        {
+            if (input is not InputEventMouseButton mouse || !mouse.Pressed || mouse.ButtonIndex != MouseButton.Right) return;
+            var point = GetMapPoint();
+            GameScene.Game?.SendTeleportRing(point.X, point.Y, _mapIndex);
+        };
 
         RecenterButton = new DXButton
         {
@@ -76,8 +100,19 @@ public partial class BigMapDialog : DXWindow
 
     private void UpdateLayout()
     {
-        Area = new Rect2(0, TitleHeight, Size.X,
-            Math.Max(0, Size.Y - TitleHeight - FooterHeight));
+        // 原版 DXWindow.GetClientArea: x=9, y=37，底部包含
+        // Interface 126/2/10 的 57px footer 和 6px 内边距。
+        const int clientX = 9;
+        const int clientY = 37;
+        const int bottomPadding = 6;
+        const int footerHeight = 57;
+        Area = new Rect2(clientX, clientY,
+            Math.Max(0, Size.X - clientX * 2),
+            Math.Max(0, Size.Y - clientY - bottomPadding - footerHeight));
+        _frame.Size = new Vector2I((int)Size.X, (int)Size.Y);
+        var close = Controls.OfType<DXButton>().FirstOrDefault(x => x.Index == 15);
+        if (close != null)
+            close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         Panel.Location = (Vector2I)Area.Position;
         Panel.Size = Area.Size;
         RecenterButton.Location = new Vector2I(
@@ -100,17 +135,25 @@ public partial class BigMapDialog : DXWindow
         foreach (var m in _objectMarkers.Values)
             m.Dispose();
         _objectMarkers.Clear();
+        foreach (var marker in _staticMarkers)
+        {
+            if (IsInstanceValid(marker)) marker.QueueFree();
+        }
+        _staticMarkers.Clear();
 
         // 窗口尺寸适配贴图 (320,240)-(800,520)
         var img = Image.Size;
         var client = new Vector2I(
             (int)Math.Clamp(img.X, 320, 800),
-            (int)Math.Clamp(img.Y + FooterHeight, 240, 520));
-        Size = new Vector2I(client.X, (int)(client.Y + TitleHeight + FooterHeight));
+            (int)Math.Clamp(img.Y, 240, 520));
+        // Generic frame adds 18 horizontal and 100 vertical pixels around
+        // the clamped client area.
+        Size = new Vector2I(client.X + 18, (int)(client.Y + 100));
         UpdateLayout();
 
         ScaleX = Image.Size.X / (float)Math.Max(1, mapWidth);
         ScaleY = Image.Size.Y / (float)Math.Max(1, mapHeight);
+        _routeLayer.Size = Image.Size;
 
         bool imageLargerThanPanel = img.X > client.X || img.Y > client.Y;
         Image.Movable = imageLargerThanPanel;
@@ -153,13 +196,28 @@ public partial class BigMapDialog : DXWindow
         {
             ObjectRenderer.Kind.Monster => Colors.Red,
             ObjectRenderer.Kind.Item => new Color(0.0f, 0.0f, 0.55f),
+            ObjectRenderer.Kind.Player => Colors.Cyan,
             _ => Colors.White,
         };
         dot.Location = new Vector2I((int)(ScaleX * cellX) - 1, (int)(ScaleY * cellY) - 1);
     }
 
+    private System.Drawing.Point GetMapPoint()
+    {
+        Vector2 point = Image.GetLocalMousePosition();
+        int x = Mathf.Clamp(Mathf.RoundToInt(point.X / Math.Max(.001f, ScaleX)), 0, Math.Max(0, _mapWidth - 1));
+        int y = Mathf.Clamp(Mathf.RoundToInt(point.Y / Math.Max(.001f, ScaleY)), 0, Math.Max(0, _mapHeight - 1));
+        return new System.Drawing.Point(x, y);
+    }
+
     /// <summary>玩家标记 (移动/换图时由 GameScene 更新)</summary>
     public void UpdatePlayer(int cellX, int cellY) => SetPlayerLocation(cellX, cellY);
+
+    public void UpdateAutoPathRoutes(IReadOnlyList<AutoPathRoute> routes, int progressMap, int progressPoint)
+    {
+        _routeLayer.Size = Image.Size;
+        _routeLayer.SetRoutes(routes, _mapIndex, progressMap, progressPoint, ScaleX, ScaleY);
+    }
 
     public void RemoveObject(uint objectID)
     {
@@ -174,19 +232,29 @@ public partial class BigMapDialog : DXWindow
         var c = RegionCenter(npc.Region.PointList);
         if (c == null) return;
 
-        var dot = new DXMapInfoControl
-        {
-            BackColour = Colors.White,
-            Size = new Vector2I(3, 3),
-        };
-        dot.Location = new Vector2I((int)(ScaleX * c.Value.X) - 1, (int)(ScaleY * c.Value.Y) - 1);
-        Image.AddControl(dot);
+        // 旧版 BigMapDialog.cs:368-372: 双击 NPC 图标 -> C.AutoPathStart{NPCIndex}。
+        var marker = MapMarkerFactory.CreateNpcMarker(npc);
+        var npcIndex = npc.Index;
+        marker.MouseDoubleClick += (o, e) => GameScene.Game?.SendAutoPathStart(npcIndex);
+        marker.Location = new Vector2I(
+            (int)(ScaleX * c.Value.X) - (int)marker.Size.X / 2,
+            (int)(ScaleY * c.Value.Y) - (int)marker.Size.Y / 2);
+        Image.AddControl(marker);
+        _staticMarkers.Add(marker);
     }
 
     private void UpdateStatic(MovementInfo mv)
     {
         if (mv.SourceRegion?.Map?.Index != _mapIndex) return;
         if (mv.DestinationRegion?.Map == null || mv.Icon == MapIcon.None) return;
+        var instance = GameScene.Game?.CurrentInstanceInfo;
+        if (instance != null)
+        {
+            bool sourceInInstance = instance.Maps?.Any(x => x.Map == mv.SourceRegion.Map) == true;
+            bool destinationInInstance = instance.Maps?.Any(x => x.Map == mv.DestinationRegion.Map) == true;
+            if ((!sourceInInstance || !destinationInInstance) && mv.NeedInstance == null)
+                return;
+        }
         if (mv.SourceRegion.PointList == null) mv.SourceRegion.CreatePoints(_mapWidth);
         var c = RegionCenter(mv.SourceRegion.PointList);
         if (c == null) return;
@@ -197,6 +265,7 @@ public partial class BigMapDialog : DXWindow
             (int)(ScaleX * c.Value.X) - (int)icon.Size.X / 2,
             (int)(ScaleY * c.Value.Y) - (int)icon.Size.Y / 2);
         Image.AddControl(icon);
+        _staticMarkers.Add(icon);
     }
 
     private void Recenter()

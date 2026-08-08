@@ -22,8 +22,11 @@ public partial class BuffDialog : DXWindow
     {
         HasFooter = false;
         HasTitle = false;
+        HasTopBorder = false;
+        ShowCloseButton = false;
         Movable = false;
         Size = new Vector2I(30, 30);
+        Opacity = 0.6f;
         Visible = false;
     }
 
@@ -37,7 +40,9 @@ public partial class BuffDialog : DXWindow
         }
         _currentBuffs.Clear();
 
-        var list = buffs?.Values.ToList() ?? new List<ClientBuffInfo>();
+        var list = buffs?.Values
+            .Where(x => x != null && x.Type != BuffType.Ranking && x.Type != BuffType.Developer)
+            .ToList() ?? new List<ClientBuffInfo>();
 
         // 永久 ItemBuff 合并到合成项 (原版 FirstOrDefault 兜底)
         var permanentStats = new List<Stats>();
@@ -48,8 +53,6 @@ public partial class BuffDialog : DXWindow
                 permanentStats.Add(itemInfo.Stats);
             list.Remove(buff);
         }
-
-        // M12: 不移植 Ranking/Developer buff 移除
 
         if (permanentStats.Count > 0)
         {
@@ -81,6 +84,7 @@ public partial class BuffDialog : DXWindow
                 Location = new Vector2I(3 + (i % 6) * 27, 3 + (i / 6) * 27),
             };
             icon.BeforeDraw += (o, e) => ColorBuffIcon(icon, buff);
+            icon.TooltipText = GetBuffHint(buff);
             AddControl(icon);
             _currentBuffs.Add(buff);
         }
@@ -102,6 +106,29 @@ public partial class BuffDialog : DXWindow
 
         float t = (float)(buff.RemainingTime.TotalSeconds / 10.0);
         icon.SelfModulate = Colors.White.Lerp(CadetBlue, 1f - t);
+    }
+
+    private static string GetBuffHint(ClientBuffInfo buff)
+    {
+        if (buff == null) return string.Empty;
+        string name = buff.Type switch
+        {
+            BuffType.ItemBuff => Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == buff.ItemIndex)?.ItemName ?? "物品增益",
+            BuffType.ItemBuffPermanent => "永久物品增益",
+            BuffType.HuntGold => "猎金",
+            BuffType.Observable => "允许被观察",
+            BuffType.Castle => "城堡领主",
+            BuffType.Guild => "行会",
+            BuffType.Companion => "伙伴",
+            BuffType.MapEffect => "地图效果",
+            BuffType.InstanceEffect => "副本效果",
+            BuffType.Fame => "声望",
+            _ => buff.Type.ToString(),
+        };
+        if (buff.Pause) name += "\n已暂停";
+        if (buff.RemainingTime != TimeSpan.MaxValue)
+            name += $"\n剩余：{Math.Max(0, buff.RemainingTime.TotalSeconds):0}s";
+        return name;
     }
 
     /// <summary>BuffType -> CBIcons 图标帧索引 (照原版 switch)</summary>

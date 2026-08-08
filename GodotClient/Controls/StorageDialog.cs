@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Library;
 using ZirconClient.Scripts;
@@ -8,19 +9,27 @@ namespace ZirconClient.Controls;
 /// <summary>
 /// 仓库窗口 (移植自 Client/Scenes/Views/StorageDialog.cs):
 /// Interface 121 底图, 10 列可滚动网格 (VisibleHeight=10, StorageSize 决定行数)。
-/// M9 简化: 只显示主仓库 (PartsStorage 数据照常填充, 界面隐藏)。
+/// 主仓库与碎片仓库均可切换，分别使用原版 Storage/PartsStorage 网格和滚动条。
 /// </summary>
 public partial class StorageDialog : DXWindow
 {
     public DXItemGrid Grid;
+    public DXItemGrid PartGrid;
+    public DXItemCell[] StorageCells => Grid?.Cells ?? Array.Empty<DXItemCell>();
     public DXVScrollBar ScrollBar;
+    public DXVScrollBar PartScrollBar;
     public DXButton SortButton;
+    private DXButton _storageTab;
+    private DXButton _partsTab;
+    private bool _partsVisible;
 
     public StorageDialog()
     {
-        HasTitle = true;
+        // 原版 StorageDialog 直接使用 Interface 121 背景图。
+        HasTitle = false;
+        Movable = true;
         Text = "仓库";
-        Size = new Vector2I(410, 420);
+        Size = new Vector2I(410, 479);
 
         var bg = new DXImageControl
         {
@@ -32,28 +41,47 @@ public partial class StorageDialog : DXWindow
         };
         AddControl(bg);
 
+        // 原版标题是背景图上的独立 DXLabel，不是 DXWindow 标题栏。
+        AddControl(new DXLabel
+        {
+            Text = "仓库",
+            FontSize = 10,
+            TextColour = new Color(1f, .85f, .3f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            AutoSize = false,
+            Location = new Vector2I(120, 4),
+            Size = new Vector2I(170, 20),
+            IsControl = false,
+        });
+
         var close = new DXButton
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)ClientArea.Size.X - 30, 3),
+            Location = new Vector2I((int)Size.X - 30, 3),
         };
-        close.MouseClick += (o, e) => Visible = false;
+        close.MouseClick += (o, e) => { CancelLinks(); Visible = false; };
         AddControl(close);
 
         SortButton = new DXButton
         {
             LibraryFile = LibraryFile.GameInter,
             Index = 364,
-            Location = new Vector2I((int)ClientArea.Size.X - 47, 41),
+            Location = new Vector2I((int)Size.X - 47, 41),
         };
-        SortButton.MouseClick += (o, e) => GameScene.Game?.SendItemSort(GridType.Storage);
+        SortButton.MouseClick += SortStorage;
         AddControl(SortButton);
+
+        _storageTab = CreateTab("仓库", 10, false);
+        _partsTab = CreateTab("碎片", 72, true);
 
         Grid = new DXItemGrid
         {
             GridSize = new Vector2I(10, 1),
-            Location = new Vector2I(19, 61),
+            Location = new Vector2I(19, 72),
             GridType = GridType.Storage,
             ItemGrid = null, // GameScene 注入
             VisibleHeight = 10,
@@ -62,15 +90,40 @@ public partial class StorageDialog : DXWindow
         };
         AddControl(Grid);
 
+        PartGrid = new DXItemGrid
+        {
+            GridSize = new Vector2I(10, 10),
+            Location = new Vector2I(19, 72),
+            GridType = GridType.PartsStorage,
+            VisibleHeight = 10,
+            Border = false,
+            GridPadding = 1,
+            Visible = false,
+        };
+        AddControl(PartGrid);
+
         ScrollBar = new DXVScrollBar
         {
-            Location = new Vector2I(19 + (int)Grid.Size.X + 1, 61),
+            // 原版位置 = Grid.Location.X + PartGrid.Size.Width；不能使用
+            // 初始 1 行 Grid 的宽度，否则创建窗口时滚动条会落在 x=58。
+            Location = new Vector2I(19 + (int)PartGrid.Size.X, 72),
             Size = new Vector2I(14, 349),
             VisibleSize = 10,
             Change = 1,
         };
         ScrollBar.ValueChanged += (o, e) => Grid.ScrollValue = ScrollBar.Value;
         AddControl(ScrollBar);
+
+        PartScrollBar = new DXVScrollBar
+        {
+            Location = new Vector2I(19 + (int)PartGrid.Size.X, 72),
+            Size = new Vector2I(14, 349),
+            VisibleSize = 10,
+            Change = 1,
+            Visible = false,
+        };
+        PartScrollBar.ValueChanged += (o, e) => PartGrid.ScrollValue = PartScrollBar.Value;
+        AddControl(PartScrollBar);
 
         BindWheel();
     }
@@ -79,7 +132,15 @@ public partial class StorageDialog : DXWindow
     private void BindWheel()
     {
         foreach (var cell in Grid.Cells)
+        {
+            cell.MouseWheel -= ScrollBar.DoMouseWheel;
             cell.MouseWheel += ScrollBar.DoMouseWheel;
+        }
+        foreach (var cell in PartGrid.Cells)
+        {
+            cell.MouseWheel -= PartScrollBar.DoMouseWheel;
+            cell.MouseWheel += PartScrollBar.DoMouseWheel;
+        }
     }
 
     /// <summary>StorageSize 包/登录后调用: 行数 = ceil(StorageSize/10)</summary>
@@ -89,8 +150,115 @@ public partial class StorageDialog : DXWindow
         int size = game?.StorageSize ?? 100;
         Grid.GridSize = new Vector2I(10, Math.Max(10, (int)Math.Ceiling(size / 10f)));
         ScrollBar.MaxValue = Grid.GridSize.Y;
+        PartGrid.GridSize = new Vector2I(10, Math.Max(10, (int)Math.Ceiling(Globals.StorageSize / 10f)));
+        PartScrollBar.MaxValue = PartGrid.GridSize.Y;
+        ApplyCapacity(size);
         Grid.ScrollValue = ScrollBar.Value;
+        PartGrid.ScrollValue = PartScrollBar.Value;
         Grid.RefreshGrid();
+        PartGrid.RefreshGrid();
         BindWheel();
+    }
+
+    private void ApplyCapacity(int storageSize)
+    {
+        foreach (var cell in Grid?.Cells ?? Array.Empty<DXItemCell>())
+            cell.Enabled = cell.Slot < storageSize;
+        foreach (var cell in PartGrid?.Cells ?? Array.Empty<DXItemCell>())
+            cell.Enabled = true;
+    }
+
+    public bool AuditCapacity(int storageSize, out string details)
+    {
+        int size = Math.Max(1, storageSize);
+        Grid.GridSize = new Vector2I(10, Math.Max(10, (int)Math.Ceiling(size / 10f)));
+        ApplyCapacity(size);
+        bool edgeEnabled = Grid.Cells.Length >= size && Grid.Cells[size - 1].Enabled;
+        bool overflowDisabled = size < Grid.Cells.Length && !Grid.Cells[size].Enabled;
+        details = $"capacity={size} edge={edgeEnabled} overflow={overflowDisabled}";
+        return edgeEnabled && overflowDisabled;
+    }
+
+    private DXButton CreateTab(string text, int x, bool parts)
+    {
+        var tab = new DXButton
+        {
+            Text = text,
+            FontSize = 10,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            Size = new Vector2I(58, 24),
+            Location = new Vector2I(x, 61),
+            LibraryFile = LibraryFile.Interface,
+            Index = -1,
+            Type = parts ? DXButton.ButtonType.DeselectedTab : DXButton.ButtonType.SelectedTab,
+        };
+        tab.MouseClick += (o, e) => SelectTab(parts);
+        AddControl(tab);
+        return tab;
+    }
+
+    private void SelectTab(bool parts)
+    {
+        _partsVisible = parts;
+        _storageTab.Type = parts ? DXButton.ButtonType.DeselectedTab : DXButton.ButtonType.SelectedTab;
+        _partsTab.Type = parts ? DXButton.ButtonType.SelectedTab : DXButton.ButtonType.DeselectedTab;
+        Grid.Visible = !parts;
+        ScrollBar.Visible = !parts;
+        PartGrid.Visible = parts;
+        PartScrollBar.Visible = parts;
+    }
+
+    public bool AuditLayout(out string details)
+    {
+        bool geometry = Size == new Vector2I(410, 479)
+            && Grid.Location == new Vector2(19, 72)
+            && PartGrid.Location == new Vector2(19, 72)
+            && ScrollBar.Location == new Vector2(390, 72)
+            && PartScrollBar.Location == new Vector2(390, 72)
+            && ScrollBar.VisibleSize == 10
+            && PartScrollBar.VisibleSize == 10;
+        SelectTab(false);
+        bool storage = Grid.Visible && ScrollBar.Visible && !PartGrid.Visible && !PartScrollBar.Visible;
+        SelectTab(true);
+        bool parts = !Grid.Visible && !ScrollBar.Visible && PartGrid.Visible && PartScrollBar.Visible;
+        SelectTab(false);
+        details = $"size={Size} grid={Grid.Location}/{Grid.Size} scroll={ScrollBar.Location}/{ScrollBar.MaxValue} pages=storage:{storage},parts:{parts}";
+        return geometry && storage && parts;
+    }
+
+    public void CancelLinks()
+    {
+        foreach (var cell in Grid?.Cells ?? Array.Empty<DXItemCell>())
+            CancelLink(cell);
+        foreach (var cell in PartGrid?.Cells ?? Array.Empty<DXItemCell>())
+            CancelLink(cell);
+    }
+
+    private static void CancelLink(DXItemCell cell)
+    {
+        if (cell == null) return;
+        if (cell.LinkedSourceSlot >= 0)
+        {
+            GameScene.Game?.UnlockItemLink(new CellLinkInfo { GridType = cell.LinkedSourceGrid, Slot = cell.LinkedSourceSlot });
+            if (cell.ItemGrid != null && cell.Slot >= 0 && cell.Slot < cell.ItemGrid.Length)
+                cell.ItemGrid[cell.Slot] = null;
+            cell.LinkedSourceGrid = GridType.None;
+            cell.LinkedSourceSlot = -1;
+            cell.RefreshItem();
+        }
+        if (DXItemCell.SelectedCell == cell) DXItemCell.SelectedCell = null;
+    }
+
+    public override void Close()
+    {
+        CancelLinks();
+        base.Close();
+    }
+
+    private void SortStorage(object sender, EventArgs e)
+    {
+        var confirm = new ConfirmDialog("确定要整理当前仓库吗？", "确认整理", () =>
+            GameScene.Game?.SendItemSort(_partsVisible ? GridType.PartsStorage : GridType.Storage));
+        WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
     }
 }

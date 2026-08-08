@@ -1,0 +1,70 @@
+using Godot;
+using Library;
+
+namespace ZirconClient.Controls;
+
+/// <summary>原版独立 NPCSocketBox（GameInter 5700），不再把开孔面板塞进 NPC 对话框。</summary>
+public sealed partial class NPCSocketDialog : DXWindow
+{
+    public NPCSocketPanel Panel { get; }
+
+    public NPCSocketDialog()
+    {
+        HasTitle = false;
+        HasFooter = false;
+        Movable = true;
+        Size = new Vector2I(188, 320);
+        AddControl(new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 5700, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(158, 3) };
+        close.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(close);
+        var closeDialog = new DXButton { Text = "Close", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(102, 280), Size = new Vector2I(70, 24) };
+        closeDialog.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(closeDialog);
+        AddControl(new DXLabel { Text = "Socket", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(188, 26), IsControl = false });
+        Panel = new NPCSocketPanel { Location = Vector2I.Zero };
+        AddControl(Panel);
+    }
+
+    public void Result(Library.Network.ServerPackets.NPCSocketItem packet) => Panel.Result(packet);
+    public bool TryRouteItem(DXItemCell source) => Panel.TryRouteItem(source);
+
+    public override void Close()
+    {
+        Panel.Reset();
+        base.Close();
+    }
+}
+
+/// <summary>原版独立 NPCSocketCombineBox（GameInter 5701）。</summary>
+public sealed partial class NPCSocketCombineDialog : DXWindow
+{
+    public NPCSocketCombinePanel Panel { get; }
+
+    public NPCSocketCombineDialog()
+    {
+        HasTitle = false;
+        HasFooter = false;
+        Movable = true;
+        Size = new Vector2I(192, 326);
+        AddControl(new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 5701, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(162, 3) };
+        close.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(close);
+        var closeDialog = new DXButton { Text = "Close", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(105, 285), Size = new Vector2I(70, 24) };
+        closeDialog.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(closeDialog);
+        AddControl(new DXLabel { Text = "Socket Combine", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(192, 26), IsControl = false });
+        Panel = new NPCSocketCombinePanel { Location = Vector2I.Zero };
+        AddControl(Panel);
+    }
+
+    public void Result(Library.Network.ServerPackets.NPCSocketCombine packet) => Panel.Result(packet);
+    public bool TryRouteItem(DXItemCell source) => Panel.TryRouteItem(source);
+
+    public override void Close()
+    {
+        Panel.Reset();
+        base.Close();
+    }
+}

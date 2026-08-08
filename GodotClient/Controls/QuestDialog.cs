@@ -1,0 +1,428 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Godot;
+using Library;
+using Library.SystemModels;
+using ZirconClient.Scripts;
+
+namespace ZirconClient.Controls;
+
+/// <summary>原版 QuestDialog 的当前/可接/已完成任务页与滚动内容。</summary>
+public partial class QuestDialog : DXWindow
+{
+    private readonly List<DXLabel> _lines = new();
+    private readonly List<ClientUserQuest> _quests = new();
+    private readonly List<QuestInfo> _available = new();
+    private DXImageControl _background;
+    private DXControl _content;
+    private DXVScrollBar _scroll;
+    private readonly DXControl _detailPanel;
+    private ClientUserQuest _selectedQuest;
+    private QuestInfo _selectedAvailable;
+    private int _page;
+    private QuestRewardChoiceDialog _choiceDialog;
+
+    public QuestDialog()
+    {
+        HasTitle = false;
+        Movable = true;
+        HasFooter = false;
+        Size = new Vector2I(732, 480);
+
+        _background = new DXImageControl
+        {
+            LibraryFile = LibraryFile.Interface,
+            Index = 291,
+            FixedSize = true,
+            Size = Size,
+            MouseFilter = MouseFilterEnum.Ignore,
+        };
+        AddControl(_background);
+
+        var close = new DXButton
+        {
+            LibraryFile = LibraryFile.Interface,
+            Index = 15,
+            Location = new Vector2I((int)Size.X - 30, 3),
+        };
+        close.MouseClick += (o, e) => WindowManager.Close(this);
+        AddControl(close);
+
+        AddControl(new DXLabel
+        {
+            Text = "任务日志",
+            FontSize = 11,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            AutoSize = false,
+            Size = new Vector2I((int)Size.X, 24),
+            IsControl = false,
+        });
+
+        AddTab("当前任务", 18, 25, 0);
+        AddTab("可接任务", 118, 25, 1);
+        // 原版已完成页签默认隐藏；保留数据页但不把它错误显示在主页签栏。
+        AddTab("里程碑", 218, 25, 3);
+
+        _content = new DXControl
+        {
+            Location = new Vector2I(18, 58),
+            Size = new Vector2I(680, 415),
+            Clip = true,
+            PassThrough = false,
+        };
+        AddControl(_content);
+        _detailPanel = new DXControl { Location = new Vector2I(380, 5), Size = new Vector2I(300, 405), Clip = true, Border = true, BorderColour = new Color(.35f, .27f, .16f) };
+        _content.AddControl(_detailPanel);
+
+        _scroll = new DXVScrollBar
+        {
+            Location = new Vector2I(704, 58),
+            Size = new Vector2I(18, 415),
+            VisibleSize = 415,
+            Change = 30,
+            HideWhenNoScroll = false,
+        };
+        _scroll.ValueChanged += (o, e) => RepositionLines();
+        AddControl(_scroll);
+        _content.MouseWheel += _scroll.DoMouseWheel;
+    }
+
+    public override void Close()
+    {
+        GameScene.Game?.SendMilestoneNotify(false);
+        base.Close();
+    }
+
+    public bool AuditLayout(out string details)
+    {
+        bool valid = Size == new Vector2I(732, 480)
+            && _content.Location == new Vector2I(18, 58)
+            && _content.Size == new Vector2I(680, 415)
+            && _detailPanel.Location == new Vector2I(380, 5)
+            && _detailPanel.Size == new Vector2I(300, 405)
+            && _scroll.Location == new Vector2I(704, 58)
+            && !_scroll.HideWhenNoScroll;
+        details = $"size={Size} content={_content.Position}/{_content.Size} detail={_detailPanel.Position}/{_detailPanel.Size} scroll={_scroll.Position}/{_scroll.Size}";
+        return valid;
+    }
+
+    private void AddTab(string text, int x, int y, int page)
+    {
+        var tab = new DXButton
+        {
+            Text = text,
+            FontSize = 10,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            Size = new Vector2I(90, 25),
+            Location = new Vector2I(x, y),
+            LibraryFile = LibraryFile.Interface,
+            Index = -1,
+        };
+        tab.MouseClick += (o, e) =>
+        {
+            if (_page == 3 && page != 3) GameScene.Game?.SendMilestoneNotify(false);
+            _page = page;
+            _background.Index = page == 3 ? 292 : 291;
+            _selectedQuest = null;
+            _selectedAvailable = null;
+            RefreshPage();
+        };
+        AddControl(tab);
+    }
+
+    public void SetQuests(IEnumerable<ClientUserQuest> quests)
+    {
+        _quests.Clear();
+        if (quests != null) _quests.AddRange(quests.Where(q => q?.Quest != null));
+        _available.Clear();
+        var active = _quests.Select(q => q.Quest).ToHashSet();
+        foreach (var quest in Globals.QuestInfoList?.Binding ?? Enumerable.Empty<QuestInfo>())
+        {
+            if (!active.Contains(quest) && quest != null && GameScene.Game?.CanAcceptQuest(quest) == true)
+                _available.Add(quest);
+        }
+        RefreshPage();
+    }
+
+    private void RefreshPage()
+    {
+        foreach (var line in _lines)
+        {
+            _content.RemoveControl(line);
+            line.QueueFree();
+        }
+        _lines.Clear();
+
+        if (_page == 3)
+        {
+            GameScene.Game?.SendMilestoneNotify(true);
+            int milestoneY = 5;
+            foreach (var milestone in GameScene.Game?.Milestones ?? Enumerable.Empty<ClientUserMilestone>())
+            {
+                var info = milestone.Info ?? Globals.MilestoneInfoList?.Binding.FirstOrDefault(x => x.Index == milestone.InfoIndex);
+                string state = milestone.IsComplete ? "完成" : "进行中";
+                var title = AddLine($"{info?.Title ?? "里程碑"} [{state}]", 12, new Color(1f, 0.85f, 0.3f), 8, milestoneY);
+                title.MouseFilter = Control.MouseFilterEnum.Stop;
+                int index = milestone.Index;
+                title.GuiInput += e =>
+                {
+                    if (e is not InputEventMouseButton mb || !mb.Pressed) return;
+                    if (mb.ButtonIndex == MouseButton.Left)
+                        GameScene.Game?.SendMilestoneActive(index, !milestone.Active);
+                };
+                milestoneY += 22;
+                AddLine(info?.Description ?? info?.Task ?? string.Empty, 10, Colors.White, 18, milestoneY);
+                milestoneY += 20;
+                if (milestone.IsComplete && !milestone.Claimed)
+                {
+                    var claim = AddLine("  [点击领取]", 10, new Color(0.5f, 1f, 0.5f), 18, milestoneY);
+                    claim.MouseFilter = Control.MouseFilterEnum.Stop;
+                    claim.GuiInput += e =>
+                    {
+                        if (e is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+                            GameScene.Game?.ClaimMilestone(index);
+                    };
+                    milestoneY += 20;
+                }
+                milestoneY += 8;
+            }
+            return;
+        }
+
+        IEnumerable<ClientUserQuest> query = _page switch
+        {
+            2 => _quests.Where(q => q.IsComplete),
+            _ => _quests.Where(q => !q.IsComplete),
+        };
+
+        if (_page == 1)
+        {
+            int availableY = 5;
+            var availableGroups = _available
+                .OrderBy(q => QuestTypeOrder(q.QuestType))
+                .ThenBy(MapName)
+                .ThenBy(q => q.QuestName)
+                .GroupBy(MapName);
+            foreach (var group in availableGroups)
+            {
+                AddLine($"▾ {group.Key}", 11, new Color(1f, .75f, .3f), 8, availableY);
+                availableY += 22;
+                foreach (var quest in group)
+                {
+                    var questTitle = AddLine($"[{quest.QuestType}] {quest.QuestName}  [点击接受]", 12, new Color(1f, 0.85f, 0.3f), 18, availableY);
+                    questTitle.MouseFilter = Control.MouseFilterEnum.Stop;
+                    questTitle.GuiInput += e =>
+                    {
+                        if (e is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+                        {
+                            _selectedAvailable = quest;
+                            RefreshDetail();
+                        }
+                    };
+                    availableY += 22;
+                    if (!string.IsNullOrWhiteSpace(quest.AcceptText))
+                    {
+                        AddLine(quest.AcceptText, 10, Colors.White, 28, availableY);
+                        availableY += 18;
+                    }
+                    foreach (var task in quest.Tasks ?? Enumerable.Empty<QuestTask>())
+                    {
+                        AddLine("  " + (GameScene.Game?.GetTaskText(task, null) ?? string.Empty), 10, Colors.White, 28, availableY);
+                        availableY += 18;
+                    }
+                    availableY += 8;
+                }
+            }
+        }
+
+        int y = 5;
+        if (_page != 1)
+        foreach (var group in query
+            .OrderBy(q => QuestTypeOrder(q.Quest.QuestType))
+            .ThenBy(q => MapName(q.Quest))
+            .ThenBy(q => q.Quest.QuestName)
+            .GroupBy(q => MapName(q.Quest)))
+        {
+            AddLine($"▾ {group.Key}", 11, new Color(1f, .75f, .3f), 8, y);
+            y += 22;
+            foreach (var userQuest in group)
+            {
+                var questTitle = AddLine($"[{userQuest.Quest.QuestType}] {userQuest.Quest.QuestName}" + (userQuest.IsComplete ? " (完成，点击提交)" : " (左键追踪，右键放弃)"), 12, new Color(1f, 0.85f, 0.3f), 18, y);
+                questTitle.MouseFilter = Control.MouseFilterEnum.Stop;
+                int questIndex = userQuest.Quest.Index;
+                bool complete = userQuest.IsComplete;
+                questTitle.GuiInput += e =>
+                {
+                    if (e is not InputEventMouseButton mb || !mb.Pressed) return;
+                    if (mb.ButtonIndex == MouseButton.Left)
+                    {
+                        _selectedQuest = userQuest;
+                        RefreshDetail();
+                        if (complete)
+                        {
+                            var choices = userQuest.Quest.Rewards?.Where(r => r?.Choice == true);
+                            if (choices != null && choices.Any())
+                            {
+                                _choiceDialog ??= new QuestRewardChoiceDialog();
+                                _choiceDialog.Open(userQuest.Quest, choices);
+                            }
+                            else GameScene.Game?.SendQuestComplete(questIndex);
+                        }
+                        else GameScene.Game?.SendQuestTrack(questIndex, true);
+                    }
+                    else if (mb.ButtonIndex == MouseButton.Right && !complete)
+                        GameScene.Game?.SendQuestAbandon(questIndex);
+                };
+                y += 22;
+
+                foreach (var task in userQuest.Quest.Tasks)
+                {
+                    var state = userQuest.Tasks.FirstOrDefault(t => t.Task == task);
+                    if (state?.Completed == true) continue;
+                    AddLine("  " + (GameScene.Game?.GetTaskText(task, userQuest) ?? string.Empty), 10, Colors.White, 28, y);
+                    y += 18;
+                }
+                y += 8;
+            }
+        }
+
+        _scroll.Value = 0;
+        int contentHeight = _page == 1 ? _lines.Count == 0 ? 0 : _lines.Max(x => (int)x.GetMeta("base_y")) + 30 : y + 5;
+        _scroll.MaxValue = Mathf.Max(_scroll.VisibleSize, contentHeight);
+        RepositionLines();
+        RefreshDetail();
+        _detailPanel.MoveToFront();
+    }
+
+    private DXLabel AddLine(string text, int fontSize, Color colour, int x, int y)
+    {
+        var line = new DXLabel
+        {
+            Text = text,
+            FontSize = fontSize,
+            TextColour = colour,
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Location = new Vector2I(x, y),
+            Size = new Vector2I(x < 300 ? 350 : 290, 20),
+            IsControl = false,
+        };
+        line.SetMeta("base_y", y);
+        _content.AddControl(line);
+        _lines.Add(line);
+        return line;
+    }
+
+    private void RefreshDetail()
+    {
+        foreach (var child in _detailPanel.GetChildren().OfType<Node>()) child.QueueFree();
+        if (_page == 3) return;
+        var tracker = new DXCheckButton(string.Empty) { Location = new Vector2I(255, 8), Size = new Vector2I(18, 18), Checked = GameScene.Game?.QuestTrackerVisible ?? true };
+        tracker.Changed += (s, e) => GameScene.Game?.SetQuestTrackerVisible(tracker.Checked);
+        _detailPanel.AddControl(tracker);
+        AddDetailText("显示任务追踪", 178, 8, 9, Colors.White, 75, 18);
+        QuestInfo quest = _selectedQuest?.Quest ?? _selectedAvailable;
+        if (quest == null)
+        {
+            _detailPanel.AddControl(new DXLabel { Text = "选择左侧任务查看详情", FontSize = 11, TextColour = Colors.Gray, Location = new Vector2I(12, 42), IsControl = false });
+            return;
+        }
+
+        AddDetailText(quest.QuestName, 10, 38, 12, new Color(1f, .85f, .3f));
+        AddDetailText("任务详情", 10, 64, 10, new Color(1f, .85f, .3f));
+        string description = GameScene.Game?.GetQuestText(quest, _selectedQuest, true) ?? quest.AcceptText ?? string.Empty;
+        AddDetailText(description, 10, 84, 10, Colors.White, 285, 62);
+        AddDetailText("任务目标", 10, 152, 10, new Color(1f, .85f, .3f));
+        AddDetailText(GameScene.Game?.GetTaskText(quest, _selectedQuest) ?? string.Join("\n", quest.Tasks?.Select(t => t?.Task.ToString()) ?? Enumerable.Empty<string>()), 10, 172, 10, Colors.White, 285, 48);
+        AddDetailText("奖励", 10, 230, 10, new Color(1f, .85f, .3f));
+        var rewards = quest.Rewards?.Where(r => r?.Item != null && !r.Choice).Take(5).ToList() ?? new List<QuestReward>();
+        if (rewards.Count == 0) AddDetailText("无固定物品奖励", 10, 250, 9, Colors.Gray);
+        else
+        {
+            var items = rewards.Select(r => new ClientUserItem(r.Item, r.Amount)).ToArray();
+            var grid = new DXItemGrid { GridSize = new Vector2I(Math.Max(1, items.Length), 1), ItemGrid = items, GridType = GridType.Inspect, Location = new Vector2I(10, 250), ReadOnly = true };
+            _detailPanel.AddControl(grid);
+        }
+        AddDetailText("选择奖励", 150, 230, 10, new Color(1f, .85f, .3f));
+        var choices = quest.Rewards?.Where(r => r?.Item != null && r.Choice).Take(4).ToList() ?? new List<QuestReward>();
+        if (choices.Count > 0)
+        {
+            var items = choices.Select(r => new ClientUserItem(r.Item, r.Amount)).ToArray();
+            _detailPanel.AddControl(new DXItemGrid { GridSize = new Vector2I(Math.Max(1, items.Length), 1), ItemGrid = items, GridType = GridType.Inspect, Location = new Vector2I(150, 250), ReadOnly = true });
+        }
+        AddDetailText("开始：", 10, 300, 9, Colors.White, 42, 18);
+        AddLocationLink(quest.StartNPC, 52, 300);
+        AddDetailText("结束：", 10, 320, 9, Colors.White, 42, 18);
+        AddLocationLink(quest.FinishNPC, 52, 320);
+        if (_selectedQuest != null || _selectedAvailable != null)
+        {
+            var action = new DXButton
+            {
+                Text = _selectedAvailable != null ? "接受任务" : _selectedQuest.IsComplete ? "提交任务" : "放弃任务",
+                FontSize = 9,
+                LibraryFile = LibraryFile.Interface,
+                Index = -1,
+                Location = new Vector2I(194, 367),
+                Size = new Vector2I(88, 27),
+            };
+            action.MouseClick += (o, e) =>
+            {
+                if (_selectedAvailable != null) GameScene.Game?.SendQuestAccept(_selectedAvailable.Index);
+                else if (_selectedQuest.IsComplete) GameScene.Game?.SendQuestComplete(_selectedQuest.Quest.Index);
+                else GameScene.Game?.SendQuestAbandon(_selectedQuest.Quest.Index);
+            };
+            _detailPanel.AddControl(action);
+        }
+    }
+
+    private static int QuestTypeOrder(QuestType type) => type switch
+    {
+        QuestType.Story => 0,
+        QuestType.Account => 1,
+        QuestType.General => 2,
+        QuestType.Daily => 3,
+        QuestType.Weekly => 4,
+        QuestType.Repeatable => 5,
+        _ => 99,
+    };
+
+    private static string MapName(QuestInfo quest)
+        => quest?.StartNPC?.Region?.Map?.Description ?? "未知地图";
+
+    private void AddLocationLink(NPCInfo npc, int x, int y)
+    {
+        var label = new DXLabel
+        {
+            Text = npc?.RegionName ?? "未知",
+            FontSize = 9,
+            TextColour = new Color(.7f, .9f, 1f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Location = new Vector2I(x, y),
+            Size = new Vector2I(220, 18),
+        };
+        label.MouseFilter = Control.MouseFilterEnum.Stop;
+        label.MouseClick += (o, e) =>
+        {
+            if (npc?.Region?.Map != null)
+                GameScene.Game?.OpenQuestMap(npc);
+        };
+        _detailPanel.AddControl(label);
+    }
+
+    private void AddDetailText(string text, int x, int y, int size, Color colour, int width = 285, int height = 20)
+    {
+        _detailPanel.AddControl(new DXLabel { Text = text ?? string.Empty, FontSize = size, TextColour = colour, DrawOutline = true, OutlineColour = Colors.Black, Location = new Vector2I(x, y), Size = new Vector2I(width, height), IsControl = false });
+    }
+
+    private void RepositionLines()
+    {
+        foreach (var line in _lines)
+            line.Position = new Vector2(line.Position.X, (int)line.GetMeta("base_y") - _scroll.Value);
+    }
+}

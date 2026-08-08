@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Library;
 using ZirconClient.Scripts;
@@ -13,6 +14,7 @@ public partial class InventoryDialog : DXWindow
 {
     public DXItemGrid Grid;
     public DXButton SortButton, TrashButton, CloseButton;
+    public DXControl WalletButton;
     public DXControl WeightBar;
     public DXLabel WeightLabel, GoldLabel, GgLabel;
 
@@ -20,9 +22,11 @@ public partial class InventoryDialog : DXWindow
 
     public InventoryDialog()
     {
-        HasTitle = true;
+        // 原版 InventoryDialog 直接使用 Interface 130 背景图。
+        HasTitle = false;
+        Movable = true;
         Text = "背包";
-        Size = new Vector2I(263, 458);
+        Size = new Vector2I(264, 436);
 
         var bg = new DXImageControl
         {
@@ -34,11 +38,28 @@ public partial class InventoryDialog : DXWindow
         };
         AddControl(bg);
 
+        // 原版虽然没有 DXWindow 标题栏，但背景图内部仍有独立的标题文字层。
+        // 不能只给 DXWindow.Text 赋值，否则 HasTitle=false 时不会绘制标题。
+        AddControl(new DXLabel
+        {
+            Text = "背包",
+            FontSize = 10,
+            TextColour = new Color(1f, .85f, .3f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            AutoSize = false,
+            Location = new Vector2I(52, 4),
+            Size = new Vector2I(160, 20),
+            IsControl = false,
+        });
+
         CloseButton = new DXButton
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)ClientArea.Size.X - 30, 3),
+            Location = new Vector2I((int)Size.X - 30, 3),
         };
         CloseButton.MouseClick += (o, e) => Visible = false;
         AddControl(CloseButton);
@@ -97,8 +118,9 @@ public partial class InventoryDialog : DXWindow
             FontSize = 8,
             Align = HorizontalAlignment.Right,
             VAlign = VerticalAlignment.Center,
-            IsControl = false,
         };
+        GoldLabel.MouseClick += (o, e) => GameScene.Game?.SelectCurrency(
+            GameScene.Game.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold));
         AddControl(GoldLabel);
 
         var ggTitle = new DXLabel
@@ -124,9 +146,21 @@ public partial class InventoryDialog : DXWindow
             FontSize = 8,
             Align = HorizontalAlignment.Right,
             VAlign = VerticalAlignment.Center,
-            IsControl = false,
         };
+        GgLabel.MouseClick += (o, e) => GameScene.Game?.SelectCurrency(
+            GameScene.Game.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.GameGold));
         AddControl(GgLabel);
+
+        WalletButton = new DXControl
+        {
+            Location = new Vector2I(8, 380),
+            Size = new Vector2I(45, 40),
+            // 原版 WalletLabel 没有可见文字或按钮底图，只提供点击热区。
+            BackColour = Colors.Transparent,
+            Border = false,
+        };
+        WalletButton.MouseClick += (o, e) => GameScene.Game?.ToggleCurrencyWindow();
+        AddControl(WalletButton);
 
         SortButton = new DXButton
         {
@@ -152,8 +186,11 @@ public partial class InventoryDialog : DXWindow
         if (DXItemCell.SelectedCell == null) return;
         var cell = DXItemCell.SelectedCell;
         if (cell.Item == null) return;
-        if (cell.GridType != GridType.Inventory && cell.GridType != GridType.Storage) return;
+        if (cell.GridType != GridType.Inventory) return;
+        if (cell.Item.Flags.HasFlag(UserItemFlags.Locked) || cell.Item.Flags.HasFlag(UserItemFlags.Marriage)) return;
 
+        cell.Locked = true;
+        cell.UpdateBorder();
         DXItemCell.SelectedCell = null;
         GameScene.Game?.SendItemDelete(cell.GridType, cell.Slot);
     }

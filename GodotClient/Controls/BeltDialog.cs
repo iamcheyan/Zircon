@@ -15,12 +15,15 @@ public partial class BeltDialog : DXWindow
 {
     public ClientBeltLink[] Links;
     public DXItemGrid Grid;
+    private bool _resizing;
 
     public BeltDialog()
     {
+        Movable = true;
         HasTitle = false;
         HasFooter = false;
         HasTopBorder = false;
+        ShowCloseButton = false;
         Size = new Vector2I(10 * (DXItemCell.CellWidth - 1) + 1, DXItemCell.CellHeight - 1 + 1);
 
         Links = new ClientBeltLink[Globals.MaxBeltCount];
@@ -36,7 +39,58 @@ public partial class BeltDialog : DXWindow
             Border = false,
         };
         AddControl(Grid);
+        RefreshGridLayout();
+    }
 
+    public override void _Ready()
+    {
+        base._Ready();
+        Resized += OnResized;
+        RefreshGridLayout();
+    }
+
+    private void OnResized() => RefreshGridLayout();
+
+    /// <summary>原版 AllowResize：按格子吸附尺寸，并在横向/纵向之间自动切换。</summary>
+    public override Vector2I GetAcceptableResize(Vector2 requested)
+    {
+        int width = Math.Max(1, (int)requested.X);
+        int height = Math.Max(1, (int)requested.Y);
+        int columns = Math.Max(1, Math.Min(Globals.MaxBeltCount, (int)Math.Ceiling((width - 10) / (double)DXItemCell.CellWidth)));
+        int rows = Math.Max(1, Math.Min(Globals.MaxBeltCount, (int)Math.Ceiling((height - 10) / (double)DXItemCell.CellHeight)));
+
+        if (height > width)
+            columns = 1;
+        else
+            rows = 1;
+
+        return new Vector2I(columns * (DXItemCell.CellWidth - 1) + 1,
+            rows * (DXItemCell.CellHeight - 1) + 1);
+    }
+
+    private void RefreshGridLayout()
+    {
+        if (Grid == null) return;
+
+        int columns = Math.Max(1, Math.Min(Globals.MaxBeltCount,
+            (int)Math.Ceiling((Size.X - 10) / (double)DXItemCell.CellWidth)));
+        int rows = Math.Max(1, Math.Min(Globals.MaxBeltCount,
+            (int)Math.Ceiling((Size.Y - 10) / (double)DXItemCell.CellHeight)));
+        if (Size.Y > Size.X) columns = 1;
+        else rows = 1;
+
+        int count = columns * rows;
+        if (Grid.GridSize == new Vector2I(columns, rows) && Grid.Cells?.Length == count)
+            return;
+
+        Grid.GridSize = new Vector2I(columns, rows);
+        AddSlotLabels();
+        UpdateLinks();
+    }
+
+    private void AddSlotLabels()
+    {
+        if (Grid?.Cells == null) return;
         for (int i = 0; i < Grid.Cells.Length; i++)
         {
             int slot = i;
@@ -54,10 +108,48 @@ public partial class BeltDialog : DXWindow
         }
     }
 
+    public override void _GuiInput(InputEvent e)
+    {
+        if (e is InputEventMouseButton button && button.ButtonIndex == MouseButton.Left)
+        {
+            if (button.Pressed && button.Position.X >= Size.X - 10 && button.Position.Y >= Size.Y - 10)
+            {
+                _resizing = true;
+                AcceptEvent();
+                return;
+            }
+
+            if (!button.Pressed && _resizing)
+            {
+                _resizing = false;
+                AcceptEvent();
+                return;
+            }
+        }
+
+        if (e is InputEventMouseMotion motion && _resizing)
+        {
+            Size = GetAcceptableResize(motion.Position);
+            RefreshGridLayout();
+            AcceptEvent();
+            return;
+        }
+
+        base._GuiInput(e);
+    }
+
     /// <summary>从 BeltLinks 恢复格子链接 (登录时调用)</summary>
     public void UpdateLinks()
     {
         if (GameScene.Game == null) return;
+
+        // 全量回包可能包含空槽；先清掉旧的 QuickInfo/QuickItem，避免
+        // 重连、角色切换或服务端清空腰带后仍显示上一轮链接。
+        foreach (var cell in Grid.Cells ?? Array.Empty<DXItemCell>())
+        {
+            cell.QuickInfo = null;
+            cell.QuickItem = null;
+        }
 
         foreach (var link in Links)
         {

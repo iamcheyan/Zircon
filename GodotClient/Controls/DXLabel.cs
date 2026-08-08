@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace ZirconClient.Controls;
@@ -33,22 +34,54 @@ public partial class DXLabel : DXControl
         var font = MirSkin.GetFont();
         if (font == null) return;
 
-        Vector2 textSize = MirSkin.MeasureText(Text, FontSize);
+        var lines = GetLines();
+        Vector2 textSize = MirSkin.MeasureText(lines.Count == 0 ? string.Empty : lines[0], FontSize);
         Vector2 pos = Vector2.Zero;
 
         if (Align == HorizontalAlignment.Center) pos.X = (Size.X - textSize.X) / 2f;
         else if (Align == HorizontalAlignment.Right) pos.X = Size.X - textSize.X;
-        if (VAlign == VerticalAlignment.Center) pos.Y = (Size.Y - textSize.Y) / 2f;
-        else if (VAlign == VerticalAlignment.Bottom) pos.Y = Size.Y - textSize.Y;
+        float lineHeight = textSize.Y;
+        float blockHeight = lineHeight * lines.Count;
+        if (VAlign == VerticalAlignment.Center) pos.Y = (Size.Y - blockHeight) / 2f;
+        else if (VAlign == VerticalAlignment.Bottom) pos.Y = Size.Y - blockHeight;
 
         Color colour = IsEnabled ? TextColour : new Color(TextColour, 0.5f);
 
-        if (DrawOutline)
-            DrawStringOutline(font, pos, Text, HorizontalAlignment.Left, -1, FontSize, 4, OutlineColour);
-        else if (DrawShadow)
-            DrawStringOutline(font, pos + new Vector2(1, 1), Text, HorizontalAlignment.Left, -1, FontSize, 2, new Color(0, 0, 0, 0.7f));
+        for (int i = 0; i < lines.Count; i++)
+        {
+            Vector2 linePos = new(pos.X, pos.Y + i * lineHeight);
+            if (DrawOutline)
+                DrawStringOutline(font, linePos, lines[i], HorizontalAlignment.Left, -1, FontSize, 4, OutlineColour);
+            else if (DrawShadow)
+                DrawStringOutline(font, linePos + new Vector2(1, 1), lines[i], HorizontalAlignment.Left, -1, FontSize, 2, new Color(0, 0, 0, 0.7f));
+            DrawString(font, linePos, lines[i], HorizontalAlignment.Left, -1, FontSize, colour);
+        }
+    }
 
-        DrawString(font, pos, Text, HorizontalAlignment.Left, -1, FontSize, colour);
+    private List<string> GetLines()
+    {
+        var result = new List<string>();
+        foreach (var source in (Text ?? string.Empty).Replace("\r", string.Empty).Split('\n'))
+        {
+            if (AutoSize || Size.X <= 0)
+            {
+                result.Add(source);
+                continue;
+            }
+            string line = string.Empty;
+            foreach (char ch in source)
+            {
+                string candidate = line + ch;
+                if (line.Length > 0 && MirSkin.MeasureText(candidate, FontSize).X > Size.X)
+                {
+                    result.Add(line);
+                    line = ch.ToString();
+                }
+                else line = candidate;
+            }
+            result.Add(line);
+        }
+        return result.Count == 0 ? new List<string> { string.Empty } : result;
     }
 
     public override void _Draw()

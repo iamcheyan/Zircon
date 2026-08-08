@@ -32,7 +32,7 @@ public partial class MainPanel : DXImageControl
         LibraryFile = LibraryFile.GameInter;
         Index = 50; // 底图, Size 自动
 
-        ExperienceBar = new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 51 };
+        ExperienceBar = new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 51, Clip = true };
         ExperienceBar.Location = new Vector2I((int)(Size.X - ExperienceBar.Size.X) / 2 + 1, 3);
         ExperienceBar.BeforeDraw += DrawExperienceFill;
         AddControl(ExperienceBar);
@@ -41,6 +41,8 @@ public partial class MainPanel : DXImageControl
         ManaBar = CreateBar(35, 36, 52, 54, () => PercentOf(_currentMP, _stats[Stat.Mana]));
         FocusBar = CreateBar(35, 50, 58, 58, () => PercentOf(_currentFP, _stats[Stat.Focus]), glowIndex: 59);
 
+        // CreateButton 的参数顺序是 (图标索引, X, Y)；X/Y 保持旧客户端
+        // GameInter 50 底图上的逻辑坐标，CanvasLayer 再统一放大 2 倍。
         CharacterButton = CreateButton(82, 650, 23);
         InventoryButton = CreateButton(87, 689, 23);
         SpellButton = CreateButton(92, 728, 23);
@@ -50,6 +52,18 @@ public partial class MainPanel : DXImageControl
         GroupButton = CreateButton(102, 884, 23);
         MenuButton = CreateButton(117, 923, 23);
         CashShopButton = CreateButton(122, 972, 16);
+
+        // 原版 MainPanel 在每个按钮/属性图标上提供 Hint；Godot 使用
+        // Control.TooltipText 承载相同的悬停提示，键位从已加载的持久化表读取。
+        CharacterButton.TooltipText = $"角色 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.CharacterWindow)}]";
+        InventoryButton.TooltipText = $"背包 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.InventoryWindow)}]\n宠物 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.CompanionWindow)}]";
+        SpellButton.TooltipText = $"技能 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MagicWindow)}]";
+        QuestButton.TooltipText = $"任务 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.QuestLogWindow)}]";
+        MailButton.TooltipText = $"聊天 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MailBoxWindow)}]";
+        BeltButton.TooltipText = $"腰带 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.BeltWindow)}]";
+        GroupButton.TooltipText = $"编组 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.GroupWindow)}]";
+        MenuButton.TooltipText = $"菜单 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MenuWindow)}]";
+        CashShopButton.TooltipText = $"商铺 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.GameStoreWindow)}]";
 
         NewMailIcon = new DXImageControl
         {
@@ -80,9 +94,16 @@ public partial class MainPanel : DXImageControl
             Visible = false,
         };
         QuestButton.AddControl(CompletedQuestIcon);
+        AvailableQuestIcon.VisibilityChanged += () =>
+        {
+            if (CompletedQuestIcon != null)
+                CompletedQuestIcon.Location = AvailableQuestIcon.Visible ? new Vector2I(2, QuestButton.Size.Y > CompletedQuestIcon.Size.Y ? (int)QuestButton.Size.Y - (int)CompletedQuestIcon.Size.Y : 2) : new Vector2I(2, 2);
+        };
 
         ClassImage = CreateStatImage(70, 277, 25);
         LevelImage = CreateStatImage(71, 277, 45);
+        ClassImage.TooltipText = "职业";
+        LevelImage.TooltipText = "等级";
         FPImage = CreateStatImage(72, 362, 25);
         CPImage = CreateStatImage(73, 362, 45);
         ACImage = CreateStatImage(66, 445, 25);
@@ -90,6 +111,13 @@ public partial class MainPanel : DXImageControl
         MACImage = CreateStatImage(63, 531, 25);
         MCImage = CreateStatImage(62, 541, 45);
         SCImage = CreateStatImage(64, 547, 45);
+        FPImage.TooltipText = "战斗力";
+        CPImage.TooltipText = "贡献";
+        ACImage.TooltipText = "防御";
+        DCImage.TooltipText = "攻击";
+        MACImage.TooltipText = "魔法防御";
+        MCImage.TooltipText = "魔法攻击";
+        SCImage.TooltipText = "道术攻击";
 
         ClassLabel = CreateStatLabel(300, 20);
         LevelLabel = CreateStatLabel(300, 40);
@@ -139,6 +167,7 @@ public partial class MainPanel : DXImageControl
         {
             Location = new Vector2I(x, y),
             Size = MirSkin.GetSize(LibraryFile.GameInter, sizeIndex),
+            Clip = true,
         };
         bar.BeforeDraw += (o, e) => DrawBarFill(bar, fillIndex, percent, glowIndex);
         AddControl(bar);
@@ -299,6 +328,18 @@ public partial class MainPanel : DXImageControl
         _experience = experience;
         _maxExperience = maxExperience;
         ExperienceBar.QueueRedraw();
+    }
+
+    public void SetQuestIndicators(bool hasAvailable, bool hasCompleted)
+    {
+        AvailableQuestIcon.Visible = hasAvailable;
+        CompletedQuestIcon.Visible = hasCompleted;
+        CompletedQuestIcon.Location = hasAvailable ? new Vector2I(2, Math.Max(2, (int)QuestButton.Size.Y - (int)CompletedQuestIcon.Size.Y)) : new Vector2I(2, 2);
+    }
+
+    public void SetMailIndicator(bool visible)
+    {
+        if (NewMailIcon != null) NewMailIcon.Visible = visible;
     }
 
     public void SetAttackMode(AttackMode mode)

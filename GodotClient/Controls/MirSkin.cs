@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Godot;
 using Library;
 using ZirconClient.Formats;
@@ -17,6 +19,7 @@ public static class MirSkin
 
     private static readonly Dictionary<LibraryFile, ZlLibrary> _libraries = new();
     private static readonly Dictionary<(LibraryFile, int), Texture2D> _textures = new();
+    private static readonly Dictionary<(LibraryFile, int), Texture2D> _overlayTextures = new();
 
     private static FontFile _font;
     private static bool _fontFailed;
@@ -30,11 +33,26 @@ public static class MirSkin
         string p = path.Replace('\\', '/');
         if (p.StartsWith("Data/")) p = p.Substring(5);
         string full = Path.Combine(DataPath, p);
+        full = ResolvePath(full);
         if (!File.Exists(full)) return null;
 
         lib = new ZlLibrary(full);
         _libraries[file] = lib;
         return lib;
+    }
+
+    private static string ResolvePath(string fullPath)
+    {
+        if (File.Exists(fullPath)) return fullPath;
+        string dir = Path.GetDirectoryName(fullPath);
+        string filename = Path.GetFileName(fullPath);
+        if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return fullPath;
+        foreach (string file in Directory.EnumerateFiles(dir))
+        {
+            if (string.Equals(Path.GetFileName(file), filename, StringComparison.OrdinalIgnoreCase))
+                return file;
+        }
+        return fullPath;
     }
 
     /// <summary>取图库第 index 帧的 Texture2D; 缺图返回 null (控件应静默跳过)</summary>
@@ -50,6 +68,20 @@ public static class MirSkin
         tex = lib.GetImageTexture(index);
         if (tex == null) return null;
         _textures[key] = tex;
+        return tex;
+    }
+
+    public static Texture2D GetOverlayTexture(LibraryFile file, int index)
+    {
+        if (index < 0) return null;
+        var key = (file, index);
+        if (_overlayTextures.TryGetValue(key, out var tex) && tex != null) return tex;
+
+        var lib = GetLibrary(file);
+        if (lib == null || index >= lib.Images.Length) return null;
+        tex = lib.GetOverlayTexture(index);
+        if (tex == null) return null;
+        _overlayTextures[key] = tex;
         return tex;
     }
 

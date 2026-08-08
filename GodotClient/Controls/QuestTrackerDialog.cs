@@ -1,28 +1,33 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Godot;
 using Library;
 using Library.SystemModels;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
 /// <summary>
 /// 任务追踪窗口 (移植自 Client/Scenes/Views/QuestTrackerDialog.cs)。
 /// 无标题/边框, 悬停半透明; 数据源 = StartInfo.Quests 中 Track=true 项。
-/// M12 不移植 QuestIcon 动画与 (Complete) 后的 NPC 指引行图标。
+/// QuestIcon 使用原版 QuestIcons.Zl 的分类/完成状态索引；Godot 版保留静态帧，避免把任务图标从追踪列表中省略。
 /// </summary>
 public partial class QuestTrackerDialog : DXWindow
 {
+    public bool TrackingEnabled { get; set; } = true;
     private DXVScrollBar ScrollBar;
     private DXControl TextPanel;
     private readonly List<DXLabel> Lines = new();
+    private readonly List<DXAnimatedControl> _icons = new();
 
     public QuestTrackerDialog()
     {
         HasFooter = false;
         HasTitle = false;
         HasTopBorder = false;
+        ShowCloseButton = false;
+        Movable = true;
+        AllowResize = true;
         Opacity = 0.0f;
         Size = new Vector2I(250, 100);
 
@@ -39,6 +44,7 @@ public partial class QuestTrackerDialog : DXWindow
     public override void _Ready()
     {
         base._Ready();
+        Resized += () => UpdateLayout();
         UpdateLayout();
     }
 
@@ -72,8 +78,11 @@ public partial class QuestTrackerDialog : DXWindow
         foreach (var line in Lines)
             line.QueueFree();
         Lines.Clear();
+        foreach (var icon in _icons)
+            icon.QueueFree();
+        _icons.Clear();
 
-        if (quests == null)
+        if (!TrackingEnabled || quests == null)
         {
             Visible = false;
             return;
@@ -94,6 +103,21 @@ public partial class QuestTrackerDialog : DXWindow
             };
             TextPanel.AddControl(label);
             Lines.Add(label);
+
+            var icon = new DXAnimatedControl
+            {
+                LibraryFile = LibraryFile.QuestIcon,
+                BaseIndex = QuestIconIndex(userQuest),
+                FrameCount = 2,
+                AnimationDelay = System.TimeSpan.FromSeconds(1),
+                Animated = true,
+                Loop = true,
+                Location = new Vector2I(0, Lines.Count * 15 - 15),
+                IsControl = false,
+            };
+            icon.SetMeta("base_y", Lines.Count * 15 - 15);
+            TextPanel.AddControl(icon);
+            _icons.Add(icon);
 
             if (userQuest.IsComplete)
             {
@@ -119,7 +143,7 @@ public partial class QuestTrackerDialog : DXWindow
 
                     var taskLabel = new DXLabel
                     {
-                        Text = GetTaskText(task, userQuest),
+                        Text = GameScene.Game?.GetTaskText(task, userQuest) ?? string.Empty,
                         TextColour = Colors.White,
                         DrawOutline = true,
                         OutlineColour = Colors.Black,
@@ -146,78 +170,21 @@ public partial class QuestTrackerDialog : DXWindow
             var pos = Lines[i].Location;
             Lines[i].Location = new Vector2I(pos.X, i * 15 - ScrollBar.Value);
         }
+        foreach (var icon in _icons)
+            icon.Position = new Vector2(0, (int)icon.GetMeta("base_y") - ScrollBar.Value);
     }
 
-    /// <summary>任务行文本 (移植自原版 GameScene.GetTaskText)</summary>
-    public static string GetTaskText(QuestTask task, ClientUserQuest userQuest)
+    private static int QuestIconIndex(ClientUserQuest userQuest)
     {
-        var builder = new StringBuilder();
-
-        var userTask = userQuest?.Tasks.FirstOrDefault(x => x.Task == task);
-
-        switch (task.Task)
+        if (userQuest?.Quest == null) return 2;
+        int start = userQuest.Quest.QuestType switch
         {
-            case QuestTaskType.KillMonster:
-                builder.AppendFormat("Kill {0} ", task.Amount);
-                break;
-            case QuestTaskType.GainItem:
-                builder.AppendFormat("Collect {0} {1}", task.Amount, task.ItemParameter?.ItemName);
-                break;
-            case QuestTaskType.VisitRegion:
-                builder.AppendFormat("Goto {0} in {1}", task.RegionParameter?.Description, task.RegionParameter?.Map?.PlayerDescription);
-                break;
-        }
-
-        if (string.IsNullOrEmpty(task.MobDescription))
-        {
-            if (task.Task == QuestTaskType.GainItem && task.MonsterDetails.Count > 0)
-                builder.Append(" from ");
-
-            bool needComma = false;
-            for (int i = 0; i < task.MonsterDetails.Count; i++)
-            {
-                var monster = task.MonsterDetails[i];
-                if (monster == null) continue;
-                if (i > 2)
-                {
-                    builder.Append("...");
-                    break;
-                }
-
-                if (needComma)
-                    builder.Append(" or ");
-                needComma = true;
-
-                builder.Append(monster.Monster?.MonsterName);
-
-                if (monster.Map != null)
-                    builder.AppendFormat(" in {0}", monster.Map.PlayerDescription);
-            }
-        }
-        else
-        {
-            if (task.Task == QuestTaskType.GainItem)
-            {
-                if (task.MonsterDetails.Count > 0)
-                {
-                    builder.Append(" from ");
-                    builder.Append(task.MobDescription);
-                }
-            }
-            else
-            {
-                builder.Append(task.MobDescription);
-            }
-        }
-
-        if (userQuest != null)
-        {
-            if (userTask != null && userTask.Completed)
-                builder.Append(" (Completed)");
-            else if (task.Task != QuestTaskType.VisitRegion)
-                builder.Append($" ({userTask?.Amount ?? 0}/{task.Amount})");
-        }
-
-        return builder.ToString();
+            QuestType.Daily or QuestType.Weekly => 76,
+            QuestType.Story => 56,
+            QuestType.Account => 36,
+            _ => 16,
+        };
+        return userQuest.IsComplete ? start + 2 : 2;
     }
+
 }

@@ -1,0 +1,44 @@
+using System.Collections.Generic;
+using Godot;
+using Library.SystemModels;
+using ZirconClient.Scripts;
+
+namespace ZirconClient.Controls;
+
+/// <summary>旧版任务提交时的可选奖励列表。ChoiceIndex 使用 QuestReward.Index。</summary>
+public sealed partial class QuestRewardChoiceDialog : DXWindow
+{
+    public QuestRewardChoiceDialog()
+    {
+        Text = "选择任务奖励";
+        Size = new Vector2I(360, 250);
+    }
+
+    public void Open(QuestInfo quest, IEnumerable<QuestReward> rewards)
+    {
+        foreach (var child in GetChildren())
+            if (child is Node node) node.QueueFree();
+
+        var title = new DXLabel { Text = "请选择一个奖励：", FontSize = 11, Location = new Vector2I(20, 35), Size = new Vector2I(300, 25) };
+        AddControl(title);
+        var y = 70;
+        foreach (var reward in rewards)
+        {
+            if (reward?.Item == null) continue;
+            var choice = reward;
+            var button = new DXButton
+            {
+                Text = $"{choice.Item.ItemName} x{choice.Amount}",
+                Location = new Vector2I(20, y), Size = new Vector2I(300, 28)
+            };
+            button.MouseClick += (s, e) =>
+            {
+                GameScene.Game?.SendQuestComplete(quest.Index, choice.Index);
+                WindowManager.Close(this);
+            };
+            AddControl(button);
+            y += 32;
+        }
+        WindowManager.Open(this, GameScene.Game?.UILayer);
+    }
+}

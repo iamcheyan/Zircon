@@ -60,11 +60,56 @@ public partial class DXItemGrid : DXControl
         }
     }
 
-    public GridType GridType;
-    public ClientUserItem[] ItemGrid;
+    private GridType _gridType;
+    public GridType GridType
+    {
+        get => _gridType;
+        set
+        {
+            if (_gridType == value) return;
+            _gridType = value;
+            if (Cells == null) return;
+            foreach (var cell in Cells)
+            {
+                if (cell == null) continue;
+                cell.GridType = value;
+                cell.RefreshItem();
+            }
+        }
+    }
+    private ClientUserItem[] _itemGrid;
+    public ClientUserItem[] ItemGrid
+    {
+        get => _itemGrid;
+        set
+        {
+            _itemGrid = value;
+            // 格子在网格构造时就已经创建；旧版 DXItemGrid 的 ItemGrid
+            // 变更会让所有 DXItemCell 继续指向同一数组，不能只更新网格自身。
+            if (Cells == null) return;
+            foreach (var cell in Cells)
+            {
+                if (cell == null) continue;
+                cell.ItemGrid = value;
+                cell.RefreshItem();
+            }
+        }
+    }
     public bool Linked;
     public bool AllowLink;
-    public bool ReadOnly;
+    private bool _readOnly;
+    public bool ReadOnly
+    {
+        get => _readOnly;
+        set
+        {
+            if (_readOnly == value) return;
+            _readOnly = value;
+            if (Cells == null) return;
+            foreach (var cell in Cells)
+                if (cell != null) cell.ReadOnly = value;
+        }
+    }
 
     public DXItemCell[] Cells;
 
@@ -107,7 +152,7 @@ public partial class DXItemGrid : DXControl
                         (int)(y * Step + GridPadding)),
                     Slot = slot,
                     HostGrid = this,
-                    ItemGrid = ItemGrid,
+                    ItemGrid = _itemGrid,
                     GridType = GridType,
                     ReadOnly = ReadOnly,
                 };

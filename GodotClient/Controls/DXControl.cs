@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Library;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
@@ -69,6 +71,7 @@ public partial class DXControl : Control
     public event EventHandler<EventArgs> Moving;
 
     private bool _dragging;
+    private bool _suppressClick;
 
     private void UpdateMouseFilter()
     {
@@ -124,6 +127,7 @@ public partial class DXControl : Control
     }
 
     public object Tag;
+    public SoundIndex Sound { get; set; } = SoundIndex.None;
 
     /// <summary>相对父控件的坐标 (旧代码叫 Location)</summary>
     public Vector2I Location
@@ -136,7 +140,7 @@ public partial class DXControl : Control
     public event EventHandler<EventArgs> MouseEnter, MouseLeave;
     public event EventHandler<EventArgs> MouseDown, MouseUp, MouseClick, MouseDoubleClick, MouseMove;
     public event EventHandler<MouseWheelEventArgs> MouseWheel;
-    public event EventHandler<EventArgs> Focus, LostFocus;
+    public event EventHandler<EventArgs> Focus;
     public event EventHandler<EventArgs> BeforeDraw, AfterDraw;
 
     /// <summary>每帧更新 (供窗口逻辑用)</summary>
@@ -195,6 +199,20 @@ public partial class DXControl : Control
         base._Ready();
         MouseEntered += OnMouseEntered;
         MouseExited += OnMouseExited;
+        // 拖拽/按住状态需要全局释放捕获: 鼠标在控件外松开时 GuiInput 不再到达本控件,
+        // 若不轮询左键状态, IsPressed/_dragging 会永远卡在按下态 (滚动条滑块/窗口粘住)。
+        SetProcess(true);
+    }
+
+    public override void _Process(double delta)
+    {
+        // 左键已松开但拖拽/按下状态未复位 -> 补一次释放 (原版 DXScene 有全局 MouseUp 路由,
+        // Godot 的 GuiInput 只在悬停本控件时到达, 控件外释放会漏事件)。
+        if (!Input.IsMouseButtonPressed(MouseButton.Left))
+        {
+            if (_dragging) _dragging = false;
+            if (IsPressed) IsPressed = false;
+        }
     }
 
     private void OnMouseEntered()
@@ -233,18 +251,29 @@ public partial class DXControl : Control
                     {
                         _dragging = true;
                     }
+
+                    // Godot 的 DoubleClick 只在第二次按下为 true (release 恒为 false),
+                    // 必须在 press 分支检测。旧版 DXScene.OnMouseClick 在双击时不再发 Click,
+                    // 只发 DoubleClick, 所以这里也要抑制本次 release 的 MouseClick。
+                    if (mb.DoubleClick)
+                    {
+                        _suppressClick = true;
+                        MouseDoubleClick?.Invoke(this, EventArgs.Empty);
+                    }
                 }
                 else if (IsPressed)
                 {
                     IsPressed = false;
                     MouseUp?.Invoke(this, EventArgs.Empty);
-                    MouseClick?.Invoke(this, EventArgs.Empty);
-                    if (mb.DoubleClick) MouseDoubleClick?.Invoke(this, EventArgs.Empty);
+                    PlayClickSound();
+                    if (!_suppressClick) MouseClick?.Invoke(this, EventArgs.Empty);
+                    _suppressClick = false;
                     _dragging = false;
                 }
             }
             else if (mb.Pressed && mb.ButtonIndex == MouseButton.Right)
             {
+                PlayClickSound();
                 MouseClick?.Invoke(this, EventArgs.Empty);
             }
             else if (mb.ButtonIndex is MouseButton.WheelUp or MouseButton.WheelDown)
@@ -271,8 +300,14 @@ public partial class DXControl : Control
         }
     }
 
+    private void PlayClickSound()
+    {
+        if (Sound != SoundIndex.None)
+            GameScene.Game?.PlaySound(Sound);
+    }
+
     /// <summary>移除并释放控件 (原版 Dispose 的 Godot 等价)</summary>
-    public void Dispose()
+    public new void Dispose()
     {
         var parent = ParentControl;
         if (parent != null) parent.RemoveControl(this);
