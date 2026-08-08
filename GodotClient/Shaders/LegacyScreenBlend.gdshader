@@ -37,6 +37,11 @@ uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_n
 void fragment()
 {
     vec4 texel = texture(TEXTURE, UV);
+    // Transparent sprite pixels must not write the sampled screen colour.
+    // Writing destination with alpha=1 makes the entire frame rectangle
+    // opaque, which is especially visible at the client's 2x world scale.
+    if (texel.a <= 0.01)
+        discard;
     vec3 source_rgb = texel.rgb * texel.a * COLOR.rgb * COLOR.a;
     vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);
     vec3 out_rgb = destination.rgb

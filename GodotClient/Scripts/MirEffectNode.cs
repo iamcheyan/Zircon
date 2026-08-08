@@ -13,6 +13,7 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class MirEffectNode : Node2D
 {
+    protected static readonly ShaderMaterial BlendMaterial = LegacyBlendMaterial.Create();
     public enum EffectLayer
     {
         Floor,
@@ -131,13 +132,17 @@ public partial class MirEffectNode : Node2D
             FrameIndexChanged?.Invoke(frame);
         }
 
-        // 位置跟随目标或固定格子
-        if (_targetNode != null)
+        // 位置跟随目标或固定格子。目标节点可能已被移除（怪物被
+        // S.ObjectRemove 释放后仍播放中的一次性特效）；旧端 MirEffect.Target
+        // 是托管 MapObject，目标移除后效果会冻结在最后 DrawX/DrawY 直到帧序列
+        // 播完，不会抛异常。这里对已释放的节点同样冻结在最后位置继续播放，
+        // 避免 ObjectDisposedException（Node2D.get_Position 访问已释放原生对象）。
+        if (_targetNode != null && IsInstanceValid(_targetNode))
             // 特效与身体共用锚点：旧端 MirEffect.Target 锚在 MapObject.DrawX/DrawY
             // （与身体同一帧），Godot 身体/对象节点锚在 Position（objectBaseline）。
             // 不能减 32——那会把特效放回旧端格子原点帧，相对身体恒高 32px（盾浮头）。
             Position = _targetNode.Position;
-        else if (_target != null)
+        else if (_target != null && IsInstanceValid(_target))
             // Setup(对象锚定) 分支：跟随对象节点（如地上物品光效）。
             Position = _target.Position;
         else if (_cameraFn != null)
@@ -158,15 +163,24 @@ public partial class MirEffectNode : Node2D
             ZIndex = RenderOrder.LocalPlayerEffect;
             return;
         }
+        // 目标已释放时按格子回退，不再读 _targetRenderYFn/_target（可能访问
+        // 已释放对象）；与 _Process 的冻结语义一致，目标移除后按最后格子排序。
+        bool targetAlive = (_targetNode != null && IsInstanceValid(_targetNode)) ||
+                           (_target != null && IsInstanceValid(_target));
         ZIndex = DrawType switch
         {
             EffectLayer.Floor => RenderOrder.FloorEffects,
             EffectLayer.Final => RenderOrder.FinalEffects,
-            _ => RenderOrder.ObjectEffect(_targetRenderYFn?.Invoke() ?? _target?.RenderY ?? MapCellY),
+            _ => RenderOrder.ObjectEffect(targetAlive
+                ? (_targetRenderYFn?.Invoke() ?? _target?.RenderY ?? MapCellY)
+                : MapCellY),
         };
     }
 
-    protected int CurrentRenderY => _targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY;
+    protected int CurrentRenderY => (_targetNode != null && IsInstanceValid(_targetNode)) ||
+                                    (_target != null && IsInstanceValid(_target))
+        ? (_targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY)
+        : MapCellY;
 
     protected int GetFrame(double now)
     {
@@ -210,11 +224,12 @@ public partial class MirEffectNode : Node2D
 
     public int DrawFrame => _frameIndex + StartIndex + (int)Direction * Skip;
 
-    private static readonly ShaderMaterial _blendMaterial = LegacyBlendMaterial.Create();
-
     public override void _Draw()
     {
-        Material = Blend ? _blendMaterial : null;
+        // Keep the legacy NORMAL screen blend. The shader discards fully
+        // transparent pixels before sampling SCREEN_TEXTURE, so it cannot
+        // turn the sprite's transparent rectangle into an opaque square.
+        Material = Blend ? BlendMaterial : null;
         if (_lib == null || _frameIndex < 0) return;
         int df = DrawFrame;
         if (df < 0 || df >= _lib.Images.Length) return;
@@ -237,22 +252,11 @@ public partial class MirEffectNode : Node2D
         var destRect = new Rect2(ox, oy, img.Width, img.Height);
         var srcRect = new Rect2(0, 0, img.Width, img.Height);
 
-        if (Blend)
-        {
-            // 原版 MirEffect.Draw → Library.DrawBlend → DrawTextureBlend 的
-            // BlendMode.NORMAL：blendRate 被忽略（AppliesBlendRateToVertexColour
-            // 只覆盖 COLORFY/MASK/EFFECTMASK/LIGHTMAP），顶点 Alpha =
-            // DrawColour.A/255 * _opacity(=1F)。元素颜色均不透明 → 全 Alpha
-            // Screen Blend，不能把 BlendRate 乘进顶点 Alpha。
-            Color c = new(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                FrameLightColour.A);
-            DrawTextureRectRegion(tex, destRect, srcRect, c);
-        }
-        else
-        {
-            Color c = new(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                Opacity * FrameLightColour.A);
-            DrawTextureRectRegion(tex, destRect, srcRect, c);
-        }
+        // Old MirEffect.Draw uses DrawColour (white by default). The
+        // FrameLightColour is only the light/effect-light colour; applying it
+        // to the sprite itself turns FireColour=OrangeRed into a solid red
+        // overlay, unlike the original client.
+        Color c = new(1f, 1f, 1f, Blend ? 1f : Opacity);
+        DrawTextureRectRegion(tex, destRect, srcRect, c);
     }
 }

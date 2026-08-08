@@ -100,12 +100,15 @@ _lightLayer = new MapLightLayer
 1. `MirEffectNode` 和 `MirProjectileNode` 使用了 `GetImageTexture()` 的原始解码帧。旧客户端的 `ImageType.Image` 绘制仍会经过图库的颜色键透明处理；Godot 的原始纹理不会自动抠除技能帧背景，因此会出现方形贴图。
 2. 投射物曾使用 `100 + renderY` 的旧临时 Z 值，而地图现在使用 `RenderOrder` 的紧凑行排序。两套数值不在同一个排序体系内，导致投射物可能被地形或建筑覆盖。
 3. 地面 `MapTarget` 与对象 `Target` 在旧客户端是两个分支。普通 `Impact`（例如火球 580 号爆炸）只应挂在对象目标上；只有显式 `MapImpact` 才应在地面格子完成时播放。
+4. 历史提交 `505fa2c` 引入 `LegacyScreenBlend.gdshader` 后，特效节点通过 `SCREEN_TEXTURE` 重新合成画面，并强制输出 `alpha=1`。这会把透明帧的整个矩形变成不透明区域；在当前 2 倍世界缩放下，采样内容还会发生明显错位。
 
 ### 修复
 
 - 技能序列帧和投射物改用 `GetEffectTexture()`，执行颜色键透明处理；角色、地图和建筑仍保留 `GetImageTexture()`。
 - 投射物对象层改用 `RenderOrder.ObjectEffect(renderY)`，与普通对象特效、地形和建筑共享同一套行排序。
 - `SpawnProjectile()` 的地面完成特效只传递 `def.MapImpact`，不再把 `def.Impact` 错误复制到每个地面目标。
+- 修正技能节点和投射物上的 `LegacyScreenBlend` 路径：保留旧端的 NORMAL screen 混合，但对完全透明像素直接丢弃，避免 `SCREEN_TEXTURE` 把透明帧写成整块矩形。
+- 修正特效颜色来源：旧端 `DrawColour` 默认白色，`FrameLightColour` 仅用于光照；Godot 不再用 `FrameLightColour` 直接染色技能贴图，避免火球被 `OrangeRed` 过度染红。
 - 补齐 `MapTestScene` 中未完成的混合审计声明，使项目可以稳定编译。
 
 ### 验证

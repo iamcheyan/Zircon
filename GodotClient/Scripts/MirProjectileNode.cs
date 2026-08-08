@@ -61,12 +61,17 @@ public partial class MirProjectileNode : MirEffectNode
 
         // 原版每帧重新取目标位置。这样目标移动、玩家滚屏和玩家自身的
         // MovingOffSet 都会反映到飞行轨迹，而不是沿着旧屏幕坐标漂移。
+        // 目标节点可能已被释放（原版 Target 是托管 MapObject，释放后按
+        // `Target?.CurrentLocation ?? MapTarget` 回退到地图格），这里同样
+        // 用 IsInstanceValid 回退到目标格，避免 ObjectDisposedException。
         Vector2 originScreen = _cameraFnByCell(Origin.X, Origin.Y);
-        Vector2 targetScreen = _targetNode != null
+        Vector2 targetScreen = (_targetNode != null && IsInstanceValid(_targetNode))
             // 与 MirEffectNode 一致：目标特效锚在对象节点（objectBaseline），
             // 不还原到旧端格子原点帧，否则相对身体恒高 32px。
             ? _targetNode.Position
-            : _cameraFnByCell(_targetCellX, _targetCellY);
+            : (_target != null && IsInstanceValid(_target))
+                ? _target.Position
+                : _cameraFnByCell(_targetCellX, _targetCellY);
         var origin = ToLegacyProjectilePoint(originScreen);
         var target = ToLegacyProjectilePoint(targetScreen);
 
@@ -154,11 +159,11 @@ public partial class MirProjectileNode : MirEffectNode
         return FrameCount - 1;
     }
 
-    private static readonly ShaderMaterial _blendMaterial = LegacyBlendMaterial.Create();
-
     public override void _Draw()
     {
-        Material = Blend ? _blendMaterial : null;
+        // Use the legacy screen blend; transparent pixels are discarded by
+        // the shader before the screen-texture sample is written.
+        Material = Blend ? BlendMaterial : null;
         if (_lib == null || _frameIndex < 0) return;
         int df = _frameIndex + StartIndex + Direction16 * Skip;
         if (df < 0 || df >= _lib.Images.Length) return;
@@ -180,14 +185,9 @@ public partial class MirProjectileNode : MirEffectNode
         var destRect = new Rect2(ox, oy, img.Width, img.Height);
         var srcRect = new Rect2(0, 0, img.Width, img.Height);
 
-        // 原版 MirProjectile 继承 MirEffect.Draw 的 Blend 路径：NORMAL 混合
-        // 忽略 blendRate，顶点 Alpha = DrawColour.A/255 * _opacity(=1F)，
-        // 元素颜色均不透明 → 全 Alpha Screen Blend。
-        Color c = Blend
-            ? new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                FrameLightColour.A)
-            : new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
-                Opacity * FrameLightColour.A);
+        // MirProjectile inherits MirEffect.Draw: DrawColour is white by
+        // default. FrameLightColour controls lighting, not sprite tint.
+        Color c = new(1f, 1f, 1f, Blend ? 1f : Opacity);
         DrawTextureRectRegion(tex, destRect, srcRect, c);
     }
 }
