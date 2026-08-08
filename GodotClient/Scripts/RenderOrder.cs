@@ -21,6 +21,11 @@ public static class RenderOrder
     public const int LocalPlayer = 3200;
     public const int Particles = 3300;
     public const int FinalEffects = 3400;
+    // 原版 MapControl.OnBeforeDraw 在 DrawObjects()(地形+对象+天气粒子)
+    // 之后才绘制 LLayer 光纹理做全屏合成: 夜晚环境光应覆盖包括对象在内的
+    // 全部世界内容, 光源光斑再在覆盖层上恢复亮度。此处取 FinalEffects 之后
+    // 最后一个世界槽位, 让 hint_screen_texture 采样到完整的场景。
+    public const int LightOverlay = FinalEffects + 1;
 
     public static int TerrainMiddle(int renderY) => TerrainBase + Math.Clamp(renderY, 0, 1000) * RowStride;
     public static int TerrainFront(int renderY) => TerrainMiddle(renderY) + 1;

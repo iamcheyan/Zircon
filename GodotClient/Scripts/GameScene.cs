@@ -862,11 +862,13 @@ public partial class GameScene : Control
 
         _mapView = new MapView();
         AddChild(_mapView);
-        // The light shader reads SCREEN_TEXTURE. Drawing it above the actors
-        // makes it sample a pre-actor canvas and then cover every actor with
-        // its full-screen rect. Keep it between the base map and terrain rows;
-        // actors/effects are then composited normally on top.
-        _lightLayer = new MapLightLayer { ZIndex = RenderOrder.TerrainBase + 1 };
+        // 原版 LLayer 在 DrawObjects()(地形+对象+天气粒子)之后最后绘制全屏
+        // 光纹理: 夜晚环境光盖住包括动物/怪物/树在内的所有世界内容, 光源
+        // 光斑再恢复亮度。因此光照层必须挂在所有世界 ZIndex 之上
+        // (LightOverlay = FinalEffects+1), hint_screen_texture 才能采样到
+        // 完整场景; 之前挂在 TerrainBase+1 只压住了地形, 对象全部露在
+        // 夜晚亮度之外。
+        _lightLayer = new MapLightLayer { ZIndex = RenderOrder.LightOverlay };
         AddChild(_lightLayer);
         _lightLayer.SetObjectSources(GetObjectLightSources);
         // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
