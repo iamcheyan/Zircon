@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 using Godot;
 using Library;
 using Library.Network;
@@ -70,6 +71,14 @@ public partial class GameScene : Control
     private FishingCatchDialog _fishingCatchDialog;
     private HorseTameDialog _horseTameDialog;
     private uint _tamingTargetObjectID;
+    // 原版 MapControl 挖矿状态机：左键点矿点后 Mining=true，
+    // 每帧满足条件（矿点在界内/Flag/相邻/武器槽 PickAxe/无马/冷却到）
+    // 就重复 AttemptAction(Mining)，否则 Mining=false。
+    private bool _mining;
+    private System.Drawing.Point _miningPoint;
+    private double _nextMiningMs;
+    // 原版 AttemptAction(Harvest) 的 Globals.HarvestTime(600ms) 冷却。
+    private double _nextHarvestMs;
     private MonsterDialog _monsterDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
@@ -272,11 +281,20 @@ public partial class GameScene : Control
     }
 
     public void SendGameStoreBuy(int index, long count, bool useHuntGold)
-        => _net?.Connection?.SendGameStoreBuy(index, count, useHuntGold);
+    {
+        if (IsObserver || index < 0 || count <= 0) return;
+        _net?.Connection?.SendGameStoreBuy(index, count, useHuntGold);
+    }
     public void SendGameStoreGift(int index, long count, bool useHuntGold, string recipient)
-        => _net?.Connection?.SendGameStoreGift(index, count, useHuntGold, recipient);
+    {
+        if (IsObserver || index < 0 || count <= 0 || string.IsNullOrWhiteSpace(recipient)) return;
+        _net?.Connection?.SendGameStoreGift(index, count, useHuntGold, recipient.Trim());
+    }
     public void SendGameStoreFavourite(int index)
-        => _net?.Connection?.SendGameStoreFavourite(index);
+    {
+        if (IsObserver || index < 0) return;
+        _net?.Connection?.SendGameStoreFavourite(index);
+    }
     public void ReceiveChat(string text, MessageType type = MessageType.System, List<ClientUserItem> linkedItems = null)
         => _chatLog?.AddMessage(text, type, Colors.Yellow, linkedItems);
 
@@ -349,20 +367,28 @@ public partial class GameScene : Control
     public void OpenRankingDialog() { if (_rankingDialog != null) { WindowManager.Open(_rankingDialog, _uiLayer); RequestRankings(0, false); } }
     public void RequestRankings(int startIndex, bool onlineOnly, RequiredClass classFilter = RequiredClass.None)
         => _net?.Connection?.Enqueue(new C.RankRequest { Class = classFilter, OnlineOnly = onlineOnly, StartIndex = startIndex });
+    public static bool CanSendQuestOperation(bool observer, int index)
+        => !observer && index >= 0;
+
     public void SendQuestAccept(int index)
     {
+        if (!CanSendQuestOperation(IsObserver, index)) return;
         PlaySound(SoundIndex.QuestTake);
         _net?.Connection?.Enqueue(new C.QuestAccept { Index = index });
     }
     public void SendQuestComplete(int index, int choiceIndex = 0)
     {
+        if (!CanSendQuestOperation(IsObserver, index)) return;
         PlaySound(SoundIndex.QuestComplete);
         _net?.Connection?.Enqueue(new C.QuestComplete { Index = index, ChoiceIndex = choiceIndex });
     }
     public void SendQuestTrack(int index, bool track)
         => _net?.Connection?.Enqueue(new C.QuestTrack { Index = index, Track = track });
     public void SendQuestAbandon(int index)
-        => _net?.Connection?.Enqueue(new C.QuestAbandon { Index = index });
+    {
+        if (!CanSendQuestOperation(IsObserver, index)) return;
+        _net?.Connection?.Enqueue(new C.QuestAbandon { Index = index });
+    }
     public void SendFriendAdd(string name)
         => _net?.Connection?.Enqueue(new C.FriendAdd { Name = name ?? string.Empty });
     public void SendFriendRemove(int index)
@@ -371,9 +397,21 @@ public partial class GameScene : Control
     public void SendBlockRemove(int index) => _net?.Connection?.SendBlockRemove(index);
     public void SendIncreaseDiscipline() => _net?.Connection?.SendIncreaseDiscipline();
     public void SendGuildTax(long tax) => _net?.Connection?.SendGuildTax(tax);
-    public void SendMarriageResponse(bool accept) => _net?.Connection?.SendMarriageResponse(accept);
-    public void SendMarriageMakeRing(int slot) => _net?.Connection?.SendMarriageMakeRing(slot);
-    public void SendTeleportRing(int x, int y, int mapIndex) => _net?.Connection?.SendTeleportRing(new System.Drawing.Point(x, y), mapIndex);
+    public void SendMarriageResponse(bool accept)
+    {
+        if (IsObserver) return;
+        _net?.Connection?.SendMarriageResponse(accept);
+    }
+    public void SendMarriageMakeRing(int slot)
+    {
+        if (IsObserver || slot < 0) return;
+        _net?.Connection?.SendMarriageMakeRing(slot);
+    }
+    public void SendTeleportRing(int x, int y, int mapIndex)
+    {
+        if (IsObserver || mapIndex < 0 || x < 0 || y < 0) return;
+        _net?.Connection?.SendTeleportRing(new System.Drawing.Point(x, y), mapIndex);
+    }
     public void SendGroupLfg(bool enabled, string name, string type, int maxCount) => _net?.Connection?.SendGroupLfg(enabled, name, type, maxCount);
     public void SendGroupNotify(bool receive) => _net?.Connection?.SendGroupNotify(receive);
     public void SendMagicToggle(MagicType magic, bool canUse) => _net?.Connection?.SendMagicToggle(magic, canUse);
@@ -429,13 +467,7 @@ public partial class GameScene : Control
     }
 
     public bool TrySelectItemForNpcSale(DXItemCell source)
-        => _inventoryDialog?.IsSellMode == true && _inventoryDialog.TrySelectForSale(source);
-
-    public void ShowInventoryForNpcSale()
-    {
-        if (_inventoryDialog != null)
-            _inventoryDialog.Visible = true;
-    }
+        => _inventoryDialog?.IsSellMode == true && _inventoryDialog.Visible && _inventoryDialog.TrySelectForSale(source);
 
     public void ShowInventoryForNpcSale(CurrencyInfo currency, IEnumerable<ItemType> sellableTypes)
     {
@@ -510,6 +542,7 @@ public partial class GameScene : Control
 
     public void CloseNPCDialog()
     {
+        _inventoryDialog?.NormalMode();
         _npcDialog?.CancelUnsubmittedLinks();
         CloseNPCSocketDialogs();
         if (_npcQuestListDialog != null) WindowManager.Close(_npcQuestListDialog);
@@ -685,9 +718,31 @@ public partial class GameScene : Control
         bool contained, bool dragonRepulsed)
         => !observer && !dead && !paralyzed && !contained && !dragonRepulsed;
 
+    /// <summary>原版拾取 250ms 节流（PickUpTime = Now + 250ms，鼠标与 Tab 共用）。</summary>
+    public static bool CanSendPickUp(double nowMs, double nextMs) => nowMs >= nextMs;
+
     public static bool CanBeginItemDrop(DXItemCell source)
         => source?.Item != null && !source.Locked
             && source.GridType is GridType.Inventory or GridType.CompanionInventory;
+
+    public static bool CanDropCurrency(bool observer, long selectedAmount, long amount)
+        => !observer && selectedAmount > 0 && amount > 0 && amount <= selectedAmount;
+
+    /// <summary>原版 Alt 采集：武器槽必须 FishingRod 且护甲槽必须 FishingRobe。</summary>
+    public static bool IsFishingRig(ItemEffect? toolEffect, ItemEffect? armourEffect)
+        => toolEffect == ItemEffect.FishingRod && armourEffect == ItemEffect.FishingRobe;
+
+    /// <summary>
+    /// 原版 Mining 块条件（MapControl.ProcessInput 1045-1071）：地图可挖矿、
+    /// **武器槽** PickAxe、耐久 >0 或天生无耐久、矿点在界内且 Flag、
+    /// 矿点与玩家相邻、未骑马。
+    /// </summary>
+    public static bool CanMineNow(bool canMine, ItemEffect? weaponEffect,
+        int durability, int itemDurability, bool inBounds, bool cellFlag,
+        bool adjacent, bool mounted)
+        => canMine && weaponEffect == ItemEffect.PickAxe
+            && (durability > 0 || itemDurability == 0)
+            && inBounds && cellFlag && adjacent && !mounted;
     private System.Drawing.Point _playerLocation;
     private MirDirection _playerDirection;
     private Library.HorseType _playerHorse = Library.HorseType.None;
@@ -796,7 +851,11 @@ public partial class GameScene : Control
 
         _mapView = new MapView();
         AddChild(_mapView);
-        _lightLayer = new MapLightLayer { ZIndex = RenderOrder.FinalEffects + 1 };
+        // The light shader reads SCREEN_TEXTURE. Drawing it above the actors
+        // makes it sample a pre-actor canvas and then cover every actor with
+        // its full-screen rect. Keep it between the base map and terrain rows;
+        // actors/effects are then composited normally on top.
+        _lightLayer = new MapLightLayer { ZIndex = RenderOrder.TerrainBase + 1 };
         AddChild(_lightLayer);
         _lightLayer.SetObjectSources(GetObjectLightSources);
         // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
@@ -856,7 +915,8 @@ public partial class GameScene : Control
             IsMovementCellBlocked,
             () => _rightClickDeTarget,
             IsMouseOverUi,
-            () => !IsFishingActive && !IsTamingActive);
+            () => !IsFishingActive && !IsTamingActive,
+            () => ReceiveChat("Unable to throw Shuriken, Your target is too far.", MessageType.Hint));
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
@@ -1776,19 +1836,24 @@ public partial class GameScene : Control
             return;
         }
 
-        // 其他玩家/怪物移动 (M4)
-        if (_objects.TryGetValue(objectID, out var ob))
+        // 其他玩家/怪物移动 (M4)。
+        // 其他玩家同时注册在 _otherPlayers(可见 PlayerRenderer) 与
+        // _objects(隐藏命中代理)。渲染必须走 PlayerRenderer 的平滑补间,
+        // 代理坐标由 UpdateOtherPlayerPosition 每帧同步, 这里只需更新其
+        // 点击优先级; 怪物/NPC/物品没有 PlayerRenderer, 走 _objects 队列。
+        if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            if (_objects.TryGetValue(objectID, out var proxy)) proxy.HitOrder = ++_nextObjectHitOrder;
+            player.StartMove(new System.Drawing.Point(loc.X, loc.Y), dir,
+                Math.Max(1, distance), player.Horse != HorseType.None);
+            UpdateOtherPlayerPosition(player);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
         {
             // 原版移动会把对象从旧 Cell.Objects 移除后追加到新格末尾，
             // 使其在 CheckCursor 的逆序扫描中成为最新优先项。
             ob.HitOrder = ++_nextObjectHitOrder;
             ob.QueueMove(loc, dir, Math.Max(1, distance));
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.StartMove(new System.Drawing.Point(loc.X, loc.Y), dir,
-                Math.Max(1, distance), player.Horse != HorseType.None);
-            UpdateOtherPlayerPosition(player);
         }
     }
 
@@ -1808,15 +1873,6 @@ public partial class GameScene : Control
     {
         if (packet == null) return;
         ClearMovementEffect(packet.ObjectID);
-        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
-        {
-            objectNode.Direction = packet.Direction;
-            objectNode.CellX = packet.Location.X;
-            objectNode.CellY = packet.Location.Y;
-            objectNode.SetAnimation(MirAnimation.Standing);
-            UpdateObjectPositions();
-            return;
-        }
         if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
         {
             player.Direction = packet.Direction;
@@ -1824,6 +1880,15 @@ public partial class GameScene : Control
             player.CellY = packet.Location.Y;
             player.PlayStandingForState();
             UpdateOtherPlayerPosition(player);
+            return;
+        }
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.Direction = packet.Direction;
+            objectNode.CellX = packet.Location.X;
+            objectNode.CellY = packet.Location.Y;
+            objectNode.SetAnimation(MirAnimation.Standing);
+            UpdateObjectPositions();
         }
     }
 
@@ -1906,6 +1971,13 @@ public partial class GameScene : Control
         if (packet == null) return;
         int maxHealth = packet.Stats?[Stat.Health] ?? 0;
         int light = packet.Stats?[Stat.Light] ?? 0;
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.MaxHealth = maxHealth;
+            player.Light = light;
+            player.ShowHealthBar = maxHealth > 0;
+            player.QueueRedraw();
+        }
         if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
         {
             objectNode.Stats = packet.Stats;
@@ -2235,8 +2307,8 @@ public partial class GameScene : Control
             (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : "系统");
         _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", p.Type, ChatColour(p.Type), p.LinkedItems);
         if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
-        else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player)) player.SetChat(p.Text);
+        else if (_objects.TryGetValue(p.ObjectID, out var ob)) ob.SetChat(p.Text);
     }
 
     private static Color ChatColour(MessageType type) => ClientSettings.ChatForeColour(type);
@@ -2559,21 +2631,21 @@ public partial class GameScene : Control
             return;
         }
 
-        if (_objects.TryGetValue(objectID, out var ob))
-        {
-            ob.Direction = dir;
-            ob.CellX = loc.X;
-            ob.CellY = loc.Y;
-            UpdateObjectPositions();
-            ob.QueueRedraw();
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
+        if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.Direction = dir;
             player.CellX = loc.X;
             player.CellY = loc.Y;
             UpdateOtherPlayerPosition(player);
             player.QueueRedraw();
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Direction = dir;
+            ob.CellX = loc.X;
+            ob.CellY = loc.Y;
+            UpdateObjectPositions();
+            ob.QueueRedraw();
         }
     }
 
@@ -2687,14 +2759,14 @@ public partial class GameScene : Control
                     ApplyAuthoritativePlayerLocation(loc, p.Slow);
             }
         }
-            else if (_objects.TryGetValue(objectID, out var ob))
+            else if (_otherPlayers.TryGetValue(objectID, out var player))
+            {
+                player.Direction = dir; player.PlayCombat(magic);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
             {
                 ob.Direction = dir;
                 ob.PlayRangeAttack();
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.Direction = dir; player.PlayCombat(magic);
         }
 
         if (targetID != 0)
@@ -2703,12 +2775,12 @@ public partial class GameScene : Control
             {
                 if (_player != null) _player.PlayStruck();
             }
+            else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
             else if (_objects.TryGetValue(targetID, out var tgt))
             {
                 tgt.SetAnimation(MirAnimation.Struck);
                 tgt.PlayStruckSound();
             }
-            else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
 
             var attackEffect = MagicEffectTable.GetAttack(magic);
             var attackSource = GetMagicTargetNode(objectID);
@@ -2742,25 +2814,25 @@ public partial class GameScene : Control
             _player.PlayRangeAttack();
             ApplyAuthoritativePlayerLocation(loc);
         }
+        else if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            player.Direction = dir; player.PlayRangeAttack();
+        }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
             ob.SetAnimation(MirAnimation.Combat1);
         }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.Direction = dir; player.PlayRangeAttack();
-        }
 
         foreach (uint targetID in targets ?? Enumerable.Empty<uint>())
         {
             if (targetID == _playerObjectID) _player.PlayStruck();
+            else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
             else if (_objects.TryGetValue(targetID, out var target))
             {
                 target.SetAnimation(MirAnimation.Struck);
                 target.PlayStruckSound();
             }
-            else if (_otherPlayers.TryGetValue(targetID, out var targetPlayer)) targetPlayer.PlayStruck();
         }
     }
 
@@ -2793,14 +2865,14 @@ public partial class GameScene : Control
                 _player.PlaySpell(type);
             }
         }
+        else if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            player.Direction = dir; player.PlaySpell(type);
+        }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
             ob.PlaySpell(type);
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.Direction = dir; player.PlaySpell(type);
         }
 
         if (cast)
@@ -2837,9 +2909,9 @@ public partial class GameScene : Control
 
         // 目标受击动画
         foreach (uint tid in targets)
-            if (_objects.TryGetValue(tid, out var tgt)) tgt.SetAnimation(MirAnimation.Struck);
-        foreach (uint tid in targets)
             if (_otherPlayers.TryGetValue(tid, out var targetPlayer)) targetPlayer.PlayStruck();
+        foreach (uint tid in targets)
+            if (_objects.TryGetValue(tid, out var tgt)) tgt.SetAnimation(MirAnimation.Struck);
 
         // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
         // MagicType 会被错误地表现成“所有技能都是火球落地”。
@@ -3165,7 +3237,7 @@ public partial class GameScene : Control
         AddChild(fx);
         fx.Setup(config.Item1, config.Item2, config.Item3, config.Item4, null,
             packet.Location.X, packet.Location.Y,
-            () => ComputeObjectScreenPos(packet.Location.X, packet.Location.Y));
+            () => ComputeEffectScreenPos(packet.Location.X, packet.Location.Y));
         fx.Direction = packet.Direction;
         fx.Loop = true;
         fx.Blend = config.Item5 < 1f;
@@ -3310,7 +3382,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
+        fx.Setup(def.File, def.StartIndex, def.FrameCount, def.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = def.Blend;
         fx.DrawType = def.DrawType;
         fx.BlendRate = def.BlendRate;
@@ -3354,7 +3426,7 @@ public partial class GameScene : Control
 
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeObjectScreenPos(x, y));
+        fx.Setup(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = true;
         fx.DrawType = imp.DrawType;
         fx.BlendRate = imp.BlendRate;
@@ -3406,6 +3478,10 @@ public partial class GameScene : Control
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
     {
         var proj = def.Projectile;
+        // MapTarget and Target are separate branches in the legacy client.
+        // A normal Impact belongs to an object Target; it must not be replayed
+        // at every ground cell.  Only explicitly declared MapImpact is a
+        // ground-position completion effect (FireBall uses this distinction).
         SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact, additionalStartDelay);
     }
 
@@ -3417,7 +3493,7 @@ public partial class GameScene : Control
         int originX = proj.OriginFromTarget ? toX : fromX;
         int originY = proj.OriginFromTarget ? toY : fromY;
         pn.SetupProjectile(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs, null, toX, toY,
-            new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeObjectScreenPos(cx, cy));
+            new System.Drawing.Point(originX + proj.OriginOffsetX, originY + proj.OriginOffsetY), (cx, cy) => ComputeEffectScreenPos(cx, cy));
         pn.Blend = true;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
@@ -3448,7 +3524,7 @@ public partial class GameScene : Control
         AddChild(pn);
         pn.SetupProjectileTarget(proj.File, proj.StartIndex, proj.FrameCount, proj.DelayMs,
             target, () => GetTargetRenderY(target), new System.Drawing.Point(fromX, fromY),
-            (cx, cy) => ComputeObjectScreenPos(cx, cy));
+            (cx, cy) => ComputeEffectScreenPos(cx, cy));
         pn.Blend = true;
         pn.Skip = proj.Skip;
         pn.Has16Directions = proj.Has16Directions;
@@ -3470,8 +3546,8 @@ public partial class GameScene : Control
     private Node2D GetMagicTargetNode(uint objectID)
     {
         if (objectID == _playerObjectID) return _player;
-        if (_objects.TryGetValue(objectID, out var ob)) return ob;
         if (_otherPlayers.TryGetValue(objectID, out var player)) return player;
+        if (_objects.TryGetValue(objectID, out var ob)) return ob;
         return null;
     }
 
@@ -3496,7 +3572,7 @@ public partial class GameScene : Control
     {
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeObjectScreenPos(cellX, cellY));
+        fx.Setup(LibraryFile.Magic, 580, 10, 100, null, cellX, cellY, () => ComputeEffectScreenPos(cellX, cellY));
         fx.Blend = true;
         fx.FrameLight = 10;
         fx.FrameLightColour = new Color(1f, 0.62f, 0.25f);
@@ -3563,19 +3639,19 @@ public partial class GameScene : Control
             _player.ShowHealthBar = true;
             return;
         }
-        if (_objects.TryGetValue(objectID, out var ob))
-        {
-            ob.Health = health;
-            ob.Dead = dead;
-            ob.ShowHealthBar = true;
-            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
+        if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.Health = health;
             player.Dead = dead;
             player.ShowHealthBar = true;
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.Health = health;
+            ob.Dead = dead;
+            ob.ShowHealthBar = true;
+            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
         }
     }
 
@@ -3587,17 +3663,17 @@ public partial class GameScene : Control
             _player.MaxHealth = maxHealth;
             return;
         }
-        if (_objects.TryGetValue(objectID, out var ob))
-        {
-            ob.MaxHealth = maxHealth;
-            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
+        if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.MaxHealth = maxHealth;
             player.MaxMana = maxMana;
             player.ShowHealthBar = maxHealth > 0;
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
+        {
+            ob.MaxHealth = maxHealth;
+            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
         }
     }
 
@@ -3644,7 +3720,15 @@ public partial class GameScene : Control
             _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
             return;
         }
-        if (_objects.TryGetValue(objectID, out var ob))
+        if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            player.CellX = loc.X;
+            player.CellY = loc.Y;
+            player.Direction = dir;
+            player.PlayStruck();
+            UpdateOtherPlayerPosition(player);
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.CellX = loc.X;
             ob.CellY = loc.Y;
@@ -3652,14 +3736,6 @@ public partial class GameScene : Control
             ob.SetAnimation(MirAnimation.Struck);
             ob.PlayStruckSound();
             ob.Position = ComputeObjectScreenPos(loc.X, loc.Y);
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.CellX = loc.X;
-            player.CellY = loc.Y;
-            player.Direction = dir;
-            player.PlayStruck();
-            UpdateOtherPlayerPosition(player);
         }
     }
 
@@ -4012,15 +4088,22 @@ public partial class GameScene : Control
         }
 
         // 只有满足原版采矿条件时才拦截移动；普通相邻空地点击仍然是走路。
+        // 原版矿点是鼠标方向的**第一格**（Functions.Move(玩家, 方向)），
+        // 与挖矿分支共用同一判定。
         var target = _combatController?.MouseCell() ?? _playerLocation;
-        int distance = Math.Max(Math.Abs(target.X - _playerLocation.X),
-            Math.Abs(target.Y - _playerLocation.Y));
+        var miningDirection = Functions.DirectionFromPoint(_playerLocation, target);
+        var miningPoint = Functions.Move(_playerLocation, miningDirection);
         var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
-        var pickaxe = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.PickAxe);
-        return distance == 1 && pickaxe != null && mapInfo?.CanMine == true
-            && target.X >= 0 && target.Y >= 0
-            && _mapView?.Map != null && target.X < _mapView.Map.Width && target.Y < _mapView.Map.Height
-            && _mapView.Map.Cells[target.X, target.Y].Flag;
+        var pickaxe = Equipment.ElementAtOrDefault((int)EquipmentSlot.Weapon);
+        bool inBounds = _mapView?.Map != null
+            && miningPoint.X >= 0 && miningPoint.Y >= 0
+            && miningPoint.X < _mapView.Map.Width && miningPoint.Y < _mapView.Map.Height;
+        bool cellFlag = inBounds && _mapView.Map.Cells[miningPoint.X, miningPoint.Y].Flag;
+        bool adjacent = Math.Max(Math.Abs(miningPoint.X - _playerLocation.X),
+            Math.Abs(miningPoint.Y - _playerLocation.Y)) == 1;
+        return CanMineNow(mapInfo?.CanMine == true, pickaxe?.Info?.ItemEffect,
+            pickaxe?.CurrentDurability ?? 0, pickaxe?.Info?.Durability ?? 0,
+            inBounds, cellFlag, adjacent, IsMounted);
     }
 
     // 原版 Cell.Blocking() 不只看地图 Flag，还看当前格上的动态 MapObject。
@@ -4756,7 +4839,7 @@ public partial class GameScene : Control
         if (_hoverItem != null && dragged == null)
         {
             _hoverLabel.Visible = true;
-            _hoverLabel.Text = _hoverItem.Info?.ItemName ?? "";
+            _hoverLabel.Text = BuildItemHoverText(_hoverItem);
         }
         else
         {
@@ -4776,9 +4859,66 @@ public partial class GameScene : Control
         _hoverItem = item;
     }
 
+    /// <summary>
+    /// 原版 GameScene.CreateItemLabel 的物品悬停信息（B9 范围：名称/稀有度
+    /// 颜色、部件标记、过期时间、锁定提示；数量与不可用角标由物品格绘制）。
+    /// </summary>
+    private string BuildItemHoverText(ClientUserItem item)
+    {
+        if (item?.Info == null) return string.Empty;
+        _hoverLabel.TextColour = HoverRarityColour(item.Info.Rarity);
+        return BuildItemHoverCore(item);
+    }
+
+    /// <summary>原版 GetItemLabelRarityColour 的稀有度颜色。</summary>
+    public static Color HoverRarityColour(Rarity rarity) => rarity switch
+    {
+        Rarity.Superior => new Color(0.55f, 0.95f, 0.6f),
+        Rarity.Elite => new Color(0.7f, 0.6f, 0.95f),
+        _ => new Color(0.9f, 0.9f, 0.5f),
+    };
+
+    /// <summary>悬停文本核心（静态可测；原版 ItemLabelBuilder 的多行信息）。</summary>
+    public static string BuildItemHoverCore(ClientUserItem item)
+    {
+        if (item?.Info == null) return string.Empty;
+
+        ItemInfo displayInfo = item.Info;
+        if (item.Info.ItemEffect == ItemEffect.ItemPart && item.AddedStats != null && item.AddedStats[Stat.ItemIndex] > 0)
+        {
+            var partInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == item.AddedStats[Stat.ItemIndex]);
+            if (partInfo != null) displayInfo = partInfo;
+        }
+
+        var sb = new System.Text.StringBuilder(displayInfo.ItemName ?? item.Info.ItemName ?? string.Empty);
+        if (item.Info.ItemEffect == ItemEffect.ItemPart)
+            sb.Append(" - [Part]");
+
+        // 原版 AddItemLabelMetadata 的 Type 行。
+        var typeMember = typeof(ItemType).GetMember(displayInfo.ItemType.ToString()).FirstOrDefault();
+        var description = typeMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
+        sb.Append('\n').Append($"Type: {description ?? displayInfo.ItemType.ToString()}");
+
+        // 原版 Expirable 标记的过期时间行。
+        if ((item.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
+            sb.Append('\n').Append($"Expires in {Functions.ToString(item.ExpireTime, true)}");
+
+        // 原版 Locked 标记的提示行。
+        if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked)
+            sb.Append('\n').Append("Locked: Prevents accidentally selling or throwing away");
+
+        return sb.ToString();
+    }
+
+    /// <summary>原版 DXItemCell 中键/快捷键 ItemLock 的目标状态（反相当前锁定）。</summary>
+    public static bool ComputeItemLockTarget(bool currentlyLocked) => !currentlyLocked;
+
     // ---- 发包转发 (DXItemCell/对话框调用) ----
     public void SendItemMove(GridType fromGrid, GridType toGrid, int fromSlot, int toSlot, bool mergeItem)
-        => _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
+    {
+        if (IsObserver || fromSlot < 0 || toSlot < 0) return;
+        _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
+    }
     public void SendItemSplit(GridType grid, int slot, long count)
     {
         if (IsObserver || count <= 0) return;
@@ -4806,6 +4946,7 @@ public partial class GameScene : Control
 
     public void SendItemUse(GridType grid, int slot)
     {
+        if (IsObserver || slot < 0) return;
         var item = ItemAt(grid, slot);
         if (item == null || item.Index == 0) return;
         var key = (grid, slot);
@@ -4815,13 +4956,20 @@ public partial class GameScene : Control
     }
 
     public void SendItemLock(GridType grid, int slot, bool locked)
-        => _net.Connection.SendItemLock(grid, slot, locked);
+    {
+        if (IsObserver || slot < 0) return;
+        _net.Connection.SendItemLock(grid, slot, locked);
+    }
 
     public void SendItemSort(GridType grid)
-        => _net.Connection.SendItemSort(grid);
+    {
+        if (IsObserver) return;
+        _net.Connection.SendItemSort(grid);
+    }
 
     public void SendItemDelete(GridType grid, int slot)
     {
+        if (IsObserver || slot < 0) return;
         var item = ItemAt(grid, slot);
         if (item == null || item.Index == 0) return;
         var key = (grid, slot);
@@ -4830,9 +4978,21 @@ public partial class GameScene : Control
         _net.Connection.SendItemDelete(grid, slot);
     }
     public void SendItemDrop(CellLinkInfo link)
-        => _net.Connection.SendItemDrop(link);
+    {
+        if (IsObserver || link == null || link.Slot < 0) return;
+        _net.Connection.SendItemDrop(link);
+    }
+    public void SendCurrencyDrop(int currencyIndex, long amount)
+    {
+        var currency = Currencies.FirstOrDefault(x => x?.CurrencyIndex == currencyIndex);
+        if (currency == null || !CanDropCurrency(IsObserver, currency.Amount, amount)) return;
+        _net?.Connection?.SendCurrencyDrop(currencyIndex, amount);
+    }
     public void SendMarriageTeleport()
-        => _net?.Connection?.Enqueue(new C.MarriageTeleport());
+    {
+        if (IsObserver) return;
+        _net?.Connection?.Enqueue(new C.MarriageTeleport());
+    }
     public void LinkItemToChat(ClientUserItem item) => _chatTextBox?.LinkItem(item);
 
     public void SendAutoPathWaypoint(int mapIndex, int x, int y)
@@ -4857,11 +5017,14 @@ public partial class GameScene : Control
     }
 
     public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
-        => _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
+    {
+        if (IsObserver || slot < 0) return;
+        _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
+    }
 
     public void SendAutoPotionLinkChanged(int slot, ClientAutoPotionLink link)
     {
-        if (_net?.Connection == null || link == null) return;
+        if (IsObserver || _net?.Connection == null || link == null || slot < 0) return;
         _net.Connection.Enqueue(new C.AutoPotionLinkChanged
         {
             Slot = slot,
@@ -4872,23 +5035,38 @@ public partial class GameScene : Control
         });
     }
 
-    public void SendBundleOpen(int slot) => _net?.Connection?.Enqueue(new C.BundleOpen { Slot = slot });
-    public void SendBundleConfirm(int slot, int choice) => _net?.Connection?.Enqueue(new C.BundleConfirm { Slot = slot, Choice = choice });
-    public void SendFortuneCheck(int itemIndex) => _net?.Connection?.Enqueue(new C.FortuneCheck { ItemIndex = itemIndex });
-    public void SendLootBoxOpen(int slot) => _net?.Connection?.Enqueue(new C.LootBoxOpen { Slot = slot });
-    public void SendLootBoxReroll(int slot) => _net?.Connection?.Enqueue(new C.LootBoxReroll { Slot = slot });
-    public void SendLootBoxConfirm(int slot) => _net?.Connection?.Enqueue(new C.LootBoxConfirmSelection { Slot = slot });
-    public void SendLootBoxReveal(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxReveal { Slot = slot, Choice = choice });
-    public void SendLootBoxTake(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxTakeItems { Slot = slot, Choice = choice });
-    public void SendCaptionChange(string caption) => _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption });
+    public void SendBundleOpen(int slot) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.BundleOpen { Slot = slot }); }
+    public void SendBundleConfirm(int slot, int choice) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.BundleConfirm { Slot = slot, Choice = choice }); }
+    public void SendFortuneCheck(int itemIndex) { if (!IsObserver && itemIndex > 0) _net?.Connection?.Enqueue(new C.FortuneCheck { ItemIndex = itemIndex }); }
+    public void SendLootBoxOpen(int slot) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.LootBoxOpen { Slot = slot }); }
+    public void SendLootBoxReroll(int slot) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.LootBoxReroll { Slot = slot }); }
+    public void SendLootBoxConfirm(int slot) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.LootBoxConfirmSelection { Slot = slot }); }
+    public void SendLootBoxReveal(int slot, int choice) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.LootBoxReveal { Slot = slot, Choice = choice }); }
+    public void SendLootBoxTake(int slot, int choice) { if (!IsObserver && slot >= 0) _net?.Connection?.Enqueue(new C.LootBoxTakeItems { Slot = slot, Choice = choice }); }
+    public void SendCaptionChange(string caption)
+    {
+        if (IsObserver || string.IsNullOrWhiteSpace(caption)) return;
+        _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption.Trim() });
+    }
 
     public void SendMarketSearch(string name, MarketPlaceSort sort, bool itemTypeFilter = false, ItemType itemType = ItemType.Nothing)
         => _net?.Connection?.SendMarketSearch(name, sort, itemTypeFilter, itemType);
     public void SendMarketSearchIndex(int index) => _net?.Connection?.SendMarketSearchIndex(index);
-    public void SendMarketBuy(long index, long count, bool guildFunds = false) => _net?.Connection?.SendMarketBuy(index, count, guildFunds);
-    public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
+    public void SendMarketBuy(long index, long count, bool guildFunds = false)
+    {
+        if (IsObserver || index < 0 || count <= 0) return;
+        _net?.Connection?.SendMarketBuy(index, count, guildFunds);
+    }
+    public void SendMarketCancel(int index, long count)
+    {
+        if (IsObserver || index < 0 || count <= 0) return;
+        _net?.Connection?.SendMarketCancel(index, count);
+    }
     public void SendMarketConsign(GridType grid, int slot, long count, int price, bool guildFunds = false)
-        => _net?.Connection?.SendMarketConsign(grid, slot, count, price, guildFunds);
+    {
+        if (IsObserver || slot < 0 || count <= 0 || price <= 0) return;
+        _net?.Connection?.SendMarketConsign(grid, slot, count, price, guildFunds);
+    }
     public void SendMarketHistory(int index, int partIndex, int display) => _net?.Connection?.SendMarketHistory(index, partIndex, display);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendFishingCast(FishingState state, bool caughtFish)
@@ -4904,16 +5082,29 @@ public partial class GameScene : Control
     public void SendGenderChange(MirGender gender, int hairType)
         => SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
     public void SendGenderChange(MirGender gender, int hairType, System.Drawing.Color hairColour)
-        => _net?.Connection?.SendGenderChange(gender, hairType, hairColour);
+    {
+        if (IsObserver) return;
+        _net?.Connection?.SendGenderChange(gender, hairType, hairColour);
+    }
     public void SendHairChange(int hairType)
         => SendHairChange(hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
     public void SendHairChange(int hairType, System.Drawing.Color hairColour)
-        => _net?.Connection?.SendHairChange(hairType, hairColour);
+    {
+        if (IsObserver) return;
+        _net?.Connection?.SendHairChange(hairType, hairColour);
+    }
     public void SendArmourDye()
         => SendArmourDye(StartInfo?.ArmourColour ?? System.Drawing.Color.White);
     public void SendArmourDye(System.Drawing.Color colour)
-        => _net?.Connection?.SendArmourDye(colour);
-    public void SendNameChange(string name) => _net?.Connection?.SendNameChange(name);
+    {
+        if (IsObserver) return;
+        _net?.Connection?.SendArmourDye(colour);
+    }
+    public void SendNameChange(string name)
+    {
+        if (IsObserver || string.IsNullOrWhiteSpace(name)) return;
+        _net?.Connection?.SendNameChange(name.Trim());
+    }
 
     public void SendJoinInstance(int index) => _net?.Connection?.SendJoinInstance(index);
 
@@ -4968,80 +5159,146 @@ public partial class GameScene : Control
         if (p.State == FishingState.None || p.State == FishingState.Cancel)
             WindowManager.Close(_fishingDialog);
     }
-    public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem) => _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
-    public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3) => _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
+    public static bool CanSendNPCOperation(bool observer) => !observer;
+    public void SendNPCSocketItem(CellLinkInfo target, CellLinkInfo gem)
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCSocketItem { Target = target, Gem = gem });
+    }
+    public void SendNPCSocketCombine(CellLinkInfo gem1, CellLinkInfo gem2, CellLinkInfo gem3)
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCSocketCombine { Gem1 = gem1, Gem2 = gem2, Gem3 = gem3 });
+    }
 
     public void SendNPCFragment(List<CellLinkInfo> links)
-        => _net?.Connection?.Enqueue(new C.NPCFragment { Links = links ?? new List<CellLinkInfo>() });
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCFragment { Links = links ?? new List<CellLinkInfo>() });
+    }
 
     public void SendNPCRefinementStone(List<CellLinkInfo> iron, List<CellLinkInfo> silver,
         List<CellLinkInfo> diamond, List<CellLinkInfo> gold, List<CellLinkInfo> crystal, long goldAmount = 0)
-        => _net?.Connection?.Enqueue(new C.NPCRefinementStone
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCRefinementStone
         {
             IronOres = iron ?? new List<CellLinkInfo>(), SilverOres = silver ?? new List<CellLinkInfo>(),
             DiamondOres = diamond ?? new List<CellLinkInfo>(), GoldOres = gold ?? new List<CellLinkInfo>(),
             Crystal = crystal ?? new List<CellLinkInfo>(), Gold = goldAmount,
         });
+    }
 
     public void SendNPCRefine(RefineType type, RefineQuality quality, List<CellLinkInfo> ores,
         List<CellLinkInfo> items, List<CellLinkInfo> specials)
-        => _net?.Connection?.Enqueue(new C.NPCRefine
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCRefine
         {
             RefineType = type, RefineQuality = quality,
             Ores = ores ?? new List<CellLinkInfo>(), Items = items ?? new List<CellLinkInfo>(),
             Specials = specials ?? new List<CellLinkInfo>(),
         });
+    }
 
     public void SendNPCMasterRefine(List<CellLinkInfo> fragment1, List<CellLinkInfo> fragment2,
         List<CellLinkInfo> fragment3, List<CellLinkInfo> stones, List<CellLinkInfo> specials)
-        => _net?.Connection?.Enqueue(new C.NPCMasterRefine
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCMasterRefine
         {
             RefineType = RefineType.None,
             Fragment1s = fragment1 ?? new List<CellLinkInfo>(), Fragment2s = fragment2 ?? new List<CellLinkInfo>(),
             Fragment3s = fragment3 ?? new List<CellLinkInfo>(), Stones = stones ?? new List<CellLinkInfo>(),
             Specials = specials ?? new List<CellLinkInfo>(),
         });
+    }
     public void SendNPCMasterRefineEvaluate(RefineType type, List<CellLinkInfo> fragment1, List<CellLinkInfo> fragment2, List<CellLinkInfo> fragment3, List<CellLinkInfo> stones, List<CellLinkInfo> specials)
-        => _net?.Connection?.Enqueue(new C.NPCMasterRefineEvaluate { RefineType = type, Fragment1s = fragment1 ?? new(), Fragment2s = fragment2 ?? new(), Fragment3s = fragment3 ?? new(), Stones = stones ?? new(), Specials = specials ?? new() });
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCMasterRefineEvaluate { RefineType = type, Fragment1s = fragment1 ?? new(), Fragment2s = fragment2 ?? new(), Fragment3s = fragment3 ?? new(), Stones = stones ?? new(), Specials = specials ?? new() });
+    }
 
     public void RequestNPCRefineList() => _npcDialog?.RefreshRefineList();
-    public void SendNPCRefineRetrieve(int index) => _net?.Connection?.Enqueue(new C.NPCRefineRetrieve { Index = index });
+    public void SendNPCRefineRetrieve(int index)
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCRefineRetrieve { Index = index });
+    }
     public void SendNPCAccessoryUpgrade(CellLinkInfo target, RefineType type)
-        => _net?.Connection?.Enqueue(new C.NPCAccessoryUpgrade { Target = target, RefineType = type });
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCAccessoryUpgrade { Target = target, RefineType = type });
+    }
     public void SendNPCAccessoryLevelUp(CellLinkInfo target, List<CellLinkInfo> links)
-        => _net?.Connection?.Enqueue(new C.NPCAccessoryLevelUp { Target = target, Links = links ?? new List<CellLinkInfo>() });
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCAccessoryLevelUp { Target = target, Links = links ?? new List<CellLinkInfo>() });
+    }
     public void SendNPCAccessoryReset(CellLinkInfo target)
-        => _net?.Connection?.Enqueue(new C.NPCAccessoryReset { Cell = target });
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCAccessoryReset { Cell = target });
+    }
     public void SendNPCAccessoryRefine(CellLinkInfo target, CellLinkInfo oreTarget, List<CellLinkInfo> links, RefineType refineType = RefineType.None)
-        => _net?.Connection?.Enqueue(new C.NPCAccessoryRefine
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCAccessoryRefine
         {
             Target = target, OreTarget = oreTarget, Links = links ?? new List<CellLinkInfo>(), RefineType = refineType,
         });
+    }
     public void SendNPCWeaponCraft(RequiredClass @class, CellLinkInfo template, CellLinkInfo yellow,
         CellLinkInfo blue, CellLinkInfo red, CellLinkInfo purple, CellLinkInfo green, CellLinkInfo grey)
-        => _net?.Connection?.Enqueue(new C.NPCWeaponCraft
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.Enqueue(new C.NPCWeaponCraft
         {
             Class = @class, Template = template, Yellow = yellow, Blue = blue, Red = red,
             Purple = purple, Green = green, Grey = grey,
         });
-    public void SendNPCRoll(int type) => _net?.Connection?.Enqueue(new C.NPCRoll { Type = type });
-    public void SendNPCRollResult() => _net?.Connection?.SendNPCRollResult();
+    }
+    public void SendNPCRoll(int type)
+    {
+        if (!CanSendNPCOperation(IsObserver) || type is < 0 or > 1) return;
+        _net?.Connection?.Enqueue(new C.NPCRoll { Type = type });
+    }
+    public void SendNPCRollResult()
+    {
+        if (!CanSendNPCOperation(IsObserver)) return;
+        _net?.Connection?.SendNPCRollResult();
+    }
     public void SendCompanionFilters(List<MirClass> classes = null, List<Rarity> rarities = null, List<ItemType> itemTypes = null)
         => _net?.Connection?.Enqueue(new C.SendCompanionFilters
         {
             FilterClass = classes ?? new List<MirClass>(), FilterRarity = rarities ?? new List<Rarity>(), FilterItemType = itemTypes ?? new List<ItemType>(),
         });
-    public void SendCompanionStore() { if (Companion != null) _net?.Connection?.SendCompanionStore(Companion.Index); }
+    public static bool CanSendCompanionOperation(bool observer, int index)
+        => !observer && index >= 0;
+    public void SendCompanionStore(int index)
+    {
+        if (!CanSendCompanionOperation(IsObserver, index)) return;
+        _net?.Connection?.SendCompanionStore(index);
+    }
+    public void SendCompanionStore() => SendCompanionStore(Companion?.Index ?? -1);
     public void SendCompanionRetrieve(int index)
     {
-        if (index >= 0) _net?.Connection?.SendCompanionRetrieve(index);
+        if (CanSendCompanionOperation(IsObserver, index)) _net?.Connection?.SendCompanionRetrieve(index);
     }
     public void SendCompanionRelease(int index)
     {
-        if (index >= 0) _net?.Connection?.SendCompanionRelease(index);
+        if (CanSendCompanionOperation(IsObserver, index)) _net?.Connection?.SendCompanionRelease(index);
     }
-    public void SendCompanionUnlock(int index) => _net?.Connection?.SendCompanionUnlock(index);
-    public void SendCompanionAdopt(int index, string name) => _net?.Connection?.SendCompanionAdopt(index, name);
+    public void SendCompanionUnlock(int index)
+    {
+        if (!CanSendCompanionOperation(IsObserver, index)) return;
+        _net?.Connection?.SendCompanionUnlock(index);
+    }
+    public void SendCompanionAdopt(int index, string name)
+    {
+        if (!CanSendCompanionOperation(IsObserver, index) || string.IsNullOrWhiteSpace(name)) return;
+        _net?.Connection?.SendCompanionAdopt(index, name.Trim());
+    }
     public void SendGuildEditMember(int index, string rank, GuildPermission permission)
         => _net?.Connection?.Enqueue(new C.GuildEditMember { Index = index, Rank = rank ?? string.Empty, Permission = permission });
     public void SendGuildKickMember(int index)
@@ -5085,7 +5342,7 @@ public partial class GameScene : Control
     public void SendPickUp()
     {
         double now = Godot.Time.GetTicksMsec();
-        if (now < _pickUpNextMs) return;
+        if (!CanSendPickUp(now, _pickUpNextMs)) return;
         _pickUpNextMs = now + 250.0;
         _net?.Connection?.SendPickUp();
     }
@@ -5117,31 +5374,68 @@ public partial class GameScene : Control
     public void SendMailOpened(int index)
         => _net.Connection.Enqueue(new C.MailOpened { Index = index });
     public void SendMailGetItem(int index, int slot)
-        => _net.Connection.SendMailGetItem(index, slot);
+    {
+        if (IsObserver || index < 0 || slot < 0) return;
+        _net.Connection.SendMailGetItem(index, slot);
+    }
     public void SendMailDelete(int index)
-        => _net.Connection.SendMailDelete(index);
+    {
+        if (IsObserver || index < 0) return;
+        _net.Connection.SendMailDelete(index);
+    }
     public void SendMail(string recipient, string subject, string message, List<CellLinkInfo> links = null, long gold = 0)
-        => _net.Connection.Enqueue(new C.MailSend
+    {
+        if (IsObserver || string.IsNullOrWhiteSpace(recipient) || gold < 0) return;
+        _net.Connection.Enqueue(new C.MailSend
         {
-            Recipient = recipient,
-            Subject = subject,
-            Message = message,
-            Gold = Math.Max(0, gold),
+            Recipient = recipient.Trim(),
+            Subject = subject ?? string.Empty,
+            Message = message ?? string.Empty,
+            Gold = gold,
             Links = links ?? new List<CellLinkInfo>(),
         });
+    }
     public void SendTradeClose() => _net.Connection.Enqueue(new C.TradeClose());
-    public void SendTradeRequestResponse(bool accept) => _net.Connection.SendTradeRequestResponse(accept);
-    public void SendTradeConfirm() => _net.Connection.Enqueue(new C.TradeConfirm());
-    public void SendTradeGold(long gold) => _net.Connection.Enqueue(new C.TradeAddGold { Gold = gold });
-    public void SendTradeItem(CellLinkInfo cell) => _net.Connection.SendTradeItem(cell);
+    public void SendTradeRequestResponse(bool accept)
+    {
+        if (IsObserver) return;
+        _net.Connection.SendTradeRequestResponse(accept);
+    }
+    public void SendTradeConfirm()
+    {
+        if (IsObserver) return;
+        _net.Connection.Enqueue(new C.TradeConfirm());
+    }
+    public static bool CanSendTradeGold(bool observer, long balance, long amount)
+        => !observer && balance > 0 && amount > 0 && amount <= balance;
+    public void SendTradeGold(long gold)
+    {
+        long balance = Currencies.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
+        if (!CanSendTradeGold(IsObserver, balance, gold)) return;
+        _net.Connection.Enqueue(new C.TradeAddGold { Gold = gold });
+    }
+    public void SendTradeItem(CellLinkInfo cell)
+    {
+        if (IsObserver || cell == null || cell.Slot < 0 || cell.Count <= 0) return;
+        _net.Connection.SendTradeItem(cell);
+    }
     public void SendNPCButton(int buttonId) => _net.Connection.Enqueue(new C.NPCButton { ButtonID = buttonId });
     public void SendNPCClose() => _net.Connection.Enqueue(new C.NPCClose());
     public void SendNPCBuy(int index, long amount, bool guildFunds = false)
-        => _net.Connection.Enqueue(new C.NPCBuy { Index = index, Amount = amount, GuildFunds = guildFunds });
+    {
+        if (!CanSendNPCOperation(IsObserver) || index < 0 || amount <= 0) return;
+        _net.Connection.Enqueue(new C.NPCBuy { Index = index, Amount = amount, GuildFunds = guildFunds });
+    }
     public void SendNPCSell(List<CellLinkInfo> links)
-        => _net.Connection.Enqueue(new C.NPCSell { Links = links ?? new List<CellLinkInfo>() });
+    {
+        if (!CanSendNPCOperation(IsObserver) || links == null || links.Count == 0) return;
+        _net.Connection.Enqueue(new C.NPCSell { Links = links });
+    }
     public void SendNPCRepair(List<CellLinkInfo> links, bool special = false, bool guildFunds = false)
-        => _net.Connection.Enqueue(new C.NPCRepair { Links = links, Special = special, GuildFunds = guildFunds });
+    {
+        if (!CanSendNPCOperation(IsObserver) || links == null || links.Count == 0) return;
+        _net.Connection.Enqueue(new C.NPCRepair { Links = links, Special = special, GuildFunds = guildFunds });
+    }
 
     private void OnNPCResponse(S.NPCResponse response)
     {
@@ -5942,7 +6236,10 @@ public partial class GameScene : Control
         // 钓鱼配件必须在鱼竿装备时才能穿戴。
         if (slot is EquipmentSlot.Hook or EquipmentSlot.Float or EquipmentSlot.Bait or EquipmentSlot.Finder or EquipmentSlot.Reel &&
             Equipment[(int)EquipmentSlot.Weapon]?.Info?.ItemEffect != ItemEffect.FishingRod)
+        {
+            ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
             return false;
+        }
 
         // 负重: 手持槽 (Weapon/Torch/Shield) 查 HandWeight, 其余查 WearWeight; 卸下旧装备减重
         ClientUserItem old = Equipment[(int)slot];
@@ -5951,13 +6248,13 @@ public partial class GameScene : Control
         {
             if (HandWeight + weight > _playerStats[Stat.HandWeight])
             {
-                GD.Print($"[Item] 手持负重不足, 无法穿戴 {item.Info.ItemName}");
+                ReceiveChat($"Unable to hold {item.Info.ItemName}, it is too heavy.", MessageType.System);
                 return false;
             }
         }
         else if (WearWeight + weight > _playerStats[Stat.WearWeight])
         {
-            GD.Print($"[Item] 穿戴负重不足, 无法穿戴 {item.Info.ItemName}");
+            ReceiveChat($"Unable to wear {item.Info.ItemName}, it is too heavy.", MessageType.System);
             return false;
         }
 
@@ -5993,7 +6290,19 @@ public partial class GameScene : Control
             if (_player != null) _player.PlayDie();
             return;
         }
-        if (_objects.TryGetValue(objectID, out var ob))
+        if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            player.PlayDie();
+            var renderer = player;
+            GetTree().CreateTimer(1.2).Timeout += () =>
+            {
+                if (renderer.IsInsideTree() && _otherPlayers.Remove(objectID))
+                {
+                    if (_objects.Remove(objectID, out var proxy)) proxy.QueueFree();
+                }
+            };
+        }
+        else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Dead = true;
             ob.SetAnimation(MirAnimation.Die);
@@ -6003,15 +6312,6 @@ public partial class GameScene : Control
             {
                 if (renderer.IsInsideTree() && _objects.Remove(objectID, out _))
                     renderer.QueueFree();
-            };
-        }
-        else if (_otherPlayers.TryGetValue(objectID, out var player))
-        {
-            player.PlayDie();
-            var renderer = player;
-            GetTree().CreateTimer(1.2).Timeout += () =>
-            {
-                if (renderer.IsInsideTree() && _otherPlayers.Remove(objectID)) renderer.QueueFree();
             };
         }
     }
@@ -6484,6 +6784,7 @@ public partial class GameScene : Control
 
     public override void _Process(double delta)
     {
+        TryContinueMining();
         ProcessPendingAutoPathMove();
         UpdateViewRange();
         // Remote PlayerRenderer advances movement offsets in its own _Process;
@@ -6996,6 +7297,15 @@ public partial class GameScene : Control
         return _mapView.CellToScreen(cellX, cellY, true);
     }
 
+    // Fixed MapTarget effects use the legacy map origin. Only effects attached
+    // to a target node use the object's baseline position.
+    private Vector2 ComputeEffectScreenPos(int cellX, int cellY)
+    {
+        if (_mapView?.Map == null) return Vector2.Zero;
+
+        return _mapView.CellToScreen(cellX, cellY, false);
+    }
+
     // F1~F12 -> Spell01~12, Shift+F1~F12 -> Spell13~24。
     // 键盘输入和技能栏点击共用这一条链路。
     public void UseMagicSlot(int slot)
@@ -7272,11 +7582,18 @@ public partial class GameScene : Control
         {
             var currency = _selectedCurrency;
             _selectedCurrency = null;
-            var dialog = new ItemAmountDialog("Drop Currency", currency.Amount, 1,
-                amount => _net?.Connection?.SendCurrencyDrop(currency.CurrencyIndex, amount));
+            var dialog = new ItemAmountDialog("Drop Item", currency.Amount, 1,
+                amount => SendCurrencyDrop(currency.CurrencyIndex, amount));
             WindowManager.Open(dialog, _uiLayer);
             GetViewport().SetInputAsHandled();
             return;
+        }
+        // 原版 MapControl.ProcessInput `case Left: Mining = false;`：
+        // 任何一次左键按下都先停止正在进行的挖矿，挖矿分支随后重新设置。
+        if (@event is InputEventMouseButton leftPress && leftPress.Pressed
+            && leftPress.ButtonIndex == MouseButton.Left)
+        {
+            _mining = false;
         }
         if (@event is InputEventMouseButton dropMouse && dropMouse.Pressed && dropMouse.ButtonIndex == MouseButton.Left)
         {
@@ -7351,7 +7668,7 @@ public partial class GameScene : Control
             var armour = Equipment.ElementAtOrDefault((int)EquipmentSlot.Armour);
             var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
 
-            bool fishingSetup = tool?.Info?.ItemEffect == ItemEffect.FishingRod && armour != null;
+            bool fishingSetup = IsFishingRig(tool?.Info?.ItemEffect, armour?.Info?.ItemEffect);
             if (fishingSetup && mapInfo != null
                 && Functions.FishingZone(Globals.FishingInfoList, mapInfo,
                     _mapView.Map.Width, _mapView.Map.Height, target) != null
@@ -7362,12 +7679,9 @@ public partial class GameScene : Control
                 GetViewport().SetInputAsHandled();
                 return;
             }
-            if (fishingSetup)
-            {
-                // 已装备钓鱼配置但地点/距离不合法时，原版不移动、不采集。
-                GetViewport().SetInputAsHandled();
-                return;
-            }
+            // 已装备钓鱼配置但地点/距离不合法：原版不 break，回落到
+            // 普通左键逻辑（拾取/挖矿/移动），而不是完全消费这次点击。
+            // 驯服 AI==135 怪物超 TamingDistance 同理：原版不 break。
 
             var monster = _combatController?.MouseObject;
             bool lassoTarget = tool?.Info?.ItemEffect == ItemEffect.TamingLasso
@@ -7381,14 +7695,22 @@ public partial class GameScene : Control
                     _playerDirection = direction;
                     _net?.Connection?.SendTaming(monster.ObjectID, TamingState.Cast, direction);
                     GetViewport().SetInputAsHandled();
+                    return;
                 }
-                // 超距离: 旧版同样无操作 (AI135 怪物在鼠标下, 移动/采集均被拦截)
+                // 超距：原版公共尾部见鼠标下 AI135 活怪物 → break，
+                // 不采集不移动；此处消费本次点击（等价 break）。
                 GetViewport().SetInputAsHandled();
                 return;
             }
-
-            _playerDirection = direction;
-            _net?.Connection?.SendHarvest(direction);
+            // 未装备钓具/驯具：原版 AttemptAction(Harvest) + return，
+            // 同样消费点击（采集/拔草），但有 Globals.HarvestTime 冷却。
+            double harvestNow = Godot.Time.GetTicksMsec();
+            if (harvestNow >= _nextHarvestMs)
+            {
+                _playerDirection = direction;
+                _net?.Connection?.SendHarvest(direction);
+                _nextHarvestMs = harvestNow + Globals.HarvestTime.TotalMilliseconds;
+            }
             GetViewport().SetInputAsHandled();
             return;
         }
@@ -7457,18 +7779,28 @@ public partial class GameScene : Control
             // 原版仅活着的非掉落对象会抢占矿点；掉落物和死亡对象不阻止挖矿。
             if (mouseObject != null && mouseObject.Type != ObjectRenderer.Kind.Item && !mouseObject.Dead)
                 return;
-            var pickaxe = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.PickAxe);
+            // 原版 MiningPoint = Functions.Move(玩家格, 鼠标方向) —— 挖鼠标
+            // 方向的**第一格**，不是鼠标所在格；仅武器槽 PickAxe 有效。
             var target = _combatController.MouseCell();
-            int distance = Math.Max(Math.Abs(target.X - _playerLocation.X), Math.Abs(target.Y - _playerLocation.Y));
+            var direction = Functions.DirectionFromPoint(_playerLocation, target);
+            var miningPoint = Functions.Move(_playerLocation, direction);
             var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
-            bool validMiningPoint = mapInfo?.CanMine == true && _mapView?.Map != null
-                && target.X >= 0 && target.Y >= 0 && target.X < _mapView.Map.Width && target.Y < _mapView.Map.Height
-                && _mapView.Map.Cells[target.X, target.Y].Flag;
-            if (pickaxe?.Info != null && (pickaxe.CurrentDurability > 0 || pickaxe.Info.Durability == 0)
-                && !IsMounted && distance == 1 && validMiningPoint)
+            var pickaxe = Equipment.ElementAtOrDefault((int)EquipmentSlot.Weapon);
+            bool inBounds = _mapView?.Map != null
+                && miningPoint.X >= 0 && miningPoint.Y >= 0
+                && miningPoint.X < _mapView.Map.Width && miningPoint.Y < _mapView.Map.Height;
+            bool cellFlag = inBounds && _mapView.Map.Cells[miningPoint.X, miningPoint.Y].Flag;
+            bool adjacent = Math.Max(Math.Abs(miningPoint.X - _playerLocation.X),
+                Math.Abs(miningPoint.Y - _playerLocation.Y)) == 1;
+            if (CanMineNow(mapInfo?.CanMine == true, pickaxe?.Info?.ItemEffect,
+                pickaxe?.CurrentDurability ?? 0, pickaxe?.Info?.Durability ?? 0,
+                inBounds, cellFlag, adjacent, IsMounted))
             {
-                var direction = Functions.DirectionFromPoint(_playerLocation, target);
-                _net?.Connection?.Enqueue(new C.Mining { Direction = direction });
+                _mining = true;
+                _miningPoint = miningPoint;
+                _playerDirection = direction;
+                // 发包交给 _Process 的 TryContinueMining：原版按下后
+                // Mining=true 并不立即发包，要等 AttackTime 冷却。
                 GetViewport().SetInputAsHandled();
             }
         }
@@ -7483,5 +7815,39 @@ public partial class GameScene : Control
         _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = objectId });
         _nextNpcCallMs = now + 1000.0;
         return true;
+    }
+
+    /// <summary>
+    /// 原版 MapControl.ProcessInput 的 Mining 状态机（1045-1071）：
+    /// 条件全部满足且 AttackTime 冷却到 → 重复 AttemptAction(Mining)；
+    /// 任一条件失效（换武器/耐久 0/移动/骑马/矿点越界）→ Mining=false。
+    /// </summary>
+    private void TryContinueMining()
+    {
+        if (!_mining) return;
+        var pickaxe = Equipment.ElementAtOrDefault((int)EquipmentSlot.Weapon);
+        var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+        bool inBounds = _mapView?.Map != null
+            && _miningPoint.X >= 0 && _miningPoint.Y >= 0
+            && _miningPoint.X < _mapView.Map.Width && _miningPoint.Y < _mapView.Map.Height;
+        bool cellFlag = inBounds && _mapView.Map.Cells[_miningPoint.X, _miningPoint.Y].Flag;
+        bool adjacent = Math.Max(Math.Abs(_miningPoint.X - _playerLocation.X),
+            Math.Abs(_miningPoint.Y - _playerLocation.Y)) == 1;
+        bool stillValid = CanMineNow(mapInfo?.CanMine == true, pickaxe?.Info?.ItemEffect,
+            pickaxe?.CurrentDurability ?? 0, pickaxe?.Info?.Durability ?? 0,
+            inBounds, cellFlag, adjacent, IsMounted);
+        if (!stillValid)
+        {
+            _mining = false;
+            return;
+        }
+        double now = Godot.Time.GetTicksMsec();
+        if (now < _nextMiningMs) return;
+        var dir = Functions.DirectionFromPoint(_playerLocation, _miningPoint);
+        if (_net?.Connection?.Connected == true)
+            _net.Connection.Enqueue(new C.Mining { Direction = dir });
+        // 原版 Mining 走 AttemptAction 的 AttackTime 冷却（AttackDelay 计算）。
+        _nextMiningMs = now + Math.Max(250.0,
+            Globals.AttackDelay - PlayerStats[Stat.AttackSpeed] * Globals.ASpeedRate);
     }
 }

@@ -173,17 +173,12 @@ public partial class MapWeatherLayer : Node2D
         if (p.TextureIndex < 0 || p.TextureIndex >= _library.Images.Length) return;
         var img = _library.Images[p.TextureIndex];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
-        // ProgUse 粒子沿用原版黑色透明键；普通 GetImageTexture 会把透明键
-        // 当成黑色实体矩形，雨、雪、雾和闪电因此会出现黑底。
-        // 天气背景在旧客户端是黑色透明键；DXT 压缩会留下较宽的近黑色
-        // 边缘，使用天气专用透明缓存，不能让这些像素形成黑色雪块。
-        // Weather payloads are the legacy particle exception: their source
-        // frames use a black/near-black color key (the ordinary decoded image
-        // is opaque for snow/fog frames), so use the dedicated weather/fog
-        // conversion rather than drawing the raw payload as a rectangle.
-        var tex = p.TextureIndex == 550
-            ? _library.GetFogTexture(p.TextureIndex)
-            : _library.GetWeatherTexture(p.TextureIndex);
+        // 旧版 Particle.Draw 最终调用 MirLibrary.DrawBlendCentered(...,
+        // ImageType.Image)。它只使用 ZL/DXT1 自身的 Alpha，不额外抠除
+        // 黑色颜色键；因此天气也必须走普通图像缓存，保持旧版的黑/灰像素
+        // 和 DXT1 Alpha 完全一致。Weather/Fog 专用 keyed cache 仅供审计
+        // 与素材诊断使用，不能用于正式绘制，否则会比旧版少画一批像素。
+        var tex = _library.GetImageTexture(p.TextureIndex);
         if (tex == null) return;
 
         float opacity = Math.Clamp(p.Opacity, 0f, 1f);

@@ -39,6 +39,9 @@ public partial class CombatController : Node2D
     private readonly Func<bool> _rightClickDeTarget;
     private readonly Func<bool> _mouseOverUi;
     private readonly Func<bool> _canUseCombatInput;
+    // 原版 Shuriken 超距提示（MapControl.OnMouseDown 683-692 的 ReceiveChat
+    // "Unable to throw Shuriken, Your target is too far." + Stop()）。
+    private readonly Action _notifyRangeAttackTooFar;
 
     public bool Enabled = true;
 
@@ -66,6 +69,25 @@ public partial class CombatController : Node2D
         System.Drawing.Point playerCell, bool shiftPressed)
         => !shiftPressed && mouseCell == playerCell;
 
+    /// <summary>
+    /// 原版 CheckCursor 环扫描边界语义：下/右越界 → continue（跳过该行/列），
+    /// 上/左越界 → break（起始值已越界时整个环不再扫描）。
+    /// 返回 1=continue、-1=break、0=正常扫描。
+    /// </summary>
+    public static int RingEdgeMode(int coord, int limit)
+    {
+        if (coord >= limit) return 1;
+        if (coord < 0) return -1;
+        return 0;
+    }
+
+    /// <summary>
+    /// 原版 MapControl.ProcessInput 底部接近分支：
+    /// 目标是玩家或宠物所有者且未按 Shift → 只选中，不接近不攻击。
+    /// </summary>
+    public static bool ShouldSelectOnly(bool isPlayer, bool hasPetOwner, bool shift)
+        => (isPlayer || hasPetOwner) && !shift;
+
     private double _nextAttackMs;
 
     /// <summary>
@@ -92,7 +114,8 @@ public partial class CombatController : Node2D
         Func<int, int, bool> cellBlocked = null,
         Func<bool> rightClickDeTarget = null,
         Func<bool> mouseOverUi = null,
-        Func<bool> canUseCombatInput = null)
+        Func<bool> canUseCombatInput = null,
+        Action notifyRangeAttackTooFar = null)
     {
         _mapView = mapView;
         _getObjects = getObjects;
@@ -106,6 +129,7 @@ public partial class CombatController : Node2D
         _rightClickDeTarget = rightClickDeTarget;
         _mouseOverUi = mouseOverUi;
         _canUseCombatInput = canUseCombatInput;
+        _notifyRangeAttackTooFar = notifyRangeAttackTooFar;
         SetProcessAlways();
     }
 
@@ -242,8 +266,12 @@ public partial class CombatController : Node2D
                 {
                     TargetObject = hit;
                     GD.Print($"[Combat] 选中目标: {hit.DisplayName} ObjectID={hit.ObjectID}");
-                    if (string.IsNullOrWhiteSpace(hit.PetOwner) ||
-                        mb.ShiftPressed || Input.IsKeyPressed(Key.Shift))
+                    // 原版 MapControl.ProcessInput 底部接近分支：
+                    // (Race == Player || 有宠物) && !Shift → 只选中，不接近不攻击。
+                    bool isPlayer = hit.Type == ObjectRenderer.Kind.Player;
+                    bool hasPetOwner = !string.IsNullOrWhiteSpace(hit.PetOwner);
+                    bool shiftHeld = mb.ShiftPressed || Input.IsKeyPressed(Key.Shift);
+                    if (!ShouldSelectOnly(isPlayer, hasPetOwner, shiftHeld))
                         AttackOrApproach(hit);
                 }
                 else
@@ -315,7 +343,18 @@ public partial class CombatController : Node2D
         if (dist > 1)
         {
             if (_canRangeAttack?.Invoke(target) == true)
+            {
+                // 原版 MapControl.OnMouseDown 683-692：Shuriken 超
+                // Globals.MagicRange 时提示 "Unable to throw ... too far."
+                // 并取消目标，不发 RangeAttack。
+                if (!Functions.InRange(pCell, new System.Drawing.Point(target.CellX, target.CellY), Globals.MagicRange))
+                {
+                    _notifyRangeAttackTooFar?.Invoke();
+                    TargetObject = null;
+                    return;
+                }
                 _sendRangeAttack?.Invoke(dir, target.ObjectID);
+            }
             else
                 _sendMove?.Invoke(BestApproachDirection(pCell, target), 1);
             _nextAttackMs = now + 120.0;
@@ -374,10 +413,18 @@ public partial class CombatController : Node2D
         {
             for (int y = mouseCell.Y - d; y <= mouseCell.Y + d; y++)
             {
-                if (y < 0 || y >= _mapView.Map.Height) continue;
+                // 原版 CheckCursor 边界：下/右越界跳过该行/列，上/左越界
+                // 直接 break（起始值已越界时整个环不再扫描）。Godot 之前
+                // 用 continue 会在鼠标靠近地图上/左边缘时多命中原版不会
+                // 命中的对象，破坏边缘格的优先级一致性。
+                int ymode = RingEdgeMode(y, _mapView.Map.Height);
+                if (ymode == 1) continue;
+                if (ymode == -1) break;
                 for (int x = mouseCell.X - d; x <= mouseCell.X + d; x++)
                 {
-                    if (x < 0 || x >= _mapView.Map.Width) continue;
+                    int xmode = RingEdgeMode(x, _mapView.Map.Width);
+                    if (xmode == 1) continue;
+                    if (xmode == -1) break;
                     ObjectRenderer cellSelect = null;
                     foreach (var ob in orderedObjects)
                     {

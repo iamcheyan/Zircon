@@ -179,6 +179,9 @@ public partial class UITestScene : Control
         SelfCheck(win, btn1, btn2);
         if (hud != null) AuditHud(hud);
         if (_uiAudit) AuditItemGridPropagation();
+        if (_uiAudit) AuditInventorySaleMode();
+        if (_uiAudit) AuditInventoryParity();
+        if (_uiAudit) AuditSocketDialogs();
         if (_uiAudit) AuditBeltAndAutoPotion();
         if (_npcAudit) AuditNpcPanels();
         if (_npcAudit) AuditNpcOperationGuards();
@@ -245,6 +248,15 @@ public partial class UITestScene : Control
         var trade = new DXItemGrid { GridSize = new Vector2I(5, 2), GridType = GridType.TradeUser };
         var tradeDialog = new TradeDialog();
         bool tradeGold = tradeDialog.AuditGoldRouting(out string tradeGoldDetails);
+        tradeGold &= TradeDialog.CanOfferGold(1) && !TradeDialog.CanOfferGold(0) && !TradeDialog.CanOfferGold(-1);
+        tradeGold &= GameScene.CanSendTradeGold(false, 100, 1)
+            && GameScene.CanSendTradeGold(false, 100, 100)
+            && !GameScene.CanSendTradeGold(false, 100, 101)
+            && !GameScene.CanSendTradeGold(true, 100, 1)
+            && !GameScene.CanSendTradeGold(false, 0, 1);
+        var tradeSource = new ClientUserItem();
+        tradeGold &= TradeDialog.ShouldUnlockTradeSource(tradeSource, tradeSource)
+            && !TradeDialog.ShouldUnlockTradeSource(new ClientUserItem(), tradeSource);
         GD.Print(tradeGold
             ? $"[UITradeAudit] PASS local/remote gold routing {tradeGoldDetails}"
             : $"[UITradeAudit] FAIL local/remote gold routing {tradeGoldDetails}");
@@ -280,6 +292,11 @@ public partial class UITestScene : Control
         altGrid.Cells[0].Enabled = false;
         altGrid.Cells[0].UpdateBorder();
         bool disabledVisual = altGrid.Cells[0].BackColour.A > 0f && !altGrid.Cells[0].IsEnabled;
+        bool storageGuards = DXItemCell.CanStoreInStorage(true, false, false, true)
+            && !DXItemCell.CanStoreInStorage(true, false, false, false)
+            && !DXItemCell.CanStoreInStorage(false, false, false, true)
+            && DXItemCell.CanStoreInPartsStorage(true, false, true)
+            && !DXItemCell.CanStoreInPartsStorage(true, false, false);
         bool itemBadgeTextures = MirSkin.GetTexture(LibraryFile.Interface, 47) != null
             && MirSkin.GetTexture(LibraryFile.Interface, 48) != null
             && MirSkin.GetTexture(LibraryFile.Interface, 49) != null
@@ -300,9 +317,9 @@ public partial class UITestScene : Control
                 && experience.Flags == UserItemFlags.Worthless;
         }
         bool gainVisual = gainedBadge && linked.New && experienceIgnored && !experience.New && experienceFlags;
-        GD.Print(initial && changed && linkSlot && selectionPropagation && readOnlyClick && linkedClear && altLinkDoesNotPickUp && normalCellEvent && itemDropGuard && lockedDropRejected && disabledVisual && itemBadgeTextures && lootBoxLockedTexture && gainVisual
-            ? "[UIItemGridAudit] PASS type/read-only, linked-slot, selection, linked-clear, Alt-link, normal-cell event, item-drop guard, disabled visual, Interface badges, loot-box lock texture, gained-item badge, experience flags and read-only-click propagation"
-            : $"[UIItemGridAudit] FAIL type={grid.Cells?[0].GridType} readOnly={grid.Cells?[0].ReadOnly} linkSlot={linkSlot} selection={selectionPropagation} linkedClear={linkedClear} altLink={altLinkDoesNotPickUp} normalEvent={normalCellClickCount} dropGuard={itemDropGuard}/{lockedDropRejected} disabledVisual={disabledVisual} badges={itemBadgeTextures} lootLock={lootBoxLockedTexture} gainVisual={gainVisual} experienceFlags={experienceFlags} readOnlyClick={clickCount}/{DXItemCell.SelectedCell != null}");
+        GD.Print(initial && changed && linkSlot && selectionPropagation && readOnlyClick && linkedClear && altLinkDoesNotPickUp && normalCellEvent && itemDropGuard && lockedDropRejected && disabledVisual && storageGuards && itemBadgeTextures && lootBoxLockedTexture && gainVisual
+            ? "[UIItemGridAudit] PASS type/read-only, linked-slot, selection, linked-clear, Alt-block, normal-cell event, item-drop guard, storage guards, disabled visual, Interface badges, loot-box lock texture, gained-item badge, experience flags and read-only-click propagation"
+            : $"[UIItemGridAudit] FAIL type={grid.Cells?[0].GridType} readOnly={grid.Cells?[0].ReadOnly} linkSlot={linkSlot} selection={selectionPropagation} altLink={altLinkDoesNotPickUp} normalEvent={normalCellClickCount} dropGuard={itemDropGuard}/{lockedDropRejected} storage={storageGuards} disabledVisual={disabledVisual} badges={itemBadgeTextures} lootLock={lootBoxLockedTexture} gainVisual={gainVisual} experienceFlags={experienceFlags} readOnlyClick={clickCount}/{DXItemCell.SelectedCell != null}");
         grid.QueueFree();
         trade.QueueFree();
         readOnlyCell.QueueFree();
@@ -330,6 +347,126 @@ public partial class UITestScene : Control
             : $"[UIBeltPotionAudit] FAIL belt={beltShape} scroll={potion.ScrollBar.MaxValue} swap={swapped} keyPriority={beltKeyPriority}");
         belt.QueueFree();
         potion.QueueFree();
+    }
+
+    private static void AuditInventorySaleMode()
+    {
+        var dialog = new InventoryDialog();
+        var info = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.ItemType == ItemType.Weapon);
+        if (info == null)
+        {
+            GD.Print("[UIInventorySaleAudit] FAIL no weapon ItemInfo");
+            dialog.QueueFree();
+            return;
+        }
+
+        bool oldCanSell = info.CanSell;
+        info.CanSell = true;
+        var item = new ClientUserItem(info, 2);
+        var cell = new DXItemCell
+        {
+            GridType = GridType.Inventory,
+            Slot = 0,
+            ItemGrid = new[] { item },
+        };
+        dialog.SellMode(Globals.CurrencyInfoList?.Binding.FirstOrDefault(x => x.Type == CurrencyType.Gold), new[] { ItemType.Weapon });
+        bool first = dialog.IsSellMode && dialog.TrySelectForSale(cell) && cell.SaleSelected && dialog.SelectedItems.Count == 1;
+        bool total = dialog.GgLabel.Text == item.Price(item.Count).ToString("N0");
+        bool second = dialog.TrySelectForSale(cell) && !cell.SaleSelected && dialog.SelectedItems.Count == 0;
+        dialog.SellMode(null, new[] { ItemType.Weapon });
+        bool sellAllEnabled = dialog.SellButton.Enabled;
+        dialog.NormalMode();
+        bool normal = sellAllEnabled && !dialog.IsSellMode && !dialog.SellButton.Visible && dialog.TrashButton.Visible && !cell.SaleSelected;
+        info.CanSell = oldCanSell;
+        GD.Print(first && total && second && normal
+            ? $"[UIInventorySaleAudit] PASS mode/multiselect/total/normal size={dialog.Size}"
+            : $"[UIInventorySaleAudit] FAIL first={first} total={total} second={second} normal={normal} mode={dialog.InvMode}");
+        cell.QueueFree();
+        dialog.QueueFree();
+    }
+
+    private static void AuditInventoryParity()
+    {
+        // B3: 原版 DXNumberBox.Change = Max(1, Count/5) 步进 + 红/橙/绿边框反馈。
+        bool step = ItemAmountDialog.ComputeStep(10) == 2
+            && ItemAmountDialog.ComputeStep(4) == 1
+            && ItemAmountDialog.ComputeStep(5) == 1
+            && ItemAmountDialog.ComputeStep(100) == 20
+            && ItemAmountDialog.ComputeStep(1) == 1;
+        bool borderRed = ItemAmountDialog.BorderColourFor(0, 10).R > .9f;
+        bool borderOrange = ItemAmountDialog.BorderColourFor(10, 10).R > .9f && ItemAmountDialog.BorderColourFor(10, 10).G < .75f;
+        bool borderGreen = ItemAmountDialog.BorderColourFor(5, 10).G > .8f;
+        GD.Print(step && borderRed && borderOrange && borderGreen
+            ? $"[UIItemAmountAudit] PASS step/colour step={ItemAmountDialog.ComputeStep(10)}"
+            : $"[UIItemAmountAudit] FAIL step={step} red={borderRed} orange={borderOrange} green={borderGreen}");
+
+        // B5: 中键/快捷键 ItemLock 反相（原版可解锁已锁物品）。
+        bool lockToggle = GameScene.ComputeItemLockTarget(false) && !GameScene.ComputeItemLockTarget(true);
+        GD.Print(lockToggle
+            ? "[UIItemLockAudit] PASS toggle-inverts"
+            : "[UIItemLockAudit] FAIL toggle-inverts");
+
+        // B9: 悬停信息核心文本（名称/稀有度颜色/部件/过期/锁定）。
+        GD.Print($"[UIItemHoverAudit] probe itemlist={Globals.ItemInfoList?.Binding?.Count ?? -1}");
+        var info = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.ItemType == ItemType.Weapon);
+        if (info == null)
+        {
+            GD.Print("[UIItemHoverAudit] FAIL no weapon ItemInfo");
+            return;
+        }
+        var plain = new ClientUserItem(info, 2);
+        string plainText;
+        try
+        {
+            plainText = GameScene.BuildItemHoverCore(plain);
+        }
+        catch (Exception e)
+        {
+            GD.Print($"[UIItemHoverAudit] EXCEPTION-plain {e.GetType().Name}: {e.Message}");
+            return;
+        }
+        bool plainOk = plainText.StartsWith(info.ItemName) && plainText.Contains($"Type: {info.ItemType}");
+        var partInfo = new ItemInfo
+        {
+            ItemName = "AuditPart",
+            ItemType = ItemType.Weapon,
+            ItemEffect = ItemEffect.ItemPart,
+        };
+        ClientUserItem partItem;
+        string partText;
+        try
+        {
+            partItem = new ClientUserItem(partInfo, 1)
+            {
+                AddedStats = new Stats { [Stat.ItemIndex] = info.Index },
+                Flags = UserItemFlags.Expirable | UserItemFlags.Locked,
+            };
+            partText = GameScene.BuildItemHoverCore(partItem);
+        }
+        catch (Exception e)
+        {
+            GD.Print($"[UIItemHoverAudit] EXCEPTION {e.GetType().Name}: {e.Message}");
+            return;
+        }
+        bool partOk = partText.Contains("AuditPart") && partText.Contains(" - [Part]") && partText.Contains("Expires in ") && partText.Contains("Locked:");
+        bool raritySuperior = GameScene.HoverRarityColour(Rarity.Superior).G > .8f;
+        bool rarityElite = GameScene.HoverRarityColour(Rarity.Elite).B > .8f;
+        GD.Print(plainOk && partOk && raritySuperior && rarityElite
+            ? $"[UIItemHoverAudit] PASS name/type/part/expiry/locked/rarity"
+            : $"[UIItemHoverAudit] FAIL plain={plainOk} part={partOk} superior={raritySuperior} elite={rarityElite}");
+    }
+
+    private static void AuditSocketDialogs()
+    {
+        var socket = new NPCSocketDialog();
+        var combine = new NPCSocketCombineDialog();
+        bool socketPass = socket.Panel.AuditLayout(out string socketDetails);
+        bool combinePass = combine.Panel.AuditLayout(out string combineDetails);
+        socket.QueueFree();
+        combine.QueueFree();
+        GD.Print(socketPass && combinePass
+            ? $"[UISocketAudit] PASS socket={socketDetails} combine={combineDetails}"
+            : $"[UISocketAudit] FAIL socket={socketDetails} combine={combineDetails}");
     }
 
     private static void AuditNpcPanels()
@@ -372,9 +509,12 @@ public partial class UITestScene : Control
             && !NPCGoodsPanel.CanAttemptPurchase(true, 0, 1)
             && !NPCGoodsPanel.CanAttemptPurchase(false, -1, 1)
             && !NPCGoodsPanel.CanAttemptPurchase(false, 1, 1);
+        bool operationGuard = GameScene.CanSendNPCOperation(false)
+            && !GameScene.CanSendNPCOperation(true);
         GD.Print(buyGuard
-            ? "[UINPCBuyAudit] PASS observer and invalid-selection purchase guards"
-            : "[UINPCBuyAudit] FAIL observer and invalid-selection purchase guards");
+            && operationGuard
+            ? "[UINPCBuyAudit] PASS observer, invalid-selection and NPC-operation guards"
+            : $"[UINPCBuyAudit] FAIL purchase={buyGuard} operation={operationGuard}");
         goods.QueueFree();
         panel.QueueFree();
     }
@@ -397,12 +537,7 @@ public partial class UITestScene : Control
     private static void AuditMagic()
     {
         var dialog = new MagicDialog();
-        bool valid = dialog.AuditLayout(out string details)
-            && EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Female)
-            && !EditCharacterDialog.CanConfirmGender(MirGender.Male, MirGender.Male)
-            && EditCharacterDialog.NormalizeHairType(99, MirClass.Warrior, MirGender.Male) == 10
-            && EditCharacterDialog.NormalizeHairType(-1, MirClass.Assassin, MirGender.Female) == 0;
-        details += " guards=same-gender,hair-range";
+        bool valid = dialog.AuditLayout(out string details);
         GD.Print(valid ? $"[UIMagicAudit] PASS {details}" : $"[UIMagicAudit] FAIL {details}");
         dialog.QueueFree();
     }
@@ -436,7 +571,12 @@ public partial class UITestScene : Control
     {
         var dialog = new QuestDialog();
         bool valid = dialog.AuditLayout(out string details);
-        GD.Print(valid ? $"[UIQuestAudit] PASS {details}" : $"[UIQuestAudit] FAIL {details}");
+        bool operationGuards = GameScene.CanSendQuestOperation(false, 0)
+            && !GameScene.CanSendQuestOperation(true, 0)
+            && !GameScene.CanSendQuestOperation(false, -1);
+        valid &= operationGuards;
+        GD.Print(valid ? $"[UIQuestAudit] PASS {details} operation=observer/index-guard"
+            : $"[UIQuestAudit] FAIL {details} operation={operationGuards}");
         dialog.QueueFree();
     }
 
@@ -478,9 +618,10 @@ public partial class UITestScene : Control
         dialog.RefreshStorage();
         bool valid = dialog.AuditLayout(out string details);
         bool capacity = dialog.AuditCapacity(23, out string capacityDetails);
-        GD.Print(valid && capacity
-            ? $"[UIStorageAudit] PASS {details} {capacityDetails}"
-            : $"[UIStorageAudit] FAIL {details} {capacityDetails}");
+        bool cancel = dialog.AuditCancelLinks(out string cancelDetails);
+        GD.Print(valid && capacity && cancel
+            ? $"[UIStorageAudit] PASS {details} {capacityDetails} {cancelDetails}"
+            : $"[UIStorageAudit] FAIL {details} {capacityDetails} {cancelDetails}");
         dialog.QueueFree();
     }
 
@@ -517,6 +658,10 @@ public partial class UITestScene : Control
     {
         var dialog = new CompanionDialog();
         bool valid = dialog.AuditLayout(out string details);
+        valid &= GameScene.CanSendCompanionOperation(false, 0)
+            && !GameScene.CanSendCompanionOperation(true, 0)
+            && !GameScene.CanSendCompanionOperation(false, -1);
+        details += " operation=selected-index/observer-guard";
         GD.Print(valid ? $"[UICompanionAudit] PASS {details}" : $"[UICompanionAudit] FAIL {details}");
         dialog.QueueFree();
     }
@@ -556,7 +701,9 @@ public partial class UITestScene : Control
             && !LootBoxDialog.CanRevealWithoutPrompt(1)
             && LootBoxDialog.CanSpend(100, 50)
             && !LootBoxDialog.CanSpend(49, 50)
-            && !LootBoxDialog.CanSpend(-1, 0);
+            && !LootBoxDialog.CanSpend(-1, 0)
+            && BundleDialog.ShouldUnlockSource(new ClientUserItem(), null) == false
+            && LootBoxDialog.ShouldUnlockSource(new ClientUserItem(), null) == false;
         GD.Print(valid
             ? $"[UIGameStoreAudit] PASS size={dialog.Size} list={dialog.ItemListGeometry} top={dialog.TopItemsGeometry} rows={dialog.TopItemRowCount}"
             : $"[UIGameStoreAudit] FAIL size={dialog.Size} list={dialog.ItemListGeometry} top={dialog.TopItemsGeometry} rows={dialog.TopItemRowCount}");

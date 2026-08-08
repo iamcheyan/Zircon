@@ -1,4 +1,5 @@
 using Godot;
+using ZirconClient.Controls;
 using ZirconClient.Formats;
 
 namespace ZirconClient.Scripts;
@@ -125,7 +126,7 @@ internal static class RenderPrimitives
         Color colour, float size = 10f)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
-        Font font = ThemeDB.FallbackFont;
+        Font font = MirSkin.GetFont() ?? ThemeDB.FallbackFont;
         if (font == null) return;
         Vector2 extent = font.GetStringSize(text, HorizontalAlignment.Left, -1, (int)size);
         Vector2 p = baseline - new Vector2(extent.X * 0.5f, 0f);
@@ -141,7 +142,7 @@ internal static class RenderPrimitives
     /// </summary>
     public static float OriginalNameBaseline(float size = 9f)
     {
-        Font font = ThemeDB.FallbackFont;
+        Font font = MirSkin.GetFont() ?? ThemeDB.FallbackFont;
         float height = font?.GetHeight((int)size) ?? size;
         return -(32f - height) / 2f - 6f + height;
     }

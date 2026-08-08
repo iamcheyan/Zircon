@@ -544,6 +544,22 @@ public partial class PlayerRenderer : Node2D
         _remoteMoveStartMs = Godot.Time.GetTicksMsec();
         _remoteMoving = true;
         BeginMove(direction, distance, mounted, distance >= 2);
+        // 立即把画面停在移动起点（权威格已到终点，靠 Offset 反向回拉补间）。
+        // 否则调用方（GameScene.OnObjectMove）随后同步 Position 时 Offset 还是 0，
+        // 会先瞬移到终点再补间，视觉上仍是跳格。
+        float xStep = CellWidth * MoveDistance;
+        float yStep = CellHeight * MoveDistance;
+        switch (Direction)
+        {
+            case MirDirection.Up: OffsetY = yStep; break;
+            case MirDirection.UpRight: OffsetX = -xStep; OffsetY = yStep; break;
+            case MirDirection.Right: OffsetX = -xStep; break;
+            case MirDirection.DownRight: OffsetX = -xStep; OffsetY = -yStep; break;
+            case MirDirection.Down: OffsetY = -yStep; break;
+            case MirDirection.DownLeft: OffsetX = xStep; OffsetY = -yStep; break;
+            case MirDirection.Left: OffsetX = xStep; break;
+            case MirDirection.UpLeft: OffsetX = xStep; OffsetY = yStep; break;
+        }
     }
 
     public int RenderY => OffsetX != 0 || OffsetY != 0
@@ -976,7 +992,7 @@ public partial class PlayerRenderer : Node2D
     }
 
     private void DrawExteriorBlendLayer(ZlLibrary lib, int frame, float alpha, bool behind,
-        float offsetX = 0f, float offsetY = 0f, bool additive = true)
+        float offsetX = 0f, float offsetY = 0f, bool blend = true)
     {
         BlendImageLayerNode layer = null;
         foreach (var candidate in _exteriorBlendLayers)
@@ -989,7 +1005,7 @@ public partial class PlayerRenderer : Node2D
             _exteriorBlendLayers.Add(layer);
             AddChild(layer);
         }
-        layer.Configure(lib, frame, new Color(1f, 1f, 1f, alpha), behind ? -1 : 1, offsetX, offsetY, additive);
+        layer.Configure(lib, frame, new Color(1f, 1f, 1f, alpha), behind ? -1 : 1, offsetX, offsetY, blend);
     }
 
     private bool DrawExteriorEffectBehind(MirDirection direction, ExteriorEffect effect)
@@ -1069,16 +1085,20 @@ public partial class PlayerRenderer : Node2D
     {
         if (lib == null || frame < 0 || frame >= lib.Images.Length) return false;
         var img = lib.Images[frame];
-        if (img == null || !RenderPrimitives.IsUsableResourceShadow(img.ShadowWidth, img.ShadowHeight))
-            return false;
+        if (img == null) return false;
         var texture = lib.GetShadowTexture(frame);
-        if (!RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
-            return RenderPrimitives.DrawShadowTypeFallback(this, lib.GetImageTexture(frame), img, 0.5f);
-        DrawTextureRectRegion(texture,
-            new Rect2(img.ShadowOffSetX, img.ShadowOffSetY, img.ShadowWidth, img.ShadowHeight),
-            new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
-            new Color(0f, 0f, 0f, 0.5f));
-        return true;
+        if (RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
+        {
+            DrawTextureRectRegion(texture,
+                new Rect2(img.ShadowOffSetX, img.ShadowOffSetY, img.ShadowWidth, img.ShadowHeight),
+                new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
+                new Color(0f, 0f, 0f, 0.5f));
+            return true;
+        }
+
+        // 与原版 MirLibrary.Draw 保持一致：Shadow payload 不可用时按
+        // ShadowType 从主体帧生成投影，而不是把该帧静默丢弃。
+        return RenderPrimitives.DrawShadowTypeFallback(this, lib.GetImageTexture(frame), img, 0.5f);
     }
 
     private bool DrawSilhouetteShadow(ZlLibrary lib, int frame, float alpha = 0.5f, ZlImage anchor = null)

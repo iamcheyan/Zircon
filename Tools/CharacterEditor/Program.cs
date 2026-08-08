@@ -37,6 +37,16 @@ static class Program
         if (!Root.EndsWith(Path.DirectorySeparatorChar)) Root += Path.DirectorySeparatorChar;
         var rest = args.Skip(2).ToArray();
 
+        if (cmd == "inspect")
+        {
+            var lib = LibraryCache.Get(LibraryFile.GameInter);
+            for (int i = 50; i <= 60; i++)
+            {
+                var img = lib.Images[i];
+                Console.WriteLine($"[Index {i}]: W={img?.Width}, H={img?.Height}, OffX={img?.OffSetX}, OffY={img?.OffSetY}");
+            }
+            return;
+        }
         if (cmd == "list") { List(rest); return; }
         if (cmd == "boost") { Boost(rest); return; }
         if (cmd == "equip") { Equip(rest); return; }

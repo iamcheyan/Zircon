@@ -429,17 +429,22 @@ public partial class ObjectRenderer : MapObjectNode
     {
         if (frame < 0 || frame >= BodyLibrary.Images.Length) return false;
         var img = BodyLibrary.Images[frame];
-        if (img == null || !RenderPrimitives.IsUsableResourceShadow(img.ShadowWidth, img.ShadowHeight))
-            return false;
+        if (img == null) return false;
         var texture = BodyLibrary.GetShadowTexture(frame);
-        if (!RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
-            return RenderPrimitives.DrawShadowTypeFallback(this, BodyLibrary.GetImageTexture(frame), img,
-                0.52f, new Vector2(px, py));
-        var dest = new Rect2(px + img.ShadowOffSetX, py + img.ShadowOffSetY,
-            img.ShadowWidth, img.ShadowHeight);
-        DrawTextureRectRegion(texture, dest, new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
-            new Color(0f, 0f, 0f, 0.52f));
-        return true;
+        if (RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
+        {
+            var dest = new Rect2(px + img.ShadowOffSetX, py + img.ShadowOffSetY,
+                img.ShadowWidth, img.ShadowHeight);
+            DrawTextureRectRegion(texture, dest, new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
+                new Color(0f, 0f, 0f, 0.52f));
+            return true;
+        }
+
+        // MirLibrary.Draw(ImageType.Shadow) 在 Shadow 资源不存在、尺寸损坏
+        // 或 payload 为空时仍会按 ShadowType 回退到主体帧。这里不能因元数据
+        // 不可用就直接 return，否则不同帧会出现“有时有影、有时没影/变直线”。
+        return RenderPrimitives.DrawShadowTypeFallback(this, BodyLibrary.GetImageTexture(frame), img,
+            0.52f, new Vector2(px, py));
     }
 
     private bool DrawSilhouetteShadow(int frame, float py)
@@ -488,7 +493,10 @@ public partial class ObjectRenderer : MapObjectNode
         else
             layer = _blendLayers[^1];
 
-        layer.Configure(library, frame, new Color(1f, 1f, 1f, 0.82f), 1, 0, py);
+        // 原版 InfernalSoldier/NumaHighMage/JinamStoneGate 的附加层调用
+        // DrawBlend(..., Color.White, true, 1f, ...)：rate=1F 被 NORMAL
+        // 混合忽略 → 顶点 Alpha = 1.0 全不透明 Screen Blend。
+        layer.Configure(library, frame, Colors.White, 1, 0, py);
     }
 
     private void DrawLayer(ZlLibrary lib, int frame, float px, float py, Color tint, bool effectTexture = false)

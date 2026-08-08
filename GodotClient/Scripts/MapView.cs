@@ -250,11 +250,14 @@ public partial class MapView : Node2D
             {
                 int index = AnimatedIndex(cell.MiddleImage - 1, cell.MiddleAnimationFrame,
                     out bool blend);
-                // 原版 MapControl 对 cell-sized 和大型贴图都保留地图帧的
-                // Front/MiddleAnimationBlend 标志；贴图尺寸只决定底边基线，
-                // 不能决定是否进入 DrawBlend 路径。
-                if (blend == blendOnly)
-                    DrawCell(canvas, cell.MiddleFile, index, px, py, true, blend, CellHeight);
+                // Old MapControl has an intentional middle-layer exception:
+                // standard 48x32/96x64 cells always use Draw(Image), even
+                // when MiddleAnimationBlend is set. Only non-cell-sized
+                // middle art enters DrawBlend.
+                bool cellSized = IsCellSized(cell.MiddleFile, index);
+                bool drawBlend = blend && !cellSized;
+                if (drawBlend == blendOnly)
+                    DrawCell(canvas, cell.MiddleFile, index, px, py, true, drawBlend, -1);
             }
 
             if (frontLayer && cell.FrontImage > 0)
@@ -267,9 +270,21 @@ public partial class MapView : Node2D
         }
     }
 
+    private bool IsCellSized(int fileByte, int imageIndex)
+    {
+        if (!Libraries.KROrder.TryGetValue(fileByte, out LibraryFile file)) return false;
+        var lib = GetLibrary(file);
+        if (lib == null || imageIndex < 0 || imageIndex >= lib.Images.Length) return false;
+        var image = lib.Images[imageIndex];
+        return image != null &&
+            (image.Width == CellWidth || image.Width == CellWidth * 2) &&
+            (image.Height == CellHeight || image.Height == CellHeight * 2);
+    }
+
     // skipTilesc: Middle/Front 跳过 Tilesc；背景层允许 fileByte=0。
-    // baselineHeight=0 表示背景层；否则使用 max(贴图高度, baselineHeight)
-    // 的底边对齐规则。
+    // baselineHeight=0 表示背景层；baselineHeight<0 表示始终按贴图自身
+    // 高度对齐（旧版 Middle）；否则标准尺寸使用指定基线、其它贴图按自身
+    // 高度对齐（旧版 Front）。
     private bool DrawCell(int fileByte, int imageIndex, float px, float py,
         bool skipTilesc, bool blend, int baselineHeight)
         => DrawCell(this, fileByte, imageIndex, px, py, skipTilesc, blend, baselineHeight);
@@ -309,14 +324,18 @@ public partial class MapView : Node2D
             return false;
         }
 
+        bool cellSized = (img.Width == CellWidth || img.Width == CellWidth * 2) &&
+            (img.Height == CellHeight || img.Height == CellHeight * 2);
         float y = baselineHeight == 0 ? py : py -
-            ((img.Width == CellWidth || img.Width == CellWidth * 2) &&
-             (img.Height == CellHeight || img.Height == CellHeight * 2)
-                ? baselineHeight : img.Height);
+            (baselineHeight < 0 || !cellSized ? img.Height : baselineHeight);
         Rect2 dest = new Rect2(px + img.OffSetX, y + img.OffSetY, img.Width, img.Height);
         Rect2 src = new Rect2(0, 0, img.Width, img.Height);
-        canvas.DrawTextureRectRegion(texture, dest, src,
-            blend ? new Color(1f, 1f, 1f, 0.5f) : Colors.White);
+        // 原版 MapControl.DrawObjects 的 Middle/FrontAnimationBlend 调用
+        // DrawBlend(..., Color.White, false, 0.5F, ...)：0.5F 落在 NORMAL
+        // 混合的 blendRate 参数上并被忽略 → 顶点 Alpha = 1.0 全不透明
+        // Screen Blend（由 BlendOnly 行的 LegacyScreenBlend 材质实现）。
+        // 不能把 0.5 写进顶点 Alpha。
+        canvas.DrawTextureRectRegion(texture, dest, src, Colors.White);
         return true;
     }
 
