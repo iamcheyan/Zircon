@@ -55,3 +55,20 @@ godot-mono --headless --path GodotClient --scene Scenes/MapTestScene.tscn -- --a
 - `ActionAudit PASS all action sequences`。
 
 后续审计如果发现某个资源确实没有 alpha，必须按旧端的具体 `ImageType` 和资源类型加入例外，不能按“特效”名称整体启用黑键。
+
+## 绘制顺序审计
+
+旧端 `MapControl.DrawObjects` 每个地图行严格执行：
+
+1. 中层地图贴图；
+2. 前景地图贴图；
+3. `RenderY == y` 的对象；
+4. 该行对象特效。
+
+随后旧端再单独绘制本地玩家、天气粒子和本地玩家特效，最后绘制 `Final` 特效。Godot 现在使用 `RenderOrder` 的每行四档排序，避免前景层覆盖顺序反转，也避免下一行地形与当前行对象共用同一 Z 值。
+
+排序回归输出：
+
+```text
+[LayerOrderAudit] PASS legacy row/local-player ordering
+```

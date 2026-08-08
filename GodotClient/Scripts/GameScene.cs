@@ -103,7 +103,17 @@ public partial class GameScene : Control
     // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
     public static GameScene Game;
     public IEnumerable<ClientUserMilestone> Milestones => _milestones.Values;
+    public bool QuestTrackerVisible { get; private set; } = true;
     public ClientUserQuest GetUserQuest(int index) => _userQuests.TryGetValue(index, out var quest) ? quest : null;
+
+    public void SetQuestTrackerVisible(bool visible)
+    {
+        QuestTrackerVisible = visible;
+        if (_questTracker == null) return;
+        _questTracker.TrackingEnabled = visible;
+        if (visible) _questTracker.PopulateQuests(_userQuests.Values);
+        else _questTracker.Visible = false;
+    }
 
     public bool CanAcceptQuest(QuestInfo quest)
     {
@@ -382,7 +392,6 @@ public partial class GameScene : Control
         if (_npcQuestDialog != null) WindowManager.Close(_npcQuestDialog);
         if (_npcCompanionStorageDialog != null) WindowManager.Close(_npcCompanionStorageDialog);
         if (_npcDialog != null) WindowManager.Close(_npcDialog);
-        SendNPCClose();
     }
 
     public void OpenNPCQuestList(uint objectId)
@@ -509,6 +518,8 @@ public partial class GameScene : Control
     private MirDirection _playerDirection;
     private Library.HorseType _playerHorse = Library.HorseType.None;
     private double _runCooldownUntilMs;
+    private double _nextNpcCallMs;
+    private double _nextInspectMs;
     private PoisonType _playerPoison;
     private bool _observer;
     public bool InSafeZone { get; private set; }
@@ -523,6 +534,10 @@ public partial class GameScene : Control
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     public bool ShowMagicBarFrames { get; private set; } = true;
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
+    private bool _rightClickDeTarget = true;
+    public bool RightClickDeTarget => _rightClickDeTarget;
+    private bool _escapeCloseAll;
+    public bool EscapeCloseAll => _escapeCloseAll;
     // 与原版 GameScene.CanRun 一致：站立后第一次移动先走，收到移动回包后
     // 才允许下一次右键移动使用跑步距离/动作。
     private bool _canRun;
@@ -542,6 +557,11 @@ public partial class GameScene : Control
     private double _moveStartMs;
     private int _moveFrameCount = 1;
     private bool _runningTestStarted;
+    private bool _interactionAuditStarted;
+    private int _interactionInspectSent;
+    private int _interactionInspectReceived;
+    private bool _interactionNpcSent;
+    private double _interactionAuditDeadline;
     private bool _runningTestRightHeld;
     private readonly List<Action> _trackedEventUnsubscribers = new();
     // S.StartGame 后原版通常还会发送 S.MapChanged；不能用过短的固定延迟
@@ -573,14 +593,18 @@ public partial class GameScene : Control
 
         _mapView = new MapView();
         AddChild(_mapView);
-        _lightLayer = new MapLightLayer { ZIndex = 900 };
+        _lightLayer = new MapLightLayer { ZIndex = RenderOrder.FinalEffects + 1 };
         AddChild(_lightLayer);
         _lightLayer.SetObjectSources(GetObjectLightSources);
         // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
-        _weatherLayer = new MapWeatherLayer { ZIndex = 850 };
+        _weatherLayer = new MapWeatherLayer { ZIndex = RenderOrder.Particles };
         AddChild(_weatherLayer);
         _mouseWalker = new MouseWalker(_mapView, SendMouseMove,
-        () => _combatController?.MouseObject != null && _combatController.MouseObject.Type != ObjectRenderer.Kind.Item,
+        () => _combatController?.MouseObject != null
+            && (_combatController.MouseObject.Type == ObjectRenderer.Kind.Item
+                || (!_combatController.MouseObject.Dead
+                    && !(_combatController.MouseObject.Type == ObjectRenderer.Kind.Monster
+                        && !string.IsNullOrWhiteSpace(_combatController.MouseObject.PetOwner)))),
         GetRunSteps,
         dir =>
         {
@@ -625,13 +649,14 @@ public partial class GameScene : Control
             {
                 if (CanPlayerTurn()) _net?.Connection?.SendRangeAttack(direction, target);
             },
-            IsMovementCellBlocked);
+            IsMovementCellBlocked,
+            () => _rightClickDeTarget);
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
 
         _player = new PlayerRenderer();
-        _player.ZIndex = 100;
+        _player.ZIndex = RenderOrder.LocalPlayer;
         _player.FrameChanged = (animation, frame, magic) => OnPlayerFrameChanged(_player, animation, frame, magic);
         _player.SoundCue = OnPlayerSoundCue;
         AddChild(_player);
@@ -905,7 +930,7 @@ public partial class GameScene : Control
             p => _companionDialog?.ApplyWeight(p.BagWeight, p.MaxBagWeight, p.InventorySize));
         TrackEvent<S.CompanionSkillUpdate>(h => _net.Connection.CompanionSkillUpdateEvent += h,
             h => _net.Connection.CompanionSkillUpdateEvent -= h,
-            p => _companionDialog?.ApplySkills(p.Level15 ?? p.Level13 ?? p.Level10 ?? p.Level7 ?? p.Level5 ?? p.Level3));
+            p => _companionDialog?.ApplySkills(p.Level3, p.Level5, p.Level7, p.Level10, p.Level11, p.Level13, p.Level15));
         _net.Connection.CompanionRetrieveEvent += OnCompanionRetrieve;
         _net.Connection.CompanionReleaseEvent += OnCompanionRelease;
         TrackEvent<S.CompanionStore>(h => _net.Connection.CompanionStoreEvent += h,
@@ -1302,6 +1327,7 @@ public partial class GameScene : Control
                 CyclePetMode();
                 break;
             case KeyBindAction.CharacterWindow:
+                _characterDialog?.ShowOwn();
                 WindowManager.Toggle(_characterDialog, _uiLayer);
                 break;
             case KeyBindAction.InventoryWindow:
@@ -1365,7 +1391,7 @@ public partial class GameScene : Control
                 break;
             case KeyBindAction.GroupTarget:
                 if (_combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player)
-                    _net?.Connection?.Enqueue(new C.GroupInvite { Name = _combatController.MouseObject.Name });
+                    _net?.Connection?.Enqueue(new C.GroupInvite { Name = _combatController.MouseObject.DisplayName });
                 break;
             case KeyBindAction.TradeAllowSwitch:
                 SendChat("@AllowTrade");
@@ -1443,6 +1469,7 @@ public partial class GameScene : Control
         {
             player.StartMove(new System.Drawing.Point(loc.X, loc.Y), dir,
                 Math.Max(1, distance), player.Horse != HorseType.None);
+            UpdateOtherPlayerPosition(player);
         }
     }
 
@@ -1727,6 +1754,11 @@ public partial class GameScene : Control
     private void OnInspect(S.Inspect packet)
     {
         if (packet == null || _characterDialog == null) return;
+        if (AutoLoginArgs.InteractionAudit)
+        {
+            _interactionInspectReceived++;
+            GD.Print($"[InteractionAudit] INSPECT_RESPONSE name={packet.Name} items={packet.Items?.Count ?? 0}");
+        }
         _characterDialog.ApplyInspect(packet);
         WindowManager.Open(_characterDialog, _uiLayer);
     }
@@ -1736,7 +1768,11 @@ public partial class GameScene : Control
         if (p == null || p.ObjectID == _playerObjectID) return;
         if (_otherPlayers.TryGetValue(p.ObjectID, out var existing))
         {
-            existing.UpdateAppearance(p); existing.GuildName = p.GuildName; existing.CellX = p.Location.X; existing.CellY = p.Location.Y;
+            existing.UpdateAppearance(p);
+            existing.GuildName = p.GuildName;
+            existing.CellX = p.Location.X;
+            existing.CellY = p.Location.Y;
+            UpdateOtherPlayerPosition(existing);
             return;
         }
         var player = new PlayerRenderer { CellX = p.Location.X, CellY = p.Location.Y };
@@ -3425,7 +3461,12 @@ public partial class GameScene : Control
 
     private bool BlockLeftMouseMovement()
     {
-        if (_combatController?.MouseObject != null || IsFishingActive || IsTamingActive)
+        var mouseObject = _combatController?.MouseObject;
+        if (IsFishingActive || IsTamingActive)
+            return true;
+        if (mouseObject != null && (mouseObject.Type == ObjectRenderer.Kind.Item
+            || (!mouseObject.Dead && !(mouseObject.Type == ObjectRenderer.Kind.Monster
+                && !string.IsNullOrWhiteSpace(mouseObject.PetOwner)))))
             return true;
 
         // 只有满足原版采矿条件时才拦截移动；普通相邻空地点击仍然是走路。
@@ -4360,10 +4401,10 @@ public partial class GameScene : Control
         });
     public void SendNPCRoll(int type) => _net?.Connection?.Enqueue(new C.NPCRoll { Type = type });
     public void SendNPCRollResult() => _net?.Connection?.SendNPCRollResult();
-    public void SendCompanionFilters()
+    public void SendCompanionFilters(List<MirClass> classes = null, List<Rarity> rarities = null, List<ItemType> itemTypes = null)
         => _net?.Connection?.Enqueue(new C.SendCompanionFilters
         {
-            FilterClass = new List<MirClass>(), FilterRarity = new List<Rarity>(), FilterItemType = new List<ItemType>(),
+            FilterClass = classes ?? new List<MirClass>(), FilterRarity = rarities ?? new List<Rarity>(), FilterItemType = itemTypes ?? new List<ItemType>(),
         });
     public void SendCompanionStore() { if (Companion != null) _net?.Connection?.SendCompanionStore(Companion.Index); }
     public void SendCompanionRetrieve() { if (Companion != null) _net?.Connection?.SendCompanionRetrieve(Companion.Index); }
@@ -4430,13 +4471,13 @@ public partial class GameScene : Control
         => _net.Connection.SendMailGetItem(index, slot);
     public void SendMailDelete(int index)
         => _net.Connection.SendMailDelete(index);
-    public void SendMail(string recipient, string subject, string message, List<CellLinkInfo> links = null)
+    public void SendMail(string recipient, string subject, string message, List<CellLinkInfo> links = null, long gold = 0)
         => _net.Connection.Enqueue(new C.MailSend
         {
             Recipient = recipient,
             Subject = subject,
             Message = message,
-            Gold = 0,
+            Gold = Math.Max(0, gold),
             Links = links ?? new List<CellLinkInfo>(),
         });
     public void SendTradeClose() => _net.Connection.Enqueue(new C.TradeClose());
@@ -4456,6 +4497,8 @@ public partial class GameScene : Control
     private void OnNPCResponse(S.NPCResponse response)
     {
         if (response == null) return;
+        if (AutoLoginArgs.InteractionAudit)
+            GD.Print($"[InteractionAudit] NPC_RESPONSE object={response.ObjectID} page={response.Page?.DialogType}");
         _npcObjectId = response.ObjectID;
         _npcDialog?.ShowPage(response);
     }
@@ -4475,6 +4518,9 @@ public partial class GameScene : Control
         ShowMagicBarFrames = value;
         RefreshMagicBars();
     }
+
+    public void SetRightClickDeTarget(bool value) => _rightClickDeTarget = value;
+    public void SetEscapeCloseAll(bool value) => _escapeCloseAll = value;
     // ---- Tab 拾取 (250ms 节流) ----
     private void PickUpItems()
     {
@@ -5429,6 +5475,20 @@ public partial class GameScene : Control
     {
         UpdateViewRange();
 
+        if (AutoLoginArgs.InteractionAudit && !_interactionAuditStarted && _startGameShown && _mapView?.Map != null)
+        {
+            _interactionAuditStarted = true;
+            GetTree().CreateTimer(1.0).Timeout += StartInteractionAudit;
+        }
+        if (AutoLoginArgs.InteractionAudit && _interactionAuditDeadline > 0
+            && Godot.Time.GetTicksMsec() >= _interactionAuditDeadline)
+        {
+            _interactionAuditDeadline = 0;
+            bool pass = _interactionNpcSent && _interactionInspectSent == 2 && _interactionInspectReceived > 0;
+            GD.Print($"[InteractionAudit] RESULT npcSent={_interactionNpcSent} inspectSent={_interactionInspectSent} inspectReceived={_interactionInspectReceived} pass={pass}");
+            GetTree().Quit();
+        }
+
         if ((AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest) && !_runningTestStarted && _startGameShown && _mapView?.Map != null)
         {
             _runningTestStarted = true;
@@ -5514,13 +5574,49 @@ public partial class GameScene : Control
         }
     }
 
+    private void StartInteractionAudit()
+    {
+        var npc = _objects.Values.FirstOrDefault(x => x?.Type == ObjectRenderer.Kind.NPC && x.Visible);
+        if (npc != null)
+        {
+            _combatController.MouseObject = npc;
+            _UnhandledInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true });
+            _interactionNpcSent = _npcObjectId == npc.ObjectID;
+            GD.Print($"[InteractionAudit] NPC_CLICK object={npc.ObjectID} sent={_interactionNpcSent}");
+        }
+        else
+            GD.PrintErr("[InteractionAudit] FAIL no visible NPC in current map");
+
+        var player = _objects.Values.FirstOrDefault(x => x?.Type == ObjectRenderer.Kind.Player
+            && x.ObjectID != _playerObjectID);
+        if (player != null)
+        {
+            _combatController.MouseObject = player;
+            foreach (var button in new[] { MouseButton.Left, MouseButton.Right })
+            {
+                _nextInspectMs = 0;
+                _UnhandledInput(new InputEventMouseButton
+                {
+                    ButtonIndex = button,
+                    Pressed = true,
+                    CtrlPressed = true,
+                });
+            }
+            GD.Print($"[InteractionAudit] PLAYER_CTRL_CLICK object={player.ObjectID} sent={_interactionInspectSent}/2");
+        }
+        else
+            GD.PrintErr("[InteractionAudit] FAIL no other player in current map");
+
+        _interactionAuditDeadline = Godot.Time.GetTicksMsec() + 4000.0;
+    }
+
     private void UpdatePlayerPosition()
     {
         if (_mapView?.Map == null) return;
         _mapView.CenterOn(_player.CellX, _player.CellY);
         _player.Position = _mapView.CellToScreen(_player.CellX, _player.CellY, true)
             + new Vector2(_player.OffsetX, _player.OffsetY);
-        _player.ZIndex = 100 + _player.RenderY;
+        _player.ZIndex = RenderOrder.LocalPlayer;
         UpdateObjectPositions();
     }
 
@@ -5556,7 +5652,7 @@ public partial class GameScene : Control
         {
             ob.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX,
                 _mapView.ViewRangeY, 0, 0, _mapView);
-            ob.ZIndex = 100 + ob.RenderY;
+            ob.ZIndex = RenderOrder.Object(ob.RenderY);
         }
         foreach (var player in _otherPlayers.Values) UpdateOtherPlayerPosition(player);
     }
@@ -5564,7 +5660,25 @@ public partial class GameScene : Control
     private void UpdateOtherPlayerPosition(PlayerRenderer player)
     {
         player.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX, _mapView.ViewRangeY, 0, 0);
-        player.ZIndex = 100 + player.RenderY;
+        player.ZIndex = RenderOrder.Object(player.RenderY);
+
+        // The visible player uses PlayerRenderer, while mouse picking uses the
+        // hidden ObjectRenderer proxy in _objects. Keep both representations
+        // authoritative; otherwise a remote player is visible but cannot be
+        // selected or inspected after moving.
+        foreach (var pair in _otherPlayers)
+        {
+            if (pair.Value != player || !_objects.TryGetValue(pair.Key, out var proxy)) continue;
+            proxy.CellX = player.CellX;
+            proxy.CellY = player.CellY;
+            proxy.Direction = player.Direction;
+            proxy.Dead = player.Dead;
+            proxy.Visible = player.Visible;
+            proxy.ComputeScreenPos(_mapView.CenterX, _mapView.CenterY, _mapView.ViewRangeX,
+                _mapView.ViewRangeY, 0, 0, _mapView);
+            proxy.ZIndex = RenderOrder.Object(proxy.RenderY);
+            break;
+        }
     }
 
     // 格子坐标 -> 屏幕坐标 (与玩家居中公式一致)
@@ -5713,7 +5827,12 @@ public partial class GameScene : Control
         }
         if (key.Keycode == Key.Escape)
         {
-            if (WindowManager.CloseTop()) return;
+            if (WindowManager.CloseTop())
+            {
+                if (_escapeCloseAll)
+                    while (WindowManager.CloseTop()) { }
+                return;
+            }
         }
 
         // 原版键位表分发：窗口、技能、物品、移动和战斗动作统一走这里。
@@ -5790,9 +5909,11 @@ public partial class GameScene : Control
         }
         if (@event is InputEventMouseButton currencyMouse && currencyMouse.Pressed && currencyMouse.ButtonIndex == MouseButton.Left && _selectedCurrency != null)
         {
-            var target = _combatController?.MouseCell() ?? _playerLocation;
-            _net?.Connection?.SendCurrencyDrop(_selectedCurrency.CurrencyIndex, _selectedCurrency.Amount);
+            var currency = _selectedCurrency;
             _selectedCurrency = null;
+            var dialog = new ItemAmountDialog("Drop Currency", currency.Amount, currency.Amount,
+                amount => _net?.Connection?.SendCurrencyDrop(currency.CurrencyIndex, amount));
+            WindowManager.Open(dialog, _uiLayer);
             GetViewport().SetInputAsHandled();
             return;
         }
@@ -5800,18 +5921,50 @@ public partial class GameScene : Control
         {
             var cell = DXItemCell.SelectedCell;
             var item = cell?.Item;
-            if (cell != null && item != null && cell.GridType is GridType.Inventory or GridType.CompanionInventory &&
-                !item.Flags.HasFlag(UserItemFlags.Locked))
+            if (cell != null)
             {
-                SendItemDrop(new CellLinkInfo { GridType = cell.GridType, Slot = cell.Slot, Count = item.Count });
+                // MapControl.OnMouseDown handles an item picked up from the
+                // belt/auto-potion bars before normal map movement.
+                if (cell.GridType == GridType.Belt)
+                {
+                    var link = BeltLinks.ElementAtOrDefault(cell.Slot);
+                    DXItemCell.SelectedCell = null;
+                    if (link != null) SendBeltLinkChanged(link.Slot, link.LinkInfoIndex, link.LinkItemIndex);
+                    GetViewport().SetInputAsHandled();
+                    return;
+                }
+                if (cell.GridType == GridType.AutoPotion)
+                {
+                    int slot = cell.Slot;
+                    DXItemCell.SelectedCell = null;
+                    AutoPotionBox?.SendRowUpdate(slot);
+                    GetViewport().SetInputAsHandled();
+                    return;
+                }
+                if (item == null || item.Flags.HasFlag(UserItemFlags.Locked)
+                    || cell.GridType is not (GridType.Inventory or GridType.CompanionInventory))
+                {
+                    DXItemCell.SelectedCell = null;
+                    GetViewport().SetInputAsHandled();
+                    return;
+                }
+                var source = cell;
+                var amount = new ItemAmountDialog(item, count => SendItemDrop(new CellLinkInfo
+                {
+                    GridType = source.GridType,
+                    Slot = source.Slot,
+                    Count = (int)Math.Clamp(count, 1L, (long)item.Count),
+                }));
                 DXItemCell.SelectedCell = null;
+                WindowManager.Open(amount, _uiLayer);
                 GetViewport().SetInputAsHandled();
                 return;
             }
         }
 
         if (@event is InputEventMouseButton altMouse && altMouse.Pressed
-            && altMouse.ButtonIndex == MouseButton.Left && Input.IsKeyPressed(Key.Alt))
+            && altMouse.ButtonIndex == MouseButton.Left
+            && (altMouse.AltPressed || Input.IsKeyPressed(Key.Alt)))
         {
             if (_player == null || _player.ElementalHurricane || _playerHorse != HorseType.None
                 || IsFishingActive || IsTamingActive)
@@ -5869,12 +6022,45 @@ public partial class GameScene : Control
             return;
         }
 
+        if (@event is InputEventMouseButton inspectMouse && inspectMouse.Pressed &&
+            (inspectMouse.ButtonIndex == MouseButton.Left || inspectMouse.ButtonIndex == MouseButton.Right) &&
+            (inspectMouse.CtrlPressed || Input.IsKeyPressed(Key.Ctrl)) &&
+            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player &&
+            _combatController.MouseObject.ObjectID != _playerObjectID)
+        {
+            double now = Godot.Time.GetTicksMsec();
+            if (now >= _nextInspectMs)
+            {
+                _autoRun = false;
+                if (_mouseWalker != null) _mouseWalker.AutoRun = false;
+                _nextInspectMs = now + 2500.0;
+                _net?.Connection?.Enqueue(new C.Inspect
+                {
+                    Index = _combatController.MouseObject.CharacterIndex,
+                    Ranking = false
+                });
+                if (AutoLoginArgs.InteractionAudit) _interactionInspectSent++;
+            }
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
         if (@event is InputEventMouseButton npcMouse && npcMouse.Pressed && npcMouse.ButtonIndex == MouseButton.Left &&
             _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
         {
+            double now = Godot.Time.GetTicksMsec();
+            if (now < _nextNpcCallMs)
+            {
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+            _autoRun = false;
+            if (_mouseWalker != null) _mouseWalker.AutoRun = false;
             _npcObjectId = _combatController.MouseObject.ObjectID;
             _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
+            _nextNpcCallMs = now + 1000.0;
             GetViewport().SetInputAsHandled();
+            return;
         }
 
         if (@event is InputEventMouseButton miningMouse && miningMouse.Pressed && miningMouse.ButtonIndex == MouseButton.Left &&
@@ -5893,14 +6079,6 @@ public partial class GameScene : Control
                 _net?.Connection?.Enqueue(new C.Mining { Direction = direction });
                 GetViewport().SetInputAsHandled();
             }
-        }
-
-        if (@event is InputEventMouseButton inspectMouse && inspectMouse.Pressed && inspectMouse.ButtonIndex == MouseButton.Right &&
-            Input.IsKeyPressed(Key.Ctrl) && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player &&
-            _combatController.MouseObject.ObjectID != _playerObjectID)
-        {
-            _net?.Connection?.Enqueue(new C.Inspect { Index = _combatController.MouseObject.CharacterIndex, Ranking = false });
-            GetViewport().SetInputAsHandled();
         }
 
     }

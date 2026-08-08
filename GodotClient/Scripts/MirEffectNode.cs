@@ -148,11 +148,18 @@ public partial class MirEffectNode : Node2D
 
     protected void UpdateRenderLayer()
     {
+        if (DrawType == EffectLayer.Object && _targetNode is PlayerRenderer)
+        {
+            // MapControl draws the local player's target effects after the
+            // particle pass and after the player itself.
+            ZIndex = RenderOrder.LocalPlayerEffect;
+            return;
+        }
         ZIndex = DrawType switch
         {
-            EffectLayer.Floor => 50,
-            EffectLayer.Final => 10000,
-            _ => 100 + (_targetRenderYFn?.Invoke() ?? _target?.CellY ?? MapCellY),
+            EffectLayer.Floor => RenderOrder.FloorEffects,
+            EffectLayer.Final => RenderOrder.FinalEffects,
+            _ => RenderOrder.ObjectEffect(_targetRenderYFn?.Invoke() ?? _target?.RenderY ?? MapCellY),
         };
     }
 

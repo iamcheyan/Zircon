@@ -30,6 +30,9 @@ public partial class MapView : Node2D
     private double _animationTime;
     private int _mapAnimation;
     private readonly Dictionary<int, MapTerrainRow> _terrainRows = new();
+    private readonly Dictionary<int, MapTerrainRow> _frontTerrainRows = new();
+    private readonly Dictionary<int, MapTerrainRow> _blendTerrainRows = new();
+    private readonly Dictionary<int, MapTerrainRow> _blendFrontTerrainRows = new();
 
     private const int ManualHeightOffset = 34;
 
@@ -48,6 +51,12 @@ public partial class MapView : Node2D
         _animationTime = 0;
         _mapAnimation++;
         foreach (var row in _terrainRows.Values)
+            row.QueueRedraw();
+        foreach (var row in _frontTerrainRows.Values)
+            row.QueueRedraw();
+        foreach (var row in _blendTerrainRows.Values)
+            row.QueueRedraw();
+        foreach (var row in _blendFrontTerrainRows.Values)
             row.QueueRedraw();
         QueueRedraw();
     }
@@ -160,24 +169,61 @@ public partial class MapView : Node2D
 
         foreach (var pair in _terrainRows)
             pair.Value.Visible = pair.Key >= first && pair.Key <= last;
+        foreach (var pair in _frontTerrainRows)
+            pair.Value.Visible = pair.Key >= first && pair.Key <= last;
+        foreach (var pair in _blendTerrainRows)
+            pair.Value.Visible = pair.Key >= first && pair.Key <= last;
+        foreach (var pair in _blendFrontTerrainRows)
+            pair.Value.Visible = pair.Key >= first && pair.Key <= last;
 
         for (int y = first; y <= last; y++)
         {
             if (!_terrainRows.TryGetValue(y, out var row))
             {
-                row = new MapTerrainRow { OwnerView = this, Row = y };
+                row = new MapTerrainRow { OwnerView = this, Row = y, FrontLayer = false };
                 _terrainRows[y] = row;
                 AddChild(row);
             }
             row.Row = y;
-            row.ZIndex = 100 + y;
+            // 旧端每行顺序：中层、前景、对象、对象特效。
+            row.ZIndex = RenderOrder.TerrainMiddle(y);
             row.QueueRedraw();
+
+            if (!_frontTerrainRows.TryGetValue(y, out var front))
+            {
+                front = new MapTerrainRow { OwnerView = this, Row = y, FrontLayer = true };
+                _frontTerrainRows[y] = front;
+                AddChild(front);
+            }
+            front.Row = y;
+            front.ZIndex = RenderOrder.TerrainFront(y);
+            front.QueueRedraw();
+
+            if (!_blendTerrainRows.TryGetValue(y, out var blendRow))
+            {
+                blendRow = new MapTerrainRow { OwnerView = this, Row = y, FrontLayer = false, BlendOnly = true };
+                _blendTerrainRows[y] = blendRow;
+                AddChild(blendRow);
+            }
+            blendRow.Row = y;
+            blendRow.ZIndex = RenderOrder.TerrainMiddle(y);
+            blendRow.QueueRedraw();
+
+            if (!_blendFrontTerrainRows.TryGetValue(y, out var blendFront))
+            {
+                blendFront = new MapTerrainRow { OwnerView = this, Row = y, FrontLayer = true, BlendOnly = true };
+                _blendFrontTerrainRows[y] = blendFront;
+                AddChild(blendFront);
+            }
+            blendFront.Row = y;
+            blendFront.ZIndex = RenderOrder.TerrainFront(y);
+            blendFront.QueueRedraw();
         }
     }
 
     // 由 MapTerrainRow 调用。每一行独立成为 CanvasItem，才能和角色
     // 使用同一套全局 Z 顺序；绘制规则仍然保持原版 y->x->中层->前景。
-    public void DrawTerrainRow(CanvasItem canvas, int y)
+    public void DrawTerrainRow(CanvasItem canvas, int y, bool frontLayer = false, bool blendOnly = false)
     {
         if (Map == null || y < 0 || y >= Map.Height) return;
 
@@ -193,20 +239,35 @@ public partial class MapView : Node2D
             float px = (x - CenterX + ViewRangeX) * CellWidth + offsetX;
             float py = (y - CenterY + ViewRangeY + 1) * CellHeight + offsetY;
 
-            if (cell.MiddleImage > 0)
+            if (!frontLayer && cell.MiddleImage > 0)
             {
                 int index = AnimatedIndex(cell.MiddleImage - 1, cell.MiddleAnimationFrame,
                     out bool blend);
-                DrawCell(canvas, cell.MiddleFile, index, px, py, true, blend, CellHeight);
+                bool effectiveBlend = IsNonCellSized(cell.MiddleFile, index) && blend;
+                if (effectiveBlend == blendOnly)
+                    DrawCell(canvas, cell.MiddleFile, index, px, py, true, effectiveBlend, CellHeight);
             }
 
-            if (cell.FrontImage > 0)
+            if (frontLayer && cell.FrontImage > 0)
             {
                 int index = AnimatedIndex(cell.FrontImage - 1, cell.FrontAnimationFrame,
                     out bool blend);
-                DrawCell(canvas, cell.FrontFile, index, px, py, true, blend, CellHeight);
+                bool effectiveBlend = IsNonCellSized(cell.FrontFile, index) && blend;
+                if (effectiveBlend == blendOnly)
+                    DrawCell(canvas, cell.FrontFile, index, px, py, true, effectiveBlend, CellHeight);
             }
         }
+    }
+
+    private bool IsNonCellSized(int fileByte, int imageIndex)
+    {
+        if (!Libraries.KROrder.TryGetValue(fileByte, out LibraryFile file)) return false;
+        var lib = GetLibrary(file);
+        if (lib == null || imageIndex < 0 || imageIndex >= lib.Images.Length) return false;
+        var image = lib.Images[imageIndex];
+        if (image == null) return false;
+        return !((image.Width == CellWidth && image.Height == CellHeight)
+            || (image.Width == CellWidth * 2 && image.Height == CellHeight * 2));
     }
 
     // skipTilesc: Middle/Front 跳过 Tilesc；背景层允许 fileByte=0。
@@ -267,6 +328,24 @@ public partial class MapView : Node2D
         return new Vector2(
             (cellX - CenterX + ViewRangeX) * CellWidth + offsetX,
             (cellY - CenterY + ViewRangeY + (objectBaseline ? 1 : 0)) * CellHeight + offsetY);
+    }
+
+    /// <summary>
+    /// 将视口鼠标位置转换为地图格。特效和 C.Magic 的 Location 使用地图坐标，
+    /// 不能把 Godot 的屏幕坐标或玩家当前格直接当作落点。
+    /// </summary>
+    public System.Drawing.Point ScreenToCell(Vector2 viewportPosition)
+    {
+        Vector2 local = GetGlobalTransformWithCanvas().AffineInverse() * viewportPosition;
+        Vector2 origin = CellToScreen(CenterX, CenterY, false);
+        int cellX = CenterX + Mathf.FloorToInt((local.X - origin.X + CellWidth * 0.5f) / CellWidth);
+        int cellY = CenterY + Mathf.FloorToInt((local.Y - origin.Y + CellHeight * 0.5f) / CellHeight);
+        if (Map != null)
+        {
+            cellX = Mathf.Clamp(cellX, 0, Map.Width - 1);
+            cellY = Mathf.Clamp(cellY, 0, Map.Height - 1);
+        }
+        return new System.Drawing.Point(cellX, cellY);
     }
 
     private ZlLibrary GetLibrary(LibraryFile file)

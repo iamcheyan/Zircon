@@ -53,6 +53,7 @@ public partial class MapTestScene : Control
         _mapAudit = OS.GetCmdlineUserArgs().Contains("--map-audit");
         _shadowAudit = OS.GetCmdlineUserArgs().Contains("--shadow-audit");
         _projectileAudit = OS.GetCmdlineUserArgs().Contains("--projectile-audit");
+        bool lightAudit = OS.GetCmdlineUserArgs().Contains("--light-audit");
         bool fullTextureAudit = OS.GetCmdlineUserArgs().Contains("--full-texture-audit");
 
         // 与实际 GameScene 保持一致：地图、对象、特效都在逻辑 48x32
@@ -88,6 +89,7 @@ public partial class MapTestScene : Control
             if (_mapAudit) CallDeferred(nameof(RunMapAudit));
             if (_shadowAudit) CallDeferred(nameof(RunShadowAudit));
             if (_projectileAudit) CallDeferred(nameof(RunProjectileAudit));
+            if (lightAudit) CallDeferred(nameof(RunLightAudit));
             if (fullTextureAudit) CallDeferred(nameof(RunTransparencyAudit));
         }
         catch (Exception ex)
@@ -95,6 +97,21 @@ public partial class MapTestScene : Control
             _statusLabel.Text = $"失败: {ex.Message}";
             GD.PrintErr($"[MapTest] {ex}");
         }
+    }
+
+    private static void RunLightAudit()
+    {
+        const float epsilon = 0.0001f;
+        bool pass = Math.Abs(MapLightLayer.AmbientFor(LightSetting.Night, 1f) - 15f / 255f) < epsilon
+            && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Twilight, 1f) - 100f / 255f) < epsilon
+            && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Light, 0f) - 1f) < epsilon
+            && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Default, 0.42f) - 0.42f) < epsilon;
+        if (pass)
+            GD.Print("[LightAudit] PASS Night=15/255 Twilight=100/255 Light=255/255 Default=DayTime");
+        else
+            GD.PrintErr($"[LightAudit] FAIL Night={MapLightLayer.AmbientFor(LightSetting.Night, 1f)} " +
+                $"Twilight={MapLightLayer.AmbientFor(LightSetting.Twilight, 1f)} " +
+                $"Light={MapLightLayer.AmbientFor(LightSetting.Light, 0f)}");
     }
 
     public override void _Process(double delta)
@@ -122,6 +139,7 @@ public partial class MapTestScene : Control
         RunTransparencyAudit();
         RunWeatherAudit();
         RunTransparencyModeAudit();
+        RunLayerOrderAudit();
         RunMagicCoverageAudit();
         RunMagicFrameAudit();
         _auditPlayer = new PlayerRenderer();
@@ -545,6 +563,21 @@ public partial class MapTestScene : Control
             GD.Print($"[TransparencyModeAudit] {name} frame={frame} size={ordinary.GetWidth()}x{ordinary.GetHeight()} " +
                      $"ordinaryTransparent={ordinaryTransparent} keyedTransparent={keyedTransparent}");
         }
+    }
+
+    private void RunLayerOrderAudit()
+    {
+        bool rows = RenderOrder.TerrainMiddle(10) < RenderOrder.TerrainFront(10)
+            && RenderOrder.TerrainFront(10) < RenderOrder.Object(10)
+            && RenderOrder.Object(10) < RenderOrder.ObjectEffect(10)
+            && RenderOrder.ObjectEffect(10) < RenderOrder.TerrainMiddle(11);
+        bool postObject = RenderOrder.ObjectEffect(10) < RenderOrder.LocalPlayer
+            && RenderOrder.LocalPlayer < RenderOrder.Particles
+            && RenderOrder.Particles < RenderOrder.LocalPlayerEffect
+            && RenderOrder.LocalPlayerEffect < RenderOrder.FinalEffects;
+        GD.Print(rows && postObject
+            ? "[LayerOrderAudit] PASS legacy row/local-player ordering"
+            : $"[LayerOrderAudit] FAIL rows={rows} postObject={postObject}");
     }
 
     private void RunSoundAssetAudit()
