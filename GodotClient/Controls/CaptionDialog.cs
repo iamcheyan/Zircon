@@ -32,12 +32,15 @@ public sealed partial class CaptionDialog : DXWindow
         _change = new DXButton { Text = "Change", Size = new Vector2I(60, 24), Location = new Vector2I(273, 50), Enabled = false };
         _change.MouseClick += (s, e) => Submit();
         AddControl(_change);
-        _input.TextChanged += value => { _change.Enabled = Globals.CaptionReg.IsMatch(value ?? string.Empty); _input.BorderColour = _change.Enabled ? Colors.Green : new Color(.55f, .4f, .18f); };
+        _input.TextChanged += value => { _change.Enabled = CanSubmit(value); _input.BorderColour = _change.Enabled ? Colors.Green : new Color(.55f, .4f, .18f); };
     }
+
+    public static bool CanSubmit(string caption)
+        => !string.IsNullOrWhiteSpace(caption) && Globals.CaptionReg.IsMatch(caption);
 
     private void Submit()
     {
-        if (!_change.Enabled) return;
+        if (!_change.Enabled || !CanSubmit(_input.Text)) return;
         GameScene.Game?.SendCaptionChange(_input.Text);
         WindowManager.Close(this);
     }
