@@ -13,6 +13,57 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public static class MagicEffectTable
 {
+    // 直接对照 Client/Models/MapObject.SetAction 的 MirAction.Spell 分支。
+    // 这不是“所有 MagicType”，而是原版确实会在施法包中创建地图/目标
+    // 特效的集合；被动、Buff、纯动作和 Effect 包在这里不能算缺失。
+    private static readonly HashSet<MagicType> OriginalSpellCases = new()
+    {
+        MagicType.AdamantineFireBall, MagicType.Assault, MagicType.Asteroid,
+        MagicType.AugmentPoisonDust, MagicType.BindingTalisman, MagicType.BloodLust,
+        MagicType.BlowEarth, MagicType.BrainStorm, MagicType.BurningFire,
+        MagicType.CelestialLight, MagicType.Chain, MagicType.ChainLightning,
+        MagicType.CorpseExploder, MagicType.CrescentMoon, MagicType.Cyclone,
+        MagicType.DarkSoulPrison, MagicType.DragonTornado, MagicType.ElectricShock,
+        MagicType.ElementalSuperiority, MagicType.EvilSlayer, MagicType.ExpelUndead,
+        MagicType.ExplosiveTalisman, MagicType.FireBall, MagicType.FireBounce,
+        MagicType.FireStorm, MagicType.FireSword, MagicType.FlamingDaggers,
+        MagicType.FourWheels, MagicType.FrozenDragon, MagicType.FrozenEarth,
+        MagicType.GreaterEvilSlayer, MagicType.GreaterFrozenEarth,
+        MagicType.GreenSludgeBall, MagicType.GustBlast, MagicType.Heal,
+        MagicType.HeavenlySky, MagicType.HellFire, MagicType.Hemorrhage,
+        MagicType.HundredFist, MagicType.IceAura, MagicType.IceBlades,
+        MagicType.IceBolt, MagicType.IceBreaker, MagicType.IceDragon,
+        MagicType.IceRain, MagicType.IceStorm, MagicType.ImprovedExplosiveTalisman,
+        MagicType.LifeSteal, MagicType.LightningBall, MagicType.LightningBeam,
+        MagicType.LightningStrike, MagicType.LightningWave, MagicType.MagicCombustion,
+        MagicType.MagicResistance, MagicType.MassHeal, MagicType.MassInvisibility,
+        MagicType.MeteorShower, MagicType.MonsterIceStorm,
+        MagicType.MonsterScortchedEarth, MagicType.MonsterThunderStorm,
+        MagicType.Neutralize, MagicType.Parasite, MagicType.PinkFireBall,
+        MagicType.PoisonCloud, MagicType.PoisonDust, MagicType.Purification,
+        MagicType.Resilience, MagicType.Resurrection, MagicType.SamaBlackIce,
+        MagicType.SamaBlueLightning, MagicType.SamaGuardianFire,
+        MagicType.SamaGuardianIce, MagicType.SamaGuardianLightning,
+        MagicType.SamaGuardianWind, MagicType.SamaPhoenixFire,
+        MagicType.SamaProphetFire, MagicType.SamaProphetLightning,
+        MagicType.SamaProphetWind, MagicType.SamaWhiteWind,
+        MagicType.ScortchedEarth, MagicType.SearingLight, MagicType.Shredding,
+        MagicType.SoulResonance, MagicType.StrengthOfFaith, MagicType.SwiftBlade,
+        MagicType.TaecheonSword, MagicType.ThunderBolt, MagicType.ThunderStrike,
+        MagicType.TrapOctagon, MagicType.WraithGrip
+    };
+
+    public static bool IsOriginalSpellCase(MagicType type) => OriginalSpellCases.Contains(type);
+
+    // 旧端对应分支只播放音效，不创建 MirEffect；它们不是视觉迁移遗漏。
+    private static readonly HashSet<MagicType> NoVisualSpellCases = new()
+    {
+        MagicType.CombatKick,
+        MagicType.JudgementOfHeaven,
+    };
+
+    public static bool IsNoVisualSpellCase(MagicType type) => NoVisualSpellCases.Contains(type);
+
     /// <summary>元素颜色 (原版 Globals.*Colour 的 System.Drawing → Godot 转换)。</summary>
     public static readonly Color Fire = ToGodot(Globals.FireColour);
     public static readonly Color Ice = ToGodot(Globals.IceColour);

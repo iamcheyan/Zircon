@@ -2434,13 +2434,15 @@ public partial class GameScene : Control
 
         // 旧端没有对应 case 时不生成伪造的通用爆炸；否则一个未覆盖的
         // MagicType 会被错误地表现成“所有技能都是火球落地”。
-        if (def == null)
+        if (def == null && !MagicEffectTable.IsNoVisualSpellCase(type))
         {
             GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
                 $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
                 "请按 docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
             return;
         }
+
+        if (def == null) return;
 
         if (def.CastAtSource)
         {
@@ -4222,11 +4224,13 @@ public partial class GameScene : Control
     public void SendLootBoxTake(int slot, int choice) => _net?.Connection?.Enqueue(new C.LootBoxTakeItems { Slot = slot, Choice = choice });
     public void SendCaptionChange(string caption) => _net?.Connection?.Enqueue(new C.CaptionChange { Caption = caption });
 
-    public void SendMarketSearch(string name, MarketPlaceSort sort) => _net?.Connection?.SendMarketSearch(name, sort);
+    public void SendMarketSearch(string name, MarketPlaceSort sort, bool itemTypeFilter = false, ItemType itemType = ItemType.Nothing)
+        => _net?.Connection?.SendMarketSearch(name, sort, itemTypeFilter, itemType);
     public void SendMarketSearchIndex(int index) => _net?.Connection?.SendMarketSearchIndex(index);
-    public void SendMarketBuy(long index, long count) => _net?.Connection?.SendMarketBuy(index, count);
+    public void SendMarketBuy(long index, long count, bool guildFunds = false) => _net?.Connection?.SendMarketBuy(index, count, guildFunds);
     public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
-    public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
+    public void SendMarketConsign(GridType grid, int slot, long count, int price, bool guildFunds = false)
+        => _net?.Connection?.SendMarketConsign(grid, slot, count, price, guildFunds);
     public void SendMarketHistory(int index, int partIndex, int display) => _net?.Connection?.SendMarketHistory(index, partIndex, display);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
