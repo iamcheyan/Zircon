@@ -938,17 +938,20 @@ public partial class GameScene : Control
             _player.SoundCue = PlaySound;
         AddChild(_player);
 
-        _statusLabel = new Label();
-        _statusLabel.Position = new Vector2(10, 10);
-        _statusLabel.Size = new Vector2(500, 80);
-        _statusLabel.ZIndex = 100;
-        AddChild(_statusLabel);
-
         // M11: 窗口层 CanvasLayer, 所有窗口挂这里 (独立于 2D 世界, 永远最顶层)
         _uiLayer = new CanvasLayer();
         _uiLayer.Layer = 10;
-        _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
+        RefreshUiScale();
         AddChild(_uiLayer);
+
+        // 坐标/状态文本: 原版无此常驻文本 (Godot 移植端调试用)。
+        // 必须挂 _uiLayer (逻辑坐标, 随 UiScale 缩放), 否则挂在世界层
+        // (根节点 Scale=2 且随相机滚动) 会漂移出屏并被视口裁切。
+        _statusLabel = new Label();
+        _statusLabel.Position = new Vector2(10, 10);
+        _statusLabel.Size = new Vector2(500, 80);
+        _statusLabel.MouseFilter = Control.MouseFilterEnum.Ignore;
+        _uiLayer.AddChild(_statusLabel);
         _debugLabel = new Label
         {
             Position = new Vector2(5, 5),
@@ -3865,6 +3868,9 @@ public partial class GameScene : Control
         _magicBar = new MagicBar(this);
         _uiLayer.AddChild(_magicBar);
         _magicBar.Visible = true;
+        // MagicBar 在 _Draw 内按绑定行数改 Size (1 行 46 -> 2 行 97);
+        // 尺寸变化后必须重新锚定, 否则 2 行底边会压进主面板顶缘。
+        _magicBar.Resized += OnMagicBarResized;
 
         _magicDialog = new MagicDialog();
         _uiLayer.AddChild(_magicDialog);
@@ -4314,6 +4320,18 @@ public partial class GameScene : Control
         return Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == mapIndex);
     }
 
+    /// <summary>MagicBar 尺寸变化后重新锚定 (仅未拖拽时), 公式同 LayoutHud。</summary>
+    private void OnMagicBarResized()
+    {
+        if (_magicBar == null || !IsInstanceValid(_magicBar) || _magicBar.UserMoved) return;
+        if (_mainPanel == null || !IsInstanceValid(_mainPanel)) return;
+        Vector2 vp = GetViewport().GetVisibleRect().Size / UiScale;
+        if (vp.X <= 0 || vp.Y <= 0) return;
+        _magicBar.Position = new Vector2(
+            Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
+            Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));
+    }
+
     private void OpenBigMap()
     {
         OpenBigMapForMap(GetMapInfo(_playerMapIndex));
@@ -4752,16 +4770,21 @@ public partial class GameScene : Control
     }
 
     // 服务端回显 (权威): 与本地循环一致, 双保险
+    // 原版 CConnection.Process(S.ChangeAttackMode): 回显时把模式描述打到聊天。
     private void OnAttackModeChanged(AttackMode mode)
     {
         _attackMode = mode;
         _mainPanel?.SetAttackMode(mode);
+        if (_mainPanel != null && _chatLog != null)
+            ReceiveChat(_mainPanel.AttackModeLabel.Text, MessageType.System);
     }
 
     private void OnPetModeChanged(PetMode mode)
     {
         _petMode = mode;
         _mainPanel?.SetPetMode(mode);
+        if (_mainPanel != null && _chatLog != null)
+            ReceiveChat(_mainPanel.PetModeLabel.Text, MessageType.System);
     }
 
     // ==================== M9 物品系统 ====================

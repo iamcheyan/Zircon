@@ -345,16 +345,16 @@ public partial class MainPanel : DXImageControl
 
     public void SetAttackMode(AttackMode mode)
     {
+        // 原版 (Client/Scenes/Views/MainPanel.cs:489-501): 标签构造 Visible=false,
+        // 全仓库无任何代码置 Visible=true → 永不渲染。模式反馈走聊天
+        // (CConnection.Process(S.ChangeAttackMode) 打 ReceiveChat)。这里只更新
+        // Text 供聊天使用, 不再显示。
         AttackModeLabel.Text = GetDescription(mode) ?? mode.ToString();
-        AttackModeLabel.Visible = true;
-        AttackModeLabel.Location = new Vector2I(45, FocusBar.Location.Y + 14);
     }
 
     public void SetPetMode(PetMode mode)
     {
         PetModeLabel.Text = GetDescription(mode) ?? mode.ToString();
-        PetModeLabel.Visible = true;
-        PetModeLabel.Location = new Vector2I(155, FocusBar.Location.Y + 14);
     }
 
     private static string GetDescription<T>(T value) where T : Enum
