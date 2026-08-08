@@ -434,6 +434,14 @@ public partial class DXItemCell : DXControl
             {
                 return;
             }
+            // 原版 InventoryDialog.SellMode 在左键选择背包格，不进入普通
+            // MoveItem 拿起/放下流程；多选状态由背包自身维护。
+            if (mb.ButtonIndex == MouseButton.Left && mb.Pressed && GridType == GridType.Inventory &&
+                GameScene.Game?.TrySelectItemForNpcSale(this) == true)
+            {
+                AcceptEvent();
+                return;
+            }
             if (!mb.Pressed) return;
             if (LinkedSourceSlot >= 0)
             {
@@ -1153,6 +1161,8 @@ public partial class DXItemCell : DXControl
             case ItemType.Scroll:
             case ItemType.CompanionFood:
             case ItemType.ItemPart:
+                // 原版在所有可消耗物品分支都先走 CanUseItem；否则性别、职业、等级、属性和伙伴等级限制会被绕过。
+                if (!GameScene.Game.CanUseItem(Item)) return false;
                 if (GridType != GridType.Inventory && GridType != GridType.PartsStorage &&
                     GridType != GridType.CompanionInventory && GridType != GridType.CompanionEquipment) return false;
                 if (GameScene.Game.IsMounted && Item.Info.Shape is 19 or 20 or 21 or 22) return false;
@@ -1166,7 +1176,7 @@ public partial class DXItemCell : DXControl
                 return true;
             case ItemType.Book:
                 // 原版书籍只能从背包使用，并通过 ItemUse 交给服务端学习技能。
-                if (GridType != GridType.Inventory || GameScene.Game.IsMounted ||
+                if (!GameScene.Game.CanUseItem(Item) || GridType != GridType.Inventory || GameScene.Game.IsMounted ||
                     GameScene.Game.IsUseItemOnCooldown(Item)) return false;
                 GameScene.Game.SetUseItemCooldown(250);
                 Locked = true;

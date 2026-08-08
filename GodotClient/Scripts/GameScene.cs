@@ -422,16 +422,29 @@ public partial class GameScene : Control
         if (_npcCompanionStorageDialog != null) WindowManager.Close(_npcCompanionStorageDialog);
     }
     public bool TryRouteItemToNpc(DXItemCell source)
-        => TryRouteItemToSocket(source) || _npcDialog?.TryRouteItem(source) == true;
+    {
+        if (_inventoryDialog?.IsSellMode == true && source?.GridType == GridType.Inventory)
+            return _inventoryDialog.TrySelectForSale(source);
+        return TryRouteItemToSocket(source) || _npcDialog?.TryRouteItem(source) == true;
+    }
 
     public bool TrySelectItemForNpcSale(DXItemCell source)
-        => _npcDialog?.TrySelectItemForSale(source) == true;
+        => _inventoryDialog?.IsSellMode == true && _inventoryDialog.TrySelectForSale(source);
 
     public void ShowInventoryForNpcSale()
     {
         if (_inventoryDialog != null)
             _inventoryDialog.Visible = true;
     }
+
+    public void ShowInventoryForNpcSale(CurrencyInfo currency, IEnumerable<ItemType> sellableTypes)
+    {
+        if (_inventoryDialog == null) return;
+        _inventoryDialog.SellMode(currency, sellableTypes);
+        _inventoryDialog.Visible = true;
+    }
+
+    public void EndInventoryNpcSale() => _inventoryDialog?.NormalMode();
 
     public bool CanRouteAdvancedItem(DXItemCell source, DXItemCell target)
         => _npcDialog?.CanAcceptAdvancedLink(source, target) ?? true;
@@ -5745,6 +5758,7 @@ public partial class GameScene : Control
     private void OnItemsChanged(S.ItemsChanged p)
     {
         if (p == null) return;
+        _inventoryDialog?.ItemsChanged(p.Links, p.Success == true);
         _npcDialog?.ItemsChanged(p?.Links);
         _npcDialog?.ClearAdvancedLinks(p?.Links);
         _communicationDialog?.ItemsChanged(p?.Links, p?.Success == true);

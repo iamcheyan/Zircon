@@ -1194,7 +1194,11 @@ public partial class MapTestScene : Control
         if (_auditPlayer.Animation != action.Expected)
             GD.PrintErr($"[ActionAudit] FAIL {action.Name}: expected {action.Expected}, got {_auditPlayer.Animation}");
         var frame = FrameSet.Players[action.Expected];
-        _actionDeadline = Godot.Time.GetTicksMsec() + Math.Max(700, frame.Sum + 250);
+        // Walking/Running 是循环动作；在桌面窗口、headless 和组合审计同时
+        // 执行时，首个检查点可能恰好落在循环动作的第 0 帧，导致只收集到
+        // 一个“0”或没有帧变更的假失败。至少等待一个完整循环再加余量，
+        // 一次性动作仍按同一窗口收集其全部帧。
+        _actionDeadline = Godot.Time.GetTicksMsec() + Math.Max(1000, frame.Sum + 400);
         GD.Print($"[ActionAudit] START {action.Name}: anim={action.Expected} count={frame.FrameCount} sum={frame.Sum:0}ms");
     }
 

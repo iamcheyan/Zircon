@@ -266,6 +266,9 @@
 - 2026-08-08：技能快捷栏补齐原版战斗技能分流：Thrusting/HalfMoon/DestructiveSurge/FlameSplash 发送 `MagicToggle`，FullBloom/莲花/荆棘/Karma 只设置下一次普通攻击的 `AttackMagic`，被动剑术类不误发 `C.Magic`；普通攻击回调现在携带已选择的攻击技能。构建与差异检查通过。
 - 2026-08-08：物品格显示对齐原版图库：New/锁定/不可用/部件角标改用 `Interface` 47/48/49/103，宝箱未揭示格改用 `GameInter2` 2930 专用锁定图；`UIItemGridAudit` 增加资源断言并通过，构建与差异检查通过。
 - 2026-08-08：邮件阅读入口恢复原版重复操作保护：已读邮件再次打开不重复发送 `MailOpened`，已领取/空附件格不发送 `MailGetItem`；通信布局、邮件发送成功/失败生命周期与新增保护审计通过。
+- 2026-08-08：角色变更窗口补齐原版状态保护：同性别变更不发送，发型编号按职业/性别范围归一化，并从当前角色恢复发色与铠甲染色预览；`--edit-character-audit` 通过。
+- 2026-08-08：消耗品、伙伴食物和技能书的使用入口恢复原版统一 `CanUseItem` 前置，避免绕过性别/职业/等级/属性/伙伴等级及技能学习限制；构建、差异检查和地图网络回归通过。
+- 2026-08-08：组合 UI 回归通过：`--ui-audit --communication-audit --game-store-audit --edit-character-audit --fortune-audit --companion-audit --belt-potion-audit`，物品格、腰带/自动药水、通信/邮件、幸运查询、伙伴和角色变更审计均 PASS。
 
 ## 当前进行中
 
