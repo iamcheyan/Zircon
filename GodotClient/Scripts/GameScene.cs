@@ -17,7 +17,7 @@ namespace ZirconClient.Scripts;
 
 public partial class GameScene : Control
 {
-    private const float UiScale = 2f;
+    internal const float UiScale = 2f;
     private const float WorldScale = 2f;
     private const string UiAuditArgument = "--ui-layout-audit";
     public float DayTime { get; private set; } = 1f;
@@ -4167,19 +4167,19 @@ public partial class GameScene : Control
 
         if (_miniMap != null)
             _miniMap.Location = new Vector2I(
-                Math.Max(0, (int)(vp.X - _miniMap.Size.X - 4)), 8);
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X)), 0);
 
         if (_questTracker != null)
             _questTracker.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _questTracker.Size.X)),
-                (int)_miniMap.Size.Y + 13);
+                (int)_miniMap.Size.Y + 5);
 
         if (_questDialog != null)
             Center(_questDialog);
 
         if (_buffDialog != null)
             _buffDialog.Location = new Vector2I(
-                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 10)), 8);
+                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 5)), 0);
 
         if (_groupHealthPanel != null)
             _groupHealthPanel.Location = new Vector2I(12, 48);
@@ -4246,7 +4246,7 @@ public partial class GameScene : Control
                 (int)(_mainPanel.Location.X + _mainPanel.Size.X - _beltDialog.Size.X),
                 Math.Max(0, (int)(_mainPanel.Location.Y - _beltDialog.Size.Y)));
 
-        if (_magicBar != null)
+        if (_magicBar != null && !_magicBar.UserMoved)
             _magicBar.Position = new Vector2(
                 Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
                 Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));

@@ -10,6 +10,7 @@ using ZirconClient.Scripts;
 /// <summary>原版 MagicBarDialog 的 Godot 绘制：12 列、最多 24 槽、按学校显示边框。</summary>
 public partial class MagicBar : Control
 {
+    private const float UiScale = 2f;
     private const int IconSize = 36;
     private const int IconsPerRow = 12;
     private const int GroupSpacing = 5;
@@ -18,6 +19,10 @@ public partial class MagicBar : Control
     private readonly DXButton _upButton;
     private readonly DXButton _downButton;
     private readonly DXLabel _setLabel;
+    private bool _dragging;
+
+    /// <summary>旧版 MagicBarDialog 是可移动窗口；布局刷新不能覆盖用户拖动后的位置。</summary>
+    public bool UserMoved { get; private set; }
 
     public MagicBar(GameScene game)
     {
@@ -32,12 +37,18 @@ public partial class MagicBar : Control
         // Client/Scenes/Views/MagicBarDialog.cs: frame on uses 49/46,
         // frame off uses 37/36. The extra 20px is reserved for set controls.
         Size = new Vector2(BarWidth(), BarHeight(1));
+        if (ClientSettings.MagicBarPosition.X >= 0 && ClientSettings.MagicBarPosition.Y >= 0)
+        {
+            Position = ClientSettings.MagicBarPosition;
+            UserMoved = true;
+        }
 
         _upButton = new DXButton
         {
             LibraryFile = LibraryFile.Interface,
             Index = 44,
             Location = new Vector2I((int)Size.X - 17, 0),
+            MouseFilter = MouseFilterEnum.Stop,
         };
         _upButton.MouseClick += (o, e) =>
         {
@@ -51,6 +62,7 @@ public partial class MagicBar : Control
             LibraryFile = LibraryFile.Interface,
             Index = 46,
             Location = new Vector2I((int)Size.X - 17, 30),
+            MouseFilter = MouseFilterEnum.Stop,
         };
         _downButton.MouseClick += (o, e) =>
         {
@@ -158,6 +170,34 @@ public partial class MagicBar : Control
 
     public override void _GuiInput(InputEvent @event)
     {
+        if (@event is InputEventMouseButton dragButton && dragButton.ButtonIndex == MouseButton.Left)
+        {
+            if (dragButton.Pressed)
+            {
+                _dragging = true;
+            }
+            else
+            {
+                _dragging = false;
+                if (UserMoved)
+                {
+                    ClientSettings.MagicBarPosition = new Vector2I((int)Position.X, (int)Position.Y);
+                    ClientSettings.Save();
+                }
+            }
+            AcceptEvent();
+            return;
+        }
+
+        if (@event is InputEventMouseMotion motion && _dragging)
+        {
+            Position += motion.Relative;
+            UserMoved = true;
+            ClampToViewport();
+            AcceptEvent();
+            return;
+        }
+
         if (@event is not InputEventMouseButton mouse || !mouse.Pressed ||
             mouse.ButtonIndex != MouseButton.Left) return;
 
@@ -223,6 +263,14 @@ public partial class MagicBar : Control
     };
 
     public void Refresh() => QueueRedraw();
+
+    private void ClampToViewport()
+    {
+        Vector2 logicalViewport = GetViewport().GetVisibleRect().Size / UiScale;
+        Position = new Vector2(
+            Mathf.Clamp(Position.X, 0, Mathf.Max(0, logicalViewport.X - Size.X)),
+            Mathf.Clamp(Position.Y, 0, Mathf.Max(0, logicalViewport.Y - Size.Y)));
+    }
 
     private float BarWidth() => (_game?.ShowMagicBarFrames == false ? 37 : 49) * IconsPerRow + 15 + 20;
     private float BarHeight(int rows) => _game?.ShowMagicBarFrames == false

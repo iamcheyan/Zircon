@@ -24,6 +24,8 @@ public static class ClientSettings
     public static bool RightClickDeTarget { get; set; } = true;
     public static bool HideChatBar { get; set; } = true;
     public static bool ShowMagicBarFrames { get; set; } = true;
+    /// <summary>快捷技能栏的逻辑像素位置；负数表示首次使用默认锚点。</summary>
+    public static Vector2I MagicBarPosition { get; set; } = new(-1, -1);
     public static bool MonsterBoxVisible { get; set; } = true;
     public static bool QuestTrackerVisible { get; set; } = true;
     public static bool LogChat { get; set; } = true;
@@ -145,6 +147,7 @@ public static class ClientSettings
         RightClickDeTarget = Read(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
         HideChatBar = Read(file, "Game", nameof(HideChatBar), HideChatBar);
         ShowMagicBarFrames = Read(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
+        MagicBarPosition = ReadVector2I(file, "Game", nameof(MagicBarPosition), MagicBarPosition);
         MonsterBoxVisible = Read(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
         QuestTrackerVisible = Read(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
         LogChat = Read(file, "Game", nameof(LogChat), LogChat);
@@ -198,6 +201,7 @@ public static class ClientSettings
         Write(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
         Write(file, "Game", nameof(HideChatBar), HideChatBar);
         Write(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
+        Write(file, "Game", nameof(MagicBarPosition), MagicBarPosition);
         Write(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
         Write(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
         Write(file, "Game", nameof(LogChat), LogChat);
