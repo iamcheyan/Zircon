@@ -470,6 +470,8 @@ public partial class MapTestScene : Control
         string auditFile = OS.GetCmdlineUserArgs()
             .FirstOrDefault(arg => arg.StartsWith("--audit-file=", StringComparison.OrdinalIgnoreCase))?
             .Substring("--audit-file=".Length);
+        int auditStart = ParseAuditInt("--audit-start=", 0);
+        int auditEnd = ParseAuditInt("--audit-end=", int.MaxValue);
         int libraries = 0, frames = 0, transparentFrames = 0, cornerPollution = 0;
         int inspectedEntries = 0;
         foreach (LibraryFile file in Enum.GetValues<LibraryFile>())
@@ -489,7 +491,9 @@ public partial class MapTestScene : Control
             // 默认均匀抽取最多 24 帧；完整模式逐帧检查整个图库，用于
             // 发布前的“所有贴图”审计，不把抽样结果冒充全量结论。
             int stride = fullScan ? 1 : Math.Max(1, library.Images.Length / 24);
-            for (int index = 0; index < library.Images.Length; index += stride)
+            int firstIndex = Math.Clamp(auditStart, 0, library.Images.Length);
+            int lastIndex = Math.Clamp(auditEnd, firstIndex, library.Images.Length);
+            for (int index = firstIndex; index < lastIndex; index += stride)
             {
                 inspectedEntries++;
                 if (fullScan && inspectedEntries % 8 == 0)
@@ -531,13 +535,19 @@ public partial class MapTestScene : Control
             }
         }
         GD.Print(cornerPollution == 0
-            ? $"[TransparencyAudit] PASS mode={(fullScan ? "full" : "sample")} file={(auditFile ?? "all")} libraries={libraries} frames={frames} transparentFrames={transparentFrames} cornerPollution=0"
-            : $"[TransparencyAudit] REVIEW mode={(fullScan ? "full" : "sample")} file={(auditFile ?? "all")} libraries={libraries} frames={frames} transparentFrames={transparentFrames} cornerPollution={cornerPollution}");
+            ? $"[TransparencyAudit] PASS mode={(fullScan ? "full" : "sample")} file={(auditFile ?? "all")} range={auditStart}..{(auditEnd == int.MaxValue ? "end" : auditEnd)} libraries={libraries} frames={frames} transparentFrames={transparentFrames} cornerPollution=0"
+            : $"[TransparencyAudit] REVIEW mode={(fullScan ? "full" : "sample")} file={(auditFile ?? "all")} range={auditStart}..{(auditEnd == int.MaxValue ? "end" : auditEnd)} libraries={libraries} frames={frames} transparentFrames={transparentFrames} cornerPollution={cornerPollution}");
         }
         catch (Exception ex)
         {
             GD.PrintErr($"[TransparencyAudit] EXCEPTION {ex.GetType().Name}: {ex.Message}");
         }
+    }
+
+    private static int ParseAuditInt(string prefix, int fallback)
+    {
+        string arg = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        return arg != null && int.TryParse(arg.Substring(prefix.Length), out int value) ? Math.Max(0, value) : fallback;
     }
 
     private void RunWeatherAudit()
