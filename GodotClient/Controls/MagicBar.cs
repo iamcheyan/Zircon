@@ -10,7 +10,6 @@ using ZirconClient.Scripts;
 /// <summary>原版 MagicBarDialog 的 Godot 绘制：12 列、最多 24 槽、按学校显示边框。</summary>
 public partial class MagicBar : Control
 {
-    private const float UiScale = 2f;
     private const int IconSize = 36;
     private const int IconsPerRow = 12;
     private const int GroupSpacing = 5;
@@ -266,7 +265,7 @@ public partial class MagicBar : Control
 
     private void ClampToViewport()
     {
-        Vector2 logicalViewport = GetViewport().GetVisibleRect().Size / UiScale;
+        Vector2 logicalViewport = GetViewport().GetVisibleRect().Size / GameScene.UiScale;
         Position = new Vector2(
             Mathf.Clamp(Position.X, 0, Mathf.Max(0, logicalViewport.X - Size.X)),
             Mathf.Clamp(Position.Y, 0, Mathf.Max(0, logicalViewport.Y - Size.Y)));

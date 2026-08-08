@@ -17,7 +17,12 @@ namespace ZirconClient.Scripts;
 
 public partial class GameScene : Control
 {
-    internal const float UiScale = 2f;
+    /// <summary>
+    /// UI 缩放系数：跟随窗口高度保持逻辑视口高恒定（原版 1024x768 基准）。
+    /// 窗口 1536 高 → 2x（旧行为）；更高窗口等比放大，UI/字体占屏比例不变。
+    /// </summary>
+    internal static float UiScale { get; private set; } = 2f;
+    private const float UiScaleBaseHeight = 768f;
     private const float WorldScale = 2f;
     private const string UiAuditArgument = "--ui-layout-audit";
     public float DayTime { get; private set; } = 1f;
@@ -3979,9 +3984,25 @@ public partial class GameScene : Control
 
     private void OnGameResized()
     {
+        RefreshUiScale();
         LayoutHud();
         UpdateViewRange();
         UpdatePlayerPosition();
+    }
+
+    /// <summary>
+    /// UiScale 跟随窗口高度（基准 768 逻辑高，即原版 1024x768 窗口）：
+    /// UiScale = 窗口高 / 768。窗口拉大时 UI 与字体等比放大，保持与原版
+    /// 相同的屏幕占比；小窗口下最小 1x，不会缩到不可读。
+    /// </summary>
+    private void RefreshUiScale()
+    {
+        Vector2 viewport = GetViewport().GetVisibleRect().Size;
+        UiScale = viewport.Y > 0
+            ? Mathf.Max(1f, viewport.Y / UiScaleBaseHeight)
+            : 2f;
+        if (_uiLayer != null && IsInstanceValid(_uiLayer))
+            _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
     }
 
     /// <summary>
