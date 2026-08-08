@@ -76,3 +76,7 @@ Godot 按需求移除旧端最黑的 `15/255` 夜间档，`Night` 和第三档 `
 ```text
 [LayerOrderAudit] PASS legacy row/local-player ordering
 ```
+
+## Blend 模式审计
+
+旧端 `MirLibrary.DrawBlend` 传入的是 `BlendMode.NORMAL`，`rate` 仅控制源透明度；它不是 Additive/亮化混合。Godot 的 MirEffect、投射物、地图动画、线/绳特效和外观附加层现统一使用正常 alpha 混合，只有环境光层保留独立 Shader。这样特效半透明区域不会把人物主体冲亮或产生错误覆盖。
