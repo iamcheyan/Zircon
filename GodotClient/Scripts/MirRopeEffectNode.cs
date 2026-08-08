@@ -7,6 +7,10 @@ namespace ZirconClient.Scripts;
 /// <summary>旧端 MirRopeEffect：先从施法者飞向目标，落地后保持绳索的下垂物理。</summary>
 public partial class MirRopeEffectNode : Node2D
 {
+    private readonly CanvasItemMaterial _blendMaterial = new()
+    {
+        BlendMode = CanvasItemMaterial.BlendModeEnum.Mix
+    };
     private Node2D _source;
     private Node2D _target;
     private ZlLibrary _library;
@@ -26,6 +30,9 @@ public partial class MirRopeEffectNode : Node2D
         _library = LibraryCache.Get(LibraryFile.MagicEx7);
         _launchStart = (long)Godot.Time.GetTicksMsec();
         ZIndex = 10000;
+        // MirRopeEffect 的旧版基类 Blend 默认是 false；保留普通 Alpha
+        // 绘制，只有明确传入 Blend 的链条才使用 Add。
+        Material = null;
         Rebuild(2, Anchor(_source));
     }
 
@@ -61,7 +68,9 @@ public partial class MirRopeEffectNode : Node2D
     {
         if (_library == null || _points.Count < 2 || _library.Images.Length <= 81) return;
         var image = _library.Images[81];
-        var texture = _library.GetEffectTexture(81);
+        // MirRopeEffect 继承 MirLineEffect，旧版源图类型是 Image；不要
+        // 对绳索素材执行技能特效的黑色透明键清理。
+        var texture = _library.GetImageTexture(81);
         if (image == null || texture == null) return;
         for (int i = 0; i < _points.Count - 1; i++)
         {

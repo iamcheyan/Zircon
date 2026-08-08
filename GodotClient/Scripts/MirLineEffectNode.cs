@@ -10,6 +10,10 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class MirLineEffectNode : Node2D
 {
+    private readonly CanvasItemMaterial _blendMaterial = new()
+    {
+        BlendMode = CanvasItemMaterial.BlendModeEnum.Mix
+    };
     private Node2D _source;
     private Node2D _target;
     private ZlLibrary _library;
@@ -20,7 +24,7 @@ public partial class MirLineEffectNode : Node2D
     private Vector2[] _velocities = System.Array.Empty<Vector2>();
     private bool _initialized;
 
-    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs)
+    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs, bool blend = false)
     {
         _source = source;
         _target = target;
@@ -29,6 +33,7 @@ public partial class MirLineEffectNode : Node2D
         _imageScale = Mathf.Max(0.01f, imageScale);
         _expireAt = Godot.Time.GetTicksMsec() + lifetimeMs;
         ZIndex = 10000;
+        Material = blend ? _blendMaterial : null;
     }
 
     public override void _Process(double delta)
@@ -74,7 +79,9 @@ public partial class MirLineEffectNode : Node2D
     {
         if (_library == null || _points.Length < 2 || _startIndex < 0 || _startIndex >= _library.Images.Length) return;
         var image = _library.Images[_startIndex];
-        var texture = _library.GetEffectTexture(_startIndex);
+        // 旧版 MirLineEffect 使用 ImageType.Image，即使 Blend=true 也不能
+        // 走技能特效的黑色颜色键缓存；普通图像中的黑色可能是有效链条像素。
+        var texture = _library.GetImageTexture(_startIndex);
         if (image == null || texture == null || image.Width <= 0 || image.Height <= 0) return;
 
         for (int i = 0; i < _points.Length - 1; i++)

@@ -133,10 +133,9 @@ public partial class MirProjectileNode : MirEffectNode
 
     public override void _Draw()
     {
-        Material = Blend ? new CanvasItemMaterial
-        {
-            BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-        } : null;
+        // MirProjectile ultimately calls the same legacy DrawBlend path as
+        // MirEffect, whose blend mode is normal alpha compositing.
+        Material = null;
         if (_lib == null || _frameIndex < 0) return;
         // 投射物帧: frame + StartIndex + Direction16 * Skip (16 向)
         int df = _frameIndex + StartIndex + Direction16 * Skip;

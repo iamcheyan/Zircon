@@ -13,7 +13,6 @@ namespace ZirconClient.Scripts;
 /// </summary>
 public partial class MirEffectNode : Node2D
 {
-    protected CanvasItemMaterial _blendMaterial;
     public enum EffectLayer
     {
         Floor,
@@ -209,13 +208,10 @@ public partial class MirEffectNode : Node2D
 
     public override void _Draw()
     {
-        // 原版 MirLibrary.DrawBlend 使用亮化混合，不是普通 Alpha 淡化。
-        // 每个特效节点独立设置 Material，避免把世界对象或同节点的其它层
-        // 错误地改成 Add 混合。
-        Material = Blend ? (_blendMaterial ??= new CanvasItemMaterial
-        {
-            BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-        }) : null;
+        // Legacy Library.DrawBlend uses BlendMode.NORMAL; BlendRate is the
+        // source opacity, not additive RGB blending. Keep the default alpha
+        // compositing so a shield frame cannot wash out the subject beneath it.
+        Material = null;
         if (_lib == null || _frameIndex < 0) return;
         int df = DrawFrame;
         if (df < 0 || df >= _lib.Images.Length) return;
