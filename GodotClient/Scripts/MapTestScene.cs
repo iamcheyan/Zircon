@@ -481,9 +481,11 @@ public partial class MapTestScene : Control
             var library = LibraryCache.Get(file);
             if (library?.Images == null) continue;
             libraries++;
-            bool effectTransparency = name.Contains("Magic", StringComparison.OrdinalIgnoreCase)
-                || name.Contains("ProgUse", StringComparison.OrdinalIgnoreCase)
-                || name.Contains("EquipEffect", StringComparison.OrdinalIgnoreCase);
+            // Actual legacy call sites for MirEffect, projectile, exterior
+            // equipment and ordinary ProgUse images all pass ImageType.Image.
+            // Weather is the only ProgUse subset using the dedicated keyed
+            // path, and it is audited separately by RunWeatherAudit.
+            bool effectTransparency = false;
             // 默认均匀抽取最多 24 帧；完整模式逐帧检查整个图库，用于
             // 发布前的“所有贴图”审计，不把抽样结果冒充全量结论。
             int stride = fullScan ? 1 : Math.Max(1, library.Images.Length / 24);
@@ -494,9 +496,9 @@ public partial class MapTestScene : Control
                     await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
                 var image = library.Images[index];
                 if (image == null || image.Width <= 0 || image.Height <= 0) continue;
-                // 普通图库必须保留原始 Alpha/黑色像素；只有旧版 DrawBlend/颜色键
-                // 图库才走特效透明路径。这样全量审计不会把“所有贴图”错误地
-                // 缩小成技能特效子集，也不会把普通 UI/角色图误按黑色颜色键清除。
+                // 普通图库和旧端 ImageType.Image 路径必须保留原始 Alpha/黑色
+                // 像素；天气颜色键由单独的 WeatherAudit 覆盖，不能按图库名称
+                // 把整个 ProgUse/EquipEffect/Magic 库误判成颜色键资源。
                 byte[] rgba = library.GetAuditImageData(index, effectTransparency);
                 if (rgba == null) continue;
                 frames++;
@@ -703,9 +705,19 @@ public partial class MapTestScene : Control
                 bool specialSpellOk = monster.Animation == MirAnimation.Combat4;
                 monster.PlaySpell(MagicType.DragonRepulse);
                 bool dragonOk = monster.Animation == MirAnimation.DragonRepulseStart;
-                GD.Print(attackOk && rangeOk && specialSpellOk && dragonOk
-                    ? "[MonsterAudit] PASS Attack=Combat1 Range=Combat2 DoomClawLeftPinch=Combat4 DragonRepulse=Start"
-                    : $"[MonsterAudit] FAIL attack={monster.Animation} range={rangeOk} special={specialSpellOk} dragon={dragonOk}");
+                var deadMonster = ObjectRenderer.CreateMonster(new S.ObjectMonster
+                {
+                    ObjectID = 9003,
+                    MonsterIndex = monsterInfo.Index,
+                    Direction = MirDirection.Down,
+                    Location = new System.Drawing.Point(0, 0),
+                    Dead = true,
+                });
+                bool deadOk = deadMonster != null && deadMonster.Animation == MirAnimation.Dead;
+                GD.Print(attackOk && rangeOk && specialSpellOk && dragonOk && deadOk
+                    ? "[MonsterAudit] PASS Attack=Combat1 Range=Combat2 DoomClawLeftPinch=Combat4 DragonRepulse=Start Dead=Die"
+                    : $"[MonsterAudit] FAIL attack={monster.Animation} range={rangeOk} special={specialSpellOk} dragon={dragonOk} dead={deadOk}");
+                deadMonster?.QueueFree();
                 monster.Position = new Vector2(x, y);
                 monster.ShowHealthBar = true;
                 monster.Health = monster.MaxHealth = 100;
