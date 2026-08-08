@@ -93,10 +93,33 @@ public sealed partial class NPCAdvancedPanel : DXControl
         bool rejectsDifferentType = !CanAcceptLink(source, material);
         source.ItemGrid[0] = new ClientUserItem(firstInfo, 1);
         bool acceptsMatchingType = CanAcceptLink(source, material);
-        details = $"differentTypeRejected={rejectsDifferentType} matchingTypeAccepted={acceptsMatchingType}";
+
+        // F4: 黑铁矿石格只收 BlackIronOre 且拒绝不可精炼物。
+        var oreInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.ItemEffect == ItemEffect.BlackIronOre);
+        var oreCell = _cells.FirstOrDefault(c => c.GridType == GridType.RefineBlackIronOre);
+        bool oreOk = oreInfo == null || oreCell == null
+            || (CanLink(source, oreCell, oreInfo) && !CanLink(source, oreCell, firstInfo));
         HidePanel();
         source.QueueFree();
-        return rejectsDifferentType && acceptsMatchingType;
+
+        // F4: 饰品重置格（AccessoryReset mode）只收 Necklace/Bracelet/Ring、
+        // 非 NonRefinable、等级未满；黑铁矿石不是饰品被拒绝。
+        Configure(NPCDialogType.AccessoryReset);
+        var resetCell = _cells.FirstOrDefault(c => c.GridType == GridType.AccessoryReset);
+        var resetSource = new DXItemCell { GridType = GridType.Inventory, Slot = 0, ItemGrid = new ClientUserItem[1] };
+        bool resetOk = resetCell == null || oreInfo == null
+            || (CanLink(resetSource, resetCell, firstInfo) && !CanLink(resetSource, resetCell, oreInfo));
+        HidePanel();
+        resetSource.QueueFree();
+
+        details = $"differentTypeRejected={rejectsDifferentType} matchingTypeAccepted={acceptsMatchingType} blackIronOre={oreOk} accessoryReset={resetOk}";
+        return rejectsDifferentType && acceptsMatchingType && oreOk && resetOk;
+    }
+
+    private static bool CanLink(DXItemCell source, DXItemCell target, ItemInfo info)
+    {
+        source.ItemGrid[0] = new ClientUserItem(info, 1);
+        return source.CanLinkToSpecialGrid(target.GridType);
     }
 
     private DXItemCell FindRouteTarget(DXItemCell source)
@@ -459,11 +482,35 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var fragment3 = Links(GridType.MasterRefineFragment3);
         var stone = Links(GridType.MasterRefineStone);
         var special = Links(GridType.MasterRefineSpecial);
-        if (fragment1.Count == 0 || fragment1[0].Count != 10 || fragment2.Count == 0 || fragment2[0].Count != 10 ||
-            fragment3.Count == 0 || stone.Count == 0) return;
+        // 原版逐项校验并提示：Fragment I/II 必须恰好 10 个，III 至少 1 个，石头至少 1 个。
+        if (fragment1.Count == 0 || fragment1[0].Count != 10)
+        {
+            GameScene.Game?.ReceiveChat("You need Fragment (I) x10 to Master Refine", MessageType.System);
+            return;
+        }
+        if (fragment2.Count == 0 || fragment2[0].Count != 10)
+        {
+            GameScene.Game?.ReceiveChat("You need Fragment (II) x10 to Master Refine", MessageType.System);
+            return;
+        }
+        if (fragment3.Count == 0)
+        {
+            GameScene.Game?.ReceiveChat("You need at least 1x Fragment (III) to Master Refine", MessageType.System);
+            return;
+        }
+        if (stone.Count == 0)
+        {
+            GameScene.Game?.ReceiveChat("You need Refinement Stone x1 to Master Refine", MessageType.System);
+            return;
+        }
         if (BeginSubmit(fragment1, fragment2, fragment3, stone, special).Count == 0) return;
         if (evaluate)
-            GameScene.Game?.SendNPCMasterRefineEvaluate(_refineType, fragment1, fragment2, fragment3, stone, special);
+        {
+            // 原版 Evaluate 弹确认框后才发包。
+            var confirm = new ConfirmDialog("Are you sure you want to pay for an evaluation?", "Evaluation",
+                () => GameScene.Game?.SendNPCMasterRefineEvaluate(_refineType, fragment1, fragment2, fragment3, stone, special));
+            WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
+        }
         else
             GameScene.Game?.SendNPCMasterRefine(fragment1, fragment2, fragment3, stone, special);
     }

@@ -837,6 +837,12 @@ public partial class GameScene : Control
         SoundPlayback.Stop(SoundIndex.LoginScene);
         SoundPlayback.Stop(SoundIndex.SelectScene);
         Game = this;
+        // GameScene 是铺满视口的 Control，默认 MouseFilter.Stop 会在 GUI 阶段
+        // 捕获并 accept 所有鼠标事件，导致 _UnhandledInput 收不到地图点击
+        // (Ctrl+右键观察、拾取、NPC、采矿全部静默失效)。地图交互全部在
+        // _UnhandledInput 手动处理，不需要 GUI 命中；UI 窗口挂在独立 _uiLayer
+        // 下，按各自 MouseFilter 参与 GUI。故本 Control 设为 Ignore 让鼠标穿透。
+        MouseFilter = Control.MouseFilterEnum.Ignore;
         ShowMagicBarFrames = ClientSettings.ShowMagicBarFrames;
         _rightClickDeTarget = ClientSettings.RightClickDeTarget;
         _escapeCloseAll = ClientSettings.EscapeCloseAll;
@@ -7210,6 +7216,7 @@ public partial class GameScene : Control
 
         _interactionAuditDeadline = Godot.Time.GetTicksMsec() + 4000.0;
     }
+
 
     private void UpdatePlayerPosition()
     {
