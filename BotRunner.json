@@ -1,0 +1,23 @@
+{
+  "Host": "127.0.0.1",
+  "Port": 7000,
+  "TickMilliseconds": 250,
+  "MoveIntervalSeconds": 5,
+  "PatrolRadius": 12,
+  "VerboseNetworkLogging": false,
+  "EnableBotPvP": true,
+  "PvPStartDelaySeconds": 35,
+  "PvPStagingRadius": 24,
+  "PvPStagingX": 158,
+  "PvPStagingY": 278,
+  "PvPRoundSeconds": 90,
+  "PvPRestSeconds": 150,
+  "ChatIntervalSeconds": 45,
+  "MaxBots": 20,
+  "AccountPrefix": "bot",
+  "Password": "bot123456",
+  "ChatPrefix": "\u5927\u5BB6\u597D",
+  "ClientHashPath": "",
+  "DatabasePath": "Debug/Server/Database",
+  "MapPath": "Debug/Client/Map"
+}

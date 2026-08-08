@@ -39,6 +39,8 @@ static class Program
 
         if (cmd == "list") { List(rest); return; }
         if (cmd == "boost") { Boost(rest); return; }
+        if (cmd == "equip") { Equip(rest); return; }
+        if (cmd == "lighten") { Lighten(rest); return; }
         if (cmd == "items") { ListItems(rest); return; }
         if (cmd == "magics") { ListMagics(rest); return; }
         if (cmd == "basestat") { ListBaseStats(rest); return; }
@@ -52,6 +54,9 @@ static class Program
         Console.WriteLine("  CharacterEditor list  <db-root> [账号邮箱] [角色名]");
         Console.WriteLine("  CharacterEditor boost <db-root> --char <角色名> [--level N] [--gold N] [--class 职业]");
         Console.WriteLine("                        [--magic 名字] [--weapon 名字] [--amulet-count N] [--no-items] [--no-magics]");
+        Console.WriteLine("  CharacterEditor equip <db-root> --char <角色名> --slot <槽名> --item <物品名子串>");
+        Console.WriteLine("  CharacterEditor lighten <db-root> --char <角色名>  (轻装并缩减背包重物堆叠)");
+        Console.WriteLine("        给指定装备槽放物品(槽名: Weapon/Armour/Helmet/Torch/Necklace/BraceletL/RingL/...), 背包有同款则移动, 否则新建");
         Console.WriteLine("  CharacterEditor items <db-root> [--type Weapon] [--class Warrior] [--min 1] [--max 60]");
     }
 
@@ -133,10 +138,155 @@ static class Program
                         ? $"装备[{EquipSlotZh(item.Slot - 1000)}]"
                         : $"背包[{item.Slot}]";
                     Console.WriteLine($"        - {where}  {item.Info.ItemName}  x{item.Count}  " +
-                                      $"耐久 {item.CurrentDurability}/{item.MaxDurability}  Level={item.Level}");
+                                      $"重量 {item.Weight}  耐久 {item.CurrentDurability}/{item.MaxDurability}  Level={item.Level}");
                 }
             }
         }
+    }
+
+    // ---------- equip (给指定装备槽放物品) ----------
+
+    static ItemType[] SlotItemTypes(EquipmentSlot slot) => slot switch
+    {
+        EquipmentSlot.Weapon => new[] { ItemType.Weapon },
+        EquipmentSlot.Armour => new[] { ItemType.Armour },
+        EquipmentSlot.Helmet => new[] { ItemType.Helmet },
+        EquipmentSlot.Torch => new[] { ItemType.Torch },
+        EquipmentSlot.Necklace => new[] { ItemType.Necklace },
+        EquipmentSlot.BraceletL or EquipmentSlot.BraceletR => new[] { ItemType.Bracelet },
+        EquipmentSlot.RingL or EquipmentSlot.RingR => new[] { ItemType.Ring },
+        EquipmentSlot.Shoes => new[] { ItemType.Shoes },
+        EquipmentSlot.Poison => new[] { ItemType.Poison },
+        EquipmentSlot.Amulet => new[] { ItemType.Amulet },
+        EquipmentSlot.Flower => new[] { ItemType.Flower },
+        EquipmentSlot.HorseArmour => new[] { ItemType.HorseArmour },
+        EquipmentSlot.Emblem => new[] { ItemType.Emblem },
+        EquipmentSlot.Shield => new[] { ItemType.Shield },
+        EquipmentSlot.Costume => new[] { ItemType.Costume },
+        EquipmentSlot.Hook => new[] { ItemType.Hook },
+        EquipmentSlot.Float => new[] { ItemType.Float },
+        EquipmentSlot.Bait => new[] { ItemType.Bait },
+        EquipmentSlot.Finder => new[] { ItemType.Finder },
+        EquipmentSlot.Reel => new[] { ItemType.Reel },
+        _ => Array.Empty<ItemType>(),
+    };
+
+    static void Equip(string[] args)
+    {
+        string charName = null, slotName = null, itemName = null;
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i])
+            {
+                case "--char": charName = args[++i]; break;
+                case "--slot": slotName = args[++i]; break;
+                case "--item": itemName = args[++i]; break;
+            }
+        }
+        if (charName == null || slotName == null || itemName == null)
+        { Console.WriteLine("需要 --char <角色名> --slot <槽名> --item <物品名子串>"); return; }
+        if (!Enum.TryParse<EquipmentSlot>(slotName, true, out var slot))
+        { Console.WriteLine($"未知槽位: {slotName}, 可用: {string.Join("/", Enum.GetNames<EquipmentSlot>())}"); return; }
+
+        Open();
+
+        var acc = Session.GetCollection<AccountInfo>().Binding
+            .FirstOrDefault(a => a.Characters.Any(c => c.CharacterName.Equals(charName, StringComparison.OrdinalIgnoreCase)));
+        if (acc == null) { Console.WriteLine($"找不到角色: {charName}"); return; }
+        var ch = acc.Characters.First(c => c.CharacterName.Equals(charName, StringComparison.OrdinalIgnoreCase));
+
+        int slotIdx = 1000 + (int)slot;
+        var allowed = SlotItemTypes(slot);
+        var pick = Session.GetCollection<ItemInfo>().Binding
+            .FirstOrDefault(x => x.ItemName.Contains(itemName, StringComparison.OrdinalIgnoreCase) && allowed.Contains(x.ItemType));
+        if (pick == null)
+        {
+            Console.WriteLine($"找不到名字含 [{itemName}] 且类型匹配槽 {slot} 的物品模板 ({string.Join("/", allowed)})");
+            return;
+        }
+
+        var existing = ch.Items.FirstOrDefault(x => x.Slot == slotIdx);
+        if (existing != null)
+        {
+            Console.WriteLine($"  装备[{slot}] {existing.Info.ItemName} -> {pick.ItemName}");
+            existing.Info = pick; existing.Count = 1;
+            if (pick.Durability > 0) { existing.CurrentDurability = pick.Durability; existing.MaxDurability = pick.Durability; }
+        }
+        else
+        {
+            // 优先移动背包中同款物品(如 Candle), 否则新建
+            var bagItem = ch.Items.FirstOrDefault(x => x.Slot >= 0 && x.Slot < 48 && x.Info.Index == pick.Index);
+            if (bagItem != null)
+            {
+                int oldSlot = bagItem.Slot;
+                bagItem.Slot = slotIdx; bagItem.Count = 1;
+                Console.WriteLine($"  装备[{slot}] 背包[{oldSlot}] {pick.ItemName} -> 装备槽 {slotIdx}");
+            }
+            else
+            {
+                var item = Session.GetCollection<UserItem>().CreateNewObject();
+                item.Info = pick; item.Slot = slotIdx; item.Count = 1;
+                if (pick.Durability > 0) { item.CurrentDurability = pick.Durability; item.MaxDurability = pick.Durability; }
+                ch.Items.Add(item);
+                Console.WriteLine($"  装备[{slot}] += {pick.ItemName}");
+            }
+        }
+        Console.WriteLine("  保存中...");
+        Session.Save(true);
+        Console.WriteLine("  完成。重启服务端后生效。");
+    }
+
+    static void Lighten(string[] args)
+    {
+        string charName = null;
+        for (int i = 0; i < args.Length; i++)
+            if (args[i] == "--char" && i + 1 < args.Length) charName = args[++i];
+        if (charName == null) { Console.WriteLine("需要 --char <角色名>"); return; }
+
+        Open();
+        var ch = Session.GetCollection<AccountInfo>().Binding
+            .SelectMany(a => a.Characters)
+            .FirstOrDefault(c => c.CharacterName.Equals(charName, StringComparison.OrdinalIgnoreCase));
+        if (ch == null) { Console.WriteLine($"找不到角色: {charName}"); return; }
+
+        var lightGear = new Dictionary<EquipmentSlot, string>
+        {
+            [EquipmentSlot.Weapon] = "Wood Sword",
+            [EquipmentSlot.Armour] = "Commoner Outfit (M)",
+            [EquipmentSlot.Helmet] = "Bronze Helmet",
+            [EquipmentSlot.Necklace] = "Gold Necklace",
+            [EquipmentSlot.BraceletL] = "Silver Bracelet",
+            [EquipmentSlot.BraceletR] = "Silver Bracelet",
+            [EquipmentSlot.RingL] = "Plain Ring",
+            [EquipmentSlot.RingR] = "Plain Ring",
+            [EquipmentSlot.Shoes] = "Straw Sandles",
+        };
+        var templates = Session.GetCollection<ItemInfo>().Binding;
+        foreach (var pair in lightGear)
+        {
+            int slot = 1000 + (int)pair.Key;
+            var template = templates.FirstOrDefault(x => x.ItemName.Equals(pair.Value, StringComparison.OrdinalIgnoreCase));
+            var equipped = ch.Items.FirstOrDefault(x => x.Slot == slot);
+            if (template == null || equipped == null) continue;
+            Console.WriteLine($"  装备[{pair.Key}] {equipped.Info.ItemName} -> {template.ItemName} (Weight={template.Weight})");
+            equipped.Info = template;
+            equipped.Count = 1;
+            if (template.Durability > 0)
+            {
+                equipped.CurrentDurability = template.Durability;
+                equipped.MaxDurability = template.Durability;
+            }
+        }
+
+        foreach (var item in ch.Items.Where(x => x.Slot >= 0 && x.Slot < 48 && x.Count > 1))
+        {
+            Console.WriteLine($"  背包[{item.Slot}] {item.Info.ItemName} x{item.Count} -> x1");
+            item.Count = 1;
+        }
+
+        Console.WriteLine("  保存中...");
+        Session.Save(true);
+        Console.WriteLine("  完成。重启服务端后生效。");
     }
 
     // ---------- items (查物品模板) ----------
@@ -464,75 +614,82 @@ static class Program
         int nextBag = Enumerable.Range(0, 48).FirstOrDefault(s => !ownedSlots.Contains(s));
         var mask = ClassMask(ch.Class);
 
-        // 装备: 按价格挑"最强"的(无等级概念时价格即强度), 放装备槽
+        // 装备: 覆盖全部 17 个 EquipmentSlot (0..16)
         var equipPlan = new (ItemType type, EquipmentSlot slot)[]
         {
             (ItemType.Weapon, EquipmentSlot.Weapon),
             (ItemType.Armour, EquipmentSlot.Armour),
             (ItemType.Helmet, EquipmentSlot.Helmet),
+            (ItemType.Torch, EquipmentSlot.Torch),
             (ItemType.Necklace, EquipmentSlot.Necklace),
             (ItemType.Bracelet, EquipmentSlot.BraceletL),
             (ItemType.Bracelet, EquipmentSlot.BraceletR),
             (ItemType.Ring, EquipmentSlot.RingL),
             (ItemType.Ring, EquipmentSlot.RingR),
             (ItemType.Shoes, EquipmentSlot.Shoes),
+            (ItemType.Poison, EquipmentSlot.Poison),
             (ItemType.Amulet, EquipmentSlot.Amulet),
+            (ItemType.Flower, EquipmentSlot.Flower),
+            (ItemType.HorseArmour, EquipmentSlot.HorseArmour),
+            (ItemType.Emblem, EquipmentSlot.Emblem),
+            (ItemType.Shield, EquipmentSlot.Shield),
+            (ItemType.Costume, EquipmentSlot.Costume),
         };
 
         foreach (var (type, slot) in equipPlan)
         {
             int slotIdx = 1000 + (int)slot;
-            if (ownedSlots.Contains(slotIdx)) { Console.WriteLine($"  装备[{slot}] 已有物品, 跳过"); continue; }
+            var existing = ch.Items.FirstOrDefault(x => x.Slot == slotIdx);
 
             var pool = all.Where(x => x.ItemType == type)
                           .Where(x => x.RequiredClass == RequiredClass.None || x.RequiredClass == RequiredClass.All || (x.RequiredClass & mask) != 0)
                           .Where(x => x.RequiredType != RequiredType.Level || x.RequiredAmount <= ch.Level)
                           .OrderByDescending(x => x.Price)
                           .ToList();
-            if (pool.Count == 0) { Console.WriteLine($"  装备[{slot}] 无匹配物品, 跳过"); continue; }
+            if (pool.Count == 0)
+                pool = all.Where(x => x.ItemType == type).OrderByDescending(x => x.Price).ToList();
+            if (pool.Count == 0)
+                pool = all.Where(x => x.ItemType == ItemType.Consumable || x.ItemType == ItemType.Book).OrderByDescending(x => x.Price).ToList();
+
+            if (pool.Count == 0) continue;
             var pick = pool.First();
-            var item = Session.GetCollection<UserItem>().CreateNewObject();
-            item.Info = pick;
-            item.Slot = slotIdx;
-            item.Count = 1;
-            if (pick.Durability > 0) { item.CurrentDurability = pick.Durability; item.MaxDurability = pick.Durability; }
-            ch.Items.Add(item);
-            ownedSlots.Add(slotIdx);
-            Console.WriteLine($"  装备[{EquipSlotZh((int)slot)}] += {pick.ItemName} (价={pick.Price}, {ReqClassZh(pick.RequiredClass)})");
+            if (existing != null)
+            {
+                existing.Info = pick;
+                existing.Count = (type == ItemType.Amulet || type == ItemType.Poison) ? 200 : 1;
+                if (pick.Durability > 0) { existing.CurrentDurability = pick.Durability; existing.MaxDurability = pick.Durability; }
+                Console.WriteLine($"  装备[{EquipSlotZh((int)slot)}] {existing.Info.ItemName} -> {pick.ItemName}");
+            }
+            else
+            {
+                var item = Session.GetCollection<UserItem>().CreateNewObject();
+                item.Info = pick;
+                item.Slot = slotIdx;
+                item.Count = (type == ItemType.Amulet || type == ItemType.Poison) ? 200 : 1;
+                if (pick.Durability > 0) { item.CurrentDurability = pick.Durability; item.MaxDurability = pick.Durability; }
+                ch.Items.Add(item);
+                ownedSlots.Add(slotIdx);
+                Console.WriteLine($"  装备[{EquipSlotZh((int)slot)}] += {pick.ItemName} (价={pick.Price}, {ReqClassZh(pick.RequiredClass)})");
+            }
         }
 
-        // 背包: 大血瓶 + 大蓝瓶 + 回城卷
-        var heal = all.Where(x => x.ItemType == ItemType.Consumable && x.ItemStats.Any(s => s.Stat == Stat.Health) && x.Price > 1000)
-                      .OrderByDescending(x => x.Price).FirstOrDefault();
-        if (heal == null) heal = all.FirstOrDefault(x => x.ItemType == ItemType.Consumable && x.ItemStats.Any(s => s.Stat == Stat.Health));
-        if (heal != null && !ownedSlots.Contains(nextBag))
+        // 背包: 填满全部 48 个格子 (0..47)
+        var sampleItems = all.Where(x => x.ItemType == ItemType.Consumable || x.ItemType == ItemType.Scroll || x.ItemType == ItemType.Book || x.ItemType == ItemType.Ore || x.ItemType == ItemType.Ring)
+                             .Take(48).ToList();
+        if (sampleItems.Count == 0) sampleItems = all.Take(48).ToList();
+
+        for (int bagSlot = 0; bagSlot < 48; bagSlot++)
         {
-            var healItem = Session.GetCollection<UserItem>().CreateNewObject();
-            healItem.Info = heal; healItem.Slot = nextBag; healItem.Count = 100;
-            ch.Items.Add(healItem);
-            Console.WriteLine($"  背包[{nextBag}] += {heal.ItemName} x100");
-            ownedSlots.Add(nextBag);
-            nextBag = Enumerable.Range(0, 48).FirstOrDefault(s => !ownedSlots.Contains(s));
-        }
-        var mana = all.Where(x => x.ItemType == ItemType.Consumable && x.ItemStats.Any(s => s.Stat == Stat.Mana) && x.Price > 1000)
-                      .OrderByDescending(x => x.Price).FirstOrDefault();
-        if (mana == null) mana = all.FirstOrDefault(x => x.ItemType == ItemType.Consumable && x.ItemStats.Any(s => s.Stat == Stat.Mana));
-        if (mana != null && !ownedSlots.Contains(nextBag))
-        {
-            var manaItem = Session.GetCollection<UserItem>().CreateNewObject();
-            manaItem.Info = mana; manaItem.Slot = nextBag; manaItem.Count = 100;
-            ch.Items.Add(manaItem);
-            Console.WriteLine($"  背包[{nextBag}] += {mana.ItemName} x100");
-            ownedSlots.Add(nextBag);
-            nextBag = Enumerable.Range(0, 48).FirstOrDefault(s => !ownedSlots.Contains(s));
-        }
-        var town = all.FirstOrDefault(x => x.ItemName == "Scroll Of Town Portal");
-        if (town != null && !ownedSlots.Contains(nextBag))
-        {
-            var townItem = Session.GetCollection<UserItem>().CreateNewObject();
-            townItem.Info = town; townItem.Slot = nextBag; townItem.Count = 20;
-            ch.Items.Add(townItem);
-            Console.WriteLine($"  背包[{nextBag}] += {town.ItemName} x20");
+            var existing = ch.Items.FirstOrDefault(x => x.Slot == bagSlot);
+            if (existing != null) continue;
+            var pick = sampleItems[bagSlot % sampleItems.Count];
+            var item = Session.GetCollection<UserItem>().CreateNewObject();
+            item.Info = pick;
+            item.Slot = bagSlot;
+            item.Count = pick.ItemType == ItemType.Consumable || pick.ItemType == ItemType.Scroll ? 100 : 1;
+            if (pick.Durability > 0) { item.CurrentDurability = pick.Durability; item.MaxDurability = pick.Durability; }
+            ch.Items.Add(item);
+            Console.WriteLine($"  背包[{bagSlot}] += {pick.ItemName}");
         }
     }
     static void BoostMagics(CharacterInfo ch, List<string> names = null, bool allMagics = false)
