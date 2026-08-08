@@ -30,7 +30,7 @@ public partial class MirProjectileNode : MirEffectNode
         Setup(file, startIndex, frameCount, frameDelayMs, target, mapCellX, mapCellY, null);
 
         Origin = origin;
-        Direction = MirDirection.Up; // 占位, 16 向单独用 Direction16
+        Direction = MirDirection.Up;
         _cameraFnByCell = cameraFnByCell;
         _targetCellX = mapCellX;
         _targetCellY = mapCellY;
@@ -68,6 +68,7 @@ public partial class MirProjectileNode : MirEffectNode
         var origin = ToLegacyProjectilePoint(originScreen);
         var target = ToLegacyProjectilePoint(targetScreen);
 
+        Direction = Functions.DirectionFromPoint(origin, target);
         Direction16 = Functions.Direction16(origin, target);
         long duration = Functions.Distance(origin, target);
         if (Delay > 0) duration *= Delay;
@@ -95,6 +96,18 @@ public partial class MirProjectileNode : MirEffectNode
 
         Position += new Vector2(AdditionalOffX, AdditionalOffY);
 
+        // 投射物在飞行过程中跨越多个地图行，必须和地形/角色共享动态
+        // RenderY 排序；只在 Setup 时计算一次会导致火球穿过建筑或角色。
+        if (DrawType == EffectLayer.Object)
+        {
+            int renderY = (int)MathF.Round(Mathf.Lerp(Origin.Y, CurrentRenderY, (float)t));
+            ZIndex = 100 + renderY;
+        }
+        else
+        {
+            UpdateRenderLayer();
+        }
+
         QueueRedraw();
     }
 
@@ -120,6 +133,10 @@ public partial class MirProjectileNode : MirEffectNode
 
     public override void _Draw()
     {
+        Material = Blend ? new CanvasItemMaterial
+        {
+            BlendMode = CanvasItemMaterial.BlendModeEnum.Add
+        } : null;
         if (_lib == null || _frameIndex < 0) return;
         // 投射物帧: frame + StartIndex + Direction16 * Skip (16 向)
         int df = _frameIndex + StartIndex + Direction16 * Skip;
@@ -127,16 +144,24 @@ public partial class MirProjectileNode : MirEffectNode
 
         var img = _lib.Images[df];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
-        var tex = _lib.GetEffectTexture(df);
+        // Legacy MirEffect/MirProjectile also renders ImageType.Image.
+        var tex = _lib.GetImageTexture(df);
         if (tex == null) return;
 
-        float ox = UseOffSet ? img.OffSetX : -img.Width / 2f;
-        float oy = UseOffSet ? img.OffSetY : -img.Height / 2f;
+        // MirProjectile 继承旧版 MirEffect.Draw：useOffSet=false 时，传入
+        // 的 DrawX/DrawY 是贴图左上角，不是中心点。只有独立的 centered
+        // 粒子绘制路径才会减去半宽/半高。
+        float ox = UseOffSet ? img.OffSetX : 0f;
+        float oy = UseOffSet ? img.OffSetY : 0f;
 
         var destRect = new Rect2(ox, oy, img.Width, img.Height);
         var srcRect = new Rect2(0, 0, img.Width, img.Height);
 
-        Color c = Blend ? new Color(1, 1, 1, BlendRate) : new Color(1, 1, 1, Opacity);
+        Color c = Blend
+            ? new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
+                BlendRate * FrameLightColour.A)
+            : new Color(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
+                Opacity * FrameLightColour.A);
         DrawTextureRectRegion(tex, destRect, srcRect, c);
     }
 }

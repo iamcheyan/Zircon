@@ -162,6 +162,10 @@ public partial class MapWeatherLayer : Node2D
         // 当成黑色实体矩形，雨、雪、雾和闪电因此会出现黑底。
         // 天气背景在旧客户端是黑色透明键；DXT 压缩会留下较宽的近黑色
         // 边缘，使用天气专用透明缓存，不能让这些像素形成黑色雪块。
+        // Weather payloads are the legacy particle exception: their source
+        // frames use a black/near-black color key (the ordinary decoded image
+        // is opaque for snow/fog frames), so use the dedicated weather/fog
+        // conversion rather than drawing the raw payload as a rectangle.
         var tex = p.TextureIndex == 550
             ? _library.GetFogTexture(p.TextureIndex)
             : _library.GetWeatherTexture(p.TextureIndex);

@@ -9,10 +9,11 @@ namespace ZirconClient.Scripts;
 /// 通用序列帧特效节点（移植自原版 Client/Models/MirEffect.cs）。
 /// 支持: 目标/地图锚定、Delays 帧推进、Loop/Reversed、Blend 混合、
 ///       方向×Skip、CompleteAction/FrameIndexChanged 回调。
-/// 替代 M5 的单帧 EffectNode 占位。
+/// 用 Godot 序列帧节点承载原版 EffectNode 的完整播放语义。
 /// </summary>
 public partial class MirEffectNode : Node2D
 {
+    protected CanvasItemMaterial _blendMaterial;
     public enum EffectLayer
     {
         Floor,
@@ -43,7 +44,7 @@ public partial class MirEffectNode : Node2D
     public bool Blend;            // 混合绘制
     public float BlendRate = 0.7f;
     public float Opacity = 1f;
-    public bool UseOffSet = true; // 用图库 OffSet 居中
+    public bool UseOffSet = true; // true 使用图库 OffSet；false 从节点左上角绘制
     public int FrameLight;
     public Color FrameLightColour = Colors.White;
 
@@ -201,6 +202,13 @@ public partial class MirEffectNode : Node2D
 
     public override void _Draw()
     {
+        // 原版 MirLibrary.DrawBlend 使用亮化混合，不是普通 Alpha 淡化。
+        // 每个特效节点独立设置 Material，避免把世界对象或同节点的其它层
+        // 错误地改成 Add 混合。
+        Material = Blend ? (_blendMaterial ??= new CanvasItemMaterial
+        {
+            BlendMode = CanvasItemMaterial.BlendModeEnum.Add
+        }) : null;
         if (_lib == null || _frameIndex < 0) return;
         int df = DrawFrame;
         if (df < 0 || df >= _lib.Images.Length) return;
@@ -208,12 +216,16 @@ public partial class MirEffectNode : Node2D
         var img = _lib.Images[df];
         if (img == null || img.Width <= 0 || img.Height <= 0) return;
 
-        var tex = _lib.GetEffectTexture(df);
+        // Client/Models/MirEffect.Draw uses ImageType.Image for every effect.
+        // The effect black-key path is not equivalent to the legacy renderer
+        // and can remove the subject beneath shield/overlay frames.
+        var tex = _lib.GetImageTexture(df);
         if (tex == null) return;
 
-        // UseOffSet: 用图库 OffSet 居中(原版 Draw 用 OffSetX/OffSetY)
-        float ox = UseOffSet ? img.OffSetX : -img.Width / 2f;
-        float oy = UseOffSet ? img.OffSetY : -img.Height / 2f;
+        // MirLibrary.Draw uses the supplied position as the top-left when
+        // useOffSet=false; centered particles use their own centered path.
+        float ox = UseOffSet ? img.OffSetX : 0f;
+        float oy = UseOffSet ? img.OffSetY : 0f;
 
         var destRect = new Rect2(ox, oy, img.Width, img.Height);
         var srcRect = new Rect2(0, 0, img.Width, img.Height);
@@ -221,12 +233,14 @@ public partial class MirEffectNode : Node2D
         if (Blend)
         {
             // Godot 混合: 用 BlendRate 降 alpha (近似原版 DrawBlend)
-            Color c = new(1, 1, 1, BlendRate);
+            Color c = new(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
+                BlendRate * FrameLightColour.A);
             DrawTextureRectRegion(tex, destRect, srcRect, c);
         }
         else
         {
-            Color c = new(1, 1, 1, Opacity);
+            Color c = new(FrameLightColour.R, FrameLightColour.G, FrameLightColour.B,
+                Opacity * FrameLightColour.A);
             DrawTextureRectRegion(tex, destRect, srcRect, c);
         }
     }
