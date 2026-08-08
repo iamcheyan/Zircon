@@ -571,8 +571,20 @@ public sealed partial class ConsignItemDialog : DXWindow
     private void Confirm()
     {
         int price = ParsePrice();
-        if (ItemCell.Item == null || price <= 0) return;
-        var confirm = new ConfirmDialog($"{_itemName.Text} x{ItemCell.Item?.Count ?? 1}\n单价: {price:#,##0}", "确认寄售", () => { _confirm?.Invoke(ItemCell, price); WindowManager.Close(this); });
+        if (ItemCell.Item == null)
+        {
+            // 原版：未放入物品时提示。
+            GameScene.Game?.ReceiveChat("Error: No Item selected.", MessageType.System);
+            return;
+        }
+        if (price <= 0)
+        {
+            // 原版：价格无效时提示。
+            GameScene.Game?.ReceiveChat("Error: Invalid Price.", MessageType.System);
+            return;
+        }
+        long fee = Globals.MarketPlaceFee;
+        var confirm = new ConfirmDialog($"{_itemName.Text} x{ItemCell.Item?.Count ?? 1}\n\n单价: {price:#,##0}\n寄售费用: {fee:#,##0}", "确认寄售", () => { _confirm?.Invoke(ItemCell, price); WindowManager.Close(this); });
         WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
     }
 }

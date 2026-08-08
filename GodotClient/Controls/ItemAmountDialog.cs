@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Godot;
 using Library;
+using Library.SystemModels;
 using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
@@ -9,7 +11,11 @@ namespace ZirconClient.Controls;
 public sealed partial class ItemAmountDialog : DXWindow
 {
     private readonly DXTextInput _amount;
+    private readonly DXItemCell _itemCell;
+    private readonly DXButton _ok;
     public long Amount { get; private set; }
+    public DXTextInput AmountBox => _amount;
+    public bool OkEnabled => _ok?.Enabled ?? false;
     private readonly long _max;
     private readonly ClientUserItem _item;
     private readonly Action<long> _confirm;
@@ -25,26 +31,28 @@ public sealed partial class ItemAmountDialog : DXWindow
     {
     }
 
-    private ItemAmountDialog(string title, long max, long initial, Action<long> confirm, ClientUserItem item)
+    public ItemAmountDialog(string title, long max, long initial, Action<long> confirm, ClientUserItem item)
     {
         Text = "选择数量";
         HasFooter = true;
-        Size = new Vector2I(260, 135);
         _confirm = confirm;
         // 原版 DXItemAmountWindow 的客户区为 200x46；这里保留物品格和数量
         // 控件的原始相对关系，窗口总尺寸按标题/底栏框架计算。
         Size = new Vector2I(218, 146);
         _max = Math.Max(1, max);
-        Amount = Math.Clamp(initial, 1, _max);
+        // 原版 DXNumberBox 未设置 MinValue（默认 0）：键入 0 合法，红框并
+        // 禁用确认；只有确认回调处才要求 Amount > 0。
+        Amount = Math.Clamp(initial, 0, _max);
         _item = item;
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true });
-        var itemCell = new DXItemCell { Location = new Vector2I(18, 38), ReadOnly = true, Border = true };
+        _itemCell = null;
         if (item != null)
         {
-            itemCell.ItemGrid = new[] { item };
-            itemCell.Slot = 0;
+            _itemCell = new DXItemCell { Location = new Vector2I(18, 38), ReadOnly = true, Border = true };
+            _itemCell.ItemGrid = new[] { item };
+            _itemCell.Slot = 0;
+            AddControl(_itemCell);
         }
-        AddControl(itemCell);
         _amount = new DXTextInput { Text = Amount.ToString(), Location = new Vector2I(64, 43), Size = new Vector2I(78, 22), MaxLength = 12 };
         _amount.TextChanged += value => UpdateAmount(value);
         AddControl(_amount);
@@ -57,24 +65,61 @@ public sealed partial class ItemAmountDialog : DXWindow
         var down = new DXButton { Text = "▼", FontSize = 8, Type = DXButton.ButtonType.SmallButton, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(144, 55), Size = new Vector2I(20, 12) };
         down.MouseClick += (s, e) => UpdateAmount((Amount - step).ToString());
         AddControl(down);
-        var ok = new DXButton { Text = "确定", Type = DXButton.ButtonType.Default, Location = new Vector2I(128, 103), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
-        ok.MouseClick += (s, e) => { _confirm?.Invoke(Amount); WindowManager.Close(this); };
-        AddControl(ok);
-        // 原版 AmountBox_KeyPress：Enter 确认、Escape 关闭。
-        _amount.TextSubmitted += _ => { _confirm?.Invoke(Amount); WindowManager.Close(this); };
+        // 原版 ConfirmButton.Enabled = Amount > 0：键入 0 时按钮灰置，
+        // DXControl._GuiInput 对禁用控件直接 return，点击不会派发。
+        _ok = new DXButton { Text = "确定", Type = DXButton.ButtonType.Default, Location = new Vector2I(128, 103), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = Amount > 0 };
+        _ok.MouseClick += (s, e) => Confirm();
+        AddControl(_ok);
+        // 原版 AmountBox_KeyPress：Enter 确认（各调用点还有 window.Amount<=0
+        // 防护，这里同样不发包、窗口保留供修正）、Escape 关闭。
+        _amount.TextSubmitted += _ => Confirm();
         _amount.Canceled += () => WindowManager.Close(this);
         _amount.GrabFocus();
+        // 原版构造末尾 AmountBox.Value = 1 触发 ValueChanged：边框绿、货币
+        // 预览数量立即同步为输入值。
+        UpdateAmount(Amount.ToString());
     }
+
+    private void Confirm()
+    {
+        if (Amount <= 0) return;
+        _confirm?.Invoke(Amount);
+        WindowManager.Close(this);
+    }
+
+    /// <summary>原版 DXNumberTextBox.TextChanged 的解析钳制：失败回落到 0，
+    /// 可解析值钳到 [0, max]。</summary>
+    public static long ParseClamp(string value, long max)
+    {
+        long amount = 0;
+        if (long.TryParse(value, out long parsed)) amount = parsed;
+        return Math.Clamp(amount, 0, Math.Max(1, max));
+    }
+
+    /// <summary>审计/测试入口：等价于用户键入触发 TextChanged（headless 下
+    /// LineEdit.text_changed 不派发，生产路径仍由 TextChanged 驱动）。</summary>
+    internal void ApplyText(string value) => UpdateAmount(value);
 
     private void UpdateAmount(string value)
     {
-        if (!long.TryParse(value, out long amount)) return;
-        Amount = Math.Clamp(amount, 1, _max);
+        // 原版 DXNumberTextBox.TextChanged：解析失败回落到 MinValue=0，
+        // 可解析值钳制到 [MinValue=0, MaxValue]。
+        Amount = ParseClamp(value, _max);
         if (_amount.Text != Amount.ToString()) _amount.Text = Amount.ToString();
         // 原版 DXItemAmountWindow.ValueChanged 边框反馈：<=0 红、等于上限橙、其余绿。
         _amount.BorderColour = BorderColourFor(Amount, _max);
-        if (_item != null && _item.Info?.ItemName == "金币") _item.Count = Amount;
+        if (_ok != null) _ok.Enabled = Amount > 0;
+        if (_item != null && IsCurrencyItem(_item.Info))
+        {
+            // 原版货币分支：item.Count = Amount 后 RefreshItem 实时刷新预览数量。
+            _item.Count = Amount;
+            _itemCell?.RefreshItem();
+        }
     }
+
+    /// <summary>原版 CEnvir.IsCurrencyItem：物品是任意货币的 DropItem。</summary>
+    public static bool IsCurrencyItem(ItemInfo info) => info != null
+        && Globals.CurrencyInfoList?.Binding?.FirstOrDefault(x => x.DropItem == info) != null;
 
     /// <summary>原版 DXNumberBox.Change = Max(1, Count/5) 的步进值。</summary>
     public static long ComputeStep(long max) => Math.Max(1, max / 5);

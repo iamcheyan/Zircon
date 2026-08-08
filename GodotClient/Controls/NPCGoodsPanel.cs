@@ -278,21 +278,33 @@ public partial class NPCGoodsPanel : DXControl
 
         long maxAmount = good.IsCurrencyGood ? long.MaxValue : Math.Max(1, good.Item.StackSize);
         maxAmount = good.MaxAmountFor(currency, balance, maxAmount);
-        if (maxAmount <= 0) return;
+        if (maxAmount <= 0)
+        {
+            // 原版：余额不足以购买时提示。
+            GameScene.Game?.ReceiveChat($"You do not have enough {currency?.Name ?? "gold"} to buy a '{good.Item.ItemName}'.", MessageType.System);
+            return;
+        }
 
         if (!good.IsCurrencyGood && good.Item.Weight > 0)
         {
             int freeWeight = (game.PlayerStats?[Stat.BagWeight] ?? 0) - game.BagWeight;
             if (good.Item.ItemType is ItemType.Amulet or ItemType.Poison)
             {
-                if (freeWeight < good.Item.Weight) return;
+                if (freeWeight < good.Item.Weight)
+                {
+                    GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+                    return;
+                }
             }
             else
                 maxAmount = Math.Min(maxAmount, Math.Max(0, freeWeight / good.Item.Weight));
 
-            // 背包没有可用重量时不应打开一个 Amount=0 的确认框；原版会在
-            // 此处直接以超重状态终止购买流程。
-            if (maxAmount <= 0) return;
+            // 背包没有可用重量时不应打开一个 Amount=0 的确认框；原版超重时直接提示终止。
+            if (maxAmount <= 0)
+            {
+                GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+                return;
+            }
         }
 
         if (good.Item.StackSize > 1 || good.IsCurrencyGood)
@@ -307,8 +319,16 @@ public partial class NPCGoodsPanel : DXControl
             return;
         }
 
-        if (good.Item.Weight > 0 && (game.PlayerStats?[Stat.BagWeight] ?? 0) - game.BagWeight < good.Item.Weight) return;
-        if (good.CostFor(currency, 1) > balance) return;
+        if (good.Item.Weight > 0 && (game.PlayerStats?[Stat.BagWeight] ?? 0) - game.BagWeight < good.Item.Weight)
+        {
+            GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+            return;
+        }
+        if (good.CostFor(currency, 1) > balance)
+        {
+            GameScene.Game?.ReceiveChat($"You do not have enough {currency?.Name ?? "gold"} to buy a '{good.Item.ItemName}'.", MessageType.System);
+            return;
+        }
         game.SendNPCBuy(good.Index, 1, _guildFunds.Checked);
         _guildFunds.Checked = false;
     }

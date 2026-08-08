@@ -183,6 +183,24 @@ public partial class CompanionDialog : DXWindow
         _bagPanel.AddControl(label); return label;
     }
 
+    // 轻量统计刷新 (对应原版 CompanionBox.Refresh): 只更新标签/进度条/预览,
+    // 绝不触碰 GameScene 的 InventoryArray/EquipmentArray —— 那些数组是
+    // ItemMove/ItemChanged/AddCompanionItems 的唯一数据源, 每次
+    // CompanionUpdate/CompanionItemsGained 都做 ApplyCompanion 的全量
+    // Clear+Copy 会抹掉刚写入的协议状态 (S17b 食物 count=9 被置空即此因)。
+    public void RefreshCompanionStats(ClientUserCompanion companion)
+    {
+        if (companion == null) return;
+        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.MonsterName ?? $"伙伴 #{companion.CompanionIndex}" : companion.Name;
+        _level.Text = $"Lv. {companion.Level}";
+        var info = Globals.CompanionLevelInfoList?.Binding?.FirstOrDefault(x => x.Level == companion.Level);
+        int maxExperience = Math.Max(1, info?.MaxExperience ?? 1), maxHunger = Math.Max(1, info?.MaxHunger ?? 100);
+        _experience.Text = $"{companion.Experience / (float)maxExperience:P0}"; _hunger.Text = $"{companion.Hunger} / {maxHunger}"; _health.Text = "100%";
+        SetBar(_healthFill, 128, 1); SetBar(_experienceFill, 152, companion.Experience / (float)maxExperience); SetBar(_hungerFill, 152, companion.Hunger / (float)maxHunger);
+        RefreshPreview(companion);
+        RefreshBonusRows(); RefreshBagWeight();
+    }
+
     public void ApplyCompanion(ClientUserCompanion companion)
     {
         var previous = _companion;
@@ -206,13 +224,7 @@ public partial class CompanionDialog : DXWindow
             _name.Text = "未召唤伙伴"; _level.Text = "0"; _experience.Text = "0%"; _hunger.Text = "0 / 0"; _health.Text = "0%";
             SetBar(_healthFill, 128, 0); SetBar(_experienceFill, 152, 0); SetBar(_hungerFill, 152, 0); RefreshBonusRows(); return;
         }
-        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.MonsterName ?? $"伙伴 #{companion.CompanionIndex}" : companion.Name;
-        _level.Text = $"Lv. {companion.Level}";
-        var info = Globals.CompanionLevelInfoList?.Binding?.FirstOrDefault(x => x.Level == companion.Level);
-        int maxExperience = Math.Max(1, info?.MaxExperience ?? 1), maxHunger = Math.Max(1, info?.MaxHunger ?? 100);
-        _experience.Text = $"{companion.Experience / (float)maxExperience:P0}"; _hunger.Text = $"{companion.Hunger} / {maxHunger}"; _health.Text = "100%";
-        SetBar(_healthFill, 128, 1); SetBar(_experienceFill, 152, companion.Experience / (float)maxExperience); SetBar(_hungerFill, 152, companion.Hunger / (float)maxHunger);
-        RefreshPreview(companion);
+        RefreshCompanionStats(companion);
         // GameScene 的数组是所有 ItemMove/ItemChanged/腰带汇总的唯一数据源。
         // 伙伴模型数组只作为切换伙伴时的快照复制进来，不能让 UI 继续引用
         // 另一份数组，否则操作成功后显示与协议状态会分叉。

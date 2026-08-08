@@ -203,5 +203,10 @@ public partial class TradeDialog : DXWindow
     }
     public static bool ShouldUnlockTradeSource(ClientUserItem current, ClientUserItem expected)
         => ReferenceEquals(current, expected);
-    private void CloseTrade() { GameScene.Game?.SendTradeClose(); WindowManager.Close(this); }
+    // 原版 OnIsVisibleChanged：关闭窗口时清除链接，且仅非观察者且交易中才发 TradeClose。
+    private void CloseTrade()
+    {
+        if (GameScene.Game?.IsObserver != true) GameScene.Game?.SendTradeClose();
+        WindowManager.Close(this);
+    }
 }

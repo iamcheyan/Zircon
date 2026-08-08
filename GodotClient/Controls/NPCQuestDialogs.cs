@@ -95,6 +95,10 @@ public sealed partial class NPCQuestDialog : DXWindow
     private int _selectedChoice = -1;
     private QuestInfo _quest;
 
+    /// <summary>原版 Complete 校验：有可选奖励时必须先选中一项（QuestSelectReward 提示）。</summary>
+    public static bool CanComplete(int choiceRewards, int selectedChoice)
+        => choiceRewards == 0 || (selectedChoice >= 0 && selectedChoice < choiceRewards);
+
     public NPCQuestDialog()
     {
         HasTitle = false; HasFooter = false; Movable = false;
@@ -132,7 +136,7 @@ public sealed partial class NPCQuestDialog : DXWindow
         _complete.MouseClick += (s, e) =>
         {
             if (_quest == null || GameScene.Game?.IsObserver == true) return;
-            if (_choiceRewards.Count > 0 && (_selectedChoice < 0 || _selectedChoice >= _choiceRewards.Count))
+            if (!CanComplete(_choiceRewards.Count, _selectedChoice))
             {
                 GameScene.Game?.ReceiveChat("Please select a reward.", MessageType.System);
                 return;

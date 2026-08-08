@@ -680,6 +680,12 @@ public partial class DXItemCell : DXControl
         from.MoveItem(this);
     }
 
+    /// <summary>原版消耗品分支的冷却时长：Max(250, Durability) 毫秒。</summary>
+    public static int ComputeUseCooldownMs(ItemInfo info) => Math.Max(250, info?.Durability ?? 0);
+
+    /// <summary>原版骑马限制：Shape 19-22 的消耗品（坐骑类食物/道具）骑马时不可使用。</summary>
+    public static bool ShapeBlocksWhileMounted(ItemInfo info) => info != null && info.Shape is 19 or 20 or 21 or 22;
+
     /// <summary>原版 UseItem 的 Ring/Bracelet 语义：优先空槽，否则落到第二槽（可替换）。</summary>
     public static EquipmentSlot? FirstAvailableEquipSlot(DXItemCell[] equipmentCells, params EquipmentSlot[] slots)
     {
@@ -1098,6 +1104,8 @@ public partial class DXItemCell : DXControl
     /// <summary>使用物品: 可穿戴->穿戴, 消耗品/卷轴->C.ItemUse，并处理系统物品/礼包/宝箱。</summary>
     public bool UseItem()
     {
+        if (AutoLoginArgs.OperationAuditExt && GridType == GridType.CompanionInventory && Item?.Info?.ItemType == ItemType.CompanionFood)
+            GD.Print($"[OperationAuditExt] S17b gate itemNull={Item == null} locked={Locked} readOnly={ReadOnly} linked={LinkedSourceSlot} selected={SelectedCell == this} grid={GridType}");
         if (Item == null || Locked || ReadOnly || LinkedSourceSlot >= 0 || SelectedCell == this ||
             GameScene.Game == null || GameScene.Game.IsObserver) return false;
         if (!GameScene.Game.CanUseItem(Item)) return false;
@@ -1177,14 +1185,16 @@ public partial class DXItemCell : DXControl
             case ItemType.CompanionFood:
             case ItemType.ItemPart:
                 // 原版在所有可消耗物品分支都先走 CanUseItem；否则性别、职业、等级、属性和伙伴等级限制会被绕过。
+                if (AutoLoginArgs.OperationAuditExt && Item.Info.ItemType == ItemType.CompanionFood)
+                    GD.Print($"[OperationAuditExt] S17b branch canUse={GameScene.Game.CanUseItem(Item)} grid={GridType} mounted={GameScene.Game.IsMounted} cooldown={GameScene.Game.IsUseItemOnCooldown(Item)} remain={GameScene.Game.UseItemTime - Godot.Time.GetTicksMsec()} dur={Item.Info.Durability} effect={Item.Info.ItemEffect}");
                 if (!GameScene.Game.CanUseItem(Item)) return false;
                 if (GridType != GridType.Inventory && GridType != GridType.PartsStorage &&
                     GridType != GridType.CompanionInventory && GridType != GridType.CompanionEquipment) return false;
-                if (GameScene.Game.IsMounted && Item.Info.Shape is 19 or 20 or 21 or 22) return false;
+                if (GameScene.Game.IsMounted && ShapeBlocksWhileMounted(Item.Info)) return false;
                 if (GameScene.Game.IsUseItemOnCooldown(Item) &&
                     Item.Info.ItemEffect != ItemEffect.ElixirOfPurification) return false;
 
-                GameScene.Game.SetUseItemCooldown(Math.Max(250, Item.Info.Durability));
+                GameScene.Game.SetUseItemCooldown(ComputeUseCooldownMs(Item.Info));
                 Locked = true;
                 UpdateBorder();
                 GameScene.Game.SendItemUse(GridType, Slot);

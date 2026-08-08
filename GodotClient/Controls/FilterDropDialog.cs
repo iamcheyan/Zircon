@@ -58,6 +58,8 @@ public sealed partial class FilterDropDialog : DXWindow
 /// <summary>可嵌入 DX 窗口的文本输入，保留 Godot 输入法/复制粘贴能力。</summary>
 public sealed partial class DXTextInput : DXControl
 {
+    /// <summary>原版 Constants.PrimaryColour(198,166,99) 的输入框默认边框色。</summary>
+    public static readonly Color DefaultBorderColour = new(.55f, .4f, .18f);
     private readonly LineEdit _edit;
     private int _fontSize = 10;
     public event Action<string> TextChanged;
@@ -105,7 +107,7 @@ public sealed partial class DXTextInput : DXControl
     public DXTextInput()
     {
         Border = true;
-        BorderColour = new Color(.55f, .4f, .18f);
+        BorderColour = DefaultBorderColour;
         _edit = new LineEdit { Flat = true, MouseFilter = MouseFilterEnum.Stop, Position = new Vector2(2, 1), Size = new Vector2(Size.X - 4, Size.Y - 2) };
         var font = MirSkin.GetFont();
         if (font != null) _edit.AddThemeFontOverride("font", font);

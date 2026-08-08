@@ -38,6 +38,15 @@ public partial class GuildDialog : DXWindow
     public System.Drawing.Color GuildColour => _guild?.Colour ?? System.Drawing.Color.White;
     public DXItemCell[] GuildStorageCells => _storageGrid?.Cells ?? System.Array.Empty<DXItemCell>();
     public ClientUserItem[] GuildStorageItems => _storageItems;
+    public int StorageLimit => _guild?.StorageLimit ?? 0;
+
+    // 原版 RefreshStorage: GridSize = (11, Max(20, Ceil(StorageLimit / 14)))，
+    // 容量决定行数；每行 11 列。
+    public static Vector2I StorageGridSize(int limit)
+        => new(11, Math.Max(20, (int)Math.Ceiling(limit / 14f)));
+
+    // 超出 StorageLimit 的格子不可交互（服务端同样拒绝），客户端先行禁用。
+    public static bool StorageCellEnabled(int index, int limit) => index < Math.Max(0, limit);
 
     public GuildDialog()
     {
@@ -98,7 +107,7 @@ public partial class GuildDialog : DXWindow
         _scroll.MaxValue = _tab == 1
             ? Mathf.Max(_scroll.VisibleSize, members.Count * 24)
             : _tab == 2 && _guild != null
-                ? Math.Max(20, (int)Math.Ceiling(_guild.StorageLimit / 14f))
+                ? StorageGridSize(_guild.StorageLimit).Y
                 : 0;
         if (_tab == 0)
         {
@@ -142,7 +151,7 @@ public partial class GuildDialog : DXWindow
             clearFilter.MouseClick += (o, e) => { _storageFilter.Text = string.Empty; RefreshRows(); };
             _content.AddControl(clearFilter);
             int storageLimit = Math.Max(0, _guild?.StorageLimit ?? 0);
-            int storageRows = Math.Max(20, (int)Math.Ceiling(storageLimit / 14f));
+            int storageRows = StorageGridSize(storageLimit).Y;
             _storageGrid = new DXItemGrid
             {
                 GridType = GridType.GuildStorage,
@@ -445,7 +454,7 @@ public partial class GuildDialog : DXWindow
         return Size == new Vector2I(456, 556) && tabs && noGuildTabs && background;
     }
 
-    private void SelectTab(int page)
+    public void SelectTab(int page)
     {
         if (_guild == null && page > 0) return;
         _tab = Math.Clamp(page, 0, 5);

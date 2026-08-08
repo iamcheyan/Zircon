@@ -266,6 +266,10 @@ public partial class CommunicationDialog : DXWindow
         if (_detail != null && _page == 1) OpenMail(index);
     }
 
+    // 审计访问器: 只读快照, 不触发 UI 重建
+    internal List<ClientMailInfo> MailSnapshot() => _mails.Where(x => x != null).ToList();
+    internal ClientMailInfo FindMail(int index) => _mails.FirstOrDefault(x => x?.Index == index);
+
     public bool AuditMailSendLifecycle(out string details)
     {
         ShowPage(2);
@@ -286,6 +290,42 @@ public partial class CommunicationDialog : DXWindow
         bool successClears = _recipient.Text.Length == 0 && _subject.Text.Length == 0 && _message.Text.Length == 0;
         details = $"first={firstPacketRetains} failure={failureRetains} success={successClears}";
         return firstPacketRetains && failureRetains && successClears;
+    }
+
+    /// <summary>断线重连回滚：发送中（pending 链接已锁定）断线时，
+    /// CancelPendingMailLinks 解锁来源、清 pending、重置发送锁，重连后可重新发送。</summary>
+    public bool AuditDisconnectRollback(out string details)
+    {
+        ShowPage(2);
+        if (_sendMailCells == null || _sendMailCells.Length == 0)
+        {
+            details = "no send cells";
+            return false;
+        }
+        var info = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.StackSize > 1);
+        if (info == null)
+        {
+            details = "no stackable item";
+            return false;
+        }
+        var item = new ClientUserItem(info, 5);
+        var cell = _sendMailCells[0];
+        cell.ItemGrid = _sendMailItems;
+        cell.Slot = 0;
+        _sendMailItems[0] = item;
+        cell.LinkedSourceGrid = GridType.Inventory;
+        cell.LinkedSourceSlot = 0;
+
+        var links = PrepareMailSend();
+        bool pendingEstablished = links != null && links.Count == 1;
+        _mailSending = true; // 模拟发送中（按钮已按下、等待回包）
+        CancelPendingMailLinks();
+        bool released = _pendingMailLinks.Count == 0 && !_mailSending;
+        var links2 = PrepareMailSend();
+        bool resendable = links2 != null;
+        CancelPendingMailLinks();
+        details = $"pending={pendingEstablished} released={released} resendable={resendable}";
+        return pendingEstablished && released && resendable;
     }
 
     private void ShowPage(int page)
@@ -621,7 +661,8 @@ public partial class CommunicationDialog : DXWindow
     {
         AddBodyLabel("收件人", 8, 8, 9, new Color(1f, 0.85f, 0.3f));
         _recipient = new DXTextInput { Location = new Vector2I(86, 11), Size = new Vector2I(115, 18), MaxLength = Globals.MaxCharacterNameLength };
-        _recipient.TextChanged += _ => UpdateSendState();
+        // 原版 RecipientBox_TextChanged：空→原色、合法→绿、否则红。
+        _recipient.TextChanged += _ => UpdateRecipientBox();
         _body.AddControl(_recipient);
         AddBodyLabel("主题", 8, 30, 9, new Color(1f, 0.85f, 0.3f));
         _subject = new DXTextInput { Location = new Vector2I(86, 30), Size = new Vector2I(155, 18), MaxLength = 30 };
@@ -641,7 +682,9 @@ public partial class CommunicationDialog : DXWindow
         }
         AddBodyLabel("金币", 8, 304, 9, new Color(1f, 0.85f, 0.3f));
         var gold = new DXTextInput { Text = "0", Location = new Vector2I(86, 303), Size = new Vector2I(122, 18), MaxLength = 10 };
-        gold.TextChanged += _ => UpdateSendState(gold);
+        // 原版 SendGoldBox.ValueTextBox.ValueChanged（GoldBox_ValueChanged）：
+        // MaxValue=2000000000 钳制 + 边框色（0 原色、合法绿、否则红）。
+        gold.TextChanged += _ => UpdateGoldBox(gold);
         _body.AddControl(gold);
         if (_sendButton == null)
         {
@@ -667,13 +710,57 @@ public partial class CommunicationDialog : DXWindow
         amount = 0;
         long available = GameScene.Game?.Currencies.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
         return !_mailSending && _recipient != null && Globals.CharacterReg.IsMatch(_recipient.Text ?? string.Empty)
-            && gold != null && long.TryParse(gold.Text, out amount) && amount >= 0 && amount <= 2_000_000_000L && amount <= available;
+            && gold != null && GoldBoxValid(gold.Text ?? string.Empty, available) && long.TryParse(gold.Text, out amount);
     }
 
     private void UpdateSendState(DXTextInput gold = null)
     {
         if (_sendButton == null) return;
         _sendButton.Enabled = IsMailSendValid(gold, out _);
+    }
+
+    private static readonly Color _inputGreen = new(0.3f, 0.9f, 0.35f);
+    private static readonly Color _inputRed = new(1f, 0.25f, 0.25f);
+
+    /// <summary>原版 DXNumberBox.MaxValue=2000000000 钳制：输入超限自动修正为上限。</summary>
+    public static string ClampGoldInput(string text)
+        => long.TryParse(text, out long v) && v > 2_000_000_000L ? "2000000000" : text;
+
+    /// <summary>原版 GoldValid = Value >= 0 && Value <= User.Gold.Amount（附加 2e9 上限）。</summary>
+    public static bool GoldBoxValid(string text, long available)
+        => long.TryParse(text, out long amount) && amount >= 0 && amount <= 2_000_000_000L && amount <= available;
+
+    /// <summary>原版 GoldBox_ValueChanged 边框色：0→原色、合法→绿、否则红。</summary>
+    public static Color GoldBorderColour(string text, long available)
+        => text == "0" ? DXTextInput.DefaultBorderColour
+            : GoldBoxValid(text, available) ? _inputGreen : _inputRed;
+
+    /// <summary>原版 RecipientBox_TextChanged 边框色：空→原色、合法→绿、否则红。</summary>
+    public static Color RecipientBorderColour(string text)
+        => string.IsNullOrEmpty(text) ? DXTextInput.DefaultBorderColour
+            : Globals.CharacterReg.IsMatch(text) ? _inputGreen : _inputRed;
+
+    /// <summary>原版 RecipientBox_TextChanged：空→原色、合法→绿、否则红。</summary>
+    private void UpdateRecipientBox()
+    {
+        _recipient.BorderColour = RecipientBorderColour(_recipient?.Text ?? string.Empty);
+        UpdateSendState();
+    }
+
+    /// <summary>原版 GoldBox_ValueChanged：DXNumberBox MaxValue=2000000000 钳制
+    /// （输入超限自动修正为上限，不改红）；0→原色、合法（≤可用金币）→绿、否则红。</summary>
+    private void UpdateGoldBox(DXTextInput gold)
+    {
+        if (gold == null) return;
+        string clamped = ClampGoldInput(gold.Text);
+        if (clamped != gold.Text)
+        {
+            gold.Text = clamped;
+            return; // TextChanged 重入，递归终止于钳制后的值
+        }
+        long available = GameScene.Game?.Currencies.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
+        gold.BorderColour = GoldBorderColour(gold.Text, available);
+        UpdateSendState(gold);
     }
 
     public bool TryRouteItem(DXItemCell source)

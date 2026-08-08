@@ -211,12 +211,13 @@ public partial class GameStoreDialog : DXWindow
         }
 
         if (_favourites.Count > 0) Add("收藏", () => SetFilter(GameStoreCategory.Favourites));
-        if (Globals.StoreInfoList?.Binding.Any(x => x?.Item != null) == true) Add("新品", () => SetFilter(GameStoreCategory.NewItems));
         var filters = Globals.StoreInfoList?.Binding.Where(x => x?.Item != null)
             .SelectMany(x => (x.Filter ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries))
             .Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
         foreach (var filter in filters) Add($"{filter}", () => SetFilter(GameStoreCategory.All, null, filter, true), 1);
+
+        if (Globals.StoreInfoList?.Binding.Any(x => x?.Item != null) == true) Add("新品", () => SetFilter(GameStoreCategory.NewItems));
 
         Add("全部商品", () => SetFilter(GameStoreCategory.All));
         Add("装备", () => SetFilter(GameStoreCategory.Equipment));
@@ -299,7 +300,8 @@ public partial class GameStoreDialog : DXWindow
             if (!info.Available) return;
             int count = quantityValue;
             long total = (long)EffectivePrice(info) * count;
-            var confirm = new ConfirmDialog($"{info.Item.ItemName} x{count}\n单价: {EffectivePrice(info):#,##0}\n总价: {total:#,##0}", "确认购买", () => GameScene.Game?.SendGameStoreBuy(info.Index, count, _useHuntGold));
+            string currency = _useHuntGold ? "狩猎金币" : "游戏金币";
+            var confirm = new ConfirmDialog($"{info.Item.ItemName} x{count}\n单价: {EffectivePrice(info):#,##0} {currency}\n总价: {total:#,##0}", "确认购买", () => GameScene.Game?.SendGameStoreBuy(info.Index, count, _useHuntGold));
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         };
         row.AddControl(buy);
