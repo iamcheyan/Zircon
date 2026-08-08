@@ -34,7 +34,8 @@ public sealed partial class ConfirmDialog : DXWindow
             OutlineColour = Colors.Black,
             Align = HorizontalAlignment.Center,
             AutoSize = false,
-            Size = new Vector2I(252, 25),
+            Location = new Vector2I(0, 8),
+            Size = new Vector2I(252, 18),
             IsControl = false,
         });
         AddControl(new DXLabel

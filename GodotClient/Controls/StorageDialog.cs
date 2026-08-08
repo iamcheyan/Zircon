@@ -52,8 +52,8 @@ public partial class StorageDialog : DXWindow
             Align = HorizontalAlignment.Center,
             VAlign = VerticalAlignment.Center,
             AutoSize = false,
-            Location = new Vector2I(120, 4),
-            Size = new Vector2I(170, 20),
+            Location = new Vector2I(120, 8),
+            Size = new Vector2I(170, 18),
             IsControl = false,
         });
 
@@ -61,8 +61,8 @@ public partial class StorageDialog : DXWindow
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
         };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => { CancelLinks(); Visible = false; };
         AddControl(close);
 
@@ -177,6 +177,23 @@ public partial class StorageDialog : DXWindow
         bool overflowDisabled = size < Grid.Cells.Length && !Grid.Cells[size].Enabled;
         details = $"capacity={size} edge={edgeEnabled} overflow={overflowDisabled}";
         return edgeEnabled && overflowDisabled;
+    }
+
+    public bool AuditCancelLinks(out string details)
+    {
+        var cell = Grid.Cells.FirstOrDefault();
+        if (cell == null) { details = "no storage cell"; return false; }
+        var items = new ClientUserItem[1];
+        items[0] = new ClientUserItem { Count = 1 };
+        cell.ItemGrid = items;
+        cell.Slot = 0;
+        cell.LinkedSourceGrid = GridType.Inventory;
+        cell.LinkedSourceSlot = 4;
+        cell.Selected = true;
+        CancelLinks();
+        bool cleared = items[0] == null && cell.LinkedSourceSlot < 0 && !cell.Selected && DXItemCell.SelectedCell != cell;
+        details = $"cleared={cleared} sourceSlot={cell.LinkedSourceSlot} selected={cell.Selected}";
+        return cleared;
     }
 
     private DXButton CreateTab(string text, int x, bool parts)

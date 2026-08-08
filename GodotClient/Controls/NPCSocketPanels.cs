@@ -26,6 +26,7 @@ public sealed partial class NPCSocketPanel : DXControl
     {
         Size = new Vector2I(188, 320);
         _target = Cell(GridType.SocketTarget, 8, 38, new Vector2I(170, 150), false, true);
+        _target.ItemLibraryFile = LibraryFile.Inventory;
         _gem = Cell(GridType.SocketGem, 136, 45, new Vector2I(46, 46));
         for (int i = 0; i < _sockets.Length; i++)
         {
@@ -47,6 +48,22 @@ public sealed partial class NPCSocketPanel : DXControl
         _start = new DXButton { Text = "Start", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(16, 280), LibraryFile = LibraryFile.Interface, Index = -1 };
         _start.MouseClick += (s, e) => Send();
         AddControl(_start);
+    }
+
+    public bool AuditLayout(out string details)
+    {
+        bool pass = Size == new Vector2I(188, 320)
+            && _target.Position == new Vector2I(8, 38)
+            && _target.Size == new Vector2I(170, 150)
+            && _target.Hidden
+            && _target.ItemLibraryFile == LibraryFile.Inventory
+            && _gem.Position == new Vector2I(136, 45)
+            && _sockets[0].Position == new Vector2I(21, 211)
+            && _sockets[1].Position == new Vector2I(74, 211)
+            && _sockets[2].Position == new Vector2I(127, 211)
+            && _start.Position == new Vector2I(16, 280);
+        details = $"target={_target.Position}/{_target.Size} targetLibrary={_target.ItemLibraryFile} sockets={_sockets.Length}";
+        return pass;
     }
 
     private DXItemCell Cell(GridType type, int x, int y, Vector2I size, bool readOnly = false, bool hidden = false)
@@ -285,6 +302,19 @@ public sealed partial class NPCSocketCombinePanel : DXControl
         _start = new DXButton { Text = "Combine", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(17, 285), LibraryFile = LibraryFile.Interface, Index = -1 };
         _start.MouseClick += (s, e) => Send();
         AddControl(_start);
+    }
+
+    public bool AuditLayout(out string details)
+    {
+        bool pass = Size == new Vector2I(192, 326)
+            && _gems[0].Position == new Vector2I(77, 45)
+            && _gems[1].Position == new Vector2I(26, 121)
+            && _gems[2].Position == new Vector2I(127, 121)
+            && _result.Position == new Vector2I(77, 213)
+            && _start.Position == new Vector2I(17, 285)
+            && CombineFrames.Length == 21;
+        details = $"gems={_gems[0].Position},{_gems[1].Position},{_gems[2].Position} result={_result.Position} frames={CombineFrames.Length}";
+        return pass;
     }
 
     private void Send()

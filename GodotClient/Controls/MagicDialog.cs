@@ -31,7 +31,10 @@ public partial class MagicDialog : DXWindow
 
     public MagicDialog()
     {
-        HasTitle = true;
+        // 原版 MagicDialog 自己在背景图上创建 TitleLabel，位置为 y=8；
+        // 不能使用 DXWindow 的通用标题栏（y=2），否则会与 HeaderImage
+        // 重叠并把技能页签整体视觉上推高。
+        HasTitle = false;
         Movable = true;
         Text = "技能";
         Clip = true;
@@ -56,14 +59,24 @@ public partial class MagicDialog : DXWindow
         };
         AddControl(_background);
 
-        var close = new DXButton
-        {
-            LibraryFile = LibraryFile.Interface,
-            Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
-        };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => Visible = false;
         AddControl(close);
+
+        AddControl(new DXLabel
+        {
+            Text = "魔法",
+            FontSize = 10,
+            TextColour = new Color(1f, 0.85f, 0.3f),
+            DrawOutline = true,
+            OutlineColour = Colors.Black,
+            Align = HorizontalAlignment.Center,
+            VAlign = VerticalAlignment.Center,
+            Location = new Vector2I(0, 8),
+            Size = new Vector2I((int)Size.X, 18),
+            IsControl = false,
+        });
 
         _list = new DXControl
         {
@@ -106,7 +119,8 @@ public partial class MagicDialog : DXWindow
 
     public bool AuditLayout(out string details)
     {
-        bool valid = Size == new Vector2I(419, 511)
+        bool valid = !HasTitle
+            && Size == new Vector2I(419, 511)
             && _background.Location == new Vector2I(0, 66)
             && _list.Location == new Vector2I(15, 70)
             && _list.Size == new Vector2I(375, 418)

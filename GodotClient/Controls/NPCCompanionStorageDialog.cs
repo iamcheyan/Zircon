@@ -26,10 +26,11 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
         AddControl(background);
         Size = (Vector2I)background.Size;
         if (Size.X < 280 || Size.Y < 230) Size = new Vector2I(300, 230);
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I((int)Size.X - 30, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "伙伴仓库", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
-            Align = HorizontalAlignment.Center, Size = new Vector2I((int)Size.X, 25), IsControl = false });
+        AddControl(new DXLabel { Text = "伙伴仓库", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
+            Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         AddControl(new DXLabel { Text = "名称", FontSize = 9, Location = new Vector2I(50, 52), IsControl = false });
         AddControl(new DXLabel { Text = "等级", FontSize = 9, Location = new Vector2I(50, 74), IsControl = false });
@@ -50,7 +51,7 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
         _store = Button("收起", 30, (int)Size.Y - 43);
         _retrieve = Button("召回", 30, (int)Size.Y - 43);
         _release = Button("释放", 145, (int)Size.Y - 43);
-        _store.MouseClick += (s, e) => GameScene.Game?.SendCompanionStore();
+        _store.MouseClick += (s, e) => GameScene.Game?.SendCompanionStore(SelectedCompanionIndex);
         _retrieve.MouseClick += (s, e) => GameScene.Game?.SendCompanionRetrieve(SelectedCompanionIndex);
         _release.MouseClick += (s, e) =>
         {

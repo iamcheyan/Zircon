@@ -67,9 +67,10 @@ public sealed partial class ConsignmentDialog : DXWindow
             Size = Size,
             MouseFilter = MouseFilterEnum.Ignore,
         });
-        AddControl(new DXLabel { Text = "寄售行", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(720, 26), IsControl = false });
+        AddControl(new DXLabel { Text = "寄售行", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(720, 18), IsControl = false });
 
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(690, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this);
         AddControl(close);
         _pageBackground = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 301, FixedSize = true, Size = new Vector2I(720, 332), Location = new Vector2I(0, 60), MouseFilter = MouseFilterEnum.Ignore };
@@ -210,7 +211,7 @@ public sealed partial class ConsignmentDialog : DXWindow
 
     public bool TryRouteItem(DXItemCell source)
     {
-        if (!_consignPage.Visible || source?.GridType is not (GridType.Inventory or GridType.Storage or GridType.PartsStorage)) return false;
+        if (GameScene.Game?.IsObserver == true || !_consignPage.Visible || source?.GridType is not (GridType.Inventory or GridType.Storage or GridType.PartsStorage)) return false;
         var target = _consignPopup?.Visible == true ? _consignPopup.ItemCell : _consignTarget;
         if (target == null || source.Item == null || source.Item.Flags.HasFlag(UserItemFlags.Marriage) ||
             source.Item.Flags.HasFlag(UserItemFlags.NonRefinable) || source.Item.Flags.HasFlag(UserItemFlags.Bound) ||
@@ -259,9 +260,9 @@ public sealed partial class ConsignmentDialog : DXWindow
         if (_consignPopup?.Visible == true) { _consignPopup.GrabFocus(); return; }
         _consignPopup = new ConsignItemDialog((cell, price) =>
         {
-            if (cell?.Item == null || price <= 0) return;
+            if (GameScene.Game?.IsObserver == true || cell?.Item == null || price <= 0) return;
             var source = FindSourceCell(cell.LinkedSourceGrid, cell.LinkedSourceSlot);
-            if (source == null) return;
+            if (source?.Item == null || cell.Item.Count <= 0 || cell.Item.Count > source.Item.Count) return;
             GameScene.Game?.SendMarketConsign(cell.LinkedSourceGrid, cell.LinkedSourceSlot, cell.Item.Count, price, _consignGuildFunds.Checked);
             // 原版确认后锁定来源格，并销毁寄售弹窗中的临时 Link，等待服务端库存回包。
             source.Locked = true;
@@ -463,6 +464,7 @@ public sealed partial class ConsignmentDialog : DXWindow
             long total = count * info.Price;
             var confirm = new ConfirmDialog($"{info.Item.Info?.ItemName ?? "物品"} x{count}\n单价: {info.Price:#,##0}\n总价: {total:#,##0}", "确认购买", () =>
             {
+                if (!CanConfirmBuy(GameScene.Game?.IsObserver == true, count, info.Item?.Count ?? 0)) return;
                 _buyButton.Enabled = false;
                 bool guildFunds = _buyGuildFunds.Checked;
                 _buyGuildFunds.Checked = false;
@@ -476,13 +478,19 @@ public sealed partial class ConsignmentDialog : DXWindow
     public static bool CanAttemptBuy(bool observer, int selectedIndex, int resultCount)
         => !observer && selectedIndex >= 0 && selectedIndex < resultCount;
 
+    public static bool CanConfirmBuy(bool observer, long count, long available)
+        => !observer && count > 0 && count <= available;
+
     public bool AuditBuyGuard(out string details)
     {
         bool valid = CanAttemptBuy(false, 0, 1)
             && !CanAttemptBuy(true, 0, 1)
             && !CanAttemptBuy(false, -1, 1)
-            && !CanAttemptBuy(false, 1, 1);
-        details = $"normal={CanAttemptBuy(false, 0, 1)} observer={CanAttemptBuy(true, 0, 1)} invalid={CanAttemptBuy(false, 1, 1)}";
+            && !CanAttemptBuy(false, 1, 1)
+            && CanConfirmBuy(false, 2, 2)
+            && !CanConfirmBuy(true, 1, 2)
+            && !CanConfirmBuy(false, 3, 2);
+        details = $"normal={CanAttemptBuy(false, 0, 1)} observer={CanAttemptBuy(true, 0, 1)} invalid={CanAttemptBuy(false, 1, 1)} confirm={CanConfirmBuy(false, 2, 2)}";
         return valid;
     }
 
@@ -495,12 +503,17 @@ public sealed partial class ConsignmentDialog : DXWindow
 
     private void RemoveSelected()
     {
+        if (GameScene.Game?.IsObserver == true) return;
         if (_selectedConsign < 0 || _selectedConsign >= _consignments.Count || _consignments[_selectedConsign] == null) return;
         var info = _consignments[_selectedConsign];
         if (info.Item == null) return;
         var amount = new ItemAmountDialog($"下架 {info.Item.Info?.ItemName ?? "物品"}", Math.Max(1, info.Item.Count), 1, count =>
         {
-            var confirm = new ConfirmDialog($"确定下架 {info.Item.Info?.ItemName ?? "物品"} x{count}？", "确认下架", () => GameScene.Game?.SendMarketCancel(info.Index, count));
+            var confirm = new ConfirmDialog($"确定下架 {info.Item.Info?.ItemName ?? "物品"} x{count}？", "确认下架", () =>
+            {
+                if (GameScene.Game?.IsObserver == true || info.Item == null || count <= 0 || count > info.Item.Count) return;
+                GameScene.Game.SendMarketCancel(info.Index, count);
+            });
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         });
         WindowManager.Open(amount, GameScene.Game?.UILayer ?? GetParent());
@@ -530,8 +543,9 @@ public sealed partial class ConsignItemDialog : DXWindow
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 303, FixedSize = true, Size = new Vector2I(296, 60), MouseFilter = MouseFilterEnum.Ignore });
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 304, FixedSize = true, Size = new Vector2I(296, 84), Location = new Vector2I(0, 60), MouseFilter = MouseFilterEnum.Ignore });
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 305, FixedSize = true, Size = new Vector2I(296, 84), Location = new Vector2I(0, 144), MouseFilter = MouseFilterEnum.Ignore });
-        AddControl(new DXLabel { Text = "寄售物品", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(296, 25), IsControl = false });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(264, 4) };
+        AddControl(new DXLabel { Text = "寄售物品", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(296, 18), IsControl = false });
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 306, Location = new Vector2I(24, 88), MouseFilter = MouseFilterEnum.Ignore });
         Grid = new DXItemGrid { GridSize = new Vector2I(1, 1), GridType = GridType.Consign, Location = new Vector2I(36, 98), Linked = true };

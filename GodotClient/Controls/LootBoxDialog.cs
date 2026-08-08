@@ -16,6 +16,7 @@ public sealed partial class LootBoxDialog : DXWindow
     private readonly ClientUserItem[] _items = new ClientUserItem[LootBoxInfo.SlotSize];
     private readonly DXButton _rerollCount, _rerollButton, _takeItemsButton, _confirmChoiceButton;
     private DXItemCell _selectedLootBox;
+    private ClientUserItem _selectedLootBoxItem;
     private LootBoxInfo _info;
     private int _selectedIndex = -1;
     private int _state;
@@ -54,6 +55,7 @@ public sealed partial class LootBoxDialog : DXWindow
         if (_info == null || _info.Contents == null || _info.Contents.Count == 0) return;
 
         _selectedLootBox = GameScene.Game?.InventoryCells?.ElementAtOrDefault(slot);
+        _selectedLootBoxItem = item;
         _selectedLootBox?.Locked = true;
         _selectedLootBox?.UpdateBorder();
         _selectedIndex = -1;
@@ -174,12 +176,12 @@ public sealed partial class LootBoxDialog : DXWindow
 
     public override void Close()
     {
-        if (_selectedLootBox != null)
+        if (_selectedLootBox != null && ReferenceEquals(_selectedLootBox.Item, _selectedLootBoxItem))
         {
             _selectedLootBox.Locked = false;
             _selectedLootBox.UpdateBorder();
         }
-        _selectedLootBox = null; _info = null; ResetCells(); base.Close();
+        _selectedLootBox = null; _selectedLootBoxItem = null; _info = null; ResetCells(); base.Close();
     }
 
     private static int LootBoxCountUnlocked(int state)
@@ -198,4 +200,6 @@ public sealed partial class LootBoxDialog : DXWindow
 
     public static bool CanRevealWithoutPrompt(int unlockedCount) => unlockedCount <= 0;
     public static bool CanSpend(long balance, long cost) => balance >= 0 && cost >= 0 && balance >= cost;
+    public static bool ShouldUnlockSource(ClientUserItem current, ClientUserItem expected)
+        => ReferenceEquals(current, expected);
 }

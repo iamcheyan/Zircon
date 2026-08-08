@@ -155,6 +155,7 @@ public partial class MainPanel : DXImageControl
 
     private static float PercentOf(int current, int max)
     {
+        if (current > 0 && max <= 0) max = current;
         if (max <= 0) return 0;
         return Math.Clamp(current / (float)max, 0f, 1f);
     }
@@ -346,20 +347,14 @@ public partial class MainPanel : DXImageControl
     {
         AttackModeLabel.Text = GetDescription(mode) ?? mode.ToString();
         AttackModeLabel.Visible = true;
-        CenterBarLabel(AttackModeLabel, FocusBar);
-        AttackModeLabel.Location = new Vector2I(
-            AttackModeLabel.Location.X,
-            FocusBar.Location.Y + (int)((FocusBar.Size.Y - AttackModeLabel.Size.Y) / 2) - 2);
+        AttackModeLabel.Location = new Vector2I(45, FocusBar.Location.Y + 14);
     }
 
     public void SetPetMode(PetMode mode)
     {
         PetModeLabel.Text = GetDescription(mode) ?? mode.ToString();
         PetModeLabel.Visible = true;
-        CenterBarLabel(PetModeLabel, FocusBar);
-        PetModeLabel.Location = new Vector2I(
-            FocusBar.Location.X + (int)(FocusBar.Size.X - PetModeLabel.Size.X),
-            FocusBar.Location.Y + (int)((FocusBar.Size.Y - PetModeLabel.Size.Y) / 2) - 2);
+        PetModeLabel.Location = new Vector2I(155, FocusBar.Location.Y + 14);
     }
 
     private static string GetDescription<T>(T value) where T : Enum

@@ -38,6 +38,7 @@ public partial class CommunicationDialog : DXWindow
     private DXItemCell[] _sendMailCells = Array.Empty<DXItemCell>();
     private readonly ClientUserItem[] _sendMailItems = new ClientUserItem[5];
     private readonly List<CellLinkInfo> _pendingMailLinks = new();
+    private readonly HashSet<(int Mail, int Slot)> _pendingMailItemGets = new();
     private bool _mailSending;
 
     public CommunicationDialog()
@@ -50,10 +51,11 @@ public partial class CommunicationDialog : DXWindow
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 200, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
         _pageBackground = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 201, FixedSize = true, Size = new Vector2I(296, 316), Location = new Vector2I(0, 60), MouseFilter = MouseFilterEnum.Ignore };
         AddControl(_pageBackground);
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(264, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "通信", FontSize = 11, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(296, 25), IsControl = false });
+        AddControl(new DXLabel { Text = "通信", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(296, 18), IsControl = false });
         // 原版 DXTabControl：TabControl 位于 y=37，页签从 x=10 按 60px+1px 间距排列，
         // 内容页从 y=60 开始，尺寸为 296x316。
         AddTab("好友", 10, 0);
@@ -144,7 +146,9 @@ public partial class CommunicationDialog : DXWindow
             foreach (var mail in _mails.Where(x => x?.Items?.Count > 0).Take(15))
             {
                 if (!mail.Opened) { mail.Opened = true; GameScene.Game?.SendMailOpened(mail.Index); }
-                foreach (var item in mail.Items) GameScene.Game?.SendMailGetItem(mail.Index, item.Slot);
+                foreach (var item in mail.Items)
+                    if (item != null && _pendingMailItemGets.Add((mail.Index, item.Slot)))
+                        GameScene.Game?.SendMailGetItem(mail.Index, item.Slot);
             }
             UnreadChanged?.Invoke(HasUnread);
             RebuildReceived();
@@ -208,6 +212,8 @@ public partial class CommunicationDialog : DXWindow
     {
         _mails.Clear();
         if (mails != null) _mails.AddRange(mails.Where(x => x != null).OrderByDescending(x => x.Date));
+        var valid = _mails.SelectMany(x => (x.Items ?? new List<ClientUserItem>()).Where(i => i != null).Select(i => (x.Index, i.Slot))).ToHashSet();
+        _pendingMailItemGets.RemoveWhere(key => !valid.Contains(key));
         if (_page == 1) RebuildReceived();
         UnreadChanged?.Invoke(HasUnread);
     }
@@ -245,12 +251,14 @@ public partial class CommunicationDialog : DXWindow
     public void RemoveMail(int index)
     {
         _mails.RemoveAll(x => x.Index == index);
+        _pendingMailItemGets.RemoveWhere(key => key.Mail == index);
         if (_page == 1) RebuildReceived();
         UnreadChanged?.Invoke(HasUnread);
     }
 
     public void RemoveMailItem(int index, int slot)
     {
+        _pendingMailItemGets.Remove((index, slot));
         var mail = _mails.FirstOrDefault(x => x.Index == index);
         if (mail?.Items == null) return;
         mail.Items.RemoveAll(x => x != null && x.Slot == slot);
@@ -567,7 +575,7 @@ public partial class CommunicationDialog : DXWindow
             int slot = item.Slot;
             cell.MouseClick += (o, e) =>
             {
-                if (!CanGetMailItem(cell.Item)) return;
+                if (!CanGetMailItem(cell.Item) || !_pendingMailItemGets.Add((mail.Index, slot))) return;
                 GameScene.Game?.SendMailGetItem(mail.Index, slot);
             };
         }
@@ -602,7 +610,7 @@ public partial class CommunicationDialog : DXWindow
     }
 
     public static bool ShouldSendMailOpened(bool alreadyOpened) => !alreadyOpened;
-    public static bool CanGetMailItem(ClientUserItem item) => item != null;
+    public static bool CanGetMailItem(ClientUserItem item) => item != null && item.Slot >= 0;
 
     private void BuildSendPage()
     {

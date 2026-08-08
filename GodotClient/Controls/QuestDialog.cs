@@ -18,6 +18,7 @@ public partial class QuestDialog : DXWindow
     private DXControl _content;
     private DXVScrollBar _scroll;
     private readonly DXControl _detailPanel;
+    private readonly List<(DXButton Button, int Page)> _tabs = new();
     private ClientUserQuest _selectedQuest;
     private QuestInfo _selectedAvailable;
     private int _page;
@@ -40,12 +41,8 @@ public partial class QuestDialog : DXWindow
         };
         AddControl(_background);
 
-        var close = new DXButton
-        {
-            LibraryFile = LibraryFile.Interface,
-            Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
-        };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
 
@@ -59,7 +56,8 @@ public partial class QuestDialog : DXWindow
             Align = HorizontalAlignment.Center,
             VAlign = VerticalAlignment.Center,
             AutoSize = false,
-            Size = new Vector2I((int)Size.X, 24),
+            Location = new Vector2I(0, 8),
+            Size = new Vector2I((int)Size.X, 18),
             IsControl = false,
         });
 
@@ -106,7 +104,10 @@ public partial class QuestDialog : DXWindow
             && _detailPanel.Location == new Vector2I(380, 5)
             && _detailPanel.Size == new Vector2I(300, 405)
             && _scroll.Location == new Vector2I(704, 58)
-            && !_scroll.HideWhenNoScroll;
+            && !_scroll.HideWhenNoScroll
+            && _tabs.Count == 3
+            && _tabs[0].Button.Type == DXButton.ButtonType.SelectedTab
+            && _tabs[1].Button.Type == DXButton.ButtonType.DeselectedTab;
         details = $"size={Size} content={_content.Position}/{_content.Size} detail={_detailPanel.Position}/{_detailPanel.Size} scroll={_scroll.Position}/{_scroll.Size}";
         return valid;
     }
@@ -122,6 +123,7 @@ public partial class QuestDialog : DXWindow
             Location = new Vector2I(x, y),
             LibraryFile = LibraryFile.Interface,
             Index = -1,
+            Type = page == _page ? DXButton.ButtonType.SelectedTab : DXButton.ButtonType.DeselectedTab,
         };
         tab.MouseClick += (o, e) =>
         {
@@ -130,9 +132,19 @@ public partial class QuestDialog : DXWindow
             _background.Index = page == 3 ? 292 : 291;
             _selectedQuest = null;
             _selectedAvailable = null;
+            UpdateTabStyles();
             RefreshPage();
         };
         AddControl(tab);
+        _tabs.Add((tab, page));
+    }
+
+    private void UpdateTabStyles()
+    {
+        foreach (var tab in _tabs)
+            tab.Button.Type = tab.Page == _page
+                ? DXButton.ButtonType.SelectedTab
+                : DXButton.ButtonType.DeselectedTab;
     }
 
     public void SetQuests(IEnumerable<ClientUserQuest> quests)
@@ -265,6 +277,7 @@ public partial class QuestDialog : DXWindow
                         RefreshDetail();
                         if (complete)
                         {
+                            if (GameScene.Game?.IsObserver == true) return;
                             var choices = userQuest.Quest.Rewards?.Where(r => r?.Choice == true);
                             if (choices != null && choices.Any())
                             {
@@ -276,7 +289,7 @@ public partial class QuestDialog : DXWindow
                         else GameScene.Game?.SendQuestTrack(questIndex, true);
                     }
                     else if (mb.ButtonIndex == MouseButton.Right && !complete)
-                        GameScene.Game?.SendQuestAbandon(questIndex);
+                        ConfirmAbandon(questIndex);
                 };
                 y += 22;
 
@@ -372,12 +385,24 @@ public partial class QuestDialog : DXWindow
             };
             action.MouseClick += (o, e) =>
             {
+                if (GameScene.Game?.IsObserver == true) return;
                 if (_selectedAvailable != null) GameScene.Game?.SendQuestAccept(_selectedAvailable.Index);
                 else if (_selectedQuest.IsComplete) GameScene.Game?.SendQuestComplete(_selectedQuest.Quest.Index);
-                else GameScene.Game?.SendQuestAbandon(_selectedQuest.Quest.Index);
+                else ConfirmAbandon(_selectedQuest.Quest.Index);
             };
             _detailPanel.AddControl(action);
         }
+    }
+
+    private void ConfirmAbandon(int questIndex)
+    {
+        if (GameScene.Game?.IsObserver == true || !GameScene.CanSendQuestOperation(false, questIndex)) return;
+        var dialog = new ConfirmDialog("确定要放弃这个任务吗？", "放弃任务", () =>
+        {
+            if (GameScene.Game?.IsObserver == true) return;
+            GameScene.Game?.SendQuestAbandon(questIndex);
+        });
+        WindowManager.Open(dialog, GameScene.Game?.UILayer ?? GetParent());
     }
 
     private static int QuestTypeOrder(QuestType type) => type switch

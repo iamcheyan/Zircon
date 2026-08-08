@@ -19,7 +19,7 @@ public sealed partial class LegacyLoginDialog : DXWindow
         HasFooter = false;
         Size = size;
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 164, FixedSize = true, Size = size, MouseFilter = MouseFilterEnum.Ignore });
-        AddControl(new DXLabel { Text = title, FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(size.X, 28), IsControl = false });
+        AddControl(new DXLabel { Text = title, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I(size.X, 18), IsControl = false });
 
         int inputX = size.X <= 300 ? 85 : 105;
         int inputWidth = Math.Min(190, size.X - inputX - 30);

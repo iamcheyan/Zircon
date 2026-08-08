@@ -22,9 +22,10 @@ public sealed partial class EditCharacterDialog : DXWindow
     public EditCharacterDialog()
     {
         Text = "Change Character";
+        HasTitle = false;
         Size = new Vector2I(260, 560);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true });
-        AddControl(new DXLabel { Text = "Change", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(260, 28), IsControl = false });
+        AddControl(new DXLabel { Text = "Change", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(260, 18), IsControl = false });
         // 原版 Change 是由外部功能按钮设置的状态，不在窗口内额外绘制一排选择按钮。
         // 窗口内部第一个可见区就是 Select Gender，客户坐标为 (30,45)。
         AddControl(new DXControl { Location = new Vector2I(30, 45), Size = new Vector2I(200, 85), Border = true, BorderColour = new Color(1f, .75f, .25f), BackColour = new Color(.28f, .14f, .14f), IsControl = false });
@@ -55,7 +56,8 @@ public sealed partial class EditCharacterDialog : DXWindow
         _name = new DXTextInput { Location = new Vector2I(75, 478), Size = new Vector2I(155, 20) }; AddControl(_name);
         var confirm = new DXButton { Text = "确认", FontSize = 10, Location = new Vector2I(90, 517), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         confirm.MouseClick += (s, e) => Confirm(); AddControl(confirm);
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(230, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
     }
 

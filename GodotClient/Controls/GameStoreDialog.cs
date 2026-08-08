@@ -45,9 +45,10 @@ public partial class GameStoreDialog : DXWindow
     {
         HasTitle = false; HasFooter = false; Movable = true; Size = new Vector2I(800, 515);
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 310, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(770, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "商城", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(800, 27), IsControl = false });
+        AddControl(new DXLabel { Text = "商城", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(800, 18), IsControl = false });
         AddControl(new DXLabel { Text = "商品分类", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(20, 20), IsControl = false });
         var categoryPanel = new DXControl { Location = new Vector2I(10, 38), Size = new Vector2I(170, 305), Clip = true };
         _categoryContent = new DXControl { Size = new Vector2I(168, 305) };

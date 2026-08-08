@@ -20,6 +20,11 @@ public partial class DXItemCell : DXControl
     public const int CellWidth = 36;
     public const int CellHeight = 36;
 
+    // 原版大目标格（例如 NPCSocketDialog.TargetCell）会在窗口自己的
+    // BeforeChildrenDraw 中使用 Inventory 图库；普通背包/交易格仍使用
+    // StoreItem。保留可选图源，避免把两种显示语义混成一个固定图库。
+    public LibraryFile ItemLibraryFile = LibraryFile.StoreItem;
+
     /// <summary>拿起状态: 记录源格子, 点另一格完成移动 (原版静态 SelectedCell)</summary>
     private static DXItemCell _selectedCell;
     public static DXItemCell SelectedCell
@@ -251,7 +256,7 @@ public partial class DXItemCell : DXControl
             drawIndex = info.Image;
         }
 
-        var tex = MirSkin.GetTexture(LibraryFile.StoreItem, drawIndex);
+        var tex = MirSkin.GetTexture(ItemLibraryFile, drawIndex);
         if (tex == null) return;
 
         var imgSize = tex.GetSize();
@@ -392,6 +397,12 @@ public partial class DXItemCell : DXControl
                left.AddedStats.Compare(right.AddedStats) && left.ExpireTime == right.ExpireTime;
     }
 
+    public static bool CanStoreInStorage(bool inSafeZone, bool marriage, bool itemPart, bool canStore)
+        => inSafeZone && !marriage && !itemPart && canStore;
+
+    public static bool CanStoreInPartsStorage(bool inSafeZone, bool marriage, bool itemPart)
+        => inSafeZone && !marriage && itemPart;
+
     public static void SetCellItem(DXItemCell cell, ClientUserItem item)
     {
         if (cell == null) return;
@@ -422,7 +433,8 @@ public partial class DXItemCell : DXControl
         {
             // 原版 DXItemCell.OnMouseClick 的前置顺序：货币已拿起时，
             // 物品格不能抢走地图的“丢弃数量”点击；观察和检查格也完全不操作。
-            if (Locked || GameScene.Game?.CurrencyPickedUp == true || GridType == GridType.Inspect) return;
+            if (Locked || GameScene.Game?.CurrencyPickedUp == true || GameScene.Game?.IsObserver == true ||
+                GridType == GridType.Inspect) return;
             // 原版先由 DXControl 派发 MouseDown/MouseClick，再执行物品格自己的
             // 移动/使用逻辑。礼包、宝箱、寄售和邮件附件都依赖这个事件。
             // 按下时基类只派发 MouseDown，抬起时才派发一次 MouseClick，
@@ -432,14 +444,6 @@ public partial class DXItemCell : DXControl
             // 阻止 MoveItem；邮件只读附件格依赖这个事件发送 MailGetItem。
             if (ReadOnly)
             {
-                return;
-            }
-            // 原版 InventoryDialog.SellMode 在左键选择背包格，不进入普通
-            // MoveItem 拿起/放下流程；多选状态由背包自身维护。
-            if (mb.ButtonIndex == MouseButton.Left && mb.Pressed && GridType == GridType.Inventory &&
-                GameScene.Game?.TrySelectItemForNpcSale(this) == true)
-            {
-                AcceptEvent();
                 return;
             }
             if (!mb.Pressed) return;
@@ -454,12 +458,10 @@ public partial class DXItemCell : DXControl
             }
             if (mb.ButtonIndex == MouseButton.Left)
             {
-                // 原版 Alt+左键是聊天物品链接，不进入拿起/移动/分堆流程。
+                // 原版 Alt+左键只阻止普通拿起/移动，不发送聊天链接；聊天链接仅由 Ctrl+中键触发。
                 // 必须在双击和 Shift 分堆之前截获，否则第二次点击会误发 ItemMove。
                 if (mb.Pressed && (mb.AltPressed || Input.IsKeyPressed(Key.Alt)))
                 {
-                    if (Item != null)
-                        GameScene.Game?.LinkItemToChat(Item);
                     AcceptEvent();
                     return;
                 }
@@ -527,6 +529,11 @@ public partial class DXItemCell : DXControl
                     // 旧版右键在维修、镶嵌、精炼、制作等窗口中优先把
                     // 背包物品放入目标格，而不是直接使用物品。
                     bool routed = GameScene.Game?.TryRouteItemToNpc(this) ?? false;
+                    // 原版 DXItemCell 右键分支：维修/加工窗口之后，背包出售
+                    // 模式下右键切换待售选中（InventoryDialog.SellMode），
+                    // 不可卖/锁定的物品给出系统提示或静默返回。
+                    if (!routed && GameScene.Game?.TrySelectItemForNpcSale(this) == true)
+                        return;
                     // 原版装备/伙伴装备右键只允许修理、婚戒传送或回背包；
                     // 交易、邮件、寄售、行会仓库的右键入口来自可持有物品格，
                     // 不会把装备格直接投放到这些窗口。
@@ -549,10 +556,18 @@ public partial class DXItemCell : DXControl
             }
             else if (mb.ButtonIndex == MouseButton.Middle && mb.Pressed)
             {
-                if (Input.IsKeyPressed(Key.Ctrl) && Item != null)
-                    GameScene.Game?.LinkItemToChat(Item);
-                else
-                    ToggleLock();
+                if (Input.IsKeyPressed(Key.Ctrl))
+                {
+                    if (Item != null)
+                        GameScene.Game?.LinkItemToChat(Item);
+                }
+                else if (Item != null && GameScene.Game != null)
+                {
+                    // 原版中键分支无 Locked/ReadOnly/链接源守卫，直接反相发包
+                    // （已锁物品可解锁）；入口处已拦截货币/观察者/检查格。
+                    GameScene.Game.SendItemLock(GridType, Slot,
+                        GameScene.ComputeItemLockTarget(Item.Flags.HasFlag(UserItemFlags.Locked)));
+                }
             }
             else if (mb.ButtonIndex == MouseButton.WheelUp || mb.ButtonIndex == MouseButton.WheelDown)
             {
@@ -665,13 +680,25 @@ public partial class DXItemCell : DXControl
         from.MoveItem(this);
     }
 
-    /// <summary>穿戴到本装备槽 (原版 ToEquipment)</summary>
-    public void ToEquipment(DXItemCell fromCell)
+    private static bool EquipFirstAvailable(DXItemCell fromCell, params EquipmentSlot[] slots)
     {
-        if (Locked || ReadOnly || GameScene.Game == null || GameScene.Game.IsObserver) return;
-        if (Item?.Flags.HasFlag(UserItemFlags.Marriage) == true) return;
-        if (GameScene.Game.IsFishingActive || GameScene.Game.IsTamingActive) return;
-        if (!GameScene.Game.CanWearItem(fromCell.Item, (EquipmentSlot)Slot)) return;
+        if (slots == null || slots.Length == 0) return false;
+        var first = GameScene.Game?.EquipmentCells.ElementAtOrDefault((int)slots[0]);
+        if (first == null) return false;
+        if (first.Item == null) return first.ToEquipment(fromCell);
+        var second = slots.Length > 1
+            ? GameScene.Game?.EquipmentCells.ElementAtOrDefault((int)slots[1])
+            : null;
+        return second?.ToEquipment(fromCell) == true;
+    }
+
+    /// <summary>穿戴到本装备槽 (原版 ToEquipment)</summary>
+    public bool ToEquipment(DXItemCell fromCell)
+    {
+        if (fromCell?.Item == null || Locked || ReadOnly || GameScene.Game == null || GameScene.Game.IsObserver) return false;
+        if (Item?.Flags.HasFlag(UserItemFlags.Marriage) == true) return false;
+        if (GameScene.Game.IsFishingActive || GameScene.Game.IsTamingActive) return false;
+        if (!GameScene.Game.CanWearItem(fromCell.Item, (EquipmentSlot)Slot)) return false;
 
         if (fromCell == SelectedCell) SelectedCell = null;
 
@@ -682,13 +709,14 @@ public partial class DXItemCell : DXControl
         UpdateBorder();
         fromCell.UpdateBorder();
         GameScene.Game.SendItemMove(fromCell.GridType, GridType, fromCell.Slot, Slot, merge);
+        return true;
     }
 
     /// <summary>伙伴装备槽使用 CompanionSlot 校验，不能复用人物 EquipmentSlot。</summary>
-    public void ToCompanionEquipment(DXItemCell fromCell)
+    public bool ToCompanionEquipment(DXItemCell fromCell)
     {
-        if (Locked || ReadOnly || GameScene.Game == null || GameScene.Game.IsObserver || fromCell?.Item == null) return;
-        if (!GameScene.Game.CanCompanionWearItem(fromCell.Item, (CompanionSlot)Slot)) return;
+        if (Locked || ReadOnly || GameScene.Game == null || GameScene.Game.IsObserver || fromCell?.Item == null) return false;
+        if (!GameScene.Game.CanCompanionWearItem(fromCell.Item, (CompanionSlot)Slot)) return false;
         if (fromCell == SelectedCell) SelectedCell = null;
 
         bool merge = Item != null && Item.Count < Item.Info.StackSize && CanMergeItems(Item, fromCell.Item);
@@ -698,6 +726,7 @@ public partial class DXItemCell : DXControl
         UpdateBorder();
         fromCell.UpdateBorder();
         GameScene.Game.SendItemMove(fromCell.GridType, GridType, fromCell.Slot, Slot, merge);
+        return true;
     }
 
     /// <summary>移动到指定格 (原版 MoveItem(DXItemCell), 含腰带链接分支)</summary>
@@ -871,9 +900,9 @@ public partial class DXItemCell : DXControl
         }
 
         if (toCell.GridType == GridType.Storage &&
-            (GridType is not (GridType.Inventory or GridType.Equipment or GridType.GuildStorage or GridType.CompanionInventory or GridType.CompanionEquipment) || GameScene.Game.InSafeZone == false ||
-             Item.Flags.HasFlag(UserItemFlags.Marriage) ||
-             Item.Info.ItemEffect == ItemEffect.ItemPart)) return;
+            (GridType is not (GridType.Inventory or GridType.Equipment or GridType.GuildStorage or GridType.CompanionInventory or GridType.CompanionEquipment) ||
+             !CanStoreInStorage(GameScene.Game.InSafeZone, Item.Flags.HasFlag(UserItemFlags.Marriage),
+                 Item.Info.ItemEffect == ItemEffect.ItemPart, Item.Info.CanStore))) return;
         if (toCell.GridType == GridType.PartsStorage &&
             (GridType is not (GridType.Inventory or GridType.GuildStorage or GridType.CompanionInventory or GridType.CompanionEquipment) || GameScene.Game.InSafeZone == false ||
              Item.Flags.HasFlag(UserItemFlags.Marriage) || Item.Info?.ItemEffect != ItemEffect.ItemPart)) return;
@@ -966,6 +995,12 @@ public partial class DXItemCell : DXControl
         if (Locked || LinkedSourceSlot >= 0 || GameScene.Game == null || GameScene.Game.IsObserver) return false;
         // 腰带/自动喝药格保存的是快捷配置，不是可参与 ItemMove 的持有物品。
         if (GridType is GridType.Belt or GridType.AutoPotion) return false;
+        if (toGrid.GridType == GridType.Storage &&
+            !CanStoreInStorage(GameScene.Game.InSafeZone, Item.Flags.HasFlag(UserItemFlags.Marriage),
+                Item.Info?.ItemEffect == ItemEffect.ItemPart, Item.Info?.CanStore == true)) return false;
+        if (toGrid.GridType == GridType.PartsStorage &&
+            !CanStoreInPartsStorage(GameScene.Game.InSafeZone, Item.Flags.HasFlag(UserItemFlags.Marriage),
+                Item.Info?.ItemEffect == ItemEffect.ItemPart)) return false;
 
         if (IsSpecialLinkGrid(toGrid.GridType))
         {
@@ -1078,72 +1113,46 @@ public partial class DXItemCell : DXControl
         switch (Item.Info.ItemType)
         {
             case ItemType.Weapon:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Weapon].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Weapon].ToEquipment(this);
             case ItemType.Armour:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].ToEquipment(this);
             case ItemType.Torch:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Torch].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Torch].ToEquipment(this);
             case ItemType.Helmet:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Helmet].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Helmet].ToEquipment(this);
             case ItemType.Necklace:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Necklace].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Necklace].ToEquipment(this);
             case ItemType.Bracelet:
-                if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.BraceletL].Item == null)
-                    GameScene.Game.EquipmentCells[(int)EquipmentSlot.BraceletL].ToEquipment(this);
-                else
-                    GameScene.Game.EquipmentCells[(int)EquipmentSlot.BraceletR].ToEquipment(this);
-                return true;
+                return EquipFirstAvailable(this, EquipmentSlot.BraceletL, EquipmentSlot.BraceletR);
             case ItemType.Ring:
-                if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.RingL].Item == null)
-                    GameScene.Game.EquipmentCells[(int)EquipmentSlot.RingL].ToEquipment(this);
-                else
-                    GameScene.Game.EquipmentCells[(int)EquipmentSlot.RingR].ToEquipment(this);
-                return true;
+                return EquipFirstAvailable(this, EquipmentSlot.RingL, EquipmentSlot.RingR);
             case ItemType.Shoes:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Shoes].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Shoes].ToEquipment(this);
             case ItemType.Poison:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Poison].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Poison].ToEquipment(this);
             case ItemType.Amulet:
             case ItemType.DarkStone:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Amulet].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Amulet].ToEquipment(this);
             case ItemType.Flower:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Flower].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Flower].ToEquipment(this);
             case ItemType.Emblem:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Emblem].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Emblem].ToEquipment(this);
             case ItemType.Shield:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Shield].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Shield].ToEquipment(this);
             case ItemType.Costume:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Costume].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Costume].ToEquipment(this);
             case ItemType.HorseArmour:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.HorseArmour].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.HorseArmour].ToEquipment(this);
             case ItemType.Hook:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Hook].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Hook].ToEquipment(this);
             case ItemType.Float:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Float].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Float].ToEquipment(this);
             case ItemType.Bait:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Bait].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Bait].ToEquipment(this);
             case ItemType.Finder:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Finder].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Finder].ToEquipment(this);
             case ItemType.Reel:
-                GameScene.Game.EquipmentCells[(int)EquipmentSlot.Reel].ToEquipment(this);
-                return true;
+                return GameScene.Game.EquipmentCells[(int)EquipmentSlot.Reel].ToEquipment(this);
             case ItemType.CompanionBag:
             case ItemType.CompanionHead:
             case ItemType.CompanionBack:
@@ -1155,8 +1164,7 @@ public partial class DXItemCell : DXControl
                     ItemType.CompanionHead => (int)CompanionSlot.Head,
                     _ => (int)CompanionSlot.Back
                 };
-                GameScene.Game.CompanionEquipmentCells[companionSlot].ToCompanionEquipment(this);
-                return true;
+                return GameScene.Game.CompanionEquipmentCells[companionSlot].ToCompanionEquipment(this);
             case ItemType.Consumable:
             case ItemType.Scroll:
             case ItemType.CompanionFood:
@@ -1188,14 +1196,22 @@ public partial class DXItemCell : DXControl
                 switch (Item.Info.ItemEffect)
                 {
                     case ItemEffect.GenderChange:
-                        if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item != null) return false;
+                        if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item != null)
+                        {
+                            GameScene.Game.ReceiveChat("衣服穿戴中无法进行变性操作.", MessageType.System);
+                            return false;
+                        }
                         GameScene.Game.OpenEditCharacterDialog(EditCharacterChange.Gender);
                         return true;
                     case ItemEffect.HairChange:
                         GameScene.Game.OpenEditCharacterDialog(EditCharacterChange.Hair);
                         return true;
                     case ItemEffect.ArmourDye:
-                        if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item == null) return false;
+                        if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item == null)
+                        {
+                            GameScene.Game.ReceiveChat("You need to be wearing an armour before you can apply a dye.", MessageType.System);
+                            return false;
+                        }
                         GameScene.Game.OpenEditCharacterDialog(EditCharacterChange.Armour);
                         return true;
                     case ItemEffect.NameChange:
@@ -1253,7 +1269,7 @@ public partial class DXItemCell : DXControl
         // 旧版 DXItemCell.OnKeyDown 前置校验: 已锁定/持有货币/链接源格/观察者/只读 均不处理。
         if (Item == null || GameScene.Game == null || GameScene.Game.CurrencyPickedUp || GameScene.Game.IsObserver) return;
         if (Locked || LinkedSourceSlot >= 0 || ReadOnly) return;
-        bool locked = !Item.Flags.HasFlag(UserItemFlags.Locked);
+        bool locked = GameScene.ComputeItemLockTarget(Item.Flags.HasFlag(UserItemFlags.Locked));
         GameScene.Game.SendItemLock(GridType, Slot, locked);
     }
 }

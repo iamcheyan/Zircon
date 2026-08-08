@@ -23,8 +23,9 @@ public sealed partial class NPCQuestListDialog : DXWindow
         var background = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 209, MouseFilter = MouseFilterEnum.Ignore };
         AddControl(background);
         Size = (Vector2I)background.Size;
-        AddControl(new DXLabel { Text = "任务列表", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I((int)Size.X, 28), IsControl = false });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I((int)Size.X - 30, 3) };
+        AddControl(new DXLabel { Text = "任务列表", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
         int panelWidth = Math.Max(210, (int)Size.X - 25);
         _list = new DXControl { Location = new Vector2I(8, 37), Size = new Vector2I(panelWidth, 134), Clip = true }; AddControl(_list);
@@ -100,7 +101,8 @@ public sealed partial class NPCQuestDialog : DXWindow
         var background = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 212, MouseFilter = MouseFilterEnum.Ignore };
         AddControl(background);
         Size = (Vector2I)background.Size;
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I((int)Size.X - 30, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
         _name = new DXLabel { FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Size = new Vector2I(334, 28), Location = new Vector2I(10, 40), IsControl = false }; AddControl(_name);
         _description = new DXLabel { FontSize = 10, TextColour = Colors.White, Size = new Vector2I(313, 81), Location = new Vector2I(13, 86), IsControl = false }; AddControl(_description);
@@ -120,11 +122,16 @@ public sealed partial class NPCQuestDialog : DXWindow
             };
         }
         _accept = new DXButton { Text = "接受任务", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25) };
-        _accept.MouseClick += (s, e) => { if (_quest != null) GameScene.Game?.SendQuestAccept(_quest.Index); WindowManager.Close(this); }; AddControl(_accept);
+        _accept.MouseClick += (s, e) =>
+        {
+            if (_quest == null || GameScene.Game?.IsObserver == true) return;
+            GameScene.Game.SendQuestAccept(_quest.Index);
+            WindowManager.Close(this);
+        }; AddControl(_accept);
         _complete = new DXButton { Text = "完成任务", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25), Visible = false };
         _complete.MouseClick += (s, e) =>
         {
-            if (_quest == null) return;
+            if (_quest == null || GameScene.Game?.IsObserver == true) return;
             if (_choiceRewards.Count > 0 && (_selectedChoice < 0 || _selectedChoice >= _choiceRewards.Count)) return;
             GameScene.Game?.SendQuestComplete(_quest.Index, _selectedChoice >= 0 ? _choiceRewards[_selectedChoice].Index : 0);
             WindowManager.Close(this);

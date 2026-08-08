@@ -33,6 +33,7 @@ public sealed partial class QuestRewardChoiceDialog : DXWindow
             };
             button.MouseClick += (s, e) =>
             {
+                if (GameScene.Game?.IsObserver == true || !GameScene.CanSendQuestOperation(false, quest.Index)) return;
                 GameScene.Game?.SendQuestComplete(quest.Index, choice.Index);
                 WindowManager.Close(this);
             };

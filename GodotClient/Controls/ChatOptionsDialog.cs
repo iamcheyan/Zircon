@@ -35,17 +35,19 @@ public partial class ChatOptionsDialog : DXWindow
 
     public ChatOptionsDialog()
     {
-        HasTitle = true;
+        // 标题由原版窗口皮肤上的手动标题控件绘制；DXWindow 的默认标题只会重复绘制。
+        HasTitle = false;
         HasFooter = true;
         Movable = true;
         AllowResize = true;
         // 原版 SetClientSize(350, 250) 的总窗口尺寸。
         Size = new Vector2I(368, 350);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(338, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "聊天选项", FontSize = 12, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(368, 28), IsControl = false });
+        AddControl(new DXLabel { Text = "聊天选项", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(368, 18), IsControl = false });
 
         _list = new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(120, 220), Clip = true };
         AddControl(_list);

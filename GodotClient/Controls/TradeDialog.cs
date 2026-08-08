@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 using System.Linq;
 using Library;
@@ -12,6 +13,7 @@ public partial class TradeDialog : DXWindow
     private readonly DXItemGrid _playerGrid;
     private readonly DXItemGrid _userGrid;
     private readonly ClientUserItem[] _playerItems = new ClientUserItem[10];
+    private readonly Dictionary<(GridType Grid, int Slot), ClientUserItem> _pendingSources = new();
     private readonly DXLabel _userGold;
     private readonly DXLabel _playerGold;
     private DXButton _confirm;
@@ -20,9 +22,10 @@ public partial class TradeDialog : DXWindow
     {
         HasTitle = false; HasFooter = false; Movable = true; Size = new Vector2I(428, 244);
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 125, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(398, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => CloseTrade(); AddControl(close);
-        AddControl(new DXLabel { Text = "交易", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(428, 27), IsControl = false });
+        AddControl(new DXLabel { Text = "交易", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(428, 18), IsControl = false });
         AddControl(new DXLabel { Text = "用户", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(186, 20), Location = new Vector2I(15, 38), IsControl = false });
         AddControl(new DXLabel { Text = "玩家", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(186, 20), Location = new Vector2I(226, 38), IsControl = false });
         _userGrid = new DXItemGrid { GridSize = new Vector2I(5, 2), Location = new Vector2I(15, 73), GridType = GridType.TradeUser, Linked = true, GridPadding = 1, Border = false }; AddControl(_userGrid);
@@ -30,7 +33,12 @@ public partial class TradeDialog : DXWindow
             cell.LinkChanged += linked =>
             {
                 if (linked?.LinkedSourceSlot >= 0)
+                {
+                    var source = GetSourceCell(new CellLinkInfo { GridType = linked.LinkedSourceGrid, Slot = linked.LinkedSourceSlot });
+                    if (source?.Item != null)
+                        _pendingSources[(linked.LinkedSourceGrid, linked.LinkedSourceSlot)] = source.Item;
                     GameScene.Game?.SendTradeItem(new CellLinkInfo { GridType = linked.LinkedSourceGrid, Slot = linked.LinkedSourceSlot, Count = linked.Item?.Count ?? 1 });
+                }
             };
         _playerGrid = new DXItemGrid { GridSize = new Vector2I(5, 2), Location = new Vector2I(226, 73), GridType = GridType.TradePlayer, ItemGrid = _playerItems, ReadOnly = true, GridPadding = 1, Border = false }; AddControl(_playerGrid);
         AddControl(new DXLabel { Text = "金币", FontSize = 8, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(11, 168), Size = new Vector2I(58, 16), IsControl = false });
@@ -40,7 +48,14 @@ public partial class TradeDialog : DXWindow
         _userGold.MouseClick += (o, e) =>
         {
             if (GameScene.Game?.IsObserver == true) return;
-            var dialog = new ItemAmountDialog("交易金币", 999999999, 1, amount => GameScene.Game?.SendTradeGold(amount));
+            long available = GameScene.Game?.Currencies?.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
+            if (!CanOfferGold(available)) return;
+            var dialog = new ItemAmountDialog("交易金币", available, 1, amount =>
+            {
+                long current = GameScene.Game?.Currencies?.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
+                if (CanOfferGold(current) && amount <= current)
+                    GameScene.Game?.SendTradeGold(amount);
+            });
             WindowManager.Open(dialog, GameScene.Game?.UILayer ?? GetParent());
         };
         _confirm = new DXButton { Text = "确认交易", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(126, 203), Size = new Vector2I(80, 25) };
@@ -76,21 +91,22 @@ public partial class TradeDialog : DXWindow
         _playerGrid.RefreshGrid();
     }
     /// <summary>原版 S.TradeAddGold：刷新本地玩家提交的金币。</summary>
-    public void SetPlayerGold(long gold) => _userGold.Text = $"金币: {gold:#,##0}";
+    public void SetPlayerGold(long gold) => _userGold.Text = gold.ToString("#,##0");
 
     /// <summary>原版 S.TradeGoldAdded：刷新交易对方的金币。</summary>
-    public void SetOtherGold(long gold) => _playerGold.Text = $"金币: {gold:#,##0}";
+    public void SetOtherGold(long gold) => _playerGold.Text = gold.ToString("#,##0");
 
     public bool AuditGoldRouting(out string details)
     {
         SetPlayerGold(1234);
         SetOtherGold(5678);
         details = $"player={_userGold.Text} other={_playerGold.Text}";
-        bool valid = _userGold.Text == "金币: 1,234" && _playerGold.Text == "金币: 5,678";
+        bool valid = _userGold.Text == "1,234" && _playerGold.Text == "5,678";
         _userGold.Text = "金币: 0";
         _playerGold.Text = "金币: 0";
         return valid;
     }
+    public static bool CanOfferGold(long amount) => amount > 0;
     public void Unlock() => _confirm.Enabled = true;
     public void ClearTrade()
     {
@@ -98,7 +114,13 @@ public partial class TradeDialog : DXWindow
         foreach (var cell in _userGrid.Cells ?? System.Array.Empty<DXItemCell>())
         {
             if (cell.LinkedSourceSlot >= 0)
-                GetSourceCell(new CellLinkInfo { GridType = cell.LinkedSourceGrid, Slot = cell.LinkedSourceSlot })?.UnlockForTrade();
+            {
+                var link = (cell.LinkedSourceGrid, cell.LinkedSourceSlot);
+                var source = GetSourceCell(new CellLinkInfo { GridType = link.Item1, Slot = link.Item2 });
+                if (!_pendingSources.TryGetValue(link, out var expected) || ShouldUnlockTradeSource(source?.Item, expected))
+                    source?.UnlockForTrade();
+                _pendingSources.Remove(link);
+            }
             cell.Item = null;
             cell.LinkedSourceGrid = GridType.None;
             cell.LinkedSourceSlot = -1;
@@ -107,6 +129,7 @@ public partial class TradeDialog : DXWindow
         _userGold.Text = "0";
         _playerGold.Text = "0";
         _confirm.Enabled = true;
+        _pendingSources.Clear();
         WindowManager.Close(this);
     }
 
@@ -115,6 +138,8 @@ public partial class TradeDialog : DXWindow
         var link = packet?.Cell;
         if (link == null) return;
         var source = GetSourceCell(link);
+        var key = (link.GridType, link.Slot);
+        _pendingSources.TryGetValue(key, out var expectedSource);
         var target = _userGrid.Cells?.FirstOrDefault(c => c.LinkedSourceGrid == link.GridType && c.LinkedSourceSlot == link.Slot);
         if (!packet.Success)
         {
@@ -125,14 +150,23 @@ public partial class TradeDialog : DXWindow
                 target.LinkedSourceSlot = -1;
                 target.LinkChanged?.Invoke(target);
             }
-            source?.UnlockForTrade();
+            if (expectedSource == null || ShouldUnlockTradeSource(source?.Item, expectedSource))
+                source?.UnlockForTrade();
+            _pendingSources.Remove(key);
             return;
         }
 
+        if (expectedSource != null && !ShouldUnlockTradeSource(source?.Item, expectedSource))
+        {
+            _pendingSources.Remove(key);
+            return;
+        }
         if (source == null || target == null)
         {
             // 成功回包可能晚于窗口清理/重复回包；来源不能因找不到展示格而永久保持交易锁。
-            source?.UnlockForTrade();
+            if (expectedSource == null || ShouldUnlockTradeSource(source?.Item, expectedSource))
+                source?.UnlockForTrade();
+            _pendingSources.Remove(key);
             return;
         }
         DXItemCell.SetCellItem(target, new ClientUserItem(source.Item, Math.Clamp(link.Count, 1, source.Item.Count)));
@@ -167,5 +201,7 @@ public partial class TradeDialog : DXWindow
         source.MoveItem(target);
         return true;
     }
+    public static bool ShouldUnlockTradeSource(ClientUserItem current, ClientUserItem expected)
+        => ReferenceEquals(current, expected);
     private void CloseTrade() { GameScene.Game?.SendTradeClose(); WindowManager.Close(this); }
 }

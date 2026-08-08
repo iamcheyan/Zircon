@@ -60,8 +60,8 @@ public partial class InventoryDialog : DXWindow
             Align = HorizontalAlignment.Center,
             VAlign = VerticalAlignment.Center,
             AutoSize = false,
-            Location = new Vector2I(52, 4),
-            Size = new Vector2I(160, 20),
+            Location = new Vector2I(52, 8),
+            Size = new Vector2I(160, 18),
             IsControl = false,
         };
         AddControl(_titleLabel);
@@ -70,8 +70,8 @@ public partial class InventoryDialog : DXWindow
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
         };
+        CloseButton.Location = new Vector2I((int)Size.X - (int)CloseButton.Size.X - 3, 3);
         CloseButton.MouseClick += (o, e) => Visible = false;
         AddControl(CloseButton);
 
@@ -289,7 +289,8 @@ public partial class InventoryDialog : DXWindow
         GgLabel.Text = "0";
         TrashButton.Visible = false;
         SellButton.Visible = true;
-        SellButton.Enabled = false;
+        // 原版按钮始终可用：有选中项时出售选中项，没有选中项时出售全部可售物品。
+        SellButton.Enabled = true;
         SetCurrency(0, 0);
     }
 
@@ -317,12 +318,24 @@ public partial class InventoryDialog : DXWindow
     public bool TrySelectForSale(DXItemCell cell)
     {
         if (!IsSellMode || cell?.Item == null || cell.GridType != GridType.Inventory) return false;
+        // 原版 DXItemCell 右键 SellMode：婚戒不可出售、静默返回；不可卖物品
+        // 先给出系统提示（UnableToSellHereCannotSold）再拒绝选中。
+        if (cell.Item.Flags.HasFlag(UserItemFlags.Marriage))
+            return true;
         if (cell.Locked || cell.Item.Flags.HasFlag(UserItemFlags.Locked) ||
             cell.Item.Flags.HasFlag(UserItemFlags.Worthless) ||
-            cell.Item.Flags.HasFlag(UserItemFlags.Marriage) ||
-            cell.Item.Info?.CanSell != true ||
-            (SellableItemTypes.Count > 0 && !SellableItemTypes.Contains(cell.Item.Info.ItemType)))
+            cell.Item.Info?.CanSell != true)
+        {
+            GameScene.Game?.ReceiveChat($"无法出售 {cell.Item.Info?.ItemName}, it cannot be sold.");
             return true;
+        }
+        // 原版 InventoryDialog.Cell_SelectedChanged：类型不在商店可售列表时
+        // 提示 UnableToSellHere 并取消选中。
+        if (SellableItemTypes.Count > 0 && !SellableItemTypes.Contains(cell.Item.Info.ItemType))
+        {
+            GameScene.Game?.ReceiveChat($"无法在 {cell.Item.Info?.ItemName} 这里进行售卖.");
+            return true;
+        }
 
         if (SelectedItems.Contains(cell))
         {
@@ -337,7 +350,7 @@ public partial class InventoryDialog : DXWindow
 
         DXItemCell.SelectedCell = null;
         GgLabel.Text = SaleTotal().ToString("N0");
-        SellButton.Enabled = SelectedItems.Count > 0;
+        SellButton.Enabled = true;
         SellButton.TooltipText = SelectedItems.Count == 1 ? "出售" : "全部出售";
         return true;
     }
@@ -351,8 +364,16 @@ public partial class InventoryDialog : DXWindow
 
     private void SellSelected()
     {
-        if (!IsSellMode || SelectedItems.Count == 0 || GameScene.Game?.IsObserver == true) return;
-        var links = SelectedItems.Where(x => x?.Item != null && !x.Locked)
+        if (!IsSellMode || GameScene.Game?.IsObserver == true) return;
+        var candidates = SelectedItems.Count > 0
+            ? SelectedItems
+            : (Grid?.Cells ?? Array.Empty<DXItemCell>())
+                .Where(x => x?.Item != null && (SellableItemTypes.Count == 0 || SellableItemTypes.Contains(x.Item.Info.ItemType)));
+        var links = candidates.Where(x => x?.Item != null && !x.Locked &&
+                !x.Item.Flags.HasFlag(UserItemFlags.Locked) &&
+                !x.Item.Flags.HasFlag(UserItemFlags.Marriage) &&
+                !x.Item.Flags.HasFlag(UserItemFlags.Worthless) &&
+                x.Item.Info?.CanSell == true)
             .Select(x => new CellLinkInfo { GridType = GridType.Inventory, Slot = x.Slot, Count = x.Item.Count })
             .ToList();
         if (links.Count == 0) return;
@@ -367,7 +388,7 @@ public partial class InventoryDialog : DXWindow
         }
         foreach (var cell in SelectedItems) cell.SaleSelected = false;
         SelectedItems.Clear();
-        SellButton.Enabled = false;
+        SellButton.Enabled = true;
         GameScene.Game?.SendNPCSell(links);
     }
 

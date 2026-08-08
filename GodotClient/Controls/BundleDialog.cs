@@ -14,6 +14,7 @@ public sealed partial class BundleDialog : DXWindow
     private readonly ClientUserItem[] _items = new ClientUserItem[16];
     private readonly DXButton _confirm;
     private DXItemCell _selectedBundle;
+    private ClientUserItem _selectedBundleItem;
     private BundleInfo _info;
     private int _slot = -1;
     private int _selectedIndex = -1;
@@ -22,9 +23,10 @@ public sealed partial class BundleDialog : DXWindow
     {
         HasTitle = false; HasFooter = false; Movable = true; Size = new Vector2I(180, 268); DropShadow = true;
         AddControl(new DXImageControl { LibraryFile = LibraryFile.GameInter, Index = 3350, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(153, 1) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => Close(); AddControl(close);
-        AddControl(new DXLabel { Text = "物品包", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(180, 25), IsControl = false });
+        AddControl(new DXLabel { Text = "物品包", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(180, 18), IsControl = false });
         Grid = new DXItemGrid { GridSize = new Vector2I(4, 4), Location = new Vector2I(15, 48), GridType = GridType.Bundle, GridPadding = 1, ItemGrid = _items, ReadOnly = true };
         AddControl(Grid);
         foreach (var cell in Grid.Cells) cell.MouseClick += (s, e) => SelectCell((DXItemCell)s);
@@ -38,7 +40,8 @@ public sealed partial class BundleDialog : DXWindow
         if (item?.Info == null || item.Info.ItemType != ItemType.Bundle) return;
         _info = Globals.BundleInfoList?.Binding?.FirstOrDefault(x => x.Index == item.Info.Shape);
         if (_info == null || _info.Contents == null || _info.Contents.Count == 0) return;
-        _slot = slot; _selectedIndex = -1; _selectedBundle = GameScene.Game?.InventoryCells?.ElementAtOrDefault(slot); _selectedBundle?.Locked = true; _selectedBundle?.UpdateBorder();
+        _slot = slot; _selectedIndex = -1; _selectedBundle = GameScene.Game?.InventoryCells?.ElementAtOrDefault(slot); _selectedBundleItem = item;
+        _selectedBundle?.Locked = true; _selectedBundle?.UpdateBorder();
         ResetCells();
         _confirm.Text = _info.Type switch { BundleType.AnyOf => "随机领取", BundleType.AllOf => "全部领取", BundleType.OneOf => "选择并领取", _ => "确认" };
         _confirm.Enabled = _info.Type != BundleType.OneOf;
@@ -85,11 +88,14 @@ public sealed partial class BundleDialog : DXWindow
 
     public override void Close()
     {
-        if (_selectedBundle != null)
+        if (_selectedBundle != null && ReferenceEquals(_selectedBundle.Item, _selectedBundleItem))
         {
             _selectedBundle.Locked = false;
             _selectedBundle.UpdateBorder();
         }
-        _selectedBundle = null; _info = null; ResetCells(); base.Close();
+        _selectedBundle = null; _selectedBundleItem = null; _info = null; ResetCells(); base.Close();
     }
+
+    public static bool ShouldUnlockSource(ClientUserItem current, ClientUserItem expected)
+        => ReferenceEquals(current, expected);
 }

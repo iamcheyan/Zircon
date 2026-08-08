@@ -102,10 +102,11 @@ public partial class RankingDialog : DXWindow
         Size = fullRanking ? new Vector2I(576, 456) : new Vector2I(330, 456);
 
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = fullRanking ? 211 : 210, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I((int)Size.X - 30, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "排行榜", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I((int)Size.X, 27), IsControl = false });
+        AddControl(new DXLabel { Text = "排行榜", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         int listX = fullRanking ? 246 : 12;
         AddControl(new DXLabel { Text = "名次       角色名                 等级       职业", FontSize = 10, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(listX + 8, 48), IsControl = false });

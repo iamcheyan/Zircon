@@ -43,10 +43,11 @@ public partial class GroupDialog : DXWindow
         HasFooter = false;
         Size = new Vector2I(240, 424);
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 240, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(208, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => GameScene.Game?.CloseGroupDialog();
         AddControl(close);
-        AddControl(new DXLabel { Text = "队伍", FontSize = 11, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(240, 25), IsControl = false });
+        AddControl(new DXLabel { Text = "队伍", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(240, 18), IsControl = false });
 
         _allowCheck = new DXCheckButton(string.Empty) { Location = new Vector2I(166, 40), Size = new Vector2I(18, 18) };
         _allowCheck.MouseClick += (o, e) => ToggleAllow();

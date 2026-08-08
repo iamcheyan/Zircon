@@ -30,6 +30,7 @@ public partial class CharacterDialog : DXWindow
     private DXLabel _statsText;
     private readonly List<DXControl> _statPages = new();
     private readonly List<DXButton> _statsTabs = new();
+    private readonly List<(DXButton Button, int Background)> _mainTabs = new();
     private readonly List<(DXLabel Value, Stat Stat, Stat? MinStat, int Mode)> _statBindings = new();
     private DXLabel _wearWeightValue, _handWeightValue;
     private int _statsPage;
@@ -119,8 +120,8 @@ public partial class CharacterDialog : DXWindow
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
         };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => Visible = false;
         AddControl(close);
 
@@ -283,14 +284,20 @@ public partial class CharacterDialog : DXWindow
             Location = new Vector2I(8 + x, 18),
             LibraryFile = LibraryFile.Interface,
             Index = -1,
+            Type = backgroundIndex == 110 ? DXButton.ButtonType.SelectedTab : DXButton.ButtonType.DeselectedTab,
         };
         tab.MouseClick += (o, e) => SelectTab(backgroundIndex);
         AddControl(tab);
+        _mainTabs.Add((tab, backgroundIndex));
     }
 
     private void SelectTab(int backgroundIndex)
     {
         _background.Index = backgroundIndex;
+        foreach (var tab in _mainTabs)
+            tab.Button.Type = tab.Background == backgroundIndex
+                ? DXButton.ButtonType.SelectedTab
+                : DXButton.ButtonType.DeselectedTab;
         bool character = backgroundIndex == 110;
         bool discipline = backgroundIndex == 112;
         bool hermit = backgroundIndex == 111;

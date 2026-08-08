@@ -13,6 +13,7 @@ namespace ZirconClient.Controls;
 public partial class CompanionDialog : DXWindow
 {
     private readonly DXControl _body;
+    private DXButton _companionTab;
     private readonly DXLabel _name, _level, _experience, _hunger, _health;
     private readonly DXControl _healthFill, _experienceFill, _hungerFill;
     private DXControl _weightFill;
@@ -38,10 +39,24 @@ public partial class CompanionDialog : DXWindow
     {
         HasTitle = false; HasFooter = false; Movable = true; Size = new Vector2I(464, 372);
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 141, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(434, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "伙伴", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(464, 27), IsControl = false });
-        AddTab("伙伴", 16, 38, 0); AddTab("加成", 92, 38, 1); AddTab("筛选", 168, 38, 2); AddTab("背包", 244, 38, 3);
+        AddControl(new DXLabel { Text = "伙伴", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(464, 18), IsControl = false });
+        // 原版 DXTabControl 这里只注册一个 CompanionTab；加成/筛选/背包
+        // 是主页签底部的视图切换按钮，不是顶部四个页签。
+        _companionTab = new DXButton
+        {
+            Text = "伙伴",
+            FontSize = 10,
+            TextColour = new Color(1f, .85f, .3f),
+            LibraryFile = LibraryFile.Interface,
+            Index = -1,
+            Type = DXButton.ButtonType.SelectedTab,
+            Location = new Vector2I(15, 38),
+            Size = new Vector2I(68, 25),
+        };
+        AddControl(_companionTab);
 
         _body = new DXControl { Location = new Vector2I(0, 62), Size = new Vector2I(464, 300), Clip = true }; AddControl(_body);
         AddMainLabel("名称", 10, 156, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
@@ -242,15 +257,10 @@ public partial class CompanionDialog : DXWindow
         SetBar(_weightFill, MirSkin.GetSize(LibraryFile.GameInter, 4312).X, _maxBagWeight <= 0 ? 0 : _bagWeight / (float)_maxBagWeight);
     }
 
-    private void AddTab(string text, int x, int y, int page)
-    {
-        var tab = new DXButton { Text = text, FontSize = 10, TextColour = new Color(1f, .85f, .3f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(x, y), Size = new Vector2I(68, 25) };
-        tab.MouseClick += (o, e) => ShowPage(page); AddControl(tab);
-    }
-
     private void ShowPage(int page)
     {
-        _page = page; _bonusPanel.Visible = page == 1; _filterPanel.Visible = page == 2; _bagPanel.Visible = page == 3; _saveFilter.Visible = page == 2;
+        _page = page;
+        _bonusPanel.Visible = page == 1; _filterPanel.Visible = page == 2; _bagPanel.Visible = page == 3; _saveFilter.Visible = page == 2;
         _bonusButton.Enabled = page != 1; _filterButton.Enabled = page != 2; _bagButton.Enabled = page != 3;
         if (InventoryGrid != null) InventoryGrid.Visible = page == 3;
     }
@@ -330,7 +340,12 @@ public partial class CompanionDialog : DXWindow
         bool bars = MirSkin.GetSize(LibraryFile.GameInter, 4310).X > 0
             && MirSkin.GetSize(LibraryFile.GameInter, 4311).X > 0
             && MirSkin.GetSize(LibraryFile.GameInter, 4312).X > 0;
-        details = $"size={Size} tabs=4 equipment={EquipmentCells.Length} panels=208x300 bonusRows={_bonusRows.Count} bars=4375/4310/4311/4312";
-        return Size == new Vector2I(464, 372) && equipment && panels && bars;
+        bool tabs = _companionTab?.Type == DXButton.ButtonType.SelectedTab
+            && _companionTab.Position == new Vector2I(15, 38)
+            && _bonusButton.Position == new Vector2I(10, 325)
+            && _filterButton.Position == new Vector2I(90, 325)
+            && _bagButton.Position == new Vector2I(170, 325);
+        details = $"size={Size} tabs=1 bottomButtons={tabs} equipment={EquipmentCells.Length} panels=208x300 bonusRows={_bonusRows.Count} bars=4375/4310/4311/4312";
+        return Size == new Vector2I(464, 372) && equipment && panels && bars && tabs;
     }
 }

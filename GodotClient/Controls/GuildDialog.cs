@@ -43,9 +43,10 @@ public partial class GuildDialog : DXWindow
     {
         HasTitle = false; HasFooter = false; Movable = true; Size = new Vector2I(456, 556);
         _background = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 260, MouseFilter = MouseFilterEnum.Ignore }; AddControl(_background);
-        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(426, 3) };
+        var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "行会", FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(456, 27), IsControl = false });
+        AddControl(new DXLabel { Text = "行会", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(456, 18), IsControl = false });
         string[] tabs = { "创建/主页", "成员", "仓库", "战争", "风格", "城堡" };
         for (int i = 0; i < tabs.Length; i++) AddTab(tabs[i], 14 + i * 76, i);
         _content = new DXControl { Location = new Vector2I(12, 68), Size = new Vector2I(410, 415), Clip = true }; AddControl(_content);

@@ -787,10 +787,12 @@ public sealed partial class NPCAdvancedPanel : DXControl
         Size = (Vector2I)background.Size;
         if (Size.X < 240 || Size.Y < 250) Size = new Vector2I(250, 350);
 
-        Add(new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I((int)Size.X - 30, 3) })
+        var close = Add(new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 });
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
+        close
             .MouseClick += (s, e) => GameScene.Game?.CloseNPCDialog();
         Add(new DXLabel { Text = "收服伙伴", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
-            Align = HorizontalAlignment.Center, Size = new Vector2I((int)Size.X, 24), IsControl = false });
+            Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         var available = (Globals.CompanionInfoList?.Binding?.AsEnumerable() ?? Enumerable.Empty<CompanionInfo>())
             .Where(x => x?.MonsterInfo != null).ToList();

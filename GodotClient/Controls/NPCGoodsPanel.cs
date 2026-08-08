@@ -31,7 +31,7 @@ public partial class NPCGoodsPanel : DXControl
         Size = new Vector2I(245, 402);
         _frame = new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true };
         AddControl(_frame);
-        AddControl(new DXLabel { Text = "Goods", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(245, 25), IsControl = false });
+        AddControl(new DXLabel { Text = "Goods", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(245, 18), IsControl = false });
         _list = new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(227, 302), Clip = true }; AddControl(_list);
         _scroll = new DXVScrollBar { Location = new Vector2I(217, 38), Size = new Vector2I(19, 301), VisibleSize = 302, Change = 43, HideWhenNoScroll = true };
         _scroll.UpButton.LibraryFile = LibraryFile.Interface; _scroll.UpButton.Index = 61;
@@ -41,12 +41,12 @@ public partial class NPCGoodsPanel : DXControl
         _buy = new DXButton { Text = "Buy", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(40, 359), Size = new Vector2I(80, 25), Enabled = false };
         _buy.MouseClick += (o, e) => BuySelected(); AddControl(_buy);
         _guildFunds = new DXCheckButton("Use Guild Funds:") { Location = new Vector2I(120, 363), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
-        // Godot 背包没有独立 SellMode，因此在 BuySell 面板提供等价的
-        // 可见批量出售入口；物品仍由背包右键加入 _sellLinks。
+        // 原版 BuySell 页的出售状态由独立 InventoryDialog.SellMode 负责；
+        // 这里保留内部链接逻辑作为旧调用兼容，但不在商品面板绘制出售按钮。
         _sell = new DXButton
         {
             Text = "Sell Selected", FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1,
-            Location = new Vector2I(150, 359), Size = new Vector2I(85, 25), Enabled = false, Visible = true
+            Location = new Vector2I(150, 359), Size = new Vector2I(85, 25), Enabled = false, Visible = false
         };
         _sell.MouseClick += (o, e) => SellSelected();
         AddControl(_sell);
@@ -67,7 +67,8 @@ public partial class NPCGoodsPanel : DXControl
         // ItemsChanged 可能在新页面响应之后到达，必须仍能解锁来源格。
         _buy.Enabled = false;
         _sell.Enabled = false;
-        _sell.Visible = true;
+        // 原版出售状态由独立 InventoryDialog.SellMode 绘制；商品面板只有购买区。
+        _sell.Visible = false;
         _guildFunds.Checked = false;
         _guildFunds.Visible = _currency?.Type == CurrencyType.Gold;
         _guildFunds.Enabled = _guildFunds.Visible && GameScene.Game?.HasGuild == true;

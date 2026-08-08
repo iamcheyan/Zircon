@@ -26,8 +26,8 @@ public partial class ExitDialog : DXWindow
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
         };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
 
@@ -41,7 +41,8 @@ public partial class ExitDialog : DXWindow
             Align = HorizontalAlignment.Center,
             VAlign = VerticalAlignment.Center,
             AutoSize = false,
-            Size = new Vector2I((int)Size.X, 25),
+            Location = new Vector2I(0, 8),
+            Size = new Vector2I((int)Size.X, 18),
             IsControl = false,
         });
 

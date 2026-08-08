@@ -62,6 +62,8 @@ public sealed partial class DXTextInput : DXControl
     private int _fontSize = 10;
     public event Action<string> TextChanged;
     public event Action<string> TextSubmitted;
+    /// <summary>输入框按 Escape 时触发（原版 DXTextBox 的 KeyPress Escape 路径）。</summary>
+    public event Action Canceled;
 
     public new string Text
     {
@@ -114,6 +116,11 @@ public sealed partial class DXTextInput : DXControl
         AddChild(_edit);
         _edit.TextChanged += value => TextChanged?.Invoke(value);
         _edit.TextSubmitted += value => TextSubmitted?.Invoke(value);
+        _edit.GuiInput += e =>
+        {
+            if (e is InputEventKey key && key.Pressed && key.Keycode == Key.Escape)
+                Canceled?.Invoke();
+        };
         Resized += () => _edit.Size = Size - new Vector2(4, 2);
     }
 }

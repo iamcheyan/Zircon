@@ -33,7 +33,7 @@ public partial class NPCRepairPanel : DXControl
         Size = new Vector2I(404, 292);
         _frame = new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = false };
         AddControl(_frame);
-        AddControl(new DXLabel { Text = "Repair Items", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(426, 24), IsControl = false });
+        AddControl(new DXLabel { Text = "Repair Items", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(404, 18), IsControl = false });
         _grid = new DXItemGrid { GridSize = new Vector2I(11, 5), Location = new Vector2I(9, 37), GridType = GridType.Repair, ItemGrid = _items, GridPadding = 0, Border = false }; AddControl(_grid);
         foreach (var cell in _grid.Cells)
             cell.LinkChanged += (o) => RebuildLinks();

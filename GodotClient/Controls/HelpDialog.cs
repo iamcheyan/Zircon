@@ -58,8 +58,8 @@ public partial class HelpDialog : DXWindow
         {
             LibraryFile = LibraryFile.Interface,
             Index = 15,
-            Location = new Vector2I((int)Size.X - 30, 3),
         };
+        close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
 
@@ -71,7 +71,9 @@ public partial class HelpDialog : DXWindow
             DrawOutline = true,
             OutlineColour = Colors.Black,
             Align = HorizontalAlignment.Center,
-            Size = new Vector2I(720, 22),
+            VAlign = VerticalAlignment.Center,
+            Location = new Vector2I(0, 8),
+            Size = new Vector2I(720, 18),
             IsControl = false,
         });
 

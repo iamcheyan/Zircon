@@ -51,6 +51,8 @@ public partial class NPCDialog : DXWindow
     {
         _page = response?.Page;
         if (_page == null) return;
+        bool selling = _page.DialogType == NPCDialogType.BuySell && _page.Types is { Count: > 0 };
+        if (!selling) GameScene.Game?.EndInventoryNpcSale();
         string raw = _page.Say ?? string.Empty;
         raw = Regex.Replace(raw, @"\<(?<Text>.*?):(?<Default>.+?)\>", match =>
         {
@@ -91,9 +93,9 @@ public partial class NPCDialog : DXWindow
         _goods.Location = new Vector2I(0, (int)Size.Y);
         _goods.SetGoods(_page.Goods, _page.Currency, _page.Types?.Select(x => x.ItemType));
         _goods.Visible = _page.DialogType == NPCDialogType.BuySell && _page.Goods != null && _page.Goods.Count > 0;
-        if (_page.DialogType == NPCDialogType.BuySell && _page.Types is { Count: > 0 })
+        if (selling)
         {
-            GameScene.Game?.ShowInventoryForNpcSale();
+            GameScene.Game?.ShowInventoryForNpcSale(_page.Currency, _page.Types.Select(x => x.ItemType));
             _goods.Visible = true;
         }
         _repair.AllowedTypes = _page.Types?.Select(x => x.ItemType);
