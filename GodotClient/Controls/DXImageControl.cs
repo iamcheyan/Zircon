@@ -1,5 +1,6 @@
 using Godot;
 using Library;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
@@ -9,7 +10,7 @@ namespace ZirconClient.Controls;
 /// </summary>
 public partial class DXImageControl : DXControl
 {
-    private CanvasItemMaterial _blendMaterial;
+    private ShaderMaterial _blendMaterial;
     private ShaderMaterial _grayMaterial;
     private ShaderMaterial _grayBlendMaterial;
     public LibraryFile LibraryFile = LibraryFile.Interface;
@@ -69,9 +70,12 @@ public partial class DXImageControl : DXControl
             : MirSkin.GetTexture(LibraryFile, idx);
         if (tex == null) return;
 
-        // 旧版 DXImageControl 在 Blend=true 时切换到亮化混合，而不是
-        // 普通 SourceAlpha/InverseSourceAlpha。Godot 的 Add 模式对应旧版
-        // NORMAL blend 的视觉用途：光效叠加会提亮底图，不再变成灰暗透明层。
+        // 旧版 DXImageControl 的 Blend 标记通过
+        // RenderingPipelineManager.SetBlend(true, ImageOpacity, BlendMode)
+        // 绘制：ImageOpacity 落在 NORMAL 混合的 blendRate 参数上并被忽略
+        // （AppliesBlendRateToVertexColour 不含 NORMAL），顶点 Alpha 保持
+        // ForeColour 全不透明。只有非 Blend 路径 SetOpacity(ImageOpacity)
+        // 才会衰减顶点 Alpha。
         if (GrayScale)
         {
             Material = Blend ? (_grayBlendMaterial ??= CreateGrayMaterial(true))
@@ -79,10 +83,7 @@ public partial class DXImageControl : DXControl
         }
         else
         {
-            Material = Blend ? (_blendMaterial ??= new CanvasItemMaterial
-            {
-                BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-            }) : null;
+            Material = Blend ? (_blendMaterial ??= LegacyBlendMaterial.Create()) : null;
         }
 
         Vector2I off = UseOffSet ? MirSkin.GetOffset(LibraryFile, idx) : Vector2I.Zero;
@@ -92,23 +93,51 @@ public partial class DXImageControl : DXControl
         // 贴图，并把 ImageOpacity 作为源 Alpha；在贴图上再盖半透明灰块
         // 会改变透明边缘和黑色有效像素，不能作为等价实现。
         Color tint = IsEnabled ? ForeColour : new Color(0.29f, 0.29f, 0.29f, 1f);
-        tint.A *= Mathf.Clamp(ImageOpacity, 0f, 1f);
-        if (GrayScale)
-        {
-            // 灰度由材质对贴图 RGB 处理，tint 仍负责旧版 ForeColour/Opacity。
-        }
+        if (!Blend)
+            tint.A *= Mathf.Clamp(ImageOpacity, 0f, 1f);
         DrawTextureRect(tex, dest, false, tint);
     }
 
-    private static ShaderMaterial CreateGrayMaterial(bool additive)
+    internal static ShaderMaterial CreateGrayMaterial(bool blend)
     {
+        // 原版 GrayscaleD3D11.hlsl（默认管线）：
+        //   gray = dot(texel.rgb, (0.299, 0.587, 0.114))   // 直通 texel
+        //   out.rgb = gray * Col.rgb * texel.a * Col.a     // 预乘两个 Alpha
+        //   out.a   = texel.a * Col.a
+        // Blend 变体再叠加 NORMAL 屏幕混合 out = src*(1-dst)+dst。
+        // Godot 贴图为直通 RGBA8，因此 texel.a 预乘必须在 shader 内完成；
+        // 灰度值只能对直通 texel.rgb 计算，不能先乘 COLOR（原版 Col 只乘
+        // 一次，出现在 gray 之外）。
+        // 两个变体都用普通 mix 输出完整结果 (alpha=1)，不用 blend_add：
+        // Godot 的 canvas blend_add 把 shader 输出当预乘处理
+        // (贡献 = COLOR.rgb*COLOR.a)，而 screen 公式的 alpha 通道
+        // (texel.a*(1-dst.a)) 会把 RGB 贡献压成 0，导致特效不可见。
+        // 另：Godot 默认 mix 的混合因子是 TEXTURE alpha (final =
+        // COLOR.rgb*texel.a + dst*(1-texel.a))，输出会被 texel.a 再预乘一次；
+        // 故 src 项除以 texel.a 补偿，最终 = src*(1-dst)+dst (旧端精确数学)。
+        // 非 blend 变体（普通 alpha 混合 out = src + dst*(1-src.a)）同样输出
+        // alpha=1、在 shader 内用 screen_texture 完成 dst 项：实测 Godot 对
+        // alpha<1 的 shader 输出混入额外预乘（常量 a=0.5 的 shader 在黑底上
+        // 渲染出 0.75 而非 0.5），无法按标准公式预测；alpha=1 + 显式 dst 项
+        // 则字节级可验证。
+        // 注意 Godot 2D 贴图上传即预乘：texel.rgb = 直通.rgb * texel.a，
+        // 故 l = dot(texel.rgb) 已含 texel.a；src = l * Col.rgb * Col.a
+        // = 直通gray * Col.rgb * (texel.a*Col.a)，与旧端单次预乘一致。
         var shader = new Shader
         {
-            Code = (additive ? "shader_type canvas_item; render_mode blend_add;\n" : "shader_type canvas_item;\n") +
+            Code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\n" +
                 "void fragment() {\n" +
-                "    vec4 sampled = texture(TEXTURE, UV) * COLOR;\n" +
-                "    float l = dot(sampled.rgb, vec3(0.299, 0.587, 0.114));\n" +
-                "    COLOR = vec4(vec3(l), sampled.a);\n" +
+                "    vec4 texel = texture(TEXTURE, UV);\n" +
+                "    float l = dot(texel.rgb, vec3(0.299, 0.587, 0.114));\n" +
+                (blend
+                    ? "    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n" +
+                      "    vec3 source = vec3(l) * COLOR.rgb * texel.a * COLOR.a;\n" +
+                      "    vec3 out_rgb = destination.rgb + source * (vec3(1.0) - destination.rgb) / max(texel.a, 0.0001);\n" +
+                      "    COLOR = vec4(out_rgb, 1.0);\n"
+                    : "    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n" +
+                      "    float a = texel.a * COLOR.a;\n" +
+                      "    vec3 source = vec3(l) * COLOR.rgb * COLOR.a;\n" +
+                      "    COLOR = vec4(source + destination.rgb * (1.0 - a), 1.0);\n") +
                 "}"
         };
         return new ShaderMaterial { Shader = shader };
