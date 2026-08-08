@@ -1,0 +1,358 @@
+using Godot;
+using Library;
+
+namespace ZirconClient.Scripts;
+
+/// <summary>原版 Client.Envir.Config 的 Godot 持久化镜像。</summary>
+public static class ClientSettings
+{
+    private const string FilePath = "user://Zircon.ini";
+    private static bool _loaded;
+
+    public static bool DrawEffects { get; set; } = true;
+    public static bool DrawParticles { get; set; }
+    public static bool DrawWeather { get; set; } = true;
+    public static bool ShowTargetOutline { get; set; } = true;
+    public static bool ShowItemNames { get; set; } = true;
+    public static bool ShowMonsterNames { get; set; } = true;
+    public static bool ShowPlayerNames { get; set; } = true;
+    public static bool ShowUserHealth { get; set; } = true;
+    public static bool ShowMonsterHealth { get; set; } = true;
+    public static bool ShowDamageNumbers { get; set; } = true;
+    public static bool EscapeCloseAll { get; set; }
+    public static bool ShiftOpenChat { get; set; } = true;
+    public static bool RightClickDeTarget { get; set; } = true;
+    public static bool HideChatBar { get; set; } = true;
+    public static bool ShowMagicBarFrames { get; set; } = true;
+    public static bool MonsterBoxVisible { get; set; } = true;
+    public static bool QuestTrackerVisible { get; set; } = true;
+    public static bool LogChat { get; set; } = true;
+    public static bool SoundInBackground { get; set; } = true;
+    public static bool FullScreen { get; set; } = true;
+    public static bool Borderless { get; set; }
+    public static bool VSync { get; set; }
+    public static bool LimitFPS { get; set; }
+    public static Vector2I GameSize { get; set; } = new(1024, 768);
+    public static int DefaultMonitor { get; set; }
+    public static string RenderingPipeline { get; set; } = "Forward Plus";
+    public static bool SmoothMove { get; set; }
+    public static bool ClipMouse { get; set; }
+    public static bool DebugLabel { get; set; }
+    public static int SystemVolume { get; set; } = 25;
+    public static int MusicVolume { get; set; } = 25;
+    public static int PlayerVolume { get; set; } = 25;
+    public static int MonsterVolume { get; set; } = 25;
+    public static int MagicVolume { get; set; } = 25;
+    public static bool SystemVolumeMuted { get; set; }
+    public static bool MusicVolumeMuted { get; set; }
+    public static bool PlayerVolumeMuted { get; set; }
+    public static bool MonsterVolumeMuted { get; set; }
+    public static bool MagicVolumeMuted { get; set; }
+    public static bool UseNetworkConfig { get; set; }
+    public static string IPAddress { get; set; } = "127.0.0.1";
+    public static int Port { get; set; } = 7000;
+    public static string Language { get; set; } = "CHINESE";
+    public static bool RememberDetails { get; set; }
+    public static string RememberedEMail { get; set; } = string.Empty;
+    public static string RememberedPassword { get; set; } = string.Empty;
+
+    public static Color LocalTextForeColour { get; set; } = Colors.White;
+    public static Color GMWhisperInTextForeColour { get; set; } = Colors.Red;
+    public static Color WhisperInTextForeColour { get; set; } = Colors.Cyan;
+    public static Color WhisperOutTextForeColour { get; set; } = Colors.Aquamarine;
+    public static Color GroupTextForeColour { get; set; } = Colors.Plum;
+    public static Color GuildTextForeColour { get; set; } = Colors.LightPink;
+    public static Color ShoutTextForeColour { get; set; } = Colors.Yellow;
+    public static Color GlobalTextForeColour { get; set; } = Colors.Lime;
+    public static Color ObserverTextForeColour { get; set; } = Colors.Silver;
+    public static Color HintTextForeColour { get; set; } = Colors.AntiqueWhite;
+    public static Color SystemTextForeColour { get; set; } = Colors.Red;
+    public static Color GainsTextForeColour { get; set; } = Colors.GreenYellow;
+    public static Color AnnouncementTextForeColour { get; set; } = Colors.DarkBlue;
+    public static Color LocalTextBackColour { get; set; } = Colors.Transparent;
+    public static Color GMWhisperInTextBackColour { get; set; } = new(1f, 1f, 1f, 200f / 255f);
+    public static Color WhisperInTextBackColour { get; set; } = Colors.Transparent;
+    public static Color WhisperOutTextBackColour { get; set; } = Colors.Transparent;
+    public static Color GroupTextBackColour { get; set; } = Colors.Transparent;
+    public static Color GuildTextBackColour { get; set; } = Colors.Transparent;
+    public static Color ShoutTextBackColour { get; set; } = Colors.Transparent;
+    public static Color GlobalTextBackColour { get; set; } = Colors.Transparent;
+    public static Color ObserverTextBackColour { get; set; } = Colors.Transparent;
+    public static Color HintTextBackColour { get; set; } = Colors.Transparent;
+    public static Color SystemTextBackColour { get; set; } = new(1f, 1f, 1f, 200f / 255f);
+    public static Color GainsTextBackColour { get; set; } = Colors.Transparent;
+    public static Color AnnouncementTextBackColour { get; set; } = new(1f, 1f, 1f, 200f / 255f);
+    public static Color TargetMonsterLowLevelColour { get; set; } = new(50f / 255f, 205f / 255f, 50f / 255f);
+    public static Color TargetMonsterSameLevelColour { get; set; } = Colors.Yellow;
+    public static Color TargetMonsterHighLevelColour { get; set; } = Colors.Red;
+    public static Color TargetMonsterFriendlyColour { get; set; } = Colors.Cyan;
+    public static Color TargetPlayerFriendlyColour { get; set; } = Colors.Cyan;
+    public static Color TargetPlayerEnemyColour { get; set; } = Colors.Red;
+    public static Color TargetNPCColour { get; set; } = Colors.Cyan;
+
+    public static Color ChatForeColour(MessageType type) => type switch
+    {
+        MessageType.GMWhisperIn => GMWhisperInTextForeColour,
+        MessageType.WhisperIn => WhisperInTextForeColour,
+        MessageType.WhisperOut => WhisperOutTextForeColour,
+        MessageType.Group => GroupTextForeColour,
+        MessageType.Guild => GuildTextForeColour,
+        MessageType.Shout => ShoutTextForeColour,
+        MessageType.Global => GlobalTextForeColour,
+        MessageType.ObserverChat => ObserverTextForeColour,
+        MessageType.Hint => HintTextForeColour,
+        MessageType.System => SystemTextForeColour,
+        MessageType.Combat => GainsTextForeColour,
+        MessageType.Announcement => AnnouncementTextForeColour,
+        _ => LocalTextForeColour,
+    };
+
+    public static Color ChatBackColour(MessageType type) => type switch
+    {
+        MessageType.GMWhisperIn => GMWhisperInTextBackColour,
+        MessageType.WhisperIn => WhisperInTextBackColour,
+        MessageType.WhisperOut => WhisperOutTextBackColour,
+        MessageType.Group => GroupTextBackColour,
+        MessageType.Guild => GuildTextBackColour,
+        MessageType.Shout => ShoutTextBackColour,
+        MessageType.Global => GlobalTextBackColour,
+        MessageType.ObserverChat => ObserverTextBackColour,
+        MessageType.Hint => HintTextBackColour,
+        MessageType.System => SystemTextBackColour,
+        MessageType.Combat => GainsTextBackColour,
+        MessageType.Announcement => AnnouncementTextBackColour,
+        _ => LocalTextBackColour,
+    };
+
+    public static void Load()
+    {
+        if (_loaded) return;
+        _loaded = true;
+        var file = new ConfigFile();
+        if (file.Load(FilePath) != Error.Ok) return;
+        DrawEffects = Read(file, "Game", nameof(DrawEffects), DrawEffects);
+        DrawParticles = Read(file, "Game", nameof(DrawParticles), DrawParticles);
+        DrawWeather = Read(file, "Game", nameof(DrawWeather), DrawWeather);
+        ShowTargetOutline = Read(file, "Game", nameof(ShowTargetOutline), ShowTargetOutline);
+        ShowItemNames = Read(file, "Game", nameof(ShowItemNames), ShowItemNames);
+        ShowMonsterNames = Read(file, "Game", nameof(ShowMonsterNames), ShowMonsterNames);
+        ShowPlayerNames = Read(file, "Game", nameof(ShowPlayerNames), ShowPlayerNames);
+        ShowUserHealth = Read(file, "Game", nameof(ShowUserHealth), ShowUserHealth);
+        ShowMonsterHealth = Read(file, "Game", nameof(ShowMonsterHealth), ShowMonsterHealth);
+        ShowDamageNumbers = Read(file, "Game", nameof(ShowDamageNumbers), ShowDamageNumbers);
+        EscapeCloseAll = Read(file, "Game", nameof(EscapeCloseAll), EscapeCloseAll);
+        ShiftOpenChat = Read(file, "Game", nameof(ShiftOpenChat), ShiftOpenChat);
+        RightClickDeTarget = Read(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
+        HideChatBar = Read(file, "Game", nameof(HideChatBar), HideChatBar);
+        ShowMagicBarFrames = Read(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
+        MonsterBoxVisible = Read(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
+        QuestTrackerVisible = Read(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
+        LogChat = Read(file, "Game", nameof(LogChat), LogChat);
+        SoundInBackground = Read(file, "Sound", nameof(SoundInBackground), SoundInBackground);
+        FullScreen = Read(file, "Graphics", nameof(FullScreen), FullScreen);
+        Borderless = Read(file, "Graphics", nameof(Borderless), Borderless);
+        VSync = Read(file, "Graphics", nameof(VSync), VSync);
+        LimitFPS = Read(file, "Graphics", nameof(LimitFPS), LimitFPS);
+        GameSize = ReadVector2I(file, "Graphics", nameof(GameSize), GameSize);
+        DefaultMonitor = Read(file, "Graphics", nameof(DefaultMonitor), DefaultMonitor);
+        RenderingPipeline = Read(file, "Graphics", nameof(RenderingPipeline), RenderingPipeline);
+        SmoothMove = Read(file, "Graphics", nameof(SmoothMove), SmoothMove);
+        ClipMouse = Read(file, "Graphics", nameof(ClipMouse), ClipMouse);
+        DebugLabel = Read(file, "Graphics", nameof(DebugLabel), DebugLabel);
+        SystemVolume = Read(file, "Sound", nameof(SystemVolume), SystemVolume);
+        MusicVolume = Read(file, "Sound", nameof(MusicVolume), MusicVolume);
+        PlayerVolume = Read(file, "Sound", nameof(PlayerVolume), PlayerVolume);
+        MonsterVolume = Read(file, "Sound", nameof(MonsterVolume), MonsterVolume);
+        MagicVolume = Read(file, "Sound", nameof(MagicVolume), MagicVolume);
+        SystemVolumeMuted = Read(file, "Sound", nameof(SystemVolumeMuted), SystemVolumeMuted);
+        MusicVolumeMuted = Read(file, "Sound", nameof(MusicVolumeMuted), MusicVolumeMuted);
+        PlayerVolumeMuted = Read(file, "Sound", nameof(PlayerVolumeMuted), PlayerVolumeMuted);
+        MonsterVolumeMuted = Read(file, "Sound", nameof(MonsterVolumeMuted), MonsterVolumeMuted);
+        MagicVolumeMuted = Read(file, "Sound", nameof(MagicVolumeMuted), MagicVolumeMuted);
+        UseNetworkConfig = Read(file, "Network", nameof(UseNetworkConfig), UseNetworkConfig);
+        IPAddress = Read(file, "Network", nameof(IPAddress), IPAddress);
+        Port = Read(file, "Network", nameof(Port), Port);
+        Language = Read(file, "UI", nameof(Language), Language);
+        RememberDetails = Read(file, "Login", nameof(RememberDetails), RememberDetails);
+        RememberedEMail = Read(file, "Login", nameof(RememberedEMail), RememberedEMail);
+        RememberedPassword = Read(file, "Login", nameof(RememberedPassword), RememberedPassword);
+        LoadColours(file);
+    }
+
+    public static void Save()
+    {
+        Load();
+        var file = new ConfigFile();
+        Write(file, "Game", nameof(DrawEffects), DrawEffects);
+        Write(file, "Game", nameof(DrawParticles), DrawParticles);
+        Write(file, "Game", nameof(DrawWeather), DrawWeather);
+        Write(file, "Game", nameof(ShowTargetOutline), ShowTargetOutline);
+        Write(file, "Game", nameof(ShowItemNames), ShowItemNames);
+        Write(file, "Game", nameof(ShowMonsterNames), ShowMonsterNames);
+        Write(file, "Game", nameof(ShowPlayerNames), ShowPlayerNames);
+        Write(file, "Game", nameof(ShowUserHealth), ShowUserHealth);
+        Write(file, "Game", nameof(ShowMonsterHealth), ShowMonsterHealth);
+        Write(file, "Game", nameof(ShowDamageNumbers), ShowDamageNumbers);
+        Write(file, "Game", nameof(EscapeCloseAll), EscapeCloseAll);
+        Write(file, "Game", nameof(ShiftOpenChat), ShiftOpenChat);
+        Write(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
+        Write(file, "Game", nameof(HideChatBar), HideChatBar);
+        Write(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
+        Write(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
+        Write(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
+        Write(file, "Game", nameof(LogChat), LogChat);
+        Write(file, "Sound", nameof(SoundInBackground), SoundInBackground);
+        Write(file, "Graphics", nameof(FullScreen), FullScreen);
+        Write(file, "Graphics", nameof(Borderless), Borderless);
+        Write(file, "Graphics", nameof(VSync), VSync);
+        Write(file, "Graphics", nameof(LimitFPS), LimitFPS);
+        Write(file, "Graphics", nameof(GameSize), GameSize);
+        Write(file, "Graphics", nameof(DefaultMonitor), DefaultMonitor);
+        Write(file, "Graphics", nameof(RenderingPipeline), RenderingPipeline);
+        Write(file, "Graphics", nameof(SmoothMove), SmoothMove);
+        Write(file, "Graphics", nameof(ClipMouse), ClipMouse);
+        Write(file, "Graphics", nameof(DebugLabel), DebugLabel);
+        Write(file, "Sound", nameof(SystemVolume), SystemVolume);
+        Write(file, "Sound", nameof(MusicVolume), MusicVolume);
+        Write(file, "Sound", nameof(PlayerVolume), PlayerVolume);
+        Write(file, "Sound", nameof(MonsterVolume), MonsterVolume);
+        Write(file, "Sound", nameof(MagicVolume), MagicVolume);
+        Write(file, "Sound", nameof(SystemVolumeMuted), SystemVolumeMuted);
+        Write(file, "Sound", nameof(MusicVolumeMuted), MusicVolumeMuted);
+        Write(file, "Sound", nameof(PlayerVolumeMuted), PlayerVolumeMuted);
+        Write(file, "Sound", nameof(MonsterVolumeMuted), MonsterVolumeMuted);
+        Write(file, "Sound", nameof(MagicVolumeMuted), MagicVolumeMuted);
+        Write(file, "Network", nameof(UseNetworkConfig), UseNetworkConfig);
+        Write(file, "Network", nameof(IPAddress), IPAddress);
+        Write(file, "Network", nameof(Port), Port);
+        Write(file, "UI", nameof(Language), Language);
+        Write(file, "Login", nameof(RememberDetails), RememberDetails);
+        Write(file, "Login", nameof(RememberedEMail), RememberedEMail);
+        Write(file, "Login", nameof(RememberedPassword), RememberedPassword);
+        SaveColours(file);
+        file.Save(FilePath);
+    }
+
+    /// <summary>将原版 Graphics 页的窗口选项映射到 Godot 当前窗口。</summary>
+    public static void ApplyDisplaySettings()
+    {
+        if (DisplayServer.GetName() == "headless") return;
+
+        DisplayServer.WindowSetFlag(DisplayServer.WindowFlags.Borderless, Borderless);
+        DisplayServer.WindowSetVsyncMode(VSync ? DisplayServer.VSyncMode.Enabled : DisplayServer.VSyncMode.Disabled);
+        if (DefaultMonitor >= 0 && DefaultMonitor < DisplayServer.GetScreenCount())
+            DisplayServer.WindowSetCurrentScreen(DefaultMonitor);
+
+        if (FullScreen)
+            DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+        else
+        {
+            DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
+            DisplayServer.WindowSetSize(GameSize);
+        }
+
+        Engine.MaxFps = LimitFPS ? 60 : 0;
+        Input.MouseMode = ClipMouse ? Input.MouseModeEnum.Confined : Input.MouseModeEnum.Visible;
+    }
+
+    private static void LoadColours(ConfigFile file)
+    {
+        LocalTextForeColour = ReadColour(file, nameof(LocalTextForeColour), LocalTextForeColour);
+        GMWhisperInTextForeColour = ReadColour(file, nameof(GMWhisperInTextForeColour), GMWhisperInTextForeColour);
+        WhisperInTextForeColour = ReadColour(file, nameof(WhisperInTextForeColour), WhisperInTextForeColour);
+        WhisperOutTextForeColour = ReadColour(file, nameof(WhisperOutTextForeColour), WhisperOutTextForeColour);
+        GroupTextForeColour = ReadColour(file, nameof(GroupTextForeColour), GroupTextForeColour);
+        GuildTextForeColour = ReadColour(file, nameof(GuildTextForeColour), GuildTextForeColour);
+        ShoutTextForeColour = ReadColour(file, nameof(ShoutTextForeColour), ShoutTextForeColour);
+        GlobalTextForeColour = ReadColour(file, nameof(GlobalTextForeColour), GlobalTextForeColour);
+        ObserverTextForeColour = ReadColour(file, nameof(ObserverTextForeColour), ObserverTextForeColour);
+        HintTextForeColour = ReadColour(file, nameof(HintTextForeColour), HintTextForeColour);
+        SystemTextForeColour = ReadColour(file, nameof(SystemTextForeColour), SystemTextForeColour);
+        GainsTextForeColour = ReadColour(file, nameof(GainsTextForeColour), GainsTextForeColour);
+        AnnouncementTextForeColour = ReadColour(file, nameof(AnnouncementTextForeColour), AnnouncementTextForeColour);
+        LocalTextBackColour = ReadColour(file, nameof(LocalTextBackColour), LocalTextBackColour);
+        GMWhisperInTextBackColour = ReadColour(file, nameof(GMWhisperInTextBackColour), GMWhisperInTextBackColour);
+        WhisperInTextBackColour = ReadColour(file, nameof(WhisperInTextBackColour), WhisperInTextBackColour);
+        WhisperOutTextBackColour = ReadColour(file, nameof(WhisperOutTextBackColour), WhisperOutTextBackColour);
+        GroupTextBackColour = ReadColour(file, nameof(GroupTextBackColour), GroupTextBackColour);
+        GuildTextBackColour = ReadColour(file, nameof(GuildTextBackColour), GuildTextBackColour);
+        ShoutTextBackColour = ReadColour(file, nameof(ShoutTextBackColour), ShoutTextBackColour);
+        GlobalTextBackColour = ReadColour(file, nameof(GlobalTextBackColour), GlobalTextBackColour);
+        ObserverTextBackColour = ReadColour(file, nameof(ObserverTextBackColour), ObserverTextBackColour);
+        HintTextBackColour = ReadColour(file, nameof(HintTextBackColour), HintTextBackColour);
+        SystemTextBackColour = ReadColour(file, nameof(SystemTextBackColour), SystemTextBackColour);
+        GainsTextBackColour = ReadColour(file, nameof(GainsTextBackColour), GainsTextBackColour);
+        AnnouncementTextBackColour = ReadColour(file, nameof(AnnouncementTextBackColour), AnnouncementTextBackColour);
+        TargetMonsterLowLevelColour = ReadColour(file, nameof(TargetMonsterLowLevelColour), TargetMonsterLowLevelColour);
+        TargetMonsterSameLevelColour = ReadColour(file, nameof(TargetMonsterSameLevelColour), TargetMonsterSameLevelColour);
+        TargetMonsterHighLevelColour = ReadColour(file, nameof(TargetMonsterHighLevelColour), TargetMonsterHighLevelColour);
+        TargetMonsterFriendlyColour = ReadColour(file, nameof(TargetMonsterFriendlyColour), TargetMonsterFriendlyColour);
+        TargetPlayerFriendlyColour = ReadColour(file, nameof(TargetPlayerFriendlyColour), TargetPlayerFriendlyColour);
+        TargetPlayerEnemyColour = ReadColour(file, nameof(TargetPlayerEnemyColour), TargetPlayerEnemyColour);
+        TargetNPCColour = ReadColour(file, nameof(TargetNPCColour), TargetNPCColour);
+    }
+
+    private static void SaveColours(ConfigFile file)
+    {
+        Write(file, "Colours", nameof(LocalTextForeColour), LocalTextForeColour);
+        Write(file, "Colours", nameof(GMWhisperInTextForeColour), GMWhisperInTextForeColour);
+        Write(file, "Colours", nameof(WhisperInTextForeColour), WhisperInTextForeColour);
+        Write(file, "Colours", nameof(WhisperOutTextForeColour), WhisperOutTextForeColour);
+        Write(file, "Colours", nameof(GroupTextForeColour), GroupTextForeColour);
+        Write(file, "Colours", nameof(GuildTextForeColour), GuildTextForeColour);
+        Write(file, "Colours", nameof(ShoutTextForeColour), ShoutTextForeColour);
+        Write(file, "Colours", nameof(GlobalTextForeColour), GlobalTextForeColour);
+        Write(file, "Colours", nameof(ObserverTextForeColour), ObserverTextForeColour);
+        Write(file, "Colours", nameof(HintTextForeColour), HintTextForeColour);
+        Write(file, "Colours", nameof(SystemTextForeColour), SystemTextForeColour);
+        Write(file, "Colours", nameof(GainsTextForeColour), GainsTextForeColour);
+        Write(file, "Colours", nameof(AnnouncementTextForeColour), AnnouncementTextForeColour);
+        Write(file, "Colours", nameof(LocalTextBackColour), LocalTextBackColour);
+        Write(file, "Colours", nameof(GMWhisperInTextBackColour), GMWhisperInTextBackColour);
+        Write(file, "Colours", nameof(WhisperInTextBackColour), WhisperInTextBackColour);
+        Write(file, "Colours", nameof(WhisperOutTextBackColour), WhisperOutTextBackColour);
+        Write(file, "Colours", nameof(GroupTextBackColour), GroupTextBackColour);
+        Write(file, "Colours", nameof(GuildTextBackColour), GuildTextBackColour);
+        Write(file, "Colours", nameof(ShoutTextBackColour), ShoutTextBackColour);
+        Write(file, "Colours", nameof(GlobalTextBackColour), GlobalTextBackColour);
+        Write(file, "Colours", nameof(ObserverTextBackColour), ObserverTextBackColour);
+        Write(file, "Colours", nameof(HintTextBackColour), HintTextBackColour);
+        Write(file, "Colours", nameof(SystemTextBackColour), SystemTextBackColour);
+        Write(file, "Colours", nameof(GainsTextBackColour), GainsTextBackColour);
+        Write(file, "Colours", nameof(AnnouncementTextBackColour), AnnouncementTextBackColour);
+        Write(file, "Colours", nameof(TargetMonsterLowLevelColour), TargetMonsterLowLevelColour);
+        Write(file, "Colours", nameof(TargetMonsterSameLevelColour), TargetMonsterSameLevelColour);
+        Write(file, "Colours", nameof(TargetMonsterHighLevelColour), TargetMonsterHighLevelColour);
+        Write(file, "Colours", nameof(TargetMonsterFriendlyColour), TargetMonsterFriendlyColour);
+        Write(file, "Colours", nameof(TargetPlayerFriendlyColour), TargetPlayerFriendlyColour);
+        Write(file, "Colours", nameof(TargetPlayerEnemyColour), TargetPlayerEnemyColour);
+        Write(file, "Colours", nameof(TargetNPCColour), TargetNPCColour);
+    }
+
+    private static Color ReadColour(ConfigFile file, string key, Color fallback)
+    {
+        if (!file.HasSectionKey("Colours", key)) return fallback;
+        return file.GetValue("Colours", key).AsColor();
+    }
+
+    private static T Read<T>(ConfigFile file, string section, string key, T fallback)
+    {
+        if (!file.HasSectionKey(section, key)) return fallback;
+        Variant value = file.GetValue(section, key);
+        if (typeof(T) == typeof(bool)) return (T)(object)value.AsBool();
+        if (typeof(T) == typeof(int)) return (T)(object)value.AsInt32();
+        if (typeof(T) == typeof(string)) return (T)(object)value.AsString();
+        return fallback;
+    }
+
+    private static Vector2I ReadVector2I(ConfigFile file, string section, string key, Vector2I fallback)
+    {
+        if (!file.HasSectionKey(section, key)) return fallback;
+        Variant value = file.GetValue(section, key);
+        Vector2I size = value.AsVector2I();
+        return new Vector2I(Mathf.Max(320, size.X), Mathf.Max(240, size.Y));
+    }
+
+    private static void Write(ConfigFile file, string section, string key, Variant value)
+        => file.SetValue(section, key, value);
+}
