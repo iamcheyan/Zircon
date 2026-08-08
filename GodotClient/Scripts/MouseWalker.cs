@@ -26,23 +26,50 @@ public partial class MouseWalker : Node2D
     private const int ManualHeightOffset = 34;
 
     private readonly MapView _mapView;
-    private readonly Action<MirDirection, int> _sendMove;  // (方向, 距离) -> C.Move
+    private readonly Action<MirDirection, int, bool> _sendMove;  // (方向, 距离, 是否跑步) -> C.Move
+    private readonly Action<MirDirection> _sendTurn;
     private readonly Func<bool> _blockLeftWalk;  // 返回 true 时左键不走路 (鼠标下有可点物体)
+    private readonly Func<bool> _mouseOverUi;  // 返回 true 时鼠标在游戏 UI 上, 屏蔽任何移动/转向
     private readonly Func<int> _getRunSteps;  // 返回当前可跑步数 (1=走, 2=负重允许跑, 3=骑马); null=默认2
+    private readonly Func<int, int, bool> _cellBlocked;  // 地形之外的动态阻挡物
+    private readonly Func<bool> _movementAllowed;
+    private readonly Func<bool> _turnAllowed;
+    private readonly Func<bool> _blockLeftMouse;
+    private readonly Func<bool> _blockRightMouse;
 
-    // 移动节流: 原版按 MoveFrame (约 100ms/格) 发包, 防止刷爆服务端
-    private const double WalkIntervalMs = 100.0;
-    private const double RunIntervalMs = 110.0;
+    // 原版 Globals.MoveTime = 600ms。一段移动完成后才允许下一段；
+    // 跑步不是把动画播得更快，而是在相同 6 帧/600ms 内移动 2 格，
+    // 因而实际速度是走路的两倍。
+    private const double WalkIntervalMs = 600.0;
+    private const double RunIntervalMs = 600.0;
     private double _nextSendMs;
     public bool Enabled = true;  // GameScene 可在登录前关掉
     public bool AutoRun;  // D 键切换; 开启时左键也跑步
 
-    public MouseWalker(MapView mapView, Action<MirDirection, int> sendMove, Func<bool> blockLeftWalk = null, Func<int> getRunSteps = null)
+    public void AddMoveDelay(TimeSpan slow)
+    {
+        if (slow <= TimeSpan.Zero) return;
+        _nextSendMs = Math.Max(_nextSendMs, Godot.Time.GetTicksMsec() + slow.TotalMilliseconds);
+    }
+
+    public MouseWalker(MapView mapView, Action<MirDirection, int, bool> sendMove,
+        Func<bool> blockLeftWalk = null, Func<int> getRunSteps = null,
+        Action<MirDirection> sendTurn = null, Func<bool> mouseOverUi = null,
+        Func<int, int, bool> cellBlocked = null, Func<bool> movementAllowed = null,
+        Func<bool> turnAllowed = null, Func<bool> blockLeftMouse = null,
+        Func<bool> blockRightMouse = null)
     {
         _mapView = mapView;
         _sendMove = sendMove;
         _blockLeftWalk = blockLeftWalk;
         _getRunSteps = getRunSteps;
+        _sendTurn = sendTurn;
+        _mouseOverUi = mouseOverUi;
+        _cellBlocked = cellBlocked;
+        _movementAllowed = movementAllowed;
+        _turnAllowed = turnAllowed;
+        _blockLeftMouse = blockLeftMouse;
+        _blockRightMouse = blockRightMouse;
     }
 
     public override void _Process(double delta)
@@ -60,59 +87,104 @@ public partial class MouseWalker : Node2D
 
         bool leftDown = Input.IsMouseButtonPressed(MouseButton.Left);
         bool rightDown = Input.IsMouseButtonPressed(MouseButton.Right);
+        bool autoRun = AutoRun;
+        // 鼠标在游戏 UI (背包/人物/商店等窗口或主面板) 上: 点击是操作界面, 不是移动角色。
+        // 原版等价物是 MapControl.ProcessInput 的 MouseControl == this 判断。
+        // 但原版 AutoRun 在 MouseControl 判断之前执行，不能被 UI 悬停截断。
+        if (!autoRun && _mouseOverUi != null && _mouseOverUi())
+            return;
+
         // Shift 按住 = 原地攻击, 不走
         bool shiftDown = Input.IsKeyPressed(Key.Shift);
-        if (shiftDown) return;
+        if (!autoRun && shiftDown) return;
 
-        if (!leftDown && !rightDown) return;
+        // MapControl.ProcessInput handles Alt+left before its ordinary walk
+        // branch (harvest/fishing/taming). MouseWalker runs independently, so
+        // it must not enqueue a same-frame movement request for that input.
+        // Alt+right keeps the legacy run behavior because the original right
+        // button branch has no Alt-special action.
+        if (!autoRun && leftDown && Input.IsKeyPressed(Key.Alt)) return;
+
+        // 原版 AutoRun 不依赖鼠标按钮；开启后即使松开鼠标也会继续调用 Run。
+        if (!leftDown && !rightDown && !autoRun) return;
+
+        if (!autoRun && leftDown && _blockLeftMouse?.Invoke() == true) return;
+        if (!autoRun && rightDown && _blockRightMouse?.Invoke() == true) return;
 
         // 左键但鼠标下有可点物体 (怪物/NPC/物品) -> 让 CombatController 处理选中, 不走路
-        if (leftDown && _blockLeftWalk != null && _blockLeftWalk())
+        if (!autoRun && leftDown && _blockLeftWalk != null && _blockLeftWalk())
             return;
 
         double now = Godot.Time.GetTicksMsec();
         int steps = _getRunSteps?.Invoke() ?? 2;
-        bool run = rightDown || AutoRun;
+        bool run = rightDown || autoRun;
         int distance = run ? steps : 1;
         double interval = run ? RunIntervalMs : WalkIntervalMs;
         if (now < _nextSendMs) return;
 
         MirDirection target = ComputeDirection(mouseWorld);
+        // 原版右键在玩家附近只转身，不会向脚下移动。
+        bool canMove = _movementAllowed?.Invoke() ?? true;
+        bool canTurn = _turnAllowed?.Invoke() ?? canMove;
+        if (rightDown && (IsMouseWithinCells(mouseWorld, 2) || !canMove))
+        {
+            if (canTurn) _sendTurn?.Invoke(target);
+            _nextSendMs = now + WalkIntervalMs;
+            return;
+        }
+        if (!canMove) return;
+
         // 撞墙绕路: 正方向走不通时找相邻可行方向 (复刻原版 MouseDirectionBest)
-        MirDirection dir = BestWalkDirection(target);
-        _sendMove(dir, distance);
+        MirDirection dir = target;
+        if (!CanMove(target, distance))
+        {
+            // 原版 Run 在遇到阻挡时用 MouseDirectionBest(direction, 1)，
+            // 即使原本请求的是两格/三格，也只寻找下一格的替代方向。
+            MirDirection best = BestWalkDirection(target, mouseWorld, 1);
+            if (best == target && !CanMove(target, 1))
+            {
+                _sendTurn?.Invoke(target);
+                _nextSendMs = now + WalkIntervalMs;
+                return;
+            }
+            dir = best;
+            distance = 1;
+        }
+        _sendMove(dir, distance, run && distance >= 2);
         _nextSendMs = now + interval;
     }
 
     /// <summary>
     /// 鼠标世界坐标 -> 8 方向之一。复刻原版 MouseDirection 的 22.5° 划分。
-    /// 玩家恒居中: 屏幕中心格的屏幕像素 = CellToScreen(CenterX, CenterY, true)。
+    /// 玩家恒居中: 使用地图格中心计算角度，避免人物贴图 baseline 偏移。
     /// </summary>
     private MirDirection ComputeDirection(Vector2 mouseWorld)
     {
-        // 玩家屏幕位置 (世界坐标): 用 MapView 的居中公式反推玩家自己格子的屏幕坐标
-        // CellToScreen(CenterX, CenterY, true) 即玩家中心。为不依赖 MapView 内部常量,
-        // 我们直接调用它的 public CellToScreen (它用玩家自己的 CenterX/Y 算)。
-        Vector2 playerWorld = _mapView.CellToScreen(_mapView.CenterX, _mapView.CenterY, true);
-
-        // 归一化到"格"单位 (消除 48x32 的宽高比), 再算角度
+        // 原版角度中心是地图格中心，而不是人物贴图的 baseline。
+        Vector2 playerWorld = _mapView.CellToScreen(_mapView.CenterX, _mapView.CenterY, false)
+            + new Vector2(CellWidth / 2f, CellHeight / 2f);
         float dx = mouseWorld.X - playerWorld.X;
         float dy = mouseWorld.Y - playerWorld.Y;
-        float gx = dx / CellWidth;
-        float gy = dy / CellHeight;
+        int cellX = (int)Math.Floor((dx + CellWidth / 2f) / CellWidth);
+        int cellY = (int)Math.Floor((dy + CellHeight / 2f) / CellHeight);
 
-        // 鼠标几乎压在玩家身上 -> 不发方向 (原版同样跳过)
-        if (Math.Abs(gx) < 0.15f && Math.Abs(gy) < 0.15f)
-            return _lastDir;  // 保持上一次方向, 避免抖动
+        // 原版近距离先按地图格坐标取方向。
+        if (Math.Max(Math.Abs(cellX), Math.Abs(cellY)) <= 2)
+        {
+            if (cellX == 0 && cellY == 0) return _lastDir;
+            _lastDir = Functions.DirectionFromPoint(
+                new System.Drawing.Point(0, 0), new System.Drawing.Point(cellX, cellY));
+            return _lastDir;
+        }
 
-        // atan2 返回弧度; 原版以"正上=0°, 顺时针"为约定 (MirDirection.Up=0, UpRight=1, ...)
-        // Godot 屏幕坐标 Y 向下为正, 所以正上方向 dy<0。用 atan2(gx, -gy) 让正上=0, 顺时针递增。
-        double angle = Math.Atan2(gx, -gy) * 180.0 / Math.PI;  // [-180, 180], 正上=0
+        // 原版远距离用实际像素角度；48x32 的比例不能归一化，否则边界
+        // 会与旧客户端的 22.5 度分界不同。
+        double angle = Math.Atan2(dx, -dy) * 180.0 / Math.PI;  // [-180, 180], 正上=0
         if (angle < 0) angle += 360.0;
 
-        // 每 45° 一个方向, 但原版以 22.5° 为分界 (即 0° 中心±22.5° 都是 Up)
-        // (int)((angle + 22.5) / 45) % 8
-        int idx = (int)Math.Floor((angle + 22.5) / 45.0) & 7;
+        angle += 22.5;
+        if (angle >= 360.0) angle -= 360.0;
+        int idx = (int)(angle / 45.0);
         _lastDir = (MirDirection)idx;
         return _lastDir;
     }
@@ -122,7 +194,9 @@ public partial class MouseWalker : Node2D
     {
         var map = _mapView.Map;
         if (x < 0 || y < 0 || x >= map.Width || y >= map.Height) return false;
-        return map.Cells[x, y].Flag;
+        // 原版 Cell.Blocking() 同时检查地形 Flag 和格子上的动态 MapObject。
+        // 之前这里只检查地形，遇到怪物/NPC/其他玩家时会错误地继续发移动。
+        return !map.Cells[x, y].Flag && !(_cellBlocked?.Invoke(x, y) ?? false);
     }
 
     /// <summary>
@@ -145,24 +219,31 @@ public partial class MouseWalker : Node2D
     /// 复刻原版 MouseDirectionBest: 先试 dir, 不行试 ShiftDirection(dir, ±1), 再 ±2。
     /// 全都不行就原地转身 (返回 dir, 发 Move 会被服务端拒, 但转身方向要发)。
     /// </summary>
-    private MirDirection BestWalkDirection(MirDirection target)
+    private MirDirection BestWalkDirection(MirDirection target, Vector2 mouseWorld, int distance)
     {
-        if (CanMove(target, 1)) return target;
+        if (CanMove(target, distance)) return target;
 
-        // ±1 (45° 偏)
-        MirDirection left = Functions.ShiftDirection(target, -1);
-        if (CanMove(left, 1)) return left;
-        MirDirection right = Functions.ShiftDirection(target, 1);
-        if (CanMove(right, 1)) return right;
+        Vector2 playerWorld = _mapView.CellToScreen(_mapView.CenterX, _mapView.CenterY, false)
+            + new Vector2(CellWidth / 2f, CellHeight / 2f);
+        double angle = Math.Atan2(mouseWorld.X - playerWorld.X,
+            -(mouseWorld.Y - playerWorld.Y)) * 180.0 / Math.PI;
+        if (angle < 0) angle += 360.0;
+        MirDirection best = (MirDirection)(int)(angle / 45.0);
+        if (best == target) best = Functions.ShiftDirection(target, 1);
+        MirDirection next = Functions.ShiftDirection(target, -(int)best + (int)target);
 
-        // ±2 (90° 偏)
-        MirDirection left2 = Functions.ShiftDirection(target, -2);
-        if (CanMove(left2, 1)) return left2;
-        MirDirection right2 = Functions.ShiftDirection(target, 2);
-        if (CanMove(right2, 1)) return right2;
-
-        // 全堵 -> 返回 target (服务端会拒/玩家转身), 与原版一致
+        if (CanMove(best, distance)) return best;
+        if (CanMove(next, distance)) return next;
         return target;
+    }
+
+    private bool IsMouseWithinCells(Vector2 mouseWorld, int range)
+    {
+        Vector2 playerWorld = _mapView.CellToScreen(_mapView.CenterX, _mapView.CenterY, false)
+            + new Vector2(CellWidth / 2f, CellHeight / 2f);
+        int x = (int)Math.Floor((mouseWorld.X - playerWorld.X + CellWidth / 2f) / CellWidth);
+        int y = (int)Math.Floor((mouseWorld.Y - playerWorld.Y + CellHeight / 2f) / CellHeight);
+        return Math.Max(Math.Abs(x), Math.Abs(y)) <= range;
     }
 
     private MirDirection _lastDir = MirDirection.Down;

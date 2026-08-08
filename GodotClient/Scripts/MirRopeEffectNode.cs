@@ -33,13 +33,13 @@ public partial class MirRopeEffectNode : Node2D
         // MirRopeEffect 的旧版基类 Blend 默认是 false；保留普通 Alpha
         // 绘制，只有明确传入 Blend 的链条才使用 Add。
         Material = null;
-        Rebuild(2, Anchor(_source));
+        Rebuild(2, AnchorSource(_source));
     }
 
     public override void _Process(double delta)
     {
         if (!IsInstanceValid(_source) || !IsInstanceValid(_target)) { QueueFree(); return; }
-        Vector2 start = Anchor(_source), end = Anchor(_target);
+        Vector2 start = AnchorSource(_source), end = AnchorTarget(_target);
         if (!_landed)
         {
             float t = Mathf.Clamp((float)((long)Godot.Time.GetTicksMsec() - _launchStart) / LaunchDuration, 0f, 1.2f);
@@ -78,12 +78,62 @@ public partial class MirRopeEffectNode : Node2D
             DrawSetTransform((a + b) * .5f, Mathf.Atan2(d.Y, d.X) + Mathf.Pi / 2f,
                 new Vector2(.5f, d.Length() / LinkLength));
             DrawTextureRect(texture, new Rect2(-image.Width / 2f, -image.Height / 2f, image.Width, image.Height), false,
-                new Color(1f, 1f, 1f, .9f));
+                // MirRopeEffect inherits MirLineEffect with Blend=false and
+                // Opacity=1; the old client does not apply an extra .9 alpha.
+                Colors.White);
         }
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 
-    private static Vector2 Anchor(Node2D node) => node.Position - new Vector2(0, 50);
+    // 原版 MirRopeEffect.ToWorld 使用 DrawY（格子原点），而 Godot 节点
+    // Position 是 objectBaseline，因此先减 32；再叠加原版的
+    // SourceOffset/TargetOffset 与 AnchorOffsetY=50。
+    private static Vector2 AnchorSource(Node2D node)
+    {
+        Vector2 delta = DirectionOffset(DirectionOf(node), true);
+        return node.Position + new Vector2(-10f + delta.X, -62f + delta.Y);
+    }
+
+    private static Vector2 AnchorTarget(Node2D node)
+    {
+        Vector2 delta = DirectionOffset(DirectionOf(node), false);
+        return node.Position + new Vector2(8f + delta.X, -72f + delta.Y);
+    }
+
+    private static MirDirection DirectionOf(Node2D node) => node switch
+    {
+        PlayerRenderer player => player.Direction,
+        MapObjectNode mapObject => mapObject.Direction,
+        _ => MirDirection.Down,
+    };
+
+    private static Vector2 DirectionOffset(MirDirection direction, bool source)
+    {
+        if (source)
+            return direction switch
+            {
+                MirDirection.Up => new Vector2(0, -50),
+                MirDirection.UpRight => new Vector2(40, -35),
+                MirDirection.Right => new Vector2(35, -15),
+                MirDirection.DownRight => new Vector2(27, -7),
+                MirDirection.DownLeft => new Vector2(-17, -10),
+                MirDirection.Left => new Vector2(-25, -20),
+                MirDirection.UpLeft => new Vector2(-15, -40),
+                _ => Vector2.Zero,
+            };
+
+        return direction switch
+        {
+            MirDirection.Up => new Vector2(0, -50),
+            MirDirection.UpRight => new Vector2(25, -45),
+            MirDirection.UpLeft => new Vector2(-25, -45),
+            MirDirection.Right => new Vector2(40, -30),
+            MirDirection.Left => new Vector2(-40, -30),
+            MirDirection.DownRight => new Vector2(25, -10),
+            MirDirection.DownLeft => new Vector2(-25, -10),
+            _ => Vector2.Zero,
+        };
+    }
     private void Rebuild(int count, Vector2 at)
     {
         _points.Clear(); _velocities.Clear();

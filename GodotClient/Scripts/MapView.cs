@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Godot;
 using Library;
 using ZirconClient.Formats;
@@ -16,6 +17,8 @@ public partial class MapView : Node2D
     public int BackgroundIndex { get; private set; }
     public int MissingLibraryCount { get; private set; }
     public int MissingTextureCount { get; private set; }
+    public int EmptyImageEntryCount { get; private set; }
+    private readonly HashSet<string> _missingTextureKeys = new();
 
     const int CellWidth = 48;
     const int CellHeight = 32;
@@ -67,6 +70,8 @@ public partial class MapView : Node2D
         BackgroundIndex = backgroundIndex;
         MissingLibraryCount = 0;
         MissingTextureCount = 0;
+        EmptyImageEntryCount = 0;
+        _missingTextureKeys.Clear();
         _debugLogged = false;
         _warned = false;
         _countLogged = false;
@@ -124,7 +129,9 @@ public partial class MapView : Node2D
         {
             _countLogged = true;
             GD.Print($"[MapView] 首帧绘制: {drawn} 格, viewport={GetViewport().GetVisibleRect().Size}");
-            GD.Print($"[MapView] 贴图诊断: missingLibraries={MissingLibraryCount}, missingTextures={MissingTextureCount}");
+            GD.Print($"[MapView] 贴图诊断: missingLibraries={MissingLibraryCount}, missingTextures={MissingTextureCount}, emptyImageEntries={EmptyImageEntryCount}");
+            if (_missingTextureKeys.Count > 0)
+                GD.Print($"[MapView] 缺失贴图键: {string.Join(", ", _missingTextureKeys.OrderBy(x => x))}");
         }
     }
 
@@ -243,31 +250,21 @@ public partial class MapView : Node2D
             {
                 int index = AnimatedIndex(cell.MiddleImage - 1, cell.MiddleAnimationFrame,
                     out bool blend);
-                bool effectiveBlend = IsNonCellSized(cell.MiddleFile, index) && blend;
-                if (effectiveBlend == blendOnly)
-                    DrawCell(canvas, cell.MiddleFile, index, px, py, true, effectiveBlend, CellHeight);
+                // 原版 MapControl 对 cell-sized 和大型贴图都保留地图帧的
+                // Front/MiddleAnimationBlend 标志；贴图尺寸只决定底边基线，
+                // 不能决定是否进入 DrawBlend 路径。
+                if (blend == blendOnly)
+                    DrawCell(canvas, cell.MiddleFile, index, px, py, true, blend, CellHeight);
             }
 
             if (frontLayer && cell.FrontImage > 0)
             {
                 int index = AnimatedIndex(cell.FrontImage - 1, cell.FrontAnimationFrame,
                     out bool blend);
-                bool effectiveBlend = IsNonCellSized(cell.FrontFile, index) && blend;
-                if (effectiveBlend == blendOnly)
-                    DrawCell(canvas, cell.FrontFile, index, px, py, true, effectiveBlend, CellHeight);
+                if (blend == blendOnly)
+                    DrawCell(canvas, cell.FrontFile, index, px, py, true, blend, CellHeight);
             }
         }
-    }
-
-    private bool IsNonCellSized(int fileByte, int imageIndex)
-    {
-        if (!Libraries.KROrder.TryGetValue(fileByte, out LibraryFile file)) return false;
-        var lib = GetLibrary(file);
-        if (lib == null || imageIndex < 0 || imageIndex >= lib.Images.Length) return false;
-        var image = lib.Images[imageIndex];
-        if (image == null) return false;
-        return !((image.Width == CellWidth && image.Height == CellHeight)
-            || (image.Width == CellWidth * 2 && image.Height == CellHeight * 2));
     }
 
     // skipTilesc: Middle/Front 跳过 Tilesc；背景层允许 fileByte=0。
@@ -296,7 +293,9 @@ public partial class MapView : Node2D
         }
         if (lib.Images[imageIndex] == null)
         {
-            MissingTextureCount++;
+            // 原版 ZL 元数据允许用空条目表示“无图层”。例如 Housesc[0]
+            // 是地图对象的空占位帧，不是资源损坏，不能计入 missingTextures。
+            EmptyImageEntryCount++;
             return false;
         }
 
@@ -306,6 +305,7 @@ public partial class MapView : Node2D
         if (texture == null)
         {
             MissingTextureCount++;
+            _missingTextureKeys.Add($"{file}[{imageIndex}]:texture-null");
             return false;
         }
 

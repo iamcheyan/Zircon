@@ -568,6 +568,10 @@ public static class MagicEffectTable
             File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f),
             Projectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = true },
             TargetProjectile = new ProjectileDef { File = LibraryFile.MonMagicEx23, StartIndex = 2600, FrameCount = 7, Colour = new Color(0.6f, 1f, 0.1f), Has16Directions = false },
+            // The original MapObject assigns action.Direction to this impact.
+            // The checked-in MonMagicEx23 resource currently lacks the later
+            // direction ranges; the frame audit records that source/resource
+            // inconsistency instead of silently forcing Up.
             Impact = new ImpactDef { File = LibraryFile.MonMagicEx23, StartIndex = 2780, FrameCount = 6, Colour = new Color(0.6f, 1f, 0.1f), DirectionFromCast = true },
         },
         // ---- 怪物魔法：旧端同样使用 MapTarget，不能回退到玩家技能的素材 ----

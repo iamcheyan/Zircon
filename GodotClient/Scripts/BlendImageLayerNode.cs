@@ -28,11 +28,7 @@ public partial class BlendImageLayerNode : Node2D
         _colour = colour;
         _offsetX = offsetX;
         _offsetY = offsetY;
-        // All current callers correspond to legacy Draw/DrawBlend(...,
-        // ImageType.Image), whose pipeline mode is NORMAL. The bool is kept
-        // for the first/second thurible layer API, but it only controls the
-        // caller's opacity choice, never additive RGB blending.
-        _material.BlendMode = CanvasItemMaterial.BlendModeEnum.Mix;
+        _material.BlendMode = additive ? CanvasItemMaterial.BlendModeEnum.Add : CanvasItemMaterial.BlendModeEnum.Mix;
         ZIndex = zIndex;
         Visible = library != null && frame >= 0;
         QueueRedraw();

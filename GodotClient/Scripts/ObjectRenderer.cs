@@ -17,6 +17,9 @@ public partial class ObjectRenderer : MapObjectNode
     public enum Kind { Monster, NPC, Item, Player }
 
     public Kind Type;
+    // 原版 MapCell.Objects 在新增/移动时追加，CheckCursor 逆序扫描；用于在
+    // 全局 _objects 字典中重建同格对象的最新优先级。
+    public long HitOrder;
     public ZlLibrary BodyLibrary;
     public int BodyShape;   // 怪物: MonsterLookup 形状; NPC: NPCInfo.Image; 物品: 0
     public int BodyOffSet;  // 怪物: 1000; NPC: 100; 物品: 0
@@ -35,8 +38,11 @@ public partial class ObjectRenderer : MapObjectNode
     public Color DrawColour = Colors.White;
     public PoisonType Poison;
     public bool Focused;
+    public bool TargetHighlighted;
+    public Color TargetOutlineColour = Colors.Transparent;
     public int Light;
     public string ChatText;
+    public Action<SoundIndex> SoundCue;
     private double _chatUntil;
 
     private Dictionary<MirAnimation, Frame> _frameTable = new(FrameSet.DefaultMonster);
@@ -45,8 +51,6 @@ public partial class ObjectRenderer : MapObjectNode
     // ---- 工厂方法 ----
     public static ObjectRenderer CreateMonster(S.ObjectMonster p)
     {
-        if (p.Dead) return null; // 死亡状态不渲染 (服务端随后发 ObjectRemove)
-
         var mi = Globals.MonsterInfoList?.Binding.FirstOrDefault(x => x.Index == p.MonsterIndex);
         if (mi == null)
         {
@@ -76,6 +80,7 @@ public partial class ObjectRenderer : MapObjectNode
             NameColour = p.NameColour.A <= 0 ? Colors.White : ToGodot(p.NameColour),
             DrawColour = p.Colour.A <= 0 ? Colors.White : ToGodot(p.Colour),
             Poison = p.Poison,
+            Dead = p.Dead,
             BodyLibrary = LibraryCache.Get(lookup.File),
             BodyShape = lookup.Shape,
             BodyOffSet = 1000,
@@ -192,6 +197,43 @@ public partial class ObjectRenderer : MapObjectNode
 
     public void PlayRangeAttack() => SetAnimation(MirAnimation.Combat2);
 
+    public void PlayAttackSound()
+    {
+        if (Type != Kind.Monster) return;
+        SoundCue?.Invoke(MonsterSoundCatalog.Get(MonsterImage).Attack);
+    }
+
+    public void PlayStruckSound()
+    {
+        if (Type != Kind.Monster) return;
+        var sounds = MonsterSoundCatalog.Get(MonsterImage);
+        SoundCue?.Invoke(sounds.Struck);
+        SoundCue?.Invoke(SoundIndex.GenericStruckMonster);
+    }
+
+    public void PlayDieSound()
+    {
+        if (Type != Kind.Monster) return;
+        SoundCue?.Invoke(MonsterSoundCatalog.Get(MonsterImage).Die);
+    }
+
+    public override void FrameIndexChanged()
+    {
+        if (Type != Kind.Monster) return;
+        if (Animation is MirAnimation.Combat1 or MirAnimation.Combat3 or MirAnimation.Combat4
+            or MirAnimation.Combat5 or MirAnimation.Combat6 or MirAnimation.Combat7
+            or MirAnimation.Combat8 or MirAnimation.Combat9 or MirAnimation.Combat10
+            or MirAnimation.Combat11 or MirAnimation.Combat12 or MirAnimation.Combat13
+            or MirAnimation.Combat14 or MirAnimation.Combat15)
+        {
+            if (FrameIndex == 1) PlayAttackSound();
+        }
+        else if (Animation == MirAnimation.Combat2 && FrameIndex == 4)
+        {
+            PlayAttackSound();
+        }
+    }
+
     private static bool IsCurrencyItem(ItemInfo info)
     {
         return Globals.CurrencyInfoList?.Binding.FirstOrDefault(x => x.DropItem == info) != null;
@@ -237,7 +279,7 @@ public partial class ObjectRenderer : MapObjectNode
         Direction = dir;
         CellX = loc.X;
         CellY = loc.Y;
-        SetAnimation(MonsterImage is MonsterImage.ZumaGuardian or MonsterImage.ZumaFanatic or MonsterImage.ZumaKing
+        SetAnimation(Dead ? MirAnimation.Dead : MonsterImage is MonsterImage.ZumaGuardian or MonsterImage.ZumaFanatic or MonsterImage.ZumaKing
             ? (MonsterExtra ? MirAnimation.Standing : MirAnimation.StoneStanding)
             : MirAnimation.Standing);
     }
@@ -265,8 +307,9 @@ public partial class ObjectRenderer : MapObjectNode
 
         if (Type == Kind.Item)
         {
-            if (!DrawResourceShadow(DrawImage, 0, 0))
-                RenderPrimitives.DrawGroundShadow(this, 20f, 6f, 24f, 16f, 0.32f);
+            // 原版 ItemObject.Draw 只绘制物品主体，不绘制 MapObject/NPC 的
+            // Shadow 通道。不能给所有掉落物追加统一椭圆，否则会变成截图中
+            // 那种与物品无关、且没有脚底锚点的“小圆盘”。
             DrawItemImage(DrawImage, 0, 0);
         }
         else
@@ -277,12 +320,21 @@ public partial class ObjectRenderer : MapObjectNode
                 MonsterImage.NewMob10 => -128,
                 _ => 0,
             };
-            // 原版 MonsterObject.DrawShadow：普通怪物优先使用 ZL 当前帧的
-            // Shadow 通道；只有资源没有可用 Shadow 时才用主体轮廓兜底。
-            // 若反过来优先投影主体，会把树、巨型怪物压成一大片黑影。
-            if (!DrawMonsterShadow(bodyY))
-                RenderPrimitives.DrawGroundShadow(this, Type == Kind.NPC ? 21f : 28f,
-                    Type == Kind.NPC ? 7f : 10f, 24f, 16f, 0.44f);
+            // 原版 MonsterObject.DrawShadow：普通怪物只使用 ZL 当前帧的
+            // Shadow 通道；资源没有可用 Shadow 时不额外投影主体轮廓。
+            // 原版 MonsterObject/NPCObject 只走 ImageType.Shadow；旧 ZL 的
+            // Shadow payload 无效时由 ShadowType 49/50/176/177 生成投影，
+            // 不能退化成所有对象共用一个椭圆。
+            DrawMonsterShadow(bodyY);
+            if (TargetHighlighted && ClientSettings.ShowTargetOutline)
+            {
+                DrawTargetOutline(BodyFrame, bodyY, TargetOutlineColour);
+                if (MonsterImage == MonsterImage.LobsterLord)
+                {
+                    DrawTargetOutline(BodyFrame + 1000, bodyY, TargetOutlineColour);
+                    DrawTargetOutline(BodyFrame + 2000, bodyY, TargetOutlineColour);
+                }
+            }
             if (MonsterImage is MonsterImage.DustDevil or MonsterImage.Tornado)
             {
                 if (_bodyBlendLayer == null)
@@ -306,9 +358,43 @@ public partial class ObjectRenderer : MapObjectNode
                 DrawLayer(BodyFrame + 2000, 0, bodyY, DrawColour);
             }
             DrawSpecialMonsterEffect(bodyY);
+            if (TargetHighlighted && ClientSettings.ShowTargetOutline)
+            {
+                // MapControl.DrawObjects 完成后会调用 MouseObject.DrawBlend；
+                // 与主体分层后再叠加 20% 白色高亮，避免固定框替代原版效果。
+                DrawTargetHighlight(BodyFrame, bodyY);
+                if (MonsterImage == MonsterImage.LobsterLord)
+                {
+                    DrawTargetHighlight(BodyFrame + 1000, bodyY);
+                    DrawTargetHighlight(BodyFrame + 2000, bodyY);
+                }
+            }
         }
         DrawName();
         DrawHealthBar();
+    }
+
+    /// <summary>
+    /// 原版 RenderingPipelineManager.EnableOutlineEffect 的资源无关等价物：
+    /// 以当前主体帧向四周扩展 2px，再绘制正常主体覆盖内部区域，留下彩色轮廓。
+    /// 这样不会把目标颜色错误地涂满身体，也不会再显示与对象大小无关的格子框。
+    /// </summary>
+    private void DrawTargetOutline(int frame, float py, Color colour)
+    {
+        if (colour.A <= 0f || frame < 0 || frame >= BodyLibrary.Images.Length) return;
+        const int radius = 2;
+        for (int y = -radius; y <= radius; y++)
+        for (int x = -radius; x <= radius; x++)
+        {
+            if (x == 0 && y == 0) continue;
+            DrawLayer(frame, x, py + y, new Color(colour.R, colour.G, colour.B, 0.92f));
+        }
+    }
+
+    private void DrawTargetHighlight(int frame, float py)
+    {
+        if (frame < 0 || frame >= BodyLibrary.Images.Length) return;
+        DrawLayer(frame, 0, py, new Color(1f, 1f, 1f, 0.20f));
     }
 
     public int BodyFrame => DrawFrame + BodyShape * BodyOffSet;
@@ -333,11 +419,10 @@ public partial class ObjectRenderer : MapObjectNode
             bool drawn = DrawResourceShadow(BodyFrame, 0, bodyY);
             drawn |= DrawResourceShadow(BodyFrame + 1000, 0, bodyY);
             drawn |= DrawResourceShadow(BodyFrame + 2000, 0, bodyY);
-            return drawn || DrawSilhouetteShadow(BodyFrame, bodyY);
+            return drawn;
         }
 
-        return DrawResourceShadow(BodyFrame, 0, bodyY)
-            || DrawSilhouetteShadow(BodyFrame, bodyY);
+        return DrawResourceShadow(BodyFrame, 0, bodyY);
     }
 
     private bool DrawResourceShadow(int frame, float px = 0f, float py = 0f)
@@ -348,7 +433,8 @@ public partial class ObjectRenderer : MapObjectNode
             return false;
         var texture = BodyLibrary.GetShadowTexture(frame);
         if (!RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
-            return false;
+            return RenderPrimitives.DrawShadowTypeFallback(this, BodyLibrary.GetImageTexture(frame), img,
+                0.52f, new Vector2(px, py));
         var dest = new Rect2(px + img.ShadowOffSetX, py + img.ShadowOffSetY,
             img.ShadowWidth, img.ShadowHeight);
         DrawTextureRectRegion(texture, dest, new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
@@ -362,7 +448,7 @@ public partial class ObjectRenderer : MapObjectNode
         var img = BodyLibrary.Images[frame];
         var texture = BodyLibrary.GetImageTexture(frame);
         return RenderPrimitives.DrawSilhouetteShadow(this, texture, img, 0.46f,
-            new Vector2(12f, 16f + py));
+            new Vector2(0f, py));
     }
 
     private void DrawSpecialMonsterEffect(float py)
@@ -473,29 +559,23 @@ public partial class ObjectRenderer : MapObjectNode
     private void DrawName()
     {
         if (Type == Kind.Item && !Focused) return;
+        if (Type == Kind.Item && !ClientSettings.ShowItemNames) return;
+        if (Type == Kind.Monster && !ClientSettings.ShowMonsterNames) return;
         // 对象节点的坐标是脚底基线。原版按当前帧的真实图像顶部放置
         // 名称；固定 -64 会让大型怪物名字压进身体，小型 NPC 又漂得过高。
-        float y;
-        if (Type == Kind.Item)
-            y = -18f;
-        else if (BodyLibrary?.Images != null && BodyFrame >= 0 && BodyFrame < BodyLibrary.Images.Length
-            && BodyLibrary.Images[BodyFrame] != null)
-        {
-            var image = BodyLibrary.Images[BodyFrame];
-            y = Math.Min(-52f, image.OffSetY - 5f);
-        }
-        else
-            y = -64f;
+        float y = Type == Kind.Item ? -18f : RenderPrimitives.OriginalNameBaseline(9f);
         if (string.IsNullOrWhiteSpace(DisplayName)) return;
-        RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(0f, y), NameColour, 9f);
+        // DrawX 是格子左边缘，原版用 (48 - labelWidth) / 2，故节点局部
+        // 坐标必须以 48x32 格中心 (24, 0) 为文字中心。
+        RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(24f, y), NameColour, 9f);
         if (!string.IsNullOrWhiteSpace(GuildName))
-            RenderPrimitives.DrawLabel(this, GuildName, new Vector2(0f, y - 12f), new Color(0.8f, 0.8f, 0.4f), 8f);
+            RenderPrimitives.DrawLabel(this, GuildName, new Vector2(24f, y - 12f), new Color(0.8f, 0.8f, 0.4f), 8f);
         if (!string.IsNullOrWhiteSpace(PetOwner))
-            RenderPrimitives.DrawLabel(this, $"({PetOwner})", new Vector2(0f, y + 12f), new Color(0.7f, 0.9f, 0.7f), 8f);
+            RenderPrimitives.DrawLabel(this, $"({PetOwner})", new Vector2(24f, y + 12f), new Color(0.7f, 0.9f, 0.7f), 8f);
         if (Poison != PoisonType.None)
-            DrawCircle(new Vector2(0f, y - 7f), 3f, new Color(0.35f, 1f, 0.35f, 0.85f));
+            DrawCircle(new Vector2(24f, y - 7f), 3f, new Color(0.35f, 1f, 0.35f, 0.85f));
         if (!string.IsNullOrWhiteSpace(ChatText) && Godot.Time.GetTicksMsec() < _chatUntil)
-            RenderPrimitives.DrawLabel(this, ChatText, new Vector2(0f, y - 18f), Colors.White, 9f);
+            RenderPrimitives.DrawLabel(this, ChatText, new Vector2(24f, y - 18f), Colors.White, 9f);
     }
 
     public void SetChat(string text)

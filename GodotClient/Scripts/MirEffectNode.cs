@@ -206,12 +206,14 @@ public partial class MirEffectNode : Node2D
 
     public int DrawFrame => _frameIndex + StartIndex + (int)Direction * Skip;
 
+    private static readonly CanvasItemMaterial _addMaterial = new()
+    {
+        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
+    };
+
     public override void _Draw()
     {
-        // Legacy Library.DrawBlend uses BlendMode.NORMAL; BlendRate is the
-        // source opacity, not additive RGB blending. Keep the default alpha
-        // compositing so a shield frame cannot wash out the subject beneath it.
-        Material = null;
+        Material = Blend ? _addMaterial : null;
         if (_lib == null || _frameIndex < 0) return;
         int df = DrawFrame;
         if (df < 0 || df >= _lib.Images.Length) return;

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Godot;
 using Library;
 using Library.Network;
+using ZirconClient.Controls;
 using Library.SystemModels;
 using ZirconClient.Formats;
+using S = Library.Network.ServerPackets;
 
 namespace ZirconClient.Scripts;
 
@@ -19,6 +21,8 @@ public partial class PlayerRenderer : Node2D
 {
     // ---- 外观状态 (与 ObjectPlayer/StartInformation 字段对应) ----
     public MirClass Class;
+    // 旧版 Ctrl+右键查看玩家所需的角色索引。
+    public int CharacterIndex;
     public MirGender Gender;
     public int HairType = 1;
     public Godot.Color HairColour = Colors.Black;
@@ -32,6 +36,8 @@ public partial class PlayerRenderer : Node2D
     public HorseType Horse = HorseType.None;
     public int HorseShape;
     public bool Dead;
+    public bool Cloaked, GhostWalking, DragonRepulsed, ElementalHurricane;
+    public bool DrawWeapon = true;
 
     // ---- M5 战斗: 玩家血量 (DataObjectHealthMana/MaxHealthMana) ----
     public int Health;
@@ -39,7 +45,10 @@ public partial class PlayerRenderer : Node2D
     public int MaxMana;
     public bool ShowHealthBar;
     public string DisplayName;
+    public string GuildName;
     public Color NameColour = Colors.White;
+    public bool TargetHighlighted;
+    public Color TargetOutlineColour = Colors.Transparent;
     public int Light;
     public string ChatText;
     private double _chatUntil;
@@ -55,6 +64,15 @@ public partial class PlayerRenderer : Node2D
     // 一次性动作动画 (Combat/Struck): 播完回 Standing
     private MirAnimation _oneShotAnim = MirAnimation.Standing;
     private MagicType _spellType = MagicType.None;
+    private bool _rangeAttack;
+    private double _stanceUntilMs;
+    private readonly Queue<MirAnimation> _animationQueue = new();
+    private bool _animationComplete = true;
+    public Action<MirAnimation, int, MagicType> FrameChanged;
+    public Action<SoundIndex> SoundCue;
+    public System.Drawing.Point FishingLocation;
+    public bool FishFound;
+    public uint TamingObjectID;
 
     // 移动插值 (格子坐标 -> 屏幕偏移)
     public int CellX, CellY;          // 服务端权威格子坐标
@@ -63,6 +81,25 @@ public partial class PlayerRenderer : Node2D
     // 原版 MapObject.MovingOffSet 使用当前走/跑帧表的 Sum，
     // 不应把所有职业、坐骑和特殊外观都硬编码成 600ms。
     public double MovementDurationMs => _currentFrame?.Sum > 0 ? _currentFrame.Sum : 600.0;
+    public int MovementFrameCount => _currentFrame?.FrameCount ?? 1;
+    public int MovementFrame => FrameIndex;
+
+    // 旧端魔法特效不是收到 ObjectMagic 的瞬间就落地：人物先完成抬手，
+    // 到施法动作的释放关键帧后才出现轨迹/命中特效。普通施法动作以第
+    // 4 个逻辑帧作为释放点；短动作则取最后一帧前的时刻。
+    public double SpellReleaseDelayMs
+    {
+        get
+        {
+            if (_currentFrame == null || _currentFrame.FrameCount <= 1)
+                return 0;
+            int releaseFrame = Math.Min(3, _currentFrame.FrameCount - 1);
+            double delay = 0;
+            for (int i = 0; i < releaseFrame && i < _currentFrame.Delays.Length; i++)
+                delay += _currentFrame.Delays[i].TotalMilliseconds;
+            return delay;
+        }
+    }
     private bool _remoteMoving;
     private System.Drawing.Point _remoteMoveFrom;
     private double _remoteMoveStartMs;
@@ -72,12 +109,13 @@ public partial class PlayerRenderer : Node2D
     private const int CellHeight = 32;
 
     private ZlLibrary _bodyLib, _hairLib, _helmetLib, _weaponLib1, _weaponLib2, _shieldLib;
-    private ZlLibrary _horseLib, _horseEffectLib;
+    private ZlLibrary _horseLib, _horseShadowLib, _horseEffectLib;
 
     public void UpdateAppearance(StartInformation info)
     {
         Class = info.Class;
         DisplayName = info.Name;
+        GuildName = info.GuildName;
         NameColour = info.NameColour == System.Drawing.Color.Empty ? Colors.White : ToGodot(info.NameColour);
         Gender = info.Gender;
         HairType = info.HairType;
@@ -98,7 +136,12 @@ public partial class PlayerRenderer : Node2D
         Direction = info.Direction;
         Dead = info.Dead;
         RefreshLibraries();
-        SetAnimation(Animation);
+        // 原版构造 PlayerObject 后调用 SetFrame(Standing/Dead)，而 SetFrame
+        // 会把有坐骑的 Standing 映射为 HorseStanding。不能沿用字段默认的
+        // Standing，否则坐骑外观库虽然已加载，首帧仍会绘制人物身体。
+        SetAnimation(Dead ? MirAnimation.Dead
+            : Horse != HorseType.None ? MirAnimation.HorseStanding
+            : MirAnimation.Standing);
         QueueRedraw();
     }
 
@@ -106,6 +149,7 @@ public partial class PlayerRenderer : Node2D
     {
         Class = info.Class;
         DisplayName = info.Name;
+        GuildName = info.GuildName;
         NameColour = info.NameColour == System.Drawing.Color.Empty ? Colors.White : ToGodot(info.NameColour);
         Gender = info.Gender;
         HairType = info.HairType;
@@ -126,7 +170,42 @@ public partial class PlayerRenderer : Node2D
         Direction = info.Direction;
         Dead = info.Dead;
         RefreshLibraries();
-        SetAnimation(Animation);
+        SetAnimation(Dead ? MirAnimation.Dead
+            : Horse != HorseType.None ? MirAnimation.HorseStanding
+            : MirAnimation.Standing);
+        QueueRedraw();
+    }
+
+    public void ApplyUpdate(S.PlayerUpdate info)
+    {
+        if (info == null) return;
+        LibraryWeaponShape = info.Weapon;
+        ShieldShape = info.Shield;
+        ArmourShape = info.Armour;
+        CostumeShape = info.Costume;
+        ArmourColour = ToGodot(info.ArmourColour);
+        ArmourEffect = info.ArmourEffect;
+        EmblemEffect = info.EmblemEffect;
+        WeaponEffect = info.WeaponEffect;
+        ShieldEffect = info.ShieldEffect;
+        HelmetShape = info.Helmet;
+        HideHead = info.HideHead;
+        Light = info.Light;
+        int scalePercent = Math.Clamp(info.SizePercent, -50, 50);
+        Scale = Vector2.One * ((100f + scalePercent) / 100f);
+        RefreshLibraries();
+        QueueRedraw();
+    }
+
+    public void ApplyCharacterUpdate(S.PlayerChangeUpdate info)
+    {
+        if (info == null) return;
+        DisplayName = info.Name ?? DisplayName;
+        Gender = info.Gender;
+        HairType = info.HairType;
+        HairColour = ToGodot(info.HairColour);
+        ArmourColour = ToGodot(info.ArmourColour);
+        RefreshLibraries();
         QueueRedraw();
     }
 
@@ -138,6 +217,20 @@ public partial class PlayerRenderer : Node2D
     // 切换动画帧表 (Start/Count/OffSet), 参考 FrameSet.Players
     public void SetAnimation(MirAnimation anim)
     {
+        // 原版 SetFrame: Standing/Dead 立即打断；其它动作在当前一次性
+        // 动作播完后衔接，避免攻击/受击/施法互相覆盖第一帧。
+        if (!_animationComplete && _oneShotAnim != MirAnimation.Standing
+            && anim is not (MirAnimation.Standing or MirAnimation.Dead))
+        {
+            _animationQueue.Enqueue(anim);
+            return;
+        }
+        ApplyAnimation(anim);
+    }
+
+    private void ApplyAnimation(MirAnimation anim)
+    {
+        DrawWeapon = true;
         Animation = anim;
         _currentFrame = GetFrameTable(anim);
         FrameStartMs = Godot.Time.GetTicksMsec(); // 从当前时刻起播, 保证从第 0 帧开始
@@ -152,23 +245,44 @@ public partial class PlayerRenderer : Node2D
             or MirAnimation.ChannellingStart or MirAnimation.ChannellingEnd
             or MirAnimation.DragonRepulseStart or MirAnimation.DragonRepulseEnd
             or MirAnimation.Die or MirAnimation.Dead ? anim : MirAnimation.Standing;
+        _animationComplete = _oneShotAnim == MirAnimation.Standing;
         QueueRedraw();
     }
 
     // M5 战斗: 玩家攻击/受击/死亡动画
     public void PlayCombat(MagicType magic)
     {
+        _rangeAttack = false;
+        _spellType = magic;
+        _stanceUntilMs = Godot.Time.GetTicksMsec() + 3000.0;
         SetAnimation(Functions.GetAttackAnimation(Class, LibraryWeaponShape, magic));
     }
 
-    public void PlayRangeAttack() => SetAnimation(MirAnimation.Combat1);
+    public void PlayRangeAttack()
+    {
+        _rangeAttack = true;
+        _spellType = MagicType.None;
+        SetAnimation(MirAnimation.Combat1);
+    }
+
+    public void PlayDash(MagicType magic)
+    {
+        SetAnimation(magic is MagicType.ShoulderDash or MagicType.Assault
+            ? MirAnimation.Combat8
+            : Functions.GetAttackAnimation(Class, LibraryWeaponShape, magic));
+    }
 
     public void PlaySpell(MagicType magic)
     {
         _spellType = magic;
+        _stanceUntilMs = Godot.Time.GetTicksMsec() + 3000.0;
         MirAnimation anim;
         try { anim = Functions.GetMagicAnimation(magic); }
         catch (NotImplementedException) { anim = MirAnimation.Combat1; }
+        // 原版在元素风暴持续施法结束时收到 Spell 动作，会播放收尾帧，
+        // 而不是把所有阶段都当成普通一次性施法。
+        if (magic == MagicType.ElementalHurricane && ElementalHurricane)
+            anim = MirAnimation.ChannellingEnd;
         // Functions.GetMagicAnimation 与原版共用同一张技能动作表。
         // 不要把 Channelling/DragonRepulse 等合法动作降级成 Combat1。
         if (!FrameSet.Players.ContainsKey(anim))
@@ -177,11 +291,231 @@ public partial class PlayerRenderer : Node2D
             anim = MirAnimation.Combat1;
         }
         SetAnimation(anim);
+        if (magic == MagicType.PoisonousCloud)
+            DrawWeapon = false;
+        QueueRedraw();
     }
 
     public void PlayHarvest() => SetAnimation(MirAnimation.Harvest);
 
     public void PlayPushed() => SetAnimation(MirAnimation.Pushed);
+    public void PlayMining()
+    {
+        _spellType = MagicType.None;
+        SetAnimation(Functions.GetAttackAnimation(Class, LibraryWeaponShape, MagicType.None));
+        SoundCue?.Invoke(SoundIndex.MiningHit);
+    }
+
+    public void PlayStandingForState()
+    {
+        MirAnimation standing = Godot.Time.GetTicksMsec() < _stanceUntilMs
+            ? MirAnimation.Stance : MirAnimation.Standing;
+        // 与原版 PlayerObject.SetFrame(Standing) 相同：持续施法/龙威压制
+        // 覆盖坐骑和隐身站立动作，坐骑再覆盖普通站立。
+        SetAnimation(ElementalHurricane ? MirAnimation.ChannellingMiddle
+            : DragonRepulsed ? MirAnimation.DragonRepulseMiddle
+            : Horse != HorseType.None ? MirAnimation.HorseStanding
+            : Cloaked ? MirAnimation.CreepStanding
+            : standing);
+    }
+
+    public void PlayDragonRepulseEnd()
+    {
+        SetAnimation(MirAnimation.DragonRepulseEnd);
+    }
+
+    public void RefreshAppearanceLibraries() => RefreshLibraries();
+
+    /// <summary>
+    /// 对照原版 PlayerObject.UpdateLibraries/DrawBody 的帧公式做组合矩阵检查。
+    /// 该检查只验证“原版会选择的图库和帧确实存在”，不把缺少某件服务器装备
+    /// 当成渲染成功；用于覆盖性回归而不是替代截图。
+    /// </summary>
+    public static bool RunAppearanceMatrixAudit(out int tested, out string failure)
+    {
+        tested = 0;
+        failure = string.Empty;
+        var directions = Enum.GetValues<MirDirection>();
+        var classes = Enum.GetValues<MirClass>();
+        var genders = Enum.GetValues<MirGender>();
+        var animations = new[]
+        {
+            MirAnimation.Standing, MirAnimation.Walking, MirAnimation.Running,
+            MirAnimation.HorseStanding, MirAnimation.HorseWalking, MirAnimation.HorseRunning,
+            MirAnimation.Combat1, MirAnimation.Struck
+        };
+
+        foreach (var gender in genders)
+        foreach (var @class in classes)
+        for (int horseShape = 0; horseShape <= 7; horseShape++)
+        foreach (var direction in directions)
+        foreach (var animation in animations)
+        {
+            var player = new PlayerRenderer
+            {
+                Gender = gender,
+                Class = @class,
+                Direction = direction,
+                HairType = 1,
+                ArmourShape = 0,
+                CostumeShape = -1,
+                HelmetShape = 0,
+                ShieldShape = -1,
+                LibraryWeaponShape = 0,
+                Horse = HorseType.Brown,
+                HorseShape = horseShape,
+            };
+            player.RefreshLibraries();
+            player.SetAnimation(animation);
+            tested++;
+
+            bool horseAnimation = animation is MirAnimation.HorseStanding
+                or MirAnimation.HorseWalking or MirAnimation.HorseRunning;
+            var checks = new List<(string Name, ZlLibrary Library, int Frame)>();
+            if (horseAnimation)
+            {
+                int horseFrame = horseShape >= 4
+                    ? player.DrawFrame
+                    : player.DrawFrame + ((int)player.Horse - 1) * 5000;
+                checks.Add(("horse-body", player._horseLib, horseFrame));
+
+                int shadowFrame = horseShape >= 6
+                    ? player.DrawFrame
+                    : player.DrawFrame + ((int)player.Horse - 1) * 5000;
+                checks.Add(("horse-shadow", horseShape >= 6 ? player._horseLib : player._horseShadowLib,
+                    shadowFrame));
+            }
+            else
+            {
+                checks.Add(("body", player._bodyLib, player.ArmourFrame));
+                checks.Add(("hair", player._hairLib, player.HairFrame));
+                checks.Add(("weapon", player._weaponLib1, player.WeaponFrame));
+            }
+        foreach (var check in checks)
+            {
+                if (check.Library == null || check.Frame < 0 || check.Frame >= check.Library.Images.Length
+                    || check.Library.Images[check.Frame] == null)
+                {
+                    failure = $"gender={gender} class={@class} horseShape={horseShape} " +
+                              $"direction={direction} animation={animation} layer={check.Name} frame={check.Frame} " +
+                              $"count={check.Library?.Images.Length ?? 0}";
+                    return false;
+                }
+            }
+        }
+
+        // 装备矩阵：原版 UpdateLibraries 使用的是“库键”和“库内形状偏移”两套
+        // 索引。仅用默认装备会漏掉女装、刺客库、时装、盾牌和双手武器的错位。
+        // 这里逐项使用原版实际存在的键，并覆盖所有方向/动作，确保每一层都
+        // 指向正确图库且帧号没有越界。
+        var armourShapes = new[] { 0, 11, 22, 33, 44, 110, 121, 132, 143, 220 };
+        var costumeShapes = new[] { 0, 10 };
+        var helmetShapes = new[] { 1, 2, 3, 4, 5, 11, 12, 13, 14, 21 };
+        var shieldShapes = new[] { 0, 10 };
+        var weaponShapes = new[] { 0, 10, 20, 30, 40, 50, 60, 90, 100, 1100, 1110, 1120, 1250, 1700 };
+        foreach (var gender in genders)
+        foreach (var @class in classes)
+        foreach (var direction in directions)
+        foreach (var animation in animations)
+        {
+            foreach (var armourShape in armourShapes)
+            {
+                var player = CreateAppearanceAuditPlayer(gender, @class, direction, animation);
+                player.ArmourShape = armourShape;
+                player.RefreshLibraries();
+                if (!ValidateAppearanceLayer(player, "armour", player._bodyLib, player.ArmourFrame,
+                        gender, @class, armourShape, direction, animation, out failure)) return false;
+                tested++;
+            }
+            foreach (var costumeShape in costumeShapes)
+            {
+                var player = CreateAppearanceAuditPlayer(gender, @class, direction, animation);
+                player.CostumeShape = costumeShape;
+                player.RefreshLibraries();
+                if (!ValidateAppearanceLayer(player, "costume", player._bodyLib, player.ArmourFrame,
+                        gender, @class, costumeShape, direction, animation, out failure)) return false;
+                tested++;
+            }
+            foreach (var helmetShape in helmetShapes)
+            {
+                var player = CreateAppearanceAuditPlayer(gender, @class, direction, animation);
+                player.HelmetShape = helmetShape;
+                player.RefreshLibraries();
+                if (!ValidateAppearanceLayer(player, "helmet", player._helmetLib, player.HelmetFrame,
+                        gender, @class, helmetShape, direction, animation, out failure)) return false;
+                tested++;
+            }
+            foreach (var shieldShape in shieldShapes)
+            {
+                var player = CreateAppearanceAuditPlayer(gender, @class, direction, animation);
+                player.ShieldShape = shieldShape;
+                player.RefreshLibraries();
+                if (!ValidateAppearanceLayer(player, "shield", player._shieldLib, player.ShieldFrame,
+                        gender, @class, shieldShape, direction, animation, out failure)) return false;
+                tested++;
+            }
+            foreach (var weaponShape in weaponShapes)
+            {
+                var player = CreateAppearanceAuditPlayer(gender, @class, direction, animation);
+                player.LibraryWeaponShape = weaponShape;
+                player.RefreshLibraries();
+                if (!ValidateAppearanceLayer(player, "weapon", player._weaponLib1, player.WeaponFrame,
+                        gender, @class, weaponShape, direction, animation, out failure)) return false;
+                if (weaponShape >= 1200 && weaponShape != 1263 && player._weaponLib2 != null
+                    && !ValidateAppearanceLayer(player, "weapon-right", player._weaponLib2, player.WeaponFrame,
+                        gender, @class, weaponShape, direction, animation, out failure)) return false;
+                tested++;
+            }
+        }
+        return true;
+    }
+
+    private static PlayerRenderer CreateAppearanceAuditPlayer(MirGender gender, MirClass @class,
+        MirDirection direction, MirAnimation animation)
+    {
+        var player = new PlayerRenderer
+        {
+            Gender = gender, Class = @class, Direction = direction,
+            HairType = 1, ArmourShape = 0, CostumeShape = -1, HelmetShape = 0,
+            ShieldShape = -1, LibraryWeaponShape = 0, Horse = HorseType.None,
+        };
+        player.RefreshLibraries();
+        player.SetAnimation(animation);
+        return player;
+    }
+
+    private static bool ValidateAppearanceLayer(PlayerRenderer player, string layer, ZlLibrary library,
+        int frame, MirGender gender, MirClass @class, int shape, MirDirection direction,
+        MirAnimation animation, out string failure)
+    {
+        // ZL 装备库允许合法的空帧（原版 DrawBody 对 GetImage==null 直接跳过），
+        // 但图库缺失或帧越界一定是映射错误。基础身体/发型矩阵仍在上面的
+        // 主循环中严格检查像素；这里的装备组合重点检查原版映射与帧地址。
+        if (library == null || frame < 0 || frame >= library.Images.Length)
+        {
+            failure = $"gender={gender} class={@class} shape={shape} direction={direction} "
+                    + $"animation={animation} layer={layer} frame={frame} count={library?.Images.Length ?? 0}";
+            return false;
+        }
+        failure = string.Empty;
+        return true;
+    }
+
+    public void PlayFishing(FishingState state, bool fishFound, System.Drawing.Point floatLocation)
+    {
+        FishFound = fishFound;
+        FishingLocation = floatLocation;
+        SetAnimation(state == FishingState.Cast
+            ? (Animation is MirAnimation.FishingWait or MirAnimation.FishingCast ? MirAnimation.FishingWait : MirAnimation.FishingCast)
+            : (Animation == MirAnimation.FishingWait ? MirAnimation.FishingReel : MirAnimation.Standing));
+    }
+
+    public void PlayTaming(TamingState state, uint tamingObjectID = 0)
+    {
+        if (tamingObjectID != 0) TamingObjectID = tamingObjectID;
+        SetAnimation(Animation is MirAnimation.TamingCast or MirAnimation.TamingWait
+            ? MirAnimation.TamingWait : MirAnimation.TamingCast);
+    }
 
     public void BeginMove(MirDirection direction, int distance, bool mounted)
         => BeginMove(direction, distance, mounted, distance >= 2);
@@ -190,9 +524,13 @@ public partial class PlayerRenderer : Node2D
     {
         Direction = direction;
         MoveDistance = Math.Max(1, distance);
-        SetAnimation(running
-            ? (mounted ? MirAnimation.HorseRunning : MirAnimation.Running)
-            : (mounted ? MirAnimation.HorseWalking : MirAnimation.Walking));
+        // 原版 Moving 的优先级是：隐身步行先于跑步；普通状态才按
+        // distance>=2 切换 Running/HorseRunning。
+        SetAnimation(Cloaked
+            ? (GhostWalking ? MirAnimation.CreepWalkFast : MirAnimation.CreepWalkSlow)
+            : running
+                ? (mounted ? MirAnimation.HorseRunning : MirAnimation.Running)
+                : (mounted ? MirAnimation.HorseWalking : MirAnimation.Walking));
     }
 
     // 其他玩家的移动回包：权威坐标立即到终点，画面从起点平滑回拉。
@@ -213,7 +551,8 @@ public partial class PlayerRenderer : Node2D
             ? CellY + MoveDistance : CellY)
         : CellY;
 
-    public void PlayStruck() => SetAnimation(MirAnimation.Struck);
+    public void PlayStruck() => SetAnimation(Horse != HorseType.None
+        ? MirAnimation.HorseStruck : MirAnimation.Struck);
 
     public void PlayDie()
     {
@@ -272,6 +611,42 @@ public partial class PlayerRenderer : Node2D
         if (frame != FrameIndex)
         {
             FrameIndex = frame;
+            FrameChanged?.Invoke(Animation, frame, _spellType);
+            if (Animation is MirAnimation.Combat1 or MirAnimation.Combat2 or MirAnimation.Combat3
+                or MirAnimation.Combat4 or MirAnimation.Combat5 or MirAnimation.Combat6
+                or MirAnimation.Combat7 or MirAnimation.Combat8 or MirAnimation.Combat9
+                or MirAnimation.Combat10 or MirAnimation.Combat11 or MirAnimation.Combat12
+                or MirAnimation.Combat13 or MirAnimation.Combat14 or MirAnimation.Combat15)
+            {
+                // MapObject.FrameIndexChanged: normal attack sound at frame 1,
+                // ranged attack/projectile sound at frame 4.
+                if (frame == 1) SoundCue?.Invoke(GetAttackSound());
+                else if (frame == 4 && _rangeAttack)
+                    SoundCue?.Invoke(GetAttackSound());
+            }
+            else if (Animation is MirAnimation.Struck or MirAnimation.HorseStruck && frame == 0)
+            {
+                SoundCue?.Invoke(Gender == MirGender.Male ? SoundIndex.MaleStruck : SoundIndex.FemaleStruck);
+                SoundCue?.Invoke(SoundIndex.GenericStruckPlayer);
+            }
+            else if (Animation == MirAnimation.Die && frame == 0)
+                SoundCue?.Invoke(Gender == MirGender.Male ? SoundIndex.MaleDie : SoundIndex.FemaleDie);
+            if (_spellType == MagicType.CrushingWave && frame == 4)
+                SoundCue?.Invoke(SoundIndex.DestructiveSurge);
+            if (_spellType == MagicType.OffensiveBlow && frame == 3)
+                SoundCue?.Invoke(SoundIndex.OffensiveBlow);
+            if (_spellType == MagicType.SweetBrier && frame == 1)
+                SoundCue?.Invoke(Gender == MirGender.Male ? SoundIndex.SweetBrierMale : SoundIndex.SweetBrierFemale);
+            if (Animation is MirAnimation.Walking or MirAnimation.Running
+                or MirAnimation.CreepWalkSlow or MirAnimation.CreepWalkFast
+                && frame is 1 or 4)
+                SoundCue?.Invoke((SoundIndex)((int)SoundIndex.Foot1 + (int)(GD.Randi() % 4)));
+            else if (Animation == MirAnimation.HorseWalking && frame == 1)
+                SoundCue?.Invoke(SoundIndex.HorseWalk1);
+            else if (Animation == MirAnimation.HorseWalking && frame == 4)
+                SoundCue?.Invoke(SoundIndex.HorseWalk2);
+            else if (Animation == MirAnimation.HorseRunning && frame == 1)
+                SoundCue?.Invoke(SoundIndex.HorseRun);
             QueueRedraw();
         }
 
@@ -286,20 +661,33 @@ public partial class PlayerRenderer : Node2D
                 if (Animation == MirAnimation.ChannellingStart &&
                     _spellType == MagicType.ElementalHurricane)
                 {
-                    SetAnimation(MirAnimation.ChannellingMiddle);
+                    ApplyAnimation(MirAnimation.ChannellingMiddle);
+                }
+                else if (_animationQueue.Count > 0)
+                {
+                    ApplyAnimation(_animationQueue.Dequeue());
                 }
                 else
                 {
                     _oneShotAnim = MirAnimation.Standing;
-                    SetAnimation(MirAnimation.Standing);
+                    _animationComplete = true;
+                    PlayStandingForState();
                 }
             }
         }
 
         if (_remoteMoving && _currentFrame != null)
         {
-            double t = Math.Clamp((nowMs - _remoteMoveStartMs) / Math.Max(1.0, _currentFrame.Sum), 0.0, 1.0);
-            double k = 1.0 - t;
+            double k;
+            if (ClientSettings.SmoothMove)
+            {
+                double t = Math.Clamp((nowMs - _remoteMoveStartMs) / Math.Max(1.0, _currentFrame.Sum), 0.0, 1.0);
+                k = 1.0 - t;
+            }
+            else
+            {
+                k = Math.Max(0.0, (_currentFrame.FrameCount - (FrameIndex + 1)) / (double)Math.Max(1, _currentFrame.FrameCount));
+            }
             float xStep = CellWidth * MoveDistance * (float)k;
             float yStep = CellHeight * MoveDistance * (float)k;
             OffsetX = 0f;
@@ -315,18 +703,39 @@ public partial class PlayerRenderer : Node2D
                 case MirDirection.Left: OffsetX = xStep; break;
                 case MirDirection.UpLeft: OffsetX = xStep; OffsetY = yStep; break;
             }
-            if (t >= 1.0)
+            if (k <= 0.0)
             {
                 _remoteMoving = false;
                 OffsetX = 0f;
                 OffsetY = 0f;
-                SetAnimation(Horse != HorseType.None ? MirAnimation.HorseStanding : MirAnimation.Standing);
+                PlayStandingForState();
             }
         }
     }
 
+    private SoundIndex GetAttackSound()
+    {
+        if (Class == MirClass.Assassin)
+        {
+            if (LibraryWeaponShape >= 1200) return SoundIndex.ClawAttack;
+            if (LibraryWeaponShape >= 1100) return SoundIndex.GlaiveAttack;
+        }
+        return LibraryWeaponShape switch
+        {
+            100 => SoundIndex.WandSwing,
+            9 or 101 => SoundIndex.WoodSwing,
+            102 => SoundIndex.AxeSwing,
+            103 => SoundIndex.DaggerSwing,
+            104 => SoundIndex.ShortSwordSwing,
+            26 or 105 => SoundIndex.IronSwordSwing,
+            _ => SoundIndex.FistSwing,
+        };
+    }
+
     // 帧号计算 (4.3 节)
-    private int DrawFrame => FrameIndex + _currentFrame.StartIndex + _currentFrame.OffSet * (int)Direction;
+    private int DrawFrame => _currentFrame == null
+        ? 0
+        : FrameIndex + _currentFrame.StartIndex + _currentFrame.OffSet * (int)Direction;
     private int ArmourShapeOffSet => Class == MirClass.Assassin ? 3000 : 5000;
     private int ArmourShift => Class != MirClass.Assassin ? 0 : Animation switch
     {
@@ -348,7 +757,8 @@ public partial class PlayerRenderer : Node2D
         MirAnimation.Harvest => 160,
         MirAnimation.TamingCast or MirAnimation.TamingWait => 0,
         MirAnimation.Stance => 160,
-        MirAnimation.Struck or MirAnimation.Die or MirAnimation.Dead => -400,
+        MirAnimation.Struck => -640,
+        MirAnimation.Die or MirAnimation.Dead => -400,
         MirAnimation.HorseStanding or MirAnimation.HorseWalking
             or MirAnimation.HorseRunning or MirAnimation.HorseStruck
             or MirAnimation.FishingCast or MirAnimation.FishingWait
@@ -365,10 +775,13 @@ public partial class PlayerRenderer : Node2D
     private static readonly HashSet<int> CostumeShapeHideWeapon = new() { 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18 };
 
     private bool _debugLogged;
+    private readonly List<BlendImageLayerNode> _exteriorBlendLayers = new();
 
     public override void _Draw()
     {
         if (_bodyLib == null) return;
+        foreach (var layer in _exteriorBlendLayers)
+            layer.Visible = false;
         if (!_debugLogged)
         {
             _debugLogged = true;
@@ -380,26 +793,34 @@ public partial class PlayerRenderer : Node2D
         }
         DrawShadow();
         DrawExteriorEffects(true);
+        if (TargetHighlighted && ClientSettings.ShowTargetOutline)
+            DrawTargetOutline();
         DrawPlayerAt(0, 0);
         DrawExteriorEffects(false);
-        if (!string.IsNullOrWhiteSpace(DisplayName))
-            RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(0f, -76f), NameColour, 9f);
-        if (!string.IsNullOrWhiteSpace(ChatText) && Godot.Time.GetTicksMsec() < _chatUntil)
-            RenderPrimitives.DrawLabel(this, ChatText, new Vector2(0f, -94f), Colors.White, 9f);
+        float nameY = RenderPrimitives.OriginalNameBaseline(9f);
+        if (ClientSettings.ShowPlayerNames && !string.IsNullOrWhiteSpace(DisplayName))
+            RenderPrimitives.DrawLabel(this, DisplayName, new Vector2(24f, nameY), NameColour, 9f);
+        if (ClientSettings.ShowPlayerNames && !string.IsNullOrWhiteSpace(GuildName))
+            RenderPrimitives.DrawLabel(this, GuildName, new Vector2(24f, nameY - 12f), new Color(0.8f, 0.8f, 0.4f), 8f);
+        if (ClientSettings.ShowPlayerNames && !string.IsNullOrWhiteSpace(ChatText) && Godot.Time.GetTicksMsec() < _chatUntil)
+            RenderPrimitives.DrawLabel(this, ChatText, new Vector2(24f, nameY - 18f), Colors.White, 9f);
 
         // 玩家头顶血条
-        if (ShowHealthBar && !Dead && MaxHealth > 0)
+        if (ShowHealthBar && ClientSettings.ShowUserHealth && !Dead && MaxHealth > 0)
         {
             float percent = Math.Clamp(Health / (float)MaxHealth, 0f, 1f);
             if (percent > 0f)
             {
-                const float w = 48, h = 6;
-                float x = -w / 2, y = -70;
-                DrawRect(new Rect2(x - 1, y - 1, w + 2, h + 2), new Color(0f, 0f, 0f, 0.75f));
-                var col = percent > 0.5f ? new Color(0f, 0.8f, 0.29f)
-                        : percent > 0.25f ? new Color(0.9f, 0.8f, 0.1f)
-                        : new Color(0.9f, 0.2f, 0.1f);
-                DrawRect(new Rect2(x, y, w * percent, h), col);
+                var background = MirSkin.GetTexture(LibraryFile.Interface, 80);
+                var fill = MirSkin.GetTexture(LibraryFile.Interface, 79);
+                if (background == null || fill == null) return;
+                Vector2 bgSize = background.GetSize();
+                Vector2 fillSize = fill.GetSize();
+                float x = 24f - bgSize.X / 2f, y = -55f;
+                DrawTextureRect(background, new Rect2(x, y, bgSize.X, bgSize.Y), false);
+                float width = Math.Clamp((int)(fillSize.X * percent), 1, (int)fillSize.X);
+                DrawTextureRectRegion(fill, new Rect2(x + 1f, y + 1f, width, fillSize.Y),
+                    new Rect2(0, 0, width, fillSize.Y), Colors.White);
             }
         }
     }
@@ -420,50 +841,63 @@ public partial class PlayerRenderer : Node2D
         );
     }
 
-    private void DrawPlayerAt(float px, float py)
+    private void DrawPlayerAt(float px, float py, Color? tint = null)
     {
         bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
 
         // 坐骑必须位于人物所有装备层之前，阴影单独绘制在人物和坐骑的共同基线。
         if (Animation is MirAnimation.HorseStanding or MirAnimation.HorseWalking
             or MirAnimation.HorseRunning or MirAnimation.HorseStruck)
-            DrawHorse(px, py);
+            DrawHorse(px, py, tint);
 
         // 1. 背武器 (Up/DownLeft/Left/UpLeft 方向)
-        if (!hideWeapon)
+        if (!hideWeapon && DrawWeapon)
         {
             if (Direction is MirDirection.Up or MirDirection.DownLeft or MirDirection.Left or MirDirection.UpLeft)
-                DrawLayer(_weaponLib2 ?? _weaponLib1, WeaponFrame, px, py);
+                DrawLayer(_weaponLib2 ?? _weaponLib1, WeaponFrame, px, py, tint);
 
             // 2. 背盾 (UpRight/Right/DownRight)
             if (ShieldShape >= 0 && Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight)
-                DrawLayer(_shieldLib, ShieldFrame, px, py);
+                DrawLayer(_shieldLib, ShieldFrame, px, py, tint);
         }
 
         // 3. 身体
-        DrawLayer(_bodyLib, ArmourFrame, px, py);
-        if (ArmourColour != Colors.White)
+        DrawLayer(_bodyLib, ArmourFrame, px, py, tint);
+        if (!tint.HasValue && ArmourColour != Colors.White)
             DrawOverlay(_bodyLib, ArmourFrame, px, py, ArmourColour);
 
         // 4. 头 (盔优先, 否则发)
         if (!HideHead)
         {
             if (HelmetShape > 0)
-                DrawLayer(_helmetLib, HelmetFrame, px, py);
+                DrawLayer(_helmetLib, HelmetFrame, px, py, tint);
             else if (HairType > 0)
-                DrawLayer(_hairLib, HairFrame, px, py, HairColour);
+                DrawLayer(_hairLib, HairFrame, px, py, tint ?? HairColour);
         }
 
         // 5. 前武器 (UpRight/Right/DownRight/Down)
-        if (!hideWeapon)
+        if (!hideWeapon && DrawWeapon)
         {
             if (Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight or MirDirection.Down)
-                DrawLayer(_weaponLib1, WeaponFrame, px, py);
+                DrawLayer(_weaponLib1, WeaponFrame, px, py, tint);
         }
+    }
+
+    private void DrawTargetOutline()
+    {
+        var colour = TargetOutlineColour.A > 0f ? TargetOutlineColour : Colors.Cyan;
+        colour.A = 0.92f;
+        // 原版 EnableOutlineEffect 是主体合成纹理的 2px 外扩；先画外圈，
+        // 再由正常 DrawPlayerAt 覆盖内部，保留坐骑和装备的真实轮廓。
+        for (int y = -2; y <= 2; y++)
+        for (int x = -2; x <= 2; x++)
+            if (Math.Abs(x) == 2 || Math.Abs(y) == 2)
+                DrawPlayerAt(x, y, colour);
     }
 
     private void DrawExteriorEffects(bool behind)
     {
+        if (!ClientSettings.DrawEffects) return;
         if (CostumeShape < 0) DrawExteriorEffect(ArmourEffect, behind);
         DrawExteriorEffect(EmblemEffect, behind);
         if (!CostumeShapeHideWeapon.Contains(CostumeShape))
@@ -607,13 +1041,28 @@ public partial class PlayerRenderer : Node2D
         bool horse = Animation is MirAnimation.HorseStanding or MirAnimation.HorseWalking
             or MirAnimation.HorseRunning or MirAnimation.HorseStruck;
         bool resourceShadow = false;
-        if (horse && _horseLib != null)
-            resourceShadow = DrawResourceShadow(_horseLib, DrawFrame + ((int)Horse - 1) * 5000);
-        if (!resourceShadow)
+        if (horse)
+        {
+            // 原版 DrawShadow 对应 DrawBody 的 HorseShape 分支：普通/铁/银/金/暗马
+            // 的影子仍来自基础 HorseLibrary + HorseFrame；皇家和蓝龙才使用
+            // 各自外观库的 DrawFrame。此前 Godot 把外观库统一当作影子库，导致
+            // 坐骑影子形状、方向和装备层不一致。
+            var shadowLibrary = HorseShape is >= 6 and <= 7 ? _horseLib : _horseShadowLib;
+            int shadowFrame = HorseShape is >= 6 and <= 7
+                ? DrawFrame
+                : DrawFrame + ((int)Horse - 1) * 5000;
+            resourceShadow = DrawResourceShadow(shadowLibrary, shadowFrame);
+        }
+        // 原版普通玩家使用 DrawShadow2：当前人物帧的轮廓做斜切压扁，
+        // 而不是直接把 Shadow 通道矩形贴在节点左上角。坐骑则保留
+        // HorseLibrary 的专用 Shadow 通道。
+        if (!horse)
+            resourceShadow = DrawPlayerSilhouetteShadow();
+        if (!resourceShadow && !horse)
             resourceShadow = DrawResourceShadow(_bodyLib, ArmourFrame);
-        if (!resourceShadow)
-            RenderPrimitives.DrawGroundShadow(this, horse ? 42f : 27f, horse ? 12f : 9f,
-                0f, horse ? 7f : 2f, 0.46f);
+        // 原版没有通用几何椭圆兜底：坐骑只使用专用 Shadow 通道，
+        // 普通玩家只使用 DrawShadow2/身体资源 Shadow。资源缺失时保持无影，
+        // 不能制造与对象脚底无关的统一小圆盘。
     }
 
     private bool DrawResourceShadow(ZlLibrary lib, int frame)
@@ -624,7 +1073,7 @@ public partial class PlayerRenderer : Node2D
             return false;
         var texture = lib.GetShadowTexture(frame);
         if (!RenderPrimitives.IsUsableResourceShadow(texture, img.ShadowWidth, img.ShadowHeight))
-            return false;
+            return RenderPrimitives.DrawShadowTypeFallback(this, lib.GetImageTexture(frame), img, 0.5f);
         DrawTextureRectRegion(texture,
             new Rect2(img.ShadowOffSetX, img.ShadowOffSetY, img.ShadowWidth, img.ShadowHeight),
             new Rect2(0, 0, img.ShadowWidth, img.ShadowHeight),
@@ -632,23 +1081,68 @@ public partial class PlayerRenderer : Node2D
         return true;
     }
 
-    private void DrawHorse(float px, float py)
+    private bool DrawSilhouetteShadow(ZlLibrary lib, int frame, float alpha = 0.5f, ZlImage anchor = null)
+    {
+        if (lib == null || frame < 0 || frame >= lib.Images.Length) return false;
+        var img = lib.Images[frame];
+        var texture = lib.GetImageTexture(frame);
+        return RenderPrimitives.DrawSilhouetteShadow(this, texture, img, alpha, anchorImage: anchor);
+    }
+
+    private bool DrawPlayerSilhouetteShadow()
+    {
+        bool hideWeapon = CostumeShapeHideWeapon.Contains(CostumeShape);
+        if (_bodyLib == null || ArmourFrame < 0 || ArmourFrame >= _bodyLib.Images.Length)
+            return false;
+        var anchor = _bodyLib.Images[ArmourFrame];
+        if (anchor == null) return false;
+
+        bool drawn = DrawSilhouetteShadow(_bodyLib, ArmourFrame, 0.5f, anchor);
+
+        // DrawShadow2 在原版先把所有可见装备层合成 scratch，再统一投影；
+        // 这里逐层投影到同一脚底锚点，保留武器、盾牌、头盔/头发的真实轮廓。
+        if (!hideWeapon && DrawWeapon)
+        {
+            if (Direction is MirDirection.Up or MirDirection.DownLeft or MirDirection.Left or MirDirection.UpLeft)
+                drawn |= DrawSilhouetteShadow(_weaponLib2 ?? _weaponLib1, WeaponFrame, 0.42f, anchor);
+            if (ShieldShape >= 0 && Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight)
+                drawn |= DrawSilhouetteShadow(_shieldLib, ShieldFrame, 0.42f, anchor);
+        }
+
+        if (!HideHead)
+        {
+            if (HelmetShape > 0)
+                drawn |= DrawSilhouetteShadow(_helmetLib, HelmetFrame, 0.42f, anchor);
+            else if (HairType > 0)
+                drawn |= DrawSilhouetteShadow(_hairLib, HairFrame, 0.35f, anchor);
+        }
+
+        if (!hideWeapon && DrawWeapon &&
+            Direction is MirDirection.UpRight or MirDirection.Right or MirDirection.DownRight or MirDirection.Down)
+            drawn |= DrawSilhouetteShadow(_weaponLib1, WeaponFrame, 0.42f, anchor);
+
+        return drawn;
+    }
+
+    private void DrawHorse(float px, float py, Color? tint = null)
     {
         if (_horseLib == null) return;
         int frame = DrawFrame + ((int)Horse - 1) * 5000;
-        if (HorseShape is >= 4 and <= 6) frame = DrawFrame;
-        DrawLayer(_horseLib, frame, px, py);
+        // 原版 HorseShape 4(蓝)、5(暗)、6(皇)、7(蓝龙) 使用外观库的
+        // DrawFrame；只有基础/铁/银/金马使用 HorseFrame 的 5000 偏移。
+        if (HorseShape is >= 4 and <= 7) frame = DrawFrame;
+        DrawLayer(_horseLib, frame, px, py, tint);
         if (_horseEffectLib != null && HorseShape is 5 or 6)
-            DrawLayer(_horseEffectLib, DrawFrame, px, py);
+            DrawExteriorBlendLayer(_horseEffectLib, DrawFrame, 1f, true);
     }
 
-    private void DrawLayer(ZlLibrary lib, int frame, float px, float py, Color? tint = null)
+    private void DrawLayer(ZlLibrary lib, int frame, float px, float py, Color? tint = null, bool effectTexture = false)
     {
         if (lib == null) return;
         if (frame < 0 || frame >= lib.Images.Length) return;
         if (lib.Images[frame] == null) return;
 
-        var texture = lib.GetImageTexture(frame);
+        var texture = effectTexture ? lib.GetEffectTexture(frame) : lib.GetImageTexture(frame);
         if (texture == null) return;
 
         var img = lib.Images[frame];
@@ -676,6 +1170,7 @@ public partial class PlayerRenderer : Node2D
     {
         _weaponLib2 = null;
         _horseLib = null;
+        _horseShadowLib = null;
         _horseEffectLib = null;
 
         bool isFemale = Gender == MirGender.Female;
@@ -745,6 +1240,9 @@ public partial class PlayerRenderer : Node2D
             if (TryShield(shieldKey, out var shieldFile))
                 _shieldLib = LibraryCache.Get(shieldFile);
         }
+
+        if (Horse != HorseType.None)
+            _horseShadowLib = LibraryCache.Get(LibraryFile.Horse);
 
         switch (HorseShape)
         {

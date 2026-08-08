@@ -11,7 +11,7 @@ public partial class BlendLayerNode : Node2D
 {
     private readonly CanvasItemMaterial _blendMaterial = new()
     {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Mix
+        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
     };
 
     private ZlLibrary _library;

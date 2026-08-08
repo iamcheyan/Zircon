@@ -12,25 +12,31 @@ public partial class MirLineEffectNode : Node2D
 {
     private readonly CanvasItemMaterial _blendMaterial = new()
     {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Mix
+        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
     };
     private Node2D _source;
     private Node2D _target;
     private ZlLibrary _library;
     private int _startIndex;
     private float _imageScale;
+    private float _opacity = 1f;
+    private float _blendRate = 0.7f;
+    private bool _blend;
     private double _expireAt;
     private Vector2[] _points = System.Array.Empty<Vector2>();
     private Vector2[] _velocities = System.Array.Empty<Vector2>();
     private bool _initialized;
 
-    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs, bool blend = false)
+    public void Setup(Node2D source, Node2D target, LibraryFile file, int startIndex, float imageScale, double lifetimeMs, bool blend = false, float opacity = 1f, float blendRate = 0.7f)
     {
         _source = source;
         _target = target;
         _library = LibraryCache.Get(file);
         _startIndex = startIndex;
         _imageScale = Mathf.Max(0.01f, imageScale);
+        _opacity = Mathf.Clamp(opacity, 0f, 1f);
+        _blendRate = Mathf.Clamp(blendRate, 0f, 1f);
+        _blend = blend;
         _expireAt = Godot.Time.GetTicksMsec() + lifetimeMs;
         ZIndex = 10000;
         Material = blend ? _blendMaterial : null;
@@ -44,8 +50,11 @@ public partial class MirLineEffectNode : Node2D
             return;
         }
 
-        Vector2 a = _source.Position - new Vector2(0, 50);
-        Vector2 b = _target.Position - new Vector2(0, 50);
+        // 原版 DrawY 是格子原点；Godot 对象节点位置是 objectBaseline
+        // （多一格 32px）。MirLineEffect 的 SourceOffset/TargetOffset
+        // 都是 (0,-25)，并且 ToWorld 还会减 AnchorOffsetY=50。
+        Vector2 a = _source.Position - new Vector2(0, 32 + 25 + 50);
+        Vector2 b = _target.Position - new Vector2(0, 32 + 25 + 50);
         float distance = a.DistanceTo(b);
         int count = Mathf.Max(2, Mathf.CeilToInt(distance / (30f * _imageScale)) + 1);
         if (_points.Length != count)
@@ -93,9 +102,10 @@ public partial class MirLineEffectNode : Node2D
             Vector2 middle = (p1 + p2) * 0.5f;
             DrawSetTransform(middle, Mathf.Atan2(delta.Y, delta.X) + Mathf.Pi / 2f,
                 new Vector2(_imageScale, length / 30f));
+            float alpha = _blend ? _opacity * _blendRate : _opacity;
             DrawTextureRectRegion(texture,
                 new Rect2(-image.Width / 2f, -image.Height / 2f, image.Width, image.Height),
-                new Rect2(0, 0, image.Width, image.Height), new Color(1, 1, 1, 0.85f));
+                new Rect2(0, 0, image.Width, image.Height), new Color(1, 1, 1, alpha));
         }
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }

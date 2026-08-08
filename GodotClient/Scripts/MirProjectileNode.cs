@@ -74,7 +74,7 @@ public partial class MirProjectileNode : MirEffectNode
         if (Delay > 0) duration *= Delay;
         if (!Has16Directions) Direction16 /= 2;
 
-        if (duration <= 0 || now - _startMs > duration)
+        if (duration <= 0)
         {
             CompleteAction?.Invoke();
             QueueFree();
@@ -108,7 +108,36 @@ public partial class MirProjectileNode : MirEffectNode
             UpdateRenderLayer();
         }
 
+        // 原版 MirProjectile 的结束条件不是“一到 duration 就删除”：
+        // 没有对象目标且未设置 Explode 的直线投射物，要继续绘制到完全
+        // 离开视口。否则长距离/穿屏技能会在目标格突然消失。
+        if (now - _startMs > duration)
+        {
+            if (_targetNode == null && !Explode && IsProjectileVisible())
+            {
+                QueueRedraw();
+                return;
+            }
+
+            CompleteAction?.Invoke();
+            QueueFree();
+            return;
+        }
+
         QueueRedraw();
+    }
+
+    private bool IsProjectileVisible()
+    {
+        if (_lib == null || _frameIndex < 0 || FrameCount <= 0) return false;
+        int frame = _frameIndex + StartIndex + Direction16 * Skip;
+        if (frame < 0 || frame >= _lib.Images.Length) return false;
+        var image = _lib.Images[frame];
+        if (image == null || image.Width <= 0 || image.Height <= 0) return false;
+
+        Rect2 bounds = new(Position.X + (UseOffSet ? image.OffSetX : 0f),
+            Position.Y + (UseOffSet ? image.OffSetY : 0f), image.Width, image.Height);
+        return bounds.Intersects(new Rect2(Vector2.Zero, GetViewportRect().Size));
     }
 
     private static System.Drawing.Point ToLegacyProjectilePoint(Vector2 screen)

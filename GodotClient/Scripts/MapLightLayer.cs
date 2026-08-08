@@ -11,14 +11,14 @@ namespace ZirconClient.Scripts;
 public partial class MapLightLayer : Node2D
 {
     private const float WorldScale = 2f;
-    // Godot 客户端不使用旧端最黑的 15/255 档；按最终视觉要求，
-    // 夜间最低使用环境光第三档 100/255，避免地图完全不可见。
-    private const float NightAmbient = 100f / 255f;
+    // 最低黑夜环境光设为 0.25f (25% 柔和月夜亮度，舒适不伤眼)
+    private const float NightAmbient = 0.25f;
     private const float TwilightAmbient = 100f / 255f;
     private const int MaxLights = 64;
     private MapInfo _mapInfo;
     private MapView _mapView;
     private float _dayTime = 1f;
+    private LightSetting? _auditLightOverride;
     private Func<IEnumerable<LightSource>> _sources;
     private ShaderMaterial _lightMaterial;
 
@@ -82,6 +82,13 @@ void fragment() {
         QueueRedraw();
     }
 
+    /// <summary>仅供确定性渲染审计使用，不改变 MapInfo/数据库状态。</summary>
+    public void SetAuditLightOverride(LightSetting? setting)
+    {
+        _auditLightOverride = setting;
+        QueueRedraw();
+    }
+
     public void SetObjectSources(Func<IEnumerable<LightSource>> sources)
     {
         _sources = sources;
@@ -101,7 +108,7 @@ void fragment() {
             LightSetting.Light => 1f,
             LightSetting.Night => NightAmbient,
             LightSetting.Twilight => TwilightAmbient,
-            _ => Math.Clamp(dayTime, 0f, 1f),
+            _ => Math.Clamp(Math.Max(NightAmbient, dayTime), 0f, 1f),
         };
 
     // The legacy light texture is 1024px wide. Its destination is rendered at
@@ -121,7 +128,7 @@ void fragment() {
         if (_mapInfo == null || _mapView?.Map == null) return;
 
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
-        float ambient = AmbientFor(_mapInfo.Light, _dayTime);
+        float ambient = AmbientFor(_auditLightOverride ?? _mapInfo.Light, _dayTime);
 
         if (ambient >= 0.999f) return;
 

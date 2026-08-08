@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using Library;
 using Library.Network;
+using ZirconClient.Controls;
 
 namespace ZirconClient.Scripts;
 
@@ -46,6 +47,18 @@ public partial class MapObjectNode : Node2D
     public double MoveStartMs;
     private int _targetX, _targetY;
     public int MoveDistance { get; private set; }
+    public double SpellReleaseDelayMs
+    {
+        get
+        {
+            if (_currentFrame == null || _currentFrame.FrameCount <= 1) return 0;
+            int releaseFrame = Math.Min(3, _currentFrame.FrameCount - 1);
+            double delay = 0;
+            for (int i = 0; i < releaseFrame && i < _currentFrame.Delays.Length; i++)
+                delay += _currentFrame.Delays[i].TotalMilliseconds;
+            return delay;
+        }
+    }
     private readonly Queue<(System.Drawing.Point To, MirDirection Direction, int Distance)> _moveQueue = new();
 
     private Dictionary<MirAnimation, Frame> _frameTable = new(FrameSet.DefaultMonster);
@@ -55,7 +68,9 @@ public partial class MapObjectNode : Node2D
     public virtual void SetAnimation(MirAnimation anim)
     {
         Animation = anim;
-        _currentFrame = FrameTable.TryGetValue(anim, out var f) ? f : FrameSet.DefaultMonster[MirAnimation.Standing];
+        _currentFrame = FrameTable?.TryGetValue(anim, out var f) == true && f != null
+            ? f
+            : FrameSet.DefaultMonster.GetValueOrDefault(MirAnimation.Standing);
         FrameStartMs = Godot.Time.GetTicksMsec(); // 从当前时刻起播, 保证从第 0 帧开始
         FrameIndex = 0;
         // 原版 SetFrame: Standing/Dead 立即打断 (Interupt=true), 其他动作播完再切
@@ -115,7 +130,10 @@ public partial class MapObjectNode : Node2D
             {
                 elapsed -= delays[delays.Length - 1 - i].TotalMilliseconds;
                 if (elapsed >= 0) continue;
-                return delays.Length - 1 - i; // 逻辑帧号 (原版 UpdateFrame 的 FrameCount-frame-1)
+                // FrameSet.GetFrame returns the logical index i here; the
+                // reversed delay lookup controls timing, not the returned
+                // frame number.  Returning FrameCount-1-i reverses twice.
+                return i;
             }
         }
         else
@@ -134,6 +152,14 @@ public partial class MapObjectNode : Node2D
     {
         double nowMs = Godot.Time.GetTicksMsec();
 
+        // 网络对象可能在刚创建、替换外观或资源异步加载期间尚未拿到动画帧。
+        // 这种对象仍然要保留在场景树中等待下一帧，不能让渲染循环因空帧崩溃。
+        if (_currentFrame == null)
+        {
+            SetAnimation(MirAnimation.Standing);
+            if (_currentFrame == null) return;
+        }
+
         // 双倍速: 原版 (this != User || Observer) && ActionQueue.Count > 1
         // (Godot 客户端玩家走 PlayerRenderer, 这里只有周围物体, 恒非 User)
         bool doubleSpeed = ActionQueue.Count > 1;
@@ -143,6 +169,7 @@ public partial class MapObjectNode : Node2D
         if (frame == _currentFrame.FrameCount || (_interupt && ActionQueue.Count > 0))
         {
             DoNextAction();
+            if (_currentFrame == null) return;
             frame = GetFrameIndex(nowMs, doubleSpeed);
             if (frame == _currentFrame.FrameCount)
                 frame -= 1; // 停末帧
@@ -161,6 +188,12 @@ public partial class MapObjectNode : Node2D
     // 移动期间像素偏移 (原版 MovingOffSet, 平滑分支): 权威格=终点, 偏移从起点回拉
     private void UpdateMoveOffset(double nowMs)
     {
+        if (_currentFrame == null)
+        {
+            OffsetX = 0;
+            OffsetY = 0;
+            return;
+        }
         if (Animation is not (MirAnimation.Walking or MirAnimation.Running))
         {
             OffsetX = 0;
@@ -243,16 +276,27 @@ public partial class MapObjectNode : Node2D
     protected void DrawHealthBar()
     {
         if (!ShowHealthBar || Dead || MaxHealth <= 0) return;
+        if (this is ObjectRenderer objectRenderer && objectRenderer.Type == ObjectRenderer.Kind.Monster && !ClientSettings.ShowMonsterHealth)
+            return;
         float percent = Math.Clamp(Health / (float)MaxHealth, 0f, 1f);
         if (percent <= 0f) return;
 
-        const float w = 40, h = 5;
-        float x = -w / 2, y = -50;
-        DrawRect(new Rect2(x - 1, y - 1, w + 2, h + 2), new Color(0f, 0f, 0f, 0.75f));
-        var col = percent > 0.5f ? new Color(0f, 0.8f, 0.29f)
-                : percent > 0.25f ? new Color(0.9f, 0.8f, 0.1f)
-                : new Color(0.9f, 0.2f, 0.1f);
-        DrawRect(new Rect2(x, y, w * percent, h), col);
+        // 原版 MonsterObject.DrawHealth: Interface 80 背景、79 填充，
+        // 坐标为 DrawX / DrawY - 55；填充只裁剪源图宽度，不拉伸贴图。
+        var background = MirSkin.GetTexture(LibraryFile.Interface, 80);
+        var fill = MirSkin.GetTexture(LibraryFile.Interface, 79);
+        if (background == null || fill == null) return;
+
+        Vector2 bgSize = background.GetSize();
+        Vector2 fillSize = fill.GetSize();
+        float x = 24f - bgSize.X / 2f;
+        float y = -55f;
+        DrawTextureRect(background, new Rect2(x, y, bgSize.X, bgSize.Y), false);
+
+        float width = Math.Clamp((int)(fillSize.X * percent), 1, (int)fillSize.X);
+        DrawTextureRectRegion(fill, new Rect2(x + 1f, y + 1f, width, fillSize.Y),
+            new Rect2(0, 0, width, fillSize.Y),
+            new Color(1f, 1f, 1f, 1f));
     }
 
     // 计算本节点屏幕位置 (相机锚定玩家, 含移动像素偏移)

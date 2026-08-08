@@ -15,6 +15,7 @@ public partial class MapWeatherLayer : Node2D
     private readonly RandomNumberGenerator _rng = new();
     private ZlLibrary _library;
     private Weather _weather;
+    private bool _enabled = true;
     private double _rainSpawn;
     private double _snowSpawn;
     private double _lightningSpawn;
@@ -53,9 +54,17 @@ public partial class MapWeatherLayer : Node2D
         QueueRedraw();
     }
 
+    public void SetEnabled(bool enabled)
+    {
+        _enabled = enabled;
+        if (!_enabled) _particles.Clear();
+        else if (_weather != Weather.None) SetWeather(_weather);
+        QueueRedraw();
+    }
+
     public override void _Process(double delta)
     {
-        if (_weather == Weather.None || _library == null) return;
+        if (!_enabled || _weather == Weather.None || _library == null) return;
         double ms = delta * 1000.0;
         Vector2 size = LogicalViewport();
 
@@ -91,10 +100,13 @@ public partial class MapWeatherLayer : Node2D
         {
             var p = _particles[i];
             p.AgeMs += ms;
-            // 旧端粒子速度按约 60 ticks/s 的逻辑帧计算；Godot 的 delta 是秒。
-            if (!p.Grounded) p.Position += p.Velocity * (float)delta * 60f;
-            // 旧端粒子每次约 10ms 更新，AngularVelocity 也是按逻辑 tick 计算。
-            p.Rotation += p.AngularVelocity * (float)delta * 60f;
+            // Legacy Particle.Update is driven by a 10ms UpdateSpeed.  Its
+            // Velocity, AngularVelocity and ScaleRate are applied once per
+            // such tick, so the equivalent continuous rate is 100 ticks/s,
+            // not the display refresh rate (60Hz).
+            const float LegacyTicksPerSecond = 100f;
+            if (!p.Grounded) p.Position += p.Velocity * (float)delta * LegacyTicksPerSecond;
+            p.Rotation += p.AngularVelocity * (float)delta * LegacyTicksPerSecond;
 
             if (p.TextureIndex == 509 && p.AgeMs >= p.LifeMs && !p.Grounded)
             {
@@ -119,6 +131,9 @@ public partial class MapWeatherLayer : Node2D
                 // 和 FadeRate=0.01 消融；不能继续按原速度飘走。
                 p.Grounded = true;
                 p.Velocity = Vector2.Zero;
+                // Client/Models/Particles/Weather/Snow.cs stops rotation when
+                // the snowflake lands; it then only fades and shrinks.
+                p.AngularVelocity = 0f;
                 p.Fading = true;
                 p.AgeMs = 0;
                 p.LifeMs = 1000;
@@ -132,9 +147,9 @@ public partial class MapWeatherLayer : Node2D
             if (p.Fading)
             {
                 if (p.TextureIndex == 540)
-                    p.Opacity -= p.FadeRate * (float)delta * 100f;
+                    p.Opacity -= p.FadeRate * (float)delta * LegacyTicksPerSecond;
                 else
-                    p.Scale -= 0.01f * (float)delta * 60f;
+                    p.Scale -= 0.01f * (float)delta * LegacyTicksPerSecond;
             }
 
             if ((p.Grounded && p.TextureIndex >= 514 && p.AgeMs >= p.LifeMs) ||
@@ -149,7 +164,7 @@ public partial class MapWeatherLayer : Node2D
 
     public override void _Draw()
     {
-        if (_library == null) return;
+        if (!_enabled || _library == null) return;
         foreach (var p in _particles) DrawParticle(p);
     }
 

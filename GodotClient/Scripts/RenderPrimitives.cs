@@ -1,4 +1,5 @@
 using Godot;
+using ZirconClient.Formats;
 
 namespace ZirconClient.Scripts;
 
@@ -8,18 +9,116 @@ namespace ZirconClient.Scripts;
 /// </summary>
 internal static class RenderPrimitives
 {
-    public static void DrawGroundShadow(CanvasItem canvas, float width = 26f, float height = 9f,
-        float x = 0f, float y = 1f, float alpha = 0.42f)
+    // Some old ZL frames contain a shadow record, but the record is only a
+    // placeholder (or a damaged/empty payload).  Drawing those textures as-is
+    // produces the characteristic long 1-pixel line under an object.
+    public static bool IsUsableResourceShadow(int width, int height)
     {
-        int segments = 24;
-        var points = new Vector2[segments];
-        for (int i = 0; i < segments; i++)
+        if (width <= 0 || height <= 0) return false;
+
+        // Real Mir ground shadows are short, flat shapes.  A very thin or
+        // extremely wide rectangle is metadata/payload noise, not a shadow.
+        return height >= 3 && width <= height * 8;
+    }
+
+    public static bool IsUsableResourceShadow(Texture2D texture, int metadataWidth, int metadataHeight)
+    {
+        if (!IsUsableResourceShadow(metadataWidth, metadataHeight) || texture == null)
+            return false;
+        int textureWidth = texture.GetWidth();
+        int textureHeight = texture.GetHeight();
+        return IsUsableResourceShadow(textureWidth, textureHeight)
+            && textureWidth == metadataWidth
+            && textureHeight == metadataHeight;
+    }
+
+    /// <summary>
+    /// MirLibrary.Draw(ImageType.Shadow) 的旧 ZL fallback。Shadow payload
+    /// 不可用时，原版按 ShadowType 从主体帧生成投影，而不是直接跳过。
+    /// </summary>
+    public static bool DrawShadowTypeFallback(CanvasItem canvas, Texture2D texture,
+        ZlImage image, float alpha = 0.5f, Vector2? localOffset = null)
+    {
+        if (canvas == null || texture == null || image == null) return false;
+        Vector2 extra = localOffset ?? Vector2.Zero;
+        float x = image.ShadowOffSetX + extra.X;
+        float y = image.ShadowOffSetY + extra.Y;
+
+        if (image.ShadowType == 50)
         {
-            float a = Mathf.Tau * i / segments;
-            points[i] = new Vector2(x + Mathf.Cos(a) * width * 0.5f,
-                y + Mathf.Sin(a) * height * 0.5f);
+            canvas.DrawTextureRect(texture, new Rect2(x, y, image.Width, image.Height), false,
+                new Color(0f, 0f, 0f, alpha));
+            return true;
         }
-        canvas.DrawColoredPolygon(points, new Color(0f, 0f, 0f, alpha));
+
+        if (image.ShadowType is not (49 or 176 or 177)) return false;
+
+        // Matrix3x2.CreateScale(1, .5) with M21=-.5 followed by
+        // Translation(x + image.Height/2, y), as in the original renderer.
+        float tx = x + image.Height * 0.5f;
+        Vector2 Transform(Vector2 p) => new(tx + p.X - p.Y * 0.5f, y + p.Y * 0.5f);
+        float right = image.Width;
+        float bottom = image.Height;
+        var points = new[]
+        {
+            Transform(new Vector2(0f, 0f)), Transform(new Vector2(right, 0f)),
+            Transform(new Vector2(right, bottom)), Transform(new Vector2(0f, bottom)),
+        };
+        var uvs = new[]
+        {
+            new Vector2(0f, 0f), new Vector2(1f, 0f),
+            new Vector2(1f, 1f), new Vector2(0f, 1f),
+        };
+        canvas.DrawPolygon(points, new[] { new Color(0f, 0f, 0f, alpha) }, uvs, texture);
+        return true;
+    }
+
+    /// <summary>
+    /// 原版 PlayerObject.DrawShadow2：把当前帧的角色轮廓沿等距地面
+    /// 斜切并压扁到脚底。这样没有 Shadow 通道时仍保留人物/怪物本身
+    /// 的真实轮廓，不会把所有对象退化成同一个椭圆。
+    /// </summary>
+    public static bool DrawSilhouetteShadow(CanvasItem canvas, Texture2D texture,
+        ZlImage image, float alpha = 0.5f, Vector2? localOffset = null,
+        ZlImage anchorImage = null)
+    {
+        if (canvas == null || texture == null || image == null || image.Width <= 0 || image.Height <= 0)
+            return false;
+
+        float left = image.OffSetX;
+        float top = image.OffSetY;
+        float right = left + image.Width;
+        float bottom = top + image.Height;
+
+        // 原版 PlayerObject.DrawShadow2 把角色 scratch 纹理以
+        // Matrix3x2(1, 0, -0.5, 0.5) 投影到地面。其平移不是固定的
+        // (12,16)，而是逐帧使用 image.Height 与 ShadowOffSetX/Y：
+        // x' = x - y/2 + Height/2 + ShadowOffSetX
+        // y' = y/2 + ShadowOffSetY
+        // 这样不同体型、装备和动作帧的影子都落在各自真实脚底。
+        // The old client first composites body/equipment into one scratch
+        // surface, then uses the body's ShadowOffset/height as the common
+        // foot anchor.  Passing an anchorImage preserves that relationship
+        // when Godot draws the source layers separately.
+        anchorImage ??= image;
+        Vector2 extra = localOffset ?? Vector2.Zero;
+        Vector2 Transform(Vector2 p) => new(
+            (p.X - anchorImage.OffSetX) - (p.Y - anchorImage.OffSetY) * 0.5f
+                + anchorImage.Height * 0.5f + anchorImage.ShadowOffSetX + extra.X,
+            (p.Y - anchorImage.OffSetY) * 0.5f + anchorImage.ShadowOffSetY + extra.Y);
+
+        var points = new[]
+        {
+            Transform(new Vector2(left, top)), Transform(new Vector2(right, top)),
+            Transform(new Vector2(right, bottom)), Transform(new Vector2(left, bottom)),
+        };
+        var uvs = new[]
+        {
+            new Vector2(0f, 0f), new Vector2(1f, 0f),
+            new Vector2(1f, 1f), new Vector2(0f, 1f),
+        };
+        canvas.DrawPolygon(points, new[] { new Color(0f, 0f, 0f, alpha) }, uvs, texture);
+        return true;
     }
 
     public static void DrawLabel(CanvasItem canvas, string text, Vector2 baseline,
@@ -33,5 +132,17 @@ internal static class RenderPrimitives
         canvas.DrawString(font, p + new Vector2(1f, 1f), text,
             HorizontalAlignment.Left, -1f, (int)size, new Color(0f, 0f, 0f, 0.85f));
         canvas.DrawString(font, p, text, HorizontalAlignment.Left, -1f, (int)size, colour);
+    }
+
+    /// <summary>
+    /// 原版 MapObject.DrawName 的基线：NameLabel 的顶部是
+    /// DrawY - (32 - labelHeight) / 2 - 6，节点原点对应 DrawX/DrawY。
+    /// Godot DrawString 接收基线，因此这里把旧版顶部坐标换算成基线。
+    /// </summary>
+    public static float OriginalNameBaseline(float size = 9f)
+    {
+        Font font = ThemeDB.FallbackFont;
+        float height = font?.GetHeight((int)size) ?? size;
+        return -(32f - height) / 2f - 6f + height;
     }
 }
