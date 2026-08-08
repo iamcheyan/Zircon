@@ -7,10 +7,7 @@ namespace ZirconClient.Scripts;
 // (not a black-key effect texture).  Used by player exterior equipment.
 public partial class BlendImageLayerNode : Node2D
 {
-    private readonly CanvasItemMaterial _material = new()
-    {
-        BlendMode = CanvasItemMaterial.BlendModeEnum.Add
-    };
+    private readonly CanvasItemMaterial _material = new();
 
     private ZlLibrary _library;
     private int _frame = -1;
@@ -23,13 +20,17 @@ public partial class BlendImageLayerNode : Node2D
         Material = _material;
     }
 
-    public void Configure(ZlLibrary library, int frame, Color colour, int zIndex, float offsetX = 0f, float offsetY = 0f)
+    public void Configure(ZlLibrary library, int frame, Color colour, int zIndex,
+        float offsetX = 0f, float offsetY = 0f, bool additive = true)
     {
         _library = library;
         _frame = frame;
         _colour = colour;
         _offsetX = offsetX;
         _offsetY = offsetY;
+        _material.BlendMode = additive
+            ? CanvasItemMaterial.BlendModeEnum.Add
+            : CanvasItemMaterial.BlendModeEnum.Mix;
         ZIndex = zIndex;
         Visible = library != null && frame >= 0;
         QueueRedraw();
