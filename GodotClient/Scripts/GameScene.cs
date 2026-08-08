@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Godot;
 using Library;
 using Library.Network;
@@ -28,6 +29,11 @@ public partial class GameScene : Control
 
     private Network.NetworkManager _net;
     private MapView _mapView;
+    private readonly Dictionary<int, string> _castleOwners = new();
+    private readonly Dictionary<int, DateTime> _castleWarDates = new();
+    private readonly Dictionary<int, ClientUserQuest> _userQuests = new();
+    public IReadOnlyDictionary<int, string> CastleOwners => _castleOwners;
+    public DateTime? GetCastleWarDate(int index) => _castleWarDates.TryGetValue(index, out var date) ? date : null;
     private Label _statusLabel;
     private PlayerRenderer _player;
     private readonly Dictionary<SoundIndex, AudioStream> _actionSounds = new();
@@ -43,6 +49,7 @@ public partial class GameScene : Control
     private MenuDialog _menuDialog;
     private ExitDialog _exitDialog;
     private ChatLogPanel _chatLog;
+    private ChatTextBox _chatTextBox;
     private HelpDialog _helpDialog;
     private ConfigDialog _configDialog;
     private ChatOptionsDialog _chatOptionsDialog;
@@ -51,17 +58,26 @@ public partial class GameScene : Control
     private MilestoneDialog _milestoneDialog;
     private readonly Dictionary<int, ClientUserMilestone> _milestones = new();
     private CompanionDialog _companionDialog;
+    private NPCCompanionStorageDialog _npcCompanionStorageDialog;
     private RankingDialog _rankingDialog;
     private CommunicationDialog _communicationDialog;
     private GameStoreDialog _gameStoreDialog;
     private ConsignmentDialog _consignmentDialog;
+    private MarketHistoryDialog _marketHistoryDialog;
     private FishingDialog _fishingDialog;
     private FishingCatchDialog _fishingCatchDialog;
     private HorseTameDialog _horseTameDialog;
+    private uint _tamingTargetObjectID;
     private MonsterDialog _monsterDialog;
     private TradeDialog _tradeDialog;
     private NPCDialog _npcDialog;
+    private NPCSocketDialog _npcSocketDialog;
+    private NPCSocketCombineDialog _npcSocketCombineDialog;
+    private NPCQuestListDialog _npcQuestListDialog;
+    private NPCQuestDialog _npcQuestDialog;
+    private readonly Dictionary<uint, NPCInfo> _npcInfos = new();
     private uint _npcObjectId;
+    public uint NPCObjectId => _npcObjectId;
     private GroupDialog _groupDialog;
     private GroupHealthPanel _groupHealthPanel;
     private double _statusRefreshMs;
@@ -78,6 +94,7 @@ public partial class GameScene : Control
     private MagicDialog _magicDialog;
     private Stats _playerStats = new Stats();
     private int _playerLevel;
+    public int PlayerLevel => _playerLevel;
     private decimal _playerExperience, _playerMaxExperience;
     private int _currentHP, _currentMP, _currentFP;
     private AttackMode _attackMode;
@@ -85,6 +102,110 @@ public partial class GameScene : Control
 
     // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
     public static GameScene Game;
+    public IEnumerable<ClientUserMilestone> Milestones => _milestones.Values;
+    public ClientUserQuest GetUserQuest(int index) => _userQuests.TryGetValue(index, out var quest) ? quest : null;
+
+    public bool CanAcceptQuest(QuestInfo quest)
+    {
+        if (quest?.StartNPC == null || quest.FinishNPC == null) return false;
+        if (_userQuests.ContainsKey(quest.Index)) return false;
+        foreach (var requirement in quest.Requirements ?? Enumerable.Empty<QuestRequirement>())
+        {
+            switch (requirement.Requirement)
+            {
+                case QuestRequirementType.MinLevel when PlayerLevel < requirement.IntParameter1:
+                case QuestRequirementType.MaxLevel when PlayerLevel > requirement.IntParameter1:
+                    return false;
+                case QuestRequirementType.NotAccepted when requirement.QuestParameter != null &&
+                    _userQuests.ContainsKey(requirement.QuestParameter.Index):
+                    return false;
+                case QuestRequirementType.HaveCompleted:
+                    if (requirement.QuestParameter == null || !_userQuests.TryGetValue(requirement.QuestParameter.Index, out var completed) || !completed.Completed)
+                        return false;
+                    break;
+                case QuestRequirementType.HaveNotCompleted when requirement.QuestParameter != null &&
+                    _userQuests.TryGetValue(requirement.QuestParameter.Index, out var existing) && existing.Completed:
+                    return false;
+                case QuestRequirementType.Class:
+                    var required = StartInfo?.Class switch
+                    {
+                        MirClass.Warrior => RequiredClass.Warrior,
+                        MirClass.Wizard => RequiredClass.Wizard,
+                        MirClass.Taoist => RequiredClass.Taoist,
+                        MirClass.Assassin => RequiredClass.Assassin,
+                        _ => RequiredClass.None,
+                    };
+                    if (required != RequiredClass.None && (requirement.Class & required) != required) return false;
+                    break;
+            }
+        }
+        return true;
+    }
+
+    // 与原版 GameScene.GetQuestText/GetTaskText 同一套文本选择和进度格式，
+    // NPC 任务详情、任务日志和右侧追踪器都共用，避免详情页只显示 QuestTask.ToString()。
+    public string GetQuestText(QuestInfo questInfo, ClientUserQuest userQuest, bool isLog = false)
+    {
+        if (questInfo == null) return string.Empty;
+        string text = userQuest == null ? questInfo.AcceptText :
+            userQuest.Completed ? questInfo.ArchiveText :
+            userQuest.IsComplete && !isLog ? questInfo.CompletedText : questInfo.ProgressText;
+        text ??= string.Empty;
+        text = text.Replace("[PLAYERNAME]", StartInfo?.Name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        text = text.Replace("[STARTNAME]", questInfo.StartNPC?.NPCName ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        text = text.Replace("[FINISHNAME]", questInfo.FinishNPC?.NPCName ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        return text;
+    }
+
+    public string GetTaskText(QuestInfo questInfo, ClientUserQuest userQuest)
+        => questInfo?.Tasks == null ? string.Empty : string.Join("\n", questInfo.Tasks.Select(x => GetTaskText(x, userQuest)));
+
+    public string GetTaskText(QuestTask task, ClientUserQuest userQuest)
+    {
+        if (task == null) return string.Empty;
+        var parts = new List<string>();
+        switch (task.Task)
+        {
+            case QuestTaskType.KillMonster:
+                parts.Add($"Kill {task.Amount}");
+                break;
+            case QuestTaskType.GainItem:
+                parts.Add($"Collect {task.Amount} {task.ItemParameter?.ItemName}");
+                break;
+            case QuestTaskType.VisitRegion:
+                parts.Add($"Goto {task.RegionParameter?.Description} in {task.RegionParameter?.Map?.PlayerDescription}");
+                break;
+        }
+
+        if (string.IsNullOrEmpty(task.MobDescription))
+        {
+            if (task.Task == QuestTaskType.GainItem && task.MonsterDetails?.Count > 0) parts.Add("from");
+            var monsters = new List<string>();
+            foreach (var detail in task.MonsterDetails ?? Enumerable.Empty<QuestTaskMonsterDetails>())
+            {
+                if (detail?.Monster == null) continue;
+                if (monsters.Count >= 3) { monsters.Add("..."); break; }
+                monsters.Add(detail.Monster.MonsterName +
+                    (detail.Map == null ? string.Empty : $" in {detail.Map.PlayerDescription}"));
+            }
+            if (monsters.Count > 0) parts.Add(string.Join(" or ", monsters));
+        }
+        else
+        {
+            if (task.Task == QuestTaskType.GainItem && task.MonsterDetails?.Count > 0) parts.Add("from");
+            parts.Add(task.MobDescription);
+        }
+
+        var userTask = userQuest?.Tasks?.FirstOrDefault(x => x?.Task == task || x?.TaskIndex == task.Index);
+        if (userQuest != null)
+            parts.Add(userTask?.Completed == true ? "(Completed)" :
+                task.Task == QuestTaskType.VisitRegion ? string.Empty : $"({userTask?.Amount ?? 0}/{task.Amount})");
+        return string.Join(" ", parts.Where(x => !string.IsNullOrWhiteSpace(x)));
+    }
+
+    public bool IsFishingActive => _fishingCatchDialog?.IsActive == true;
+    public bool IsTamingActive => _horseTameDialog?.Visible == true;
+    public bool IsMounted => _playerHorse != HorseType.None;
 
     public void ToggleStorageWindow()
     {
@@ -94,19 +215,42 @@ public partial class GameScene : Control
 
     public void LeaveGame()
     {
+        _net?.Connection?.SendLogout();
         _net?.Disconnect();
         GetTree().Quit();
     }
 
+    public void OpenRechargePage()
+    {
+        if (_net == null || string.IsNullOrWhiteSpace(_net.BuyAddress))
+        {
+            ReceiveChat("当前服务器未提供充值地址", MessageType.System);
+            return;
+        }
+        var address = _net.BuyAddress + Uri.EscapeDataString(StartInfo?.Name ?? string.Empty);
+        OS.ShellOpen(address);
+    }
+
     public void SendChat(string text)
+        => SendChat(text, new List<int>());
+
+    public void SendChat(string text, List<int> linkedItemIndexes)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
         _net?.Connection?.Enqueue(new C.Chat
         {
             Text = text.Trim(),
-            LinkedItemIndexes = new List<int>(),
+            LinkedItemIndexes = linkedItemIndexes ?? new List<int>(),
         });
     }
+
+    public void SendGameStoreBuy(int index, long count, bool useHuntGold)
+        => _net?.Connection?.SendGameStoreBuy(index, count, useHuntGold);
+    public void SendGameStoreGift(int index, long count, bool useHuntGold, string recipient)
+        => _net?.Connection?.SendGameStoreGift(index, count, useHuntGold, recipient);
+    public void SendGameStoreFavourite(int index)
+        => _net?.Connection?.SendGameStoreFavourite(index);
+    public void ReceiveChat(string text, MessageType type = MessageType.System) => _chatLog?.AddMessage(text, type, Colors.Yellow);
 
     public void OpenExitDialog()
     {
@@ -131,17 +275,136 @@ public partial class GameScene : Control
 
     public bool IsChatTypeEnabled(MessageType type) => _chatLog?.IsTypeEnabled(type) ?? true;
     public void SetChatFilter(MessageType type, bool enabled) => _chatLog?.SetTypeEnabled(type, enabled);
+    public void AddChatTab(string title) => _chatLog?.AddTab(title);
+    public void ResetChatTabs() => _chatLog?.ResetTabs();
+    public void SelectChatTab(int index) => _chatLog?.SelectTab(index);
+    public int ChatTabCount => _chatLog?.TabCount ?? 0;
+    public int SelectedChatTab => _chatLog?.SelectedTabIndex ?? 0;
+    public string GetChatTabTitle(int index) => _chatLog?.GetTabTitle(index) ?? string.Empty;
+    public void RenameChatTab(int index, string title) => _chatLog?.RenameTab(index, title);
+    public void RemoveChatTab(int index) => _chatLog?.RemoveTab(index);
+    public bool GetChatOption(string option) => _chatLog?.GetOption(option) ?? false;
+    public void SetChatOption(string option, bool enabled) => _chatLog?.SetOption(option, enabled);
+    public void SaveChatTabs() => _chatLog?.SaveTabs();
+    public void LoadChatTabs() => _chatLog?.LoadTabs();
 
     public void OpenGuildDialog() { if (_guildDialog != null) WindowManager.Open(_guildDialog, _uiLayer); }
+    public bool HasGuild => _guildDialog?.HasGuild == true;
+    public long GuildFunds => _guildDialog?.GuildFunds ?? 0;
+    public IEnumerable<DXItemCell> GuildStorageCells => _guildDialog?.GuildStorageCells ?? Array.Empty<DXItemCell>();
     public void OpenGuildMemberDialog(int index, string name, string rank, GuildPermission permission)
     {
         if (_guildMemberDialog == null) return;
         _guildMemberDialog.OpenMember(index, name, rank, permission);
         WindowManager.Open(_guildMemberDialog, _uiLayer);
     }
-    public void OpenRankingDialog() { if (_rankingDialog != null) WindowManager.Open(_rankingDialog, _uiLayer); }
+    public void OpenRankingDialog() { if (_rankingDialog != null) { WindowManager.Open(_rankingDialog, _uiLayer); RequestRankings(0, false); } }
+    public void RequestRankings(int startIndex, bool onlineOnly)
+        => _net?.Connection?.Enqueue(new C.RankRequest { Class = RequiredClass.None, OnlineOnly = onlineOnly, StartIndex = startIndex });
+    public void SendQuestAccept(int index)
+        => _net?.Connection?.Enqueue(new C.QuestAccept { Index = index });
+    public void SendQuestComplete(int index, int choiceIndex = 0)
+        => _net?.Connection?.Enqueue(new C.QuestComplete { Index = index, ChoiceIndex = choiceIndex });
+    public void SendQuestTrack(int index, bool track)
+        => _net?.Connection?.Enqueue(new C.QuestTrack { Index = index, Track = track });
+    public void SendQuestAbandon(int index)
+        => _net?.Connection?.Enqueue(new C.QuestAbandon { Index = index });
+    public void SendFriendAdd(string name)
+        => _net?.Connection?.Enqueue(new C.FriendAdd { Name = name ?? string.Empty });
+    public void SendFriendRemove(int index)
+        => _net?.Connection?.Enqueue(new C.FriendRemove { Index = index });
+    public void SendBlockAdd(string name) => _net?.Connection?.SendBlockAdd(name);
+    public void SendBlockRemove(int index) => _net?.Connection?.SendBlockRemove(index);
+    public void SendIncreaseDiscipline() => _net?.Connection?.SendIncreaseDiscipline();
+    public void SendGuildTax(long tax) => _net?.Connection?.SendGuildTax(tax);
+    public void SendMarriageResponse(bool accept) => _net?.Connection?.SendMarriageResponse(accept);
+    public void SendMarriageMakeRing(int slot) => _net?.Connection?.SendMarriageMakeRing(slot);
+    public void SendTeleportRing(int x, int y, int mapIndex) => _net?.Connection?.SendTeleportRing(new System.Drawing.Point(x, y), mapIndex);
+    public void SendGroupLfg(bool enabled, string name, string type, int maxCount) => _net?.Connection?.SendGroupLfg(enabled, name, type, maxCount);
+    public void SendGroupNotify(bool receive) => _net?.Connection?.SendGroupNotify(receive);
+    public void SendMagicToggle(MagicType magic, bool canUse) => _net?.Connection?.SendMagicToggle(magic, canUse);
+    public void SendHermit(Stat stat) => _net?.Connection?.SendHermit(stat);
+    public void SendObservable(bool allow) => _net?.Connection?.SendObservable(allow);
+    public void SendTownRevive() => _net?.Connection?.SendTownRevive();
+    private ClientUserCurrency _selectedCurrency;
+    public void SelectCurrency(ClientUserCurrency currency) => _selectedCurrency = currency?.Info?.DropItem != null && currency.Amount > 0 ? currency : null;
+    public void SendObserverRequest(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return;
+        _net?.Connection?.Enqueue(new C.ObserverRequest { Name = name.Trim() });
+    }
     public void OpenCompanionDialog() { if (_companionDialog != null) WindowManager.Open(_companionDialog, _uiLayer); }
-    public bool TryRouteItemToNpc(DXItemCell source) => _npcDialog?.TryRouteItem(source) == true;
+    public void OpenNPCCompanionStorage()
+    {
+        if (_npcCompanionStorageDialog == null) return;
+        _npcCompanionStorageDialog.SetCompanions(Companions);
+        WindowManager.Open(_npcCompanionStorageDialog, _uiLayer);
+    }
+    public void CloseNPCCompanionStorage()
+    {
+        if (_npcCompanionStorageDialog != null) WindowManager.Close(_npcCompanionStorageDialog);
+    }
+    public bool TryRouteItemToNpc(DXItemCell source)
+        => TryRouteItemToSocket(source) || _npcDialog?.TryRouteItem(source) == true;
+
+    public bool TryRouteItemToSocket(DXItemCell source)
+    {
+        if (source?.Item == null) return false;
+        if (_npcSocketDialog?.Visible == true && _npcSocketDialog.TryRouteItem(source)) return true;
+        if (_npcSocketCombineDialog?.Visible == true && _npcSocketCombineDialog.TryRouteItem(source)) return true;
+        return false;
+    }
+
+    public void OpenNPCSocketDialog()
+    {
+        if (_npcSocketDialog == null) return;
+        WindowManager.Close(_npcSocketCombineDialog);
+        WindowManager.Open(_npcSocketDialog, _uiLayer);
+    }
+
+    public void OpenNPCSocketCombineDialog()
+    {
+        if (_npcSocketCombineDialog == null) return;
+        WindowManager.Close(_npcSocketDialog);
+        WindowManager.Open(_npcSocketCombineDialog, _uiLayer);
+    }
+
+    public void CloseNPCSocketDialogs()
+    {
+        if (_npcSocketDialog != null) WindowManager.Close(_npcSocketDialog);
+        if (_npcSocketCombineDialog != null) WindowManager.Close(_npcSocketCombineDialog);
+    }
+
+    public void CloseNPCDialog()
+    {
+        CloseNPCSocketDialogs();
+        if (_npcQuestListDialog != null) WindowManager.Close(_npcQuestListDialog);
+        if (_npcQuestDialog != null) WindowManager.Close(_npcQuestDialog);
+        if (_npcCompanionStorageDialog != null) WindowManager.Close(_npcCompanionStorageDialog);
+        if (_npcDialog != null) WindowManager.Close(_npcDialog);
+        SendNPCClose();
+    }
+
+    public void OpenNPCQuestList(uint objectId)
+    {
+        if (_npcQuestListDialog == null || !_npcInfos.TryGetValue(objectId, out var npc)) return;
+        _npcQuestListDialog.Location = new Vector2I(_npcDialog?.Location.X ?? 0, (_npcDialog?.Location.Y ?? 0) + (int)(_npcDialog?.Size.Y ?? 204));
+        _npcQuestListDialog.OpenFor(npc);
+    }
+
+    public void OpenNPCQuestDialog(QuestInfo quest)
+    {
+        if (_npcQuestDialog == null || quest == null) return;
+        var listLocation = _npcQuestListDialog?.Location ?? Vector2I.Zero;
+        _npcQuestDialog.Location = new Vector2I(listLocation.X + (int)(_npcQuestListDialog?.Size.X ?? 240), listLocation.Y);
+        _npcQuestDialog.OpenFor(quest);
+    }
+
+    public void CloseNPCQuestDialogs()
+    {
+        if (_npcQuestListDialog != null) WindowManager.Close(_npcQuestListDialog);
+        if (_npcQuestDialog != null) WindowManager.Close(_npcQuestDialog);
+    }
     public bool BundleBoxVisible => _bundleDialog?.Visible == true;
     public bool LootBoxVisible => _lootBoxDialog?.Visible == true;
     public bool TryRouteItemToTradeOrConsign(DXItemCell source)
@@ -153,9 +416,11 @@ public partial class GameScene : Control
         return false;
     }
     public void OpenCommunicationDialog() { if (_communicationDialog != null) WindowManager.Open(_communicationDialog, _uiLayer); }
-    public void OpenGroupDialog() { if (_groupDialog != null) WindowManager.Open(_groupDialog, _uiLayer); }
+    public void OpenGroupDialog() { if (_groupDialog != null) { _net?.Connection?.SendGroupNotify(true); WindowManager.Open(_groupDialog, _uiLayer); } }
+    public void CloseGroupDialog() { if (_groupDialog != null) WindowManager.Close(_groupDialog); }
     public void OpenGameStoreDialog() { if (_gameStoreDialog != null) WindowManager.Open(_gameStoreDialog, _uiLayer); }
     public void OpenConsignmentDialog() { if (_consignmentDialog != null) WindowManager.Open(_consignmentDialog, _uiLayer); }
+    public void OpenMarketHistory(ClientUserItem item) { if (_marketHistoryDialog != null) _marketHistoryDialog.ShowFor(item); }
     public void OpenFishingDialog() { if (_fishingDialog != null) WindowManager.Open(_fishingDialog, _uiLayer); }
     public void OpenEditCharacterDialog()
     {
@@ -175,6 +440,7 @@ public partial class GameScene : Control
         SendFishingCast(FishingState.Cast);
     }
     public void OpenCaptionDialog() { if (_captionDialog != null) WindowManager.Open(_captionDialog, _uiLayer); }
+    public void OpenFortuneCheckerDialog() { if (_fortuneDialog != null) WindowManager.Open(_fortuneDialog, _uiLayer); }
 
     public ClientUserItem[] Inventory = new ClientUserItem[Globals.InventorySize];
     public ClientUserItem[] Equipment = new ClientUserItem[Globals.EquipmentSize];
@@ -183,6 +449,7 @@ public partial class GameScene : Control
     public ClientUserItem[] CompanionInventory = new ClientUserItem[Globals.InventorySize];
     public ClientUserItem[] CompanionEquipment = new ClientUserItem[4];
     public ClientUserCompanion Companion;
+    public readonly List<ClientUserCompanion> Companions = new();
     public List<ClientUserCurrency> Currencies = new();
     public ClientBeltLink[] BeltLinks = new ClientBeltLink[Globals.MaxBeltCount];
     public int StorageSize = Globals.StorageSize;
@@ -191,6 +458,7 @@ public partial class GameScene : Control
     public DXItemCell[] InventoryCells = Array.Empty<DXItemCell>();
     public DXItemCell[] EquipmentCells = Array.Empty<DXItemCell>();
     public DXItemCell[] CompanionEquipmentCells = Array.Empty<DXItemCell>();
+    public DXItemCell[] StorageCells => _storageDialog?.StorageCells ?? Array.Empty<DXItemCell>();
 
     // 物品交互状态
     public double UseItemTime;          // 服务端 S.ItemUseDelay 给的下次可用时间 (绝对 ms)
@@ -202,6 +470,7 @@ public partial class GameScene : Control
     private readonly System.Collections.Generic.Dictionary<int, MirEffectNode> _buffEffects = new();
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _spellEffects = new();
     private readonly System.Collections.Generic.Dictionary<(uint, BuffType), MirEffectNode> _objectBuffEffects = new();
+    private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _movementEffects = new();
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _objectPoisonEffects = new();
 
     private InventoryDialog _inventoryDialog;
@@ -239,10 +508,20 @@ public partial class GameScene : Control
     private System.Drawing.Point _playerLocation;
     private MirDirection _playerDirection;
     private Library.HorseType _playerHorse = Library.HorseType.None;
+    private double _runCooldownUntilMs;
+    private PoisonType _playerPoison;
+    private bool _observer;
+    public bool InSafeZone { get; private set; }
+    public double CombatUntilMs { get; private set; }
+    public double ItemReviveUntilMs { get; private set; }
+    public double ReincarnationPillUntilMs { get; private set; }
+    private readonly HashSet<string> _guildWars = new();
 
     // 玩家已学技能: MagicInfo -> ClientUserMagic (S.NewMagic 维护)
     public readonly System.Collections.Generic.Dictionary<MagicInfo, ClientUserMagic> UserMagics = new();
+    private readonly HashSet<MagicType> _enabledToggleMagics = new();
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
+    public bool ShowMagicBarFrames { get; private set; } = true;
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
     // 与原版 GameScene.CanRun 一致：站立后第一次移动先走，收到移动回包后
     // 才允许下一次右键移动使用跑步距离/动作。
@@ -264,6 +543,23 @@ public partial class GameScene : Control
     private int _moveFrameCount = 1;
     private bool _runningTestStarted;
     private bool _runningTestRightHeld;
+    private readonly List<Action> _trackedEventUnsubscribers = new();
+    // S.StartGame 后原版通常还会发送 S.MapChanged；不能用过短的固定延迟
+    // 先把 StartInformation 中可能过期的地图画出来，造成错误场景闪现。
+    private const double StartupMapFallbackDelaySeconds = 2.0;
+
+    private void TrackEvent<T>(Action<Action<T>> subscribe, Action<Action<T>> unsubscribe,
+        Action<T> handler)
+    {
+        subscribe(handler);
+        _trackedEventUnsubscribers.Add(() => unsubscribe(handler));
+    }
+
+    private void TrackEvent(Action<Action> subscribe, Action<Action> unsubscribe, Action handler)
+    {
+        subscribe(handler);
+        _trackedEventUnsubscribers.Add(() => unsubscribe(handler));
+    }
 
     public override void _Ready()
     {
@@ -291,7 +587,12 @@ public partial class GameScene : Control
             if (_net?.Connection?.Connected == true)
                 _net.Connection.Enqueue(new C.Turn { Direction = dir });
         },
-        () => IsMouseOverUi());
+        () => IsMouseOverUi(),
+        IsMovementCellBlocked,
+        CanPlayerMove,
+        CanPlayerTurn,
+        BlockLeftMouseMovement,
+        () => Input.IsKeyPressed(Key.Ctrl) && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player);
         AddChild(_mouseWalker);
         _combatController = new CombatController(_mapView,
             () => _objects,
@@ -299,6 +600,8 @@ public partial class GameScene : Control
             (dir, action, magic) =>
             {
                 if (_net?.Connection?.Connected != true) return;
+                if (!CanPlayerTurn()) return;
+                if (_playerHorse != HorseType.None) return;
                 if (_player != null)
                 {
                     _player.Direction = dir;
@@ -311,17 +614,25 @@ public partial class GameScene : Control
             (dir, distance) =>
             {
                 if (_net?.Connection?.Connected != true) return;
+                if (!CanPlayerMove()) return;
                 _player?.BeginMove(dir, distance, _playerHorse != HorseType.None);
                 _canRun = true; // 原版 AttemptAction(Moving) 后立即允许下一次 Run
                 _net.Connection.Enqueue(new C.Move { Direction = dir, Distance = Math.Max(1, distance) });
-            });
+            },
+            () => Math.Max(250.0, Globals.AttackDelay - PlayerStats[Stat.AttackSpeed] * Globals.ASpeedRate),
+            target => _player?.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape && _playerHorse == HorseType.None,
+            (direction, target) =>
+            {
+                if (CanPlayerTurn()) _net?.Connection?.SendRangeAttack(direction, target);
+            },
+            IsMovementCellBlocked);
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
 
         _player = new PlayerRenderer();
         _player.ZIndex = 100;
-        _player.FrameChanged = OnPlayerFrameChanged;
+        _player.FrameChanged = (animation, frame, magic) => OnPlayerFrameChanged(_player, animation, frame, magic);
         _player.SoundCue = OnPlayerSoundCue;
         AddChild(_player);
 
@@ -348,44 +659,185 @@ public partial class GameScene : Control
         _net.Connection.MapChangedEvent += OnMapChanged;
         _net.Connection.UserLocationEvent += OnUserLocation;
         _net.Connection.ObjectMoveEvent += OnObjectMove;
+        _net.Connection.ObjectIdleEvent += OnObjectIdle;
+        _net.Connection.ObjectShowEvent += OnObjectShow;
+        _net.Connection.ObjectHideEvent += OnObjectHide;
+        _net.Connection.ObjectNameColourEvent += OnObjectNameColour;
+        _net.Connection.ObjectPetOwnerChangedEvent += OnObjectPetOwnerChanged;
+        _net.Connection.ObjectLeveledEvent += OnObjectLeveled;
+        _net.Connection.ObjectReviveEvent += OnObjectRevive;
+        _net.Connection.ObjectStatsEvent += OnObjectStats;
+        _net.Connection.ObjectHarvestedEvent += OnObjectHarvested;
+        _net.Connection.CompanionShapeUpdateEvent += OnCompanionShapeUpdate;
+        _net.Connection.SafeZoneChangedEvent += OnSafeZoneChanged;
+        _net.Connection.CombatTimeEvent += OnCombatTime;
+        _net.Connection.GuildChangedEvent += OnGuildChanged;
+        _net.Connection.GuildWarStartedEvent += OnGuildWarStarted;
+        _net.Connection.GuildWarFinishedEvent += OnGuildWarFinished;
+        _net.Connection.GuildWarEvent += OnGuildWar;
+        _net.Connection.MarriageInfoEvent += OnMarriageInfo;
+        _net.Connection.MarriageRemoveRingEvent += OnMarriageRemoveRing;
+        _net.Connection.MarriageMakeRingEvent += OnMarriageMakeRing;
+        _net.Connection.MarriageOnlineChangedEvent += OnMarriageOnlineChanged;
+        _net.Connection.MailSendEvent += OnMailSend;
+        _net.Connection.MarketPlaceStoreBuyEvent += OnMarketPlaceStoreBuy;
+        _net.Connection.MountFailedEvent += OnMountFailed;
+        _net.Connection.TradeAddItemEvent += OnTradeAddItem;
+        _net.Connection.TradeAddGoldEvent += OnTradeAddGold;
+        _net.Connection.DataObjectLocationEvent += OnDataObjectLocation;
+        _net.Connection.DataObjectRemoveEvent += OnDataObjectRemove;
+        _net.Connection.DataObjectPlayerEvent += OnDataObjectPlayer;
+        _net.Connection.DataObjectItemEvent += OnDataObjectItem;
+        _net.Connection.StartObserverEvent += OnStartObserver;
+        _net.Connection.NPCRefinementStoneEvent += OnNPCRefinementStone;
+        _net.Connection.NPCRefineEvent += OnNPCRefine;
+        _net.Connection.NPCMasterRefineEvent += OnNPCMasterRefine;
+        _net.Connection.NPCAccessoryLevelUpEvent += OnNPCAccessoryLevelUp;
+        _net.Connection.NPCAccessoryUpgradeEvent += OnNPCAccessoryUpgrade;
+        _net.Connection.NPCAccessoryRefineEvent += OnNPCAccessoryRefine;
+        _net.Connection.NPCWeaponCraftEvent += OnNPCWeaponCraft;
+        _net.Connection.NPCRefineRetrieveEvent += OnNPCRefineRetrieve;
+        _net.Connection.ItemAcessoryRefinedEvent += OnItemAcessoryRefined;
+        _net.Connection.ReviveTimersEvent += OnReviveTimers;
+        _net.Connection.ObservableSwitchEvent += OnObservableSwitch;
+        _net.Connection.GuildCreateEvent += OnGuildCreate;
+        _net.Connection.GuildKickEvent += OnGuildKick;
+        _net.Connection.GuildTaxEvent += OnGuildTax;
+        _net.Connection.GuildIncreaseMemberEvent += OnGuildIncreaseMember;
+        _net.Connection.GuildIncreaseStorageEvent += OnGuildIncreaseStorage;
+        _net.Connection.GuildInviteMemberEvent += OnGuildInviteMember;
+        _net.Connection.GuildDayResetEvent += OnGuildDayReset;
+        _net.Connection.InspectEvent += OnInspect;
         _net.Connection.ObjectMonsterEvent += OnObjectMonster;
         _net.Connection.ObjectPlayerEvent += OnObjectPlayer;
+        _net.Connection.PlayerUpdateEvent += OnPlayerUpdate;
+        _net.Connection.PlayerChangeUpdateEvent += OnPlayerChangeUpdate;
+        _net.Connection.HelmetToggleEvent += OnHelmetToggle;
         _net.Connection.ObjectNPCEvent += OnObjectNPC;
         _net.Connection.ChatEvent += OnChat;
         _net.Connection.GroupMemberEvent += OnGroupMember;
         _net.Connection.GroupRemoveEvent += OnGroupRemove;
         _net.Connection.GroupLFGEvent += OnGroupLfg;
+        _net.Connection.GroupInviteEvent += OnGroupInvite;
+        _net.Connection.GroupRequestEvent += OnGroupRequest;
+        _net.Connection.GroupUpdateEvent += OnGroupUpdate;
+        _net.Connection.GroupSwitchEvent += OnGroupSwitch;
         _net.Connection.MailListEvent += OnMailList;
         _net.Connection.MailNewEvent += OnMailNew;
         _net.Connection.MailDeleteEvent += OnMailDelete;
-        _net.Connection.TradeOpenEvent += p => { if (p != null) _tradeDialog?.OpenTrade(p.Name); };
-        _net.Connection.TradeCloseEvent += () => _tradeDialog?.ClearTrade();
-        _net.Connection.TradeItemAddedEvent += item => _tradeDialog?.SetOtherItem(item);
-        _net.Connection.TradeGoldAddedEvent += gold => _tradeDialog?.SetOtherGold(gold);
-        _net.Connection.TradeUnlockEvent += () => _tradeDialog?.Unlock();
+        _net.Connection.MailItemDeleteEvent += OnMailItemDelete;
+        _net.Connection.FriendUpdateEvent += OnFriendUpdate;
+        _net.Connection.FriendAddEvent += OnFriendAdd;
+        _net.Connection.FriendRemoveEvent += OnFriendRemove;
+        _net.Connection.BlockListEvent += OnBlockList;
+        _net.Connection.BlockAddedEvent += OnBlockAdded;
+        _net.Connection.BlockRemovedEvent += OnBlockRemoved;
+        _net.Connection.DisciplineUpdateEvent += OnDisciplineUpdate;
+        _net.Connection.DisciplineExperienceChangedEvent += OnDisciplineExperienceChanged;
+        _net.Connection.MarriageInviteEvent += OnMarriageInvite;
+        TrackEvent<S.TradeOpen>(h => _net.Connection.TradeOpenEvent += h,
+            h => _net.Connection.TradeOpenEvent -= h,
+            p => { if (p != null) _tradeDialog?.OpenTrade(p.Name); });
+        TrackEvent<S.TradeRequest>(h => _net.Connection.TradeRequestEvent += h,
+            h => _net.Connection.TradeRequestEvent -= h,
+            p => _tradeDialog?.ShowRequest(p?.Name));
+        TrackEvent<S.NPCRoll>(h => _net.Connection.NPCRollEvent += h,
+            h => _net.Connection.NPCRollEvent -= h,
+            p => _npcDialog?.ShowRollResult(p?.Type ?? 0, p?.Result ?? 0));
+        TrackEvent(h => _net.Connection.TradeCloseEvent += h,
+            h => _net.Connection.TradeCloseEvent -= h,
+            () => _tradeDialog?.ClearTrade());
+        TrackEvent(h => _net.Connection.DisconnectedEvent += h,
+            h => _net.Connection.DisconnectedEvent -= h,
+            () =>
+        {
+            _tradeDialog?.ClearTrade();
+            DXItemCell.SelectedCell = null;
+            while (WindowManager.CloseTop()) { }
+        });
+        TrackEvent<ClientUserItem>(h => _net.Connection.TradeItemAddedEvent += h,
+            h => _net.Connection.TradeItemAddedEvent -= h,
+            item => _tradeDialog?.SetOtherItem(item));
+        TrackEvent<long>(h => _net.Connection.TradeGoldAddedEvent += h,
+            h => _net.Connection.TradeGoldAddedEvent -= h,
+            gold => _tradeDialog?.SetOtherGold(gold));
+        TrackEvent(h => _net.Connection.TradeUnlockEvent += h,
+            h => _net.Connection.TradeUnlockEvent -= h,
+            () => _tradeDialog?.Unlock());
+        TrackEvent<S.Rankings>(h => _net.Connection.RankingsEvent += h,
+            h => _net.Connection.RankingsEvent -= h,
+            p => _rankingDialog?.ApplyRankings(p));
         _net.Connection.NPCResponseEvent += OnNPCResponse;
-        _net.Connection.NPCClosedEvent += () => { if (_npcDialog != null) WindowManager.Close(_npcDialog); };
-        _net.Connection.NPCRepairEvent += packet => _npcDialog?.RepairResult(packet?.Success == true);
-        _net.Connection.BundleOpenEvent += p => _bundleDialog?.Open(p.Slot, p.Items);
-        _net.Connection.BundleCloseEvent += () => { if (_bundleDialog != null) WindowManager.Close(_bundleDialog); };
+        TrackEvent(h => _net.Connection.NPCClosedEvent += h,
+            h => _net.Connection.NPCClosedEvent -= h,
+            () =>
+        {
+            CloseNPCSocketDialogs();
+            if (_npcQuestListDialog != null) WindowManager.Close(_npcQuestListDialog);
+            if (_npcQuestDialog != null) WindowManager.Close(_npcQuestDialog);
+            if (_npcDialog != null) WindowManager.Close(_npcDialog);
+        });
+        TrackEvent<S.NPCRepair>(h => _net.Connection.NPCRepairEvent += h,
+            h => _net.Connection.NPCRepairEvent -= h,
+            packet => _npcDialog?.RepairResult(packet?.Success == true));
+        TrackEvent<S.BundleOpen>(h => _net.Connection.BundleOpenEvent += h,
+            h => _net.Connection.BundleOpenEvent -= h,
+            p => _bundleDialog?.Open(p.Slot, p.Items));
+        TrackEvent(h => _net.Connection.BundleCloseEvent += h,
+            h => _net.Connection.BundleCloseEvent -= h,
+            () => { if (_bundleDialog != null) WindowManager.Close(_bundleDialog); });
         _net.Connection.FortuneUpdateEvent += OnFortuneUpdate;
-        _net.Connection.LootBoxOpenEvent += p => _lootBoxDialog?.Open(p.Slot, p.Items);
-        _net.Connection.LootBoxCloseEvent += () => { if (_lootBoxDialog != null) WindowManager.Close(_lootBoxDialog); };
-        _net.Connection.NPCSocketItemEvent += p => _npcDialog?.SocketResult(p.Success, p.Message);
-        _net.Connection.NPCSocketCombineEvent += p => _npcDialog?.SocketCombineResult(p.Success, p.Message);
-        _net.Connection.SetTimerEvent += p => _timerDialog?.AddTimer(p);
-        _net.Connection.MarketPlaceConsignEvent += p => _consignmentDialog?.AddConsignments(p?.Consignments);
-        _net.Connection.MarketPlaceSearchEvent += p => _consignmentDialog?.ApplySearch(p?.Count ?? 0, p?.Results);
-        _net.Connection.MarketPlaceSearchCountEvent += p => _consignmentDialog?.ApplySearchCount(p?.Count ?? 0);
-        _net.Connection.MarketPlaceSearchIndexEvent += p => _consignmentDialog?.ApplySearchIndex(p?.Index ?? -1, p?.Result);
-        _net.Connection.MarketPlaceBuyEvent += p => _consignmentDialog?.ApplyBuy(p?.Index ?? -1, p?.Count ?? 0, p?.Success == true);
-        _net.Connection.MarketPlaceConsignChangedEvent += p => _consignmentDialog?.ApplyConsignChanged(p?.Index ?? -1, p?.Count ?? 0);
+        TrackEvent<S.LootBoxOpen>(h => _net.Connection.LootBoxOpenEvent += h,
+            h => _net.Connection.LootBoxOpenEvent -= h,
+            p => _lootBoxDialog?.Open(p.Slot, p.Items));
+        TrackEvent(h => _net.Connection.LootBoxCloseEvent += h,
+            h => _net.Connection.LootBoxCloseEvent -= h,
+            () => { if (_lootBoxDialog != null) WindowManager.Close(_lootBoxDialog); });
+        TrackEvent<S.NPCSocketItem>(h => _net.Connection.NPCSocketItemEvent += h,
+            h => _net.Connection.NPCSocketItemEvent -= h,
+            p => _npcSocketDialog?.Result(p));
+        TrackEvent<S.NPCSocketCombine>(h => _net.Connection.NPCSocketCombineEvent += h,
+            h => _net.Connection.NPCSocketCombineEvent -= h,
+            p => _npcSocketCombineDialog?.Result(p));
+        TrackEvent<S.SetTimer>(h => _net.Connection.SetTimerEvent += h,
+            h => _net.Connection.SetTimerEvent -= h,
+            p => _timerDialog?.AddTimer(p));
+        TrackEvent<S.MarketPlaceConsign>(h => _net.Connection.MarketPlaceConsignEvent += h,
+            h => _net.Connection.MarketPlaceConsignEvent -= h,
+            p => _consignmentDialog?.AddConsignments(p?.Consignments));
+        TrackEvent<S.MarketPlaceSearch>(h => _net.Connection.MarketPlaceSearchEvent += h,
+            h => _net.Connection.MarketPlaceSearchEvent -= h,
+            p => _consignmentDialog?.ApplySearch(p?.Count ?? 0, p?.Results));
+        TrackEvent<S.MarketPlaceSearchCount>(h => _net.Connection.MarketPlaceSearchCountEvent += h,
+            h => _net.Connection.MarketPlaceSearchCountEvent -= h,
+            p => _consignmentDialog?.ApplySearchCount(p?.Count ?? 0));
+        TrackEvent<S.MarketPlaceSearchIndex>(h => _net.Connection.MarketPlaceSearchIndexEvent += h,
+            h => _net.Connection.MarketPlaceSearchIndexEvent -= h,
+            p => _consignmentDialog?.ApplySearchIndex(p?.Index ?? -1, p?.Result));
+        TrackEvent<S.MarketPlaceBuy>(h => _net.Connection.MarketPlaceBuyEvent += h,
+            h => _net.Connection.MarketPlaceBuyEvent -= h,
+            p => _consignmentDialog?.ApplyBuy(p?.Index ?? -1, p?.Count ?? 0, p?.Success == true));
+        TrackEvent<S.MarketPlaceConsignChanged>(h => _net.Connection.MarketPlaceConsignChangedEvent += h,
+            h => _net.Connection.MarketPlaceConsignChangedEvent -= h,
+            p => _consignmentDialog?.ApplyConsignChanged(p?.Index ?? -1, p?.Count ?? 0));
+        TrackEvent<S.MarketPlaceHistory>(h => _net.Connection.MarketPlaceHistoryEvent += h,
+            h => _net.Connection.MarketPlaceHistoryEvent -= h,
+            p => _marketHistoryDialog?.Apply(p?.Index ?? -1, p?.Display ?? -1, p?.SaleCount ?? 0, p?.LastPrice ?? 0, p?.AveragePrice ?? 0));
         _net.Connection.ObjectFishingEvent += OnObjectFishing;
-        _net.Connection.FishingStatsEvent += p => _fishingCatchDialog?.UpdateStats(p);
+        TrackEvent<S.FishingStats>(h => _net.Connection.FishingStatsEvent += h,
+            h => _net.Connection.FishingStatsEvent -= h,
+            p => _fishingCatchDialog?.UpdateStats(p));
+        _net.Connection.GameStoreDataEvent += OnGameStoreData;
+        _net.Connection.GameStoreTopItemsEvent += OnGameStoreTopItems;
+        _net.Connection.GameStoreFavouriteChangedEvent += OnGameStoreFavouriteChanged;
+        _net.Connection.GameStoreGiftEvent += OnGameStoreGift;
         _net.Connection.AutoPathChangedEvent += OnAutoPathChanged;
         _net.Connection.ObjectTamingEvent += OnObjectTaming;
         _net.Connection.JoinInstanceEvent += OnJoinInstance;
         _net.Connection.NewMagicEvent += OnNewMagic;
+        _net.Connection.MagicLeveledEvent += OnMagicLeveled;
+        _net.Connection.MagicCooldownEvent += OnMagicCooldown;
+        _net.Connection.MagicToggleEvent += OnMagicToggle;
         _net.Connection.ObjectRemoveEvent += OnObjectRemove;
         _net.Connection.ObjectTurnEvent += OnObjectTurn;
         _net.Connection.ObjectHarvestEvent += OnObjectHarvest;
@@ -439,13 +891,50 @@ public partial class GameScene : Control
         _net.Connection.ItemDurabilityEvent += OnItemDurability;
         _net.Connection.ItemExperienceEvent += OnItemExperience;
         _net.Connection.ItemsChangedEvent += OnItemsChanged;
-        _net.Connection.CompanionAdoptEvent += p => { Companion = p?.UserCompanion; _companionDialog?.ApplyCompanion(Companion); };
-        _net.Connection.CompanionUpdateEvent += p => { if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.ApplyCompanion(Companion); } };
-        _net.Connection.CompanionItemsGainedEvent += p => { if (Companion != null) { Companion.Items ??= new(); Companion.Items.AddRange(p.Items ?? new()); Companion.OnComplete(); _companionDialog?.ApplyCompanion(Companion); } };
-        _net.Connection.CompanionWeightUpdateEvent += p => _companionDialog?.ApplyWeight(p.BagWeight, p.MaxBagWeight, p.InventorySize);
-        _net.Connection.CompanionSkillUpdateEvent += p => _companionDialog?.ApplySkills(p.Level15 ?? p.Level13 ?? p.Level10 ?? p.Level7 ?? p.Level5 ?? p.Level3);
-        _net.Connection.GuildNewItemEvent += p => _guildDialog?.SetGuildItem(p.Slot, p.Item);
-        _net.Connection.GuildGetItemEvent += p => _guildDialog?.SetGuildItem(p.Slot, p.Item);
+        TrackEvent<S.CompanionAdopt>(h => _net.Connection.CompanionAdoptEvent += h,
+            h => _net.Connection.CompanionAdoptEvent -= h,
+            p => { Companion = p?.UserCompanion; if (Companion != null && !Companions.Exists(x => x.Index == Companion.Index)) Companions.Add(Companion); _companionDialog?.ApplyCompanion(Companion); _npcCompanionStorageDialog?.AddCompanion(Companion); });
+        TrackEvent<S.CompanionUpdate>(h => _net.Connection.CompanionUpdateEvent += h,
+            h => _net.Connection.CompanionUpdateEvent -= h,
+            p => { if (Companion != null) { Companion.Level = p.Level; Companion.Experience = p.Experience; Companion.Hunger = p.Hunger; _companionDialog?.ApplyCompanion(Companion); } });
+        TrackEvent<S.CompanionItemsGained>(h => _net.Connection.CompanionItemsGainedEvent += h,
+            h => _net.Connection.CompanionItemsGainedEvent -= h,
+            p => { if (Companion != null) { Companion.Items ??= new(); Companion.Items.AddRange(p.Items ?? new()); Companion.OnComplete(); _companionDialog?.ApplyCompanion(Companion); } });
+        TrackEvent<S.CompanionWeightUpdate>(h => _net.Connection.CompanionWeightUpdateEvent += h,
+            h => _net.Connection.CompanionWeightUpdateEvent -= h,
+            p => _companionDialog?.ApplyWeight(p.BagWeight, p.MaxBagWeight, p.InventorySize));
+        TrackEvent<S.CompanionSkillUpdate>(h => _net.Connection.CompanionSkillUpdateEvent += h,
+            h => _net.Connection.CompanionSkillUpdateEvent -= h,
+            p => _companionDialog?.ApplySkills(p.Level15 ?? p.Level13 ?? p.Level10 ?? p.Level7 ?? p.Level5 ?? p.Level3));
+        _net.Connection.CompanionRetrieveEvent += OnCompanionRetrieve;
+        _net.Connection.CompanionReleaseEvent += OnCompanionRelease;
+        TrackEvent<S.CompanionStore>(h => _net.Connection.CompanionStoreEvent += h,
+            h => _net.Connection.CompanionStoreEvent -= h,
+            p => { Companion = null; _companionDialog?.ApplyCompanion(null); _npcCompanionStorageDialog?.Refresh(); ReceiveChat("伙伴已收起", MessageType.System); });
+        TrackEvent<S.CompanionUnlock>(h => _net.Connection.CompanionUnlockEvent += h,
+            h => _net.Connection.CompanionUnlockEvent -= h,
+            p => ReceiveChat($"伙伴槽位 {p?.Index ?? 0} 已解锁", MessageType.System));
+        TrackEvent<S.GuildNewItem>(h => _net.Connection.GuildNewItemEvent += h,
+            h => _net.Connection.GuildNewItemEvent -= h,
+            p => _guildDialog?.SetGuildItem(p.Slot, p.Item));
+        TrackEvent<S.GuildGetItem>(h => _net.Connection.GuildGetItemEvent += h,
+            h => _net.Connection.GuildGetItemEvent -= h,
+            p => _guildDialog?.SetGuildItem(p.Slot, p.Item));
+        _net.Connection.GuildInfoEvent += OnGuildInfo;
+        _net.Connection.GuildNoticeChangedEvent += OnGuildNoticeChanged;
+        _net.Connection.GuildUpdateEvent += OnGuildUpdate;
+        _net.Connection.GuildMemberOfflineEvent += OnGuildMemberOffline;
+        _net.Connection.GuildMemberOnlineEvent += OnGuildMemberOnline;
+        _net.Connection.GuildMemberContributionEvent += OnGuildMemberContribution;
+        _net.Connection.GuildFundsChangedEvent += OnGuildFundsChanged;
+        _net.Connection.GuildInviteEvent += OnGuildInvite;
+        _net.Connection.QuestChangedEvent += OnQuestChanged;
+        _net.Connection.QuestCancelledEvent += OnQuestCancelled;
+        _net.Connection.GuildCastleInfoEvent += OnGuildCastleInfo;
+        _net.Connection.GuildConquestDateEvent += OnGuildConquestDate;
+        _net.Connection.GuildConquestStartedEvent += OnGuildConquestStarted;
+        _net.Connection.GuildConquestFinishedEvent += OnGuildConquestFinished;
+        _net.Connection.RefineListEvent += OnRefineList;
         _net.Connection.CurrencyChangedEvent += OnCurrencyChanged;
         _net.Connection.WeightUpdateEvent += OnWeightUpdate;
         _net.Connection.StorageSizeEvent += OnStorageSize;
@@ -494,6 +983,10 @@ public partial class GameScene : Control
     {
         if (_net?.Connection != null)
         {
+            foreach (var unsubscribe in _trackedEventUnsubscribers)
+                unsubscribe();
+            _trackedEventUnsubscribers.Clear();
+
             _net.Connection.StartGameResultEvent -= OnStartGameResult;
             _net.Connection.MapChangedEvent -= OnMapChanged;
             _net.Connection.UserLocationEvent -= OnUserLocation;
@@ -560,12 +1053,110 @@ public partial class GameScene : Control
             _net.Connection.CurrencyChangedEvent -= OnCurrencyChanged;
             _net.Connection.WeightUpdateEvent -= OnWeightUpdate;
             _net.Connection.StorageSizeEvent -= OnStorageSize;
+            _net.Connection.GuildInfoEvent -= OnGuildInfo;
+            _net.Connection.GuildNoticeChangedEvent -= OnGuildNoticeChanged;
+            _net.Connection.GuildUpdateEvent -= OnGuildUpdate;
+            _net.Connection.GuildMemberOfflineEvent -= OnGuildMemberOffline;
+            _net.Connection.GuildMemberOnlineEvent -= OnGuildMemberOnline;
+            _net.Connection.GuildMemberContributionEvent -= OnGuildMemberContribution;
+            _net.Connection.GuildFundsChangedEvent -= OnGuildFundsChanged;
+            _net.Connection.GuildInviteEvent -= OnGuildInvite;
+            _net.Connection.GuildCreateEvent -= OnGuildCreate;
+            _net.Connection.GuildKickEvent -= OnGuildKick;
+            _net.Connection.GuildTaxEvent -= OnGuildTax;
+            _net.Connection.GuildIncreaseMemberEvent -= OnGuildIncreaseMember;
+            _net.Connection.GuildIncreaseStorageEvent -= OnGuildIncreaseStorage;
+            _net.Connection.GuildInviteMemberEvent -= OnGuildInviteMember;
+            _net.Connection.GuildDayResetEvent -= OnGuildDayReset;
+            _net.Connection.QuestChangedEvent -= OnQuestChanged;
+            _net.Connection.QuestCancelledEvent -= OnQuestCancelled;
+            _net.Connection.GuildCastleInfoEvent -= OnGuildCastleInfo;
+            _net.Connection.GuildConquestDateEvent -= OnGuildConquestDate;
+            _net.Connection.GuildConquestStartedEvent -= OnGuildConquestStarted;
+            _net.Connection.GuildConquestFinishedEvent -= OnGuildConquestFinished;
+            _net.Connection.RefineListEvent -= OnRefineList;
             _net.Connection.GroupMemberEvent -= OnGroupMember;
             _net.Connection.GroupRemoveEvent -= OnGroupRemove;
             _net.Connection.GroupLFGEvent -= OnGroupLfg;
+            _net.Connection.GroupInviteEvent -= OnGroupInvite;
+            _net.Connection.GroupRequestEvent -= OnGroupRequest;
+            _net.Connection.GroupUpdateEvent -= OnGroupUpdate;
+            _net.Connection.GroupSwitchEvent -= OnGroupSwitch;
+            _net.Connection.MailListEvent -= OnMailList;
+            _net.Connection.MailNewEvent -= OnMailNew;
+            _net.Connection.MailDeleteEvent -= OnMailDelete;
+            _net.Connection.FriendUpdateEvent -= OnFriendUpdate;
+            _net.Connection.FriendAddEvent -= OnFriendAdd;
+            _net.Connection.FriendRemoveEvent -= OnFriendRemove;
+            _net.Connection.BlockListEvent -= OnBlockList;
+            _net.Connection.MailItemDeleteEvent -= OnMailItemDelete;
+            _net.Connection.BlockAddedEvent -= OnBlockAdded;
+            _net.Connection.BlockRemovedEvent -= OnBlockRemoved;
+            _net.Connection.DisciplineUpdateEvent -= OnDisciplineUpdate;
+            _net.Connection.DisciplineExperienceChangedEvent -= OnDisciplineExperienceChanged;
+            _net.Connection.MarriageInviteEvent -= OnMarriageInvite;
+            _net.Connection.GameStoreDataEvent -= OnGameStoreData;
+            _net.Connection.GameStoreTopItemsEvent -= OnGameStoreTopItems;
+            _net.Connection.GameStoreFavouriteChangedEvent -= OnGameStoreFavouriteChanged;
+            _net.Connection.GameStoreGiftEvent -= OnGameStoreGift;
+            _net.Connection.FortuneUpdateEvent -= OnFortuneUpdate;
+            _net.Connection.ObjectFishingEvent -= OnObjectFishing;
+            _net.Connection.ObjectTamingEvent -= OnObjectTaming;
+            _net.Connection.AutoPathChangedEvent -= OnAutoPathChanged;
+            _net.Connection.NewMagicEvent -= OnNewMagic;
+            _net.Connection.CompanionRetrieveEvent -= OnCompanionRetrieve;
+            _net.Connection.CompanionReleaseEvent -= OnCompanionRelease;
             _net.Connection.JoinInstanceEvent -= OnJoinInstance;
             _net.Connection.UserMilestonesEvent -= OnUserMilestones;
             _net.Connection.MilestoneEarnedEvent -= OnMilestoneEarned;
+            _net.Connection.ObjectIdleEvent -= OnObjectIdle;
+            _net.Connection.ObjectShowEvent -= OnObjectShow;
+            _net.Connection.ObjectHideEvent -= OnObjectHide;
+            _net.Connection.ObjectNameColourEvent -= OnObjectNameColour;
+            _net.Connection.ObjectPetOwnerChangedEvent -= OnObjectPetOwnerChanged;
+            _net.Connection.ObjectLeveledEvent -= OnObjectLeveled;
+            _net.Connection.ObjectReviveEvent -= OnObjectRevive;
+            _net.Connection.ObjectStatsEvent -= OnObjectStats;
+            _net.Connection.ObjectHarvestedEvent -= OnObjectHarvested;
+            _net.Connection.CompanionShapeUpdateEvent -= OnCompanionShapeUpdate;
+            _net.Connection.SafeZoneChangedEvent -= OnSafeZoneChanged;
+            _net.Connection.CombatTimeEvent -= OnCombatTime;
+            _net.Connection.GuildChangedEvent -= OnGuildChanged;
+            _net.Connection.GuildWarStartedEvent -= OnGuildWarStarted;
+            _net.Connection.GuildWarFinishedEvent -= OnGuildWarFinished;
+            _net.Connection.GuildWarEvent -= OnGuildWar;
+            _net.Connection.MarriageInfoEvent -= OnMarriageInfo;
+            _net.Connection.MarriageRemoveRingEvent -= OnMarriageRemoveRing;
+            _net.Connection.MarriageMakeRingEvent -= OnMarriageMakeRing;
+            _net.Connection.MarriageOnlineChangedEvent -= OnMarriageOnlineChanged;
+            _net.Connection.MailSendEvent -= OnMailSend;
+            _net.Connection.MarketPlaceStoreBuyEvent -= OnMarketPlaceStoreBuy;
+            _net.Connection.MountFailedEvent -= OnMountFailed;
+            _net.Connection.TradeAddItemEvent -= OnTradeAddItem;
+            _net.Connection.TradeAddGoldEvent -= OnTradeAddGold;
+            _net.Connection.DataObjectLocationEvent -= OnDataObjectLocation;
+            _net.Connection.DataObjectRemoveEvent -= OnDataObjectRemove;
+            _net.Connection.DataObjectPlayerEvent -= OnDataObjectPlayer;
+            _net.Connection.DataObjectItemEvent -= OnDataObjectItem;
+            _net.Connection.StartObserverEvent -= OnStartObserver;
+            _net.Connection.NPCRefinementStoneEvent -= OnNPCRefinementStone;
+            _net.Connection.NPCRefineEvent -= OnNPCRefine;
+            _net.Connection.NPCMasterRefineEvent -= OnNPCMasterRefine;
+            _net.Connection.NPCAccessoryLevelUpEvent -= OnNPCAccessoryLevelUp;
+            _net.Connection.NPCAccessoryUpgradeEvent -= OnNPCAccessoryUpgrade;
+            _net.Connection.NPCAccessoryRefineEvent -= OnNPCAccessoryRefine;
+            _net.Connection.NPCWeaponCraftEvent -= OnNPCWeaponCraft;
+            _net.Connection.NPCRefineRetrieveEvent -= OnNPCRefineRetrieve;
+            _net.Connection.ItemAcessoryRefinedEvent -= OnItemAcessoryRefined;
+            _net.Connection.ReviveTimersEvent -= OnReviveTimers;
+            _net.Connection.ObservableSwitchEvent -= OnObservableSwitch;
+            _net.Connection.PlayerUpdateEvent -= OnPlayerUpdate;
+            _net.Connection.PlayerChangeUpdateEvent -= OnPlayerChangeUpdate;
+            _net.Connection.HelmetToggleEvent -= OnHelmetToggle;
+            _net.Connection.InspectEvent -= OnInspect;
+            _net.Connection.MagicLeveledEvent -= OnMagicLeveled;
+            _net.Connection.MagicCooldownEvent -= OnMagicCooldown;
+            _net.Connection.MagicToggleEvent -= OnMagicToggle;
         }
 
         if (Game == this) Game = null;
@@ -614,7 +1205,7 @@ public partial class GameScene : Control
             else
             {
                 _waitingStartupMap = true;
-                GetTree().CreateTimer(0.5).Timeout += FinalizeStartupMap;
+                GetTree().CreateTimer(StartupMapFallbackDelaySeconds).Timeout += FinalizeStartupMap;
             }
 
         }
@@ -663,16 +1254,20 @@ public partial class GameScene : Control
         _playerMapIndex = _pendingMapIndex;
         GD.Print($"[Game] 地图切换: MapIndex={_pendingMapIndex}");
         LoadPlayerMap();
+        UpdateAutoPathProgress();
     }
 
     private void OnUserLocation(MirDirection dir, System.Drawing.Point loc)
     {
         GD.Print($"[Game] USERLOC dir={dir} loc=({loc.X},{loc.Y})");
-        _pendingDir = dir;
-        _pendingX = loc.X;
-        _pendingY = loc.Y;
-        _pendingDistance = 1;
-        CallDeferred(nameof(ShowUserLocation));
+        // S.UserLocation 是服务端对非法/过早移动的纠正，不是 S.ObjectMove。
+        // 原客户端收到它会校正格子并停止当前移动，不能再播放一次 Walking。
+        if (_player == null) return;
+        _playerDirection = dir;
+        _player.Direction = dir;
+        ApplyAuthoritativePlayerLocation(loc);
+        _player.PlayStandingForState();
+        _canRun = IsRunInputHeld();
     }
 
     private void HandleKeyBind(KeyBindAction action)
@@ -776,7 +1371,7 @@ public partial class GameScene : Control
                 SendChat("@AllowTrade");
                 break;
             case KeyBindAction.ChangeChatMode:
-                _chatLog?.CycleMode();
+                _chatTextBox?.CycleMode();
                 break;
             case KeyBindAction.ItemPickUp:
                 SendPickUp();
@@ -829,11 +1424,14 @@ public partial class GameScene : Control
         }
     }
 
-    private void OnObjectMove(uint objectID, MirDirection dir, System.Drawing.Point loc, int distance)
+    private void OnObjectMove(uint objectID, MirDirection dir, System.Drawing.Point loc, int distance,
+        TimeSpan slow = default, bool mapChanged = false)
     {
+        ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
             _canRun = true;
+            _mouseWalker?.AddMoveDelay(slow);
             CallDeferred(nameof(ShowUserLocation), (int)dir, loc.X, loc.Y, Math.Max(1, distance));
             return;
         }
@@ -848,23 +1446,376 @@ public partial class GameScene : Control
         }
     }
 
+    private void OnObjectIdle(S.ObjectIdle packet)
+    {
+        if (packet == null) return;
+        ClearMovementEffect(packet.ObjectID);
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.Direction = packet.Direction;
+            objectNode.CellX = packet.Location.X;
+            objectNode.CellY = packet.Location.Y;
+            objectNode.SetAnimation(MirAnimation.Standing);
+            UpdateObjectPositions();
+            return;
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.Direction = packet.Direction;
+            player.CellX = packet.Location.X;
+            player.CellY = packet.Location.Y;
+            player.PlayStandingForState();
+            UpdateOtherPlayerPosition(player);
+        }
+    }
+
+    private void OnObjectShow(S.ObjectShow packet) => SetObjectVisibility(packet?.ObjectID ?? 0, true, packet?.Direction, packet?.Location);
+    private void OnObjectHide(S.ObjectHide packet) => SetObjectVisibility(packet?.ObjectID ?? 0, false, packet?.Direction, packet?.Location);
+
+    private void SetObjectVisibility(uint objectID, bool visible, MirDirection? direction, System.Drawing.Point? location)
+    {
+        if (_objects.TryGetValue(objectID, out var objectNode))
+        {
+            if (direction.HasValue) objectNode.Direction = direction.Value;
+            if (location.HasValue) { objectNode.CellX = location.Value.X; objectNode.CellY = location.Value.Y; }
+            objectNode.Visible = visible;
+            UpdateObjectPositions();
+        }
+        if (_otherPlayers.TryGetValue(objectID, out var player))
+        {
+            if (direction.HasValue) player.Direction = direction.Value;
+            if (location.HasValue) { player.CellX = location.Value.X; player.CellY = location.Value.Y; }
+            player.Visible = visible;
+            UpdateOtherPlayerPosition(player);
+        }
+    }
+
+    private void OnObjectNameColour(S.ObjectNameColour packet)
+    {
+        if (packet == null) return;
+        var colour = ToGodotColour(packet.Colour);
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.NameColour = colour;
+            objectNode.QueueRedraw();
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.NameColour = colour;
+            player.QueueRedraw();
+        }
+    }
+
+    private void OnObjectPetOwnerChanged(S.ObjectPetOwnerChanged packet)
+    {
+        if (packet == null || !_objects.TryGetValue(packet.ObjectID, out var objectNode)) return;
+        objectNode.PetOwner = packet.PetOwner;
+        objectNode.QueueRedraw();
+    }
+
+    private void OnObjectLeveled(S.ObjectLeveled packet)
+    {
+        if (packet == null) return;
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode)) objectNode.QueueRedraw();
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player)) player.QueueRedraw();
+    }
+
+    private void OnObjectRevive(S.ObjectRevive packet)
+    {
+        if (packet == null) return;
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.Dead = false;
+            objectNode.CellX = packet.Location.X;
+            objectNode.CellY = packet.Location.Y;
+            objectNode.Visible = true;
+            objectNode.SetAnimation(MirAnimation.Standing);
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.Dead = false;
+            player.CellX = packet.Location.X;
+            player.CellY = packet.Location.Y;
+            player.Visible = true;
+            player.PlayStandingForState();
+        }
+        UpdateObjectPositions();
+        foreach (var remotePlayer in _otherPlayers.Values) UpdateOtherPlayerPosition(remotePlayer);
+    }
+
+    private void OnObjectStats(S.ObjectStats packet)
+    {
+        if (packet == null) return;
+        int maxHealth = packet.Stats?[Stat.Health] ?? 0;
+        int light = packet.Stats?[Stat.Light] ?? 0;
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.Stats = packet.Stats;
+            objectNode.MaxHealth = maxHealth;
+            objectNode.Light = light;
+            objectNode.ShowHealthBar = maxHealth > 0;
+            objectNode.QueueRedraw();
+        }
+    }
+
+    private void OnObjectHarvested(S.ObjectHarvested packet)
+    {
+        if (packet == null || !_objects.TryGetValue(packet.ObjectID, out var objectNode)) return;
+        objectNode.CellX = packet.Location.X;
+        objectNode.CellY = packet.Location.Y;
+        objectNode.Direction = packet.Direction;
+        objectNode.Dead = true;
+        objectNode.SetAnimation(MirAnimation.Dead);
+        UpdateObjectPositions();
+    }
+
+    private void OnCompanionShapeUpdate(S.CompanionShapeUpdate packet)
+    {
+        if (packet == null) return;
+        // 伙伴的独立头/背图层由下一次 ObjectMonster 外观包重新建立；保留包处理，
+        // 同时让当前对象立即重绘，避免服务端变更后仍停留在旧帧。
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode)) objectNode.QueueRedraw();
+    }
+
+    private void OnSafeZoneChanged(S.SafeZoneChanged packet)
+    {
+        InSafeZone = packet?.InSafeZone == true;
+        if (StartInfo != null) StartInfo.InSafeZone = InSafeZone;
+        ReceiveChat(InSafeZone ? "已进入安全区" : "已离开安全区", MessageType.System);
+    }
+
+    private void OnCombatTime(S.CombatTime packet)
+    {
+        CombatUntilMs = Godot.Time.GetTicksMsec() + 10_000;
+    }
+
+    private void OnGuildChanged(S.GuildChanged packet)
+    {
+        if (packet == null) return;
+        if (packet.ObjectID == _playerObjectID)
+        {
+            if (StartInfo != null) { StartInfo.GuildName = packet.GuildName; StartInfo.GuildRank = packet.GuildRank; }
+            _characterDialog?.QueueRedraw();
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.GuildName = packet.GuildName;
+            player.QueueRedraw();
+        }
+        if (_objects.TryGetValue(packet.ObjectID, out var hitProxy))
+        {
+            hitProxy.GuildName = packet.GuildName;
+            hitProxy.QueueRedraw();
+        }
+    }
+
+    private void OnGuildWarStarted(S.GuildWarStarted packet)
+    {
+        if (packet == null) return;
+        _guildWars.Add(packet.GuildName ?? string.Empty);
+        ReceiveChat($"行会战开始：{packet.GuildName}", MessageType.System);
+    }
+
+    private void OnGuildWarFinished(S.GuildWarFinished packet)
+    {
+        if (packet == null) return;
+        _guildWars.Remove(packet.GuildName ?? string.Empty);
+        ReceiveChat($"行会战结束：{packet.GuildName}", MessageType.System);
+    }
+
+    private void OnGuildWar(S.GuildWar packet)
+    {
+        if (packet != null) ReceiveChat(packet.Success ? "行会战请求成功" : "行会战请求失败", MessageType.System);
+    }
+
+    private void OnMarriageInfo(S.MarriageInfo packet)
+    {
+        if (packet?.Partner != null) ReceiveChat($"伴侣：{packet.Partner.Name}", MessageType.System);
+    }
+
+    private void OnMarriageRemoveRing(S.MarriageRemoveRing packet)
+    {
+        var ring = Equipment.ElementAtOrDefault((int)EquipmentSlot.RingL);
+        if (ring != null) ring.Flags &= ~UserItemFlags.Marriage;
+        _characterDialog?.QueueRedraw();
+    }
+
+    private void OnMarriageMakeRing(S.MarriageMakeRing packet)
+    {
+        var ring = Equipment.ElementAtOrDefault((int)EquipmentSlot.RingL);
+        if (ring != null) ring.Flags |= UserItemFlags.Marriage;
+        _characterDialog?.QueueRedraw();
+    }
+
+    private void OnMarriageOnlineChanged(S.MarriageOnlineChanged packet)
+    {
+        if (packet != null) ReceiveChat(packet.ObjectID == 0 ? "伴侣已离线" : "伴侣上线了", MessageType.System);
+    }
+
+    private void OnMailSend(S.MailSend packet) => ReceiveChat("邮件发送完成", MessageType.System);
+    private void OnMarketPlaceStoreBuy(S.MarketPlaceStoreBuy packet) => ReceiveChat("商城购买请求已处理", MessageType.System);
+    private void OnMountFailed(S.MountFailed packet) => ReceiveChat("无法使用当前坐骑", MessageType.System);
+    private void OnTradeAddItem(S.TradeAddItem packet)
+    {
+        if (packet != null && !packet.Success) ReceiveChat("交易物品添加失败", MessageType.System);
+    }
+    private void OnTradeAddGold(S.TradeAddGold packet)
+    {
+        if (packet != null) ReceiveChat($"交易金币：{packet.Gold:#,##0}", MessageType.System);
+    }
+
+    private void OnDataObjectLocation(S.DataObjectLocation packet)
+    {
+        if (packet == null) return;
+        if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
+        {
+            objectNode.CellX = packet.CurrentLocation.X;
+            objectNode.CellY = packet.CurrentLocation.Y;
+            UpdateObjectPositions();
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.CellX = packet.CurrentLocation.X;
+            player.CellY = packet.CurrentLocation.Y;
+            UpdateOtherPlayerPosition(player);
+        }
+    }
+
+    private void OnDataObjectRemove(S.DataObjectRemove packet)
+    {
+        if (packet == null) return;
+        _miniMap?.RemoveObject(packet.ObjectID);
+        _bigMap?.RemoveObject(packet.ObjectID);
+        OnObjectRemove(packet.ObjectID);
+    }
+
+    private void OnDataObjectPlayer(S.DataObjectPlayer packet)
+    {
+        if (packet == null) return;
+        _miniMap?.UpdateObject(packet.ObjectID, packet.CurrentLocation.X, packet.CurrentLocation.Y, ObjectRenderer.Kind.Player);
+        _bigMap?.UpdateObject(packet.ObjectID, packet.CurrentLocation.X, packet.CurrentLocation.Y, ObjectRenderer.Kind.Player);
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+        {
+            player.Health = packet.Health;
+            player.MaxHealth = packet.MaxHealth;
+            player.Dead = packet.Dead;
+            player.CellX = packet.CurrentLocation.X;
+            player.CellY = packet.CurrentLocation.Y;
+            UpdateOtherPlayerPosition(player);
+        }
+    }
+
+    private void OnDataObjectItem(S.DataObjectItem packet)
+    {
+        if (packet == null) return;
+        _miniMap?.UpdateObject(packet.ObjectID, packet.CurrentLocation.X, packet.CurrentLocation.Y, ObjectRenderer.Kind.Item);
+        _bigMap?.UpdateObject(packet.ObjectID, packet.CurrentLocation.X, packet.CurrentLocation.Y, ObjectRenderer.Kind.Item);
+    }
+
+    private void OnStartObserver(S.StartObserver packet)
+    {
+        if (packet?.StartInformation == null) return;
+        _observer = true;
+        StartInfo = packet.StartInformation;
+        FillItems(packet.Items);
+        ReceiveChat("已进入观察模式", MessageType.System);
+    }
+
+    private static Color ToGodotColour(System.Drawing.Color colour) =>
+        colour.A <= 0 ? Colors.White : new Color(colour.R / 255f, colour.G / 255f, colour.B / 255f, colour.A / 255f);
+
+    private void OnInspect(S.Inspect packet)
+    {
+        if (packet == null || _characterDialog == null) return;
+        _characterDialog.ApplyInspect(packet);
+        WindowManager.Open(_characterDialog, _uiLayer);
+    }
+
     private void OnObjectPlayer(S.ObjectPlayer p)
     {
         if (p == null || p.ObjectID == _playerObjectID) return;
         if (_otherPlayers.TryGetValue(p.ObjectID, out var existing))
         {
-            existing.UpdateAppearance(p); existing.CellX = p.Location.X; existing.CellY = p.Location.Y;
+            existing.UpdateAppearance(p); existing.GuildName = p.GuildName; existing.CellX = p.Location.X; existing.CellY = p.Location.Y;
             return;
         }
         var player = new PlayerRenderer { CellX = p.Location.X, CellY = p.Location.Y };
-        player.FrameChanged = (animation, frame, magic) => { };
+        player.CharacterIndex = p.Index;
+        player.FrameChanged = (animation, frame, magic) => OnPlayerFrameChanged(player, animation, frame, magic);
         player.SoundCue = OnPlayerSoundCue;
         player.UpdateAppearance(p);
         AddChild(player);
         _otherPlayers[p.ObjectID] = player;
+        // 命中代理：玩家外观仍由 PlayerRenderer 绘制，代理只参与地图拾取/点击命中。
+        var hit = new ObjectRenderer
+        {
+            Type = ObjectRenderer.Kind.Player,
+            ObjectID = p.ObjectID,
+            DisplayName = p.Name,
+            GuildName = p.GuildName,
+            CharacterIndex = p.Index,
+            CellX = p.Location.X,
+            CellY = p.Location.Y,
+            Visible = false,
+        };
+        AddChild(hit);
+        _objects[p.ObjectID] = hit;
         UpdateOtherPlayerPosition(player);
         _miniMap?.UpdateObject(p.ObjectID, p.Location.X, p.Location.Y, ObjectRenderer.Kind.Player);
         _bigMap?.UpdateObject(p.ObjectID, p.Location.X, p.Location.Y, ObjectRenderer.Kind.Player);
+    }
+
+    private void OnPlayerUpdate(S.PlayerUpdate packet)
+    {
+        if (packet == null) return;
+        if (_playerObjectID != 0 && _player != null && packet.ObjectID == _playerObjectID)
+        {
+            _player.ApplyUpdate(packet);
+            if (StartInfo != null)
+            {
+                StartInfo.Weapon = packet.Weapon;
+                StartInfo.Shield = packet.Shield;
+                StartInfo.Armour = packet.Armour;
+                StartInfo.Costume = packet.Costume;
+                StartInfo.ArmourColour = packet.ArmourColour;
+                StartInfo.HelmetShape = packet.Helmet;
+                StartInfo.HideHead = packet.HideHead;
+            }
+            _characterDialog?.QueueRedraw();
+            return;
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+            player.ApplyUpdate(packet);
+    }
+
+    private void OnPlayerChangeUpdate(S.PlayerChangeUpdate packet)
+    {
+        if (packet == null) return;
+        if (_playerObjectID != 0 && _player != null && packet.ObjectID == _playerObjectID)
+        {
+            _player.ApplyCharacterUpdate(packet);
+            if (StartInfo != null)
+            {
+                StartInfo.Name = packet.Name;
+                StartInfo.Gender = packet.Gender;
+                StartInfo.HairType = packet.HairType;
+                StartInfo.HairColour = packet.HairColour;
+                StartInfo.ArmourColour = packet.ArmourColour;
+            }
+            return;
+        }
+        if (_otherPlayers.TryGetValue(packet.ObjectID, out var player))
+            player.ApplyCharacterUpdate(packet);
+    }
+
+    private void OnHelmetToggle(S.HelmetToggle packet)
+    {
+        if (packet == null || _player == null) return;
+        _player.HideHead = packet.HideHelmet;
+        if (StartInfo != null) StartInfo.HideHead = packet.HideHelmet;
+        _player.RefreshAppearanceLibraries();
+        _characterDialog?.QueueRedraw();
+        _player.QueueRedraw();
     }
 
     private void OnObjectMonster(S.ObjectMonster p)
@@ -878,6 +1829,8 @@ public partial class GameScene : Control
 
     private void OnObjectNPC(S.ObjectNPC p)
     {
+        var npcInfo = Globals.NPCInfoList?.Binding.FirstOrDefault(x => x.Index == p.NPCIndex);
+        if (npcInfo != null) _npcInfos[p.ObjectID] = npcInfo;
         if (_objects.ContainsKey(p.ObjectID)) return;
         var ob = ObjectRenderer.CreateNPC(p);
         if (ob == null) return;
@@ -924,6 +1877,194 @@ public partial class GameScene : Control
         _groupHealthPanel?.RemoveMember(objectId);
     }
     private void OnGroupLfg(S.GroupLFG packet) => _groupDialog?.SetLfg(packet?.List);
+    private void OnGroupInvite(S.GroupInvite packet) => _groupDialog?.ShowInvite(packet?.Name);
+    private void OnGroupRequest(S.GroupRequest packet) => ReceiveChat($"{packet?.Name ?? "未知玩家"} 请求加入队伍（请在队伍界面处理）", MessageType.System);
+    private void OnGroupUpdate(S.GroupUpdate packet) => _groupDialog?.SetOwnLfg(packet?.Group);
+    private void OnGroupSwitch(S.GroupSwitch packet) => _groupDialog?.SetAllow(packet?.Allow == true);
+
+    private void OnGameStoreData(S.GameStoreData packet)
+    {
+        _gameStoreDialog?.SetFavourites(packet?.Favourites);
+    }
+
+    private void OnGameStoreTopItems(S.GameStoreTopItems packet)
+    {
+        _gameStoreDialog?.SetTopItems(packet?.Items);
+    }
+
+    private void OnGameStoreFavouriteChanged(S.GameStoreFavouriteChanged packet)
+    {
+        if (packet != null) _gameStoreDialog?.SetFavourite(packet.Index, packet.Favourited);
+    }
+
+    private void OnGameStoreGift(S.GameStoreGift packet)
+    {
+        if (packet == null) return;
+        ReceiveChat($"商城赠送结果: {packet.Result}", packet.Result == GameStoreGiftResult.Success ? MessageType.Announcement : MessageType.System);
+    }
+
+    private void OnGuildInfo(S.GuildInfo packet) => _guildDialog?.ApplyGuild(packet?.Guild);
+    private void OnGuildNoticeChanged(S.GuildNoticeChanged packet) => _guildDialog?.SetGuildNotice(packet?.Notice);
+    private void OnGuildUpdate(S.GuildUpdate packet) => _guildDialog?.ApplyGuildUpdate(packet);
+    private void OnGuildMemberOffline(S.GuildMemberOffline packet) => _guildDialog?.SetMemberOnline(packet?.Index ?? -1, false, string.Empty);
+    private void OnGuildMemberOnline(S.GuildMemberOnline packet) => _guildDialog?.SetMemberOnline(packet?.Index ?? -1, true, packet?.Name);
+    private void OnGuildMemberContribution(S.GuildMemberContribution packet) => _guildDialog?.SetMemberContribution(packet?.Index ?? -1, packet?.Contribution ?? 0);
+    private void OnGuildFundsChanged(S.GuildFundsChanged packet) => _guildDialog?.ChangeGuildFunds(packet?.Change ?? 0);
+    private void OnGuildInvite(S.GuildInvite packet)
+    {
+        if (packet == null) return;
+        OpenGuildDialog();
+        _guildDialog?.ShowInvite(packet.Name, packet.GuildName);
+    }
+    private void OnCompanionRetrieve(S.CompanionRetrieve packet)
+    {
+        if (packet == null) return;
+        Companion = Companions.FirstOrDefault(x => x?.Index == packet.Index);
+        if (Companion == null) return;
+        _companionDialog?.ApplyCompanion(Companion);
+        _npcCompanionStorageDialog?.Refresh();
+    }
+    private void OnCompanionRelease(S.CompanionRelease packet)
+    {
+        if (packet == null) return;
+        Companions.RemoveAll(x => x?.Index == packet.Index);
+        Companion = null;
+        _companionDialog?.ApplyCompanion(null);
+        _npcCompanionStorageDialog?.RemoveCompanion(packet.Index);
+    }
+    private void OnQuestChanged(S.QuestChanged packet)
+    {
+        var quest = packet?.Quest;
+        if (quest == null) return;
+        if (quest.Quest == null) quest.Complete();
+        _userQuests[quest.Index] = quest;
+        RefreshQuestUi();
+    }
+    private void OnQuestCancelled(S.QuestCancelled packet)
+    {
+        if (packet == null) return;
+        _userQuests.Remove(packet.Index);
+        RefreshQuestUi();
+    }
+    private void RefreshQuestUi()
+    {
+        var quests = _userQuests.Values.Where(x => x?.Quest != null).ToList();
+        _questTracker?.PopulateQuests(quests);
+        _questDialog?.SetQuests(quests);
+        _mainPanel?.SetQuestIndicators(quests.Any(x => !x.IsComplete), quests.Any(x => x.IsComplete));
+    }
+    private void OnGuildCastleInfo(S.GuildCastleInfo packet)
+    {
+        if (packet == null) return;
+        _castleOwners[packet.Index] = packet.Owner ?? string.Empty;
+        _guildDialog?.RefreshWarPage();
+    }
+    private void OnGuildConquestDate(S.GuildConquestDate packet)
+    {
+        if (packet == null) return;
+        _castleWarDates[packet.Index] = packet.WarTime == TimeSpan.MinValue ? DateTime.MinValue : DateTime.Now + packet.WarTime;
+        _guildDialog?.RefreshWarPage();
+    }
+    private void OnGuildConquestStarted(S.GuildConquestStarted packet)
+    {
+        if (packet == null) return;
+        _castleWarDates[packet.Index] = DateTime.Now;
+        _guildDialog?.RefreshWarPage();
+    }
+    private void OnGuildConquestFinished(S.GuildConquestFinished packet)
+    {
+        if (packet == null) return;
+        _castleWarDates[packet.Index] = DateTime.MinValue;
+        _guildDialog?.RefreshWarPage();
+    }
+
+    private void ConsumeNpcLinks(params IEnumerable<CellLinkInfo>[] groups)
+    {
+        var links = groups.Where(x => x != null).SelectMany(x => x).Where(x => x != null).ToList();
+        if (links.Count > 0) OnItemsChanged(new S.ItemsChanged { Links = links, Success = true });
+    }
+
+    private void OnNPCRefinementStone(S.NPCRefinementStone packet)
+    {
+        if (packet == null) return;
+        ConsumeNpcLinks(packet.IronOres, packet.SilverOres, packet.DiamondOres, packet.GoldOres, packet.Crystal);
+        ReceiveChat("精炼石制作完成", MessageType.System);
+    }
+
+    private void OnNPCRefine(S.NPCRefine packet)
+    {
+        if (packet == null) return;
+        ConsumeNpcLinks(packet.Ores, packet.Items, packet.Specials);
+        ReceiveChat(packet.Success ? "精炼成功" : "精炼失败", MessageType.System);
+    }
+
+    private void OnNPCMasterRefine(S.NPCMasterRefine packet)
+    {
+        if (packet == null) return;
+        ConsumeNpcLinks(packet.Fragment1s, packet.Fragment2s, packet.Fragment3s, packet.Stones, packet.Specials);
+        ReceiveChat(packet.Success ? "高级精炼成功" : "高级精炼失败", MessageType.System);
+    }
+
+    private void OnNPCAccessoryLevelUp(S.NPCAccessoryLevelUp packet)
+    {
+        if (packet == null) return;
+        var links = packet.Links?.ToList() ?? new List<CellLinkInfo>();
+        if (packet.Target != null) links.Add(packet.Target);
+        ConsumeNpcLinks(links);
+    }
+
+    private void OnNPCAccessoryUpgrade(S.NPCAccessoryUpgrade packet)
+        => ReceiveChat(packet?.Success == true ? "饰品升级成功" : "饰品升级失败", MessageType.System);
+
+    private void OnNPCAccessoryRefine(S.NPCAccessoryRefine packet)
+    {
+        if (packet == null) return;
+        var links = packet.Links?.ToList() ?? new List<CellLinkInfo>();
+        if (packet.Target != null) links.Add(packet.Target);
+        if (packet.OreTarget != null) links.Add(packet.OreTarget);
+        ConsumeNpcLinks(links);
+        ReceiveChat(packet.Success ? "饰品精炼成功" : "饰品精炼失败", MessageType.System);
+    }
+
+    private void OnNPCWeaponCraft(S.NPCWeaponCraft packet)
+    {
+        if (packet == null) return;
+        ConsumeNpcLinks(new[] { packet.Template, packet.Yellow, packet.Blue, packet.Red, packet.Purple, packet.Green, packet.Grey });
+        ReceiveChat(packet.Success ? "武器制作成功" : "武器制作失败", MessageType.System);
+    }
+
+    private void OnNPCRefineRetrieve(S.NPCRefineRetrieve packet)
+        => ReceiveChat($"已取回精炼物品 #{packet?.Index ?? 0}", MessageType.System);
+
+    private void OnItemAcessoryRefined(S.ItemAcessoryRefined packet)
+    {
+        if (packet == null) return;
+        var item = ItemAt(packet.GridType, packet.Slot);
+        if (item != null) item.AddedStats = packet.NewStats;
+        RefreshItemGrids();
+    }
+
+    private void OnReviveTimers(S.ReviveTimers packet)
+    {
+        if (packet == null) return;
+        double now = Godot.Time.GetTicksMsec();
+        ItemReviveUntilMs = now + packet.ItemReviveTime.TotalMilliseconds;
+        ReincarnationPillUntilMs = now + packet.ReincarnationPillTime.TotalMilliseconds;
+    }
+
+    private void OnObservableSwitch(S.ObservableSwitch packet)
+    {
+        if (StartInfo != null) StartInfo.Observable = packet?.Allow == true;
+    }
+
+    private void OnGuildCreate(S.GuildCreate packet) => ReceiveChat("行会创建请求已处理", MessageType.System);
+    private void OnGuildKick(S.GuildKick packet) => ReceiveChat("行会成员已更新", MessageType.System);
+    private void OnGuildTax(S.GuildTax packet) => ReceiveChat("行会税率设置已处理", MessageType.System);
+    private void OnGuildIncreaseMember(S.GuildIncreaseMember packet) => ReceiveChat("行会成员上限已更新", MessageType.System);
+    private void OnGuildIncreaseStorage(S.GuildIncreaseStorage packet) => ReceiveChat("行会仓库容量已更新", MessageType.System);
+    private void OnGuildInviteMember(S.GuildInviteMember packet) => ReceiveChat("行会邀请请求已处理", MessageType.System);
+    private void OnGuildDayReset(S.GuildDayReset packet) => ReceiveChat("行会每日贡献已重置", MessageType.System);
+    private void OnRefineList(S.RefineList packet) => _npcDialog?.SetRefineList(packet?.List);
     private void OnMailList(List<ClientMailInfo> mails)
     {
         _communicationDialog?.SetMails(mails);
@@ -939,6 +2080,16 @@ public partial class GameScene : Control
         _communicationDialog?.RemoveMail(index);
         _mainPanel?.SetMailIndicator(_communicationDialog?.HasUnread == true);
     }
+    private void OnMailItemDelete(int index, int slot) => _communicationDialog?.RemoveMailItem(index, slot);
+    private void OnFriendUpdate(S.FriendUpdate packet) => _communicationDialog?.ApplyFriend(packet?.Info);
+    private void OnFriendAdd(S.FriendAdd packet) => _communicationDialog?.ApplyFriend(packet?.Info);
+    private void OnFriendRemove(S.FriendRemove packet) => _communicationDialog?.RemoveFriend(packet?.Index ?? -1);
+    private void OnBlockList(IList<ClientBlockInfo> list) => _communicationDialog?.SetBlocks(list);
+    private void OnBlockAdded(ClientBlockInfo info) => _communicationDialog?.ApplyBlock(info);
+    private void OnBlockRemoved(int index) => _communicationDialog?.RemoveBlock(index);
+    private void OnDisciplineUpdate(S.DisciplineUpdate packet) { if (StartInfo != null) StartInfo.Discipline = packet?.Discipline; _characterDialog?.RefreshDiscipline(); }
+    private void OnDisciplineExperienceChanged(long experience) { if (StartInfo?.Discipline != null) StartInfo.Discipline.Experience = experience; _characterDialog?.RefreshDiscipline(); }
+    private void OnMarriageInvite(S.MarriageInvite packet) => _guildDialog?.ShowMarriageInvite(packet?.Name);
 
     // 稀有度光效 (原版 ItemObject: Common+AddedStats / Superior / Elite)
     private void SpawnItemGlow(ObjectRenderer ob, ClientUserItem item)
@@ -976,6 +2127,7 @@ public partial class GameScene : Control
 
     private void OnObjectRemove(uint objectID)
     {
+        ClearMovementEffect(objectID);
         if (_tamingRopes.Remove(objectID, out var rope)) rope.QueueFree();
         if (_spellEffects.Remove(objectID, out var spellFx)) spellFx.QueueFree();
         foreach (var key in _objectBuffEffects.Keys.Where(k => k.Item1 == objectID).ToList())
@@ -986,21 +2138,41 @@ public partial class GameScene : Control
         if (_itemGlows.Remove(objectID, out var fx)) fx.QueueFree();
         if (_otherPlayers.Remove(objectID, out var player)) player.QueueFree();
         if (_objects.Remove(objectID, out var ob)) ob.QueueFree();
+        _npcInfos.Remove(objectID);
         GD.Print($"[Game] 移除物体: ObjectID={objectID}");
         _miniMap?.RemoveObject(objectID);
         _bigMap?.RemoveObject(objectID);
     }
 
-    private void OnObjectTurn(uint objectID, MirDirection dir)
+    private void OnObjectTurn(uint objectID, MirDirection dir, System.Drawing.Point loc, TimeSpan slow)
     {
+        if (objectID == _playerObjectID && _player != null)
+        {
+            _playerDirection = dir;
+            _player.Direction = dir;
+            _mouseWalker?.AddMoveDelay(slow);
+            if (_playerLocation != loc)
+            {
+                ApplyAuthoritativePlayerLocation(loc);
+                _player.PlayStandingForState();
+            }
+            return;
+        }
+
         if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
+            ob.CellX = loc.X;
+            ob.CellY = loc.Y;
+            UpdateObjectPositions();
             ob.QueueRedraw();
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.Direction = dir;
+            player.CellX = loc.X;
+            player.CellY = loc.Y;
+            UpdateOtherPlayerPosition(player);
             player.QueueRedraw();
         }
     }
@@ -1012,7 +2184,7 @@ public partial class GameScene : Control
         {
             _player.Direction = p.Direction;
             _player.PlayHarvest();
-            ApplyAuthoritativePlayerLocation(p.Location);
+            ApplyAuthoritativePlayerLocation(p.Location, p.Slow);
         }
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
         {
@@ -1042,18 +2214,23 @@ public partial class GameScene : Control
     private void OnObjectDash(S.ObjectDash p)
     {
         if (p == null) return;
+        ClearMovementEffect(p.ObjectID);
         if (p.ObjectID == _playerObjectID && _player != null)
         {
             _player.Direction = p.Direction;
             _player.BeginMove(p.Direction, Math.Max(1, p.Distance), _player.Horse != HorseType.None, false);
             ApplyAuthoritativePlayerLocation(p.Location);
             _player.PlayDash(p.Magic);
+            SetMovementEffect(p.ObjectID, p.Magic, _player);
+            if (p.Magic == MagicType.Assault) OnPlayerSoundCue(SoundIndex.AssaultStart);
         }
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
         {
             player.Direction = p.Direction;
             player.BeginMove(p.Direction, Math.Max(1, p.Distance), player.Horse != HorseType.None, false);
             player.PlayDash(p.Magic);
+            SetMovementEffect(p.ObjectID, p.Magic, player);
+            if (p.Magic == MagicType.Assault) OnPlayerSoundCue(SoundIndex.AssaultStart);
         }
     }
 
@@ -1080,7 +2257,7 @@ public partial class GameScene : Control
         {
             _player.Direction = p.Direction;
             _player.PlayMining();
-            ApplyAuthoritativePlayerLocation(p.Location);
+            ApplyAuthoritativePlayerLocation(p.Location, p.Slow);
         }
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player))
         {
@@ -1092,21 +2269,28 @@ public partial class GameScene : Control
     // ---- M5 战斗 ----
 
     // 攻击: 攻击者播攻击动画, 被攻击者播 Struck
-    private void OnObjectAttack(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType magic, uint targetID)
+    private void OnObjectAttack(S.ObjectAttack p)
     {
+        uint objectID = p.ObjectID;
+        MirDirection dir = p.Direction;
+        System.Drawing.Point loc = p.Location;
+        MagicType magic = p.AttackMagic;
+        uint targetID = p.TargetID;
+        ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
             if (_player != null)
             {
                 _player.Direction = dir;
                 _player.PlayCombat(magic);
-                ApplyAuthoritativePlayerLocation(loc);
+                if (magic != MagicType.DanceOfSwallow)
+                    ApplyAuthoritativePlayerLocation(loc, p.Slow);
             }
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Direction = dir;
-            ob.SetAnimation(MirAnimation.Combat1);
+            ob.PlayRangeAttack();
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
@@ -1143,9 +2327,14 @@ public partial class GameScene : Control
         }
     }
 
-    private void OnObjectRangeAttack(uint objectID, MirDirection dir, System.Drawing.Point loc,
-        MagicType magic, List<uint> targets)
+    private void OnObjectRangeAttack(S.ObjectRangeAttack p)
     {
+        uint objectID = p.ObjectID;
+        MirDirection dir = p.Direction;
+        System.Drawing.Point loc = p.Location;
+        MagicType magic = p.AttackMagic;
+        List<uint> targets = p.Targets;
+        ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
             _player.Direction = dir;
@@ -1170,7 +2359,7 @@ public partial class GameScene : Control
         }
     }
 
-    private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc)
+    private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc, TimeSpan slow = default)
     {
         if (_player == null) return;
         _playerLocation = loc;
@@ -1181,9 +2370,13 @@ public partial class GameScene : Control
         _player.CellX = loc.X;
         _player.CellY = loc.Y;
         UpdatePlayerPosition();
+        if (slow > TimeSpan.Zero)
+            _mouseWalker?.AddMoveDelay(slow);
     }
 
-    // 魔法施放: 施法者播攻击动画, 按 MagicType 查特效表播放站桩/弹道/落地特效
+    // 魔法施放：先进入旧端对应的抬手/施法动作，释放表现等待动作的
+    // 释放关键帧后再创建投射物、命中和地面特效。这样不会在抬手第一帧
+    // 就把整套魔法结果一次性显示出来。
     private void OnObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc, MagicType type, List<uint> targets, List<System.Drawing.Point> locations, bool cast)
     {
         GD.Print($"[Magic] OnObjectMagic type={type} cast={cast} targets={targets?.Count ?? 0} locs={locations?.Count ?? 0} loc=({loc.X},{loc.Y})");
@@ -1206,6 +2399,21 @@ public partial class GameScene : Control
         }
 
         if (!cast) return;  // 原版: !MagicCast 时不播特效
+
+        // 原版普通施法动作的释放点在第 4 帧附近；按当前动作帧表的
+        // 实际延迟计算，避免把不同职业/动作硬编码成同一个总时长。
+        double releaseDelay = objectID == _playerObjectID
+            ? _player?.SpellReleaseDelayMs ?? 300.0
+            : _objects.TryGetValue(objectID, out var spellMonster) ? spellMonster.SpellReleaseDelayMs
+            : _otherPlayers.TryGetValue(objectID, out var spellPlayer) ? spellPlayer.SpellReleaseDelayMs
+            : 300.0;
+        GetTree().CreateTimer(Math.Max(0.0, releaseDelay / 1000.0)).Timeout += () =>
+            RenderObjectMagic(objectID, dir, loc, type, targets, locations);
+    }
+
+    private void RenderObjectMagic(uint objectID, MirDirection dir, System.Drawing.Point loc,
+        MagicType type, List<uint> targets, List<System.Drawing.Point> locations)
+    {
 
         var def = MagicEffectTable.Get(type);
 
@@ -1349,17 +2557,17 @@ public partial class GameScene : Control
 
     // 原版 PlayerObject.FrameIndexChanged 中由动作关键帧触发的本地表现。
     // 网络魔法包负责目标/轨迹；这里仅补必须与人物挥击帧同步的本地事件。
-    private void OnPlayerFrameChanged(MirAnimation animation, int frame, MagicType magic)
+    private void OnPlayerFrameChanged(PlayerRenderer source, MirAnimation animation, int frame, MagicType magic)
     {
-        if (_player == null) return;
+        if (source == null) return;
         if (animation == MirAnimation.TamingCast && frame == 5 &&
-            _player.TamingObjectID != 0 && _objects.TryGetValue(_player.TamingObjectID, out var tamingTarget))
+            source.TamingObjectID != 0 && _objects.TryGetValue(source.TamingObjectID, out var tamingTarget))
         {
-            if (_tamingRopes.Remove(_player.TamingObjectID, out var oldRope)) oldRope.QueueFree();
+            if (_tamingRopes.Remove(source.TamingObjectID, out var oldRope)) oldRope.QueueFree();
             var rope = new MirRopeEffectNode();
             AddChild(rope);
-            rope.Setup(_player, tamingTarget);
-            _tamingRopes[_player.TamingObjectID] = rope;
+            rope.Setup(source, tamingTarget);
+            _tamingRopes[source.TamingObjectID] = rope;
         }
         if (animation == MirAnimation.FishingCast && frame == 1)
         {
@@ -1368,17 +2576,17 @@ public partial class GameScene : Control
                 File = LibraryFile.MagicEx5, StartIndex = 1400, FrameCount = 6,
                 DelayMs = 120, Blend = true, BlendRate = 0.8f,
                 Colour = MagicEffectTable.None
-            }, _player.FishingLocation.X, _player.FishingLocation.Y);
+            }, source.FishingLocation.X, source.FishingLocation.Y);
         }
         if (animation == MirAnimation.FishingWait && frame == 1)
         {
             SpawnCastEffect(new MagicEffectTable.CastEffect
             {
                 File = LibraryFile.MagicEx5,
-                StartIndex = _player.FishFound ? 1400 : 1420,
+                StartIndex = source.FishFound ? 1400 : 1420,
                 FrameCount = 6, DelayMs = 120, Blend = true,
                 BlendRate = 0.8f, Colour = MagicEffectTable.None
-            }, _player.FishingLocation.X, _player.FishingLocation.Y);
+            }, source.FishingLocation.X, source.FishingLocation.Y);
         }
         if (magic == MagicType.SeismicSlam && frame == 4)
         {
@@ -1387,9 +2595,39 @@ public partial class GameScene : Control
                 File = LibraryFile.MonMagicEx7, StartIndex = 700, FrameCount = 7,
                 DelayMs = 120, Colour = MagicEffectTable.Lightning, BlendRate = 0.8f
             };
-            var point = Functions.Move(new System.Drawing.Point(_player.CellX, _player.CellY),
-                _player.Direction, 2);
+            var point = Functions.Move(new System.Drawing.Point(source.CellX, source.CellY),
+                source.Direction, 2);
             SpawnImpact(def, point.X, point.Y);
+        }
+        if (magic == MagicType.CrushingWave && frame == 4)
+        {
+            var projectile = new MagicEffectTable.ProjectileDef
+            {
+                File = LibraryFile.MagicEx6, StartIndex = 200, FrameCount = 8,
+                DelayMs = 100, Colour = MagicEffectTable.Lightning,
+                Has16Directions = false, FrameLight = 35
+            };
+            SpawnProjectileDefinition(projectile, source.CellX, source.CellY,
+                Functions.Move(new System.Drawing.Point(source.CellX, source.CellY),
+                    source.Direction, Globals.MagicRange).X,
+                Functions.Move(new System.Drawing.Point(source.CellX, source.CellY),
+                    source.Direction, Globals.MagicRange).Y, null);
+            var wave = new MagicEffectTable.ImpactDef
+            {
+                File = LibraryFile.MagicEx6, StartIndex = 300, FrameCount = 9,
+                DelayMs = 150, Colour = MagicEffectTable.Lightning,
+                DirectionFromSource = true
+            };
+            var near = Functions.Move(new System.Drawing.Point(source.CellX, source.CellY), source.Direction, 1);
+            SpawnImpact(wave, near.X, near.Y, source.CellX, source.CellY);
+        }
+        if (magic == MagicType.OffensiveBlow && frame == 3)
+        {
+            SpawnImpact(new MagicEffectTable.ImpactDef
+            {
+                File = LibraryFile.MagicEx5, StartIndex = 2305, FrameCount = 5,
+                DelayMs = 100, Colour = MagicEffectTable.Fire, Skip = 10
+            }, source.CellX, source.CellY, source.CellX, source.CellY);
         }
     }
 
@@ -1417,12 +2655,17 @@ public partial class GameScene : Control
                 SoundIndex.MaleStruck => "138.wav", SoundIndex.FemaleStruck => "139.wav",
                 SoundIndex.MaleDie => "144.wav", SoundIndex.FemaleDie => "145.wav",
                 SoundIndex.DestructiveSurge => "M103-1.wav", SoundIndex.OffensiveBlow => "37400.wav",
+                SoundIndex.AssaultStart => "M109-1.wav", SoundIndex.HundredFist => "37380.wav",
                 _ => null,
             };
             if (file == null) return;
             string resourcePath = "res://../Debug/Client/Sound/" + file;
             string filePath = ProjectSettings.GlobalizePath(resourcePath);
-            stream = ResourceLoader.Load<AudioStream>(resourcePath);
+            // Prefer the original WAV on disk; asking ResourceLoader to resolve
+            // an outside-res:// path emits a noisy loader error before fallback.
+            stream = File.Exists(filePath) ? AudioStreamWav.LoadFromFile(filePath) : null;
+            if (stream == null && !File.Exists(filePath))
+                stream = ResourceLoader.Load<AudioStream>(resourcePath);
             // Debug/Client/Sound is deliberately outside the Godot project and
             // therefore may not be importable as res:// in a packaged client.
             // Load the original WAV from its absolute workspace path as a
@@ -1619,9 +2862,13 @@ public partial class GameScene : Control
 
     private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue)
     {
+        MirDirection direction = MirDirection.Up;
+        if (imp.DirectionFromSource && sourceX != int.MinValue)
+            direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
+
         var fx = new MirEffectNode();
         AddChild(fx);
-        fx.Setup(imp.File, imp.ResolveStartIndex(MirDirection.Up), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
+        fx.Setup(imp.File, imp.ResolveStartIndex(direction), imp.FrameCount, imp.DelayMs, null, x, y, () => ComputeEffectScreenPos(x, y));
         fx.Blend = true;
         fx.DrawType = imp.DrawType;
         fx.BlendRate = imp.BlendRate;
@@ -1629,8 +2876,9 @@ public partial class GameScene : Control
         fx.Skip = imp.Skip;
         double distanceDelay = sourceX == int.MinValue ? 0 : Functions.Distance(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y)) * imp.DistanceDelayMs;
         fx.SetStartDelay(imp.StartDelayMs + distanceDelay);
-        if (imp.DirectionFromSource && sourceX != int.MinValue)
-            fx.Direction = Functions.DirectionFromPoint(new System.Drawing.Point(sourceX, sourceY), new System.Drawing.Point(x, y));
+        // ResolveStartIndex 已经选取了方向分组帧；不要再次叠加
+        // Direction*Skip，否则会把分组偏移重复计算。
+        fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
         fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
     }
@@ -1774,6 +3022,7 @@ public partial class GameScene : Control
                 ob.SetAnimation(MirAnimation.Struck);
                 SpawnDamagePopup(ob, change, critical);
             }
+            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
             return;
         }
         if (_otherPlayers.TryGetValue(objectID, out var player))
@@ -1785,6 +3034,7 @@ public partial class GameScene : Control
                 player.PlayStruck();
                 SpawnDamagePopup(player, change, critical);
             }
+            _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
     }
 
@@ -1812,12 +3062,14 @@ public partial class GameScene : Control
             ob.Health = health;
             ob.Dead = dead;
             ob.ShowHealthBar = true;
+            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
         }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.Health = health;
             player.Dead = dead;
             player.ShowHealthBar = true;
+            _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
     }
 
@@ -1830,12 +3082,16 @@ public partial class GameScene : Control
             return;
         }
         if (_objects.TryGetValue(objectID, out var ob))
+        {
             ob.MaxHealth = maxHealth;
+            _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
+        }
         else if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.MaxHealth = maxHealth;
             player.MaxMana = maxMana;
             player.ShowHealthBar = maxHealth > 0;
+            _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
     }
 
@@ -1848,6 +3104,7 @@ public partial class GameScene : Control
         ob.Light = light;
         ob.Dead = dead;
         ob.ShowHealthBar = maxHealth > 0;
+        _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
     }
 
     // 玩家属性: MaxHealth/MaxMana 来源
@@ -1872,6 +3129,7 @@ public partial class GameScene : Control
             _player.Direction = dir;
             _player.PlayStruck();
             _canRun = false;
+            _runCooldownUntilMs = Godot.Time.GetTicksMsec() + 600.0;
             _moveFrameCount = 1;
             _player.OffsetX = 0f;
             _player.OffsetY = 0f;
@@ -1944,6 +3202,9 @@ public partial class GameScene : Control
 
         _chatLog = new ChatLogPanel();
         _uiLayer.AddChild(_chatLog);
+        _chatTextBox = new ChatTextBox();
+        _uiLayer.AddChild(_chatTextBox);
+        _chatTextBox.Visible = true;
 
         _miniMap = new MiniMapDialog();
         _uiLayer.AddChild(_miniMap);
@@ -2036,6 +3297,8 @@ public partial class GameScene : Control
         _companionDialog = new CompanionDialog();
         _uiLayer.AddChild(_companionDialog);
         CompanionEquipmentCells = _companionDialog.EquipmentCells;
+        _npcCompanionStorageDialog = new NPCCompanionStorageDialog();
+        _uiLayer.AddChild(_npcCompanionStorageDialog);
         _communicationDialog = new CommunicationDialog();
         _uiLayer.AddChild(_communicationDialog);
         _communicationDialog.UnreadChanged += unread => _mainPanel?.SetMailIndicator(unread);
@@ -2047,6 +3310,8 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_gameStoreDialog);
         _consignmentDialog = new ConsignmentDialog();
         _uiLayer.AddChild(_consignmentDialog);
+        _marketHistoryDialog = new MarketHistoryDialog();
+        _uiLayer.AddChild(_marketHistoryDialog);
         _fishingDialog = new FishingDialog();
         _uiLayer.AddChild(_fishingDialog);
         _fishingCatchDialog = new FishingCatchDialog();
@@ -2059,6 +3324,14 @@ public partial class GameScene : Control
         _uiLayer.AddChild(_tradeDialog);
         _npcDialog = new NPCDialog();
         _uiLayer.AddChild(_npcDialog);
+        _npcSocketDialog = new NPCSocketDialog();
+        _uiLayer.AddChild(_npcSocketDialog);
+        _npcSocketCombineDialog = new NPCSocketCombineDialog();
+        _uiLayer.AddChild(_npcSocketCombineDialog);
+        _npcQuestListDialog = new NPCQuestListDialog();
+        _uiLayer.AddChild(_npcQuestListDialog);
+        _npcQuestDialog = new NPCQuestDialog();
+        _uiLayer.AddChild(_npcQuestDialog);
 
         // 数组注入: 先设 ItemGrid 再 CreateGrid (格子建立时快照 ItemGrid)
         _inventoryDialog.Grid.ItemGrid = Inventory;
@@ -2078,7 +3351,11 @@ public partial class GameScene : Control
         BeltLinks = _beltDialog.Links; // 与对话框共享同一数组 (QuickInfo/QuickItem 写回)
 
         // M9: 主面板功能按钮 -> 对话框开关
-        _mainPanel.CharacterButton.MouseClick += (o, e) => WindowManager.Toggle(_characterDialog, _uiLayer);
+        _mainPanel.CharacterButton.MouseClick += (o, e) =>
+        {
+            _characterDialog.ShowOwn();
+            WindowManager.Toggle(_characterDialog, _uiLayer);
+        };
         _mainPanel.InventoryButton.MouseClick += (o, e) => WindowManager.Toggle(_inventoryDialog, _uiLayer);
         _inventoryDialog.WalletButton.MouseClick += (o, e) =>
         {
@@ -2129,6 +3406,66 @@ public partial class GameScene : Control
         return false;
     }
 
+    private bool CanPlayerTurn()
+    {
+        if (_observer || _player == null || _player.Dead || _player.DragonRepulsed)
+            return false;
+        return !_playerPoison.HasFlag(PoisonType.Paralysis)
+            && !_playerPoison.HasFlag(PoisonType.Containment);
+    }
+
+    private bool CanPlayerMove()
+    {
+        return CanPlayerTurn()
+            && !_player.ElementalHurricane
+            && !_playerPoison.HasFlag(PoisonType.WraithGrip);
+    }
+
+    private bool BlockLeftMouseMovement()
+    {
+        if (_combatController?.MouseObject != null || IsFishingActive || IsTamingActive)
+            return true;
+
+        // 只有满足原版采矿条件时才拦截移动；普通相邻空地点击仍然是走路。
+        var target = _combatController?.MouseCell() ?? _playerLocation;
+        int distance = Math.Max(Math.Abs(target.X - _playerLocation.X),
+            Math.Abs(target.Y - _playerLocation.Y));
+        var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+        var pickaxe = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.PickAxe);
+        return distance == 1 && pickaxe != null && mapInfo?.CanMine == true
+            && target.X >= 0 && target.Y >= 0
+            && _mapView?.Map != null && target.X < _mapView.Map.Width && target.Y < _mapView.Map.Height
+            && _mapView.Map.Cells[target.X, target.Y].Flag;
+    }
+
+    // 原版 Cell.Blocking() 不只看地图 Flag，还看当前格上的动态 MapObject。
+    // 地面物品和法术不挡路；活着的怪物、NPC、其他玩家会挡路。
+    private bool IsMovementCellBlocked(int x, int y)
+    {
+        foreach (var ob in _objects.Values)
+        {
+            if (ob.CellX != x || ob.CellY != y || ob.Dead) continue;
+            if (ob.Type == ObjectRenderer.Kind.Item) continue;
+            if (ob.Type == ObjectRenderer.Kind.Monster)
+            {
+                // Client.Models.MonsterObject.Blocking：宠物不挡路；
+                // 城堡防御对象朝向 7 时也不挡路。
+                if (!string.IsNullOrWhiteSpace(ob.PetOwner)) continue;
+                if (ob.MonsterInfo?.Flag == MonsterFlag.CastleDefense
+                    && ob.Direction == MirDirection.UpLeft) continue;
+            }
+            return true;
+        }
+
+        foreach (var player in _otherPlayers.Values)
+        {
+            if (player.CellX == x && player.CellY == y && !player.Dead)
+                return true;
+        }
+
+        return false;
+    }
+
     // 所有常驻 HUD 都基于当前 viewport 重新锚定。不能只在 _Ready 中
     // 计算一次：Linux/Windows 高 DPI 下 Godot 可能在场景创建后才完成
     // 窗口尺寸调整，旧坐标会把底栏留在屏幕中间。
@@ -2138,6 +3475,14 @@ public partial class GameScene : Control
         Vector2 vp = GetViewport().GetVisibleRect().Size / UiScale;
         if (vp.X <= 0 || vp.Y <= 0) return;
 
+        void Center(DXControl control, int yOffset = 0)
+        {
+            if (control == null) return;
+            control.Location = new Vector2I(
+                Math.Max(0, (int)((vp.X - control.Size.X) / 2f)),
+                Math.Max(0, (int)((vp.Y - control.Size.Y) / 2f) + yOffset));
+        }
+
         if (_mainPanel != null)
             _mainPanel.Location = new Vector2I(
                 Math.Max(0, (int)((vp.X - _mainPanel.Size.X) / 2f)),
@@ -2146,7 +3491,11 @@ public partial class GameScene : Control
         if (_chatLog != null && _mainPanel != null)
             _chatLog.Position = new Vector2(
                 Math.Max(0, _mainPanel.Position.X),
-                Math.Max(0, _mainPanel.Position.Y - _chatLog.Size.Y - 4));
+                Math.Max(0, _mainPanel.Position.Y - _chatLog.Size.Y - 29));
+        if (_chatTextBox != null && _mainPanel != null)
+            _chatTextBox.Location = new Vector2I(
+                Math.Max(0, (int)_mainPanel.Position.X),
+                Math.Max(0, (int)(_mainPanel.Position.Y - _chatTextBox.Size.Y - 2)));
 
         if (_miniMap != null)
             _miniMap.Location = new Vector2I(
@@ -2158,9 +3507,7 @@ public partial class GameScene : Control
                 (int)_miniMap.Size.Y + 5);
 
         if (_questDialog != null)
-            _questDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _questDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _questDialog.Size.Y) / 2f)));
+            Center(_questDialog);
 
         if (_buffDialog != null)
             _buffDialog.Location = new Vector2I(
@@ -2178,64 +3525,53 @@ public partial class GameScene : Control
             _storageDialog.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _storageDialog.Size.X - _inventoryDialog.Size.X)), 0);
 
+        if (_magicDialog != null)
+            _magicDialog.Location = new Vector2I(
+                Math.Max(0, (int)(vp.X - _magicDialog.Size.X)), 0);
+
         if (AutoPotionBox != null)
             AutoPotionBox.Location = new Vector2I(
                 Math.Max(0, (int)((vp.X - AutoPotionBox.Size.X) / 2f)),
                 Math.Max(0, (int)((vp.Y - AutoPotionBox.Size.Y) / 2f)));
 
         if (_currencyDialog != null)
-            _currencyDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _currencyDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _currencyDialog.Size.Y) / 2f)));
+            Center(_currencyDialog);
 
         if (_filterDropDialog != null)
-            _filterDropDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _filterDropDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _filterDropDialog.Size.Y) / 2f)));
+            Center(_filterDropDialog);
 
         if (_consignmentDialog != null)
-            _consignmentDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _consignmentDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _consignmentDialog.Size.Y) / 2f)));
+            Center(_consignmentDialog);
+        if (_marketHistoryDialog != null)
+            Center(_marketHistoryDialog);
 
         if (_fishingDialog != null)
+        {
+            var characterLocation = _characterDialog?.Location ?? Vector2I.Zero;
+            var characterSize = _characterDialog?.Size ?? Vector2.Zero;
             _fishingDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _fishingDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _fishingDialog.Size.Y) / 2f)));
+                (int)(characterLocation.X + characterSize.X), characterLocation.Y);
+        }
         if (_fishingCatchDialog != null)
-            _fishingCatchDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _fishingCatchDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _fishingCatchDialog.Size.Y) / 2f) + 110));
+            Center(_fishingCatchDialog, 200);
 
         if (_bundleDialog != null)
-            _bundleDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _bundleDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _bundleDialog.Size.Y) / 2f)));
+            Center(_bundleDialog);
 
         if (_fortuneDialog != null)
-            _fortuneDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _fortuneDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _fortuneDialog.Size.Y) / 2f)));
+            Center(_fortuneDialog);
 
         if (_lootBoxDialog != null)
-            _lootBoxDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _lootBoxDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _lootBoxDialog.Size.Y) / 2f)));
+            Center(_lootBoxDialog);
 
         if (_milestoneDialog != null)
-            _milestoneDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _milestoneDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _milestoneDialog.Size.Y) / 2f)));
+            Center(_milestoneDialog, 100);
 
         if (_guildMemberDialog != null)
-            _guildMemberDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _guildMemberDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _guildMemberDialog.Size.Y) / 2f)));
+            Center(_guildMemberDialog);
 
         if (_dungeonFinderDialog != null)
-            _dungeonFinderDialog.Location = new Vector2I(
-                Math.Max(0, (int)((vp.X - _dungeonFinderDialog.Size.X) / 2f)),
-                Math.Max(0, (int)((vp.Y - _dungeonFinderDialog.Size.Y) / 2f)));
+            Center(_dungeonFinderDialog);
 
         if (_beltDialog != null)
             _beltDialog.Location = new Vector2I(
@@ -2246,6 +3582,36 @@ public partial class GameScene : Control
             _magicBar.Position = new Vector2(
                 Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
                 Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));
+
+        // 原版 GameScene.SetDefaultLocations 的其余窗口位置。
+        if (_menuDialog != null)
+            _menuDialog.Location = new Vector2I(Math.Max(0, (int)(vp.X - _menuDialog.Size.X)),
+                Math.Max(0, (int)(vp.Y - _menuDialog.Size.Y - _mainPanel.Size.Y)));
+        Center(_configDialog);
+        Center(_chatOptionsDialog);
+        Center(_exitDialog);
+        Center(_tradeDialog);
+        Center(_guildDialog);
+        Center(_rankingDialog);
+        Center(_companionDialog);
+        Center(_npcCompanionStorageDialog);
+        Center(_communicationDialog);
+        Center(_groupDialog);
+        Center(_gameStoreDialog);
+        Center(_editCharacterDialog);
+        Center(_helpDialog);
+        if (_captionDialog != null)
+            _captionDialog.Location = Vector2I.Zero;
+        if (_npcDialog != null)
+            _npcDialog.Location = Vector2I.Zero;
+        Center(_npcSocketDialog);
+        Center(_npcSocketCombineDialog);
+        Center(_npcQuestDialog);
+        if (_monsterDialog != null)
+            _monsterDialog.Location = new Vector2I(Math.Max(0, (int)((vp.X - _monsterDialog.Size.X) / 2f)), 50);
+        if (_timerDialog != null && _mainPanel != null)
+            _timerDialog.Location = new Vector2I((int)(_mainPanel.Position.X + _mainPanel.Size.X - 115),
+                Math.Max(0, (int)(vp.Y - 170)));
     }
 
     private MapInfo GetMapInfo(int mapIndex)
@@ -2274,8 +3640,12 @@ public partial class GameScene : Control
     private void InitHudData(StartInformation info)
     {
         _playerStats = new Stats();
+        _observer = false;
+        _playerPoison = info.Poison;
         _playerLevel = info.Level;
         _playerExperience = info.Experience;
+        InSafeZone = info.InSafeZone;
+        CombatUntilMs = 0;
         // MaxExperience 由 S.InformMaxExperience / S.LevelChanged 填充 (排空可能已先到)
         _currentHP = info.CurrentHP;
         _currentMP = info.CurrentMP;
@@ -2293,15 +3663,34 @@ public partial class GameScene : Control
         _buffs.Clear();
         if (info.Buffs != null)
             foreach (var b in info.Buffs)
+            {
                 _buffs[b.Index] = b;
+                if (_player != null)
+                {
+                    if (b.Type == BuffType.Cloak) _player.Cloaked = true;
+                    if (b.Type == BuffType.GhostWalk) _player.GhostWalking = true;
+                    if (b.Type == BuffType.DragonRepulse) _player.DragonRepulsed = true;
+                    if (b.Type == BuffType.ElementalHurricane) _player.ElementalHurricane = true;
+                }
+            }
         _buffDialog?.BuffsChanged(_buffs);
 
         var quests = info.Quests ?? Enumerable.Empty<ClientUserQuest>();
+        _userQuests.Clear();
+        foreach (var quest in quests)
+            if (quest != null) { if (quest.Quest == null) quest.Complete(); _userQuests[quest.Index] = quest; }
+        quests = _userQuests.Values;
         _questTracker?.PopulateQuests(quests);
         _questDialog?.SetQuests(quests);
         _mainPanel?.SetQuestIndicators(
             quests.Any(q => q != null && !q.IsComplete),
             quests.Any(q => q != null && q.IsComplete));
+        _communicationDialog?.SetFriends(info.Friends);
+        Companions.Clear();
+        if (info.Companions != null) Companions.AddRange(info.Companions.Where(x => x != null));
+        Companion = Companions.FirstOrDefault(x => x?.Index == info.Companion);
+        _npcCompanionStorageDialog?.SetCompanions(Companions);
+        _companionDialog?.ApplyCompanion(Companion);
 
         // ---- M9: 物品数据 (StartInformation + 登录仓库包) ----
         FillItems(info.Items);
@@ -2465,7 +3854,11 @@ public partial class GameScene : Control
                 {
                     case BuffType.Cloak: _player.Cloaked = false; break;
                     case BuffType.GhostWalk: _player.GhostWalking = false; break;
-                    case BuffType.DragonRepulse: _player.DragonRepulsed = false; break;
+                    case BuffType.DragonRepulse:
+                        if (_player.Animation == MirAnimation.DragonRepulseMiddle)
+                            _player.PlayDragonRepulseEnd();
+                        _player.DragonRepulsed = false;
+                        break;
                     case BuffType.ElementalHurricane: _player.ElementalHurricane = false; break;
                 }
             }
@@ -2477,8 +3870,30 @@ public partial class GameScene : Control
     {
         _autoPathRoutes.Clear();
         if (packet?.Routes != null) _autoPathRoutes.AddRange(packet.Routes);
-        _autoPathProgressMap = -1;
+        UpdateAutoPathProgress();
+    }
+
+    private void UpdateAutoPathProgress()
+    {
+        _autoPathProgressMap = _autoPathRoutes.Count == 0 ? -1 : _playerMapIndex;
         _autoPathProgressPoint = -1;
+        if (_autoPathProgressMap >= 0)
+        {
+            var leg = _autoPathRoutes.SelectMany(r => r?.Legs ?? new List<AutoPathRouteLeg>())
+                .FirstOrDefault(x => x.MapIndex == _autoPathProgressMap);
+            if (leg?.Points != null)
+            {
+                _autoPathProgressPoint = 0;
+                while (_autoPathProgressPoint < leg.Points.Count
+                    && Functions.InRange(_playerLocation, leg.Points[_autoPathProgressPoint], 1))
+                    _autoPathProgressPoint++;
+            }
+        }
+
+        _miniMap?.UpdateAutoPathRoutes(_autoPathRoutes, _playerMapIndex,
+            _autoPathProgressMap, _autoPathProgressPoint);
+        _bigMap?.UpdateAutoPathRoutes(_autoPathRoutes,
+            _autoPathProgressMap, _autoPathProgressPoint);
     }
 
     private bool TryGetBuffEffect(BuffType type, out MagicEffectTable.ImpactDef def)
@@ -2520,6 +3935,29 @@ public partial class GameScene : Control
         _objectBuffEffects[key] = fx;
     }
 
+    private void SetMovementEffect(uint objectID, MagicType magic, Node2D target)
+    {
+        if (target == null || magic is not (MagicType.Assault or MagicType.HundredFist)) return;
+        var (file, start, count, delay, colour) = magic == MagicType.Assault
+            ? (LibraryFile.MagicEx2, 740, 3, 100, MagicEffectTable.None)
+            : (LibraryFile.MagicEx5, 2100, 5, 200, MagicEffectTable.Fire);
+        var fx = new MirEffectNode();
+        AddChild(fx);
+        fx.SetupTarget(file, start, count, delay, target, () => GetTargetRenderY(target));
+        fx.Loop = true;
+        fx.Blend = true;
+        fx.BlendRate = 0.7f;
+        fx.Direction = target is PlayerRenderer player ? player.Direction : MirDirection.Up;
+        fx.FrameLight = 10;
+        fx.FrameLightColour = colour;
+        _movementEffects[objectID] = fx;
+    }
+
+    private void ClearMovementEffect(uint objectID)
+    {
+        if (_movementEffects.Remove(objectID, out var fx)) fx.QueueFree();
+    }
+
     private void OnObjectBuffRemove(uint objectID, BuffType type)
     {
         if (_objectBuffEffects.Remove((objectID, type), out var fx)) fx.QueueFree();
@@ -2527,6 +3965,8 @@ public partial class GameScene : Control
 
     private void OnObjectPoison(uint objectID, PoisonType poison)
     {
+        if (objectID == _playerObjectID)
+            _playerPoison = poison;
         var target = GetMagicTargetNode(objectID);
         if (target == null) return;
         if (_objectPoisonEffects.Remove(objectID, out var oldFx)) oldFx.QueueFree();
@@ -2726,6 +4166,11 @@ public partial class GameScene : Control
         => _net.Connection.SendItemMove(fromGrid, toGrid, fromSlot, toSlot, mergeItem);
     public void SendItemSplit(GridType grid, int slot, long count)
         => _net.Connection.SendItemSplit(grid, slot, count);
+    public void OpenItemSplitDialog(ClientUserItem item, GridType grid, int slot)
+    {
+        var dialog = new ItemAmountDialog(item, count => SendItemSplit(grid, slot, count));
+        WindowManager.Open(dialog, _uiLayer);
+    }
 
     public void SendItemUse(GridType grid, int slot)
         => _net.Connection.SendItemUse(grid, slot);
@@ -2742,10 +4187,14 @@ public partial class GameScene : Control
         => _net.Connection.SendItemDrop(link);
     public void SendMarriageTeleport()
         => _net?.Connection?.Enqueue(new C.MarriageTeleport());
-    public void LinkItemToChat(ClientUserItem item) => _chatLog?.LinkItem(item);
+    public void LinkItemToChat(ClientUserItem item) => _chatTextBox?.LinkItem(item);
 
     public void SendAutoPathWaypoint(int mapIndex, int x, int y)
-        => _net?.Connection?.SendAutoPathWaypoint(mapIndex, new System.Drawing.Point(x, y));
+    {
+        _net?.Connection?.SendAutoPathWaypoint(mapIndex, new System.Drawing.Point(x, y));
+        _net?.Connection?.SendAutoPathMoveStarted();
+    }
+    public void CancelAutoPath() => _net?.Connection?.SendAutoPathCancel();
 
     public void SendBeltLinkChanged(int slot, int linkInfoIndex, int linkItemIndex)
         => _net.Connection.SendBeltLinkChanged(slot, linkInfoIndex, linkItemIndex);
@@ -2778,11 +4227,16 @@ public partial class GameScene : Control
     public void SendMarketBuy(long index, long count) => _net?.Connection?.SendMarketBuy(index, count);
     public void SendMarketCancel(int index, long count) => _net?.Connection?.SendMarketCancel(index, count);
     public void SendMarketConsign(GridType grid, int slot, long count, int price) => _net?.Connection?.SendMarketConsign(grid, slot, count, price);
+    public void SendMarketHistory(int index, int partIndex, int display) => _net?.Connection?.SendMarketHistory(index, partIndex, display);
     public void SendFishingCast(FishingState state) => _net?.Connection?.SendFishingCast(state, _playerDirection, new System.Drawing.Point(_playerLocation.X, _playerLocation.Y));
     public void SendTaming(uint objectID) => _net?.Connection?.SendTaming(objectID, TamingState.Cast, _playerDirection);
+    public void CancelTaming() => _net?.Connection?.SendTaming(_tamingTargetObjectID, TamingState.Cancel, _playerDirection);
     public void SendTamingSuccess(uint objectID) => _net?.Connection?.SendTamingSuccess(objectID);
     public void SendMilestoneClaim(int index) => _net?.Connection?.SendMilestoneClaim(index);
     public void ClaimMilestone(int index) => SendMilestoneClaim(index);
+    public void SendMilestoneNotify(bool receive) => _net?.Connection?.SendMilestoneNotify(receive);
+    public void SendMilestoneActive(int index, bool active) => _net?.Connection?.SendMilestoneActive(index, active);
+    public void SendSelectLanguage(string language) => _net?.Connection?.SendSelectLanguage(language);
     public void SendGenderChange(MirGender gender, int hairType)
         => _net?.Connection?.SendGenderChange(gender, hairType, StartInfo?.HairColour ?? System.Drawing.Color.Black);
     public void SendHairChange(int hairType)
@@ -2797,6 +4251,11 @@ public partial class GameScene : Control
     {
         if (p == null) return;
         _statusLabel.Text = p.Success ? "副本加入成功" : $"副本加入失败: {p.Result}";
+    }
+
+    private void ShowServerActionResult(string action, object packet)
+    {
+        if (packet != null) _statusLabel.Text = $"{action}：{packet}";
     }
 
     private void OnUserMilestones(S.UserMilestones packet)
@@ -2820,10 +4279,12 @@ public partial class GameScene : Control
         _horseTameDialog?.SetState(p.State);
         if (p.State == TamingState.Cast && _objects.TryGetValue(p.TamingObjectID, out var target))
         {
+            _tamingTargetObjectID = p.TamingObjectID;
             _horseTameDialog?.SetTarget(p.TamingObjectID, target.Position / UiScale);
         }
         else if (p.State == TamingState.Cancel || p.State == TamingState.None)
         {
+            _tamingTargetObjectID = 0;
             if (_tamingRopes.Remove(p.TamingObjectID, out var rope)) rope.QueueFree();
         }
     }
@@ -2844,12 +4305,12 @@ public partial class GameScene : Control
         => _net?.Connection?.Enqueue(new C.NPCFragment { Links = links ?? new List<CellLinkInfo>() });
 
     public void SendNPCRefinementStone(List<CellLinkInfo> iron, List<CellLinkInfo> silver,
-        List<CellLinkInfo> diamond, List<CellLinkInfo> gold, List<CellLinkInfo> crystal)
+        List<CellLinkInfo> diamond, List<CellLinkInfo> gold, List<CellLinkInfo> crystal, long goldAmount = 0)
         => _net?.Connection?.Enqueue(new C.NPCRefinementStone
         {
             IronOres = iron ?? new List<CellLinkInfo>(), SilverOres = silver ?? new List<CellLinkInfo>(),
             DiamondOres = diamond ?? new List<CellLinkInfo>(), GoldOres = gold ?? new List<CellLinkInfo>(),
-            Crystal = crystal ?? new List<CellLinkInfo>(), Gold = 0,
+            Crystal = crystal ?? new List<CellLinkInfo>(), Gold = goldAmount,
         });
 
     public void SendNPCRefine(RefineType type, RefineQuality quality, List<CellLinkInfo> ores,
@@ -2870,8 +4331,10 @@ public partial class GameScene : Control
             Fragment3s = fragment3 ?? new List<CellLinkInfo>(), Stones = stones ?? new List<CellLinkInfo>(),
             Specials = specials ?? new List<CellLinkInfo>(),
         });
+    public void SendNPCMasterRefineEvaluate(RefineType type, List<CellLinkInfo> fragment1, List<CellLinkInfo> fragment2, List<CellLinkInfo> fragment3, List<CellLinkInfo> stones, List<CellLinkInfo> specials)
+        => _net?.Connection?.Enqueue(new C.NPCMasterRefineEvaluate { RefineType = type, Fragment1s = fragment1 ?? new(), Fragment2s = fragment2 ?? new(), Fragment3s = fragment3 ?? new(), Stones = stones ?? new(), Specials = specials ?? new() });
 
-    public void RequestNPCRefineList() => GD.Print("[NPC] refine list is supplied by the server");
+    public void RequestNPCRefineList() => _npcDialog?.RefreshRefineList();
     public void SendNPCRefineRetrieve(int index) => _net?.Connection?.Enqueue(new C.NPCRefineRetrieve { Index = index });
     public void SendNPCAccessoryUpgrade(CellLinkInfo target, RefineType type)
         => _net?.Connection?.Enqueue(new C.NPCAccessoryUpgrade { Target = target, RefineType = type });
@@ -2879,10 +4342,10 @@ public partial class GameScene : Control
         => _net?.Connection?.Enqueue(new C.NPCAccessoryLevelUp { Target = target, Links = links ?? new List<CellLinkInfo>() });
     public void SendNPCAccessoryReset(CellLinkInfo target)
         => _net?.Connection?.Enqueue(new C.NPCAccessoryReset { Cell = target });
-    public void SendNPCAccessoryRefine(CellLinkInfo target, CellLinkInfo oreTarget, List<CellLinkInfo> links)
+    public void SendNPCAccessoryRefine(CellLinkInfo target, CellLinkInfo oreTarget, List<CellLinkInfo> links, RefineType refineType = RefineType.None)
         => _net?.Connection?.Enqueue(new C.NPCAccessoryRefine
         {
-            Target = target, OreTarget = oreTarget, Links = links ?? new List<CellLinkInfo>(), RefineType = RefineType.None,
+            Target = target, OreTarget = oreTarget, Links = links ?? new List<CellLinkInfo>(), RefineType = refineType,
         });
     public void SendNPCWeaponCraft(RequiredClass @class, CellLinkInfo template, CellLinkInfo yellow,
         CellLinkInfo blue, CellLinkInfo red, CellLinkInfo purple, CellLinkInfo green, CellLinkInfo grey)
@@ -2892,15 +4355,44 @@ public partial class GameScene : Control
             Purple = purple, Green = green, Grey = grey,
         });
     public void SendNPCRoll(int type) => _net?.Connection?.Enqueue(new C.NPCRoll { Type = type });
+    public void SendNPCRollResult() => _net?.Connection?.SendNPCRollResult();
     public void SendCompanionFilters()
         => _net?.Connection?.Enqueue(new C.SendCompanionFilters
         {
             FilterClass = new List<MirClass>(), FilterRarity = new List<Rarity>(), FilterItemType = new List<ItemType>(),
         });
+    public void SendCompanionStore() { if (Companion != null) _net?.Connection?.SendCompanionStore(Companion.Index); }
+    public void SendCompanionRetrieve() { if (Companion != null) _net?.Connection?.SendCompanionRetrieve(Companion.Index); }
+    public void SendCompanionRelease() { if (Companion != null) _net?.Connection?.SendCompanionRelease(Companion.Index); }
+    public void SendCompanionUnlock(int index) => _net?.Connection?.SendCompanionUnlock(index);
+    public void SendCompanionAdopt(int index, string name) => _net?.Connection?.SendCompanionAdopt(index, name);
     public void SendGuildEditMember(int index, string rank, GuildPermission permission)
         => _net?.Connection?.Enqueue(new C.GuildEditMember { Index = index, Rank = rank ?? string.Empty, Permission = permission });
     public void SendGuildKickMember(int index)
         => _net?.Connection?.Enqueue(new C.GuildKickMember { Index = index });
+    public void SendGuildInviteMember(string name) => _net?.Connection?.SendGuildInviteMember(name);
+    public void SendGuildEditNotice(string notice) => _net?.Connection?.SendGuildEditNotice(notice);
+    public void SendGuildIncreaseMember() => _net?.Connection?.SendGuildIncreaseMember();
+    public void SendGuildIncreaseStorage() => _net?.Connection?.SendGuildIncreaseStorage();
+    public void SendGuildCreate(string name, bool useGold, int members, int storage) => _net?.Connection?.SendGuildCreate(name, useGold, members, storage);
+    public void SendJoinStarterGuild() => _net?.Connection?.SendJoinStarterGuild();
+    public void SendGuildColour(Color colour) => _net?.Connection?.SendGuildColour(System.Drawing.Color.FromArgb((int)(colour.A * 255), (int)(colour.R * 255), (int)(colour.G * 255), (int)(colour.B * 255)));
+    public void SendGuildFlag(int flag) => _net?.Connection?.SendGuildFlag(flag);
+    public void SendRankSearch(string name) => _net?.Connection?.SendRankSearch(name);
+    public void SendOnlineState(OnlineState state) => _net?.Connection?.SendOnlineState(state);
+    public void SendHelmetToggle(bool hide) => _net?.Connection?.SendHelmetToggle(hide);
+    private OnlineState _onlineState = OnlineState.Online;
+    public void CycleOnlineState()
+    {
+        _onlineState = _onlineState switch { OnlineState.Online => OnlineState.Busy, OnlineState.Busy => OnlineState.Away, _ => OnlineState.Online };
+        SendOnlineState(_onlineState);
+    }
+    public void SendGuildWar(string guildName) => _net?.Connection?.SendGuildWar(guildName);
+    public void SendGuildRequestConquest(int index) => _net?.Connection?.SendGuildRequestConquest(index);
+    public void SendGuildResponse(string guildName, bool accept) => _net?.Connection?.SendGuildResponse(guildName, accept);
+    public void SendGuildToggleCastleGates() => _net?.Connection?.SendGuildToggleCastleGates();
+    public void SendGuildRepairCastleGates() => _net?.Connection?.SendGuildRepairCastleGates();
+    public void SendGuildRepairCastleGuards() => _net?.Connection?.SendGuildRepairCastleGuards();
     public ClientFortuneInfo GetFortune(int itemIndex) => _fortunes.TryGetValue(itemIndex, out var value) ? value : null;
 
     private void OnFortuneUpdate(S.FortuneUpdate packet)
@@ -2926,8 +4418,14 @@ public partial class GameScene : Control
     }
     public void SendGroupRequest(string name)
         => _net.Connection.Enqueue(new C.GroupRequest { Name = name });
+    public void SendGroupResponse(string name, bool accept)
+        => _net?.Connection?.SendGroupResponse(name, accept);
     public void SendMailOpened(int index)
         => _net.Connection.Enqueue(new C.MailOpened { Index = index });
+    public void SendMailGetItem(int index, int slot)
+        => _net.Connection.SendMailGetItem(index, slot);
+    public void SendMailDelete(int index)
+        => _net.Connection.SendMailDelete(index);
     public void SendMail(string recipient, string subject, string message, List<CellLinkInfo> links = null)
         => _net.Connection.Enqueue(new C.MailSend
         {
@@ -2938,14 +4436,18 @@ public partial class GameScene : Control
             Links = links ?? new List<CellLinkInfo>(),
         });
     public void SendTradeClose() => _net.Connection.Enqueue(new C.TradeClose());
+    public void SendTradeRequestResponse(bool accept) => _net.Connection.SendTradeRequestResponse(accept);
     public void SendTradeConfirm() => _net.Connection.Enqueue(new C.TradeConfirm());
     public void SendTradeGold(long gold) => _net.Connection.Enqueue(new C.TradeAddGold { Gold = gold });
+    public void SendTradeItem(CellLinkInfo cell) => _net.Connection.SendTradeItem(cell);
     public void SendNPCButton(int buttonId) => _net.Connection.Enqueue(new C.NPCButton { ButtonID = buttonId });
     public void SendNPCClose() => _net.Connection.Enqueue(new C.NPCClose());
-    public void SendNPCBuy(int index, long amount)
-        => _net.Connection.Enqueue(new C.NPCBuy { Index = index, Amount = amount, GuildFunds = false });
-    public void SendNPCRepair(List<CellLinkInfo> links)
-        => _net.Connection.Enqueue(new C.NPCRepair { Links = links, Special = false, GuildFunds = false });
+    public void SendNPCBuy(int index, long amount, bool guildFunds = false)
+        => _net.Connection.Enqueue(new C.NPCBuy { Index = index, Amount = amount, GuildFunds = guildFunds });
+    public void SendNPCSell(List<CellLinkInfo> links)
+        => _net.Connection.Enqueue(new C.NPCSell { Links = links ?? new List<CellLinkInfo>() });
+    public void SendNPCRepair(List<CellLinkInfo> links, bool special = false, bool guildFunds = false)
+        => _net.Connection.Enqueue(new C.NPCRepair { Links = links, Special = special, GuildFunds = guildFunds });
 
     private void OnNPCResponse(S.NPCResponse response)
     {
@@ -2961,6 +4463,13 @@ public partial class GameScene : Control
     {
         _magicBar?.Refresh();
         _magicDialog?.Refresh();
+    }
+
+    public void SetMagicBarFrames(bool value)
+    {
+        if (ShowMagicBarFrames == value) return;
+        ShowMagicBarFrames = value;
+        RefreshMagicBars();
     }
     // ---- Tab 拾取 (250ms 节流) ----
     private void PickUpItems()
@@ -3491,12 +5000,12 @@ public partial class GameScene : Control
         while (conn.PendingMoves.Count > 0)
         {
             var m = conn.PendingMoves.Dequeue();
-            OnObjectMove(m.ObjectID, m.Direction, m.Location, m.Distance);
+            OnObjectMove(m.ObjectID, m.Direction, m.Location, m.Distance, m.Slow, m.MapChanged);
         }
         while (conn.PendingTurns.Count > 0)
         {
-            var (id, dir) = conn.PendingTurns.Dequeue();
-            OnObjectTurn(id, dir);
+            var turn = conn.PendingTurns.Dequeue();
+            OnObjectTurn(turn.ObjectID, turn.Direction, turn.Location, turn.Slow);
         }
         while (conn.PendingPlayers.Count > 0)
             OnObjectPlayer(conn.PendingPlayers.Dequeue());
@@ -3513,7 +5022,7 @@ public partial class GameScene : Control
         while (conn.PendingAttacks.Count > 0)
         {
             var a = conn.PendingAttacks.Dequeue();
-            OnObjectAttack(a.ObjectID, a.Direction, a.Location, a.AttackMagic, a.TargetID);
+            OnObjectAttack(a);
         }
         while (conn.PendingMagics.Count > 0)
         {
@@ -3650,6 +5159,35 @@ public partial class GameScene : Control
         _magicDialog?.Refresh();
     }
 
+    private void OnMagicLeveled(S.MagicLeveled packet)
+    {
+        if (packet == null) return;
+        var magic = UserMagics.Values.FirstOrDefault(x => x?.InfoIndex == packet.InfoIndex || x?.Info?.Index == packet.InfoIndex);
+        if (magic == null) return;
+        magic.Level = packet.Level;
+        magic.Experience = packet.Experience;
+        _magicBar?.Refresh();
+        _magicDialog?.Refresh();
+    }
+
+    private void OnMagicCooldown(S.MagicCooldown packet)
+    {
+        if (packet == null) return;
+        var magic = UserMagics.Values.FirstOrDefault(x => x?.InfoIndex == packet.InfoIndex || x?.Info?.Index == packet.InfoIndex);
+        if (magic == null) return;
+        magic.Cooldown = TimeSpan.FromMilliseconds(Math.Max(0, packet.Delay));
+        magic.NextCast = Library.Time.Now + magic.Cooldown;
+        _magicBar?.Refresh();
+    }
+
+    private void OnMagicToggle(S.MagicToggle packet)
+    {
+        if (packet == null) return;
+        ReceiveChat($"{packet.Magic} {(packet.CanUse ? "已启用" : "已禁用")}", MessageType.System);
+        _magicBar?.Refresh();
+        _magicDialog?.Refresh();
+    }
+
     private void AddObject(ObjectRenderer ob, uint objectID, int zIndex)
     {
         ob.ObjectID = objectID;
@@ -3677,6 +5215,7 @@ public partial class GameScene : Control
         _playerLocation = new System.Drawing.Point(x, y);
         _player.CellX = x;
         _player.CellY = y;
+        UpdateAutoPathProgress();
         _player.OffsetX = (_moveFrom.X - x) * 48f;
         _player.OffsetY = (_moveFrom.Y - y) * 32f;
         _player.Direction = dir;
@@ -3684,8 +5223,8 @@ public partial class GameScene : Control
         // 原版 PlayerObject.SetFrame：Moving.Extra[0] >= 2 才使用 Running。
         // 右键只是请求跑步，最终动作必须以服务器接受的移动距离为准。
         _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
-        if (AutoLoginArgs.RunningTest)
-            GD.Print($"[RunningTest] APPLY distance={distance} animation={_player.Animation} " +
+        if (AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest)
+            GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY distance={distance} animation={_player.Animation} " +
                      $"frameStart={_player.FrameIndex} location=({x},{y})");
         _moveFrameCount = 2;
 
@@ -3695,6 +5234,7 @@ public partial class GameScene : Control
         // M12: 地图玩家标记跟随
         _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
         _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
+        UpdateAutoPathProgress();
     }
 
     private void StartRunningTest()
@@ -3732,22 +5272,56 @@ public partial class GameScene : Control
         };
     }
 
+    private void StartRightRunTest()
+    {
+        if (_net?.Connection?.Connected != true || _mapView?.Map == null || _player == null)
+        {
+            GD.PrintErr("[RightRunTest] FAIL client is not ready");
+            return;
+        }
+
+        _runningTestRightHeld = true;
+        _canRun = true;
+        int steps = GetRunSteps();
+        MirDirection direction = FindRunningTestDirection(steps);
+        GD.Print($"[RightRunTest] INPUT right-held canRun={_canRun} steps={steps} direction={direction}");
+        SendMouseMove(direction, steps, true);
+        GetTree().CreateTimer(0.9).Timeout += () =>
+        {
+            int nextSteps = GetRunSteps();
+            MirDirection nextDirection = FindRunningTestDirection(nextSteps);
+            GD.Print($"[RightRunTest] INPUT right-held-second canRun={_canRun} steps={nextSteps} direction={nextDirection}");
+            SendMouseMove(nextDirection, nextSteps, true);
+        };
+        GetTree().CreateTimer(1.8).Timeout += () =>
+        {
+            _runningTestRightHeld = false;
+            GD.Print($"[RightRunTest] RESULT animation={_player.Animation} location=({_playerLocation.X},{_playerLocation.Y})");
+        };
+    }
+
     private void SendMouseMove(MirDirection direction, int distance, bool running)
     {
         if (_net?.Connection?.Connected != true) return;
+        // 原版 UserObject.AttemptAction(Moving) 在发包前就切换本地动作；
+        // 服务端回包只负责确认终点和最终距离，不能让网络往返时间表现成站立。
+        _player?.BeginMove(direction, Math.Max(1, distance), _playerHorse != HorseType.None,
+            running && distance >= 2);
         _net.Connection.Enqueue(new C.Move { Direction = direction, Distance = distance });
         // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run。
         _canRun = true;
         if (AutoLoginArgs.RunningTest)
             GD.Print($"[RunningTest] SEND distance={distance} running={running} direction={direction}");
+        if (AutoLoginArgs.RightRunTest)
+            GD.Print($"[RightRunTest] SEND distance={distance} running={running} direction={direction}");
     }
 
     private int GetRunSteps()
     {
-        // 当前服务端已停用 C.Move 的负重禁跑校验（SConnection.Process(C.Move)
-        // 中该检查被注释）。客户端不能继续单方面把所有超重移动压成 1 格，
-        // 否则服务器支持的 Running 动作永远无法触发。
-        int steps = _canRun ? 2 : 1;
+        // 原版规则：站立后的第一段先走；后续只有背包和穿戴均未超重才跑。
+        int steps = Godot.Time.GetTicksMsec() >= _runCooldownUntilMs
+            && _canRun && BagWeight <= _playerStats[Stat.BagWeight]
+            && WearWeight <= _playerStats[Stat.WearWeight] ? 2 : 1;
         if (steps > 1 && _playerHorse != Library.HorseType.None) steps++;
         return steps;
     }
@@ -3757,7 +5331,11 @@ public partial class GameScene : Control
 
     private MirDirection FindRunningTestDirection(int distance)
     {
-        for (int direction = 0; direction < 8; direction++)
+        // Use cardinal directions first: the legacy server's multi-cell move
+        // validation treats diagonal segments differently, while right-run
+        // itself must still be verified with the authoritative distance.
+        int[] directions = { 0, 2, 4, 6, 1, 3, 5, 7 };
+        foreach (int direction in directions)
         {
             var dir = (MirDirection)direction;
             bool open = true;
@@ -3765,7 +5343,7 @@ public partial class GameScene : Control
             {
                 var point = Functions.Move(_playerLocation, dir, step);
                 if (point.X < 0 || point.Y < 0 || point.X >= _mapView.Map.Width || point.Y >= _mapView.Map.Height ||
-                    !_mapView.Map.Cells[point.X, point.Y].Flag)
+                    _mapView.Map.Cells[point.X, point.Y].Flag)
                 {
                     open = false;
                     break;
@@ -3835,14 +5413,22 @@ public partial class GameScene : Control
         _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
     }
 
+    private static Weather ResolveMapWeather(MapInfo mapInfo)
+    {
+        if (TownWeatherTestMode && mapInfo != null && TownWeatherTestMaps.Contains(mapInfo.FileName))
+            return (Weather)Random.Shared.Next(1, 16);
+
+        return mapInfo?.Weather ?? Weather.None;
+    }
+
     public override void _Process(double delta)
     {
         UpdateViewRange();
 
-        if (AutoLoginArgs.RunningTest && !_runningTestStarted && _startGameShown && _mapView?.Map != null)
+        if ((AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest) && !_runningTestStarted && _startGameShown && _mapView?.Map != null)
         {
             _runningTestStarted = true;
-            GetTree().CreateTimer(1.0).Timeout += StartRunningTest;
+            GetTree().CreateTimer(1.0).Timeout += (AutoLoginArgs.RightRunTest ? StartRightRunTest : StartRunningTest);
         }
 
         // M9: 拿起物品跟随鼠标 + 悬浮提示
@@ -3910,8 +5496,7 @@ public partial class GameScene : Control
                 _canRun = IsRunInputHeld();
                 _player.OffsetX = 0f;
                 _player.OffsetY = 0f;
-                _player.SetAnimation(_playerHorse != HorseType.None
-                    ? MirAnimation.HorseStanding : MirAnimation.Standing);
+                _player.PlayStandingForState();
             }
             UpdatePlayerPosition();
         }
@@ -4049,6 +5634,14 @@ public partial class GameScene : Control
             _ => false
         };
         var castCell = useMouseLocation || selected == null ? mouseCell : targetCell;
+        if (magic.Info.School == MagicSchool.Toggle)
+        {
+            bool enabled = !_enabledToggleMagics.Contains(magic.Info.Magic);
+            if (enabled) _enabledToggleMagics.Add(magic.Info.Magic); else _enabledToggleMagics.Remove(magic.Info.Magic);
+            SendMagicToggle(magic.Info.Magic, enabled);
+            RefreshMagicBars();
+            return;
+        }
         MirDirection dir = Functions.DirectionFromPoint(
             new System.Drawing.Point(pCell.X, pCell.Y), castCell);
         GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} " +
@@ -4084,6 +5677,9 @@ public partial class GameScene : Control
         if (@event is not InputEventKey key || !key.Pressed) return;
         GD.Print($"[Game] KEY {key.Keycode} ctrl={key.CtrlPressed} alt={key.AltPressed} shift={key.ShiftPressed}");
         if (_net?.Connection?.Connected != true) return;
+
+        if (_chatTextBox?.HandleGlobalKey(key) == true)
+            return;
 
         // M11: F2 开关状态窗口, Esc 关闭最上层窗口
         // 原版：Ctrl+F1~F4 切换技能栏，其余 F1~F12 释放当前栏技能。
@@ -4156,7 +5752,8 @@ public partial class GameScene : Control
         if (dir != null)
         {
             GD.Print($"[Game] MOVE {dir.Value}");
-            _net.Connection.Enqueue(new C.Move { Direction = dir.Value, Distance = 1 });
+            if (CanPlayerMove())
+                SendMouseMove(dir.Value, 1, false);
         }
         else if (key.Keycode == Key.F12)
         {
@@ -4170,6 +5767,31 @@ public partial class GameScene : Control
     // 对齐旧版 ActiveScene 的“UI 优先、地图其次”分发顺序。
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (@event is InputEventMouseButton stateMouse && stateMouse.Pressed &&
+            (stateMouse.ButtonIndex == MouseButton.Left || stateMouse.ButtonIndex == MouseButton.Right))
+        {
+            CancelAutoPath();
+            if (IsFishingActive)
+            {
+                SendFishingCast(FishingState.Cancel);
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+            if (IsTamingActive)
+            {
+                CancelTaming();
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+        }
+        if (@event is InputEventMouseButton currencyMouse && currencyMouse.Pressed && currencyMouse.ButtonIndex == MouseButton.Left && _selectedCurrency != null)
+        {
+            var target = _combatController?.MouseCell() ?? _playerLocation;
+            _net?.Connection?.SendCurrencyDrop(_selectedCurrency.CurrencyIndex, _selectedCurrency.Amount);
+            _selectedCurrency = null;
+            GetViewport().SetInputAsHandled();
+            return;
+        }
         if (@event is InputEventMouseButton dropMouse && dropMouse.Pressed && dropMouse.ButtonIndex == MouseButton.Left)
         {
             var cell = DXItemCell.SelectedCell;
@@ -4184,12 +5806,98 @@ public partial class GameScene : Control
             }
         }
 
+        if (@event is InputEventMouseButton altMouse && altMouse.Pressed
+            && altMouse.ButtonIndex == MouseButton.Left && Input.IsKeyPressed(Key.Alt))
+        {
+            if (_player == null || _player.ElementalHurricane || _playerHorse != HorseType.None
+                || IsFishingActive || IsTamingActive)
+            {
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+
+            var target = _combatController?.MouseCell() ?? _playerLocation;
+            var direction = Functions.DirectionFromPoint(_playerLocation, target);
+            int distance = Math.Max(Math.Abs(target.X - _playerLocation.X),
+                Math.Abs(target.Y - _playerLocation.Y));
+            var tool = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.FishingRod
+                || x?.Info?.ItemEffect == ItemEffect.TamingLasso);
+            var armour = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.FishingRobe);
+            var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+
+            bool fishingSetup = tool?.Info?.ItemEffect == ItemEffect.FishingRod && armour != null;
+            if (fishingSetup && mapInfo != null
+                && Functions.FishingZone(Globals.FishingInfoList, mapInfo,
+                    _mapView.Map.Width, _mapView.Map.Height, target) != null
+                && Functions.ValidFishingDistance(distance, _playerStats[Stat.ThrowDistance]))
+            {
+                _playerDirection = direction;
+                _net?.Connection?.SendFishingCast(FishingState.Cast, direction, target);
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+            if (fishingSetup) return;
+
+            var monster = _combatController?.MouseObject;
+            if (tool?.Info?.ItemEffect == ItemEffect.TamingLasso && monster?.Type == ObjectRenderer.Kind.Monster
+                && monster.MonsterInfo?.AI == 135 && distance <= Globals.TamingDistance)
+            {
+                _tamingTargetObjectID = monster.ObjectID;
+                _playerDirection = direction;
+                _net?.Connection?.SendTaming(monster.ObjectID, TamingState.Cast, direction);
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+
+            _playerDirection = direction;
+            _net?.Connection?.SendHarvest(direction);
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
         if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
+            _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Item)
+        {
+            // 旧版 MapControl：左键点击地面掉落物（或玩家脚下）发送 PickUp，
+            // 不把掉落物当作普通目标/攻击对象。
+            SendPickUp();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        if (@event is InputEventMouseButton npcMouse && npcMouse.Pressed && npcMouse.ButtonIndex == MouseButton.Left &&
             _combatController?.MouseObject?.Type == ObjectRenderer.Kind.NPC)
         {
             _npcObjectId = _combatController.MouseObject.ObjectID;
             _net?.Connection?.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
             GetViewport().SetInputAsHandled();
         }
+
+        if (@event is InputEventMouseButton miningMouse && miningMouse.Pressed && miningMouse.ButtonIndex == MouseButton.Left &&
+            _combatController != null && _combatController.MouseObject == null)
+        {
+            var pickaxe = Equipment.FirstOrDefault(x => x?.Info?.ItemEffect == ItemEffect.PickAxe);
+            var target = _combatController.MouseCell();
+            int distance = Math.Max(Math.Abs(target.X - _playerLocation.X), Math.Abs(target.Y - _playerLocation.Y));
+            var mapInfo = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex);
+            bool validMiningPoint = mapInfo?.CanMine == true && _mapView?.Map != null
+                && target.X >= 0 && target.Y >= 0 && target.X < _mapView.Map.Width && target.Y < _mapView.Map.Height
+                && _mapView.Map.Cells[target.X, target.Y].Flag;
+            if (pickaxe != null && distance == 1 && validMiningPoint)
+            {
+                var direction = Functions.DirectionFromPoint(_playerLocation, target);
+                _net?.Connection?.Enqueue(new C.Mining { Direction = direction });
+                GetViewport().SetInputAsHandled();
+            }
+        }
+
+        if (@event is InputEventMouseButton inspectMouse && inspectMouse.Pressed && inspectMouse.ButtonIndex == MouseButton.Right &&
+            Input.IsKeyPressed(Key.Ctrl) && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player &&
+            _combatController.MouseObject.ObjectID != _playerObjectID)
+        {
+            _net?.Connection?.Enqueue(new C.Inspect { Index = _combatController.MouseObject.CharacterIndex, Ranking = false });
+            GetViewport().SetInputAsHandled();
+        }
+
     }
 }
