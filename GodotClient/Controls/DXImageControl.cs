@@ -95,6 +95,11 @@ public partial class DXImageControl : DXControl
         Color tint = IsEnabled ? ForeColour : new Color(0.29f, 0.29f, 0.29f, 1f);
         if (!Blend)
             tint.A *= Mathf.Clamp(ImageOpacity, 0f, 1f);
+        // 灰度 shader 用 uniform vcolor 接收顶点色（COLOR 已被模板预乘 texel，
+        // 无法无损恢复 Col；见 CreateGrayMaterial 注释）。tint 每次绘制可变
+        // （禁用变灰、非 Blend 衰减 ImageOpacity），必须每帧写入。
+        if (GrayScale && Material is ShaderMaterial sm)
+            sm.SetShaderParameter("vcolor", tint);
         DrawTextureRect(tex, dest, false, tint);
     }
 
@@ -105,38 +110,41 @@ public partial class DXImageControl : DXControl
         //   out.rgb = gray * Col.rgb * texel.a * Col.a     // 预乘两个 Alpha
         //   out.a   = texel.a * Col.a
         // Blend 变体再叠加 NORMAL 屏幕混合 out = src*(1-dst)+dst。
-        // Godot 贴图为直通 RGBA8，因此 texel.a 预乘必须在 shader 内完成；
-        // 灰度值只能对直通 texel.rgb 计算，不能先乘 COLOR（原版 Col 只乘
-        // 一次，出现在 gray 之外）。
-        // 两个变体都用普通 mix 输出完整结果 (alpha=1)，不用 blend_add：
-        // Godot 的 canvas blend_add 把 shader 输出当预乘处理
-        // (贡献 = COLOR.rgb*COLOR.a)，而 screen 公式的 alpha 通道
-        // (texel.a*(1-dst.a)) 会把 RGB 贡献压成 0，导致特效不可见。
-        // 另：Godot 默认 mix 的混合因子是 TEXTURE alpha (final =
-        // COLOR.rgb*texel.a + dst*(1-texel.a))，输出会被 texel.a 再预乘一次；
-        // 故 src 项除以 texel.a 补偿，最终 = src*(1-dst)+dst (旧端精确数学)。
+        //
+        // Godot 4 canvas 管线实测（MapTestScene 混合审计，字节级验证）：
+        //   1. texture(TEXTURE, UV) 返回直通 texel（rgb 与 a 均未预乘）。
+        //   2. 片元 shader 的 COLOR 输入 = 顶点色 × 贴图：canvas 模板在用户
+        //      代码之前执行 color *= texture(color_texture, uv)。即
+        //      COLOR = Col × texel —— 旧实现 0.125 而非 0.25 的根因：
+        //      source = l*COLOR.rgb*texel.a*COLOR.a 把 texel.rgb 与 texel.a
+        //      各多乘了一次（灰 texel 0.5/白顶点色 → 0.25×0.5×0.5 = 0.0625
+        //      → 0.125）。
+        //   3. screen_texture = 本 item 绘制前的同帧帧缓冲；默认 MIX 的混合
+        //      因子是 shader 输出的 COLOR.a（不是 TEXTURE alpha）。本 shader
+        //      输出 alpha=1 → 因子=1 → 写出的颜色就是 COLOR.rgb，字节级可验证。
+        //   4. 原版 Col 无法从 COLOR 无损恢复（texel.rgb 含 0 通道时除法
+        //      发散且信息已丢失），必须用 uniform vcolor 显式传入顶点色；
+        //      DrawControl 每次绘制前写入 tint（见下）。
+        // 因此：src.rgb = l * vcolor.rgb * texel.a * vcolor.a = 原版精确数学。
         // 非 blend 变体（普通 alpha 混合 out = src + dst*(1-src.a)）同样输出
         // alpha=1、在 shader 内用 screen_texture 完成 dst 项：实测 Godot 对
         // alpha<1 的 shader 输出混入额外预乘（常量 a=0.5 的 shader 在黑底上
         // 渲染出 0.75 而非 0.5），无法按标准公式预测；alpha=1 + 显式 dst 项
         // 则字节级可验证。
-        // 注意 Godot 2D 贴图上传即预乘：texel.rgb = 直通.rgb * texel.a，
-        // 故 l = dot(texel.rgb) 已含 texel.a；src = l * Col.rgb * Col.a
-        // = 直通gray * Col.rgb * (texel.a*Col.a)，与旧端单次预乘一致。
         var shader = new Shader
         {
-            Code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\n" +
+            Code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nuniform vec4 vcolor = vec4(1.0);\n" +
                 "void fragment() {\n" +
                 "    vec4 texel = texture(TEXTURE, UV);\n" +
                 "    float l = dot(texel.rgb, vec3(0.299, 0.587, 0.114));\n" +
                 (blend
                     ? "    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n" +
-                      "    vec3 source = vec3(l) * COLOR.rgb * texel.a * COLOR.a;\n" +
-                      "    vec3 out_rgb = destination.rgb + source * (vec3(1.0) - destination.rgb) / max(texel.a, 0.0001);\n" +
+                      "    vec3 source = vec3(l) * vcolor.rgb * texel.a * vcolor.a;\n" +
+                      "    vec3 out_rgb = destination.rgb + source * (vec3(1.0) - destination.rgb);\n" +
                       "    COLOR = vec4(out_rgb, 1.0);\n"
                     : "    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n" +
-                      "    float a = texel.a * COLOR.a;\n" +
-                      "    vec3 source = vec3(l) * COLOR.rgb * COLOR.a;\n" +
+                      "    float a = texel.a * vcolor.a;\n" +
+                      "    vec3 source = vec3(l) * vcolor.rgb * texel.a * vcolor.a;\n" +
                       "    COLOR = vec4(source + destination.rgb * (1.0 - a), 1.0);\n") +
                 "}"
         };

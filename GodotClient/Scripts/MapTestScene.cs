@@ -1437,35 +1437,44 @@ public partial class MapTestScene : Control
     }
 
     // 原版 Screen Blend（BlendMode.NORMAL）数学的确定性像素验证（真实 Vulkan 读回）：
-    //   src.rgb = texel.rgb * texel.a * COLOR.rgb * COLOR.a
-    //   src.a   = texel.a * COLOR.a
+    //   src.rgb = texel.rgb * texel.a * Col.rgb * Col.a
+    //   src.a   = texel.a * Col.a
     //   out     = src * (1 - dst) + dst          （RGB/Alpha 双通道）
-    // 黑色底板使 (1-dst) 空间无关（黑→黑、白→白映射唯一），因此所有期望值
-    // 在 sRGB 与线性管线下相同，只留两个互斥候选：
-    // LegacyScreenBlend.gdshader 当前为普通 mix + 完整公式（非 blend_add）：
-    //   COLOR = src*(1-dst)+dst, alpha=1，dst 来自 screen_texture（黑底板=0）。
-    // 实测（白 α0.5 → 0.25 而非 0.5）证明 Godot 2D 在贴图上传时预乘了 alpha
-    // （texel.rgb 已含 straight.rgb*a），因此当前着色器 texel.rgb*texel.a 会把
-    // alpha 平方一次 —— 对半透明内容比原版公式暗 a 倍。
-    // 期望 current = 当前着色器实际输出（premult texel × texel.a × COLOR...）
-    // 期望 original = 原版公式（premult texel × COLOR...，即只乘一次 a）。
-    // 判定：current 命中 → 双重预乘确认，需修 shader；original 命中 → 奇偶一致。
+    // 灰度 Blend：gray = dot(直通 texel.rgb, luma)；out = gray*Col.rgb*texel.a*Col.a。
+    // 已实测确定的 Godot 4 canvas 管线（kind 14-24 判别）：
+    //   - texture(TEXTURE, UV) 返回直通 texel（rgb/a 均未预乘）；
+    //   - shader 输入 COLOR = 顶点色 × texel（模板先 color *= texture）；
+    //   - screen_texture = 本 item 绘制前的同帧帧缓冲（kind 14/15 测到红探针）；
+    //   - MIX 因子 = shader 输出的 COLOR.a（本审计全部输出 alpha=1 → 因子=1）。
+    // 期望 current = 修复前（错误 COLOR 预乘公式）输出；期望 original = 原版公式。
+    // 期望值按红探针底板 (1,0,0) 计算（探针 ZIndex 200 垫在 quad 下方，黑底板
+    // ZIndex 200 更早添加 → dest.rgb = (1,0,0)）；out.r = 1 + src.r*0 = 1（blend
+    // 类），g/b 通道携带判别信息。判定：original 命中 → 奇偶一致。
     private static readonly Color BlendAuditBackdropColour = new Color(0f, 0f, 0f, 1f);
     // (texel[直通], modulate, 期望 current, 期望 original, Kind)
     // Kind: 0 = LegacyScreenBlend 材质, 1 = 灰度 Blend, 2 = 灰度非 Blend
+    // 奇偶门只统计 Kind<=2（三种生产材质），判别 kind 仅作人工诊断。
     private static readonly (Color Texel, Color Modulate, Color ExpectCurrent, Color ExpectOriginal, int Kind)[] BlendAuditCases =
     {
-        (new Color(1f, 1f, 1f, 0.5f),  Colors.White,                new Color(0.25f, 0.25f, 0.25f, 1f), new Color(0.5f, 0.5f, 0.5f, 1f), 0), // 判别器：半透明白
-        (new Color(1f, 1f, 1f, 1f),    new Color(1f, 1f, 1f, 0.8f), new Color(0.8f, 0.8f, 0.8f, 1f),    new Color(0.8f, 0.8f, 0.8f, 1f), 0),  // 不透明 texel：两模型同值
-        (new Color(1f, 1f, 1f, 0.5f),  new Color(1f, 1f, 1f, 0.8f), new Color(0.2f, 0.2f, 0.2f, 1f),    new Color(0.4f, 0.4f, 0.4f, 1f), 0),  // 判别器：texel.a×COLOR.a
-        (new Color(0f, 0f, 0f, 1f),    Colors.White,                new Color(0f, 0f, 0f, 1f),          new Color(0f, 0f, 0f, 1f), 0),       // 黑 texel → 0
-        (new Color(1f, 1f, 1f, 0f),    Colors.White,                new Color(0f, 0f, 0f, 1f),          new Color(0f, 0f, 0f, 1f), 0),       // 零 alpha → 0
-        (new Color(1f, 0f, 0f, 0.5f),  Colors.White,                new Color(0.25f, 0f, 0f, 1f),       new Color(0.5f, 0f, 0f, 1f), 0),     // 判别器：红 α0.5 通道隔离
-        // 灰度 Blend：premult texel.rgb=(0.25,0.25,0.25) → l=0.25；
-        // original = l（/texel.a 补偿后恰好抵消）；current(无补偿) = l*texel.a = 0.125
-        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.125f, 0.125f, 0.125f, 1f), new Color(0.25f, 0.25f, 0.25f, 1f), 1),
-        // 灰度非 Blend：original out = l + dst*(1-a) = 0.25；current(旧 alpha<1 版) = 0.125（ONE/INV 假设）
-        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.125f, 0.125f, 0.125f, 1f), new Color(0.25f, 0.25f, 0.25f, 1f), 2),
+        (new Color(1f, 1f, 1f, 0.5f),  Colors.White,                new Color(1f, 0.5f, 0.5f, 1f),      new Color(1f, 0.5f, 0.5f, 1f), 0),  // 判别器：半透明白（红底 → r=1, g=0.5）
+        (new Color(1f, 1f, 1f, 1f),    new Color(1f, 1f, 1f, 0.8f), new Color(1f, 0.8f, 0.8f, 1f),    new Color(1f, 0.8f, 0.8f, 1f), 0),  // 不透明 texel：两模型同值
+        (new Color(1f, 1f, 1f, 0.5f),  new Color(1f, 1f, 1f, 0.8f), new Color(1f, 0.4f, 0.4f, 1f),    new Color(1f, 0.4f, 0.4f, 1f), 0),  // 判别器：texel.a×COLOR.a
+        (new Color(0f, 0f, 0f, 1f),    Colors.White,                new Color(1f, 0f, 0f, 1f),        new Color(1f, 0f, 0f, 1f), 0),     // 黑 texel → 0 → 探针透出
+        (new Color(1f, 1f, 1f, 0f),    Colors.White,                new Color(1f, 0f, 0f, 1f),        new Color(1f, 0f, 0f, 1f), 0),     // 零 alpha → discard → 探针透出
+        (new Color(1f, 0f, 0f, 0.5f),  Colors.White,                new Color(1f, 0f, 0f, 1f),        new Color(1f, 0f, 0f, 1f), 0),     // 判别器：红 α0.5 通道隔离
+        // 灰度 Blend（vcolor=modulate）：source = l*vcolor.rgb*texel.a*vcolor.a；
+        // 红底 out = (1,0,0) + source*(0,1,1)。original = 0.25（灰 0.5、白顶点色：
+        // l=0.5, texel.a=0.5）；修复前 source = l*COLOR.rgb*texel.a*COLOR.a 多乘
+        // texel.rgb×texel.a → 0.125。
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(1f, 0.125f, 0.125f, 1f), new Color(1f, 0.25f, 0.25f, 1f), 1),
+        // 灰度非 Blend：a = texel.a*vcolor.a = 0.5；out = source + dst*(1-a)；
+        // 红底 original = (0.25,0.25,0.25) + (1,0,0)*0.5 = (0.75,0.25,0.25)；
+        // 修复前 a = texel.a*COLOR.a = 0.25、source = 0.125 → (0.875,0.125,0.125)。
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.875f, 0.125f, 0.125f, 1f), new Color(0.75f, 0.25f, 0.25f, 1f), 2),
+        // 判别器：Legacy 材质 + 部分覆盖灰 texel（COLOR=0.5×0.5=0.25）；
+        // 修复前 source = texel.rgb*texel.a*COLOR.rgb*COLOR.a = 0.0625 → /texel.a = 0.125；
+        // 修复后 source = texel.a*COLOR.rgb*COLOR.a = 0.125 → /texel.a = 0.25（= 原版）。
+        (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(1f, 0.125f, 0.125f, 1f), new Color(1f, 0.25f, 0.25f, 1f), 0),
         // 诊断：emit 纯白 (alpha=1) → got = 混合因子（texel.a 或 1）；emit texel.rgb → got = texel.rgb×混合因子
         (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(1f, 1f, 1f, 1f),            new Color(1f, 1f, 1f, 1f), 3),
         (new Color(0.5f, 0.5f, 0.5f, 0.5f), Colors.White,           new Color(0.25f, 0.25f, 0.25f, 1f),    new Color(0.25f, 0.25f, 0.25f, 1f), 4),
@@ -1648,6 +1657,8 @@ public partial class MapTestScene : Control
                                                                                                         : "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;\nvoid fragment() {\n    vec4 texel = texture(TEXTURE, UV);\n    vec4 destination = textureLod(screen_texture, SCREEN_UV, 0.0);\n    COLOR = vec4(texel.rgb + destination.rgb * 0.25, 1.0);\n}",
                 },
             };
+        if (!isProbe && (kind == 1 || kind == 2))
+            mat!.SetShaderParameter("vcolor", modulate);
         if (!isProbe)
             GD.Print($"[BlendAudit] case={i} kind={kind} shader={(mat?.Shader as Shader)?.Code?.Replace("\n", " | ")}");
         if (!isProbe)
@@ -1721,19 +1732,20 @@ public partial class MapTestScene : Control
         int i = _blendAuditCase;
         int probeIndex = i - BlendAuditCases.Length;
         bool isProbe = probeIndex >= 0;
-        (Color texel, Color modulate, Color expectCurrent, Color expectOriginal) =
-            isProbe ? BlendAuditMixProbes[probeIndex]
+        (Color texel, Color modulate, Color expectCurrent, Color expectOriginal, int kind) =
+            isProbe ? (BlendAuditMixProbes[probeIndex].Texel, BlendAuditMixProbes[probeIndex].Modulate,
+                       BlendAuditMixProbes[probeIndex].ExpectCurrent, BlendAuditMixProbes[probeIndex].ExpectOriginal, 0)
                     : (BlendAuditCases[i].Texel, BlendAuditCases[i].Modulate,
-                       BlendAuditCases[i].ExpectCurrent, BlendAuditCases[i].ExpectOriginal);
+                       BlendAuditCases[i].ExpectCurrent, BlendAuditCases[i].ExpectOriginal, BlendAuditCases[i].Kind);
         Color got = SampleBlendAuditQuad(image);
         bool curHit = BlendColourClose(got, expectCurrent);
         bool origHit = BlendColourClose(got, expectOriginal);
         if (curHit) _blendAuditCurrentHits++;
         if (origHit) _blendAuditOriginalHits++;
-        // 奇偶判定只统计 blend 材质案例（cases），探针仅作管线语义记录
-        if (!isProbe && origHit) _blendAuditParityHits++;
+        // 奇偶判定只统计三种生产 blend 材质（Kind<=2），探针与判别 kind 仅作记录
+        if (!isProbe && kind <= 2 && origHit) _blendAuditParityHits++;
         GD.Print($"[BlendAudit] case={i} texel={texel} colour={modulate} got={got} " +
-                 $"current(texel.rgb*texel.a*Col)={expectCurrent} original(straight.rgb*texel.a*Col)={expectOriginal} " +
+                 $"broken(修复前)={expectCurrent} original(原版)={expectOriginal} " +
                  (curHit || origHit ? (origHit ? "PASS(original)" : "PASS(current)") : "FAIL"));
         int total = BlendAuditCases.Length + BlendAuditMixProbes.Length;
         if (++_blendAuditCase < total)
@@ -1747,8 +1759,9 @@ public partial class MapTestScene : Control
                  (backdropOk ? "PASS" : "FAIL"));
         string path = "/tmp/zircon-blend-audit.png";
         image.SavePng(path);
-        GD.Print($"[BlendAudit] 判定: original命中={_blendAuditOriginalHits} current命中={_blendAuditCurrentHits} 奇偶案例命中original={_blendAuditParityHits}/{BlendAuditCases.Length} cases={total}");
-        GD.Print(_blendAuditParityHits == BlendAuditCases.Length && backdropOk
+        int materialCases = BlendAuditCases.Count(c => c.Kind <= 2);
+        GD.Print($"[BlendAudit] 判定: original命中={_blendAuditOriginalHits} current命中={_blendAuditCurrentHits} 材质案例命中original={_blendAuditParityHits}/{materialCases} cases={total}");
+        GD.Print(_blendAuditParityHits == materialCases && backdropOk
             ? $"[BlendAudit] PASS 所有 blend 材质与原始公式一致 截图 {path}"
             : $"[BlendAudit] FAIL 未命中原始公式，截图 {path}");
         GetTree().Quit();
