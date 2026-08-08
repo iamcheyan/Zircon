@@ -133,9 +133,13 @@ public partial class MirEffectNode : Node2D
 
         // 位置跟随目标或固定格子
         if (_targetNode != null)
-            // MapObjectNode 使用对象基线，而旧端 MirEffect.Target 使用
-            // MapObject.DrawY；当前对象基线多一格，需还原到旧端锚点。
-            Position = _targetNode.Position - new Vector2(0f, 32f);
+            // 特效与身体共用锚点：旧端 MirEffect.Target 锚在 MapObject.DrawX/DrawY
+            // （与身体同一帧），Godot 身体/对象节点锚在 Position（objectBaseline）。
+            // 不能减 32——那会把特效放回旧端格子原点帧，相对身体恒高 32px（盾浮头）。
+            Position = _targetNode.Position;
+        else if (_target != null)
+            // Setup(对象锚定) 分支：跟随对象节点（如地上物品光效）。
+            Position = _target.Position;
         else if (_cameraFn != null)
             Position = _cameraFn();
 

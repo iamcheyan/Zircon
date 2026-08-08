@@ -63,7 +63,9 @@ public partial class MirProjectileNode : MirEffectNode
         // MovingOffSet 都会反映到飞行轨迹，而不是沿着旧屏幕坐标漂移。
         Vector2 originScreen = _cameraFnByCell(Origin.X, Origin.Y);
         Vector2 targetScreen = _targetNode != null
-            ? _targetNode.Position - new Vector2(0f, 32f)
+            // 与 MirEffectNode 一致：目标特效锚在对象节点（objectBaseline），
+            // 不还原到旧端格子原点帧，否则相对身体恒高 32px。
+            ? _targetNode.Position
             : _cameraFnByCell(_targetCellX, _targetCellY);
         var origin = ToLegacyProjectilePoint(originScreen);
         var target = ToLegacyProjectilePoint(targetScreen);
