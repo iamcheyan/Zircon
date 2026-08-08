@@ -19,6 +19,8 @@ static class Program
     static bool DryRun;
     static bool ResetPositions;
     static bool ResourceReport;
+    static bool SeedReference;
+    static bool FindShuriken;
 
     static int Main(string[] args)
     {
@@ -35,7 +37,9 @@ static class Program
                 case "--reference": ReferenceName = args[++i]; break;
                 case "--dry-run": DryRun = true; break;
                 case "--reset-positions": ResetPositions = true; break;
+                case "--seed-reference": SeedReference = true; break;
                 case "--resource-report": ResourceReport = true; break;
+                case "--find-shuriken": FindShuriken = true; break;
                 case "--help": Usage(); return 0;
                 default: Console.Error.WriteLine($"未知参数: {args[i]}"); return 2;
             }
@@ -51,6 +55,9 @@ static class Program
         SEnvir.CurrencyInfoList = Session.GetCollection<CurrencyInfo>();
         SEnvir.UserCurrencyList = Session.GetCollection<UserCurrency>();
         SEnvir.BuffInfoList = Session.GetCollection<BuffInfo>();
+        // 行会重置需要 SEnvir 集合句柄 (服务端 LoadDatabase 486-487 同样接线)
+        SEnvir.GuildInfoList = Session.GetCollection<GuildInfo>();
+        SEnvir.GuildMemberInfoList = Session.GetCollection<GuildMemberInfo>();
 
         if (ResourceReport)
         {
@@ -89,10 +96,60 @@ static class Program
                     Console.WriteLine($"  {npc.NPCName}: page={page.DialogType} goods={page.Goods?.Count ?? 0} types={page.Types?.Count ?? 0} goodsIndex={npc.GoodsIndex} items={string.Join(",", page.Goods?.Where(g => g.Item != null).Select(g => g.Item.ItemName) ?? Enumerable.Empty<string>())}");
             }
 
+            var safeZones = Session.GetCollection<SafeZoneInfo>().Binding.ToList();
+            Console.WriteLine($"安全区区域 (SafeZoneInfo) 总数={safeZones.Count}:");
+            foreach (var sz in safeZones.OrderBy(x => x.Region?.Map?.Index ?? 9999).ThenBy(x => x.Region?.Description))
+            {
+                string regionDesc = sz.Region == null ? "(null)" : $"{sz.Region.Description ?? ""} map={sz.Region.Map?.Index} bit={sz.Region.BitRegion?.Length} pts={sz.Region.PointRegion?.Length}";
+                Console.WriteLine($"  region={regionDesc} bind={sz.BindRegion?.Description} red={sz.RedZone} border={sz.Border}");
+                if (sz.Region?.PointRegion != null)
+                    foreach (var p in sz.Region.PointRegion.Take(3))
+                        Console.WriteLine($"    point=({p.X},{p.Y})");
+            }
+
+            Console.WriteLine("伙伴食物 (ItemType.CompanionFood):");
+            foreach (var food in Session.GetCollection<ItemInfo>().Binding
+                .Where(x => x.ItemType == ItemType.CompanionFood)
+                .OrderBy(x => x.ItemName))
+                Console.WriteLine($"  {food.ItemName} index={food.Index} hungerStat={food.Stats[Stat.CompanionHunger]} stack={food.StackSize} dur={food.Durability} shape={food.Shape}");
+
+            Console.WriteLine("伙伴等级配置:");
+            foreach (var lv in Session.GetCollection<CompanionLevelInfo>().Binding.OrderBy(x => x.Level))
+                Console.WriteLine($"  Lv{lv.Level} inventory={lv.InventorySpace} weight={lv.InventoryWeight} maxHunger={lv.MaxHunger}");
+
             Console.WriteLine($"宠物配置: companions={Session.GetCollection<CompanionInfo>().Binding.Count}, unlocks={Session.GetCollection<UserCompanionUnlock>().Binding.Count}, users={Session.GetCollection<UserCompanion>().Binding.Count}");
             Console.WriteLine($"副本配置: instances={Session.GetCollection<InstanceInfo>().Binding.Count}, instanceMaps={Session.GetCollection<InstanceMapInfo>().Binding.Count}");
             Console.WriteLine($"礼包配置: bundles={Session.GetCollection<BundleInfo>().Binding.Count}, lootBoxes={Session.GetCollection<LootBoxInfo>().Binding.Count}");
             Console.WriteLine($"市场记录: auctions={Session.GetCollection<AuctionInfo>().Binding.Count}");
+            return 0;
+        }
+        if (FindShuriken)
+        {
+            var items = Session.GetCollection<ItemInfo>().Binding;
+            Console.WriteLine("形状 33 武器 (Shuriken 类):");
+            foreach (var item in items.Where(x => x.ItemType == ItemType.Weapon && x.Shape == 33)
+                .OrderBy(x => x.Index))
+                Console.WriteLine($"  index={item.Index} {item.ItemName} class={item.RequiredClass} level={item.RequiredAmount}");
+            if (!items.Any(x => x.ItemType == ItemType.Weapon && x.Shape == 33))
+                Console.WriteLine("  (无)");
+            Console.WriteLine("武器形状分布:");
+            foreach (var g in items.Where(x => x.ItemType == ItemType.Weapon).GroupBy(x => x.Shape).OrderBy(x => x.Key))
+                Console.WriteLine($"  shape={g.Key} count={g.Count()} 例: {string.Join(", ", g.Take(3).Select(x => x.ItemName))}");
+            Console.WriteLine("地图 1 怪物刷新点 (TestHero 在 122,256):");
+            foreach (var spawn in Session.GetCollection<Library.SystemModels.RespawnInfo>().Binding.Where(x => x.Region?.Map?.Index == 1))
+                Console.WriteLine($"  {spawn.Monster?.MonsterName} index={spawn.Monster?.Index} region={spawn.Region?.Description} size={spawn.Region?.Size} count={spawn.Count}");
+            Console.WriteLine("地图 1 怪物属性:");
+            foreach (var m in Session.GetCollection<MonsterInfo>().Binding.Where(x => x.Respawns?.Any(r => r.Region?.Map?.Index == 1) == true).OrderBy(x => x.Index))
+            {
+                var st = m.MonsterInfoStats.ToDictionary(x => x.Stat, x => x.Amount);
+                st.TryGetValue(Stat.Health, out int hp);
+                st.TryGetValue(Stat.MinDC, out int minDc);
+                st.TryGetValue(Stat.MaxDC, out int maxDc);
+                Console.WriteLine($"  {m.MonsterName} index={m.Index} Lv={m.Level} HP={hp} DC={minDc}-{maxDc} ai={m.AI}");
+            }
+            var hero = Session.GetCollection<CharacterInfo>().Binding.FirstOrDefault(x => x.CharacterName == ReferenceName);
+            if (hero != null)
+                Console.WriteLine($"TestHero: map={hero.CurrentMap?.Index} loc={hero.CurrentLocation} class={hero.Class} level={hero.Level}");
             return 0;
         }
         var accounts = Session.GetCollection<AccountInfo>().Binding;
@@ -114,6 +171,68 @@ static class Program
 
         Console.WriteLine($"数据库: {Session.UsersPath}");
         Console.WriteLine($"参考角色: {reference.CharacterName}, 地图={reference.CurrentMap?.Index}, 坐标={reference.CurrentLocation}");
+        if (SeedReference)
+        {
+            // 给参考角色 (TestHero) 施加与机器人相同的固定种子装备/消耗品/魔法，
+            // 保证实服操作审计每次都能拿到确定的戒指/手镯/自动药水。
+            // 规范重置: 先删除种子管理的物品/魔法再重新播种, 避免旧装备腾挪进背包
+            // 累积、重复槽位 (服务端按 Slot 绑定, 同槽双物品会歧义)。
+            int wiped = 0;
+            foreach (var item in reference.Items.ToList())
+            {
+                if (item.Info?.ItemType == ItemType.Torch) { reference.Items.Remove(item); item.Delete(); wiped++; }
+                else if (item.Slot >= Globals.EquipmentOffSet) { reference.Items.Remove(item); item.Delete(); wiped++; }
+                else if (item.Info != null && item.Info.CanAutoPot && item.Info.ItemType == ItemType.Consumable) { reference.Items.Remove(item); item.Delete(); wiped++; }
+                // 伙伴食物 (CanAutoPot=false) 也要清, 否则每次播种新发的食物会与残留堆叠槽位歧义
+                else if (item.Info?.ItemType == ItemType.CompanionFood) { reference.Items.Remove(item); item.Delete(); wiped++; }
+            }
+            int wipedMagics = reference.Magics.Count;
+            foreach (var magic in reference.Magics.ToList()) magic.Delete();
+            reference.Magics.Clear();
+            // 清空邮箱: 审计 S13-S15 依赖确定的邮件基线 (残留邮件会污染 mailCountBefore)
+            int wipedMail = reference.Account.Mail.Count;
+            foreach (var mail in reference.Account.Mail.ToList())
+            {
+                foreach (var item in mail.Items.ToList())
+                {
+                    mail.Items.Remove(item);
+                    item.Delete();
+                }
+                reference.Account.Mail.Remove(mail);
+                mail.Delete();
+            }
+            // 建会费 7.5M (Globals.GuildCreationCost); 审计前金币基线须足够
+            SeedCurrency(reference.Account, 50_000_000);
+            SeedEquipment(reference, reference.Class, reference.Level, 17);
+            EnsureTorch(reference);
+            EnsureClassSupplies(reference);
+            SeedConsumables(reference, 1);
+            SeedMagics(reference, reference.Class, reference.Level);
+            // C6/E3 实服端到端种子: 专属伙伴 (Lv2 才有 1 格背包) + 伙伴食物 x10 +
+            // 行会重置 + 安全区出生点 (每次强制, 防 S16 走位把存点移出安全区)
+            bool companionSeeded = SeedTestHeroCompanion(reference);
+            int foodCount = SeedCompanionFood(reference);
+            bool guildReset = ResetGuild(reference.Account);
+            ResetTestHeroPosition(reference);
+            var equipmentSlots = new[] { EquipmentSlot.Weapon, EquipmentSlot.Armour, EquipmentSlot.Helmet,
+                EquipmentSlot.Necklace, EquipmentSlot.BraceletL, EquipmentSlot.BraceletR,
+                EquipmentSlot.RingL, EquipmentSlot.RingR, EquipmentSlot.Shoes };
+            var equipped = string.Join(", ", equipmentSlots
+                .Select(s => (Slot: s, Item: reference.Items.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + (int)s)))
+                .Where(x => x.Item?.Info != null)
+                .Select(x => $"{x.Slot}={x.Item.Info.ItemName}"));
+            var potions = reference.Items.Where(x => x.Info?.CanAutoPot == true).Select(x => $"{x.Info.ItemName}x{x.Count}").ToList();
+            Session.Save(true);
+            Console.WriteLine($"[seed] {reference.CharacterName} {reference.Class}/{reference.Gender} Lv.{reference.Level} 清理 {wiped} 物品/{wipedMagics} 魔法/{wipedMail} 邮件");
+            Console.WriteLine($"[seed] 装备: {equipped}");
+            Console.WriteLine($"[seed] 自动药水: {string.Join(", ", potions)}");
+            Console.WriteLine($"[seed] 伙伴: {(companionSeeded ? $"{reference.Companion?.Name ?? "?"} Lv.{reference.Companion?.Level} Hunger={reference.Companion?.Hunger}" : "未播种")}");
+            Console.WriteLine($"[seed] 伙伴食物: {foodCount} 个");
+            Console.WriteLine($"[seed] 行会重置: {(guildReset ? "已删除旧行会成员/行会" : "无旧行会")}");
+            Console.WriteLine($"[seed] 出生点: map={reference.CurrentMap?.Index} loc={reference.CurrentLocation}");
+            Console.WriteLine("完成: 参考角色播种完毕。");
+            return 0;
+        }
         if (DryRun)
         {
             Console.WriteLine($"账号数={accounts.Count}, 角色数={characters.Count}, 物品模板={Session.GetCollection<ItemInfo>().Binding.Count}, 魔法模板={Session.GetCollection<MagicInfo>().Binding.Count}");
@@ -379,6 +498,111 @@ static class Program
         return true;
     }
 
+    // C6: TestHero 专属伙伴。Lv2 才有 1 格背包 (服务端 Companion.Stats[Stat.CompanionInventory]
+    // = InventorySpace, Lv1 为 0 会拒收物品), Hunger=50 (低于 Lv2 MaxHunger=100,
+    // 服务端 7054-7060 饥饿满拒用)。先删旧伙伴再建, 保证幂等。
+    static bool SeedTestHeroCompanion(CharacterInfo character)
+    {
+        var old = character.Companion;
+        if (old != null)
+        {
+            character.Companion = null;
+            old.Character = null;
+            old.Account = null;
+            old.Delete();
+        }
+        foreach (var stale in character.Account.Companions.ToList())
+        {
+            if (stale == old) continue;
+            stale.Character = null;
+            stale.Account = null;
+            stale.Delete();
+        }
+
+        var info = Session.GetCollection<CompanionInfo>().Binding
+            .Where(x => x.MonsterInfo != null)
+            .OrderBy(x => x.Index)
+            .FirstOrDefault();
+        if (info == null)
+        {
+            Console.WriteLine("[warn] 无 CompanionInfo (MonsterInfo != null), 跳过伙伴播种");
+            return false;
+        }
+
+        var companion = Session.GetCollection<UserCompanion>().CreateNewObject();
+        companion.Account = character.Account;
+        companion.Character = character;
+        companion.Info = info;
+        companion.Name = $"{character.CharacterName}伙伴";
+        companion.Level = 2;
+        companion.Hunger = 50;
+        character.Companion = companion;
+        return true;
+    }
+
+    // C6: 背包放 10 个伙伴食物 (首个 CompanionHunger > 0 的 CompanionFood), 找空闲槽
+    static int SeedCompanionFood(CharacterInfo character)
+    {
+        var food = Session.GetCollection<ItemInfo>().Binding
+            .Where(x => x.ItemType == ItemType.CompanionFood && x.Stats[Stat.CompanionHunger] > 0)
+            .OrderBy(x => x.Index)
+            .FirstOrDefault();
+        if (food == null)
+        {
+            Console.WriteLine("[warn] 无 CompanionFood 物品, 跳过食物播种");
+            return 0;
+        }
+        int slot = Enumerable.Range(0, Globals.InventorySize)
+            .FirstOrDefault(x => character.Items.All(item => item.Slot != x));
+        if (character.Items.Any(x => x.Slot == slot)) return 0;
+        AddItem(character, food, slot, 10);
+        Console.WriteLine($"[seed] 伙伴食物: {food.ItemName} index={food.Index} slot={slot} count=10 hungerStat={food.Stats[Stat.CompanionHunger]}");
+        return 10;
+    }
+
+    // E3: 行会重置 (幂等)。镜像服务端踢人 (PlayerObject.cs:4771-4773 info.Guild=null;
+    // info.Account=null; info.Delete()) 移除 TestHero 成员资格; 若行会已空则清仓库
+    // 物品并删会 (行会名 E3AuditGuild 可被下次建会复用)。
+    static bool ResetGuild(AccountInfo account)
+    {
+        var member = account.GuildMember;
+        if (member == null) return false;
+        var guild = member.Guild;
+        member.Guild = null;
+        member.Account = null;
+        member.Delete();
+        if (guild == null) return true;
+        if (guild.Members.Count > 0) return true;
+        foreach (var item in guild.Items.ToList())
+        {
+            guild.Items.Remove(item);
+            item.Delete();
+        }
+        foreach (var m in guild.Members.ToList())
+        {
+            m.Guild = null;
+            m.Account = null;
+            m.Delete();
+        }
+        guild.Delete();
+        return true;
+    }
+
+    // E3 闸门依赖安全区: 每次播种强制把 TestHero 放回 map1 "Player Spawns" 安全区
+    // (158,229)。只动参考角色, 机器人保留各自已存坐标。
+    static void ResetTestHeroPosition(CharacterInfo character)
+    {
+        var map1 = Session.GetCollection<MapInfo>().Binding.FirstOrDefault(x => x.Index == 1);
+        if (map1 == null)
+        {
+            Console.WriteLine("[warn] 无 map1, 跳过出生点重置");
+            return;
+        }
+        character.CurrentMap = map1;
+        character.CurrentInstance = null;
+        character.CurrentLocation = new Point(158, 229);
+    }
+
     static void SeedMagics(CharacterInfo character, MirClass cls, int level)
     {
         var available = Session.GetCollection<MagicInfo>().Binding.Where(x => x.Class == cls && x.NeedLevel1 <= level).ToList();
@@ -507,5 +731,5 @@ static class Program
     static Point Offset(Point origin, int n) => new(origin.X + (n % 5) - 2, origin.Y + (n / 5) - 2);
     static readonly Color[] HairColours = { Color.Black, Color.Brown, Color.DarkBlue, Color.DarkRed, Color.Gray };
     static readonly Color[] ArmourColours = { Color.White, Color.LightBlue, Color.LightGreen, Color.LightPink, Color.LightYellow };
-    static void Usage() => Console.WriteLine("用法: dotnet run --project Tools/BotProvisioner -- <Users.db所在目录> [--reference TestHero] [--count 20] [--prefix bot] [--password bot123456] [--dry-run] [--reset-positions] [--resource-report]");
+    static void Usage() => Console.WriteLine("用法: dotnet run --project Tools/BotProvisioner -- <Users.db所在目录> [--reference TestHero] [--count 20] [--prefix bot] [--password bot123456] [--dry-run] [--reset-positions] [--seed-reference] [--resource-report]");
 }

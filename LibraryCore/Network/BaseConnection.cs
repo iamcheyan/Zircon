@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
@@ -13,7 +13,6 @@ namespace Library.Network
         public static Dictionary<(Type ConnectionType, Type PacketType), MethodInfo> PacketMethods = new Dictionary<(Type ConnectionType, Type PacketType), MethodInfo>();
         private static readonly object PacketMethodsLock = new object();
         public static bool Monitor;
-        public static bool NetworkLogging;
 
         public bool Connected { get; set; }
         protected bool Sending { get; set; }
@@ -128,8 +127,6 @@ namespace Library.Network
             {
                 Sending = true;
                 TotalBytesSent += data.Count;
-                if (NetworkLogging)
-                    Console.WriteLine($"[SendQ] BeginSend {data.Count} bytes");
                 Client.Client.BeginSend(data.ToArray(), 0, data.Count, SocketFlags.None, SendData, null);
                 UpdateTimeOut();
             }
@@ -147,8 +144,6 @@ namespace Library.Network
             {
                 Sending = false;
                 Client.Client.EndSend(result);
-                if (NetworkLogging)
-                    Console.WriteLine("[SendQ] SendData done");
                 UpdateTimeOut();
             }
             catch (Exception ex)
@@ -163,8 +158,6 @@ namespace Library.Network
             if (!Connected || p == null) return;
 
             SendList.Enqueue(p);
-            if (NetworkLogging)
-                Console.WriteLine($"[SendQ] enqueue {p.GetType().Name} sending={Sending} q={SendList.Count}");
         }
 
         public abstract void TryDisconnect();
@@ -274,12 +267,9 @@ namespace Library.Network
             if (!Disconnecting && Sending)
                 UpdateTimeOut();
 
-            if (NetworkLogging && !SendList.IsEmpty && Sending)
-                Console.WriteLine($"[SendQ] blocked: Sending=true q={SendList.Count}");
             if (SendList.IsEmpty || Sending) return;
 
             List<byte> data = new List<byte>();
-            int flushed = 0;
             while (!SendList.IsEmpty)
             {
                 Packet p;
@@ -288,7 +278,6 @@ namespace Library.Network
 
                 if (p == null) continue;
 
-                flushed++;
                 try
                 {
                     byte[] bytes = p.GetPacketBytes();
