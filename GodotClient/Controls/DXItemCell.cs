@@ -680,16 +680,20 @@ public partial class DXItemCell : DXControl
         from.MoveItem(this);
     }
 
+    /// <summary>原版 UseItem 的 Ring/Bracelet 语义：优先空槽，否则落到第二槽（可替换）。</summary>
+    public static EquipmentSlot? FirstAvailableEquipSlot(DXItemCell[] equipmentCells, params EquipmentSlot[] slots)
+    {
+        if (slots == null || slots.Length == 0) return null;
+        var first = equipmentCells.ElementAtOrDefault((int)slots[0]);
+        if (first?.Item == null) return slots[0];
+        return slots.Length > 1 ? slots[1] : null;
+    }
+
     private static bool EquipFirstAvailable(DXItemCell fromCell, params EquipmentSlot[] slots)
     {
-        if (slots == null || slots.Length == 0) return false;
-        var first = GameScene.Game?.EquipmentCells.ElementAtOrDefault((int)slots[0]);
-        if (first == null) return false;
-        if (first.Item == null) return first.ToEquipment(fromCell);
-        var second = slots.Length > 1
-            ? GameScene.Game?.EquipmentCells.ElementAtOrDefault((int)slots[1])
-            : null;
-        return second?.ToEquipment(fromCell) == true;
+        var slot = FirstAvailableEquipSlot(GameScene.Game?.EquipmentCells, slots);
+        if (slot == null) return false;
+        return GameScene.Game.EquipmentCells[(int)slot.Value].ToEquipment(fromCell);
     }
 
     /// <summary>穿戴到本装备槽 (原版 ToEquipment)</summary>

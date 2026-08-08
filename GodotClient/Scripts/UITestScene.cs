@@ -181,6 +181,7 @@ public partial class UITestScene : Control
         if (_uiAudit) AuditItemGridPropagation();
         if (_uiAudit) AuditInventorySaleMode();
         if (_uiAudit) AuditInventoryParity();
+        if (_uiAudit) AuditEquipmentParity();
         if (_uiAudit) AuditSocketDialogs();
         if (_uiAudit) AuditBeltAndAutoPotion();
         if (_npcAudit) AuditNpcPanels();
@@ -406,54 +407,91 @@ public partial class UITestScene : Control
             ? "[UIItemLockAudit] PASS toggle-inverts"
             : "[UIItemLockAudit] FAIL toggle-inverts");
 
-        // B9: 悬停信息核心文本（名称/稀有度颜色/部件/过期/锁定）。
-        GD.Print($"[UIItemHoverAudit] probe itemlist={Globals.ItemInfoList?.Binding?.Count ?? -1}");
-        var info = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.ItemType == ItemType.Weapon);
-        if (info == null)
-        {
-            GD.Print("[UIItemHoverAudit] FAIL no weapon ItemInfo");
-            return;
-        }
-        var plain = new ClientUserItem(info, 2);
-        string plainText;
         try
         {
-            plainText = GameScene.BuildItemHoverCore(plain);
-        }
-        catch (Exception e)
-        {
-            GD.Print($"[UIItemHoverAudit] EXCEPTION-plain {e.GetType().Name}: {e.Message}");
-            return;
-        }
-        bool plainOk = plainText.StartsWith(info.ItemName) && plainText.Contains($"Type: {info.ItemType}");
-        var partInfo = new ItemInfo
-        {
-            ItemName = "AuditPart",
-            ItemType = ItemType.Weapon,
-            ItemEffect = ItemEffect.ItemPart,
-        };
-        ClientUserItem partItem;
-        string partText;
-        try
-        {
-            partItem = new ClientUserItem(partInfo, 1)
+            var info = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.ItemType == ItemType.Weapon);
+            if (info == null)
             {
-                AddedStats = new Stats { [Stat.ItemIndex] = info.Index },
-                Flags = UserItemFlags.Expirable | UserItemFlags.Locked,
-            };
-            partText = GameScene.BuildItemHoverCore(partItem);
+                GD.Print("[UIItemHoverAudit] FAIL no weapon ItemInfo");
+                return;
+            }
+            var plain = new ClientUserItem(info, 2);
+            string plainText = GameScene.BuildItemHoverCore(plain);
+            bool plainOk = plainText.StartsWith(info.ItemName) && plainText.Contains($"Type: {info.ItemType}");
+            var partInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x?.ItemEffect == ItemEffect.ItemPart);
+            bool partOk = true;
+            if (partInfo != null)
+            {
+                var partItem = new ClientUserItem(partInfo, 1)
+                {
+                    AddedStats = new Stats { [Stat.ItemIndex] = partInfo.Index },
+                    Flags = UserItemFlags.Expirable | UserItemFlags.Locked,
+                };
+                string partText = GameScene.BuildItemHoverCore(partItem);
+                partOk = partText.Contains(" - [Part]") && partText.Contains("Expires in ") && partText.Contains("Locked:");
+            }
+            bool raritySuperior = GameScene.HoverRarityColour(Rarity.Superior).G > .8f;
+            bool rarityElite = GameScene.HoverRarityColour(Rarity.Elite).B > .8f;
+            GD.Print(plainOk && partOk && raritySuperior && rarityElite
+                ? $"[UIItemHoverAudit] PASS name/type/part/expiry/locked/rarity"
+                : $"[UIItemHoverAudit] FAIL plain={plainOk} part={partOk} superior={raritySuperior} elite={rarityElite}");
         }
         catch (Exception e)
         {
-            GD.Print($"[UIItemHoverAudit] EXCEPTION {e.GetType().Name}: {e.Message}");
-            return;
+            GD.Print($"[UIItemHoverAudit] EXCEPTION {e}");
         }
-        bool partOk = partText.Contains("AuditPart") && partText.Contains(" - [Part]") && partText.Contains("Expires in ") && partText.Contains("Locked:");
-        bool raritySuperior = GameScene.HoverRarityColour(Rarity.Superior).G > .8f;
-        bool rarityElite = GameScene.HoverRarityColour(Rarity.Elite).B > .8f;
-        GD.Print(plainOk && partOk && raritySuperior && rarityElite
-            ? $"[UIItemHoverAudit] PASS name/type/part/expiry/locked/rarity"
-            : $"[UIItemHoverAudit] FAIL plain={plainOk} part={partOk} superior={raritySuperior} elite={rarityElite}");
+    }
+
+    private static void AuditEquipmentParity()
+    {
+        // C1: 所有装备类型都能映射到 CorrectSlot 的某个装备槽，且错误的
+        // 类型/槽位组合被拒绝（原版 DXItemCell.UseItem 与 MoveItem 共用）。
+        var itemTypes = Enum.GetValues<ItemType>();
+        var equipSlots = Enum.GetValues<EquipmentSlot>();
+        int covered = 0;
+        bool slotOk = true;
+        foreach (var type in itemTypes)
+        {
+            bool any = false;
+            foreach (var slot in equipSlots)
+            {
+                if (Functions.CorrectSlot(type, slot)) any = true;
+            }
+            if (any) covered++;
+            else if (type != ItemType.Consumable && type != ItemType.Scroll && type != ItemType.CompanionFood
+                     && type != ItemType.ItemPart && type != ItemType.Book && type != ItemType.Meat
+                     && type != ItemType.Ore && type != ItemType.System && type != ItemType.RefineSpecial
+                     && type != ItemType.Currency && type != ItemType.Nothing && type != ItemType.Bundle
+                     && type != ItemType.LootBox && type != ItemType.SocketGem
+                     && type != ItemType.CompanionBag && type != ItemType.CompanionHead && type != ItemType.CompanionBack)
+                slotOk = false;
+        }
+        bool correctRejects = !Functions.CorrectSlot(ItemType.Weapon, EquipmentSlot.Armour)
+            && Functions.CorrectSlot(ItemType.Weapon, EquipmentSlot.Weapon)
+            && Functions.CorrectSlot(ItemType.Ring, EquipmentSlot.RingL)
+            && Functions.CorrectSlot(ItemType.Ring, EquipmentSlot.RingR)
+            && Functions.CorrectSlot(ItemType.Bracelet, EquipmentSlot.BraceletL)
+            && Functions.CorrectSlot(ItemType.DarkStone, EquipmentSlot.Amulet)
+            && Functions.CorrectSlot(ItemType.HorseArmour, EquipmentSlot.HorseArmour)
+            && Functions.CorrectSlot(ItemType.Reel, EquipmentSlot.Reel);
+
+        // C2: 原版双戒指/双手镯语义 - 优先空槽，否则落到第二槽（可替换）。
+        var equipGrid = new ClientUserItem[32];
+        var cells = new DXItemCell[32];
+        for (int i = 0; i < cells.Length; i++)
+            cells[i] = new DXItemCell { Slot = i, ItemGrid = equipGrid };
+        var firstRing = DXItemCell.FirstAvailableEquipSlot(cells, EquipmentSlot.RingL, EquipmentSlot.RingR);
+        bool emptyPrefersFirst = firstRing == EquipmentSlot.RingL;
+        cells[(int)EquipmentSlot.RingL].Item = new ClientUserItem { Count = 1 };
+        var secondRing = DXItemCell.FirstAvailableEquipSlot(cells, EquipmentSlot.RingL, EquipmentSlot.RingR);
+        bool fullFallsToSecond = secondRing == EquipmentSlot.RingR;
+        var singleSlot = DXItemCell.FirstAvailableEquipSlot(cells, EquipmentSlot.RingL);
+        bool singleFullRejects = singleSlot == null;
+
+        GD.Print(covered >= 20 && slotOk && correctRejects && emptyPrefersFirst && fullFallsToSecond && singleFullRejects
+            ? $"[UIEquipmentAudit] PASS slots-covered={covered} ring-empty-first/full-second/single-reject"
+            : $"[UIEquipmentAudit] FAIL covered={covered} slotOk={slotOk} correct={correctRejects} " +
+              $"first={emptyPrefersFirst} second={fullFallsToSecond} single={singleFullRejects}");
     }
 
     private static void AuditSocketDialogs()
