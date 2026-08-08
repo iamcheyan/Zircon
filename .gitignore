@@ -10,3 +10,5 @@ licenses.licx
 /NuGet.Config
 /.dotnet/.dotnet
 /.codex/skills/*
+/.godot/
+**/.godot/
