@@ -39,6 +39,7 @@ public partial class MapTestScene : Control
     private int _blendAuditCase;
     private int _blendAuditOriginalHits;
     private int _blendAuditCurrentHits;
+    private int _blendAuditParityHits;
     private ColorRect? _blendAuditBackdrop;
     private TextureRect? _blendAuditQuad;
     private int _auditFrames;
