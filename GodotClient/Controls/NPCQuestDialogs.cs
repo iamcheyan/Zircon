@@ -132,7 +132,11 @@ public sealed partial class NPCQuestDialog : DXWindow
         _complete.MouseClick += (s, e) =>
         {
             if (_quest == null || GameScene.Game?.IsObserver == true) return;
-            if (_choiceRewards.Count > 0 && (_selectedChoice < 0 || _selectedChoice >= _choiceRewards.Count)) return;
+            if (_choiceRewards.Count > 0 && (_selectedChoice < 0 || _selectedChoice >= _choiceRewards.Count))
+            {
+                GameScene.Game?.ReceiveChat("Please select a reward.", MessageType.System);
+                return;
+            }
             GameScene.Game?.SendQuestComplete(_quest.Index, _selectedChoice >= 0 ? _choiceRewards[_selectedChoice].Index : 0);
             WindowManager.Close(this);
         };

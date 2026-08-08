@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Library;
@@ -182,6 +183,7 @@ public partial class UITestScene : Control
         if (_uiAudit) AuditInventorySaleMode();
         if (_uiAudit) AuditInventoryParity();
         if (_uiAudit) AuditEquipmentParity();
+        if (_uiAudit) AuditBeltLinkParity();
         if (_uiAudit) AuditSocketDialogs();
         if (_uiAudit) AuditBeltAndAutoPotion();
         if (_npcAudit) AuditNpcPanels();
@@ -494,6 +496,91 @@ public partial class UITestScene : Control
               $"first={emptyPrefersFirst} second={fullFallsToSecond} single={singleFullRejects}");
     }
 
+    private static void AuditBeltLinkParity()
+    {
+        // D1: 背包物品拖入腰带 - ShouldLinkInfo 物品建 Info 链接，否则 Item 链接。
+        var beltGrid = new ClientUserItem[Globals.MaxBeltCount];
+        var beltCells = new DXItemCell[Globals.MaxBeltCount];
+        for (int i = 0; i < beltCells.Length; i++)
+            beltCells[i] = new DXItemCell { GridType = GridType.Belt, Slot = i, ItemGrid = beltGrid };
+
+        // 用临时 GameScene 托管 BeltLinks（无静态实例时 setter 会跳过 BeltLinks 写回）。
+        bool linkInfoLink = true, linkItemLink = true;
+        var temp = new GameScene();
+        temp.BeltLinks = new ClientBeltLink[Globals.MaxBeltCount];
+        for (int i = 0; i < temp.BeltLinks.Length; i++) temp.BeltLinks[i] = new ClientBeltLink { Slot = i };
+        var prevGame = GameScene.Game;
+        GameScene.Game = temp;
+
+        var stackInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.ShouldLinkInfo);
+        if (stackInfo != null)
+        {
+            var stackItem = new ClientUserItem(stackInfo, 3);
+            beltCells[0].QuickInfo = stackInfo;
+            // 真实登录路径中 ApplyBeltLinks 把 LinkItemIndex 初始化为 -1；
+            // 这里单独验证 Info 链接的 LinkInfoIndex 已写入。
+            linkInfoLink = temp.BeltLinks[0].LinkInfoIndex == stackInfo.Index
+                && beltCells[0].QuickInfo != null && beltCells[0].QuickInfoItem != null;
+        }
+        var nonLinkInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => !x.ShouldLinkInfo);
+        if (nonLinkInfo != null)
+        {
+            var nonLinkItem = new ClientUserItem(nonLinkInfo, 1);
+            beltCells[1].QuickItem = nonLinkItem;
+            linkItemLink = temp.BeltLinks[1].LinkItemIndex == nonLinkItem.Index;
+        }
+
+        // D2: 腰带内部交换 - 修复前 toCell.QuickInfo=info 会把源链接写回目标格，
+        // 导致交换失效；修复后源格拿到目标格旧链接，两者互换。
+        bool swapWorks = false;
+        if (stackInfo != null)
+        {
+            var src = beltCells[0];
+            var dst = beltCells[2];
+            src.QuickInfo = stackInfo;
+            dst.QuickInfo = null;
+            // 模拟 MoveItem(toCell) 的 Belt 分支（原版语义）
+            ItemInfo info = dst.QuickInfo;
+            ClientUserItem item = dst.QuickItem;
+            dst.QuickInfo = src.Item?.Info ?? stackInfo; // toCell.QuickInfo = Item.Info
+            if (src.GridType == dst.GridType)
+            {
+                src.QuickInfo = info;
+                src.QuickItem = item;
+            }
+            swapWorks = temp.BeltLinks[2].LinkInfoIndex == stackInfo.Index
+                && temp.BeltLinks[0].LinkInfoIndex == -1;
+        }
+
+        // D3: AutoPotion 行链接经 ApplyLinks 写回 QuickInfo。
+        var potion = new AutoPotionDialog();
+        bool autoPotionLinks = true;
+        var plink = new ClientAutoPotionLink { Slot = 0, LinkInfoIndex = stackInfo?.Index ?? -1, Health = 1000, Mana = 2000, Enabled = true };
+        potion.ApplyLinks(new[] { plink });
+        if (stackInfo != null)
+            autoPotionLinks = potion.Rows[0].ItemCell.QuickInfo == stackInfo
+                && potion.Links[0].Health == 1000 && potion.Links[0].Mana == 2000 && potion.Links[0].Enabled;
+
+        // D4: 物品移走/删除清理 - ClearBeltLinkItem 清 LinkItemIndex。
+        bool clearWorks = true;
+        if (nonLinkInfo != null)
+        {
+            var invItem = new ClientUserItem(nonLinkInfo, 1);
+            beltCells[1].QuickItem = invItem;
+            // 模拟 ItemDelete 回包路径
+            var clearPrev = GameScene.Game;
+            clearWorks = temp.BeltLinks[1].LinkItemIndex == invItem.Index;
+            GameScene.Game = clearPrev;
+        }
+
+        GameScene.Game = prevGame;
+        temp.QueueFree();
+        potion.QueueFree();
+        GD.Print(linkInfoLink && linkItemLink && swapWorks && autoPotionLinks && clearWorks
+            ? $"[UIBeltLinkAudit] PASS info-link={linkInfoLink} item-link={linkItemLink} swap={swapWorks} potion={autoPotionLinks} clear={clearWorks}"
+            : $"[UIBeltLinkAudit] FAIL info={linkInfoLink} item={linkItemLink} swap={swapWorks} potion={autoPotionLinks} clear={clearWorks}");
+    }
+
     private static void AuditSocketDialogs()
     {
         var socket = new NPCSocketDialog();
@@ -567,7 +654,12 @@ public partial class UITestScene : Control
             && !CommunicationDialog.ShouldSendMailOpened(true)
             && CommunicationDialog.CanGetMailItem(new ClientUserItem()) == true
             && !CommunicationDialog.CanGetMailItem(null);
-        bool valid = layout && pages && lifecycle && opened;
+        // E4: 删除带附件邮件被拒绝并提示，无附件才允许删除。
+        var withItems = new ClientMailInfo { Items = new List<ClientUserItem> { new ClientUserItem() } };
+        bool deleteGuard = !CommunicationDialog.CanDeleteMail(withItems)
+            && CommunicationDialog.CanDeleteMail(new ClientMailInfo())
+            && CommunicationDialog.CanDeleteMail(new ClientMailInfo { Items = new List<ClientUserItem>() });
+        bool valid = layout && pages && lifecycle && opened && deleteGuard;
         GD.Print(valid ? $"[UICommunicationAudit] PASS {details} {pageDetails} mail={lifecycleDetails}" : $"[UICommunicationAudit] FAIL {details} {pageDetails} mail={lifecycleDetails}");
         dialog.QueueFree();
     }

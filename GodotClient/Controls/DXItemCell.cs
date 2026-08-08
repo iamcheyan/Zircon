@@ -758,8 +758,11 @@ public partial class DXItemCell : DXControl
 
             if (GridType == toCell.GridType)
             {
-                toCell.QuickInfo = info;
-                toCell.QuickItem = item;
+                // 原版 MoveItem: 腰带内部交换时把目标格原链接还给源格 (this)。
+                // Godot 的 QuickInfo/QuickItem setter 会同步 BeltLinks[Slot]，
+                // 因此这里必须设置 this 而不是 toCell，否则交换不会生效。
+                QuickInfo = info;
+                QuickItem = item;
                 var link = GameScene.Game.BeltLinks[Slot];
                 GameScene.Game.SendBeltLinkChanged(link.Slot, link.LinkInfoIndex, link.LinkItemIndex);
             }

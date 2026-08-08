@@ -87,17 +87,50 @@ public sealed partial class NPCSocketPanel : DXControl
 
     private bool CanUseGem(ClientUserItem gem)
     {
-        if (gem?.Info == null || gem.Info.ItemType != ItemType.SocketGem || _target.Item?.Info == null) return false;
+        if (gem?.Info == null || gem.Info.ItemType != ItemType.SocketGem)
+        {
+            GameScene.Game?.ReceiveChat("右上栏位必须放入镶嵌宝石。", MessageType.System);
+            return false;
+        }
+        if (_target.Item?.Info == null)
+        {
+            GameScene.Game?.ReceiveChat($"无法使用 {gem.Info.ItemName}，请先选择武器或盔甲。", MessageType.System);
+            return false;
+        }
         var target = _target.Item;
         int shape = gem.Info.Shape;
-        if (shape is not (0 or 1 or 2 or 4)) return false;
-        if (target.Info.ItemType is not (ItemType.Weapon or ItemType.Armour)) return false;
-        if (shape is 0 or 1 or 2 && gem.Info.Rarity != target.Info.Rarity) return false;
-        if (shape == 0 && target.Sockets.Count >= SocketCount) return false;
+        if (shape is not (0 or 1 or 2 or 4))
+        {
+            GameScene.Game?.ReceiveChat("右上栏位必须放入镶嵌宝石。", MessageType.System);
+            return false;
+        }
+        if (target.Info.ItemType is not (ItemType.Weapon or ItemType.Armour))
+        {
+            GameScene.Game?.ReceiveChat($"无法在所选目标上使用 {gem.Info.ItemName}。", MessageType.System);
+            return false;
+        }
+        if (shape is 0 or 1 or 2 && gem.Info.Rarity != target.Info.Rarity)
+        {
+            GameScene.Game?.ReceiveChat($"无法使用 {gem.Info.ItemName}，其稀有度与所选目标不符。", MessageType.System);
+            return false;
+        }
+        if (shape == 0 && target.Sockets.Count >= SocketCount)
+        {
+            GameScene.Game?.ReceiveChat($"无法使用 {gem.Info.ItemName}，目标物品已解锁三个镶嵌孔。", MessageType.System);
+            return false;
+        }
         if ((shape == 1 && target.Info.ItemType != ItemType.Weapon) ||
-            (shape == 2 && target.Info.ItemType != ItemType.Armour)) return false;
+            (shape == 2 && target.Info.ItemType != ItemType.Armour))
+        {
+            GameScene.Game?.ReceiveChat($"无法在所选目标上使用 {gem.Info.ItemName}。", MessageType.System);
+            return false;
+        }
         if (shape is 1 or 2 && target.Sockets.All(x => x.Gem != null) &&
-            target.Sockets.All(x => x.Gem?.InfoIndex != gem.Info.Index)) return false;
+            target.Sockets.All(x => x.Gem?.InfoIndex != gem.Info.Index))
+        {
+            GameScene.Game?.ReceiveChat("没有可用的已解锁空镶嵌孔。", MessageType.System);
+            return false;
+        }
         return true;
     }
 
@@ -319,9 +352,21 @@ public sealed partial class NPCSocketCombinePanel : DXControl
 
     private void Send()
     {
-        if (_gems[0].LinkedSourceSlot < 0 || _gems[1].LinkedSourceSlot < 0 || _gems[2].LinkedSourceSlot < 0) return;
-        if (_gems.Any(cell => cell.Item?.Info?.ItemType != ItemType.SocketGem)) return;
-        if (_gems.Skip(1).Any(cell => cell.Item?.Info != _gems[0].Item?.Info)) return;
+        if (_gems[0].LinkedSourceSlot < 0 || _gems[1].LinkedSourceSlot < 0 || _gems[2].LinkedSourceSlot < 0)
+        {
+            GameScene.Game?.ReceiveChat("请在上方栏位放入三颗相同的镶嵌宝石。", MessageType.System);
+            return;
+        }
+        if (_gems.Any(cell => cell.Item?.Info?.ItemType != ItemType.SocketGem))
+        {
+            GameScene.Game?.ReceiveChat("请在上方栏位放入三颗相同的镶嵌宝石。", MessageType.System);
+            return;
+        }
+        if (_gems.Skip(1).Any(cell => cell.Item?.Info != _gems[0].Item?.Info))
+        {
+            GameScene.Game?.ReceiveChat("三颗镶嵌宝石必须是相同物品。", MessageType.System);
+            return;
+        }
         _operating = true;
         _combineFinished = false;
         _resultStarted = false;

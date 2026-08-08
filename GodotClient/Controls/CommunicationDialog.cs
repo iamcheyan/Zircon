@@ -603,7 +603,11 @@ public partial class CommunicationDialog : DXWindow
         }
         void DeleteMail(object sender, EventArgs args)
         {
-            if (mail.Items?.Count > 0) return;
+            if (!CanDeleteMail(mail))
+            {
+                GameScene.Game?.ReceiveChat("You cannot delete a mail with items inside", MessageType.System);
+                return;
+            }
             GameScene.Game?.SendMailDelete(mail.Index);
             ShowPage(1);
         }
@@ -611,6 +615,7 @@ public partial class CommunicationDialog : DXWindow
 
     public static bool ShouldSendMailOpened(bool alreadyOpened) => !alreadyOpened;
     public static bool CanGetMailItem(ClientUserItem item) => item != null && item.Slot >= 0;
+    public static bool CanDeleteMail(ClientMailInfo mail) => mail?.Items == null || mail.Items.Count == 0;
 
     private void BuildSendPage()
     {

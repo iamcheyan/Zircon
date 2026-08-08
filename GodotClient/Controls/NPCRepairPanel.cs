@@ -207,6 +207,9 @@ public partial class NPCRepairPanel : DXControl
         _grid.RefreshGrid();
         _cost.Text = "维修费用: 0";
         _repair.Enabled = false;
+        // 原版提交后复位 GuildCheckBox（Special 不复位）。
+        _guildFunds.Checked = false;
+        _guildFunds.Enabled = GameScene.Game?.HasGuild == true;
         GameScene.Game?.SendNPCRepair(new List<CellLinkInfo>(_pendingLinks), _special.Checked, _guildFunds.Checked);
     }
 
