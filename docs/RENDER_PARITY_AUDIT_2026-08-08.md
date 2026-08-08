@@ -56,6 +56,16 @@ godot-mono --headless --path GodotClient --scene Scenes/MapTestScene.tscn -- --a
 - `MagicFrameAudit PASS skills=142`；
 - `ActionAudit PASS all action sequences`。
 
+超大图库使用区间参数分片，避免单进程超时；例如：
+
+```bash
+godot-mono --headless --path GodotClient --scene Scenes/MapTestScene.tscn -- \
+  --full-texture-audit --audit-file=EquipEffect_Full \
+  --audit-start=0 --audit-end=10000
+```
+
+当前已完成 `EquipEffect_Full` 的 0..100000、`EquipEffect_FullEx3` 的 0..10000、`MagicIcon` 的 0..1773 全区间扫描，均无 `cornerPollution`。
+
 后续审计如果发现某个资源确实没有 alpha，必须按旧端的具体 `ImageType` 和资源类型加入例外，不能按“特效”名称整体启用黑键。
 
 ## 环境光与 2x 光圈
