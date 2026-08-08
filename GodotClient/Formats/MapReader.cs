@@ -80,6 +80,26 @@ public sealed class MirMap
     }
 
     public bool IsValid => Width > 0 && Height > 0 && Cells != null;
+
+    public static bool TryGetDimensions(string fileName, out int width, out int height)
+    {
+        width = height = 0;
+        if (string.IsNullOrWhiteSpace(fileName) || !File.Exists(fileName)) return false;
+        try
+        {
+            using var stream = File.OpenRead(fileName);
+            using var reader = new BinaryReader(stream);
+            reader.BaseStream.Seek(22, SeekOrigin.Begin);
+            width = reader.ReadInt16();
+            height = reader.ReadInt16();
+            return width > 0 && height > 0;
+        }
+        catch
+        {
+            width = height = 0;
+            return false;
+        }
+    }
 }
 
 public struct MapCell

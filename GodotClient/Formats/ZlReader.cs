@@ -270,6 +270,13 @@ public sealed class ZlLibrary : IDisposable
             effectTransparency, EffectTransparentKeyTolerance);
     }
 
+    /// <summary>返回未经过颜色键处理的 Shadow/Overlay BGRA8 数据，仅供资源审计使用。</summary>
+    public byte[] GetAuditLayerData(int index, bool shadow)
+    {
+        if (index < 0 || index >= Images.Length || Images[index] == null) return null;
+        return GetPartData(index, shadow ? ZlImagePart.Shadow : ZlImagePart.Overlay);
+    }
+
     private ImageTexture GetPartTexture(int index, ZlImagePart part, bool effectTransparency = false,
         byte transparentKeyTolerance = EffectTransparentKeyTolerance)
     {

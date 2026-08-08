@@ -8,6 +8,7 @@ namespace ZirconClient.Network;
 public partial class NetworkManager : Node
 {
     public ServerConnection Connection { get; private set; }
+    public string BuyAddress { get; set; } = string.Empty;
     public new bool IsConnected => Connection != null && Connection.Connected;
 
     public event Action<string> Log;
@@ -52,7 +53,7 @@ public partial class NetworkManager : Node
             else if (client != null && client.Client != null && !client.Connected)
             {
                 Log?.Invoke("[Net] TCP 连接已断开");
-                Connection.Connected = false;
+                Connection.NotifyDisconnected(closeTransport: true);
                 return;
             }
 
@@ -61,12 +62,13 @@ public partial class NetworkManager : Node
         catch (Exception ex)
         {
             Log?.Invoke($"[Net] Process 异常: {ex}");
-            Connection.Connected = false;
+            Connection.NotifyDisconnected(closeTransport: true);
         }
     }
 
     public bool Connect(string host, int port)
     {
+        Disconnect();
         Packet.IsClient = true;
         var client = new TcpClient();
         try { client.Connect(host, port); }
@@ -88,7 +90,7 @@ public partial class NetworkManager : Node
     {
         if (Connection != null)
         {
-            Connection.Connected = false;
+            Connection.Disconnect();
             Connection = null;
         }
     }

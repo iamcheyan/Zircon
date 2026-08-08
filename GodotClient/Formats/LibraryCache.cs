@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Godot;
 using Library;
 
@@ -32,11 +33,26 @@ public static class LibraryCache
         path = path.Replace('\\', '/');
         if (path.StartsWith("Data/")) path = path.Substring(5);
         string fullPath = Path.Combine(DataPath, path);
+        fullPath = ResolvePath(fullPath);
         if (!File.Exists(fullPath)) return null;
 
         lib = new ZlLibrary(fullPath);
         _cache[file] = lib;
         return lib;
+    }
+
+    private static string ResolvePath(string fullPath)
+    {
+        if (File.Exists(fullPath)) return fullPath;
+        string dir = Path.GetDirectoryName(fullPath);
+        string filename = Path.GetFileName(fullPath);
+        if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return fullPath;
+        foreach (string file in Directory.EnumerateFiles(dir))
+        {
+            if (string.Equals(Path.GetFileName(file), filename, StringComparison.OrdinalIgnoreCase))
+                return file;
+        }
+        return fullPath;
     }
 
     public static void DisposeAll()
