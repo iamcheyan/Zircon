@@ -1410,9 +1410,10 @@ public partial class MapTestScene : Control
     {
         (new Color(1f, 1f, 1f, 0.5f),  Colors.White,                new Color(0.25f, 0.25f, 0.25f, 1f), new Color(0.5f, 0.5f, 0.5f, 1f)),
         (new Color(1f, 0f, 0f, 0.5f),  Colors.White,                new Color(0.5f, 0f, 0f, 1f),       new Color(1f, 0f, 0f, 1f)),
-        // shader 材质输出常量色 (1,0,0,0.5)：SRC_ALPHA(直通) → 0.5；ONE/INV(预乘) → 1.0
-        (new Color(1f, 0f, 0f, 0.5f),  Colors.White,                new Color(0.5f, 0f, 0f, 1f),       new Color(1f, 0f, 0f, 1f)),
     };
+    // 注：曾加入"shader 输出常量色 α0.5"探针（期望 0.5 或 1.0），实测得 0.749：
+    // Godot 对 alpha<1 的 shader 输出会额外预乘一次（无标准公式可预测）。
+    // 因此所有半透明 blend shader 一律输出完整结果 + alpha=1（见灰度非 Blend 变体）。
     private const float BlendAuditTolerance = 4f / 255f;
 
     private static bool BlendChannelClose(float a, float b) => Mathf.Abs(a - b) <= BlendAuditTolerance;
@@ -1446,7 +1447,10 @@ public partial class MapTestScene : Control
         }
         int probeIndex = i - BlendAuditCases.Length;
         bool isProbe = probeIndex >= 0;
-        (Color texel, Color modulate, _, _) = isProbe ? BlendAuditMixProbes[probeIndex] : BlendAuditCases[i];
+        (Color texel, Color modulate, _, _, int kind) = isProbe
+            ? (BlendAuditMixProbes[probeIndex].Texel, BlendAuditMixProbes[probeIndex].Modulate,
+               BlendAuditMixProbes[probeIndex].ExpectCurrent, BlendAuditMixProbes[probeIndex].ExpectOriginal, 0)
+            : BlendAuditCases[i];
         var vp = GetViewportRect();
         // 根节点 Scale=2：场景坐标 ×2 = 窗口像素；GetViewportRect() 返回窗口像素，
         // 因此场景中心 = vp.Size/4。
@@ -1466,35 +1470,6 @@ public partial class MapTestScene : Control
             _blendAuditFrames = 0;
             return;
         }
-        if (isProbe && probeIndex == 2)
-        {
-            // shader 输出常量色探针：混合语义（SRC_ALPHA vs ONE/INV）。
-            // 用 TextureRect（modulate=白）避免 ColorRect+材质 的双重绘制伪影。
-            var probeImg = Image.CreateEmpty(4, 4, false, Image.Format.Rgba8);
-            var probePx = new byte[4 * 4 * 4];
-            for (int k = 0; k < probePx.Length; k += 4) { probePx[k] = 255; probePx[k + 1] = 255; probePx[k + 2] = 255; probePx[k + 3] = 255; }
-            probeImg.SetData(4, 4, false, Image.Format.Rgba8, probePx);
-            _blendAuditQuad = new TextureRect
-            {
-                Texture = ImageTexture.CreateFromImage(probeImg),
-                Modulate = Colors.White,
-                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                StretchMode = TextureRect.StretchModeEnum.Scale,
-                Position = center,
-                Size = new Vector2(80, 80),
-                ZIndex = 201,
-                Material = new ShaderMaterial
-                {
-                    Shader = new Shader
-                    {
-                        Code = "shader_type canvas_item;\nvoid fragment() {\n    COLOR = vec4(1.0, 0.0, 0.0, 0.5);\n}",
-                    },
-                },
-            };
-            AddChild(_blendAuditQuad);
-            _blendAuditFrames = 0;
-            return;
-        }
         var img = Image.CreateEmpty(4, 4, false, Image.Format.Rgba8);
         var px = new byte[4 * 4 * 4];
         for (int k = 0; k < px.Length; k += 4)
@@ -1508,8 +1483,12 @@ public partial class MapTestScene : Control
         _blendAuditQuad = new TextureRect
         {
             Texture = ImageTexture.CreateFromImage(img),
-            // 探针（probeIndex==0）不加 screen blend 材质，测 Godot 普通 mix 语义
-            Material = isProbe ? null : LegacyBlendMaterial.Create(),
+            // 探针（probeIndex==0）不加 blend 材质，测 Godot 普通 mix 语义；
+            // 其余按 Kind 选材质：0 = LegacyScreenBlend, 1 = 灰度 Blend, 2 = 灰度非 Blend
+            Material = isProbe ? null
+                : kind == 0 ? LegacyBlendMaterial.Create()
+                : kind == 1 ? DXImageControl.CreateGrayMaterial(true)
+                : DXImageControl.CreateGrayMaterial(false),
             Modulate = modulate,
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.Scale,
@@ -1565,12 +1544,16 @@ public partial class MapTestScene : Control
         int probeIndex = i - BlendAuditCases.Length;
         bool isProbe = probeIndex >= 0;
         (Color texel, Color modulate, Color expectCurrent, Color expectOriginal) =
-            isProbe ? BlendAuditMixProbes[probeIndex] : BlendAuditCases[i];
+            isProbe ? BlendAuditMixProbes[probeIndex]
+                    : (BlendAuditCases[i].Texel, BlendAuditCases[i].Modulate,
+                       BlendAuditCases[i].ExpectCurrent, BlendAuditCases[i].ExpectOriginal);
         Color got = SampleBlendAuditQuad(image);
         bool curHit = BlendColourClose(got, expectCurrent);
         bool origHit = BlendColourClose(got, expectOriginal);
         if (curHit) _blendAuditCurrentHits++;
         if (origHit) _blendAuditOriginalHits++;
+        // 奇偶判定只统计 blend 材质案例（cases），探针仅作管线语义记录
+        if (!isProbe && origHit) _blendAuditParityHits++;
         GD.Print($"[BlendAudit] case={i} texel={texel} colour={modulate} got={got} " +
                  $"current(texel.rgb*texel.a*Col)={expectCurrent} original(straight.rgb*texel.a*Col)={expectOriginal} " +
                  (curHit || origHit ? (origHit ? "PASS(original)" : "PASS(current)") : "FAIL"));
@@ -1586,12 +1569,10 @@ public partial class MapTestScene : Control
                  (backdropOk ? "PASS" : "FAIL"));
         string path = "/tmp/zircon-blend-audit.png";
         image.SavePng(path);
-        GD.Print($"[BlendAudit] 判定: original命中={_blendAuditOriginalHits} current命中={_blendAuditCurrentHits} cases={total}");
-        GD.Print(_blendAuditOriginalHits == total && backdropOk
-            ? $"[BlendAudit] PASS 着色器与原始公式一致 截图 {path}"
-            : _blendAuditOriginalHits == 0 && _blendAuditCurrentHits == total && backdropOk
-                ? $"[BlendAudit] FAIL-预期 双重预乘已确认（当前着色器比原版暗 a 倍），需修 LegacyScreenBlend.gdshader 截图 {path}"
-                : $"[BlendAudit] FAIL 未命中任一模型，截图 {path}");
+        GD.Print($"[BlendAudit] 判定: original命中={_blendAuditOriginalHits} current命中={_blendAuditCurrentHits} 奇偶案例命中original={_blendAuditParityHits}/{BlendAuditCases.Length} cases={total}");
+        GD.Print(_blendAuditParityHits == BlendAuditCases.Length && backdropOk
+            ? $"[BlendAudit] PASS 所有 blend 材质与原始公式一致 截图 {path}"
+            : $"[BlendAudit] FAIL 未命中原始公式，截图 {path}");
         GetTree().Quit();
     }
 
