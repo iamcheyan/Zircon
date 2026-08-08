@@ -48,7 +48,7 @@
 ### 特效透明和缩放
 
 - 主体/地图/装备使用普通纹理缓存。
-- 技能、怪物附加效果、玩家外观效果和天气使用特效/天气透明键缓存。
+- 技能、怪物附加效果、玩家外观效果按旧版调用分别选择普通/特效缓存；天气正式路径使用普通 ImageType.Image，天气键控缓存仅用于诊断。
 - 投射物飞行期间按实时目标 RenderY 更新排序。
 
 ## 已确认但仍需继续处理的差异
@@ -56,14 +56,15 @@
 | 编号 | 差异 | 证据/风险 | 下一步 |
 |---|---|---|---|
 | P-001 | 已闭合：原版独立 payload 读取器与 Godot 解码路径的全量主图/Shadow/Overlay 逐像素差异 | 8 个可复现批次覆盖 312 个去重图库、1,483,776 个主图帧、244,866 个 Shadow/Overlay 层，合计 1,728,642 次比较，全部 `PASS` 且 `different=0` | 保留批次日志；后续资源变更时重新执行批次审计 |
-| P-002 | 全部 258 张地图的结构、分层和地形资源引用已审计通过，但仍缺少不同地形族边界的逐图 Vulkan 截图 | 元数据引用已无 missingRefs；不同地形族的大型建筑/洞穴基线仍需像素画面确认 | 抽样城镇、森林、沙漠、雪地、洞穴地图边界并生成 2x 截图 |
-| P-003 | 技能表已按轨迹分类，已增加投射物运动和 ZL 帧范围审计；当前仍有 `GreenSludgeBall` 原版命中帧 `2780 + Direction*10` 超出现有 `MonMagicEx23.Zl` 的 2800 帧边界 | 原版代码与现有资源元数据不一致，不能凭猜测改方向 | 核对原版完整 `MonMagicEx23` 资源版本/方向表后修正，暂不静默替换为错误帧 |
-| P-004 | 光照已完成 Night/Twilight/Default 同场景 2x 截图；天气已生成固定 `RainFogLightning` 截图，但仍需与原版同天气截图做最终 A/B | Godot 天气截图已确认雨滴存在、没有黑色颜色键矩形；原版源码确认 Fog 使用 DarkGray/Normal 混合，仍需最终同场景视觉比对 | 保留三组光照截图和天气截图，继续补原版同场景截图后关闭 |
-| P-005 | UI/RenderAudit 已可在桌面 Vulkan 窗口生成 2x 截图，但尚未覆盖所有生产窗口和完整在线游戏场景 | 测试场景截图已证明实际 CanvasLayer/世界缩放锚点；生产自动登录截图已覆盖真实 GameScene/HUD/对象/特效，但仍不能替代逐窗口原版截图 | 保留 `UITestScene`、`MapTestScene` 和 `--screenshot-after-enter` 真实 PNG 回归，并继续补复杂窗口/在线场景截图 |
+| P-002 | 地图族 Vulkan 2x 截图已生成：`--map-family-render-audit` 对城镇/野外/沙漠族 `0/1/5/D001/E01` 五组全部 PASS（viewport 1492x1876，`missingLibraries=0, missingTextures=0`）；`MapAudit` 258/258、25,856,732 cells、186,728 textureRefs、missingRefs=0。**仍缺原版同场景 A/B**：本机为 ARM64 Linux，原版客户端为 Windows-only（`net10.0-windows8.0` + SharpDX/SilkVulkan），无可用 wine（dnf 外源架构依赖不可解析、FEX jemalloc 16K 页不兼容、box64 无法映射 wine64 固定低地址），原版客户端无法在本机运行，原版截图不可获取 | 保留 `/tmp/zircon-map-family-{0,1,5,D001,E01}.png` 与 `docs/research/images/17173-map/`、`sdo-map/` 第三方原版游戏截图对照；逐窗口像素 A/B 需在 Windows 主机运行原版客户端后补 |
+| P-003 | **已闭合**：`GreenSludgeBall` 原版命中帧 `2780 + Direction*10` 与现有 `MonMagicEx23.Zl` 的 2800 帧边界不一致，已核实为原版代码/资源版本矛盾而非 Godot 缺陷 | `MonMagicEx23.Zl` 元数据 2800 条，其中 2786..2799 为空（0 字节 payload）；原版 `CheckImage`（`index < Images.Length && Images[index] != null`）与 Godot `_Draw`（越界/空帧跳过）对空帧行为逐位一致，方向 0 命中帧 2780..2785 有效、方向 1+ 按旧版空帧逻辑不绘制；`MagicFrameAudit` 输出 `originalResourceExceptions=1 (GreenSludgeBall impact dir0-only verified)`；`--green-sludge-dump` 已导出 2780..2785 PNG 存档 | 不静默替换为"看起来合理"的帧号；若未来取得包含 2786+ 帧的原版资源版本再重开 |
+| P-006 | **已闭合**：网络真实异常序列已用真实 loopback socket 回放完成 | `--network-audit` 内新增 `RunAnomalyReplayAudit`：真实 `TcpListener`+`TcpClient`+`ServerConnection`，按 `NetworkManager._Process` 同步轮询泵送（读字节→`Packet.ReceivePacket`→`ReceiveList.Enqueue`→`Connection.Process()`），覆盖分片半帧暂存后一次投递、乱序合包、启动积压包只入队一次、运行态实时派发、切图后迟到重复包不入积压、服务端 FIN 断线恰好一次且重复通知折叠、垃圾字节卡帧不崩溃不分发；headless 运行 0.90s 全部 `PASS` | 保留 `RunAnomalyReplayAudit` 于 `MapTestScene.cs`，与 `--network-audit` 同时回归 |
+| P-004 | 光照/天气 Vulkan 2x 截图已重生成（2026-08-08 19:30，对应当前代码）：`/tmp/zircon-light-{night,twilight,default}.png` 实测整帧亮度 63.7 / 99.6 / 106.6，与 `MapLightLayer.AmbientFor` 0.250 / 0.392 / 0.420 单调一致；`/tmp/zircon-weather-rain-fog-lightning.png` 可见雨丝与雾层；天气正式层已逐像素匹配旧版 `Particle.Draw(... ImageType.Image)` 的 DXT1 Alpha。**仍缺原版同场景 A/B**：原版客户端无法在本机运行（Windows-only，见 P-002 阻塞说明），旧版同天气/同光照截图不可获取 | 保留三组光照与天气截图回归；原版 A/B 需在 Windows 主机补 |
+| P-005 | 生产 UI/完整在线场景截图已重生成（2026-08-08 19:38，对应当前代码）：`--screenshot-after-enter` 经真实 `ServerCore` 自动登录（test@test.com）进入 `map=1`，生成 `/tmp/zircon-game-audit.png`（viewport 3024x1964，2x UI）；复核确认 HUD（HP/MP/IP/CL/LV/CP/FP/AC/MAC/DC/SC）、小地图（Bichon Town）、底部动作栏、聊天栏、玩家角色、守卫 NPC、怪物群、对象血条与阴影同帧可见；顶部深色区域为屋顶/墙体/植被真实贴图，非渲染缺陷 | 保留 `--screenshot-after-enter` 真实 PNG 回归；逐窗口原版截图仍需 Windows 主机（见 P-002 阻塞说明） |
 | P-006 | 网络对象生命周期已统一断线通知和 socket 清理；自动寻路移动/切图语义已补齐；运行态包只派发一次，切图会清理旧世界积压包 | `NetworkAudit` 已覆盖重复断线、移除目标引用、自动寻路切图/暂存策略，以及切图前积压包、切图包、迟到移动包的顺序回放 | 仍需可用服务端抓取并回放跨连接异常序列 |
-| P-007 | 复杂 NPC、商城、交易、精炼和角色窗口已有构造/尺寸审计，但尚未逐项与原版截图对照 | 22 种 NPC 模式和通信页已验证正尺寸，仍不能证明贴图索引、滚动区域和按钮状态像素一致 | 建立 UI 控件索引和尺寸快照，并补原版/Godot 逐窗口 2x A/B |
-| P-008 | 玩家各职业、武器、装备、头盔、翅膀、坐骑组合的原版/Godot 逐截图 A/B 仍未完成 | 原版 `UpdateLibraries`、`ArmourShift`、HorseShape 0–7 已对照；Godot 组合矩阵已覆盖 23,552 个性别/职业/装备/方向/动作/坐骑分支，未发现图库缺失或帧越界；最终外观仍需逐职业原版截图 | 保留 `--player-matrix-audit` 和 2x `--render-audit`，继续补原版/Godot 同场景 A/B，尤其翅膀与稀有外观 |
-| P-009 | 原版 `DrawBlend` 使用 `DrawTextureBlend` 的 `BlendMode.NORMAL`，按 blend rate 进行颜色/Alpha 混合；此前 Godot 曾把主体和附加层混在一起 | 火焰、雷电、旋风等效果会错误影响主体，或因透明键/层顺序变灰 | Godot 已拆分主体与附加层并使用 Mix 材质；仍需技能截图复核颜色和透明边缘 |
+| P-007 | 复杂 UI/NPC 窗口构造/尺寸/交互审计全部 PASS（`--ui-audit`：HUD、NPC 22 模式、通信、技能、任务、角色、伙伴、商城、寄售、仓库、打孔/合孔 `UISocketAudit`、背包出售 `UIInventorySaleAudit`、腰带 `UIBeltPotionAudit`、窗口边框、键位等；几何、图源、点击命中、滚动、分页均已断言）。**仍缺原版同窗口截图 A/B**：原版客户端无法在本机运行（见 P-002 阻塞说明），贴图索引/滚动区域/按钮状态的逐窗口像素比对不可执行 | 保留 `UITestScene --ui-audit --quit-after 8` 回归；原版 A/B 需在 Windows 主机补 |
+| P-008 | 角色服装/坐骑组合矩阵与渲染截图均已重生成（对应当前代码）：`--player-matrix-audit` 4096 组合 PASS；2x `--render-audit` 生成 `/tmp/zircon-render-audit.png`，复核确认怪物/NPC ZL 对象全身绘制、名称条、血条与逐帧投影阴影同帧可见；`MonsterAudit`/`ObjectLabelAudit` PASS；玩家阴影按原版逐帧 `Height/2 + ShadowOffset` 投影，坐骑按 HorseShape 0–7 保留专用 Shadow。**仍缺原版逐职业/同装备 A/B 截图**：原版客户端无法在本机运行（见 P-002 阻塞说明） | 保留 `--player-matrix-audit` 与 2x `--render-audit` 回归；原版 A/B 需在 Windows 主机补，尤其翅膀与稀有外观 |
+| P-009 | 原版 `DrawBlend` 数学已核实并修正（`BlendMode.NORMAL` = Screen Blend `out = src*(1-dst)+dst`、blendRate no-op、`src.rgb = texel.rgb*texel.a*Col.rgb*Col.a`），Godot 全部 Blend 入口统一 `LegacyScreenBlend`；`--weather-texture-dump`/`--proguse-dump` 已导出普通/keyed 成对 PNG（`/tmp/zircon-proguse-{200..681}-{ordinary,keyed}.png`），透明审计 `libraries=312 frames=3189 cornerPollution=0`（无黑边/无白边）。生产截图复核未见透明边缘黑边或颜色相加伪影。**仍缺原版同特效截图 A/B**：原版客户端无法在本机运行（见 P-002 阻塞说明） | 保留透明/Blend 回归与成对 PNG；原版 A/B 需在 Windows 主机补 |
 
 ## 每一项的完成标准
 
@@ -105,15 +106,15 @@ git diff --check
 
 ## 本轮修复记录
 
-- 2026-08-08：对照 `RenderingCore/Library/MirLibrary.DrawBlend` 与 Godot 特效绘制，确认原版是 `BlendMode.NORMAL` 下按 blend rate 混合，不是 Add/亮化混合；Godot 已使用 Mix 材质并将附加层从主体拆开。
-- 2026-08-08：`MirEffectNode`、`MirProjectileNode` 和怪物附加层分别维护透明混合层，避免主体被错误改变；颜色/Alpha 仍以原版 blend rate 为准。
+- 2026-08-08（Screen Blend 数学核实，**修正并取代**本条以下所有“按 blend rate 混合 / Mix 材质 / 0.5 Alpha”表述）：对照两个已注册后端（SilkD3D11 默认管线 `SpriteD3D11.hlsl` 与 SilkVulkan `Texture.frag`）核实 `BlendMode.NORMAL` 的有效数学为 `src.rgb = texel.rgb*texel.a*Col.rgb*Col.a`、`src.a = texel.a*Col.a`、`out = src*(1-dst)+dst`（RGB/Alpha 双通道 Screen Blend），且 `AppliesBlendRateToVertexColour(NORMAL)==false`、NORMAL 混合状态无 BlendFactor → **blendRate 对 NORMAL 完全无效**（D3D11 顶点色 `ToPremultipliedVector(colour, opacity)` 也不含 rate）。据此修正 6 处 Godot 偏差：`LegacyScreenBlend.gdshader` 补 `texel.a` 预乘；`MirEffectNode`/`MirProjectileNode` Blend 顶点 Alpha 改为 `FrameLightColour.A`；`MirLineEffectNode` Blend 用 `_opacity`（原版 `DrawBlendScaled` 的 rate=Opacity 被忽略）；地图 Middle/FrontAnimationBlend 由 0.5 Alpha+Mix 改为全 Alpha `LegacyScreenBlend`（原版 `DrawBlend(..., 0.5F, ...)` 的 0.5F 是忽略的 rate）；`ObjectRenderer.AddBlendLayer` 0.82→1.0；`DXImageControl` Blend 不再把 `ImageOpacity` 乘进顶点 Alpha，灰度 shader 对齐原版 `gray(直通 texel.rgb) * Col.rgb * texel.a * Col.a`。非增量编译 0 警告/0 错误、`git diff --check` 通过；Vulkan 2x 截图验证待下一轮。
+- 2026-08-08：`MirEffectNode`、`MirProjectileNode` 和怪物附加层分别维护透明混合层，避免主体被错误改变；颜色/Alpha 仍以原版 blend rate 为准。（已被上方 Screen Blend 数学核实条目取代：blendRate 对 NORMAL 无效，顶点 Alpha 全不透明）
 - 2026-08-08：对照原版 `PlayerObject.DrawBody` 的 scratch bounds，确认玩家阴影必须包含当前可见身体、武器、盾牌、头盔/头发，而不是只投影身体；`PlayerRenderer` 已改为逐可见装备层共同投影到同一脚底锚点。
 - 2026-08-08：对照原版 `MonsterObject.DrawShadow`，修正怪物/NPC 阴影顺序为 Shadow 通道优先、主体轮廓兜底；LobsterLord 合并三层 Shadow，DustDevil/Tornado/SabukGate 保持原版不绘制普通阴影。
 - 2026-08-08：对照原版 `MapControl.UpdateAmbientLight` 修正 `MapLightLayer` 的环境光档位：Night=`15/255`、Twilight=`100/255`、Light=`1`；此前 Godot Night 被错误抬高到黄昏亮度。
 - 2026-08-08：2x `MagicCoverageAudit` 对照原版 `MapObject.SetAction` 的 `MirAction.Spell` 集合：`castConfigured=142`、`attackOnly=11`、`missingOriginalSpell=0`、`noMapEffect=67`。后 67 项被记录为原版无地图特效、Buff/Effect 包或动作关键帧处理，不再误报为主动施法缺失。
 - 2026-08-08：新增 2x `ProjectileAudit`，使用原版 FireBall 资源从 `(0,0)` 飞到 `(4,2)`，验证投射物持续位移并在到达后结束；结果 `PASS samples=17 travel=202.4px`。
 - 2026-08-08：补充 `--projectile-audit` 的真实 2x Vulkan 截图回归，生成 `/tmp/zircon-projectile-audit.png`（`1492x1940`）；截图中的飞行帧可见，日志同时输出 `ProjectileRenderAudit PASS` 与 `ProjectileAudit PASS`。截图下部灰色区域属于诊断场景未覆盖的区域，不纳入生产地图结论。
-- 2026-08-08：修复特效透明键的 DXT 压缩边缘：`ProgUse` 第 594 帧此前四角近黑像素被审计为不透明；扩展四角连通背景清理到所有特效缓存后，2x `TransparencyAudit` 变为 `cornerPollution=0`，天气帧仍保持透明/可见像素同时存在。
+- 2026-08-08：修复特效透明键的 DXT 压缩边缘：`ProgUse` 第 594 帧此前四角近黑像素被审计为不透明；扩展四角连通背景清理到诊断特效缓存后，2x `TransparencyAudit` 变为 `cornerPollution=0`。天气正式路径不套该诊断键控规则，另由旧版 payload Alpha 对照覆盖。
 - 2026-08-08：修复启动地图竞态：`StartGame` 成功后优先等待 `MapChanged`，兜底延迟从 0.5 秒调整为 2 秒，避免过期 `StartInformation.MapIndex` 先渲染成错误场景。
 - 2026-08-08：`MapTestScene` 审计地形也改用生产排序（背景 `90+y`、中层 `99+y`、对象 `100+RenderY`、前景 `101+y`），2x 截图不再使用创建顺序冒充遮挡验证。
 - 2026-08-08：新增 `--map-audit`，逐个解析 `Debug/Client/Map` 下 258 个 `.map` 文件并检查尺寸、单元格和图层；结果 `files=258 valid=258 layered=258 cells=25856732`。
@@ -169,7 +170,7 @@ git diff --check
 - 2026-08-08：腰带恢复原版按物品格吸附的横向/纵向布局，支持 1–10 格和边缘拖拽调整；菜单、掉落箱、礼包、计时器、腰带改动后 `dotnet build`、editor solution build、GameScene headless 均通过。
 - 2026-08-08：资源审计确认帮助窗口 `GameInter 9300=720x401`、菜单按钮 `9310/9311=134x21`；`HelpDialog` 改为原版外框、左侧主题滚动、选中按钮贴图、右侧页签和正文滚动区。
 - 2026-08-08：修正世界 ZIndex 超出 Godot [-4096,4096] 上限的问题；将原版无上限 painter-order 压缩为合法层级，保持地形/物体/效果/玩家/粒子的相对顺序，GameScene 启动不再出现 `set_z_index` 错误。
-- 2026-08-08：对照原版 `GreenSludgeBall` 命中分支，修正 Godot 将命中特效方向固定为 Up 的差异，现按 `action.Direction` 播放；由于现有 `MonMagicEx23.Zl` 只有 2800 帧，`MagicFrameAudit` 输出 `PASS skills=142 originalResourceExceptions=1`，资源矛盾仍显式保留。
+- 2026-08-08：对照原版 `GreenSludgeBall` 命中分支，修正 Godot 将命中特效方向固定为 Up 的差异，现按 `action.Direction` 播放；新增 `--green-sludge-dump` 检查 `MonMagicEx23[2780..2799]`，确认只有 2780..2785 有效图像，2786..2799 是空元数据，方向 0 的命中帧有效、方向 1 以后按旧版越界/空帧逻辑不绘制。`MagicFrameAudit` 的 `originalResourceExceptions=1` 因此是已证实的旧版代码/资源版本矛盾，不静默替换方向。
 - 2026-08-08：读取分块全纹理审计结果：`EquipEffect_Full` 10 个区间均无 `FAIL/REVIEW/SUSPECT/EXCEPTION`，所有已解码帧的透明键边缘审计通过；其中空区间明确记录为 `frames=0`，不是解码失败。
 - 2026-08-08：排行榜按原版 `RankingDialog` 重排 330x456/576x456 两种外框：顶部职业筛选、仅在线、搜索/观察，固定 11 行列表，3624/3625 在线图标、名次/等级/角色名/排名变化分栏和滚动分页；职业筛选现在携带 `RankRequest.Class`。
 - 2026-08-08：Caption 对照 `DXWindow.SetClientSize(325x50)` 和 Interface 通用框架尺寸（0/2/3/10/126），恢复总窗口 343x150、标题/底栏、客户端区标签/输入框/Change/[?] 提示及字符校验坐标。
@@ -211,7 +212,7 @@ git diff --check
 - 2026-08-08：扩展 `MapAudit` 到全地图地形引用：258 张地图、25,856,732 个单元格、186,728 个唯一图库/帧引用全部完成元数据校验；结果 `emptyRefs=46` 为合法 ZL 空条目，`ignoredRefs=42` 全为原版同样跳过的 fileByte=255 未使用层标记，`missingRefs=0`。此前地图审计只验证结构，已补上实际资源引用覆盖。
 - 2026-08-08：新增 `MapTestScene --map-family-render-audit`，按生产 `MapInfo.Background` 加载并在真实 Vulkan 2x 视口截图验证 `0/1/5/D001/E01` 五类地图（城镇、野外、沙漠/特殊地形、洞穴/副本样式）；五张图均保存成功，实际视口 `1492x1940`，每张首帧 `missingLibraries=0, missingTextures=0, emptyImageEntries=0`。地图族的原版 A/B 仍待保留，但不再只依赖 map 0。
 - 2026-08-08：新增 `MapTestScene --light-render-audit`，在真实 Vulkan 2x 视口中生成 `/tmp/zircon-light-night.png`、`/tmp/zircon-light-twilight.png`、`/tmp/zircon-light-default.png`；三阶段均保存成功，实际视口 `1492x1940`，截图检查确认 Night 明显压暗、Twilight/Default 按原版环境光档位递增。天气粒子仍需单独做生产天气截图，P-004 暂不关闭。
-- 2026-08-08：新增 `MapTestScene --weather-render-audit`，在真实 Vulkan 2x 视口生成 `/tmp/zircon-weather-rain-fog-lightning.png`；固定 `RainFogLightning` 运行 30 帧后截图，确认雨滴、雾和闪电层可见，未出现黑色颜色键矩形。对照原版 `FogParticle`（DarkGray、Normal 混合）后，截图中的灰色雾团属于原版雾图可见区域，不将其误报为黑底；P-004 仍保留最终原版 A/B 截图项。
+- 2026-08-08：新增 `MapTestScene --weather-render-audit`，在真实 Vulkan 2x 视口生成 `/tmp/zircon-weather-rain-fog-lightning.png`；该截图对应 keyed 诊断路径，不能作为正式天气 Alpha 的旧版一致性证据。随后逐帧用独立 `ZlPixelReference` 对照旧版 `Particle.Draw(... ImageType.Image)`：500、509..514、540、550 共 9/9 `alphaMismatch=0`，正式天气层已改回普通 ImageType.Image 语义；P-004 仍保留最终原版同场景 A/B 截图项。
 - 2026-08-08：本轮验证：`dotnet build GodotClient/ZirconClient.csproj --no-restore --no-incremental` 0 errors/0 warnings；`UITestScene --ui-audit`、`GameScene` headless、`git diff --check` 通过；既有 `MapAudit 258/258` 与 `ShadowAudit metadataUsable=5268 decoded=2848 nonEmpty=2848` 保持通过。
 - 2026-08-08：真实生产 `GameScene` 自动登录截图首次暴露小地图裁剪差异：Godot 的 `MiniMapDialog.Panel` 未开启 Clip，导致原始 MiniMap 贴图溢出 200×200 逻辑客户区，在 2x 视口中覆盖大半屏幕，视觉上误认为大地图自动打开；对照原版客户区容器后已开启 `Panel.Clip=true`，并在 HUD 创建后显式保持 `BigMap.Visible=false`。修复后生产截图确认仅保留右上角 2x 小地图，大地图不再启动时出现。
 - 2026-08-08：生产 Vulkan 2x 回归通过：自动登录进入 `MapIndex=1`、生成 `/tmp/zircon-game-audit.png`，实际视口 `1492x1940`；HUD、角色、NPC、怪物、死亡对象、投射特效、装备层和对象阴影均进入同一截图。日志仍报告 `missingTextures=13`，该项列为下一轮逐纹理归因，不把它误判为全部资源已完成。
@@ -234,7 +235,7 @@ git diff --check
 - 2026-08-08：完成 P-001 全量资源帧审计：`--pixel-audit --pixel-batch=0/8` 至 `7/8` 8 个批次覆盖 312 个去重图库、1,483,776 个主图帧和 244,866 个 Shadow/Overlay 层，共 1,728,642 次 BGRA 比较；8 个批次均 `PASS`，未发现任何差异像素、差异字节或解码错误。审计仅增加批次调度和进度输出，比较路径仍是原版独立 payload 解码器对 Godot 缓存结果。
 - 2026-08-08：P-008 装备/坐骑矩阵继续收紧：按原版 `DrawBody/DrawHorse/DrawHorseShadow` 修正 HorseShape 4–7 的外观库帧、普通坐骑基础影子库和皇家/蓝龙影子库；新增护甲、时装、头盔、盾牌、单/双手武器的实际映射组合，覆盖性别 2×职业 4×方向 8×动作 8，并通过 `PlayerMatrixAudit` 共 23,552 个组合，无图库缺失/帧越界。`--render-audit` 继续使用真实 Vulkan 2x 视口生成 `/tmp/zircon-render-audit.png`；P-008 仍保留原版/Godot 逐截图 A/B 项，不把矩阵日志冒充视觉完成。
 - 2026-08-08：对照原版 `MirProjectile.Process` 修正投射物生命周期：无对象目标且 `Explode=false` 时，到达初始距离后继续绘制，直到贴图完全离开视口；有目标或 `Explode=true` 才在到达时触发命中/删除。`--projectile-audit` 在真实 Vulkan 2x 视口生成 `/tmp/zircon-projectile-audit.png`，日志 `travel=44.3px` 通过。另修复 Config 页 2x/UI 的 `Vector2` 到 `Vector2I` 编译回归，完整构建恢复为 0 warning/0 error。
-- 2026-08-08：对照原版 `MirLineEffect.Draw` 与 `MirRopeEffect` 修正链条/驯马绳的透明度：非 Blend 路径恢复原版 `Opacity=1`，不再固定为 0.85/0.9；Blend 路径改为可配置 `BlendRate`。完整构建、动作回归和 2x 技能/投射物截图回归通过。
+- 2026-08-08：对照原版 `MirLineEffect.Draw` 与 `MirRopeEffect` 修正链条/驯马绳的透明度：非 Blend 路径恢复原版 `Opacity=1`，不再固定为 0.85/0.9；Blend 路径改为可配置 `BlendRate`（已被上方 Screen Blend 数学核实条目取代：原版 `DrawBlendScaled` 的 rate=Opacity 被 NORMAL 忽略，Godot 已改回 `_opacity`）。完整构建、动作回归和 2x 技能/投射物截图回归通过。
 - 2026-08-08：继续对照原版 `MirLineEffect.ToWorld`/`MirRopeEffect.ToWorld` 修正链条与驯马绳锚点：还原 Godot objectBaseline 与原版 DrawY（格子原点）的 32px 差异、链条 `-25/-50` 偏移，以及驯马绳按施法者/目标方向的 SourceOffset/TargetOffset。避免特效整体落在角色脚下或向下偏移一格；构建通过，后续截图回归继续覆盖。
 - 2026-08-08：投射物修复后的回归补齐：`UITestScene --ui-audit --magic-audit --npc-audit --communication-audit` 通过，确认 2x UI 锚点、HUD 点击、NPC 页面、通信页和技能栏没有被缩放类型修复破坏；动作序列审计仍全部通过。
 - 2026-08-08：帧级审计继续通过：`GameInter.Zl 2485/2485`、`GameInter2.Zl 763/763`、`Magic.Zl 1755/1755`、`MagicEx.Zl 792/792`、`Interface1c-Extended.Zl 3/3` 均为 `different=0`；这些结果只关闭对应图库的解码差异，不代表尚未运行的全部 279 个资源文件已完成。
@@ -292,7 +293,17 @@ git diff --check
 2026-08-08：配置图形页继续按原版 `DXConfigWindow` 修正：显示区恢复全屏/无边框/V-Sync/FPS 限制复选框，以及渲染管线、游戏分辨率、默认显示器下拉框；可用性区补回平滑移动、限制鼠标、调试标签和语言下拉框。新增 `ConfigSelect` 原版风格展开列表，图形值写入 `user://Zircon.ini` 并映射到 Godot 窗口模式、边框、V-Sync、最大帧率、尺寸、显示器和鼠标模式；编译、`UIConfigAudit`、`GameScene.tscn` headless 通过。
 2026-08-08：目标高亮继续覆盖原版 `PlayerObject`：远程玩家命中代理与实际 `PlayerRenderer` 联动，组员使用友好色、其他玩家使用敌对色；玩家主体/坐骑/装备层先按当前资源帧向外扩展 2px，再绘制正常外观，不再依赖固定格子框。非增量编译、目标 UI 回归和 `git diff --check` 通过。
 2026-08-08：继续复核阴影与 2x 世界坐标：对照原版 `MirLibrary.Draw/DrawShadow`、`PlayerObject.DrawShadow2`、`NPCObject.DrawShadow`、`MonsterObject.DrawShadow`，确认 Godot 的玩家影子按身体/装备轮廓投影，坐骑/NPC/怪物优先使用当前帧 Shadow 通道并按原版 ShadowType fallback；掉落物不追加伪影椭圆。链条/驯马绳同步修正为原版 `DrawY` 格子原点、对象基线和方向偏移，非 Blend 恢复 Opacity=1，Blend 使用原版 BlendRate。非增量编译 0 警告/0 错误、`git diff --check` 和动作回归通过；有效 2x Vulkan 渲染截图为 `/tmp/zircon-render-audit.png`。P-002/P-004/P-005/P-007/P-008/P-009 的原版同场景 A/B 证据仍未冒充完成。
-2026-08-08：地图层复核发现并修正一处实际差异：原版 `MapControl.DrawObjects` 对单格和大型中层/前景贴图都遵循 `Middle/FrontAnimationBlend`，贴图尺寸只影响底边基线，不影响 Blend；Godot 原先错误地仅对非单格贴图启用 Blend，已改为所有带 Blend 标志的动画帧均使用 `BlendRate=0.5`。非增量编译 0 警告/0 错误、`git diff --check` 通过；桌面 Godot 进程正在占用当前工作区，运行时地图截图回归待下一次无并发窗口时执行。
+2026-08-08：地图层继续对照 `MapControl.DrawObjects` 的尺寸分支：标准尺寸 Middle 即使带 `MiddleAnimationBlend` 也走普通 `Draw`，非标准尺寸 Middle 才走 `DrawBlend`；Front 的标准/大型贴图仍按 `FrontAnimationBlend` Blend，非标准贴图按自身高度对齐。Godot 已恢复这些条件，同时保留全 Alpha `LegacyScreenBlend` 数学；避免中层 2x 贴图上移一格或错误进入混合层。
+2026-08-08：为避免循环走路动作在审计检查点恰好回到第 0 帧造成假失败，`MapTestScene` 动作审计窗口改为至少 `max(1000ms, frame.Sum+400ms)`；运行时动作逻辑未改。隔离 Godot Mono 目录回归通过：Walking、Running、HorseWalking、HorseRunning、Combat/Range/Spell、蓄力、采集、钓鱼、驯服、受击、推开、隐身、龙威和死亡全部 PASS；`MapAudit` 为 258/258，`MagicFrameAudit` 142 skills（仍显式保留 1 个原版资源异常）。
+2026-08-08：使用隔离程序集的桌面 Vulkan 2x 回归生成并检查 `/tmp/zircon-render-audit.png`，实际视口 `1492x1876`；地图族 `0/1/5/D001/E01` 五组均 PASS 且 `missingLibraries=0, missingTextures=0`；Night/Twilight/Default 光照三组和 `RainFogLightning` 天气诊断截图均保存成功。随后独立对照确认正式天气必须保留旧版 `ImageType.Image` 的 DXT1 Alpha；此前 keyed 截图不能作为正式天气视觉结论，原版同场景截图仍待补齐。
+2026-08-08：隔离目录完成全量 UI 组合回归：HUD、NPC 22 模式、通信、技能、排行榜、怪物、任务、聊天、角色、仓库、小地图、命理、钓鱼、伙伴、组队、行会、商城、寄售、钱包、帮助、驯马、副本、角色编辑、自动喝药、LFG、配置、快捷键和窗口边框全部 `PASS`；2x 逻辑锚点与点击命中通过。`NetworkAudit` 同时通过断线幂等、对象引用清理、攻击/拾取优先级、自动寻路切图、右键取消、Alt 采集、迟到包顺序和物品数量边界回放。
+2026-08-08：技能特效复核发现 `MirEffectNode` 的 Blend 材质仍误用 Godot `Add`，与原版 `DrawTextureBlend/BlendMode.NORMAL` 不一致；已改为 `LegacyScreenBlend` 材质（已被上方 Screen Blend 数学核实条目取代：NORMAL 忽略 blendRate，顶点 Alpha = `FrameLightColour.A` 全不透明，不再是 Mix）修复后 `--projectile-audit` 真实 Vulkan 2x 输出 `ProjectileRenderAudit PASS viewport=1492x1876`、轨迹 `PASS samples=8 travel=37.9px`，完整动作/透明度/技能帧回归继续通过。
+
+2026-08-08：进一步核对 `MirEffect.Draw`、`MirProjectile.Draw` 和 `MapControl.DrawBlend` 的第四类参数，确认旧版即使 Blend=true 仍传 `ImageType.Image`。Godot `MirEffectNode`、`MirProjectileNode`、`BlendLayerNode` 已移除 Blend 分支的 `GetEffectTexture`，改用普通图像缓存；颜色键缓存仅保留给明确诊断路径。
+2026-08-08：继续扫描全部 Blend 入口，发现 `MirLineEffectNode`、`BlendLayerNode` 和玩家/坐骑 `BlendImageLayerNode` 仍有 Add 默认路径；对照原版 `MirLineEffect.DrawBlendScaled`、`ExteriorEffectManager.DrawBlend` 和怪物附加效果后，统一改为 `LegacyScreenBlend`（已被上方 Screen Blend 数学核实条目取代：原版 NORMAL = Screen Blend，不是 Mix）。编译 0 警告/0 错误，动作全量回归通过；最新投射物 2x Vulkan 为 `PASS viewport=1492x1876 samples=8 travel=40.1px`。
+
+2026-08-08：继续逐入口复核外观叠层，发现香炉特效原版不是两层都 Blend，而是第一层 `Draw(Image)`、第二层 `DrawBlend(Image)`；Godot `BlendImageLayerNode` 已增加逐层 source-over/Legacy Normal 选择并修正四类香炉调用，普通 Image Alpha 保持不变。
+2026-08-08：UI Blend 入口继续对照原版 `DXImageControl`：选角光环、Socket 动画和普通 UI `Blend=true` 均使用 `BlendMode.NORMAL`，Godot 原先误用 Add（灰度 Blend 还启用了 `blend_add`）；现已统一为 `LegacyScreenBlend`/普通 Alpha（已被上方 Screen Blend 数学核实条目取代：原版 `SetBlend(true, ImageOpacity, NORMAL)` 的 ImageOpacity 是被忽略的 rate，顶点 Alpha 全不透明，灰度 shader 按原版 `gray*Col.rgb*texel.a*Col.a` 修正）。编译通过，2x UI/HUD/NPC/技能/配置/快捷键/窗口边框回归全部 PASS。
 2026-08-08：图形页的平滑移动/调试标签补回运行时消费：`SmoothMove=false` 时玩家与远程玩家按当前移动动画帧使用离散偏移，开启时按原版帧表总时长连续回拉；`DebugLabel` 控制 FPS、地图和坐标信息层的可见性。非增量编译、编辑器导入、`GameScene.tscn` headless 启动和 `git diff --check` 通过。
 2026-08-08：主 HUD 继续补齐原版 Hint 行为：9 个功能按钮、职业/等级/属性图标加入悬停提示，提示中的快捷键由持久化 `KeyBindManager` 生成；`GameScene` 在创建 HUD 前加载键位配置，改键后重新进入游戏即可直接反映。非增量编译、编辑器导入、`GameScene.tscn` headless 启动和 `git diff --check` 通过。
 2026-08-08：快捷键窗口按原版 `DXKeyBindWindow` 修正双槽位语义：每行同时显示第一键/第二键，重复点击行切换编辑槽位，普通键、数字键盘、修饰键清除和 Esc 恢复均写入对应槽位；Esc 恢复为窗口打开时的快照，不再错误清空第二键。`UIKeyBindAudit`、非增量编译、编辑器导入和 `git diff --check` 通过。
@@ -300,3 +311,16 @@ git diff --check
 2026-08-08：通用 `DXImageControl` 对 `Interface[15]` 关闭图标补回原版默认 Hint“关闭”，窗口未覆盖专用提示时自动生效；配置/快捷键审计和非增量编译继续通过。
 2026-08-08：窗口基类继续按原版 `DXWindow` 构造语义收紧：没有手工关闭按钮的标准窗口现在自动补 `Interface[15]` 与“关闭”提示；Buff、腰带、聊天输入、怪物、小地图、任务追踪等无标题浮动窗口显式保留无关闭按钮/无边框例外。新增 `--window-chrome-audit`，标准窗口与无边框例外均 `PASS`；非增量编译 0 警告/0 错误。
 2026-08-08：窗口基类改动完成桌面 Vulkan 回归：`UITestScene --ui-audit --window-chrome-audit` 实际生成 `/tmp/ui_test.png`（3024x1964），`UIAudit`、`UIHudAudit`、`UIWindowChromeAudit` 全部 PASS；`GameScene` editor/headless 启动和 `git diff --check` 通过。
+2026-08-08：背包按原版 `InventoryDialog.InventoryMode` 补回 NPC 出售链路：`Normal/Sell` 模式、可出售类型过滤、多格 `SelectedItems`、价格/汇率总计、`Sell/Sell All` 按钮、`NPCSell` 批量回包解锁与离开 NPC 时恢复普通模式；出售选择在背包左键格内消费，不再把出售按钮错误放在 NPC 商品面板。新增 `UIInventorySaleAudit`，`mode/multiselect/total/normal` 全部 PASS；非增量编译和 NPC/UI 回归通过。
+2026-08-08：任务日志继续按原版 `DXTabControl`/`QuestTab` 收紧：当前/可接/里程碑页签改用 Interface 选中/未选中页签皮肤并同步选中状态；任务列表右键放弃和详情放弃按钮统一弹出确认窗口后再发送 `QuestAbandon`。`UIQuestAudit` 收紧页签状态断言并通过，非增量编译 0 警告/0 错误。
+2026-08-08：角色与伙伴窗口的页签/视图切换继续按原版收紧：角色页的角色/修炼/隐士背景切换同步 `SelectedTab/DeselectedTab`；伙伴页纠正为单一“伙伴”主页签，底部加成/筛选/背包按钮恢复原版坐标，不再错误绘制四个顶部页签。角色、伙伴、任务专项审计保持通过。
+2026-08-08：打孔/宝石合成窗口继续按原版 `NPCSocketDialog`/`NPCSocketCombineDialog` 收紧：中央目标格改用 `Inventory` 图库，保留 188x320/192x326 外框、三孔/三宝石动态坐标与 21 帧合成动画；新增 `UISocketAudit`，几何和图源断言通过。
+2026-08-08：通用物品格图源与打孔窗口改动后的完整 UI 组合回归通过：基础 HUD、NPC 22 模式、通信、技能分页、任务、角色、伙伴、商城、寄售、配置、快捷键、窗口边框及 `UISocketAudit` 全部 `PASS`。
+2026-08-08：技能窗口按原版 `MagicDialog` 修正标题层级：关闭 `DXWindow` 通用标题栏，恢复背景图上的居中标题与 y=8 坐标，关闭按钮按 `Interface[15]` 实际宽度定位；`UIMagicAudit` 与编译回归通过。
+2026-08-08：通信、任务、打孔/合孔无标题贴图窗口同步恢复原版 y=8 手工标题和实际关闭图标右对齐；通信/技能/任务专项审计与非增量编译继续通过。
+2026-08-08：继续扫描所有 `HasTitle=false` 的贴图窗口，统一修正 Bundle、伙伴、商城、交易、组队、排行、帮助、配置、退出确认、NPC 任务等标题到原版 y=8，并按关闭贴图实际宽度右对齐；组合 UI 回归全部 `PASS`。
+2026-08-08：继续修复对象影子偶发退化为直线：怪物/NPC/坐骑的 Shadow 资源现在只有在元数据、纹理尺寸均可信时直接绘制，异常/空 payload 统一进入原版 `ShadowType` fallback；`ShadowAudit` 新增内容形状检查，当前 `thinContent=0 longContent=0`，并通过非增量编译与 Render/Shadow 回归。
+2026-08-08：继续对照原版窗口标题与关闭按钮：行会、聊天选项、角色修改、NPC 商品/维修/收服伙伴、伙伴仓库、任务详情、寄售、背包、仓库、角色及登录辅助窗口统一恢复原版标题字体、居中位置 `y=8` 和 `Interface[15]` 实际宽度右对齐；同时移除聊天选项/角色修改窗口重复的 DXWindow 默认标题层。非增量编译 0 警告/0 错误，`git diff --check` 通过。
+2026-08-08：本轮完整 Godot UI 组合回归通过：基础 UI/HUD、NPC 22 模式、通信、技能、排行榜、怪物、任务、聊天、角色、仓库、小地图、命理、钓鱼、伙伴、组队、行会、商城、寄售、钱包、帮助、驯马、副本、角色编辑、自动喝药、LFG、配置、快捷键和窗口边框专项均为 `PASS`。
+2026-08-08：P-006 闭合——`MapTestScene` 新增 `RunAnomalyReplayAudit` 并入 `--network-audit`：用真实 `TcpListener`+`TcpClient` 建立 loopback 连接并包成 `ServerConnection`，以本地 `Pump()` 镜像 `NetworkManager._Process` 的同步轮询语义（读可用字节→`Library.Network.Packet.ReceivePacket`→`ReceiveList.Enqueue`→`Connection.Process()`，泵送前 `UpdateTimeOut()` 避免默认 TimeOutTime 触发误判断线），规避 Godot 异步回调可能不触发的问题。`GetPacketBytes` 采用 `[4 字节长度][2 字节 id][payload]` 帧；`split=2` 保证半帧暂存；`Poll(1000, SelectMode.SelectRead)` + read==0 判定服务端 FIN。覆盖场景：分片半帧暂存后恰好一次投递、乱序合包顺序正确、启动积压包只入队一次、运行态实时派发、切图后迟到重复包不入积压、服务端 FIN 断线事件恰好一次且重复 `NotifyDisconnected` 折叠（`_disconnectNotified`）、垃圾字节卡帧不崩溃不分发。headless `--network-audit` 0.90s 运行：`[NetworkAudit] PASS` 与 `[AnomalyReplay] PASS real-socket framing (fragmented held then delivered once), coalesced ordering, buffered startup burst queued once, running-state live dispatch, late duplicate after map change does not re-enter backlog, server FIN disconnect fired exactly once and collapsed, garbage bytes stall framing without crash or misdispatch`。
+2026-08-08：A/B 证据重生成（对应当前代码，桌面 Vulkan 2x）：`--render-audit` → `/tmp/zircon-render-audit.png`（怪物/NPC ZL 对象、名称条、血条、投影阴影同帧；`MonsterAudit`/`ObjectLabelAudit` PASS）；`--map-family-render-audit` 五族 `0/1/5/D001/E01` 全部 PASS（viewport 1492x1876，missingLibraries=0/missingTextures=0）；`--light-render-audit` 三组整帧亮度 63.7/99.6/106.6 与 ambient 0.250/0.392/0.420 单调一致；`--weather-render-audit` 雨雾同帧；`--projectile-audit` PASS samples=17 travel=197.0px → `/tmp/zircon-projectile-audit.png`；`--screenshot-after-enter` 经真实 `ServerCore` 自动登录进入 `map=1` 生成 `/tmp/zircon-game-audit.png`（3024x1964）。逐张截图复核：生产场景顶部深色区为屋顶/墙体/植被真实贴图（非黑框缺陷），光照 Night 全帧均匀变暗（无异常黑块）。原版同场景 A/B 仍因原版客户端 Windows-only + 本机 ARM64 无可用 wine 而阻塞，已按 P-002 阻塞说明记录，不伪造原版截图。

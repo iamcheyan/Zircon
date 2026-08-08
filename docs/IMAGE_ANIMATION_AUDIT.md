@@ -11,7 +11,7 @@
 | 怪物/NPC/地面物品 | `Client/Models/MapObject.cs`、`MonsterObject.cs`、`NPCObject.cs`、`ItemObject.cs` | `MapObjectNode.cs`、`ObjectRenderer.cs` | 帧表/定位已对照，需继续检查 Shadow 与大图对象 |
 | 玩家/装备/坐骑/外观 | `Client/Models/PlayerObject.cs`、`Player/ExteriorEffectManager.cs` | `PlayerRenderer.cs` | 形状偏移已迁移，需逐动画验证装备轮廓和覆盖顺序 |
 | 序列帧技能特效 | `Client/Models/MirEffect.cs`、`MirProjectile.cs`、`MirLineEffect.cs` | `MirEffectNode.cs`、`MirProjectileNode.cs`、`MirLineEffectNode.cs`、`MagicEffectTable.cs` | 播放模型已对照，需逐类确认 Blend/Offset/Direction |
-| 粒子天气 | `Client/Models/Particles/Weather/*.cs` | `MapWeatherLayer.cs` | 参数已对照，透明键正在按素材类型修正 |
+| 粒子天气 | `Client/Models/Particles/Weather/*.cs` | `MapWeatherLayer.cs` | 参数、2x 坐标、帧时序和旧版 ImageType.Image Alpha 已验证；keyed 结果仅作诊断，仍需旧版窗口 A/B |
 | UI 图片/动画 | `Client/Controls/DXImageControl.cs`、`DXAnimatedControl.cs` | `DXImageControl.cs`、`DXAnimatedControl.cs`、各 Godot Controls | 入口已定位，需检查 UI 缩放是否误用世界缩放 |
 
 ## 每类必须核对的项目
@@ -28,15 +28,20 @@
 ## 已确认的共性规则
 
 - 普通地图、人物、装备和地面物品贴图不使用黑色透明键。
-- 旧版角色、装备、技能和外观特效的正式调用均传 `ImageType.Image`；不能把所有“Blend”调用误当成黑色颜色键。天气/雾/闪电是单独的颜色键路径，DXT 压缩后的近黑边缘需要专用清理。
-- 天气和雾不能只按同一个黑色阈值处理；天气帧使用专用透明缓存，雾帧还需要边缘背景色连通清除。普通 Alpha 审计与天气颜色键审计已分离。
+- 旧版角色、装备、技能、外观特效和天气粒子的正式调用均传 `ImageType.Image`；不能把所有“Blend”调用误当成黑色颜色键。天气 keyed 结果只作为额外诊断，不属于旧版正式绘制语义。
+- 旧版 `MirEffect`、`MirProjectile` 和地图 `DrawBlend` 的 `Blend=true` 使用 `BlendMode.NORMAL` Screen Blend，仍传 `ImageType.Image`；Godot 正式 Blend 节点现在统一使用普通图像缓存和 Legacy Screen 材质，keyed `GetEffectTexture` 不再误删特效主体中的黑色像素。
+- 普通 Alpha 审计与 keyed 诊断审计已分离：正式天气使用 DXT1 自带 Alpha，避免把黑色合法像素误删；天气/Fog 专用缓存仍保留给需要研究颜色键的诊断场景。
+- 天气帧已做实际 RGBA 导出复核：旧版 `Particle.Draw` 使用普通 ImageType.Image，因此正式路径必须保留旧版 DXT1 Alpha；`MapTestScene --action-audit` 的 WeatherAudit 现逐像素比较旧版独立 payload 与生产天气纹理，9/9 `alphaMismatch=0`。`MapTestScene --weather-texture-dump` 同时导出 ordinary/keyed 结果，后者仅用于诊断。
+- 该对照还确认了“黑色是否应透明”不能凭视觉猜测：旧版/正式路径的透明/可见像素为 500=`0/256`、540=`72538/58534`、550=`0/262144`；同帧 keyed 诊断结果分别为 `170/86`、`114813/16259`、`259327/2817`，差异很大，故 keyed 结果不能替代旧版。
+- `ProgUse` 中被旧版 `MirEffect` 作为普通 `ImageType.Image` 使用的 200/210/220/230/240..247/260/680..685/700..714 已额外导出普通与颜色键两种结果；普通结果的黑色/深色轮廓属于资源像素，旧版调用没有颜色键，不能为了消除截图中的黑色轮廓而误套 `GetEffectTexture`。对应入口可用 `MapTestScene --proguse-effect-dump` 复核。
+- `GreenSludgeBall` 的命中特效也已导出复核：`MonMagicEx23[2780..2785]` 是 6 帧有效爆炸图，`[2786..2799]` 没有元数据；旧版 `2780 + Direction*10` 因而只在 Direction=Up 时有有效帧，Godot 保持同样的方向计算和越界不绘制行为。
 - 世界节点统一使用 `WorldScale=2`；天气、地图、对象使用逻辑坐标，不能在子层重复乘 2。
 - UI 位于独立 Canvas/缩放体系，不能套用世界坐标缩放。
-- UI `Blend=true` 使用 Godot Add 混合材质，匹配旧版光效叠加用途；运行时 HUD/物品格/腰带审计已通过，特殊窗口光效仍保留显示环境截图确认项。
+- UI `Blend=true` 使用旧版 Normal Screen Blend 材质，运行时 HUD/物品格/腰带审计已通过，特殊窗口光效仍保留显示环境截图确认项。
 - 通用序列帧特效与投射物必须同时应用旧版 `DrawColour`/元素颜色和透明度；Godot 已将 `FrameLightColour` 用于 RGB 染色与 Alpha 调制。
 - 纸娃娃头部层已补齐旧版职业/性别发型帧：普通职业男/女为 60/80 系列，刺客男/女为 1100/1120 系列；头盔存在时仍由头盔层覆盖。
-- 纸娃娃已补齐旧版 `EquipEffect_UI` 武器/盾牌外观特效、预设装备特效和 100ms 动画帧；这些旧版入口传 `ImageType.Image`，Godot 使用普通 Alpha 图层并在对应武器/盾牌层之后 Add 混合。
-- 地图 Middle/Front 动画已拆为普通行节点与 Blend 行节点；只有带 Blend 位的动画进入 Add 混合，普通贴图不再被同一行的混合材质影响。
+- 纸娃娃已补齐旧版 `EquipEffect_UI` 武器/盾牌外观特效、预设装备特效和 100ms 动画帧；这些旧版入口传 `ImageType.Image`，Godot 使用普通 Alpha 图层并在对应武器/盾牌层之后使用旧版 Normal Screen Blend。
+- 地图 Middle/Front 动画已拆为普通行节点与 Blend 行节点；按旧版分支恢复：标准尺寸 Middle 即使带 Blend 位也走普通 Draw，非标准尺寸 Middle 才 Blend；Front 的标准/大型和非标准尺寸均按 Blend 位决定，且分别保持旧版底边基线。
 - 地图动画刷新现在同时通知普通、前景、Blend、Blend 前景四类行；此前 Blend 行未进入 100ms 地图动画刷新，会导致带 Blend 标记的地图动画停帧，已修正。
 - 天气参数已逐项与 `Client/Models/Particles/Weather/{Rain,Snow,Fog,Lightning}.cs` 对照：雨 509→510..514、雨滴 10ms 生成/100ms 水花帧；雪 500、20ms 生成、落地后缩放消融；雾 550、4 张按 `Width*Scale` 横向排列；闪电 540、最多 3 个、1000..5000ms 随机生成、100..200ms 生命周期。Godot `MapWeatherLayer` 已按这些参数实现，并修正为旧版每 10ms 粒子逻辑步进的等效 100Hz 速度/旋转/消融速率，避免使用 60Hz 导致雨雪位移和缩放时序偏慢。
 - `GodotClient/project.godot` 的 `textures/canvas_textures/default_texture_filter=0` 对应像素贴图 Nearest；世界与 UI 的 2 倍缩放分别只设置在 `GameScene` 的世界节点和独立 `CanvasLayer`，天气层使用逻辑坐标后由世界父节点统一放大。
@@ -45,24 +50,26 @@
 - `MirEffectNode.UseOffSet=false` 已按旧版 `MirLibrary.Draw` 修正为节点左上角绘制；贴图居中只由天气/粒子专用的 centered 绘制路径负责，避免把通用特效错误平移半个贴图尺寸。
 - `DXItemCell` 已按旧版补齐物品角标的灰度状态，并对 `ItemPart` 使用 `Count >= PartCount` 判断可用颜色；此前 Godot 角标始终白色且部件主图只按 `Count > 0` 判断。
 - 世界层级已静态核对：地图行使用 `99+y/101+y`，对象使用 `100+RenderY`，Floor/Object/Final 特效分别使用 50/100+RenderY/10000；天气为 850、光照为 900、UI 为独立 CanvasLayer 10，天气先于夜间光照处理且位于对象之上。
-- 地图动画已补齐旧版尺寸规则：只有非标准格尺寸（不是 48×32 或 96×64）的动画帧才进入 Blend/Add；标准格尺寸即使携带 Blend 位也按普通贴图绘制。此前 Godot 对所有 Blend 位都使用半透明 Add。
-- 玩家外观特效已拆为独立 `BlendImageLayerNode`：旧版 `ExteriorEffectManager` 的外观翅膀、光环、戒指等 `DrawBlend` 现在使用普通图像缓存 + Add 材质，并按 behind/front 使用相对 Z=-1/+1；避免给整个玩家节点加 Blend 导致身体和装备一起变亮。
+- 地图动画已按旧版 `AnimationBlend` 标志分离普通行和 Blend 行；标准尺寸 Middle 是旧版的普通 Draw 例外，Front 标准尺寸仍可 Blend，尺寸同时决定对应底边定位。Godot 地图 Blend 使用普通 Image Alpha + Legacy Normal Screen 材质，不使用颜色键。
+- 玩家外观特效已拆为独立 `BlendImageLayerNode`：旧版 `ExteriorEffectManager` 的外观翅膀、光环、戒指等 `DrawBlend` 现在使用普通图像缓存 + Legacy Normal Screen 材质，并按 behind/front 使用相对 Z=-1/+1；避免给整个玩家节点加 Blend 导致身体和装备一起变亮。
 - 普通玩家 `DrawShadow2` 的投影已修正为共享身体帧脚底锚点：旧版先合成身体/装备 scratch 再统一斜切，Godot 现在对各层轮廓使用身体 `OffSet/ShadowOffSet/Height` 的共同变换，避免武器、盾牌、头盔影子各自漂移。
-- 旧版 `MonsterImage.DustDevil/Tornado` 的主体 `DrawBlend` 已补入 Godot：通过独立普通图像 Add 层绘制，不再按普通怪物 Alpha 图层处理。
+- 旧版 `MonsterImage.DustDevil/Tornado` 的主体 `DrawBlend` 已补入 Godot：通过独立普通图像 Legacy Normal Screen 层绘制，不再按普通怪物 Alpha 图层处理。
 - `MonsterImage.CastleFlag` 已补齐旧版主体后的 Overlay 绘制，使用独立 Overlay 缓存、Overlay 尺寸和主体 Offset。
-- 坐骑附加外观已按旧版 `DrawHorseOverlay` 修正为独立普通纹理 Add 层；坐骑主体仍使用普通图层，避免附加光效被当作不透明贴图绘制。
+- 坐骑附加外观已按旧版 `DrawHorseOverlay` 修正为独立普通纹理 Legacy Normal Screen 层；坐骑主体仍使用普通图层，避免附加光效被当作不透明贴图绘制。
 - 玩家外观动画速度已按旧版分组修正：翅膀/光环/戒指使用 `MapControl.Animation/2`（Godot `slowTick`），火炉/灯笼类保留原始 `Animation` 速度，避免外观特效整体快一倍。
 - 纸娃娃 `EquipEffect_UI` 已按旧版 `EquipEffectDecider` 改用普通 `ImageType.Image` 缓存；此前误用特效透明键会删除 UI 外观中合法的黑色像素。
-- `MirLineEffect`/`MirRopeEffect` 已按旧版基类改用普通 `ImageType.Image` 缓存；绳索/链条不再误用技能特效黑色透明键，且默认保持旧版普通 Alpha（只有明确 Blend 的调用才使用 Add）。
+- `MirLineEffect`/`MirRopeEffect` 已按旧版基类改用普通 `ImageType.Image` 缓存；绳索/链条不再误用技能特效黑色透明键，且明确 Blend 的调用使用 Legacy Normal Screen，普通调用保持 source-over。
+- `MirEffectNode`、`MirProjectileNode` 和独立地图 `BlendLayerNode` 已按旧版调用改用普通 Image 缓存；Blend 使用 Legacy Normal Screen 材质（NORMAL 的 blendRate 不改变顶点 Alpha），不再把 Blend 当作颜色键开关。
+- 香炉类外观特效已按旧版逐层恢复：第一层 `Draw(Image)` 使用普通 source-over，第二层 `DrawBlend(Image)` 使用 Legacy Normal Screen；两层均保留普通 Image Alpha。
 - `MirProjectileNode` 的 `UseOffSet=false` 已按旧版 `MirProjectile : MirEffect` 修正为贴图左上角 `(0,0)`；居中只属于独立 `DrawBlendCentered` 粒子路径，投射物不再被错误平移半个尺寸。
-- UI `DXImageControl` 已按旧版 `PresentTexture` 改为使用 `ForeColour`/禁用色直接调制贴图 Alpha，不再在贴图上覆盖半透明灰块；同时补充普通 Alpha 与 Add Blend 两套灰度 shader，只改变 RGB 灰度而保留原始 Alpha。
+- UI `DXImageControl` 已按旧版 `PresentTexture` 改为使用 `ForeColour`/禁用色直接调制贴图 Alpha，不再在贴图上覆盖半透明灰块；同时补充普通 Alpha 与 Legacy Normal Screen 两套灰度 shader，只改变 RGB 灰度而保留原始 Alpha。
 - Godot `DXWindow` 已补齐旧版 `DropShadow` 属性，并在窗口子控件之前用独立阴影 StyleBox 绘制；阴影不再错误叠加到窗口背景贴图内容上。当前仍需带窗口运行时确认阴影边界与旧版模糊半径的像素级差异。
-- 纸娃娃已补齐旧版遗漏的护甲 `EquipEffectDecider` 层，并将护甲、武器、盾的 UI 装备特效改为独立普通图像 Add 子层；护甲使用 behind Z，武器/盾使用 front Z，避免父纸娃娃整体套 Blend。
+- 纸娃娃已补齐旧版遗漏的护甲 `EquipEffectDecider` 层，并将护甲、武器、盾的 UI 装备特效改为独立普通图像 Legacy Normal Screen 子层；护甲使用 behind Z，武器/盾使用 front Z，避免父纸娃娃整体套 Blend。
 - `CharacterDialog` 的属性分页已补齐统计文本节点字段，修复此前新增属性面板导致的编译回归；属性页仍使用独立 UI 坐标和 Nearest 贴图体系。
 
 ## 仍需补强的证据
 
-- 旧版与 Godot 相同 ZL 帧的逐像素 RGBA 差异图仍需要旧客户端实际输出；当前已完成 Godot 端 Alpha/尺寸/颜色键审计和静态路径对照。
+- 旧版与 Godot 相同 ZL 帧的最终逐像素 RGBA 差异图仍需要旧客户端实际输出；当前已完成 Godot 端全库 Alpha/尺寸/颜色键审计和静态正式路径对照，不能把诊断 keyed 图当成旧版画面证据。
 - 角色每个 `MirAnimation` 的无窗口运行时帧序列已通过；装备组合、Shadow/Overlay 的最终轮廓仍需真实显示环境截图抽样。
 - 主要技能特效的 Blend、UseOffSet、DrawType、Reversed、Loop 和结束时刻已由代码对照及 `MapTestScene --action-audit` 覆盖；最终画面颜色/混合强度仍需显示环境截图。
 - UI 2x 缩放、Offset、Nearest 过滤和窗口阴影已通过 `UITestScene --ui-audit` 资源/锚点测试；窗口阴影模糊半径仍需真实显示环境像素确认。
@@ -77,7 +84,12 @@
 - 最近一次 `dotnet build GodotClient/ZirconClient.csproj`：通过，0 错误、0 警告。
 - 最近一次 `git diff --check`：通过。
 - 2026-08-08：阴影/特效坐标复核：`MirLibrary.DrawShadow` 的 ShadowOffset、ShadowType 斜切投影和玩家 `DrawShadow2` 的共享脚底锚点已与 Godot `RenderPrimitives`/`PlayerRenderer` 对照；`MirLineEffectNode`、`MirRopeEffectNode` 已补回原版 DrawY→对象基线换算及八方向 source/target 偏移。2x 只由世界父节点统一执行，绘制函数不再重复放大；编译、动作回归和有效 2x 渲染截图通过。
-- 2026-08-08：修正地图中层/前景动画的 Blend 判断：原版单格贴图同样遵循 `AnimationBlend`，Godot 不再把贴图尺寸作为 Blend 开关；单格与大型贴图现在都按原版 `0.5` BlendRate 绘制，尺寸只用于底边基线。
+- 2026-08-08：继续修正地图中层/前景动画的尺寸分支：原版标准尺寸 Middle 带 Blend 位时仍走普通 Draw，Front 标准尺寸保留 Blend；Godot 已按此恢复，并分别修正 Middle/Front 的底边基线。
+- 2026-08-08：动作回归检查窗口增加循环动作余量，隔离 Vulkan/Mono 环境下 Walking、Running、HorseWalking、HorseRunning 及全部战斗/施法/采集动作稳定通过；2x 地图族、光照、天气诊断截图也完成保存与检查。天气雾块对应原版 `FogParticle` 的真实 DarkGray 纹理像素，不作为黑色透明键污染。
+- 2026-08-08：隔离桌面环境完成 UI 全组合与网络回归：所有已注册 UI 审计均 PASS，2x CanvasLayer 锚点/点击命中正常；网络审计覆盖断线、对象生命周期、移动切图、拾取、攻击、采集和迟到包顺序，全部 PASS。
+- 2026-08-08：`MirEffectNode` Blend 材质由错误的 Add 改为原版 Normal Screen；投射物 2x Vulkan 截图与轨迹审计通过，火焰/雷电等效果不再使用加法混合吞亮主体。
+- 2026-08-08：全量扫描发现链条、怪物附加层和玩家/坐骑外观层仍有 Add 入口，已全部收紧到原版 Normal Screen；动作与投射物 2x 截图回归继续通过。
+- 2026-08-08：`DXImageControl`/`DXAnimatedControl` 的普通 UI Blend 也已从 Add 改为原版 Normal Screen，灰度 UI 不再使用 `blend_add`；UI 2x 审计继续通过。
 - 已使用本机 C# Godot Mono headless 实际加载 `MapTestScene`、`System.db` 和 `0.map`，完成真实对象绘制及动画审计；headless 无法回读最终纹理，因此仍需有显示环境的截图做最后视觉确认。
 
 ## 运行时审计记录（2026-08-08）
@@ -86,7 +98,7 @@
 
 - 地图加载：350x350，20x20 区域背景 100、中层 388、前景 400，完成渲染。
 - 对象绘制：真实 Monster/NPC/Player/Item 均创建并绘制，包含 Shadow、Overlay fallback、标签和 RenderY；`RenderAudit` 完成。
-- 天气：雷电帧 540 检查通过，尺寸 256x512，透明像素 114813、可见像素 16259；说明天气资源已经经过透明键清理并能被正常读取。
+- 天气：雷电帧 540 正式路径尺寸 256x512，透明像素 72538、可见像素 58534，与旧版独立 DXT1 payload Alpha 逐像素一致；keyed 诊断结果 114813/16259 不用于正式绘制。
 - 动画：Walking、Running、HorseWalking、HorseRunning、Combat、RangeAttack、ShoulderDash、Spell、Channel、Struck、Pushed、Harvest、Mining、Fishing、Taming 等审计项均通过，帧序列符合旧版逻辑。
 - 技能覆盖：`castConfigured=142`、`attackOnly=11`、`missingOriginalSpell=0`；没有发现旧版技能资源缺失映射。
 - 历史抽样曾发现 `ProgUse` frame 594（20x20）角点颜色高度相同，作为候选保留过；最近一次完整 Mono 审计已重新抽样 34 个图库/339 帧并报告 `cornerPollution=0`，当前没有新的透明污染候选。该帧仍保留原样，避免误删未引用素材中的合法黑色。
@@ -95,12 +107,15 @@
 - 最近一次 UI 回归还通过 `UIHudAudit`、`UIItemGridAudit`、`UIBeltPotionAudit`：HUD 面板/按钮点击命中、物品格只读/联动/清除传播、腰带缩放/滚轮范围/行交换均通过。
 - 本轮最终回归再次通过：`dotnet build` 0 警告/0 错误、`git diff --check` 通过；`MapTestScene --render-audit --action-audit` 的天气 9/9、层级、技能覆盖、技能帧、音效、释放时序和全部动作序列均通过；`UITestScene --ui-audit` 的 2x 锚点、HUD 点击、物品格和腰带审计均通过。
 - 已查看 `/tmp/ui_test.png`：窗口边缘可见独立阴影，Interface 金色边框和透明区域未出现天气类黑色矩形；右侧/底部灰色区域来自 headless 的 64×64 逻辑 viewport 与输出纹理尺寸不一致，是测试环境伪影，不作为贴图缺陷。
-- 最近一次完整天气审计已逐帧通过：`500、509、510、511、512、513、514、540、550` 共 9/9，分别使用 Weather/Fog 专用透明缓存并检查透明像素与可见像素均大于 0。
+- 已查看 `/tmp/zircon-weather-rain-fog-lightning.png` 与 `/tmp/zircon-render-audit.png`：画面下方及地图边缘的连续灰色区域与 20×20 测试地图/viewport 未铺满的边界重合，不是天气帧的透明矩形。天气帧的正式 Alpha 现在严格跟随旧版；若产品画面仍有黑/灰天气块，那是旧版 ImageType.Image 资源像素，需要用旧版同场景截图确认是否应保留，不能仅凭 keyed 预览图改写。
+- 生产截图 `/tmp/zircon-game-audit.png` 中火焰/地面效果周围的黑色点状轮廓与上述 `ProgUse` 普通帧形状一致；这是旧版 `MapObject`/`SpellObject` 的 `ImageType.Image` 路径所保留的原始像素，不等同于天气颜色键矩形。天气正式路径同样使用普通 ImageType.Image。
+- 最近一次天气审计已逐帧通过：`500、509、510、511、512、513、514、540、550` 共 9/9；正式生产纹理逐像素匹配旧版独立 payload，9 帧均 `alphaMismatch=0`。Weather/Fog keyed 版本仍保留为诊断输出，不能代表正式绘制 Alpha。
 - 最近一次标准运行时回归的全库 Alpha 抽样覆盖 `libraries=312 frames=3189 transparentFrames=2499 cornerPollution=0`；`MagicCoverageAudit` 为 `castConfigured=142 attackOnly=11 missingOriginalSpell=0`，`SpellTimingAudit` 的 `Combat1` 释放延迟 400ms、总时长 600ms，全部 `ActionAudit` 动作序列通过。
+- 本轮收尾回归再次通过：`dotnet build GodotClient/ZirconClient.csproj` 为 0 警告/0 错误，`git diff --check` 通过；`MapTestScene --action-audit` 的天气 9/9、层级、贴图透明模式、技能覆盖/帧序列、音效、释放时序和动作序列均通过；`UITestScene --ui-audit` 的 2x 锚点、HUD 命中、物品格、库存销售和腰带审计均通过。
 - `MirLineEffectNode` 与 `MirRopeEffectNode` 的非 Blend 链条/绳索透明度已恢复原版完整不透明度；链条 Blend 路径保留可配置的原版 BlendRate，不再使用未经原版依据的 0.85/0.9 固定值。
 - 链条/驯马绳位置也已按原版 `DrawY` 格子原点和方向偏移重新锚定；Godot 对象基线的额外 32px 不再被遗漏。
 - 已增加 `--full-texture-audit` 全量模式，采用分帧批处理避免同步解码阻塞；`EquipEffect_UI=367`、`EquipEffect_Part=2809`、`EquipEffect_Full=21616`、`EquipEffect_FullEx1/2/3=5192/3152/3152` 及其它已列单库均取得明确终点。默认抽样审计和天气全帧审计仍独立通过。
-- 全量模式支持 `--audit-file=<LibraryFile>` 及 `--audit-start/--audit-end` 分片运行；已完成单库全量审计的技能/装备特效图库包括 `Magic`、`MagicEx`–`MagicEx11`（其中 `MagicEx11` 为有效空库，`MagicEx`–`MagicEx9` 合计 8207 帧），以及全部 `EquipEffect_*`（36288 帧），全部 `cornerPollution=0`。角色、发型、服装、坐骑、武器、盾牌、头盔、怪物主体/技能、UI/辅助库和基础/Forest/Sand/Snow/Wood 地图库均已按后续分项记录取得单库终点；已完成库均无透明角落污染。普通库审计保留原始 Alpha/黑色像素，天气颜色键由独立 WeatherAudit 覆盖。剩余未决项是旧客户端与 Godot 的显示环境逐像素画面证据，而不是未审计库。
+- 全量模式支持 `--audit-file=<LibraryFile>` 及 `--audit-start/--audit-end` 分片运行；已完成单库全量审计的技能/装备特效图库包括 `Magic`、`MagicEx`–`MagicEx11`（其中 `MagicEx11` 为有效空库，`MagicEx`–`MagicEx9` 合计 8207 帧），以及全部 `EquipEffect_*`（36288 帧），全部 `cornerPollution=0`。角色、发型、服装、坐骑、武器、盾牌、头盔、怪物主体/技能、UI/辅助库和基础/Forest/Sand/Snow/Wood 地图库均已按后续分项记录取得单库终点；已完成库均无透明角落污染。普通库和正式天气均保留旧版原始 Alpha/黑色像素，keyed 天气结果由独立诊断覆盖。剩余未决项是旧客户端与 Godot 的显示环境逐像素画面证据，而不是未审计库。
 - 本轮补齐的外观终点：`M_HumEx10` 11952 帧、`M_HumEx11` 2352 帧、`M_HumEx12` 3984 帧、`M_HumEx13` 为有效元数据空库（0 帧）、`WM_Hair` 16808 帧、`WM_HairA` 8960 帧、`M_Costume` 19984 帧、`WM_Costume` 19984 帧、`WM_Weapon10` 7600 帧、`WM_Weapon11` 7600 帧、`WM_Weapon12` 3752 帧、`WM_Weapon13` 6840 帧、`WM_Weapon14` 7600 帧、`WM_Weapon15` 7600 帧、`WM_Weapon16` 5160 帧；上述库均 `cornerPollution=0`。
 - 女款扩展武器也已取得终点：`WM_WeaponADL1/2/6`（10240/1024/0 帧）、`WM_WeaponADR1/2/6`（10240/1024/1024 帧）、`WM_WeaponAOH1/2/3/4/5/6`（10240/8896/10240/7168/4096/1984 帧），全部 `cornerPollution=0`；其中 0 帧库是有效元数据空库，不是审计跳过。
 - 头盔变体补充完成：`M_Helmet11/12/14/A1/A3`（13280/2656/0/13840/6920 帧）及 `WM_Helmet11/12/14/A1`（13280/2352/0/13840 帧），全部 `cornerPollution=0`；`M_Helmet14`、`WM_Helmet14` 的 0 帧同样是有效空库。
