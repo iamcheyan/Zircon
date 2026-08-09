@@ -2109,6 +2109,10 @@ function addFocusedWindow(r,analysis){
   }else if(r.id==='window.chat-pop'){
     addFocusedGeometry(ox+40,oy+29,491,279,'聊天历史区');addFocusedGeometry(ox+25,oy+311,499,15,'输入区');
     for(let i=0;i<19;i++)addFocusedGeometry(ox+40,oy+29+15*i,491,15,i===0?'19行 / 16字节记录':'' );
+    const ce=evidenceWindow(r.id),pc=ce.control_repositioned_paint?.records||[];
+    for(const q of pc){if(q.object_offset==='this+0x6C')continue;addFocusedGeometry(ox+q.relative_position[0],oy+q.relative_position[1],40,20,`${q.role} · ${q.object_offset}`);}
+    const cmds=ce.channel_command_state?.records||[];
+    for(const q of cmds){const control=pc.find(x=>x.object_offset===q.object_offset);if(control)addFocusedGeometry(ox+control.relative_position[0],oy+control.relative_position[1],40,20,q.text);}
   }else if(r.id==='window.quest'){
     for(let i=0;i<19;i++)addFocusedGeometry(ox+65,oy+90+15*i,210,15,i===0?'任务列表 / 15px':'' );
     addFocusedGeometry(ox+65,oy+294,250,16,'任务详情 Frame 705 / 背景候选');

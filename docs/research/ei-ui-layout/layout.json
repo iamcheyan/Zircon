@@ -19219,7 +19219,181 @@
         "clip_rect_step_px": 14,
         "evidence_level": "primary-static-exact-draw-loop"
       },
-      "notes": "The linked-line record stride is 16 bytes, but the paint loop advances the screen Y coordinate by 0x0E (14 pixels). Do not use the record stride as visual line spacing."
+      "notes": "The linked-line record stride is 16 bytes, but the paint loop advances the screen Y coordinate by 0x0E (14 pixels). Do not use the record stride as visual line spacing.",
+      "refresh_draw_chain": {
+        "routine": "0x004142C0–0x0041482A",
+        "linked_list_head": "this+0x5C",
+        "line_count_fields": [
+          "this+0x68",
+          "this+0x6D0"
+        ],
+        "record_next_pointer_candidate": "node+0x408",
+        "record_text_pointer_candidate": "node+0x08",
+        "visible_line_loop": {
+          "maximum_rows": 19,
+          "loop_guard_va": "0x004143D6",
+          "counter_step": 1
+        },
+        "draw_call": {
+          "va": "0x004147F3",
+          "shared_text_compositor": "0x0045DD70",
+          "text_source": "node+0x08",
+          "x": "this+0x6C0 + window.x",
+          "y": "this+0x6C4 + window.y + row_offset",
+          "row_offset_step_px": 14
+        },
+        "scroll_state_candidate": "this+0x64",
+        "evidence_level": "primary-static-exact-draw-loop"
+      }
+    },
+    "control_repositioned_paint": {
+      "routine": "0x0041485A–0x00414999",
+      "coordinate_space": "window-relative",
+      "records": [
+        {
+          "object_offset": "this+0x6C",
+          "relative_position": [
+            532,
+            350
+          ],
+          "source_va": "0x0041485A",
+          "role": "close-or-control-candidate"
+        },
+        {
+          "object_offset": "this+0x120",
+          "relative_position": [
+            25,
+            332
+          ],
+          "source_va": "0x00414879",
+          "role": "channel-control-1"
+        },
+        {
+          "object_offset": "this+0x1D4",
+          "relative_position": [
+            65,
+            332
+          ],
+          "source_va": "0x00414894",
+          "role": "channel-control-2"
+        },
+        {
+          "object_offset": "this+0x288",
+          "relative_position": [
+            105,
+            332
+          ],
+          "source_va": "0x004148B0",
+          "role": "channel-control-3"
+        },
+        {
+          "object_offset": "this+0x33C",
+          "relative_position": [
+            145,
+            332
+          ],
+          "source_va": "0x004148CF",
+          "role": "channel-control-4"
+        },
+        {
+          "object_offset": "this+0x3F0",
+          "relative_position": [
+            185,
+            332
+          ],
+          "source_va": "0x004148EA",
+          "role": "channel-control-5"
+        },
+        {
+          "object_offset": "this+0x4A4",
+          "relative_position": [
+            225,
+            332
+          ],
+          "source_va": "0x00414905",
+          "role": "channel-control-6"
+        }
+      ],
+      "note": "The repaint routine writes the same fixed relative positions after scrolling/state changes; these are stronger than constructor-only positions."
+    },
+    "input_parser": {
+      "routine": "0x00414364–0x004144F0",
+      "syntax_markers": [
+        "/",
+        "(",
+        ")"
+      ],
+      "token_delimiters": [
+        "space 0x20",
+        "colon 0x3A"
+      ],
+      "format_strings": [
+        {
+          "va": "0x0047AD28",
+          "text": "/%s "
+        },
+        {
+          "va": "0x0047AD30",
+          "text": "%[^`]...",
+          "interpretation": "static format candidate; exact scan fields remain to be mapped"
+        }
+      ],
+      "evidence_level": "primary-static-parser-candidate"
+    },
+    "channel_command_state": {
+      "routine": "0x00414A24–0x00414C00",
+      "state_check_object_offsets": [
+        "this+0x120",
+        "this+0x1D4",
+        "this+0x288",
+        "this+0x33C",
+        "this+0x3F0",
+        "this+0x4A4"
+      ],
+      "records": [
+        {
+          "object_offset": "this+0x120",
+          "string_va": "0x0047AD88",
+          "text": "@拒绝 ",
+          "interpretation": "private-chat rejection command prefix"
+        },
+        {
+          "object_offset": "this+0x1D4",
+          "string_va": "0x0047AD84",
+          "text": "!",
+          "interpretation": "world shout prefix"
+        },
+        {
+          "object_offset": "this+0x288",
+          "string_va": "0x0047AD80",
+          "text": "!!",
+          "interpretation": "party/group shout prefix"
+        },
+        {
+          "object_offset": "this+0x33C",
+          "string_va": "0x0047AD7C",
+          "text": "!~",
+          "interpretation": "guild shout prefix"
+        },
+        {
+          "object_offset": "this+0x3F0",
+          "string_va": "0x0047AD70",
+          "text": "@拒绝私聊",
+          "interpretation": "private-chat rejection toggle"
+        },
+        {
+          "object_offset": "this+0x4A4",
+          "string_va": "0x0047AD60",
+          "text": "@拒绝行会聊天",
+          "interpretation": "guild-chat rejection toggle"
+        }
+      ],
+      "shared_calls": [
+        "0x004762B8",
+        "0x004762AC",
+        "0x004762CC"
+      ],
+      "evidence_level": "primary-static-command-state"
     },
     "original_command_strings": {
       "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
@@ -19273,7 +19447,8 @@
     "pending": [
       "Confirm whether the six command strings are rendered as visible captions, tooltips, or both by the shared control implementation.",
       "Confirm the first control's exact close/submit role and runtime hit rectangles.",
-      "Recover chat line font/color and clipping parameters from the shared text renderer."
+      "Recover chat line font/color and clipping parameters from the shared text renderer.",
+      "Resolve the exact node+0x08 record text/color field order and whether the six controls expose captions or only tooltips."
     ]
   },
   "npc_window_evidence": {
