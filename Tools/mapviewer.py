@@ -663,7 +663,7 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
 
     canvas = Image.new("RGBA", (TILE_SZ, TILE_SZ), (16, 16, 20, 255))
 
-    cells = map_cache.sparse_slice(map_name, wx0, wy0, wx1, wy1)
+    cells = map_cache.sparse_slice(map_name, wx0, wx1, wy0, wy1)
 
     for x, y, cell in cells:
         cx, cy = cell_anchor(x, y, h)
@@ -683,13 +683,18 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
 
         # 2. Middle Layer (SmTiles, SmObjects, Furnitures, etc)
+        # Mir3 client ignores the WIL frame offset for mid/front objects and
+        # anchors the sprite bottom to the cell bottom edge (drawX, drawY - h):
+        #   drawX = cell left  = cx - 24,  drawY = cell bottom = cy + 16
+        # Some libs (e.g. SmTilesc) carry garbage offsets (-1132, -19694) that
+        # would fling sprites off-map, so offsets are intentionally dropped.
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             frame_idx = cell.mid_img - 1
             got = pool.decode(cell.mid_file, frame_idx, scale)
             if got is not None:
-                img, off_x, off_y = got
-                px = cx + off_x
-                py = cy + 16 + off_y - img.height * scale
+                img = got[0]
+                px = cx - 24
+                py = cy + 16 - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -699,9 +704,9 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
             frame_idx = cell.front_img - 1
             got = pool.decode(cell.front_file, frame_idx, scale)
             if got is not None:
-                img, off_x, off_y = got
-                px = cx + off_x
-                py = cy + 16 + off_y - img.height * scale
+                img = got[0]
+                px = cx - 24
+                py = cy + 16 - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -774,14 +779,14 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             got = sprites.get((cell.mid_file, cell.mid_img - 1))
             if got is not None:
-                img, off_x, off_y, opaque = got
-                _blit(canvas, img, cx + off_x, cy + 16 + off_y - img.height * scale, scale, opaque)
+                img = got[0]
+                _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
         # 3. Front Layer
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             got = sprites.get((cell.front_file, cell.front_img - 1))
             if got is not None:
-                img, off_x, off_y, opaque = got
-                _blit(canvas, img, cx + off_x, cy + 16 + off_y - img.height * scale, scale, opaque)
+                img = got[0]
+                _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
 
     buf = io.BytesIO()
     if fmt == "PNG":
