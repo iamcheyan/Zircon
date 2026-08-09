@@ -133,6 +133,16 @@
     {"call_va": "0x0044D46D", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x1FA", "y": "arg5+0x043"}},
     {"call_va": "0x0044D496", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x188", "y": "arg5+0x03D"}}
   ],
+  "resource_visual_semantics": {
+    "source": "Direct pixel inspection of original Data/GameInter.wil frames 1010-1017.",
+    "warning": "These names describe the icon artwork only; they do not prove shop, warehouse, buy/sell or protocol semantics.",
+    "records": [
+      {"frame_pair": [1010, 1011], "visual_candidate": "circular X / close-or-cancel", "confidence": "high"},
+      {"frame_pair": [1012, 1013], "visual_candidate": "horizontal check/execute control", "confidence": "medium", "note": "The low-resolution artwork is a green check-like mark inside a long metal control."},
+      {"frame_pair": [1014, 1015], "visual_candidate": "left arrow / previous-page-or-selection", "confidence": "high"},
+      {"frame_pair": [1016, 1017], "visual_candidate": "right arrow / next-page-or-selection", "confidence": "high"}
+    ]
+  },
   "control_hit_rects": {
     "basis": "The store constructor passes each control through 0x00417550; the rectangle size is read from the selected GameInter frame header and the position is the constructor's arg4/arg5-relative expression.",
     "records": [
