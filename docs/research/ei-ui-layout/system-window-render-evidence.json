@@ -24,7 +24,7 @@
           {"frame_pair": [161, 162], "relative_rect": [218, 238, 28, 26]},
           {"frame_pair": [760, 761], "relative_rects": [[148, 43, 32, 22], [148, 116, 32, 22], [148, 190, 32, 22], [148, 217, 32, 22]]},
           {"frame_pair": [762, 763], "relative_rects": [[185, 43, 40, 22], [185, 116, 40, 22], [185, 190, 40, 22], [185, 217, 40, 22]]},
-          {"frame": 751, "relative_rects": [[34, 96, 20, 16], [34, 170, 20, 16]], "role": "non-frame text/control entries; semantic role pending"}
+          {"frame": 751, "relative_rects": [[34, 96, 20, 16], [34, 170, 20, 16]], "role": "slider-thumb/resource candidate", "visual_note": "Frame 751 is a small gold circular knob; the two instances align with the background-sound and effect-sound volume tracks in Frame 750."}
         ],
         "evidence_level": "primary-static-plus-primary-resource"
       },
