@@ -6,8 +6,8 @@
     "evidence_level": "primary-static-resource-loader"
   },
   "resources": [
-    {"field": "owner+0x148", "file": "Data/MMap.wil", "literal_va": "0x0047C428", "frame_count": 255, "nonblank_frames": 154, "role": "map-thumbnail-or-mini-map-candidate"},
-    {"field": "owner+0x2D0", "file": "Data/FMMap.wil", "literal_va": "0x0047C414", "frame_count": 31, "nonblank_frames": 29, "role": "full-map-or-large-map-candidate"}
+    {"field": "owner+0x04", "file": "Data/MMap.wil", "literal_va": "0x0047C428", "frame_count": 255, "nonblank_frames": 154, "role": "dungeon-or-field-map-family"},
+    {"field": "owner+0x148", "file": "Data/FMMap.wil", "literal_va": "0x0047C414", "frame_count": 31, "nonblank_frames": 29, "role": "overland-or-city-map-family"}
   ],
   "server_cross_reference": {
     "artifact": "minimap-server-crossref.json",
@@ -49,11 +49,12 @@
   "selection": {
     "va": "0x0043D780",
     "condition": "map_id >= 1000",
-    "selected_library": "MMap.wil",
-    "frame_expression": "map_id - 1000",
+    "selected_library": "FMMap.wil when map_id >= 1000; MMap.wil otherwise",
+    "frame_expression": "map_id - 1000 for FMMap; map_id for MMap",
     "source_rect": "frame header offset/size at owner+0x180",
     "destination_rect": "owner+0x2E0",
-    "warning": "The selected frame proves the resource/index relation, not yet the visible UI widget or final screen destination."
+    "warning": "The selected frame proves the resource/index relation, not yet the visible UI widget or final screen destination.",
+    "field_binding": {"fmmap_resource_field": "owner+0x148", "mmap_resource_field": "owner+0x04", "runtime_state_rect_field": "owner+0x2D0"}
   },
   "viewport": {
     "surface_init_va": "0x0043D5F0",

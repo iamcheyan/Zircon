@@ -979,11 +979,13 @@ GameInter Frame 200（构造尺寸 244×328），并找到 11 个连续的 `SetR
 ### Finding 44：原版地图对象明确装载 MMap/FMMap 并按地图编号选择 Frame（2026-08-09）
 
 在 `Mir3.exe` 的地图资源对象路径 `0x0043D4D0` 中，`Data/MMap.wil` 被装载到
-`owner+0x148`，`Data/FMMap.wil` 被装载到 `owner+0x2D0`。资源头交叉确认 MMap 为
-255 槽/154 非空，FMMap 为 31 槽/29 非空。
+`owner+0x04`，`Data/FMMap.wil` 被装载到 `owner+0x148`。`owner+0x2D0` 是后续
+初始化的运行时矩形/状态区域，不是 WIL 句柄。资源头交叉确认 MMap 为 255 槽/154 非空，
+FMMap 为 31 槽/29 非空。
 
-在 `0x0043D780` 看到 `map_id >= 1000` 的分支：选择 MMap 资源时使用精确的
-`frame = map_id - 1000` 表达式，并把帧头源矩形送入 `owner+0x2E0` 目标矩形。地图
+在 `0x0043D780` 看到 `map_id >= 1000` 的分支：选择 FMMap 资源时使用精确的
+`frame = map_id - 1000` 表达式；低于 1000 时选择 MMap 并使用 `frame = map_id`，
+然后把帧头源矩形送入 `owner+0x2E0` 目标矩形。地图
 表面初始化函数 `0x0043D5F0` 还维护 `owner+0x2C0` 视口矩形和 `owner+0x2B8/0x2BC`
 视图位置字段。当前这些是地图子系统一级证据，尚未把输出绑定到 GameInter 的小地图
 控件或全地图窗口；机器记录见 `map-ui-resource-evidence.json`。
@@ -1276,3 +1278,21 @@ x=107, y=110, width=584, height=252, trailing flags=0,3
 这条证据说明完整地图资源并不是泛泛的“FMMap 候选”，而是服务器配置明确使用的资源族；但
 它属于服务器配置的第二证据源。exe 内 `0x0043D780` 的 `map_id >= 1000` 分支与服务器值
 之间仍需继续追踪调用者的归一化过程，不能把两个数值条件未经验证地当成同一个输入。
+
+### Finding 67：纠正地图资源字段绑定，并闭合服务器值与 exe 分支（2026-08-10）
+
+重新反汇编 `0x0043D4D0` 和 `0x0043D780` 后确认此前字段记录有误，正确关系为：
+
+```text
+owner+0x04   <- .\Data\MMap.wil   (literal 0x0047C428)
+owner+0x148  <- .\Data\FMMap.wil  (literal 0x0047C414)
+owner+0x2D0  <- 运行时矩形/状态字段，不是 WIL 资源句柄
+```
+
+`0x0043D780` 的分支是：`map_id >= 1000` 时选择 `owner+0x148` 的 FMMap，帧号为
+`map_id-1000`；否则选择 `owner+0x04` 的 MMap，帧号为 `map_id`。而 `0x00420C24–0x00420C3C`
+在调用前对网络/状态字段做 `word & 0xffff` 后再减一，因此服务器 `MiniMap.txt` 的
+`1001 -> FMMap F0` 恰好归一化为 exe 的 `1000 -> FMMap F0`。
+
+这修正了早期“owner+0x148 是 MMap、owner+0x2D0 是 FMMap”的错误表述；相关机器可读证据
+已同步更新，后续地图 UI 不得再使用旧绑定。
