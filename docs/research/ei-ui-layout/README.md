@@ -69,6 +69,14 @@ python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --p
 
 打开 [`/ui`](http://127.0.0.1:8765/ui)。根路径 `/` 仍是 WIL 素材浏览器；`/compare` 是资源差异工具；`/api/ui-layout` 返回统一布局及专题证据。
 
+交互式客户端模拟器（同一服务）：
+
+```bash
+python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+```
+
+打开 [`/sim/`](http://127.0.0.1:8765/sim/)（`/sim` 自动 301 到 `/sim/`）。模拟器固定 800×600 逻辑画布、整数缩放、真实 WIL 贴图、14 窗口开/关/拖拽、确认框/公告、证据模式覆盖层与测试导航；数据模型与运行说明见 `Tools/mir3_client_simulator/README.md`，数据由 `Tools/build_mir3_simulator_data.py` 从本目录证据生成。
+
 持续研究日志（记录反汇编地址、推理过程、失败尝试和待验证事项）：
 
 ```text

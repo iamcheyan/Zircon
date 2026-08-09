@@ -2795,3 +2795,18 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 窗口预览现在直接消费 `layout.json.specialized_control_rects`，在已选窗口的证据画布中显示统一控件目录面板。每行包含控件 Frame 对、资源库、窗口相对 `(x,y,w,h)` 和证据等级；因此可以直接核对预览图层与统一还原数据是否一致。
 
 目录面板只显示已经拥有数值 Rect 的记录，工厂表达式、动态字段和未确认语义仍留在专项 JSON 中，不会因为可视化方便而被推导成最终屏幕坐标。改动已提交为 `06d290e` 并推送。
+
+### Finding 213：800×600 交互式客户端模拟器交付（2026-08-10）
+
+新增 `Tools/mir3_client_simulator/`（HTML 客户端模拟器），作为 wilviewer 的新路由 `/sim` 内嵌（`/sim` → `/sim/` 301 重定向保证相对资源解析）。模拟器消费 `Tools/build_mir3_simulator_data.py` 从 `layout.json` + 专项证据生成的统一数据模型 `data/*.json`（windows=14、controls=37 = 22 专项 + 15 HUD 按钮、resources=157、entities=6、equipment_slots=6、skills=12、maps=2），HTML/JS 内不散落坐标。
+
+关键事实复用（均来自既有证据文件，未新增伪证）：
+
+- HUD `GameInter.wil F50` 800×136 @ `(0,465)`；HP/MP/EXP 条 rect `(61,496,104,566)`/`(105,496,147,566)`/`(61,586,400,597)`；聊天总区 `(224,492,578,566)`；小地图 `(672,0)-(800,128)`。
+- 确认框 `GameInter.wil F950` 360×190 居中 `(400,246)`，三子按钮 rel `[51,125,44,20]`F151/152、`[147,125,64,20]`F157/158、`[244,125,44,20]`F154/155（confirmation-prompt-evidence.json `primary-static-exact-relative-and-derived-screen`）。
+- 公告 `GameInter.wil F602` 固定 `(107,110)`，子按钮 F161/162 与 F606/607（notice-prompt-window-evidence.json）。
+- 聊天窗历史 `(40,29,531,308)`、输入 `(25,311,524,326)`（chat-window-render-evidence.json）。
+- 商店状态 0–4 → 帧 `1000/1003/1001/1000/1002`，factory args `[0,186,300,304]`/`[1,186,498,304]`/`[-4,182,205,205]`/`[0,184,540,307]`（store-state-graph.json）；**不**把状态映射到买卖/仓库业务名（保持 pending）。
+- 已确认静态窗口原点直接使用：guild `(102,22)`、group `(272,123)`、chat-pop `(114,76)`、option `(276,113)`、notice `(107,110)`；未闭合原点窗口按视口居中并标 `candidate`，永不冒充 primary。
+
+证据模式覆盖层按证据等级着色（primary 蓝 / candidate 橙 / pending 红），每矩形显示控件 ID、资源库/Frame、相对坐标与 evidence_level。冒烟测试（headless Chromium）33/35 通过，2 项为测试脚本口径问题（stage 尺寸来自 CSS var、坐骑无独立 HUD 按钮走测试导航），实际功能全部正常；117/117 贴图加载、14 窗口可开/关/拖拽/置顶、确认框/公告弹出、无 JS 错误。改动已提交为 `a041fba` 并推送。

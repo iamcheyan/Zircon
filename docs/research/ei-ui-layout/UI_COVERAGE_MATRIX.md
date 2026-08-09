@@ -30,6 +30,7 @@
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json`；公告父窗口 `(107,110)-(691,362)` 与 `[行会公告]/[行会修改]` 原版 GBK 文字已由静态绘制调用闭合；`0x00418030` 直接调用者已关联交易、丢金币、仓库、组队和网络提示文本 | 候选 | 区分独立公告框与行会子状态、状态机和确认框 F950 的运行时原点 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |
 | 绘制层级 | `0x00423D00`、`0x004179B0`、`0x0043F040`、`0x004280F0` | `draw-order-evidence.json`；已确认窗口基类背景先于本窗口派生绘制/子控件，并确认可见窗口链表按 ID 分派专用 Paint 后逐节点前进 | 候选（跨窗口规则已恢复） | 真实运行时窗口列表样本与遮挡截图 |
+| 交互式模拟器交付 | `Tools/mir3_client_simulator/`（`/sim`），数据模型 `data/*.json`（windows=14 controls=37 resources=157） | `app.js`/`index.html`/`style.css`/`build_mir3_simulator_data.py`；证据模式覆盖层按等级着色；冒烟测试 33/35（2 项测试口径） | 已交付（candidate 几何显式标注） | 场景/商店/装备业务语义、未闭合窗口原点仍 pending |
 
 ## 当前硬性原则
 

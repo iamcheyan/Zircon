@@ -19,6 +19,8 @@
 | 证据等级与 pending 边界 | 各专项 JSON、`verify_mir3_ui_evidence.py` | 已闭合 |
 | 原版绘制层级 | `draw-order-evidence.json`、`window-traversal-evidence.json` | 候选；运行时可见链仍会变化 |
 | 可视化装配预览 | `Tools/wilviewer.py`：HUD、14 个注册窗口、任务/NPC/技能/聊天/坐骑/商店状态等专项模式 | 已有；动态语义仍按专项 pending 标记 |
+| 交互式客户端模拟器 | `Tools/mir3_client_simulator/`（`/sim` 路由）：800×600 固定画布 + 整数缩放、真实 WIL 贴图、14 窗口开/关/拖拽、确认框/公告、证据模式覆盖层、测试导航 | 已交付；场景/商店/装备等业务语义按 candidate/pending 标记 |
+| 模拟器数据模型 | `Tools/build_mir3_simulator_data.py` → `data/*.json`（windows=14 controls=37 resources=157），坐标不散落在 HTML/JS | 已闭合到当前覆盖范围 |
 | 坐标差异叠加 | `/ui` 本地截图上传、透明度调节、状态保存 | 已有验证入口 |
 | UI 状态记忆 | `localStorage` 与 HUD modal hash 状态 | 已有 |
 | 专项控件统一目录 | `layout.json.specialized_control_rects`，当前 22 条，包含资源库、Frame 对、相对 Rect、证据等级和来源 | 已闭合到数值 Rect 范围 |
@@ -63,5 +65,7 @@ python3 Tools/verify_mir3_ui_evidence.py
 python3 -m py_compile Tools/wilviewer.py
 git diff --check
 ```
+
+模拟器交付后，每轮还需在浏览器验证 `/sim` 的贴图加载、窗口开关、控件状态与无 JS 错误（见 `Tools/mir3_client_simulator/README.md` 冒烟测试）。
 
 只有专项 JSON 的 pending 项减少、统一 `layout.json` 同步、预览模式可访问且提交已推送，才算一轮有效进展。当前审计证明项目仍在进行中，不得调用 goal complete。

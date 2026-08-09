@@ -1,30 +1,266 @@
 {
-  "source": "Mir3.exe, mir3.dat, Data/*.wil, Data/*.wix",
-  "viewport": {"width": 800, "height": 600},
-  "evidence_policy": "primary original-client evidence first; secondary server files only cross-reference names/content",
-  "records": [
-    {"id":"hud","category":"主HUD/底部操作栏","artifacts":["layout.json","hud-bars-render-evidence.json","hud-label-evidence.json"],"layout_ids":["hud.*"],"preview_mode":"hud","status":"primary-static-resource-and-coordinate","pending":true},
-    {"id":"map","category":"地图/小地图","artifacts":["map-ui-resource-evidence.json","minimap-server-crossref.json"],"layout_ids":[],"preview_mode":"map-minimap-candidate,map-candidate","status":"primary-static-render-plus-secondary-name-crossref","pending":true},
-    {"id":"status","category":"人物状态/属性/装备","artifacts":["status-window-render-evidence.json"],"layout_ids":["window.status"],"preview_mode":"window.status","status":"primary-static-render","pending":true},
-    {"id":"inventory","category":"背包/物品栏","artifacts":["inventory-window-render-evidence.json"],"layout_ids":["window.inventory"],"preview_mode":"window.inventory","status":"primary-static-render","pending":true},
-    {"id":"skills","category":"技能/技能书","artifacts":["skill-window-render-loop-evidence.json","magic-exp-loader-evidence.json","magic-exp-records.json"],"layout_ids":["window.other-14-candidate"],"preview_mode":"window.other-14-candidate","status":"primary-static-render-plus-data-loader","pending":true},
-    {"id":"quest","category":"任务","artifacts":["quest-window-render-evidence.json"],"layout_ids":["window.quest"],"preview_mode":"window.quest","status":"primary-static-render","pending":true},
-    {"id":"chat","category":"聊天/频道","artifacts":["chat-window-render-evidence.json"],"layout_ids":["window.chat-pop"],"preview_mode":"window.chat-pop","status":"primary-static-render","pending":true},
-    {"id":"npc","category":"NPC对话","artifacts":["npc-window-render-evidence.json","npc-paint-evidence.json"],"layout_ids":["window.npc-candidate"],"preview_mode":"window.npc-candidate","status":"primary-static-render-plus-parser","pending":true},
-    {"id":"store","category":"商店/仓库","artifacts":["store-window-render-evidence.json","store-state-graph.json"],"layout_ids":["window.store-candidate"],"preview_mode":"window.store-state-0..4","status":"primary-static-state-machine","pending":true},
-    {"id":"exchange","category":"交易/交换","artifacts":["window-draw-calls.json","window-control-resource-analysis.json","window-frame-visual-semantics.json"],"layout_ids":["window.exchange-candidate"],"preview_mode":"window.exchange-candidate","status":"primary-static-composition","pending":true},
-    {"id":"party","category":"组队","artifacts":["window-draw-calls.json","window-control-resource-analysis.json","window-frame-visual-semantics.json"],"layout_ids":["window.group","window.group-pop-candidate"],"preview_mode":"window.group,window.group-pop-candidate","status":"primary-static-render","pending":true},
-    {"id":"guild","category":"行会","artifacts":["window-draw-calls.json","window-control-resource-analysis.json","window-frame-visual-semantics.json"],"layout_ids":["window.guild-candidate"],"preview_mode":"window.guild-candidate","status":"primary-static-render","pending":true},
-    {"id":"social","category":"好友/社交","artifacts":["social-window-render-evidence.json"],"layout_ids":[],"preview_mode":"none","status":"primary-negative-scope","pending":true},
-    {"id":"settings","category":"系统设置/音量","artifacts":["system-window-render-evidence.json"],"layout_ids":["window.option"],"preview_mode":"window.option","status":"primary-static-config-and-render","pending":true},
-    {"id":"horse","category":"坐骑","artifacts":["horse-window-render-evidence.json"],"layout_ids":["window.horse"],"preview_mode":"window.horse","status":"primary-static-render-and-command","pending":true},
-    {"id":"prompt","category":"确认框/提示框","artifacts":["confirmation-prompt-evidence.json","notice-prompt-window-evidence.json"],"layout_ids":["window.confirmation-prompt-950","window.notice-prompt-candidate"],"preview_mode":"prompt.confirmation,prompt.notice,window.notice-prompt-candidate","status":"primary-static-render","pending":true},
-    {"id":"secondary","category":"角色选择/创建/登录次级界面","artifacts":["interface1c-parent-context.json","interface1c-select-screen-context.json","interface1c-cluster-456d.json"],"layout_ids":[],"preview_mode":"secondary-0,secondary-1","status":"primary-resource-cluster-candidate","pending":true}
-  ],
-  "verification": {
-    "required_categories": 17,
-    "all_have_original_artifact": true,
-    "all_have_preview_or_explicit_negative_scope": true,
-    "pending_is_not_completion": true
+ "source": "Mir3.exe, mir3.dat, Data/*.wil, Data/*.wix",
+ "viewport": {
+  "width": 800,
+  "height": 600
+ },
+ "evidence_policy": "primary original-client evidence first; secondary server files only cross-reference names/content",
+ "records": [
+  {
+   "id": "hud",
+   "category": "主HUD/底部操作栏",
+   "artifacts": [
+    "layout.json",
+    "hud-bars-render-evidence.json",
+    "hud-label-evidence.json"
+   ],
+   "layout_ids": [
+    "hud.*"
+   ],
+   "preview_mode": "hud",
+   "status": "primary-static-resource-and-coordinate",
+   "pending": true
+  },
+  {
+   "id": "map",
+   "category": "地图/小地图",
+   "artifacts": [
+    "map-ui-resource-evidence.json",
+    "minimap-server-crossref.json"
+   ],
+   "layout_ids": [],
+   "preview_mode": "map-minimap-candidate,map-candidate",
+   "status": "primary-static-render-plus-secondary-name-crossref",
+   "pending": true
+  },
+  {
+   "id": "status",
+   "category": "人物状态/属性/装备",
+   "artifacts": [
+    "status-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.status"
+   ],
+   "preview_mode": "window.status",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "inventory",
+   "category": "背包/物品栏",
+   "artifacts": [
+    "inventory-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.inventory"
+   ],
+   "preview_mode": "window.inventory",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "skills",
+   "category": "技能/技能书",
+   "artifacts": [
+    "skill-window-render-loop-evidence.json",
+    "magic-exp-loader-evidence.json",
+    "magic-exp-records.json"
+   ],
+   "layout_ids": [
+    "window.other-14-candidate"
+   ],
+   "preview_mode": "window.other-14-candidate",
+   "status": "primary-static-render-plus-data-loader",
+   "pending": true
+  },
+  {
+   "id": "quest",
+   "category": "任务",
+   "artifacts": [
+    "quest-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.quest"
+   ],
+   "preview_mode": "window.quest",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "chat",
+   "category": "聊天/频道",
+   "artifacts": [
+    "chat-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.chat-pop"
+   ],
+   "preview_mode": "window.chat-pop",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "npc",
+   "category": "NPC对话",
+   "artifacts": [
+    "npc-window-render-evidence.json",
+    "npc-paint-evidence.json"
+   ],
+   "layout_ids": [
+    "window.npc-candidate"
+   ],
+   "preview_mode": "window.npc-candidate",
+   "status": "primary-static-render-plus-parser",
+   "pending": true
+  },
+  {
+   "id": "store",
+   "category": "商店/仓库",
+   "artifacts": [
+    "store-window-render-evidence.json",
+    "store-state-graph.json"
+   ],
+   "layout_ids": [
+    "window.store-candidate"
+   ],
+   "preview_mode": "window.store-state-0..4",
+   "status": "primary-static-state-machine",
+   "pending": true
+  },
+  {
+   "id": "exchange",
+   "category": "交易/交换",
+   "artifacts": [
+    "window-draw-calls.json",
+    "window-control-resource-analysis.json",
+    "window-frame-visual-semantics.json"
+   ],
+   "layout_ids": [
+    "window.exchange-candidate"
+   ],
+   "preview_mode": "window.exchange-candidate",
+   "status": "primary-static-composition",
+   "pending": true
+  },
+  {
+   "id": "party",
+   "category": "组队",
+   "artifacts": [
+    "window-draw-calls.json",
+    "window-control-resource-analysis.json",
+    "window-frame-visual-semantics.json"
+   ],
+   "layout_ids": [
+    "window.group",
+    "window.group-pop-candidate"
+   ],
+   "preview_mode": "window.group,window.group-pop-candidate",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "guild",
+   "category": "行会",
+   "artifacts": [
+    "window-draw-calls.json",
+    "window-control-resource-analysis.json",
+    "window-frame-visual-semantics.json"
+   ],
+   "layout_ids": [
+    "window.guild-candidate"
+   ],
+   "preview_mode": "window.guild-candidate",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "social",
+   "category": "好友/社交",
+   "artifacts": [
+    "social-window-render-evidence.json"
+   ],
+   "layout_ids": [],
+   "preview_mode": "none",
+   "status": "primary-negative-scope",
+   "pending": true
+  },
+  {
+   "id": "settings",
+   "category": "系统设置/音量",
+   "artifacts": [
+    "system-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.option"
+   ],
+   "preview_mode": "window.option",
+   "status": "primary-static-config-and-render",
+   "pending": true
+  },
+  {
+   "id": "horse",
+   "category": "坐骑",
+   "artifacts": [
+    "horse-window-render-evidence.json"
+   ],
+   "layout_ids": [
+    "window.horse"
+   ],
+   "preview_mode": "window.horse",
+   "status": "primary-static-render-and-command",
+   "pending": true
+  },
+  {
+   "id": "prompt",
+   "category": "确认框/提示框",
+   "artifacts": [
+    "confirmation-prompt-evidence.json",
+    "notice-prompt-window-evidence.json"
+   ],
+   "layout_ids": [
+    "window.confirmation-prompt-950",
+    "window.notice-prompt-candidate"
+   ],
+   "preview_mode": "prompt.confirmation,prompt.notice,window.notice-prompt-candidate",
+   "status": "primary-static-render",
+   "pending": true
+  },
+  {
+   "id": "secondary",
+   "category": "角色选择/创建/登录次级界面",
+   "artifacts": [
+    "interface1c-parent-context.json",
+    "interface1c-select-screen-context.json",
+    "interface1c-cluster-456d.json"
+   ],
+   "layout_ids": [],
+   "preview_mode": "secondary-0,secondary-1",
+   "status": "primary-resource-cluster-candidate",
+   "pending": true
+  },
+  {
+   "id": "simulator",
+   "category": "交互式客户端模拟器交付",
+   "artifacts": [
+    "../../../Tools/mir3_client_simulator/app.js",
+    "../../../Tools/mir3_client_simulator/index.html",
+    "../../../Tools/mir3_client_simulator/style.css",
+    "../../../Tools/mir3_client_simulator/data/layout.json",
+    "../../../Tools/build_mir3_simulator_data.py"
+   ],
+   "layout_ids": [
+    "sim.*"
+   ],
+   "preview_mode": "sim",
+   "status": "delivered-candidate-geometry-explicit",
+   "pending": true
   }
+ ],
+ "verification": {
+  "required_categories": 17,
+  "all_have_original_artifact": true,
+  "all_have_preview_or_explicit_negative_scope": true,
+  "pending_is_not_completion": true
+ }
 }
