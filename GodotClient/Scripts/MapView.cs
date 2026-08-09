@@ -113,7 +113,10 @@ public partial class MapView : Node2D
             for (int y = sy; y < ey; y++)
             {
                 ref var cell = ref Map.Cells[x, y];
-                if (x % 2 != 0 || y % 2 != 0 || cell.BackImage <= 0) continue;
+                // 原版 Floor.OnClearTexture 对 BackImage 无 >0 检查：index 0
+                // 是合法地砖（如 Wood_Tiles5c[0]，D201 上 2390 格）。仅当库
+                // 缺失/空帧/解码失败时才由 DrawCell 跳过。
+                if (x % 2 != 0 || y % 2 != 0) continue;
                 float px = (x - CenterX + ViewRangeX) * CellWidth + offsetX;
                 float py = (y - CenterY + ViewRangeY) * CellHeight + offsetY;
                 if (DrawCell(cell.BackFile, cell.BackImage, px, py, false, false, 0)) drawn++;
@@ -328,7 +331,11 @@ public partial class MapView : Node2D
             (img.Height == CellHeight || img.Height == CellHeight * 2);
         float y = baselineHeight == 0 ? py : py -
             (baselineHeight < 0 || !cellSized ? img.Height : baselineHeight);
-        Rect2 dest = new Rect2(px + img.OffSetX, y + img.OffSetY, img.Width, img.Height);
+        // 原版地图层一律 useOffSet=false（MapControl.Floor.OnClearTexture /
+        // DrawObjects 的 Draw/DrawBlend 均传 false）：帧 OffSet 只用于角色/
+        // 怪物等对象层。地图库常见 OffSet=(-24,-16)（半格），个别库（如
+        // 部分 Dungeonsc）有极大 OffSet，加上会让墙体错位/飞出视野。
+        Rect2 dest = new Rect2(px, y, img.Width, img.Height);
         Rect2 src = new Rect2(0, 0, img.Width, img.Height);
         // 原版 MapControl.DrawObjects 的 Middle/FrontAnimationBlend 调用
         // DrawBlend(..., Color.White, false, 0.5F, ...)：0.5F 落在 NORMAL
