@@ -2523,3 +2523,9 @@ Frame 1003 在当前客户端副本中没有可导出的像素内容，但状态
 直接导出背包相关资源后，Frame 264/265（GameInter.wil）是小型金属横向操作控件；而 Frame 267（Interface1c.wil）是完整的持武器角色图，Frame 268 在当前副本为空。它不是一个可以按“普通/悬停按钮”处理的 GameInter 控件。
 
 这项像素与库文件交叉检查修正了背包证据中“第三控件可能是动作按钮”的过宽描述，并同步修正 `inventory-window-render-evidence.json.confirmed`：关闭/264–265 走 GameInter 路径，267/268 必须保留 Interface1c 角色图路径。后续预览器不能仅按帧号把它渲染成按钮。
+
+### Finding 176：统一 layout 生成器按实际 WIL 库选择控件资源（2026-08-10）
+
+修正 `Tools/enrich_mir3_layout_evidence.py`：窗口控件的尺寸、资源来源和命中矩形不再无条件写成 `GameInter.wil`，而是从 `window-control-resource-analysis.json` 的已解码库头中选择实际存在的 WIL。重新生成后，背包三个控件分别为 GameInter 161/162、GameInter 264/265、Interface1c 267/268；第三项尺寸为 76×88，统一 `layout.json` 与独立证据保持一致。
+
+这条规则是通用修复，不是背包特例：当相同 Frame 编号在多个 WIL 库中有不同含义时，预览器和后续还原器必须以“调用点 + 实际可解码库 + 帧头尺寸”联合决定资源，不能只看 Frame 数字。

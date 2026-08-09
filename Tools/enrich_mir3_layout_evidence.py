@@ -217,12 +217,19 @@ def main() -> None:
                 coordinate_status = position_analysis.get("geometric_status", "resolved-candidate")
         resource_analysis = control_resources.get(control["call_va"], {})
         dimensions = None
+        resource_library = None
         frames_meta = resource_analysis.get("frames", [])
         if frames_meta:
-            gameinter = (frames_meta[0].get("libraries") or {}).get("GameInter.wil")
-            if gameinter:
-                dimensions = {"width": gameinter.get("width"), "height": gameinter.get("height"),
-                              "source": f"Data/GameInter.wil frame {pair[0] if pair else 'unknown'}"}
+            libraries = frames_meta[0].get("libraries") or {}
+            candidates = [(name, meta) for name, meta in libraries.items()
+                          if meta and meta.get("width") is not None and meta.get("height") is not None]
+            if candidates:
+                resource_library, selected = next(
+                    ((name, meta) for name, meta in candidates if name == "GameInter.wil"),
+                    candidates[0],
+                )
+                dimensions = {"width": selected.get("width"), "height": selected.get("height"),
+                              "source": f"Data/{resource_library} frame {pair[0] if pair else 'unknown'}"}
         item = {
             "id": f"{control['window_id']}.control.{control['call_va']}",
             "kind": "control-constructor",
@@ -238,11 +245,11 @@ def main() -> None:
             "size": dimensions,
             "hit_rect": ({"x": absolute_position["x"], "y": absolute_position["y"],
                           "width": dimensions["width"], "height": dimensions["height"],
-                          "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
+                          "basis": f"0x00417550 SetRect; {resource_library or 'selected WIL'} Frame dimensions",
                           "evidence_level": "primary-static-expression-plus-primary-resource"}
                          if absolute_position and dimensions and dimensions["width"] and dimensions["height"] else None),
             "evidence": control["evidence"],
-            "notes": ("Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; "
+            "notes": (f"Frame pair, {resource_library or 'unresolved'} resource candidate, and push-time x/y expression are primary static evidence; "
                        "geometric status is retained as a separate validation field."),
         }
         redraw = SKILL_REDRAW_POSITIONS.get(control["call_va"].lower())
@@ -264,9 +271,9 @@ def main() -> None:
         if resource_handles.get(control["window_id"]):
             item["resource_handle"] = {
                 "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-                "library": "Data/GameInter.wil",
-                "evidence_level": "primary-static-handle-flow",
-                "warning": "Static register-flow record; runtime identity remains to be confirmed.",
+                "library": f"Data/{resource_library}" if resource_library else "unresolved-resource-handle",
+                "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck" if resource_library else "primary-static-handle-flow",
+                "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression.",
             }
         if item["id"] in control_semantics:
             item["semantic_candidate"] = control_semantics[item["id"]]

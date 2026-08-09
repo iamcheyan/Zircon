@@ -2208,12 +2208,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.inventory.control.0x0042eadb",
@@ -2364,12 +2364,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -2486,18 +2486,29 @@
         "x": 694,
         "y": 286
       },
-      "size": null,
-      "hit_rect": null,
+      "size": {
+        "width": 76,
+        "height": 88,
+        "source": "Data/Interface1c.wil frame 267"
+      },
+      "hit_rect": {
+        "x": 694,
+        "y": 286,
+        "width": 76,
+        "height": 88,
+        "basis": "0x00417550 SetRect; Interface1c.wil Frame dimensions",
+        "evidence_level": "primary-static-expression-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, Interface1c.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-        "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "library": "Data/Interface1c.wil",
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -2631,12 +2642,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.status.control.0x0044b18b",
@@ -2787,12 +2798,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -2926,12 +2937,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d36b",
@@ -3082,12 +3093,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d394",
@@ -3238,12 +3249,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d3c0",
@@ -3394,12 +3405,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d3ec",
@@ -3550,12 +3561,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d418",
@@ -3706,12 +3717,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d444",
@@ -3862,12 +3873,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d46d",
@@ -4018,12 +4029,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.store-candidate.control.0x0044d496",
@@ -4174,12 +4185,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -4313,12 +4324,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.exchange-candidate.control.0x00415a9d",
@@ -4452,18 +4463,29 @@
         "x": 225,
         "y": 332
       },
-      "size": null,
-      "hit_rect": null,
+      "size": {
+        "width": 196,
+        "height": 56,
+        "source": "Data/Interface1c.wil frame 1064"
+      },
+      "hit_rect": {
+        "x": 225,
+        "y": 332,
+        "width": 196,
+        "height": 56,
+        "basis": "0x00417550 SetRect; Interface1c.wil Frame dimensions",
+        "evidence_level": "primary-static-expression-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, Interface1c.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-        "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "library": "Data/Interface1c.wil",
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.exchange-candidate.control.0x00415ac3",
@@ -4614,12 +4636,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -4753,12 +4775,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424ef3",
@@ -4909,12 +4931,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424f27",
@@ -5065,12 +5087,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424f54",
@@ -5211,12 +5233,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424f7b",
@@ -5357,12 +5379,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424fa3",
@@ -5503,12 +5525,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424fc3",
@@ -5649,12 +5671,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x00424feb",
@@ -5805,12 +5827,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.guild-candidate.control.0x0042500f",
@@ -5961,12 +5983,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -6100,12 +6122,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.group.control.0x004242d4",
@@ -6256,12 +6278,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.group.control.0x004242fd",
@@ -6412,12 +6434,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.group.control.0x00424329",
@@ -6568,12 +6590,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.group.control.0x0042434f",
@@ -6724,12 +6746,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -6863,12 +6885,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x00414170",
@@ -7019,12 +7041,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x00414196",
@@ -7175,12 +7197,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x004141bc",
@@ -7331,12 +7353,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x004141e5",
@@ -7487,12 +7509,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x0041420e",
@@ -7643,12 +7665,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.chat-pop.control.0x00414237",
@@ -7799,12 +7821,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -7921,18 +7943,29 @@
         "x": 653,
         "y": 761
       },
-      "size": null,
-      "hit_rect": null,
+      "size": {
+        "width": 88,
+        "height": 84,
+        "source": "Data/Interface1c.wil frame 382"
+      },
+      "hit_rect": {
+        "x": 653,
+        "y": 761,
+        "width": 88,
+        "height": 84,
+        "basis": "0x00417550 SetRect; Interface1c.wil Frame dimensions",
+        "evidence_level": "primary-static-expression-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, Interface1c.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-        "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "library": "Data/Interface1c.wil",
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -8066,12 +8099,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.group-pop-candidate.control.0x0045040b",
@@ -8222,12 +8255,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -8361,12 +8394,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x00441067",
@@ -8517,12 +8550,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x00441090",
@@ -8673,12 +8706,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x004410b9",
@@ -8829,12 +8862,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x004410e2",
@@ -8985,12 +9018,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x0044110e",
@@ -9141,12 +9174,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x0044113a",
@@ -9297,12 +9330,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x0044116a",
@@ -9453,12 +9486,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.option.control.0x0044119a",
@@ -9592,12 +9625,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, unresolved resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-        "library": "Data/GameInter.wil",
+        "library": "unresolved-resource-handle",
         "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -9714,12 +9747,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, unresolved resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
-        "library": "Data/GameInter.wil",
+        "library": "unresolved-resource-handle",
         "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -9853,12 +9886,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.quest.control.0x0044743b",
@@ -10009,12 +10042,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.quest.control.0x0044745e",
@@ -10165,12 +10198,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -10304,12 +10337,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.horse.control.0x00426944",
@@ -10460,12 +10493,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.horse.control.0x00426967",
@@ -10616,12 +10649,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.horse.control.0x0042698d",
@@ -10772,12 +10805,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.horse.control.0x004269b3",
@@ -10928,12 +10961,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x004392b6",
@@ -11084,12 +11117,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x004392df",
@@ -11240,12 +11273,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x0043930b",
@@ -11397,7 +11430,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 5,
         "y": 21,
@@ -11408,8 +11441,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x00439334",
@@ -11561,7 +11594,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 3,
         "y": 56,
@@ -11572,8 +11605,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x0043935d",
@@ -11725,7 +11758,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 4,
         "y": 91,
@@ -11736,8 +11769,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x00439386",
@@ -11889,7 +11922,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 2,
         "y": 126,
@@ -11900,8 +11933,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x004393b3",
@@ -12053,7 +12086,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 2,
         "y": 161,
@@ -12064,8 +12097,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x004393e0",
@@ -12217,7 +12250,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 2,
         "y": 196,
@@ -12228,8 +12261,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x0043940d",
@@ -12381,7 +12414,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 1,
         "y": 231,
@@ -12392,8 +12425,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x00439437",
@@ -12545,7 +12578,7 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "redraw_position": {
         "x": 2,
         "y": 266,
@@ -12556,8 +12589,8 @@
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.other-14-candidate.control.0x00439464",
@@ -12708,12 +12741,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       }
     },
     {
@@ -12847,12 +12880,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.npc-candidate.control.0x0043ed8b",
@@ -13003,12 +13036,12 @@
         "level": "primary-static",
         "source": "Mir3.exe"
       },
-      "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "notes": "Frame pair, GameInter.wil resource candidate, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
-        "evidence_level": "primary-static-handle-flow",
-        "warning": "Static register-flow record; runtime identity remains to be confirmed."
+        "evidence_level": "primary-static-handle-flow-plus-primary-resource-crosscheck",
+        "warning": "Static register-flow record; selected WIL library is cross-checked from decoded frame headers and remains separate from the generic constructor handle expression."
       },
       "semantic_candidate": {
         "control_id": "window.npc-candidate.control.0x0043edb1",
@@ -16190,6 +16223,32 @@
           324
         ]
       },
+      "resource_visual_inspection": {
+        "source": "Direct pixel inspection of original Data/GameInter.wil and Data/Interface1c.wil",
+        "records": [
+          {
+            "frame_pair": [
+              264,
+              265
+            ],
+            "library": "Data/GameInter.wil",
+            "visual_description": "small horizontal metallic action control with a green/gold state symbol and short embedded glyph",
+            "confidence": "medium",
+            "business_name": null
+          },
+          {
+            "frame_pair": [
+              267,
+              268
+            ],
+            "library": "Data/Interface1c.wil",
+            "visual_description": "character/action sprite resource; Frame 267 contains a full armored character with weapon, not a generic button",
+            "confidence": "high",
+            "note": "Frame 268 is empty in the current export. Preserve the library distinction and do not render this as a GameInter button."
+          }
+        ],
+        "evidence_level": "primary-resource-visual-plus-static-library-crosscheck"
+      },
       "child_controls": [
         {
           "object_offset": "this+0x5c",
@@ -16224,11 +16283,12 @@
             267,
             268
           ],
-          "resource_library_candidate": "GameInter.wil",
+          "resource_library_candidate": "Interface1c.wil",
           "position_expression": {
             "x": "arg_base+0xB0+0xF9",
             "y": "arg_base+0xB0+0x11E"
-          }
+          },
+          "role": "character-sprite/appearance resource candidate, not a generic button"
         }
       ],
       "hit_rects": {
@@ -16274,7 +16334,7 @@
               76,
               88
             ],
-            "role": "inventory action candidate; resource differs from GameInter"
+            "role": "character-sprite/appearance candidate; resource differs from GameInter"
           }
         ],
         "evidence_level": "primary-static-plus-primary-resource"
@@ -16441,7 +16501,7 @@
         "Frame 250 is the inventory window background candidate with primary constructor evidence.",
         "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
         "The item draw path contains a 36-pixel spacing constant.",
-        "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
+        "The close and 264/265 controls are tied to the GameInter path; the 267/268 child must remain associated with the Interface1c character-sprite resource path in the current export, despite nearby constructor clustering.",
         "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count.",
         "Selected-item rendering is a source/destination rectangle composition through 0x00466800 and 0x004542F0, with static text formatting call sites separately recovered.",
         "The local inventory paint sequence is statically ordered from the base vtable call through item selection, value text, child-control positioning and state-dependent text."
@@ -16502,7 +16562,8 @@
         "observations": [
           "The artwork contains a vertical character/status panel with empty equipment-slot silhouettes; the slot labels are not baked into Frame 200.",
           "The visible slot artwork must therefore be combined with runtime item graphics and the 11-record paint loop; a static screenshot of Frame 200 alone cannot name the equipment positions.",
-          "The close control and the secondary status control are separate child resources (161/162 and 171/172), not part of the slot-record loop."
+          "The close control and the secondary status control are separate child resources (161/162 and 171/172), not part of the slot-record loop.",
+          "Frame 171 is a small right-pointing green/gold arrow control; Frame 172 is empty in the current export, so the pair's action name remains unresolved."
         ],
         "confidence": "primary-static-resource-plus-pixel-inspection"
       },
@@ -17360,12 +17421,22 @@
       },
       "related_resource_visuals": [
         {
+          "frame": 1000,
+          "header_size": [
+            1024,
+            256
+          ],
+          "visual": "five-row framed item-list panel with left item boxes, five long description rows, bottom check/execute plate and circular X control",
+          "confidence": "high"
+        },
+        {
           "frame": 1001,
           "header_size": [
             256,
             256
           ],
-          "visual": "compact framed item panel with lower navigation controls"
+          "visual": "compact framed item-grid panel with left/right circular arrows, bottom check/execute plate and circular X control",
+          "confidence": "high"
         },
         {
           "frame": 1002,
@@ -17373,7 +17444,8 @@
             1024,
             256
           ],
-          "visual": "wide composite item panel with attached side controls"
+          "visual": "wide composite: five-row item-list panel plus attached right detail/action panel, each with check/execute and X controls",
+          "confidence": "high"
         },
         {
           "frame": 1003,
@@ -17381,7 +17453,9 @@
             1024,
             256
           ],
-          "visual": "wide composite item panel variant with attached side controls"
+          "visual": "empty in the current client export; constructor still selects it for the expanded state",
+          "confidence": "medium",
+          "note": "Do not replace the state-1 binding with Frame 1002 solely because both headers are wide."
         }
       ],
       "state_machine_evidence": {
@@ -19838,7 +19912,7 @@
             224,
             58
           ],
-          "visual_observation": "Chinese YES/NO confirmation prompt."
+          "visual_observation": "Korean YES/NO confirmation prompt; the artwork contains a Korean question and YES/NO labels."
         },
         {
           "frame": 604,
@@ -19846,7 +19920,7 @@
             296,
             58
           ],
-          "visual_observation": "Narrow message/input panel with checkmark state."
+          "visual_observation": "Narrow dark message/input panel with a white checkmark at the right."
         },
         {
           "frame": 605,
@@ -19854,7 +19928,7 @@
             40,
             20
           ],
-          "visual_observation": "Small button/state resource."
+          "visual_observation": "Small white-check state resource."
         },
         {
           "frame": 606,
@@ -19862,7 +19936,7 @@
             40,
             20
           ],
-          "visual_observation": "Small button/state resource used by the 0x43E260 control cluster."
+          "visual_observation": "Small green-check highlighted state resource used by the 0x43E260 control cluster."
         },
         {
           "frame": 607,
@@ -19870,7 +19944,7 @@
             40,
             20
           ],
-          "visual_observation": "State pair for Frame 606."
+          "visual_observation": "State pair for Frame 606; exact pixels need the alternate resource copy confirmed."
         }
       ],
       "child_controls": [
@@ -20012,7 +20086,7 @@
       "confirmed": [
         "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
         "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
-        "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
+        "Frame 603 visually provides an independent Korean YES/NO confirmation prompt resource in the same nearby frame family.",
         "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
         "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field.",
         "The ID15 dispatcher branch at 0x0042B2AD is now resolved as a stateful show/hide path; it does not itself prove that the business caller is the guild page."
@@ -20075,6 +20149,16 @@
           "visual": "additional YES/NO normal state candidates"
         }
       ],
+      "resource_visual_inspection": {
+        "source": "Data/GameInter.wil direct pixel inspection of Frames 151–158",
+        "observations": [
+          "Frame 151 visibly reads YES in the normal/gold state; Frame 152 is the green highlighted YES state.",
+          "Frame 154 visibly reads NO in the normal/gold state; Frame 155 is the green highlighted NO state.",
+          "Frame 157 is a white checkmark state; Frame 158 is the green highlighted checkmark state.",
+          "Frame 150 and Frame 153 are additional YES/NO candidates in the same 44×20 family and must not be collapsed into 151/152 or 154/155 without constructor-state evidence."
+        ],
+        "evidence_level": "primary-resource-visual"
+      },
       "parent_window": {
         "id": "window.confirmation-prompt-950",
         "wrapper_va": "0x00418030",
@@ -20724,6 +20808,39 @@
           "meaning": "second map-object marker candidate; semantic name pending"
         }
       ],
+      "marker_visual_semantics": {
+        "source": "primary-static color arguments at 0x0043DBBF/0x0043DBD9/0x0043DC42/0x0043DD79",
+        "records": [
+          {
+            "color": "0x64C864",
+            "rgb": [
+              100,
+              200,
+              100
+            ],
+            "used_by": [
+              "computed view/object rectangle marker",
+              "global list marker family"
+            ],
+            "confidence": "high",
+            "business_name": null
+          },
+          {
+            "color": "0xFFFF00",
+            "rgb": [
+              255,
+              255,
+              0
+            ],
+            "used_by": [
+              "global list entries where entry+0x88 == 0x32"
+            ],
+            "confidence": "high",
+            "business_name": null
+          }
+        ],
+        "note": "The original client distinguishes at least green and yellow map overlays; color evidence is stronger than a semantic label, so player/NPC/item names remain unresolved."
+      },
       "timing_or_animation": {
         "field": "owner+0x300",
         "range": "0..0x320",
@@ -25006,6 +25123,82 @@
         "y_field": "this+0x1c"
       }
     },
+    "resource_visual_inspection": {
+      "source": "Data/GameInter.wil direct pixel inspection of Frame 350 and control ranges 360–383",
+      "frames": [
+        {
+          "frame": 350,
+          "visual_description": "chat panel background resource; current export has transparency/empty regions around the visible shell",
+          "confidence": "medium"
+        },
+        {
+          "frame_pair": [
+            360,
+            361
+          ],
+          "visual_description": "circular channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            362,
+            363
+          ],
+          "visual_description": "circular channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            364,
+            365
+          ],
+          "visual_description": "slanted-line channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            366,
+            367
+          ],
+          "visual_description": "slanted-line channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            368,
+            369
+          ],
+          "visual_description": "two-person/group channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            370,
+            371
+          ],
+          "visual_description": "two-person/group channel icon, green highlighted and gold normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            380,
+            381
+          ],
+          "visual_description": "vertical chain/scroll control with red center state",
+          "confidence": "medium"
+        },
+        {
+          "frame_pair": [
+            382,
+            383
+          ],
+          "visual_description": "vertical chain/scroll control with red center state",
+          "confidence": "medium"
+        }
+      ],
+      "warning": "The six channel concepts are established by original command strings; pictograms alone do not determine which pair is active/disabled or the exact caption rendering.",
+      "evidence_level": "primary-resource-visual-plus-primary-static"
+    },
     "controls": [
       {
         "object_offset": "this+0x6C",
@@ -27459,6 +27652,16 @@
       "order_implication": "A visible normal window first passes the common background/base paint gate; derived window paint and child controls are separate subsequent call paths. This proves a base-before-child constraint, but not overlap order between two movable windows.",
       "evidence_level": "primary-static-base-window-paint"
     },
+    "cross_window_order_rule": {
+      "paint_dispatch": "0x004280F0–0x00428357 consumes main+0xD28 linked-list order; each node ID is dispatched to one specialized paint VA before node+0x04 is read.",
+      "consequence": "The final overlapping-window order is runtime list order, not a universal hard-coded category order. A later node paints over an earlier node when their rectangles overlap.",
+      "known_list_mutations": [
+        "0x00449870 insertion/append path",
+        "0x0042AC50 hide/remove path"
+      ],
+      "evidence_level": "primary-static-visible-list-dispatch",
+      "implementation_note": "The restoration preview should expose list order as a debug layer and keep explicit z-order data separate from each window's local paint order."
+    },
     "pending": [
       "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
       "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
@@ -27508,7 +27711,7 @@
           224,
           58
         ],
-        "visual_observation": "Chinese YES/NO confirmation prompt."
+        "visual_observation": "Korean YES/NO confirmation prompt; the artwork contains a Korean question and YES/NO labels."
       },
       {
         "frame": 604,
@@ -27516,7 +27719,7 @@
           296,
           58
         ],
-        "visual_observation": "Narrow message/input panel with checkmark state."
+        "visual_observation": "Narrow dark message/input panel with a white checkmark at the right."
       },
       {
         "frame": 605,
@@ -27524,7 +27727,7 @@
           40,
           20
         ],
-        "visual_observation": "Small button/state resource."
+        "visual_observation": "Small white-check state resource."
       },
       {
         "frame": 606,
@@ -27532,7 +27735,7 @@
           40,
           20
         ],
-        "visual_observation": "Small button/state resource used by the 0x43E260 control cluster."
+        "visual_observation": "Small green-check highlighted state resource used by the 0x43E260 control cluster."
       },
       {
         "frame": 607,
@@ -27540,7 +27743,7 @@
           40,
           20
         ],
-        "visual_observation": "State pair for Frame 606."
+        "visual_observation": "State pair for Frame 606; exact pixels need the alternate resource copy confirmed."
       }
     ],
     "child_controls": [
@@ -27682,7 +27885,7 @@
     "confirmed": [
       "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
       "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
-      "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
+      "Frame 603 visually provides an independent Korean YES/NO confirmation prompt resource in the same nearby frame family.",
       "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
       "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field.",
       "The ID15 dispatcher branch at 0x0042B2AD is now resolved as a stateful show/hide path; it does not itself prove that the business caller is the guild page."
@@ -27745,6 +27948,16 @@
         "visual": "additional YES/NO normal state candidates"
       }
     ],
+    "resource_visual_inspection": {
+      "source": "Data/GameInter.wil direct pixel inspection of Frames 151–158",
+      "observations": [
+        "Frame 151 visibly reads YES in the normal/gold state; Frame 152 is the green highlighted YES state.",
+        "Frame 154 visibly reads NO in the normal/gold state; Frame 155 is the green highlighted NO state.",
+        "Frame 157 is a white checkmark state; Frame 158 is the green highlighted checkmark state.",
+        "Frame 150 and Frame 153 are additional YES/NO candidates in the same 44×20 family and must not be collapsed into 151/152 or 154/155 without constructor-state evidence."
+      ],
+      "evidence_level": "primary-resource-visual"
+    },
     "parent_window": {
       "id": "window.confirmation-prompt-950",
       "wrapper_va": "0x00418030",
@@ -28126,6 +28339,14 @@
         "notes": "This is the original keyboard semantic for the F102/F103 HUD chat-history control; it must not be confused with the separate F350 chat window."
       }
     ],
+    "resource_visual_inspection": {
+      "source": "Data/GameInter.wil direct pixel inspection",
+      "observations": [
+        "Frames 100/101 and 102/103 are icon-only triangular/metal HUD controls with green/gold state art; their Chinese keyboard descriptions are supplied by Mir3.exe strings, not visibly baked into the icons.",
+        "Frame 159 has no exportable pixel content in the current client copy; the belt text string is therefore a constructor-associated runtime label/control semantic, not proof of a visible Frame 159 bitmap."
+      ],
+      "evidence_level": "primary-resource-visual-plus-primary-static"
+    },
     "pending": [
       "Whether Frame 159 is a visible belt label, a tooltip-only control, or an auxiliary text glyph in every runtime state.",
       "The exact draw-time font/color path for these constructor-associated strings."
@@ -28184,7 +28405,8 @@
         ],
         "geometry": {
           "panel": "300×304",
-          "candidate": "item-list/store reset"
+          "candidate": "five-row item-list panel; Frame 1000 visibly has five rows, bottom execute plate and X control",
+          "visual_evidence": "primary-resource-visual"
         },
         "business_name": {
           "value": null,
@@ -28209,13 +28431,14 @@
         ],
         "geometry": {
           "panel": "498×304",
-          "candidate": "expanded item-list panel",
+          "candidate": "expanded item-list panel; constructor selects Frame 1003, which is empty in the current export",
           "grid_origin": [
             323,
             43
           ],
           "grid": "4×3",
-          "step": 38
+          "step": 38,
+          "visual_evidence": "primary-static-plus-resource-discrepancy"
         },
         "business_name": {
           "value": null,
@@ -28240,7 +28463,8 @@
         ],
         "geometry": {
           "panel": "205×205",
-          "candidate": "compact selected-item/detail"
+          "candidate": "compact selected-item/detail; Frame 1001 visibly has a grid with left/right arrows and bottom execute/X controls",
+          "visual_evidence": "primary-resource-visual"
         },
         "pagination": {
           "record_field": "this+0x71C",
@@ -28270,7 +28494,7 @@
         ],
         "geometry": {
           "panel": "300×304",
-          "candidate": "item-list panel recreated"
+          "candidate": "Frame 1000 five-row item-list panel recreated"
         },
         "business_name": {
           "value": null,
@@ -28302,7 +28526,8 @@
         ],
         "geometry": {
           "panel": "540×307",
-          "candidate": "wide selected-item/action panel"
+          "candidate": "wide selected-item/action panel; Frame 1002 visibly combines the list and an attached right detail/action panel",
+          "visual_evidence": "primary-resource-visual"
         },
         "business_name": {
           "value": null,
@@ -29426,8 +29651,9 @@
             860,
             861
           ],
-          "normal_visual_text": "马上骑",
-          "pressed_visual_text": "马上骑",
+          "normal_visual_text": "말타기",
+          "pressed_visual_text": "말타기",
+          "translation_candidate": "骑马/上马",
           "transcription_confidence": "high"
         },
         {
@@ -29435,8 +29661,9 @@
             862,
             863
           ],
-          "normal_visual_text": "马儿跑",
-          "pressed_visual_text": "马儿跑",
+          "normal_visual_text": "말내리기",
+          "pressed_visual_text": "말내리기",
+          "translation_candidate": "下马",
           "transcription_confidence": "high"
         },
         {
@@ -29444,19 +29671,23 @@
             864,
             865
           ],
-          "normal_visual_text_candidate": "马鞍骑",
-          "transcription_confidence": "medium; second glyph requires font-level confirmation"
+          "normal_visual_text": "말숨기기",
+          "pressed_visual_text": "말숨기기",
+          "translation_candidate": "收马/隐藏马",
+          "transcription_confidence": "high"
         },
         {
           "frame_pair": [
             866,
             867
           ],
-          "normal_visual_text_candidate": "马鞍跑",
-          "transcription_confidence": "medium; second glyph requires font-level confirmation"
+          "normal_visual_text": "말꺼내기",
+          "pressed_visual_text": "말꺼내기",
+          "translation_candidate": "取马/召出马",
+          "transcription_confidence": "high"
         }
       ],
-      "warning": "The pixel transcription identifies the visible artwork labels but does not by itself prove which runtime horse state enables each action."
+      "warning": "The Korean pixel transcription and translation candidates identify the visible artwork labels; the exact runtime state binding still comes from the click branches and decoded command strings."
     },
     "interaction": {
       "hit_rect_proof": "Shared control constructor 0x00417550-0x004175B0 selects the resource frame and writes SetRect(this+0x04, x, y, x+selected_frame.width, y+selected_frame.height); the widths/heights above are the GameInter.wil frame-header dimensions.",
@@ -29551,7 +29782,7 @@
     },
     "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The click commands are now exact original strings; only the mapping between those commands, state transitions and the low-resolution artwork labels remains partially unresolved.",
     "pending": [
-      "Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map them to the now-decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."
+      "Map the now-confirmed Korean artwork labels to the decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."
     ]
   },
   "hud_bars_render_evidence": {
