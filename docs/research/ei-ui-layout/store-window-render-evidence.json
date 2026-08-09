@@ -122,6 +122,47 @@
       "evidence_level": "primary-static-message-dispatch",
       "interpretation": "A decoded client message subcode value 2 enters the store-item handler and then the shared state machine. This proves a non-visual protocol/opening entry exists, but the packet's human business name is not present in the recovered symbols."
     },
+    "state_input_evidence": {
+      "handler": "0x0042BFE1",
+      "owner": "main+0x33188",
+      "state_1_constructor": {
+        "va": "0x0044F7E8",
+        "frame": 1003,
+        "raw_factory_args": [1, 186, 498, 304],
+        "packet_derived_fields": [
+          {"field": "this+0x7E8", "expression": "packet-derived value / 6", "confidence": "primary-static-arithmetic"},
+          {"field": "this+0x7E4", "expression": "-1 if input count is zero, otherwise 0", "confidence": "primary-static"}
+        ],
+        "interpretation": "The expanded 4×3 item grid is initialized with a packet-derived count/batch value; this is stronger than a purely visual shop-state guess, but the packet schema is unresolved."
+      },
+      "state_2_constructor": {
+        "va": "0x0044F9E4",
+        "frame": 1001,
+        "raw_factory_args": [-4, 182, 205, 205],
+        "packet_derived_fields": [
+          {"field": "this+0x7E0", "value": 0, "role": "page index reset", "confidence": "primary-static"},
+          {"field": "this+0x7E4", "expression": "-1 if input count is zero, otherwise 0", "role": "selected index", "confidence": "primary-static"}
+        ],
+        "interpretation": "The compact Frame 1001 state is a selected/detail or paging presentation candidate; no business label is promoted."
+      },
+      "state_4_transition": {
+        "vas": ["0x0044EBCB", "0x0044F263"],
+        "frame": 1002,
+        "raw_factory_args": [0, 184, 540, 307],
+        "precondition": "selected item index this+0x704 resolves through 0x0044E6D0; resulting pointer is stored at this+0x7F0",
+        "confidence": "primary-static"
+      },
+      "interaction_controls": {
+        "state_0_1_3_4_control_offset": "this+0x54",
+        "state_1_2_4_control_offset": "this+0x1BC",
+        "state_1_2_control_offset": "this+0x270",
+        "state_1_control_offset": "this+0x324",
+        "state_0_control_offset": "this+0x540",
+        "state_4_control_offset": "this+0x48C",
+        "state_2_page_control_offset": "this+0x3D8",
+        "note": "These offsets are proven by vtable+0x0C/+0x10 hit/activation calls. They identify control objects, not their human captions."
+      }
+    },
     "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
   },
   "controls": [
