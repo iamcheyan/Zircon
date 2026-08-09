@@ -2118,7 +2118,13 @@ function addFocusedWindow(r,analysis){
     for(let i=0;i<visible;i++)addFocusedGeometry(ox+12,oy+20+18*i,528,18,i===0?'运行时目标字段决定实际屏幕位置':'' );
     addFocusedGeometry(ox+12,oy+20+visible*18,528,16,'F1102 最终项：index=max(count-1,0)，位置字段待解析');
   }else if(r.id==='window.store-candidate'){
-    for(let i=0;i<8;i++)addFocusedGeometry(ox+28,oy+26+49*i,36,36,i===0?'商品列表 / 8项 / 49px':'' );
+    const se=evidenceWindow(r.id),cr=se.constructor_rect_initializers||{};
+    const ll=cr.left_list_rects||{count:5,left:28,top_start:26,row_step:49,width:36,height:36};
+    for(let i=0;i<ll.count;i++)addFocusedGeometry(ox+ll.left,oy+ll.top_start+ll.row_step*i,ll.right-ll.left,ll.height,i===0?'原始 SetRect 左侧列表 / 5行':'' );
+    const lt=cr.left_text_rects||{count:5,left:69,top_start:21,row_step:49,right:256,height:45};
+    for(let i=0;i<lt.count;i++)addFocusedGeometry(ox+lt.left,oy+lt.top_start+lt.row_step*i,lt.right-lt.left,lt.height,i===0?'原始 SetRect 说明区 / 5行':'' );
+    const rg=cr.right_item_grid_rects||{columns:4,rows:3,x_start:323,y_start:43,x_step:38,y_step:38,width:37,height:37};
+    for(let row=0;row<rg.rows;row++)for(let col=0;col<rg.columns;col++)addFocusedGeometry(ox+rg.x_start+rg.x_step*col,oy+rg.y_start+rg.y_step*row,(rg.width||37),(rg.height||37),(row===0&&col===0)?'原始 SetRect 右侧 4×3 / 参数坐标':'' );
     addFocusedGeometry(ox+210,oy+20,75,270,'状态0/3列表面板');
   }
   const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);
