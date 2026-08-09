@@ -63,13 +63,17 @@
         "evidence_level": "primary-static-loop-and-argument-flow"
       },
       "selected_overlay": {
-        "guard_fields": ["0x00777720 low byte", "0x00777723"],
-        "frame_selector": "0x00466130",
-        "composition_helper": "0x0045FD50",
-        "target_expression": "window origin + (0x61,0xC8) plus item geometry offsets",
-        "note": "The binary confirms a selected/secondary overlay path, but the global fields and business label are not named by symbols.",
-        "evidence_level": "primary-static-candidate"
-      }
+      "guard_fields": ["0x00777720 low byte", "0x00777723"],
+      "frame_selector": "0x00466130",
+      "selector_table": "0x00566DD4",
+      "selected_resource_header_fields": ["0x00566E0C", "0x00566E10"],
+      "composition_helper": "0x0045FD50",
+      "target_expression": "window origin + (0x61,0xC8) plus item geometry offsets",
+      "call_sites": ["0x0044B560-0x0044B5C3", "0x0044B63D-0x0044B6A8"],
+      "alternate_selector_index_expression": "(low8(0x00777720) * 10) + low8(0x00777723) + 0x3B",
+      "note": "The binary confirms a selected/secondary overlay path and a table-driven resource/header lookup. The global fields and business label are not named by symbols.",
+      "evidence_level": "primary-static-candidate"
+    }
     }
   },
   "attribute_text_draw_chain": {
