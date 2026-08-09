@@ -15,9 +15,9 @@
 | 人物状态/装备槽 | GameInter F200，装备槽 38×38 | `status-window-render-evidence.json` | 已恢复 | 装备图层、属性文字实际调用 |
 | 背包 | GameInter F250，36 px 网格 | `inventory-window-render-evidence.json` | 已恢复 | 行列数量、物品图标/数量文本顺序 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 任务详情页/分页状态 |
-| 商店/购买 | GameInter F1000 | `store-window-render-evidence.json` | 候选 | 父窗口绑定和异常宽度坐标的真实解释 |
+| 商店/购买 | GameInter F1000、F1001–F1003 | `store-window-render-evidence.json`、`0x0044E9B0` 状态机 | 候选 | 通过协议/开启调用区分 NPC 商店、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `system-window-render-evidence.json` | 候选 | 交换双方格子、确认按钮和状态机 |
-| 仓库/存取 | 现有全局控件与窗口候选 | `window-control-calls.json`、资源族目录 | 待追踪 | 找到独立构造/绘制入口并绑定资源 |
+| 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`0x00423E80` 工厂调用 | 候选 | 继续把 state 0–4 与业务入口绑定，确认仓库屏幕原点和按钮语义 |
 | NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040` | `npc-window-render-evidence.json` | 已恢复 | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900 | `social-window-render-evidence.json` | 已恢复 | 成员文本/图标和操作状态 |
 | 行会 | GameInter F600 | `social-window-render-evidence.json` | 候选 | 4 个寄存器流坐标、成员列表绘制 |

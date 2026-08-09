@@ -16312,6 +16312,110 @@
           "visual": "wide composite item panel variant with attached side controls"
         }
       ],
+      "state_machine_evidence": {
+        "owner_function_region": "0x0044E9B0-0x0044FCxx",
+        "state_field": "this+0x5F8",
+        "state_values_observed": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "window_factory": {
+          "va": "0x00423E80",
+          "signature_candidate": "this, frame, x, y, width, height",
+          "argument_order_basis": "ret 0x14; call sites push height, width, y, x, frame",
+          "note": "The factory selects the WIL frame and computes the centered/parent-relative Rect; the call-site arguments below are primary static geometry, not a guessed screen origin."
+        },
+        "state_transitions": [
+          {
+            "state": 0,
+            "frame": 1000,
+            "call_va": "0x0044EAA4",
+            "args": {
+              "x": 0,
+              "y": 186,
+              "width": 300,
+              "height": 304
+            },
+            "meaning": "item-list/store panel reset or initial state candidate"
+          },
+          {
+            "state": 0,
+            "frame": 1000,
+            "call_va": "0x0044EAEC",
+            "args": {
+              "x": 0,
+              "y": 186,
+              "width": 300,
+              "height": 304
+            },
+            "meaning": "same panel recreated after a secondary state callback"
+          },
+          {
+            "state": 1,
+            "frame": 1003,
+            "call_va": "0x0044F7E8",
+            "args": {
+              "x": 1,
+              "y": 186,
+              "width": 498,
+              "height": 304
+            },
+            "meaning": "expanded item-list panel candidate; state byte is written to 1 immediately after factory call"
+          },
+          {
+            "state": 2,
+            "frame": 1001,
+            "call_va": "0x0044F9E4",
+            "args": {
+              "x": -4,
+              "y": 182,
+              "width": 205,
+              "height": 205
+            },
+            "meaning": "compact selected-item/detail panel candidate; state byte is written to 2 immediately after factory call"
+          },
+          {
+            "state": 3,
+            "frame": 1000,
+            "call_va": "0x0044FBCE",
+            "args": {
+              "x": 0,
+              "y": 186,
+              "width": 300,
+              "height": 304
+            },
+            "meaning": "item-list panel recreated for state 3; state byte is written to 3 immediately after factory call"
+          },
+          {
+            "state": 4,
+            "frame": 1002,
+            "call_va": "0x0044EBCB",
+            "args": {
+              "x": 0,
+              "y": 184,
+              "width": 540,
+              "height": 307
+            },
+            "meaning": "wide selected-item/action panel candidate; state byte is written to 4 immediately before/around factory call"
+          },
+          {
+            "state": 4,
+            "frame": 1002,
+            "call_va": "0x0044F263",
+            "args": {
+              "x": 0,
+              "y": 184,
+              "width": 540,
+              "height": 307
+            },
+            "meaning": "same wide panel recreated from the alternate state-4 path"
+          }
+        ],
+        "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls and fixed call-site rectangles. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
+      },
       "controls": [
         {
           "call_va": "0x0044D36B",
@@ -16426,10 +16530,10 @@
         "item_grid_note": "These are raw SetRect constants from the binary; parent origin/meaning is unresolved because they do not fit the currently bound 300-pixel visible background."
       },
       "pending": [
-        "Resolve arg4/arg5 and the actual parent window object at runtime.",
+        "Resolve the factory's parent-relative centering behavior and the actual screen origin at runtime.",
         "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
         "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots.",
-        "Determine whether Frames 1001–1003 are warehouse/extended shop variants or unused composite resources; visual similarity alone is not a binding."
+        "Map state values 0–4 to protocol/opening call sites so warehouse, NPC shop, selected-item and extended-shop names can be separated; visual similarity alone is not a binding."
       ]
     },
     {
