@@ -1,0 +1,41 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "constructor_va": "0x0044B130",
+    "paint_va": "0x0044B2D0",
+    "evidence_level": "primary-static"
+  },
+  "window": {
+    "id": "window.status",
+    "background": {"file": "Data/GameInter.wil", "frame": 200, "visible_size": [241, 327]},
+    "constructor_window_size": [244, 328],
+    "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"}
+  },
+  "child_controls": [
+    {"object_offset": "this+0x58", "call_va": "0x0044B18B", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil"},
+    {"object_offset": "this+0x10C", "call_va": "0x0044B1B7", "frame_pair": [171, 172], "resource_library_candidate": "GameInter.wil"}
+  ],
+  "equipment_and_attribute_rects": [
+    {"object_offset": "this+0x1F0", "left": 177, "top": 70, "right": 215, "bottom": 108, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x1E0", "left": 27, "top": 264, "right": 65, "bottom": 302, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x250", "left": 64, "top": 264, "right": 102, "bottom": 302, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x210", "left": 27, "top": 186, "right": 65, "bottom": 224, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x220", "left": 175, "top": 186, "right": 213, "bottom": 224, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x230", "left": 27, "top": 227, "right": 65, "bottom": 265, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x240", "left": 175, "top": 227, "right": 213, "bottom": 265, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
+    {"object_offset": "this+0x200", "left": 94, "top": 71, "right": 143, "bottom": 104, "width": 49, "height": 33, "role": "portrait_or_name-area-candidate"},
+    {"object_offset": "this+0x1C0", "left": 86, "top": 114, "right": 146, "bottom": 204, "width": 60, "height": 90, "role": "character-image-area-candidate"},
+    {"object_offset": "this+0x1D0", "left": 38, "top": 70, "right": 91, "bottom": 154, "width": 53, "height": 84, "role": "attribute-panel-area-candidate"},
+    {"object_offset": "this+0x260", "left": 103, "top": 264, "right": 141, "bottom": 302, "width": 38, "height": 38, "role": "equipment-slot-candidate"}
+  ],
+  "paint_state": {
+    "state_field": "this+0x54",
+    "state_dispatch_va": "0x0044B2D0",
+    "notes": "The paint path branches by state and calls shared text/image composition helpers. Equipment slot business names and exact resource families remain pending."
+  },
+  "pending": [
+    "Mapping each object offset to the exact equipment item (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
+    "The exact status/attribute text field coordinates and source data structures.",
+    "The runtime resource handle used for equipment item icons."
+  ]
+}
