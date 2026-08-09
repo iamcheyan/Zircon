@@ -1,5 +1,40 @@
 # Mir3 EI 原版 UI 静态提取进度
 
+> 本目录是“20 年前 EI 3.0 原版 UI”证据库，不是现代 Zircon 布局说明。所有结论按
+> `primary-static`、`secondary-cross-reference`、`candidate`、`pending` 分级；原始
+> 客户端目录只读，任何无法由 `Mir3.exe`/WIL/WIX 或服务器交叉资料证明的业务名称都
+> 必须保留为候选。
+
+## 当前覆盖范围（2026-08-10）
+
+已建立统一 `layout.json` 与固定 `800×600` 证据预览，覆盖主 HUD、HP/MP/经验、人物
+状态/装备、背包、技能、任务、聊天、组队、行会、商店/仓库状态机、NPC、系统设置、坐骑、
+公告/提示、角色选择候选、MMap/FMMap 小地图资源和地图模式切换。机器码已恢复的重点
+内容包括：背包 `6×6 / 36px` 网格、状态窗口 `8 个装备候选槽 + 3 个非装备记录`、组队
+两列成员位置、行会最多 18 行、聊天六个原版 GBK 命令字符串、NPC 最多 13 个动态条目、
+地图固定 Rect `(672,0)-(800,128)` 以及 `256×256/128×128` 表面切换。
+
+尚未完成的项目仍明确列在 [`UI_COVERAGE_MATRIX.md`](UI_COVERAGE_MATRIX.md) 和各专题
+JSON 的 `pending` 字段中，尤其是运行时窗口打开入口、好友是否复用行会/Interface1c、
+商店状态的业务命名、地图完整窗口容器及若干动态字段；这些不会被预览器伪装为已确认。
+
+专题证据入口：
+
+- [`UI_COVERAGE_MATRIX.md`](UI_COVERAGE_MATRIX.md)：按 UI 类别的完成度与剩余工作。
+- [`RESEARCH_LOG.md`](RESEARCH_LOG.md)：按 Finding 记录反汇编地址、推导和纠错。
+- [`layout.json`](layout.json)：统一窗口、按钮、控件、资源、命中框和证据等级。
+- [`map-ui-resource-evidence.json`](map-ui-resource-evidence.json)：MMap/FMMap、服务器映射、地图表面和输入路径。
+- [`npc-window-render-evidence.json`](npc-window-render-evidence.json)：NPC F1100/F1101/F1102、控件和动态条目。
+- [`chat-window-render-evidence.json`](chat-window-render-evidence.json)：聊天窗口几何和原版命令字符串。
+- [`skill-window-render-loop-evidence.json`](skill-window-render-loop-evidence.json)：技能列表绘制循环与 Magic.exp。
+- [`inventory-window-render-evidence.json`](inventory-window-render-evidence.json)：背包 6×6 槽位证据。
+- [`status-window-render-evidence.json`](status-window-render-evidence.json)：人物状态/装备位置记录与绘制链。
+
+预览器运行后访问 `http://127.0.0.1:8765/ui`。模式选择包含主 HUD、地图候选、技能、
+状态、背包、组队、行会、聊天、任务、商店、交换、系统设置、坐骑、NPC 等固定视口模式；
+调试框、Frame 编号、图层、地图 Rect、截图差异叠加和 localStorage 状态记忆均属于预览
+辅助，不会取代原版静态证据。
+
 持续研究日志（记录反汇编地址、推理过程、失败尝试和待验证事项）：
 
 ```text
