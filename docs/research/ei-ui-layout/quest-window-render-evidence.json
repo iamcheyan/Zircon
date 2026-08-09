@@ -20,7 +20,16 @@
     "first_column": {"x": 65, "y": 90, "coordinate_space": "window-relative"},
     "line_spacing": 15,
     "line_count_guard": 19,
-    "evidence": "0x0044760B/0x004477EF compute window.x+0x41 and window.y+(row*15)+0x5A"
+    "evidence": "0x0044760B/0x004477EF compute window.x+0x41 and window.y+(row*15)+0x5A",
+    "entry_decode": {
+      "record_text_field_candidate": "record+0x04",
+      "lookup_helper": "0x0045E0C0",
+      "length_threshold_bytes": 200,
+      "long_entry_path": "0x0044755C–0x0044764E",
+      "short_entry_path": "0x0044777E–0x00447824",
+      "color_selection": {"state_fields": ["record+0x204", "record+0x210"], "literal_candidates": ["0x0019197D", "0x001919C8"], "evidence_level": "primary-static-color-branch-candidate"},
+      "evidence_level": "primary-static-entry-formatting"
+    }
   },
   "detail_text": {
     "frame_select_va": "0x00447E07",
@@ -37,7 +46,10 @@
       "visible_line_count": 3,
       "text_measurement_limit": 160,
       "draw_helper": "0x0045DD70",
-      "evidence_level": "primary-static-detail-text-loop"
+      "evidence_level": "primary-static-detail-text-loop",
+      "record_text_field_candidate": "detail_record+0x04",
+      "long_line_threshold_bytes": 190,
+      "line_clip_or_wrap_path": "0x00447957–0x00447B7A"
     },
     "evidence_level": "primary-static-detail-render"
   },
