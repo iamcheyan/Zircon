@@ -158,6 +158,8 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .kv {{ display:grid; grid-template-columns:110px 1fr; gap:4px 12px; font-size:14px; }}
 .kv dt {{ color:var(--dim); }}
 .grid3 {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }}
+.grid4 {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }}
+.dim {{ color:var(--dim); }}
 .panel {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }}
 .panel h3 {{ font-size:15px; margin-bottom:6px; }}
 .mono {{ font-family:ui-monospace,Consolas,monospace; font-size:13px; color:var(--dim); }}
@@ -640,28 +642,113 @@ class Handler(BaseHTTPRequestHandler):
             import traceback; traceback.print_exc()
             return f'<p class="lead">预览失败: {esc(e)}</p>'
 
-    # ---------------- 差异裁剪
+    # ---------------- 差异裁剪（三版本比对）
     def diff(self):
-        r = Data.report
+        import json as _json
+        tv_path = "/tmp/three_versions.json"
+        if os.path.exists(tv_path):
+            tv = _json.load(open(tv_path, encoding="utf-8"))
+        else:
+            tv = None
+        if tv is None:
+            self._send(page("差异裁剪", "<h1>差异裁剪</h1><p class='lead'>缺少三版本分析数据 /tmp/three_versions.json，请先运行 three_versions_check.py。</p>", "diff"))
+            return
+        m = tv["maps"]; mo = tv["monsters"]; it = tv["items"]; sk = tv["skills"]
+        ei_map_names = {x["name"].lower() for x in Data.wiki.get("ei_maps", [])}
+
+        def map_rows(files, with_link=True):
+            rows = ""
+            for f in files:
+                # EI 客户端无此文件时不给链接 (点了只会 404)
+                has_ei = (f.lower() in ei_map_names)
+                cell = file_link(f) if (with_link and has_ei) else esc(f)
+                zh = m.get("mud3_only_zh", {}).get(f, "")
+                zh_cell = f' <span class="dim">{esc(zh)}</span>' if zh else ""
+                rows += f"<tr><td>{cell}{zh_cell}</td></tr>"
+            return rows
+
+        # EI 独有地图带尺寸 (report 顶层 ei_only)
         ei_rows = ""
-        for f in r["ei_only"]:
-            m = Data.map_by_file.get(f)
-            sz = f"{m['w']}×{m['h']}" if m else "—"
+        for f in m["ei_only"]:
+            mf = Data.map_by_file.get(f)
+            sz = f"{mf['w']}×{mf['h']}" if mf else "—"
             ei_rows += f"<tr><td>{file_link(f)}</td><td>{sz}</td></tr>"
-        mei_rows = ""
-        for f in r["mei_only"]:
-            mei_rows += f"<tr><td>{esc(f)}</td><td>—</td></tr>"
+        stat_cards = f"""
+<div class="grid4">
+  <div class="stat"><b>{m['mud3_total']}</b><span>MUD3 服务端地图</span></div>
+  <div class="stat"><b>{m['ei_total']}</b><span>EI 客户端地图</span></div>
+  <div class="stat"><b>{m['mei_total']}</b><span>mir3ei 地图</span></div>
+  <div class="stat"><b>{m['zir_total']}</b><span>Zircon 地图</span></div>
+</div>
+<div class="grid3">
+  <div class="stat"><b>{len(m['mud3_only'])}</b><span>MUD3 独有</span></div>
+  <div class="stat"><b>{len(m['mei_mud3_shared'])}</b><span>MUD3+mir3ei 共享</span></div>
+  <div class="stat"><b>{len(m['zir_only'])}</b><span>Zircon 独有</span></div>
+  <div class="stat"><b>{len(m['core'])}</b><span>四版核心</span></div>
+  <div class="stat"><b>{mo['mud3_only_count']}</b><span>MUD3 独有怪物</span></div>
+  <div class="stat"><b>{sk['assassin_count']}</b><span>Zircon 独有刺客技能</span></div>
+</div>"""
+
+        # 怪物表
+        mon_rows = ""
+        for x in mo["mud3_only"][:40]:
+            mon_rows += (f"<tr><td>{esc(x['zh'])}</td><td>{x['count']:,}</td>"
+                         f"<td>{len(x['maps'])}</td><td>{esc('、'.join(x['variants'][:3]))}</td></tr>")
+        mon_more = ""
+        if mo["mud3_only_count"] > 40:
+            mon_more = f"<p class='lead'>…另有 {mo['mud3_only_count'] - 40} 种。</p>"
+
+        # 装备表
+        it_rows = ""
+        for n in it["mud3_only"][:60]:
+            it_rows += f"<tr><td>{esc(n)}</td></tr>"
+        it_more = f"<p class='lead'>…另有 {max(0, it['mud3_only_count'] - 60)} 件，共 {it['mud3_only_count']} 件。</p>" if it["mud3_only_count"] > 60 else ""
+
+        # 刺客技能
+        as_rows = ""
+        for n in sk["assassin_skills"][:40]:
+            as_rows += f"<tr><td>{esc(n)}</td></tr>"
+
         body = f"""
-<h1>差异裁剪 · EI 客户端 vs mir3ei</h1>
-<p class="lead">mir3ei 复原库相对 EI 客户端多出的内容，是裁剪对象。完整分析见
-<a href="docs/EI_CLIENT_DIFF_2026-08-09.md">EI_CLIENT_DIFF_2026-08-09.md</a>（仓库 docs/ 目录）。</p>
-<h2>EI 独有地图（{len(r['ei_only'])} 张）</h2>
+<h1>差异裁剪 · 三版本比对</h1>
+<p class="lead">以 MUD3 服务端（最早）为基线，对照 mir3ei（中间）与 Zircon（20 年后实现）。
+数据源: MUD3 Envir/Mapinfo.txt + Mon_Def + MonItems · EI 客户端 544 图 · mir3ei 566 图 · Zircon System.db。
+完整分析见 <a href="docs/EI_CLIENT_DIFF_2026-08-09.md">EI_CLIENT_DIFF_2026-08-09.md</a>。</p>
+{stat_cards}
+
+<h2>MUD3 独有地图（{len(m['mud3_only'])} 张）</h2>
+<p class="lead">仅 MUD3 服务端存在（其余三版本无），多为活动/试练/后期新增图:</p>
+<table><tr><th>地图</th><th>中文名</th></tr>{map_rows(m['mud3_only'])}</table>
+
+<h2>MUD3 + mir3ei 共享（{len(m['mei_mud3_shared'])} 张）</h2>
+<p class="lead">MUD3 服务端与 mir3ei 都有，EI 客户端与 Zircon 无 —— 即真天宫/诺玛深 D1500 系等中后期地图:</p>
+<table><tr><th>地图</th><th>中文名</th></tr>{map_rows(m['mei_mud3_shared'])}</table>
+
+<h2>三版共享（无 EI 客户端）（{len(m['three_wo_ei'])} 张）</h2>
+<table><tr><th>地图</th><th>中文名</th></tr>{map_rows(m['three_wo_ei'])}</table>
+
+<h2>EI 客户端独有（{len(m['ei_only'])} 张）</h2>
 <table><tr><th>地图</th><th>尺寸</th></tr>{ei_rows}</table>
-<h2>mir3ei 独有地图（{len(r['mei_only'])} 张）</h2>
-<p class="lead">以下地图在 EI 客户端不存在，属 mir3ei 新增（诺玛深、赤月、西沙等）:</p>
-<table><tr><th>地图</th><th>尺寸</th></tr>{mei_rows}</table>
+
+<h2>Zircon 独有地图（{len(m['zir_only'])} 张）</h2>
+<p class="lead">仅 Zircon 本地库存在（20 年后新实现，含英文命名新图）:</p>
+<table><tr><th>地图</th></tr>{map_rows(m['zir_only'][:60])}</table>
+<p class="lead">…另有 {max(0, len(m['zir_only']) - 60)} 张，共 {len(m['zir_only'])} 张。</p>
+
 <h2>怪物差异</h2>
-<p class="lead">EI 怪物图鉴 {r['stats']['monsters']} 种（Mud3 服务端刷怪聚合），mir3ei 20 年积累的额外内容详见差异文档 §4。</p>
+<p class="lead">MUD3 服务端刷怪聚合 {mo['mud3_total']} 种，与 Zircon {mo['zir_total']} 种按「中文词根 + 英文族关键词」双层匹配后：
+<strong>{mo['shared_count']} 种共享</strong>、<strong>{mo['mud3_only_count']} 种为 MUD3 真独有</strong>（Zircon 无对应怪物/怪物族）。</p>
+<p class="lead">共享中含大量「术语表缺口」：诺玛(Numa 系 10)、祖玛(Zuma 系 5)、沃玛(Oma 系 6)、骷髅(Skeleton 系 9)、蜘蛛(Spider 系 4)等在 Zircon 以英文名存在，仅术语表未收录中文音译名。</p>
+<table><tr><th>MUD3 独有怪物</th><th>刷怪量</th><th>地图数</th><th>变体</th></tr>{mon_rows}</table>{mon_more}
+
+<h2>装备差异</h2>
+<p class="lead">MUD3 服务端 MonItems 掉落表 {it['mud3_total']} 件，Zircon {it['zir_total']} 件；<strong>MUD3 独有 {it['mud3_only_count']} 件</strong>（Zircon 装备表无对应）。</p>
+<table><tr><th>MUD3 独有装备</th></tr>{it_rows}</table>{it_more}
+
+<h2>技能差异</h2>
+<p class="lead">Zircon 共 {sk['zir_total']} 技能：三职业（战法道）{sk['three_class_count']} + <strong>刺客 {sk['assassin_count']} = Zircon 独有</strong>（MUD3/mir3ei 无刺客职业）。
+职业分布: {'、'.join(f'{k} {v}' for k, v in sk['klass_dist'].items())}。</p>
+<table><tr><th>Zircon 独有刺客技能</th></tr>{as_rows}</table>
 """
         self._send(page("差异裁剪", body, "diff"))
 
