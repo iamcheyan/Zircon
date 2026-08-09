@@ -12,6 +12,11 @@ public sealed class BotConfig
     public double WalkIntervalSeconds { get; set; } = 0.65;
     public double RunIntervalSeconds { get; set; } = 0.6;
     public int PatrolRadius { get; set; } = 12;
+    // 练级角色(野外打怪)的活动锚点。比奇县(0.map)北部 y5..117 是怪物
+    // 刷新区;锚点带半径抖动, 每个 bot 选一个自己的练级点。
+    public int FieldAnchorX { get; set; } = 175;
+    public int FieldAnchorY { get; set; } = 60;
+    public int FieldRadius { get; set; } = 40;
     public bool VerboseNetworkLogging { get; set; } = false;
     public bool EnableBotPvP { get; set; } = true;
     public int PvPStartDelaySeconds { get; set; } = 35;

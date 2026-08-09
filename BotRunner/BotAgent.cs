@@ -24,6 +24,7 @@ public sealed class BotAgent
     private DateTime _nextPotion;
     private Point _patrolTarget;
     private DateTime _arrivedPauseUntil;
+    private Point _fieldAnchor;
     private uint _targetMonsterId;
     private DateTime _nextTargetScan;
     private DateTime _nextGroupAction;
@@ -289,7 +290,7 @@ public sealed class BotAgent
         var now = DateTime.UtcNow;
         if (now >= _nextActivityReport)
         {
-        Console.WriteLine($"[{Name}] active map={World.MapIndex}:{World.Location} class={World.Class} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} pvp={_pvpActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} targets={_targetSelections} pets={OwnedSummonCount()}");
+        Console.WriteLine($"[{Name}] active map={World.MapIndex}:{World.Location} role={RoleName(_index)} class={World.Class} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} pvp={_pvpActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} targets={_targetSelections} pets={OwnedSummonCount()}");
             _nextActivityReport = now.AddSeconds(45 + _random.NextDouble() * 15);
         }
         if (World.Dead)
@@ -338,10 +339,12 @@ public sealed class BotAgent
         if (TryTradeBehavior(now)) goto AfterMovement;
 
         // 防止无路径寻路时被障碍物或错误方向带离陪玩区域。
-        // 阈值比巡逻半径上限(8~12 格)宽裕, 避免"走向目标途中被拽回出生点"的边界拉锯。
-        if (Distance(World.Location, World.SpawnLocation) > _config.PatrolRadius + 8)
+        // 仅在同一张地图内做回拉(跨图坐标不可比);阈值比巡逻半径上限
+        // 宽裕, 避免"走向目标途中被拽回锚点"的边界拉锯。
+        if (World.MapIndex == World.SpawnMapIndex &&
+            Distance(World.Location, ActivityAnchor()) > _config.PatrolRadius + 8)
         {
-            if (now >= _nextMove) MoveToward(World.SpawnLocation, 1, now);
+            if (now >= _nextMove) MoveToward(ActivityAnchor(), 1, now);
             return;
         }
 
@@ -593,7 +596,7 @@ public sealed class BotAgent
 
     private bool TryPvPBehavior(DateTime now)
     {
-        if (!_config.EnableBotPvP || now < _nextPvpAction) return false;
+        if (!_config.EnableBotPvP || !IsPvpBot(_index) || now < _nextPvpAction) return false;
 
         if (World.MapIndex != World.SpawnMapIndex)
         {
@@ -806,6 +809,42 @@ public sealed class BotAgent
     private static MirDirection Rotate(MirDirection direction, int steps)
         => (MirDirection)(((int)direction + steps + 8) % 8);
 
+    // 角色划分(按 index): %5==0 矿工, %5==1/2 野外练级, %5==3 PvP, %5==4 城中心社交。
+    // 让 bot 分布到各自的固定活动点, 而不是全部挤在出生地空地打转。
+    private bool IsPvpBot(int index) => index % 5 == 3;
+    private bool IsFieldBot(int index) => index % 5 == 1 || index % 5 == 2;
+    private string RoleName(int index)
+    {
+        if (index % 5 == 0) return "miner";
+        if (index % 5 == 1 || index % 5 == 2) return "field";
+        if (index % 5 == 3) return "pvp";
+        return "social";
+    }
+
+    // 当前地图内的活动锚点: 巡逻远足、回拉都以它为准, 替代统一出生点。
+    private Point ActivityAnchor()
+    {
+        if (IsPvpBot(_index))
+            return new Point(_config.PvPStagingX, _config.PvPStagingY);
+        if (IsFieldBot(_index))
+            return _fieldAnchor;
+        return World.SpawnLocation; // 矿工回城休整/社交 bot 都锚在城中心
+    }
+
+    // 练级 bot 各自在野外怪区选一个可走锚点, 带抖动避免扎堆。
+    private Point ChooseFieldAnchor()
+    {
+        var map = CurrentMap();
+        for (int i = 0; i < 30; i++)
+        {
+            var point = new Point(
+                Math.Clamp(_config.FieldAnchorX + _random.Next(-_config.FieldRadius, _config.FieldRadius + 1), 0, 349),
+                Math.Clamp(_config.FieldAnchorY + _random.Next(-_config.FieldRadius, _config.FieldRadius + 1), 0, 349));
+            if (map == null || map.CanWalk(point)) return point;
+        }
+        return new Point(_config.FieldAnchorX, _config.FieldAnchorY);
+    }
+
     private void Patrol(DateTime now)
     {
         // 真人闲逛会偶发驻足(看路/犹豫), 让节奏不像精确节拍器。
@@ -848,8 +887,8 @@ public sealed class BotAgent
     {
         var map = CurrentMap();
         // 锚点随当前位置漂移, 让闲逛轨迹自然蔓延, 而不是绕出生点钟摆折返。
-        // 大部分时候小范围漫步(2~6 格), 偶发以出生点为锚做一次远足(8~12 格)。
-        Point anchor = _random.NextDouble() < 0.8 ? World.Location : World.SpawnLocation;
+        // 大部分时候小范围漫步(2~6 格), 偶发以活动锚点为锚做一次远足(8~12 格)。
+        Point anchor = _random.NextDouble() < 0.8 ? World.Location : ActivityAnchor();
         int radius = _random.NextDouble() < 0.8
             ? 2 + _random.Next(0, 5)
             : 8 + _random.Next(0, Math.Max(1, _config.PatrolRadius - 7));
@@ -946,6 +985,7 @@ public sealed class BotAgent
         _nextPotion = now.AddSeconds(2 + _random.NextDouble());
         _patrolTarget = Point.Empty;
         _arrivedPauseUntil = DateTime.MinValue;
+        _fieldAnchor = ChooseFieldAnchor();
         _targetMonsterId = 0;
         _nextGroupAction = now.AddSeconds(8);
         _nextTorchAction = now.AddSeconds(4);
@@ -996,7 +1036,7 @@ public sealed class BotAgent
 
     private bool TryInstanceBehavior(DateTime now)
     {
-        if (_config.EnableBotPvP) return false;
+        if (IsPvpBot(_index)) return false;
         // Only a subset uses the dungeon finder, leaving the rest in the
         // overworld so the test map still has ordinary social traffic.
         if (_index % 5 != 2 || World.InstanceIndex != 0 || now < _nextInstanceAction)
@@ -1018,7 +1058,7 @@ public sealed class BotAgent
 
     private bool TryFishingBehavior(DateTime now)
     {
-        if (_config.EnableBotPvP) return false;
+        if (IsPvpBot(_index)) return false;
         // One specialist per five bots keeps the world varied. A fishing
         // action is enabled only when both the real equipment and a server
         // configured fishing region exist.
@@ -1257,7 +1297,7 @@ public sealed class BotAgent
 
     private bool TryResourceBehavior(DateTime now)
     {
-        if (_config.EnableBotPvP) return false;
+        if (IsPvpBot(_index)) return false;
         // Every fifth bot is a resource specialist. The provisioner gives these
         // bots a real pickaxe; all other bots remain combat/social specialists.
         if (_index % 5 != 0 || now < _nextResourceAction) return false;
@@ -1319,6 +1359,24 @@ public sealed class BotAgent
 
             if (now < _resourceTripEnd)
             {
+                // 矿洞站桩挖矿 2 分钟, 中途低血先喝药再继续, 避免被打死。
+                if (ShouldUseConsumable())
+                {
+                    var potion = World.Inventory
+                        .Where(x => x.Count > 0 && x.Info != null && x.Info.CanAutoPot)
+                        .OrderByDescending(x => IsManaPotion(x.Info) == NeedsManaPotion())
+                        .FirstOrDefault();
+                    if (potion != null)
+                    {
+                        _connection.Enqueue(new C.ItemUse
+                        {
+                            Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
+                        });
+                        _nextResourceAction = now.AddSeconds(1.5);
+                        return true;
+                    }
+                }
+
                 _connection.Enqueue(new C.Mining { Direction = (MirDirection)_random.Next(8) });
                 _nextResourceAction = now.AddSeconds(1.1 + _random.NextDouble() * 0.7);
                 return true;
