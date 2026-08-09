@@ -1,4 +1,4 @@
-﻿using Server.Envir.Commands.Command.Admin;
+using Server.Envir.Commands.Command.Admin;
 using Server.Envir.Commands.Handler;
 using Server.Models;
 
@@ -8,7 +8,7 @@ namespace Server.Envir.Commands
     {
         public override bool IsAllowedByPlayer(PlayerObject player)
         {
-            return player.Character.Account.TempAdmin;
+            return player.Character.Account.Admin || player.Character.Account.TempAdmin;
         }
     }
 }
