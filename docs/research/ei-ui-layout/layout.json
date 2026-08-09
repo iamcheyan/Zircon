@@ -19986,6 +19986,53 @@
       "friend_entry_audit": {
         "scope": "Mir3.exe direct common-window constructor inventory and main HUD control inventory",
         "common_window_constructor_calls": 15,
+        "interface1c_clusters_checked": [
+          {
+            "cluster": "0x004027DF–0x00402845",
+            "resource": "Data/Interface1c.wil",
+            "frames": [
+              11,
+              13,
+              15,
+              17
+            ],
+            "visual_labels": [
+              "选择角色",
+              "创建账号",
+              "修改密码",
+              "blank export at Frame 17"
+            ],
+            "interpretation": "startup character-selection controls; no friend-list label"
+          },
+          {
+            "cluster": "0x00456DC1–0x00456EC8",
+            "resource": "Data/Interface1c.wil",
+            "frames": [
+              51,
+              53,
+              55,
+              57,
+              86,
+              87,
+              89,
+              90,
+              92,
+              93,
+              95,
+              96,
+              98,
+              99
+            ],
+            "visual_labels": [
+              "创建角色",
+              "删除角色",
+              "开始游戏",
+              "character/slot icon candidates"
+            ],
+            "interpretation": "character-selection/creation family; no standalone friend-list artwork proven"
+          }
+        ],
+        "search_boundary": "The negative result covers the enumerated common-window constructors, HUD control inventory and the two recovered Interface1c clusters. It does not cover dynamically allocated controls whose constructor call site has not yet been assigned.",
         "separately_classified_static_windows": [
           "inventory F250",
           "status F200",
@@ -28101,6 +28148,53 @@
     "friend_entry_audit": {
       "scope": "Mir3.exe direct common-window constructor inventory and main HUD control inventory",
       "common_window_constructor_calls": 15,
+      "interface1c_clusters_checked": [
+        {
+          "cluster": "0x004027DF–0x00402845",
+          "resource": "Data/Interface1c.wil",
+          "frames": [
+            11,
+            13,
+            15,
+            17
+          ],
+          "visual_labels": [
+            "选择角色",
+            "创建账号",
+            "修改密码",
+            "blank export at Frame 17"
+          ],
+          "interpretation": "startup character-selection controls; no friend-list label"
+        },
+        {
+          "cluster": "0x00456DC1–0x00456EC8",
+          "resource": "Data/Interface1c.wil",
+          "frames": [
+            51,
+            53,
+            55,
+            57,
+            86,
+            87,
+            89,
+            90,
+            92,
+            93,
+            95,
+            96,
+            98,
+            99
+          ],
+          "visual_labels": [
+            "创建角色",
+            "删除角色",
+            "开始游戏",
+            "character/slot icon candidates"
+          ],
+          "interpretation": "character-selection/creation family; no standalone friend-list artwork proven"
+        }
+      ],
+      "search_boundary": "The negative result covers the enumerated common-window constructors, HUD control inventory and the two recovered Interface1c clusters. It does not cover dynamically allocated controls whose constructor call site has not yet been assigned.",
       "separately_classified_static_windows": [
         "inventory F250",
         "status F200",
