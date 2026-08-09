@@ -11,6 +11,22 @@
     "constructor_window_size": [572, 388],
     "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"}
   },
+  "resource_visual_inspection": {
+    "source": "Data/GameInter.wil direct pixel inspection of Frame 350 and control ranges 360–383",
+    "frames": [
+      {"frame": 350, "visual_description": "chat panel background resource; current export has transparency/empty regions around the visible shell", "confidence": "medium"},
+      {"frame_pair": [360, 361], "visual_description": "circular channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [362, 363], "visual_description": "circular channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [364, 365], "visual_description": "slanted-line channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [366, 367], "visual_description": "slanted-line channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [368, 369], "visual_description": "two-person/group channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [370, 371], "visual_description": "two-person/group channel icon, green highlighted and gold normal state", "confidence": "high"},
+      {"frame_pair": [380, 381], "visual_description": "vertical chain/scroll control with red center state", "confidence": "medium"},
+      {"frame_pair": [382, 383], "visual_description": "vertical chain/scroll control with red center state", "confidence": "medium"}
+    ],
+    "warning": "The six channel concepts are established by original command strings; pictograms alone do not determine which pair is active/disabled or the exact caption rendering.",
+    "evidence_level": "primary-resource-visual-plus-primary-static"
+  },
   "controls": [
     {"object_offset": "this+0x6C", "call_va": "0x00414144", "frame_pair": [161, 162], "position": {"x": 532, "y": 350, "coordinate_space": "window-relative"}, "hit_rect": [532, 350, 28, 26], "role": "close-or-control-candidate"},
     {"object_offset": "this+0x120", "call_va": "0x00414170", "frame_pair": [360, 361], "position": {"x": 25, "y": 332, "coordinate_space": "window-relative"}, "hit_rect": [25, 332, 36, 34], "role": "chat-channel-candidate"},
