@@ -22114,6 +22114,22 @@
       "virtual_visibility_slot": "+0x10",
       "virtual_argument": "1 = show, 0 = hide"
     },
+    "visible_window_list_manager": {
+      "container_base": "main+0xD24",
+      "head": "main+0xD28",
+      "cursor_or_current": "main+0xD2C",
+      "tail": "main+0xD30",
+      "current_index": "main+0xD34",
+      "count": "main+0xD38",
+      "node_layout": {
+        "offset_0": "window_id",
+        "offset_4": "previous_node",
+        "offset_8": "next_node"
+      },
+      "insert_va": "0x00449870",
+      "remove_and_free_va": "0x0042AC50 / 0x004680F8",
+      "evidence_level": "primary-static-linked-list-flow"
+    },
     "records": [
       {
         "window_id": 0,
