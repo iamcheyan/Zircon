@@ -16169,6 +16169,85 @@
         "The exact status/attribute text field coordinates and source data structures.",
         "The runtime resource handle used for equipment item icons."
       ]
+    },
+    {
+      "source": {
+        "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+        "constructor_va": "0x00447400",
+        "paint_va": "0x00447470",
+        "evidence_level": "primary-static"
+      },
+      "window": {
+        "id": "window.quest",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 700,
+          "visible_size": [
+            340,
+            440
+          ]
+        },
+        "constructor_window_size": [
+          340,
+          440
+        ],
+        "window_object_origin": {
+          "x_field": "this+0x18",
+          "y_field": "this+0x1c"
+        }
+      },
+      "controls": [
+        {
+          "object_offset": "this+0x74",
+          "call_va": "0x0044743B",
+          "frame_pair": [
+            723,
+            724
+          ],
+          "position": {
+            "x": 290,
+            "y": 59,
+            "coordinate_space": "window-relative"
+          }
+        },
+        {
+          "object_offset": "this+0x128",
+          "call_va": "0x0044745E",
+          "frame_pair": [
+            721,
+            722
+          ],
+          "position": {
+            "x": 290,
+            "y": 89,
+            "coordinate_space": "window-relative"
+          }
+        }
+      ],
+      "text_list": {
+        "source_chain": [
+          "this+0x1E8",
+          "0x0045E0C0"
+        ],
+        "first_column": {
+          "x": 65,
+          "y": 90,
+          "coordinate_space": "window-relative"
+        },
+        "line_spacing": 15,
+        "line_count_guard": 19,
+        "evidence": "0x0044760B/0x004477EF compute window.x+0x41 and window.y+(row*15)+0x5A"
+      },
+      "confirmed": [
+        "Frame 700 and the two control frame pairs are statically tied to the quest window constructor.",
+        "The quest list is read through 0x0045E0C0 and rendered with a 15-pixel row cadence.",
+        "Both operation controls are repositioned by 0x00447470 using the same relative coordinates."
+      ],
+      "pending": [
+        "Exact quest field separators and wrapping width.",
+        "The runtime meaning of the 19-line guard and list scroll state.",
+        "Final labels/business names for frames 721–724."
+      ]
     }
   ]
 }
