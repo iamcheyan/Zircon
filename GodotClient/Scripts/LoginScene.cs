@@ -378,8 +378,18 @@ public partial class LoginScene : Control
         };
         dialog.AddControl(_skinEmail);
         dialog.AddControl(_skinPassword);
-        _skinEmail.TextChanged += value => _emailEdit.Text = value;
-        _skinPassword.TextChanged += value => _passwordEdit.Text = value;
+        // The legacy skin input can outlive the hidden native LineEdit during a
+        // scene transition. Do not forward events into a disposed control.
+        _skinEmail.TextChanged += value =>
+        {
+            if (_emailEdit != null && GodotObject.IsInstanceValid(_emailEdit))
+                _emailEdit.Text = value;
+        };
+        _skinPassword.TextChanged += value =>
+        {
+            if (_passwordEdit != null && GodotObject.IsInstanceValid(_passwordEdit))
+                _passwordEdit.Text = value;
+        };
 
         int defaultButtonHeight = MirSkin.GetSize(LibraryFile.Interface, 16).Y;
         if (defaultButtonHeight <= 0) defaultButtonHeight = 21;
