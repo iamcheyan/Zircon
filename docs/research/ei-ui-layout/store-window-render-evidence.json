@@ -23,9 +23,10 @@
     "warning": "The same function contains control/grid coordinates wider than the currently bound Frame 1000 visible width; preserve raw expressions until parent/window binding is runtime-confirmed."
   },
   "related_resource_visuals": [
-    {"frame": 1001, "header_size": [256, 256], "visual": "compact framed item panel with lower navigation controls"},
-    {"frame": 1002, "header_size": [1024, 256], "visual": "wide composite item panel with attached side controls"},
-    {"frame": 1003, "header_size": [1024, 256], "visual": "wide composite item panel variant with attached side controls"}
+    {"frame": 1000, "header_size": [1024, 256], "visual": "five-row framed item-list panel with left item boxes, five long description rows, bottom check/execute plate and circular X control", "confidence": "high"},
+    {"frame": 1001, "header_size": [256, 256], "visual": "compact framed item-grid panel with left/right circular arrows, bottom check/execute plate and circular X control", "confidence": "high"},
+    {"frame": 1002, "header_size": [1024, 256], "visual": "wide composite: five-row item-list panel plus attached right detail/action panel, each with check/execute and X controls", "confidence": "high"},
+    {"frame": 1003, "header_size": [1024, 256], "visual": "empty in the current client export; constructor still selects it for the expanded state", "confidence": "medium", "note": "Do not replace the state-1 binding with Frame 1002 solely because both headers are wide."}
   ],
   "state_machine_evidence": {
     "state_graph_artifact": "docs/research/ei-ui-layout/store-state-graph.json",

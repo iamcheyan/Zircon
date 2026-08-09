@@ -19,7 +19,7 @@
       "frames": [1000],
       "factory_calls": ["0x0044EAA4", "0x0044EAEC", "0x0044FBCE"],
       "factory_args": [[0,186,300,304],[0,186,300,304],[0,186,300,304]],
-      "geometry": {"panel": "300×304", "candidate": "item-list/store reset"},
+      "geometry": {"panel": "300×304", "candidate": "five-row item-list panel; Frame 1000 visibly has five rows, bottom execute plate and X control", "visual_evidence": "primary-resource-visual"},
       "business_name": {"value": null, "status": "pending"}
     },
     {
@@ -27,7 +27,7 @@
       "frames": [1003],
       "factory_calls": ["0x0044F7E8"],
       "factory_args": [[1,186,498,304]],
-      "geometry": {"panel": "498×304", "candidate": "expanded item-list panel", "grid_origin": [323,43], "grid": "4×3", "step": 38},
+      "geometry": {"panel": "498×304", "candidate": "expanded item-list panel; constructor selects Frame 1003, which is empty in the current export", "grid_origin": [323,43], "grid": "4×3", "step": 38, "visual_evidence": "primary-static-plus-resource-discrepancy"},
       "business_name": {"value": null, "status": "pending"}
     },
     {
@@ -35,7 +35,7 @@
       "frames": [1001],
       "factory_calls": ["0x0044F9E4"],
       "factory_args": [[-4,182,205,205]],
-      "geometry": {"panel": "205×205", "candidate": "compact selected-item/detail"},
+      "geometry": {"panel": "205×205", "candidate": "compact selected-item/detail; Frame 1001 visibly has a grid with left/right arrows and bottom execute/X controls", "visual_evidence": "primary-resource-visual"},
       "pagination": {"record_field": "this+0x71C", "divisor": 12, "formula": "ceil(count/12)"},
       "business_name": {"value": null, "status": "pending"}
     },
@@ -44,7 +44,7 @@
       "frames": [1000],
       "factory_calls": ["0x0044FBCE"],
       "factory_args": [[0,186,300,304]],
-      "geometry": {"panel": "300×304", "candidate": "item-list panel recreated"},
+      "geometry": {"panel": "300×304", "candidate": "Frame 1000 five-row item-list panel recreated"},
       "business_name": {"value": null, "status": "pending"}
     },
     {
@@ -52,7 +52,7 @@
       "frames": [1002],
       "factory_calls": ["0x0044EBCB", "0x0044F263"],
       "factory_args": [[0,184,540,307],[0,184,540,307]],
-      "geometry": {"panel": "540×307", "candidate": "wide selected-item/action panel"},
+      "geometry": {"panel": "540×307", "candidate": "wide selected-item/action panel; Frame 1002 visibly combines the list and an attached right detail/action panel", "visual_evidence": "primary-resource-visual"},
       "business_name": {"value": null, "status": "pending"}
     }
   ],
