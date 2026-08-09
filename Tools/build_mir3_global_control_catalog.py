@@ -57,6 +57,9 @@ def main() -> None:
         "0x00456ea6": "interface1c.parent-screen",
         "0x00456ec8": "interface1c.parent-screen",
     }
+    hud_text_owners = {
+        "0x00427b24": "hud.belt-label",
+    }
 
     records = []
     for item in all_records:
@@ -68,6 +71,9 @@ def main() -> None:
         elif call_va.lower() in hud_calls:
             classification = "main-hud-control"
             owner = "hud"
+        elif call_va.lower() in hud_text_owners:
+            classification = "main-hud-text-control"
+            owner = hud_text_owners[call_va.lower()]
         elif call_va.lower() in secondary_owners:
             classification = "secondary-window-control"
             owner = secondary_owners[call_va.lower()]
@@ -88,7 +94,7 @@ def main() -> None:
                 "source": "Mir3.exe",
                 "warning": ("Secondary wrapper ownership is supported by a dedicated static evidence file; "
                              "business semantics or runtime state may still be pending."
-                             if classification == "secondary-window-control" else
+                             if classification in {"secondary-window-control", "main-hud-text-control"} else
                              "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."),
             },
         })
@@ -100,6 +106,7 @@ def main() -> None:
             "all": len(records),
             "main_window": sum(r["classification"] == "main-window-control" for r in records),
             "main_hud": sum(r["classification"] == "main-hud-control" for r in records),
+            "main_hud_text": sum(r["classification"] == "main-hud-text-control" for r in records),
             "unassigned": sum(r["classification"] == "unassigned-control-candidate" for r in records),
         },
         "records": records,

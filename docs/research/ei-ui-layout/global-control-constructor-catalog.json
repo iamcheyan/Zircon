@@ -5,7 +5,8 @@
     "all": 109,
     "main_window": 72,
     "main_hud": 15,
-    "unassigned": 2
+    "main_hud_text": 1,
+    "unassigned": 1
   },
   "records": [
     {
@@ -3349,8 +3350,8 @@
     {
       "id": "control.0x00427b24",
       "call_va": "0x00427b24",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "main-hud-text-control",
+      "owner": "hud.belt-label",
       "frame_pair_candidates": [],
       "object_lea_near_call": "427b1e: 8d 8e 68 5b 00 00            \tlea\tecx, [esi + 0x5b68]",
       "position_register_pushes_near_call": [
@@ -3394,7 +3395,7 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {

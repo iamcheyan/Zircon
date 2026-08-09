@@ -325,8 +325,9 @@ http://127.0.0.1:8765/ui
 （腰带、技能书、聊天记录）见 `hud-label-evidence.json`，不会被误当作现代 UI 文案。
 
 全局控件目录 `global-control-constructor-catalog.json` 会把已由 Interface1c、公告包装器和
-确认框专用证据闭合的 20 条调用标记为 `secondary-window-control`；只有剩余 2 条真正未归属
-调用保留在 `unassigned-control-clusters.json` 中。
+确认框专用证据闭合的 20 条调用标记为 `secondary-window-control`；另有 1 条由主 HUD
+字符串/坐标证据提升为 `main-hud-text-control`，现在只有剩余 1 条真正未归属调用保留在
+`unassigned-control-clusters.json` 中。
 
 ## 证据等级
 

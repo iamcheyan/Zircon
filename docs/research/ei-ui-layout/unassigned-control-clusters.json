@@ -2,72 +2,10 @@
   "source": "Mir3.exe",
   "method": "address-gap clustering of unassigned 0x00417550 constructor calls",
   "warning": "Clusters are triage units, not recovered C++ class boundaries; each still needs function and handle tracing.",
-  "cluster_count": 2,
+  "cluster_count": 1,
   "clusters": [
     {
       "cluster_id": "unassigned-cluster-01",
-      "records": [
-        {
-          "id": "control.0x00427b24",
-          "call_va": "0x00427b24",
-          "classification": "unassigned-control-candidate",
-          "owner": null,
-          "frame_pair_candidates": [],
-          "object_lea_near_call": "427b1e: 8d 8e 68 5b 00 00            \tlea\tecx, [esi + 0x5b68]",
-          "position_register_pushes_near_call": [
-            {
-              "va": "0x00427ae3",
-              "register": "ecx"
-            },
-            {
-              "va": "0x00427b11",
-              "register": "edx"
-            },
-            {
-              "va": "0x00427b12",
-              "register": "eax"
-            },
-            {
-              "va": "0x00427b1d",
-              "register": "ecx"
-            }
-          ],
-          "raw_neighborhood": [
-            "427ae3: 51                           \tpush\tecx",
-            "427ae4: 8d 8e b4 5a 00 00            \tlea\tecx, [esi + 0x5ab4]",
-            "427aea: e8 61 fa fe ff               \tcall\t0x417550 <.text+0x16550>",
-            "427aef: 8b 96 5c 0c 00 00            \tmov\tedx, dword ptr [esi + 0xc5c]",
-            "427af5: 8b 86 58 0c 00 00            \tmov\teax, dword ptr [esi + 0xc58]",
-            "427afb: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
-            "427afe: 6a 00                        \tpush\t0x0",
-            "427b00: 6a ff                        \tpush\t-0x1",
-            "427b02: 6a 01                        \tpush\t0x1",
-            "427b04: 83 c2 0d                     \tadd\tedx, 0xd",
-            "427b07: 68 68 bc 47 00               \tpush\t0x47bc68",
-            "427b0c: 05 89 01 00 00               \tadd\teax, 0x189",
-            "427b11: 52                           \tpush\tedx",
-            "427b12: 50                           \tpush\teax",
-            "427b13: 68 9f 00 00 00               \tpush\t0x9f",
-            "427b18: 68 9f 00 00 00               \tpush\t0x9f",
-            "427b1d: 51                           \tpush\tecx",
-            "427b1e: 8d 8e 68 5b 00 00            \tlea\tecx, [esi + 0x5b68]"
-          ],
-          "evidence": {
-            "level": "primary-call-unknown-control",
-            "source": "Mir3.exe",
-            "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
-          }
-        }
-      ],
-      "range": [
-        "0x00427b24",
-        "0x00427b24"
-      ],
-      "call_count": 1,
-      "frame_pairs": []
-    },
-    {
-      "cluster_id": "unassigned-cluster-02",
       "records": [
         {
           "id": "control.0x00455af5",
