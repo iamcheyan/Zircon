@@ -19,6 +19,7 @@ import re
 import sys
 import threading
 import webbrowser
+import zipfile
 from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
@@ -50,6 +51,9 @@ def _default_root() -> str:
 DEFAULT_ROOT = _default_root()
 SOUND_DIR = "Sound"
 INDEX_LOCK = threading.Lock()
+# All roots ever switched to, keyed by data_dir -> AssetIndex.  Lets /api/diff
+# compare libraries across two client roots without re-scanning.
+ROOTS: dict[str, "AssetIndex"] = {}
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 UI_LAYOUT_PATH = PROJECT_ROOT / "docs/research/ei-ui-layout/layout.json"
 UI_RESOURCE_ANALYSIS_PATH = PROJECT_ROOT / "docs/research/ei-ui-layout/window-resource-analysis.json"
@@ -192,6 +196,7 @@ def switch_root(root: str) -> tuple[str | None, str | None]:
         wilsdk.open_library.cache_clear()   # drop file handles from the old root
         thumb_bytes.cache_clear()           # thumbnails keyed by lib name only
         INDEX = AssetIndex(root)
+        ROOTS[INDEX.data_dir] = INDEX       # keep for cross-root compare
     return INDEX.data_dir, None
 
 # ---------------------------------------------------------------- asset index
@@ -286,6 +291,52 @@ def thumb_bytes(lib_name: str, index: int, size: int):
     return png_bytes(im)
 
 
+@lru_cache(maxsize=512)
+def thumb_strip_bytes(lib_name: str, start: int, count: int, size: int):
+    """One PNG strip of `count` thumbnails starting at `start` (single request
+    instead of N round-trips).  Blank frames render as fully transparent cells;
+    the page layers its checker background underneath.  Header-only blanks are
+    skipped from decode; opaque probes are never needed client-side."""
+    lib = INDEX.get_lib(lib_name)
+    if lib is None:
+        return b""
+    canvas = _PILImage.new("RGBA", (size * count, size), (0, 0, 0, 0))
+    for k in range(count):
+        i = start + k
+        if i >= lib.count:
+            break
+        if wilsdk.is_blank(lib, i):
+            continue
+        try:
+            im = lib.decode(i)
+        except Exception:
+            continue
+        if im is None or im.getbbox() is None:
+            continue
+        w, h = im.size
+        s = size / max(w, h)
+        im = im.resize((max(1, round(w * s)), max(1, round(h * s))), Image_NEAREST)
+        x = k * size + (size - im.width) // 2
+        y = (size - im.height) // 2
+        canvas.paste(im, (x, y), im)
+    return png_bytes(canvas)
+
+
+def lib_from_dir(data_dir: str, name: str) -> wilsdk.WilLibrary | None:
+    """Look up a library in a specific root (for cross-root compare)."""
+    idx = ROOTS.get(data_dir)
+    if idx is None:
+        # Not seen yet: try a quick scan without switching the active root.
+        if os.path.isdir(data_dir) and any(
+                f.lower().endswith(".wil") for f in os.listdir(data_dir)):
+            with INDEX_LOCK:
+                idx = AssetIndex(data_dir)
+                ROOTS[data_dir] = idx
+        else:
+            return None
+    return idx.get_lib(name)
+
+
 # ------------------------------------------------------------------- handler
 class Handler(BaseHTTPRequestHandler):
     server_version = "WilViewer/1.0"
@@ -348,6 +399,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/thumb":
             self.api_thumb(q)
             return
+        if path == "/api/thumbs":
+            self.api_thumbs(q)
+            return
         if path == "/api/info":
             self.api_info(q)
             return
@@ -359,6 +413,18 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/sound":
             self.api_sound(q)
+            return
+        if path == "/api/export":
+            self.api_export(q)
+            return
+        if path == "/api/sound-zip":
+            self.api_sound_zip(q)
+            return
+        if path == "/api/ranges":
+            self.api_ranges(q)
+            return
+        if path == "/api/diff":
+            self.api_diff(q)
             return
         self._err(404, "not found")
 
@@ -390,6 +456,13 @@ class Handler(BaseHTTPRequestHandler):
             return int(q.get(key, [default])[0])
         except (ValueError, TypeError):
             return default
+
+    def _qstr(self, q, key, default=""):
+        return (q.get(key, [default])[0] or default).strip()
+
+    def _qbool(self, q, key, default=False):
+        v = self._qstr(q, key, "1" if default else "0").lower()
+        return v in ("1", "true", "yes", "on")
 
     def _lib_or_404(self, q):
         name = q.get("f", [""])[0]
@@ -424,10 +497,13 @@ class Handler(BaseHTTPRequestHandler):
             return
         i = self._qint(q, "i", 0)
         scale = min(max(self._qint(q, "scale", 1), 1), 8)
+        bg = self._qstr(q, "bg", "transparent")
         try:
             im = lib.decode(i)
             if im is None:
                 im = Image_transparent_1x1()
+            if bg != "transparent":
+                im = wilsdk._composite_bg(im, bg)
             if scale > 1:
                 im = im.resize((im.width * scale, im.height * scale), Image_NEAREST)
             data = png_bytes(im)
@@ -453,18 +529,25 @@ class Handler(BaseHTTPRequestHandler):
         if lib is None:
             return
         start = self._qint(q, "start", 0)
-        count = min(max(self._qint(q, "count", 12), 1), 200)
+        count = min(max(self._qint(q, "count", 12), 1), 300)
         fps = min(max(self._qint(q, "fps", 8), 1), 30)
         scale = min(max(self._qint(q, "scale", 1), 1), 4)
+        bg = self._qstr(q, "bg", "checker")
+        skipblank = self._qbool(q, "skipblank", True)
         imgs = []
-        for i in range(start, min(start + count, lib.count)):
+        i = start
+        while len(imgs) < count and i < lib.count:
             try:
                 im = lib.decode(i)
             except Exception:
                 im = None
-            imgs.append(im)
+            if im is not None:
+                imgs.append(im)
+            elif not skipblank:
+                imgs.append(None)
+            i += 1
         try:
-            data = gif_bytes(imgs, fps, scale)
+            data = gif_bytes(imgs, fps, scale, bg)
         except Exception as e:
             self._err(500, str(e))
             return
@@ -516,6 +599,151 @@ class Handler(BaseHTTPRequestHandler):
             self._err(500, str(e))
             return
         self._send(data, "audio/wav")
+
+    def api_thumbs(self, q):
+        lib = self._lib_or_404(q)
+        if lib is None:
+            return
+        start = max(self._qint(q, "start", 0), 0)
+        count = min(max(self._qint(q, "count", 120), 1), 512)
+        s = min(max(self._qint(q, "s", 48), 8), 256)
+        try:
+            data = thumb_strip_bytes(lib.name, start, count, s)
+        except Exception as e:
+            self._err(500, str(e))
+            return
+        if not data:
+            data = png_bytes(Image_transparent_1x1())
+        self._send(data, "image/png")
+
+    def api_ranges(self, q):
+        lib = self._lib_or_404(q)
+        if lib is None:
+            return
+        self._send(json_bytes({"ranges": wilsdk.scan_ranges(lib)}),
+                   "application/json; charset=utf-8")
+
+    def api_export(self, q):
+        lib = self._lib_or_404(q)
+        if lib is None:
+            return
+        f = self._qstr(q, "f")
+        scale = min(max(self._qint(q, "scale", 1), 1), 8)
+        kind = self._qstr(q, "kind", "png")   # png | sheet
+        cols = min(max(self._qint(q, "cols", 24), 1), 60)
+        bg = self._qstr(q, "bg", "transparent")
+        idxs: list[int] = []
+        raw = q.get("i", []) or []
+        if len(raw) == 1 and ("," in raw[0] or "-" in raw[0] or ":" in raw[0]):
+            raw = [raw[0]]
+            for tok in re.split(r"[, ]+", raw[0]):
+                tok = tok.strip()
+                if not tok:
+                    continue
+                m = re.fullmatch(r"(\d+)(?:-(\d+))?", tok)
+                if m:
+                    a = int(m.group(1))
+                    b = int(m.group(2)) if m.group(2) else a
+                    idxs.extend(range(a, min(b, lib.count - 1) + 1))
+        else:
+            for tok in raw:
+                try:
+                    idxs.append(int(tok))
+                except ValueError:
+                    continue
+        if not idxs:
+            self._err(400, "no frames selected (use i=1&i=2 or i=1-5)")
+            return
+        idxs = sorted(set(i for i in idxs if 0 <= i < lib.count))
+        if not idxs:
+            self._err(400, "no valid frames in range")
+            return
+        if kind == "sheet":
+            imgs = []
+            for i in idxs:
+                try:
+                    im = lib.decode(i)
+                except Exception:
+                    im = None
+                if im is not None and bg != "transparent":
+                    im = wilsdk._composite_bg(im, bg)
+                imgs.append(im)
+            try:
+                sheet = wilsdk.contact_sheet(imgs, cols, scale)
+                data = png_bytes(sheet)
+            except Exception as e:
+                self._err(500, str(e))
+                return
+            self._send(data, "image/png")
+            return
+        # zip of individual PNGs + manifest.json (mirrors wilextract --meta)
+        buf = BytesIO()
+        manifest = []
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+            for i in idxs:
+                try:
+                    im = lib.decode(i)
+                except Exception:
+                    continue
+                if im is None:
+                    continue
+                if bg != "transparent":
+                    im = wilsdk._composite_bg(im, bg)
+                if scale > 1:
+                    im = im.resize((im.width * scale, im.height * scale), Image_NEAREST)
+                hdr = lib.header(i)
+                z.writestr(f"{f.replace('.wil', '')}_{i:05d}.png", png_bytes(im))
+                manifest.append({
+                    "index": i, "width": hdr["width"], "height": hdr["height"],
+                    "offsetX": hdr["offsetX"], "offsetY": hdr["offsetY"],
+                    "shadow": hdr["shadow"], "shadowX": hdr["shadowX"],
+                    "shadowY": hdr["shadowY"], "words": hdr["words"],
+                })
+            z.writestr("manifest.json", json_bytes(manifest))
+        data = buf.getvalue()
+        self._send(data, "application/zip",
+                   {"Content-Disposition": f'attachment; filename="{f.replace(".wil", "")}_{len(idxs)}f.zip"'})
+
+    def api_sound_zip(self, q):
+        if not INDEX.sound_dir:
+            self._err(404, "no Sound directory")
+            return
+        names = q.get("n", []) or []
+        safe = []
+        for name in names:
+            if re.fullmatch(r"[\w.\- ]+\.wav", name, re.IGNORECASE):
+                p = os.path.join(INDEX.sound_dir, name)
+                if os.path.isfile(p):
+                    safe.append(name)
+        if not safe:
+            self._err(400, "no valid sounds selected")
+            return
+        buf = BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+            for name in sorted(safe):
+                try:
+                    with open(os.path.join(INDEX.sound_dir, name), "rb") as f:
+                        z.writestr(name, f.read())
+                except OSError:
+                    continue
+        self._send(buf.getvalue(), "application/zip",
+                   {"Content-Disposition": f'attachment; filename="sounds_{len(safe)}.zip"'})
+
+    def api_diff(self, q):
+        f = self._qstr(q, "f")
+        ra = self._qstr(q, "a")
+        rb = self._qstr(q, "b")
+        if not f or not ra or not rb:
+            self._err(400, "need f, a, b")
+            return
+        la = lib_from_dir(ra, f)
+        lb = lib_from_dir(rb, f)
+        if la is None or lb is None:
+            self._err(404, f"library not found in one root: {f}")
+            return
+        self._send(json_bytes({"file": f, "root_a": ra, "root_b": rb,
+                               **wilsdk.compare_libraries(la, lb)}),
+                   "application/json; charset=utf-8")
 
 
 # ---------------------------------------------------------------------- page
@@ -1093,6 +1321,7 @@ def main():
 
     global INDEX
     INDEX = AssetIndex(args.root)
+    ROOTS[INDEX.data_dir] = INDEX
     print(f"root: {INDEX.data_dir}")
     print(f"libraries: {len(INDEX.libs)}  ({sum(l.count for l in INDEX.libs.values())} frames total)")
     if INDEX.sound_dir:
