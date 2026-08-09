@@ -70,6 +70,15 @@
       "evidence_level": "primary-static-loop"
     },
     "dynamic_entry_blit": {"va": "0x0043F102", "target_x": "this+0x530 + entry_index", "target_y": "this+0x534 + entry_index*18"},
+    "dynamic_entry_geometry_proof": {
+      "loop_index": "EDI starts at 0 and is compared with DWORD [this+0x51C]",
+      "source_entry_offset": "EBX starts at 0 and advances by 0x12 after each composite; the loop body does not dereference [this+EBX] for a business field",
+      "destination_x": "DWORD [this+0x530] + 1 + EBX/0x12",
+      "destination_y": "DWORD [this+0x534] + EBX/0x12",
+      "source_frame": 1101,
+      "source_frame_size": "selected WIL header width/height at resource_header+0/+2",
+      "interpretation": "The 18-byte stride is the original menu-entry layout cadence, while the current paint routine uses the entry index only to place repeated Frame 1101 strips. It does not prove the semantic text/item fields stored elsewhere in the dialogue object."
+    },
     "final_state_select": {"va": "0x0043F120", "frame": 1102},
     "final_entry": {
       "select_va": "0x0043F120",
