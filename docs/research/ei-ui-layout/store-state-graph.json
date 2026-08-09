@@ -1,0 +1,70 @@
+{
+  "source": {
+    "client": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "state_owner_region": "0x0044E910–0x0044FCxx",
+    "protocol_entry_region": "0x0042BE20–0x0042C359",
+    "evidence_level": "primary-static-state-graph"
+  },
+  "protocol_entry": {
+    "subcode_reader": "0x0042AAB0",
+    "store_subcode": 2,
+    "jump_table": "0x0042C4D4",
+    "handler": "0x0042BFE1",
+    "dispatch_chain": ["0x0042BFE1", "0x0044E910", "0x0044E9B0", "0x00423E80"],
+    "interpretation": "The client receives a decoded item/shop-storage message and enters the shared panel state machine. The packet's human business name is not present in symbols."
+  },
+  "states": [
+    {
+      "state": 0,
+      "frames": [1000],
+      "factory_calls": ["0x0044EAA4", "0x0044EAEC", "0x0044FBCE"],
+      "factory_args": [[0,186,300,304],[0,186,300,304],[0,186,300,304]],
+      "geometry": {"panel": "300×304", "candidate": "item-list/store reset"},
+      "business_name": {"value": null, "status": "pending"}
+    },
+    {
+      "state": 1,
+      "frames": [1003],
+      "factory_calls": ["0x0044F7E8"],
+      "factory_args": [[1,186,498,304]],
+      "geometry": {"panel": "498×304", "candidate": "expanded item-list panel", "grid_origin": [323,43], "grid": "4×3", "step": 38},
+      "business_name": {"value": null, "status": "pending"}
+    },
+    {
+      "state": 2,
+      "frames": [1001],
+      "factory_calls": ["0x0044F9E4"],
+      "factory_args": [[-4,182,205,205]],
+      "geometry": {"panel": "205×205", "candidate": "compact selected-item/detail"},
+      "pagination": {"record_field": "this+0x71C", "divisor": 12, "formula": "ceil(count/12)"},
+      "business_name": {"value": null, "status": "pending"}
+    },
+    {
+      "state": 3,
+      "frames": [1000],
+      "factory_calls": ["0x0044FBCE"],
+      "factory_args": [[0,186,300,304]],
+      "geometry": {"panel": "300×304", "candidate": "item-list panel recreated"},
+      "business_name": {"value": null, "status": "pending"}
+    },
+    {
+      "state": 4,
+      "frames": [1002],
+      "factory_calls": ["0x0044EBCB", "0x0044F263"],
+      "factory_args": [[0,184,540,307],[0,184,540,307]],
+      "geometry": {"panel": "540×307", "candidate": "wide selected-item/action panel"},
+      "business_name": {"value": null, "status": "pending"}
+    }
+  ],
+  "factory_argument_order": ["x", "y", "width", "height", "frame"],
+  "factory_argument_warning": "Call-site arguments are inputs to 0x00423E80; that factory centers/derives parent-relative rectangles before storing final object fields. They must not be copied directly as 800×600 screen coordinates.",
+  "server_cross_reference": {
+    "artifact": "store-server-crossref.json",
+    "categories": {"storage": 19, "buy": 108, "sell": 108},
+    "status": "secondary corroboration only; no state-to-business promotion"
+  },
+  "pending": [
+    "Runtime or stronger call-site evidence mapping states 0–4 to warehouse, buy, sell, selected item and extended action names.",
+    "Final parent-relative origin after 0x00423E80 arithmetic in a live window instance."
+  ]
+}

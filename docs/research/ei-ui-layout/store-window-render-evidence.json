@@ -28,6 +28,7 @@
     {"frame": 1003, "header_size": [1024, 256], "visual": "wide composite item panel variant with attached side controls"}
   ],
   "state_machine_evidence": {
+    "state_graph_artifact": "docs/research/ei-ui-layout/store-state-graph.json",
     "owner_function_region": "0x0044E9B0-0x0044FCxx",
     "state_field": "this+0x5F8",
     "state_values_observed": [0, 1, 2, 3, 4],
