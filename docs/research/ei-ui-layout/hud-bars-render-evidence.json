@@ -44,6 +44,14 @@
     "draw_order_observation": "Each bar computes a normalized scalar before the texture/composite helper; exact frame-to-resource semantic names remain pending.",
     "static_coordinate_rule": "The resource frame is drawn relative to main HUD origin this+0xC58; primary and secondary clipping/hit rectangles are fixed by SetRect at 0x004276D6 and 0x004276F0."
   },
+  "text_overlay": {
+    "va": "0x0042A065-0x0042A087",
+    "source_ratio": "stack scalar [esp+0x50], prepared from 0x007DA115/0x007DA119",
+    "operation": "multiply by float at 0x0047644C, format through 0x0046811C using literals 0x0047BD5C and 0x0047BD4C",
+    "target_rect": "this+0xC88 = (235,586)-(400,597)",
+    "interpretation": "experience/progress percentage text candidate; exact localized format string should be decoded before naming",
+    "confidence": "medium"
+  },
   "evidence_addresses": ["0x00429876-0x004298B1", "0x004298CC-0x00429904", "0x00429920-0x0042994F", "0x0042996C-0x004299A4", "0x00429A4D", "0x00429CCB", "0x00429E4D"],
   "caveat": "Global variable semantic names are deliberately not guessed from modern source; live memory or protocol tracing is still required to label HP/MP/EXP definitively."
 }
