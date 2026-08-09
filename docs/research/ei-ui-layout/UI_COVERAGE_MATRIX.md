@@ -20,7 +20,7 @@
 | 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`0x00423E80` 工厂调用 | 候选 | 继续把 state 0–4 与业务入口绑定，确认仓库屏幕原点和按钮语义 |
 | NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040` | `npc-window-render-evidence.json` | 已恢复 | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
-| 行会 | GameInter F600 | `social-window-render-evidence.json` | 候选 | 4 个寄存器流坐标、成员列表绘制 |
+| 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |
 | 聊天 | GameInter F350 | `chat-window-render-evidence.json` | 已恢复 | 频道名称、字体颜色、滚动状态 |
 | 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |

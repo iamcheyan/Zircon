@@ -54,7 +54,25 @@
         {"call_va": "0x00424FEB", "frame_pair": [622, 623], "position_expression": {"x": "arg8", "y": "ecx+1360"}, "evidence_level": "primary-static-register-ambiguous"},
         {"call_va": "0x0042500F", "frame_pair": [624, 625], "position": [196, 50], "semantic_candidate": "guild tab/action"}
       ],
-      "pending": ["four ambiguous register-flow positions", "guild member list row geometry", "exact tab labels and business semantics"]
+      "member_list_render": {
+        "paint_va": "0x00425280",
+        "linked_list_head": "this+0xD4",
+        "scroll_start_field": "this+0x9C",
+        "visible_count_source": "this+0xE4 - scroll_start, capped at 0x12 (18)",
+        "screen_relative_origin": [35, 60],
+        "row_formula": "x = window.x + 35; y = window.y + 60 + (index - scroll_start) * (font_metric_height + 5)",
+        "row_step_source": "0x00425297-0x004252C8 obtains text metric height and adds 5",
+        "entry_text_field": "linked_entry+0x04",
+        "recognized_original_markers": [
+          {"va": "0x0047BA60", "text": "[联盟行会]"},
+          {"va": "0x0047BA6C", "text": "[敌对行会]"},
+          {"va": "0x0047BA78", "text": "[行会公告]"}
+        ],
+        "draw_helper": "0x0045DD70",
+        "evidence": "0x004252F1-0x0042541A",
+        "confidence": "primary-static"
+      },
+      "pending": ["four ambiguous register-flow control positions", "exact tab labels and business semantics", "special marker color/field styling"]
     }
   ],
   "confirmed": [
