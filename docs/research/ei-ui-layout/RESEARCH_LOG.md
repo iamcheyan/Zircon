@@ -2529,3 +2529,9 @@ Frame 1003 在当前客户端副本中没有可导出的像素内容，但状态
 修正 `Tools/enrich_mir3_layout_evidence.py`：窗口控件的尺寸、资源来源和命中矩形不再无条件写成 `GameInter.wil`，而是从 `window-control-resource-analysis.json` 的已解码库头中选择实际存在的 WIL。重新生成后，背包三个控件分别为 GameInter 161/162、GameInter 264/265、Interface1c 267/268；第三项尺寸为 76×88，统一 `layout.json` 与独立证据保持一致。
 
 这条规则是通用修复，不是背包特例：当相同 Frame 编号在多个 WIL 库中有不同含义时，预览器和后续还原器必须以“调用点 + 实际可解码库 + 帧头尺寸”联合决定资源，不能只看 Frame 数字。
+
+### Finding 177：主 HUD 预览增加固定小地图资源候选层（2026-08-10）
+
+预览器 `/ui` 新增“显示小地图资源候选层”开关，并纳入 `localStorage` 状态记忆。开启后，主 HUD 的固定目标 Rect `(672,0)-(800,128)` 会显示当前选定的 `MMap.wil`/`FMMap.wil` Frame 缩放候选，同时保留“资源缩放候选、边框/裁剪/标记尚未冒充已确认”的明确提示。
+
+该层只使用已经由 `map-ui-resource-evidence.json` 证明的目标矩形，不把手工拖动结果写入布局；默认关闭，以保持原始 HUD 模式不被候选层遮挡。服务已重启并通过 `/ui` 页面检查开关存在，API 仍返回 800×600 布局和 72 个控件构造记录。
