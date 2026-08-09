@@ -79,7 +79,16 @@
     "true_branch": {"surface_args": [256, 256], "evidence_level": "primary-static-exact-call"},
     "false_branch": {"surface_args": [128, 128], "evidence_level": "primary-static-exact-call"},
     "caller": "0x0042C75C -> 0x0043DEB0 -> this routine",
-    "interpretation": "The original client has an explicit map display mode switch. The two surface sizes are directly observed call arguments; their user-facing labels (full map versus minimap) remain a semantic interpretation until the command/key path is named."
+    "keyboard_dispatch_evidence": {
+      "routine": "0x0042CC76–0x0042CF1F",
+      "key_code": "0x54",
+      "ascii_candidate": "T",
+      "state_field": "main+0x64A8",
+      "behavior": "When key 0x54 is pressed, main+0x64A8 is toggled; the true/false branches directly rebuild 0x0043D5F0 with 256×256 or 128×128.",
+      "evidence_level": "primary-static-key-dispatch",
+      "caveat": "The numeric key code is exact; the user-facing label and whether this is called full-map/minimap are not named in the binary."
+    },
+    "interpretation": "The original client has an explicit map display mode switch. The two surface sizes and the keyboard dispatch relation are directly observed; only the user-facing mode label remains semantic."
   },
   "render_evidence": {
     "paint_va": "0x0043DA80",
