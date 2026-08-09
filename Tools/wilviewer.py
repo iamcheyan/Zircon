@@ -2106,7 +2106,9 @@ function addFocusedWindow(r,analysis){
     for(let i=0;i<19;i++)addFocusedGeometry(ox+40,oy+29+15*i,491,15,i===0?'19行 / 16字节记录':'' );
   }else if(r.id==='window.quest'){
     for(let i=0;i<19;i++)addFocusedGeometry(ox+65,oy+90+15*i,210,15,i===0?'任务列表 / 15px':'' );
-    addFocusedGeometry(ox+65,oy+294,250,120,'任务详情候选');
+    addFocusedGeometry(ox+65,oy+294,250,16,'任务详情 Frame 705 / 背景候选');
+    const qe=evidenceWindow(r.id).detail_text?.body_text_draw;
+    if(qe)for(let i=0;i<qe.visible_line_count;i++)addFocusedGeometry(ox+qe.origin.x,oy+qe.origin.y+qe.line_spacing*i,220,15,i===0?'详情正文 / 3行':'' );
   }else if(r.id==='window.other-14-candidate'){
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
   }else if(r.id==='window.npc-candidate'){

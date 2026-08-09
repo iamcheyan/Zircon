@@ -29,6 +29,16 @@
     "draw_helper": "0x0045FD50",
     "origin": {"x": 65, "y": 294, "coordinate_space": "window-relative"},
     "position_expression": {"x": "window.x+0x41", "y": "window.y+0x126"},
+    "body_text_draw": {
+      "source_field": "this+0x6C",
+      "line_guard": "this+0x60 <= line_index < this+0x60+3",
+      "origin": {"x": 80, "y": 310, "coordinate_space": "window-relative"},
+      "line_spacing": 15,
+      "visible_line_count": 3,
+      "text_measurement_limit": 160,
+      "draw_helper": "0x0045DD70",
+      "evidence_level": "primary-static-detail-text-loop"
+    },
     "evidence_level": "primary-static-detail-render"
   },
   "confirmed": [
