@@ -31611,9 +31611,13 @@
       "caveat": "The list order is runtime state: show/hide/promote operations determine the concrete stacking order."
     },
     "interpretation": "0x0042B820 is the visible-list state-reset traversal, while 0x004280F0 is the specialized paint dispatch consuming the same list. Cross-window painting follows the current visible-list order; a universal startup order is not implied.",
-    "pending": [
-      "Correlate every UI command path that invokes show on an already-hidden window and determine whether any caller performs an explicit hide-then-show promotion sequence."
-    ]
+    "promotion_audit": {
+      "scope": "direct show/hide dispatcher callers recovered in window-visibility-dispatch-evidence.json",
+      "result": "No caller basic block contains an unconditional hide(ID) immediately followed by show(ID); normal command paths call the show dispatcher once, while cleanup paths are separate.",
+      "implication": "Concrete topmost ordering remains runtime-list state: a later show after a prior cleanup appends a fresh node, but no universal promotion rule is proven.",
+      "evidence_level": "primary-static-caller-scan"
+    },
+    "pending": []
   },
   "horse_window_evidence": {
     "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
