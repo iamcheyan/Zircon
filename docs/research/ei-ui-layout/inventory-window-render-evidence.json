@@ -17,15 +17,18 @@
     {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x11E"}}
   ],
   "paint_geometry": [
-    {"va": "0x0042EB9B", "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5, with GameInter frame 0x5E selected by this paint path; the call is the inventory top/detail composition candidate."},
+    {"va": "0x0042EB9B", "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5, with GameInter frame 0x5E (94) selected by this paint path; the call is the inventory top/detail composition candidate."},
     {"va": "0x0042EC54", "fact": "A later item/record draw path computes a horizontal coordinate x+0x19 plus an index multiplied by 36 pixels."},
     {"va": "0x0042EC64", "fact": "The corresponding vertical coordinate is y+0x29 plus a row/record difference multiplied by 36 pixels."},
     {"va": "0x0042EC8C-0x0042EE2A", "fact": "The selected item path builds source and destination rectangles, converts their integer extents through shared float helper 0x00466800, and composites with context 0x005600FC via 0x004542F0. This is the original item-icon/selection pipeline; it is not a plain 36px CSS slot fill."},
     {"va": "0x0042EE62", "fact": "The inventory paint formats a numeric text value through 0x0046811C using data string VA 0x0047A214 (the executable stores the format token '%d'); the surrounding positions are window.x+0x41 and window.y+0x11A/0x12B candidates."},
     {"va": "0x0042EFC4-0x0042F003", "fact": "The same paint branch draws a second numeric/text pair through 0x0045DE50 with fixed text color/format arguments and rectangles derived from window.x+0x86/+0xF0 and window.y+0x18/+0x26; field names remain unresolved."},
+    {"va": "0x0042EBBB-0x0042EC13", "fact": "The selected-item branch is gated by globals 0x007DA1C0/0x007DA1C4 and 0x007243D8; it calls the inventory hit/index helpers before building the selected source/destination rectangles."},
     {"va": "0x0042F150", "fact": "The inventory hit-test/search loop scans both axes in 36-pixel steps from 0 through 180, proving a 6-column by 6-row, 36-slot grid."},
     {"va": "0x0042F2A0", "fact": "The item index is divided by 6; remainder selects the column and quotient selects the row. Slot rectangles are (window.x+0x19+36*column, window.y+0x29+36*row) with 36x36 size."},
-    {"va": "0x0042EECD", "fact": "The three child controls are repositioned from the window origin with fixed offsets (0xF9,0x120), (0xB0,0x106), and (0xB0,0x11E) as shown by 0x00417830 calls."}
+    {"va": "0x0042EECD", "fact": "The three child controls are repositioned from the window origin with fixed offsets (0xF9,0x120), (0xB0,0x106), and (0xB0,0x11E) as shown by 0x00417830 calls."},
+    {"va": "0x0042EE42-0x0042EEBE", "fact": "The primary numeric text uses runtime value 0x007DA100 and format VA 0x0047A214; the surrounding target rectangle is (window.x+0x41, window.y+0x11A) to (window.x+0x41, window.y+0x12B) in the original call setup."},
+    {"va": "0x0042EF97-0x0042F003", "fact": "The secondary text path reads 0x007DA11D and 0x007DA11F, selects among four state branches from byte this+0x54, and uses format literal candidates at 0x0047BDFC, 0x0047BE10 and 0x0047BE18; exact business labels remain unresolved."}
   ],
   "confirmed": [
     "Frame 250 is the inventory window background candidate with primary constructor evidence.",
