@@ -134,3 +134,7 @@
 - `layout.json`：总布局证据库。
 - `RESEARCH_LOG.md`：按时间追加的研究日志。
 - `docs/research/mud3-dat-decoded/comparison.md`：服务端老版技能数据对照。
+
+背包窗口的独立构造、资源和绘制几何证据见：
+
+`docs/research/ei-ui-layout/inventory-window-render-evidence.json`

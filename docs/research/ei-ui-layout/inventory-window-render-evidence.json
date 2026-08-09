@@ -1,0 +1,35 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "constructor_va": "0x0042EA80",
+    "paint_va": "0x0042EB7F",
+    "evidence_level": "primary-static"
+  },
+  "window": {
+    "id": "window.inventory",
+    "background": {"file": "Data/GameInter.wil", "frame": 250, "visible_size": [281, 324]},
+    "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"},
+    "constructor_window_size": [284, 324]
+  },
+  "child_controls": [
+    {"object_offset": "this+0x5c", "call_va": "0x0042EADB", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xF9", "y": "arg_base+0x120"}},
+    {"object_offset": "this+0x110", "call_va": "0x0042EB07", "frame_pair": [264, 265], "resource_library_candidates": ["GameInter.wil", "Interface1c.wil"], "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x120"}},
+    {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "Interface1c.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x120"}}
+  ],
+  "paint_geometry": [
+    {"va": "0x0042EB9B", "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5; exact resource/state semantics remain pending."},
+    {"va": "0x0042EC54", "fact": "A later item/record draw path computes a horizontal coordinate x+0x19 plus an index multiplied by 36 pixels."},
+    {"va": "0x0042EC64", "fact": "The corresponding vertical coordinate is y+0x29 plus a row/record difference multiplied by 36 pixels."},
+    {"va": "0x0042EECD", "fact": "The three child controls are repositioned from the window origin with fixed offsets (0xF9,0x120), (0xB0,0x106), and (0xB0,0x11E) as shown by 0x00417830 calls."}
+  ],
+  "confirmed": [
+    "Frame 250 is the inventory window background candidate with primary constructor evidence.",
+    "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
+    "The item draw path contains a 36-pixel spacing constant."
+  ],
+  "pending": [
+    "Exact number of inventory columns and rows.",
+    "Whether Frame 264/265 resolves to GameInter or Interface1c at runtime for this client build.",
+    "The meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields."
+  ]
+}
