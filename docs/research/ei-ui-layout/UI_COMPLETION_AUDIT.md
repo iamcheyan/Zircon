@@ -15,12 +15,13 @@
 |---|---|---|
 | 固定 800×600 视口 | `layout.json.viewport`、`Tools/wilviewer.py /ui` | 已闭合 |
 | 原版资源与 Frame | `resource-family-catalog.json`、各窗口专项 JSON、WIL/WIX 分析 | 已闭合到资源级 |
-| 统一布局/绘制记录 | `layout.json` 的 28 条窗口/按钮记录与 `normalized_draw_calls`（当前 57 条，保留 scope/order/evidence/source） | 已闭合到当前覆盖范围 |
+| 统一布局/绘制记录 | `layout.json` 的 29 条窗口/按钮记录、22 条 `specialized_control_rects` 与 `normalized_draw_calls`（当前 57 条，保留 scope/order/evidence/source） | 已闭合到当前覆盖范围 |
 | 证据等级与 pending 边界 | 各专项 JSON、`verify_mir3_ui_evidence.py` | 已闭合 |
 | 原版绘制层级 | `draw-order-evidence.json`、`window-traversal-evidence.json` | 候选；运行时可见链仍会变化 |
-| 可视化装配预览 | `Tools/wilviewer.py` | 已有；需继续补专项内容 |
+| 可视化装配预览 | `Tools/wilviewer.py`：HUD、14 个注册窗口、任务/NPC/技能/聊天/坐骑/商店状态等专项模式 | 已有；动态语义仍按专项 pending 标记 |
 | 坐标差异叠加 | `/ui` 本地截图上传、透明度调节、状态保存 | 已有验证入口 |
 | UI 状态记忆 | `localStorage` 与 HUD modal hash 状态 | 已有 |
+| 专项控件统一目录 | `layout.json.specialized_control_rects`，当前 22 条，包含资源库、Frame 对、相对 Rect、证据等级和来源 | 已闭合到数值 Rect 范围 |
 
 ## 界面覆盖矩阵
 
