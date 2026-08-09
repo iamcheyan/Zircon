@@ -150,6 +150,17 @@
       "entry_count_proof": "The parser computes paint_count=max(raw_count-6,0), then clamps paint_count to 16; raw_count is incremented by segment separators and token handling, so it is not simply the number of visible text lines.",
       "evidence_level": "primary-static-token-scanner"
     },
+    "server_script_syntax_cross_reference": {
+      "source": "/home/tetsuya/NAS/TMP/Mud3/Envir/Convert_Def/QuestDiary/Repair/TotalRepair.txt",
+      "evidence_level": "secondary-server-script-cross-reference",
+      "observed_forms": [
+        {"form": "{ ... }", "role_candidate": "dialogue block wrapper", "relation_to_client": "matches the client brace-token scanner; exact server preprocessor expansion is not asserted"},
+        {"form": "\\\\", "role_candidate": "dialogue line separator", "relation_to_client": "matches the client 0x5C segment delimiter"},
+        {"form": "<text/@SRepairNow>", "role_candidate": "clickable dialogue/menu entry with server action label", "relation_to_client": "matches the client angle-bracket/special-token scan; the client-side action dispatch remains unresolved"},
+        {"form": "<$OUTPUT(P9)>", "role_candidate": "server-expanded value embedded in dialogue text", "relation_to_client": "shows why the client parser has a special token path; no direct client formatter binding is claimed"}
+      ],
+      "warning": "This server file is not proof of the client's rendering implementation. It is retained only as a secondary syntax cross-reference for future dialogue replay and must not override Mir3.exe evidence."
+    },
     "paint_repositioned_controls": {
       "routine": "0x00440A43–0x00440A8B",
       "records": [
