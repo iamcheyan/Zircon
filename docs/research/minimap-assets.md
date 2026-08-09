@@ -91,3 +91,34 @@ EI 客户端（`/home/tetsuya/NAS/TMP/EI传奇3.0客户端/`，544 图）**没�
 - **8899**：EI 版（544 图），用户手动启动（`Tools/mapviewer.py /home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map --data .../Data --port 8899`），http://127.0.0.1:8899/
 - 同一份 `Tools/mapviewer.py` 自动适配两版数据（MiniMapSource 按 data dir 检测）
 - 用户新增 hash 深链接逻辑（`#map=X.map&cur=N&x=Y&y=Y&g=0/1&o=0/1`）：静态地图 URL 可还原到指定地图/缩放/中心坐标，`updateUrlHash()` + `hashchange` 监听，已实测工作正常
+
+## 9. mid/front 渲染锚定修复（2026-08-09）
+
+### 根因（对照客户端源码实证）
+
+Mir3 客户端 `MapControl.cs` 绘制 mid/front 层时 **`useOffSet=false`**：`MirLibrary.Draw` 只在 `useOffSet` 为真时应用 `image.OffSetX/OffSetY`（`MirLibrary.cs`），即：
+
+- 中/前景：`Draw(index, drawX, drawY - s.Height, Color.White, false, ...)`，drawX=格左、drawY=格底 → **sprite 底边锚定格底，完全忽略 WIL 帧偏移**
+- 背景层：`Draw(BackImage, drawX, drawY, ..., false)`，drawY=格顶，96×64 瓦片覆盖 2×2 格
+
+mapviewer 旧代码应用 `off_x/off_y` 是 bug。实测各库偏移：
+
+| 库 | off_x/off_y | 性质 |
+|---|---|---|
+| `smtilesc`（10180 帧） | **-1132 / -19694**（帧0: 28432/21537） | 垃圾数据 |
+| `housesc`/`smobjectsc`/`wallsc`/`wood_furnituresc`/`tilesc` | -24 / -16 统一 | 正常常量锚点 |
+
+smtilesc 的偏移会把 sprite 甩出地图外——这是"无建筑"假象的一大来源。
+
+### 修复（`Tools/mapviewer.py`，commit 7278e12）
+
+- `render_tile` / `render_full_map` 的 mid/front 绘制统一改为：
+  `px = cx - 24; py = cy + 16 - img.height * scale`（格底锚定），**删除 off_x/off_y 依赖**
+- 顺带修复 `render_tile` 调 `sparse_slice` 的 `(wx0, wy0, wx1, wy1)` 参数顺序错位 → 窗口恒空 → 所有 tile 端点全黑；改按签名 `(wx0, wx1, wy0, wy1)`
+
+### 验证
+
+- 10.map（2017 比奇城堡）z2 回归：城堡/围墙/门楼完整、对齐无缺陷
+- EI `0.map`（比奇城）z2：完整围墙城镇 + 内部密集建筑
+- `00.map` 中心 tile 由 4.7KB 全黑恢复为 ~105KB 正常地形
+- `smtilesc` 两版（ZL/WIL）帧均为 48×32 全不透明**地面铺地块**（SmTiles 小地砖），非建筑组件；`is_object_library` 放行它是为了与客户端 `file != Tilesc` 行为一致（客户端会画），视觉上作为地面细节
