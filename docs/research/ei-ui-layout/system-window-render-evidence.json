@@ -18,6 +18,16 @@
         {"call_va": "0x0044116A", "frame_pair": [760, 761], "position": [148, 217], "semantic_candidate": "option toggle"},
         {"call_va": "0x0044119A", "frame_pair": [762, 763], "position": [185, 217], "semantic_candidate": "option toggle"}
       ],
+      "hit_rects": {
+        "basis": "Shared control constructor 0x00417550 selects the GameInter frame and writes SetRect from the frame width/height.",
+        "records": [
+          {"frame_pair": [161, 162], "relative_rect": [218, 238, 28, 26]},
+          {"frame_pair": [760, 761], "relative_rects": [[148, 43, 32, 22], [148, 116, 32, 22], [148, 190, 32, 22], [148, 217, 32, 22]]},
+          {"frame_pair": [762, 763], "relative_rects": [[185, 43, 40, 22], [185, 116, 40, 22], [185, 190, 40, 22], [185, 217, 40, 22]]},
+          {"frame": 751, "relative_rects": [[34, 96, 20, 16], [34, 170, 20, 16]], "role": "non-frame text/control entries; semantic role pending"}
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "paint_repositioned_controls": {
         "routine": "0x00441380–0x0044148A",
         "records": [
@@ -38,7 +48,7 @@
         {"order": 2, "va": "0x0044138C-0x004414C7", "role": "nine option/close control reposition", "evidence": "The routine writes fixed window-relative positions for the close control and eight option controls, then positions two additional state-dependent controls."},
         {"order": 3, "va": "0x004414CC-0x004414DF", "role": "child control paint sequence", "evidence": "The first nine child objects are painted by vtable +0x04 in construction order after all fixed positions are written."}
       ],
-      "pending": ["labels and option state fields", "two non-frame text/control entries at y=96 and y=170"]
+      "pending": ["labels and option state fields", "business meaning of the two Frame 751 entries at y=96 and y=170"]
     },
     {
       "id": "window.horse",

@@ -18501,6 +18501,106 @@
               "semantic_candidate": "option toggle"
             }
           ],
+          "hit_rects": {
+            "basis": "Shared control constructor 0x00417550 selects the GameInter frame and writes SetRect from the frame width/height.",
+            "records": [
+              {
+                "frame_pair": [
+                  161,
+                  162
+                ],
+                "relative_rect": [
+                  218,
+                  238,
+                  28,
+                  26
+                ]
+              },
+              {
+                "frame_pair": [
+                  760,
+                  761
+                ],
+                "relative_rects": [
+                  [
+                    148,
+                    43,
+                    32,
+                    22
+                  ],
+                  [
+                    148,
+                    116,
+                    32,
+                    22
+                  ],
+                  [
+                    148,
+                    190,
+                    32,
+                    22
+                  ],
+                  [
+                    148,
+                    217,
+                    32,
+                    22
+                  ]
+                ]
+              },
+              {
+                "frame_pair": [
+                  762,
+                  763
+                ],
+                "relative_rects": [
+                  [
+                    185,
+                    43,
+                    40,
+                    22
+                  ],
+                  [
+                    185,
+                    116,
+                    40,
+                    22
+                  ],
+                  [
+                    185,
+                    190,
+                    40,
+                    22
+                  ],
+                  [
+                    185,
+                    217,
+                    40,
+                    22
+                  ]
+                ]
+              },
+              {
+                "frame": 751,
+                "relative_rects": [
+                  [
+                    34,
+                    96,
+                    20,
+                    16
+                  ],
+                  [
+                    34,
+                    170,
+                    20,
+                    16
+                  ]
+                ],
+                "role": "non-frame text/control entries; semantic role pending"
+              }
+            ],
+            "evidence_level": "primary-static-plus-primary-resource"
+          },
           "paint_repositioned_controls": {
             "routine": "0x00441380–0x0044148A",
             "records": [
@@ -18610,7 +18710,7 @@
           ],
           "pending": [
             "labels and option state fields",
-            "two non-frame text/control entries at y=96 and y=170"
+            "business meaning of the two Frame 751 entries at y=96 and y=170"
           ]
         },
         {
@@ -21407,6 +21507,106 @@
             "semantic_candidate": "option toggle"
           }
         ],
+        "hit_rects": {
+          "basis": "Shared control constructor 0x00417550 selects the GameInter frame and writes SetRect from the frame width/height.",
+          "records": [
+            {
+              "frame_pair": [
+                161,
+                162
+              ],
+              "relative_rect": [
+                218,
+                238,
+                28,
+                26
+              ]
+            },
+            {
+              "frame_pair": [
+                760,
+                761
+              ],
+              "relative_rects": [
+                [
+                  148,
+                  43,
+                  32,
+                  22
+                ],
+                [
+                  148,
+                  116,
+                  32,
+                  22
+                ],
+                [
+                  148,
+                  190,
+                  32,
+                  22
+                ],
+                [
+                  148,
+                  217,
+                  32,
+                  22
+                ]
+              ]
+            },
+            {
+              "frame_pair": [
+                762,
+                763
+              ],
+              "relative_rects": [
+                [
+                  185,
+                  43,
+                  40,
+                  22
+                ],
+                [
+                  185,
+                  116,
+                  40,
+                  22
+                ],
+                [
+                  185,
+                  190,
+                  40,
+                  22
+                ],
+                [
+                  185,
+                  217,
+                  40,
+                  22
+                ]
+              ]
+            },
+            {
+              "frame": 751,
+              "relative_rects": [
+                [
+                  34,
+                  96,
+                  20,
+                  16
+                ],
+                [
+                  34,
+                  170,
+                  20,
+                  16
+                ]
+              ],
+              "role": "non-frame text/control entries; semantic role pending"
+            }
+          ],
+          "evidence_level": "primary-static-plus-primary-resource"
+        },
         "paint_repositioned_controls": {
           "routine": "0x00441380–0x0044148A",
           "records": [
@@ -21516,7 +21716,7 @@
         ],
         "pending": [
           "labels and option state fields",
-          "two non-frame text/control entries at y=96 and y=170"
+          "business meaning of the two Frame 751 entries at y=96 and y=170"
         ]
       },
       {
@@ -22007,7 +22207,9 @@
       "GameInter Frame 50 is the fixed 800x136 bottom HUD plate at y=465.",
       "The button renderer selects the current/state frame before calling the shared composition candidate.",
       "NPC special paint selects Frame 1100, then dynamic Frame 1101 entries, then Frame 1102.",
-      "Interface1c Frame 50 is a separate 640x480 screen candidate and must not be composited as a normal in-game window."
+      "Interface1c Frame 50 is a separate 640x480 screen candidate and must not be composited as a normal in-game window.",
+      "Group paint evidence now covers background/header → two-column member text → control reposition → permission text → five child-control paints.",
+      "Guild paint evidence now covers background/header → state-specific list text → nine control reposition operations → nine child-control paints."
     ],
     "window_base_paint_evidence": {
       "routine": "0x00423D00",
@@ -22036,7 +22238,7 @@
     "pending": [
       "Runtime z-order when multiple movable windows overlap.",
       "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
-      "Exact text and icon draw calls for guild, group, store, exchange and option windows."
+      "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
     ]
   },
   "notice_prompt_evidence": {
