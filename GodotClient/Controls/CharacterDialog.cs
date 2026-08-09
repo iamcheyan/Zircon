@@ -683,9 +683,14 @@ public partial class CharacterDialog : DXWindow
 
     public void SetWeight(int wearWeight, int handWeight)
     {
+        // 上限取 PlayerStats（与 RefreshStatsPanel 一致），不能用写死的 0，
+        // 否则玩家面板显示 "42 / 0" 会误以为超重。
+        var stats = GameScene.Game?.PlayerStats;
+        int wearMax = stats?[Stat.WearWeight] ?? 0;
+        int handMax = stats?[Stat.HandWeight] ?? 0;
         WeightLabel.Text = $"负重 {wearWeight} / 手持 {handWeight}";
-        if (_wearWeightValue != null) _wearWeightValue.Text = $"{wearWeight} / 0";
-        if (_handWeightValue != null) _handWeightValue.Text = $"{handWeight} / 0";
+        if (_wearWeightValue != null) _wearWeightValue.Text = $"{wearWeight} / {wearMax}";
+        if (_handWeightValue != null) _handWeightValue.Text = $"{handWeight} / {handMax}";
     }
 
     public void SetPartner(string name)
