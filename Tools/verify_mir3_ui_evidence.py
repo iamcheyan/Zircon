@@ -109,9 +109,21 @@ def main() -> int:
             for field in ("scope", "role", "evidence_level", "source"):
                 if not call.get(field):
                     errors.append(f"normalized draw call {index} lacks {field}")
+    specialized_rects = layout.get("specialized_control_rects", [])
+    if not specialized_rects:
+        errors.append("layout has no specialized_control_rects")
+    else:
+        for index, control in enumerate(specialized_rects):
+            for field in ("id", "window_id", "relative_rect", "frame_pair", "resource_library", "evidence_level", "source"):
+                if field not in control:
+                    errors.append(f"specialized control {index} lacks {field}")
+            rect = control.get("relative_rect")
+            if not isinstance(rect, list) or len(rect) != 4:
+                errors.append(f"specialized control {index} has invalid relative_rect: {rect}")
     print(f"original_files={sum(path.is_file() for path in required)}/{len(required)}")
     print(f"layout_records={len(records)} viewport={viewport.get('width')}x{viewport.get('height')}")
     print(f"normalized_draw_calls={len(normalized)}")
+    print(f"specialized_control_rects={len(specialized_rects)}")
     print(f"json_artifacts={parsed} pending_items={pending_total}")
     for warning in warnings:
         print(f"PENDING {warning}")

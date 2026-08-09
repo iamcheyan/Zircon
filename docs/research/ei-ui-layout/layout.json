@@ -34586,5 +34586,447 @@
       "source": "confirmation-prompt-evidence.json",
       "warning": null
     }
+  ],
+  "specialized_control_rects": [
+    {
+      "id": "window.inventory.specialized-control.0",
+      "window_id": "window.inventory",
+      "relative_rect": [
+        249,
+        288,
+        28,
+        26
+      ],
+      "frame_pair": [
+        161,
+        162
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "close/confirm candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.inventory.specialized-control.1",
+      "window_id": "window.inventory",
+      "relative_rect": [
+        176,
+        262,
+        64,
+        20
+      ],
+      "frame_pair": [
+        264,
+        265
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "inventory action candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.inventory.specialized-control.2",
+      "window_id": "window.inventory",
+      "relative_rect": [
+        176,
+        286,
+        76,
+        88
+      ],
+      "frame_pair": [
+        267,
+        268
+      ],
+      "resource_library": "Interface1c.wil",
+      "role": "character-sprite/appearance candidate; resource differs from GameInter",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.status.specialized-control.0",
+      "window_id": "window.status",
+      "relative_rect": [
+        212,
+        298,
+        28,
+        26
+      ],
+      "frame_pair": [
+        161,
+        162
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "close/confirm candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "status-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.status.specialized-control.1",
+      "window_id": "window.status",
+      "relative_rect": [
+        176,
+        286,
+        36,
+        36
+      ],
+      "frame_pair": [
+        171,
+        172
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "status action candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "status-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.quest.specialized-control.0",
+      "window_id": "window.quest",
+      "relative_rect": [
+        290,
+        59,
+        28,
+        28
+      ],
+      "frame_pair": [
+        723,
+        724
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "specialized control candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.quest.specialized-control.1",
+      "window_id": "window.quest",
+      "relative_rect": [
+        290,
+        89,
+        28,
+        28
+      ],
+      "frame_pair": [
+        721,
+        722
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "specialized control candidate",
+      "call_va": null,
+      "evidence_level": "candidate",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.npc-candidate.specialized-control.0",
+      "window_id": "window.npc-candidate",
+      "relative_rect": [
+        7,
+        141,
+        28,
+        26
+      ],
+      "frame_pair": [
+        161,
+        162
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "close/confirm or generic NPC dialogue control",
+      "call_va": "0x0043ED65",
+      "evidence_level": "primary-static-expression",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.npc-candidate.specialized-control.1",
+      "window_id": "window.npc-candidate",
+      "relative_rect": [
+        290,
+        145,
+        12,
+        8
+      ],
+      "frame_pair": [
+        52,
+        53
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "NPC face/portrait or dialogue-side control",
+      "call_va": "0x0043ED8B",
+      "evidence_level": "primary-static-expression",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.npc-candidate.specialized-control.2",
+      "window_id": "window.npc-candidate",
+      "relative_rect": [
+        306,
+        136,
+        12,
+        8
+      ],
+      "frame_pair": [
+        54,
+        55
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "NPC dialogue-side state/control",
+      "call_va": "0x0043EDB1",
+      "evidence_level": "primary-static-expression",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.0",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        532,
+        350,
+        28,
+        26
+      ],
+      "frame_pair": [
+        161,
+        162
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "close-or-control-candidate",
+      "call_va": "0x00414144",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.1",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        25,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        360,
+        361
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x00414170",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.2",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        65,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        362,
+        363
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x00414196",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.3",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        105,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        364,
+        365
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x004141BC",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.4",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        145,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        366,
+        367
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x004141E5",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.5",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        185,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        368,
+        369
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x0041420E",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.chat-pop.specialized-control.6",
+      "window_id": "window.chat-pop",
+      "relative_rect": [
+        225,
+        332,
+        36,
+        34
+      ],
+      "frame_pair": [
+        370,
+        371
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "chat-channel-candidate",
+      "call_va": "0x00414237",
+      "evidence_level": "candidate",
+      "source": "chat-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.horse.specialized-control.0",
+      "window_id": "window.horse",
+      "relative_rect": [
+        252,
+        293,
+        28,
+        26
+      ],
+      "frame_pair": [
+        161,
+        162
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "top/right control candidate",
+      "call_va": null,
+      "evidence_level": "primary-static-derived-paint-order",
+      "source": "horse-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.horse.specialized-control.1",
+      "window_id": "window.horse",
+      "relative_rect": [
+        28,
+        244,
+        44,
+        20
+      ],
+      "frame_pair": [
+        860,
+        861
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "mount control candidate",
+      "call_va": null,
+      "evidence_level": "primary-static-derived-paint-order",
+      "source": "horse-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.horse.specialized-control.2",
+      "window_id": "window.horse",
+      "relative_rect": [
+        74,
+        244,
+        60,
+        20
+      ],
+      "frame_pair": [
+        862,
+        863
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "mount control candidate",
+      "call_va": null,
+      "evidence_level": "primary-static-derived-paint-order",
+      "source": "horse-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.horse.specialized-control.3",
+      "window_id": "window.horse",
+      "relative_rect": [
+        133,
+        244,
+        60,
+        20
+      ],
+      "frame_pair": [
+        864,
+        865
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "mount control candidate",
+      "call_va": null,
+      "evidence_level": "primary-static-derived-paint-order",
+      "source": "horse-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "id": "window.horse.specialized-control.4",
+      "window_id": "window.horse",
+      "relative_rect": [
+        192,
+        244,
+        56,
+        20
+      ],
+      "frame_pair": [
+        866,
+        867
+      ],
+      "resource_library": "GameInter.wil",
+      "role": "mount control candidate",
+      "call_va": null,
+      "evidence_level": "primary-static-derived-paint-order",
+      "source": "horse-window-render-evidence.json",
+      "warning": null
+    }
   ]
 }

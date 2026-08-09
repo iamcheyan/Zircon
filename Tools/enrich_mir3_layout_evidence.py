@@ -72,6 +72,51 @@ def normalized_draw_calls(draw_order: dict, specialized: list[dict]) -> list[dic
     return calls
 
 
+def specialized_control_rects(evidence_items: list[dict]) -> list[dict]:
+    """Normalize numeric window-relative control Rects from specialist files.
+
+    Expressions without a proven numeric rectangle are intentionally omitted;
+    their source records remain nested in the original evidence artifacts.
+    """
+    rows: list[dict] = []
+    for evidence in evidence_items:
+        source = evidence.get("_artifact", "specialized evidence")
+        scope = evidence.get("window", {}).get("id") or evidence.get("id") or source
+        candidates: list[dict] = []
+        hit = evidence.get("hit_rects", {})
+        if isinstance(hit.get("records"), list):
+            candidates.extend(hit["records"])
+        hit = evidence.get("control_hit_rects", {})
+        if isinstance(hit.get("records"), list):
+            candidates.extend(hit["records"])
+        for control in evidence.get("controls", []) + evidence.get("child_controls", []):
+            if isinstance(control.get("hit_rect"), list):
+                candidates.append(control)
+        for item in evidence.get("paint_order", []):
+            if isinstance(item.get("hit_rect"), list):
+                candidates.append(item)
+        for index, item in enumerate(candidates):
+            rect = item.get("relative_rect") or item.get("hit_rect")
+            if not isinstance(rect, list) or len(rect) != 4 or any(v is None for v in rect):
+                continue
+            pair = item.get("frame_pair") or item.get("frames") or []
+            if isinstance(pair, dict):
+                pair = pair.get("normal_state") or pair.get("pair") or []
+            rows.append({
+                "id": f"{scope}.specialized-control.{index}",
+                "window_id": scope,
+                "relative_rect": rect,
+                "frame_pair": pair,
+                "resource_library": item.get("resource_library") or item.get("resource_library_candidate") or "GameInter.wil",
+                "role": item.get("role") or item.get("semantic_candidate") or "specialized control candidate",
+                "call_va": item.get("call_va") or item.get("source_va"),
+                "evidence_level": item.get("evidence_level", evidence.get("evidence_level", "candidate")),
+                "source": source,
+                "warning": item.get("warning"),
+            })
+    return rows
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--layout", type=Path, default=Path("docs/research/ei-ui-layout/layout.json"))
@@ -416,6 +461,14 @@ def main() -> None:
     layout["store_state_graph"] = store_state_graph
     layout["draw_order_evidence"] = draw_order_evidence
     layout["normalized_draw_calls"] = normalized_draw_calls(draw_order_evidence, specialized)
+    all_specialized = list(specialized)
+    for extra, artifact in ((chat_window_evidence, "chat-window-render-evidence.json"),
+                            (horse_window_evidence, "horse-window-render-evidence.json")):
+        if extra:
+            tagged = dict(extra)
+            tagged["_artifact"] = artifact
+            all_specialized.append(tagged)
+    layout["specialized_control_rects"] = specialized_control_rects(all_specialized)
     layout["window_position_dispatch_evidence"] = window_position_dispatch
     layout["window_visibility_dispatch_evidence"] = window_visibility_dispatch
     layout["window_initialization_evidence"] = window_initialization
