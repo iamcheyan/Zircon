@@ -77,6 +77,10 @@
       "type": "array",
       "description": "Detailed static text/resource correlations for specialized windows.",
       "items": {"type": "object"}
+    },
+    "map_ui_evidence": {
+      "type": "object",
+      "description": "Primary static evidence for MMap/FMMap loading and map selection; widget binding may remain pending."
     }
   }
 }
