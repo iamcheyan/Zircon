@@ -1070,3 +1070,12 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 4 个因寄存器复用暂保留表达式歧义；控件帧对覆盖 `161/162`、`610/611` 至 `624/625`。
 这批结果属于 `primary-static`，尚未把控件业务名和成员列表文字绘制顺序升级为最终结论。
 机器记录见 `social-window-render-evidence.json`，并已接入 `layout.json`。
+
+### Finding 48：800×600 证据预览增加次级 Interface1c 界面切换（2026-08-09）
+
+`Tools/wilviewer.py` 的 `/ui` 页面新增预览模式选择器：主 HUD、角色选择/创建候选 A、
+角色选择候选 B。次级模式读取 `layout.json.secondary_screen_candidates` 中的原版
+`Interface1c.wil` Frame 50（640×480），按原始坐标居中到固定 800×600 视口，并叠加对应
+`secondary_control_constructors` 的 Frame 和命中矩形。模式选择与调试/Frame 开关共同写入
+`mir3_evidence_ui_state`，刷新后恢复。此功能只展示候选证据，不把候选屏幕名称升级成已
+运行时确认的业务结论。

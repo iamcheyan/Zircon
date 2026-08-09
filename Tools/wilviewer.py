@@ -240,7 +240,15 @@ class AssetIndex:
 
     def get_lib(self, name: str) -> wilsdk.WilLibrary | None:
         with self._lock:
-            return self.libs.get(name)
+            lib = self.libs.get(name)
+            if lib is None:
+                # WIL names are case-insensitive (Windows heritage); help
+                # callers that pass the wrong case (e.g. compare page keys).
+                lname = name.lower()
+                for k, v in self.libs.items():
+                    if k.lower() == lname:
+                        return v
+            return lib
 
 
 # ------------------------------------------------------------------- helpers
@@ -342,7 +350,10 @@ def lib_from_dir(data_dir: str, name: str) -> wilsdk.WilLibrary | None:
                 ROOTS[data_dir] = idx
         else:
             return None
-    return idx.get_lib(name)
+    lib = idx.get_lib(name)
+    if lib is not None:
+        lib._data_dir = data_dir
+    return lib
 
 
 # ------------------------------------------------------------------- handler
@@ -503,6 +514,8 @@ class Handler(BaseHTTPRequestHandler):
         if lib is None:
             self._err(404, f"library not found: {name}")
             return None
+        if not hasattr(lib, "_data_dir"):
+            lib._data_dir = INDEX.data_dir
         return lib
 
     # -- endpoints ---------------------------------------------------------
@@ -513,7 +526,7 @@ class Handler(BaseHTTPRequestHandler):
         i = self._qint(q, "i", 0)
         s = min(max(self._qint(q, "s", 48), 8), 256)
         try:
-            data = thumb_bytes(INDEX.data_dir, lib.name, i, s)
+            data = thumb_bytes(getattr(lib, "_data_dir", INDEX.data_dir), lib.name, i, s)
         except Exception as e:
             self._err(500, str(e))
             return
@@ -641,7 +654,7 @@ class Handler(BaseHTTPRequestHandler):
         count = min(max(self._qint(q, "count", 120), 1), 512)
         s = min(max(self._qint(q, "s", 48), 8), 256)
         try:
-            data = thumb_strip_bytes(INDEX.data_dir, lib.name, start, count, s)
+            data = thumb_strip_bytes(getattr(lib, "_data_dir", INDEX.data_dir), lib.name, start, count, s)
         except Exception as e:
             self._err(500, str(e))
             return
@@ -1120,7 +1133,16 @@ function restoreFromHash(){
       if (ac != null) $('#acount').value = ac;
       if (af != null) $('#afps').value = af;
       const sel = h.get('sel');
-      if (sel) sel.split(',').map(Number).filter(i => i >= 0 && i < STATE.count).forEach(i => STATE.sel.add(i));
+      if (sel){
+        for (const tok of sel.split(',')){
+          const m = tok.match(/^(\d+)(?:-(\d+))?$/);
+          if (!m) continue;
+          const a = +m[1], b = m[2] ? +m[2] : a;
+          for (let k = a; k <= b; k++){
+            if (k >= 0 && k < STATE.count) STATE.sel.add(k);
+          }
+        }
+      }
       renderSelUI();
       const frame = h.get('frame');
       if (frame != null){
@@ -1601,10 +1623,11 @@ $('#btn-anim').onclick = () => {
   const colsVis = gridCols(cell);
   const row = Math.max(0, Math.floor(gw.scrollTop / (cell + 4)));
   const guess = Math.min(STATE.count - 1, row * colsVis);
-  // 优先给一个非空区间的起点
+  // 优先当前可视帧所在的非空区间，其次下一个区间
   let start = guess;
   if (STATE.ranges && STATE.ranges.length){
-    const rg = STATE.ranges.find(r => r.start >= guess) || STATE.ranges[0];
+    let rg = STATE.ranges.find(r => guess >= r.start && guess < r.end);
+    if (!rg) rg = STATE.ranges.find(r => r.start >= guess) || STATE.ranges[0];
     start = rg ? rg.start : guess;
   }
   $('#astart').value = Math.max(0, start);
@@ -1845,25 +1868,45 @@ let libA = null, libB = null;
 async function loadRoots(){
   const r = await fetch('/api/root');
   const d = await r.json();
+  const curRoot = d.current.replace(/\/Data$/, '');
+  const cands = d.candidates;
   const fill = (sel, cur) => {
     sel.innerHTML = '';
-    for (const c of d.candidates){
+    for (const c of cands){
       const o = document.createElement('option'); o.value = c; o.textContent = c;
       if (c === cur) o.selected = true;
       sel.appendChild(o);
     }
-    if (![...sel.options].some(o => o.selected)) sel.value = d.current;
+    if (![...sel.options].some(o => o.selected)){
+      sel.value = cands.includes(cur) ? cur : (cands[0] || '');
+    }
   };
-  fill($('#rootA'), d.current);
-  fill($('#rootB'), d.candidates.find(c => c !== d.current) || d.current);
+  fill($('#rootA'), curRoot);
+  // rootB 默认选另一个客户端目录（跳过仓库自身与当前 root）
+  const isRepo = c => /development[\\/]Zircon/.test(c);
+  const other = cands.find(c => c !== curRoot && !isRepo(c))
+             || cands.find(c => c !== curRoot)
+             || curRoot;
+  fill($('#rootB'), other);
   $('#cmp').disabled = false;
+  await loadLibs();
 }
 async function loadLibs(){
   const ra = $('#rootA').value, rb = $('#rootB').value;
-  const [fa, fb] = await Promise.all([
-    fetch(`/api/files?r=${encodeURIComponent(ra)}`).then(r=>r.json()),
-    fetch(`/api/files?r=${encodeURIComponent(rb)}`).then(r=>r.json()),
-  ]);
+  if (!ra || !rb) return;
+  let fa, fb;
+  try {
+    [fa, fb] = await Promise.all([
+      fetch(`/api/files?r=${encodeURIComponent(ra)}`).then(r => { if (!r.ok) throw new Error('A: ' + r.status); return r.json(); }),
+      fetch(`/api/files?r=${encodeURIComponent(rb)}`).then(r => { if (!r.ok) throw new Error('B: ' + r.status); return r.json(); }),
+    ]);
+  } catch (e) {
+    $('#stat').textContent = '加载库列表失败: ' + e;
+    $('#libsel').innerHTML = '';
+    LIBS = [];
+    $('#cmp').disabled = true;
+    return;
+  }
   const map = m => new Map(m.libs.map(l => [l.name.toLowerCase(), l]));
   const ma = map(fa), mb = map(fb);
   const common = [...ma.keys()].filter(k => mb.has(k)).sort();
@@ -1886,7 +1929,7 @@ async function compare(){
   const ra = $('#rootA').value, rb = $('#rootB').value;
   const url = `/api/diff?a=${encodeURIComponent(ra)}&b=${encodeURIComponent(rb)}&f=${encodeURIComponent(name)}`;
   const d = await (await fetch(url)).json();
-  $('#stat').innerHTML = `库 <b>${d.lib}</b> — A 帧数 <b>${d.a.count}</b>, B 帧数 <b>${d.b.count}</b>, 内容不同的帧 <b style="color:#ffb8b0">${d.diff_count}</b> / ${Math.max(d.a.count, d.b.count)} · 不同区间 <b>${d.ranges.length}</b>`;
+  $('#stat').innerHTML = `库 <b>${d.file}</b> — A 帧数 <b>${d.a.count}</b>, B 帧数 <b>${d.b.count}</b>, 内容不同的帧 <b style="color:#ffb8b0">${d.diff_count}</b> / ${Math.max(d.a.count, d.b.count)} · 不同区间 <b>${d.ranges.length}</b>`;
   // 区间
   const ds = $('#diffsel'); ds.innerHTML = '';
   if (!d.ranges.length){
@@ -1952,7 +1995,6 @@ function showRange(start, end){
 }
 $('#cmp').onclick = compare;
 loadRoots();
-loadLibs();
 </script>
 </body>
 </html>
@@ -1971,6 +2013,7 @@ UI_LAYOUT_HTML = r"""<!doctype html>
   header { padding:12px 18px; background:var(--panel); border-bottom:1px solid var(--line); display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
   header h1 { margin:0; color:var(--acc); font-size:18px; } header .hint { color:var(--dim); font-size:12px; }
   header label { color:var(--dim); } header input { accent-color:var(--acc); }
+  header select { background:#11151a; color:var(--fg); border:1px solid var(--line); padding:3px 6px; }
   #wrap { padding:18px; display:flex; gap:18px; align-items:flex-start; }
   #screen { width:800px; height:600px; flex:none; position:relative; overflow:hidden; background:linear-gradient(135deg,#18201a,#0d120f); border:8px solid #2a3038; box-shadow:0 0 30px #000; image-rendering:pixelated; }
   #screen img { image-rendering:pixelated; } #world-label { position:absolute; left:16px; top:14px; color:#596d5d; font:12px monospace; pointer-events:none; }
@@ -2006,15 +2049,16 @@ UI_LAYOUT_HTML = r"""<!doctype html>
   <span class="hint">固定视口 800×600 · 坐标来自 Mir3.exe/WIL · 未确认内容不自动伪装成结论</span>
   <label><input id="debug" type="checkbox" checked> 显示坐标/命中框</label>
   <label><input id="frames" type="checkbox" checked> 显示资源 Frame</label>
+  <label>预览模式 <select id="mode"><option value="hud">主 HUD / 窗口组合</option><option value="secondary-0">角色选择/创建候选 A</option><option value="secondary-1">角色选择候选 B</option></select></label>
   <button id="reset">恢复默认状态</button>
 </header>
 <div id="wrap"><div id="screen" class="debug"><span id="world-label">[EI 3.0 evidence viewport: 800 × 600]</span></div>
 <aside id="side"><h2>布局记录</h2><div id="summary">读取中…</div><div id="records"></div></aside></div>
 <script>
 const $ = s => document.querySelector(s); const screen = $('#screen');
-let DATA = null; const key='mir3_evidence_ui_state';
+let DATA = null; let SCREEN_MODE='hud'; const key='mir3_evidence_ui_state';
 function state(){ try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e){return {}} }
-function save(){localStorage.setItem(key,JSON.stringify({debug:$('#debug').checked,frames:$('#frames').checked}));}
+function save(){localStorage.setItem(key,JSON.stringify({debug:$('#debug').checked,frames:$('#frames').checked,mode:SCREEN_MODE}));}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function resolve(v,base){return typeof v==='number'?v:(v&&v.offset+(base[v.base]||0));}
 function addLabel(el,text,klass){const l=document.createElement('span');l.className=klass;l.textContent=text;el.appendChild(l);}
@@ -2023,9 +2067,10 @@ function addButton(r,base){const x=resolve(r.position.x,base),y=resolve(r.positi
 function addWindow(r,analysis){const w=r.size.width,h=r.size.height,x=r.position.x,y=r.position.y;const box=document.createElement('div');box.className='evidence-window';box.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const a=analysis.find(q=>q.id===r.id);const bb=a&&a.resource&&a.resource.visible_bbox;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frame}&scale=1`;if(bb)im.style.cssText=`left:${-bb.left}px;top:${-bb.top}px`;box.appendChild(im);const lib=r.resource_handle?.library?.file||'resource unresolved';addLabel(box,`${r.id} · ${lib} · F${r.resource.frame} · (${x},${y},${w},${h})`,'window-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
 function addInternalControl(r,windows,analysis){if(!r.position||r.coordinate_status==='unresolved')return;const pair=r.resource?.frame_pair||[];const w=r.size?.width||20,h=r.size?.height||20;let x=r.position.x,y=r.position.y;const parent=windows.find(q=>q.id===r.window_id);const relative=r.position.coordinate_space==='window-relative';if(relative&&parent){x+=parent.position.x;y+=parent.position.y;}const ca=analysis.find(q=>q.call_va===r.call_va);const libs=ca?.frames?.[0]?.libraries||{};const lib=libs['GameInter.wil']?'GameInter.wil':(libs['Interface1c.wil']?'Interface1c.wil':'GameInter.wil');const box=document.createElement('div');box.className=`internal-control ${r.coordinate_status==='outside-window'?'outside-control':''} ${r.size?'':'unresolved-size'}`;box.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;if(pair.length){const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(lib)}&i=${pair[0]}&scale=1`;im.alt=`${lib} Frame ${pair[0]}`;im.style.cssText='width:100%;height:100%;image-rendering:pixelated';box.appendChild(im);}addLabel(box,`${r.window_id} · ${lib} F${pair.join('/')} · (${x},${y},${w},${h})${relative?' · window-relative':''} · ${r.coordinate_status}${r.size?'':' · size unresolved'}`,'button-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
 function addSecondaryControl(r){const box=document.createElement('div');const p=r.position,s=r.size;box.className='secondary-control';box.style.cssText=`left:${p.x}px;top:${p.y}px;width:${s.width}px;height:${s.height}px`;addLabel(box,`${r.id} · Interface1c F${r.resource.frame} · (${p.x},${p.y},${s.width},${s.height})`,'button-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
+function addSecondaryScreen(l,index){const candidate=(l.secondary_screen_candidates||[])[index];if(!candidate)return;const bg=candidate.interface1c_frames?.['50']||{width:640,height:480};const image=document.createElement('img');image.src='/api/image?f=Interface1c.wil&i=50&scale=1';image.style.cssText=`position:absolute;left:${(800-bg.width)/2}px;top:${(600-bg.height)/2}px;width:${bg.width}px;height:${bg.height}px`;image.title=`Interface1c.wil Frame 50 · secondary screen candidate ${index}`;screen.appendChild(image);const scope=index===0?'interface1c-cluster-0x456d':'interface1c-cluster-0x4027';for(const r of (l.secondary_control_constructors||[])){if(r.scope!==scope)continue;const copy={...r,position:{...r.position},size:{...r.size}};copy.position.x+=(800-bg.width)/2;copy.position.y+=(600-bg.height)/2;addSecondaryControl(copy);}const label=document.createElement('div');label.style.cssText='position:absolute;left:16px;top:14px;color:#e8a33d;font:12px monospace;z-index:70';label.textContent=`[Interface1c secondary candidate ${index} · 640×480 centered in 800×600]`;screen.appendChild(label);}
 function focusRecord(id){document.querySelectorAll('.row').forEach(x=>x.style.outline='');const r=document.querySelector(`[data-id="${CSS.escape(id)}"]`);if(r){r.scrollIntoView({block:'nearest'});r.style.outline='1px solid #e8a33d';}}
-function render(){if(!DATA)return;screen.querySelectorAll(':scope > *:not(#world-label)').forEach(x=>x.remove());addMain();const l=DATA.layout,base={'hud.left':0,'hud.top':465},windows=l.records.filter(q=>q.kind==='window'),controlAnalysis=DATA.window_control_resource_analysis?.records||[];const rec=$('#records');rec.innerHTML='';let buttons=0,windowCount=0;for(const r of l.records){if(r.kind==='button'){addButton(r,base);buttons++;}if(r.kind==='window'){addWindow(r,DATA.window_resource_analysis.records||[]);windowCount++;}const row=document.createElement('div');row.className='row';row.dataset.id=r.id;const e=r.evidence||{};const handle=r.resource_handle?.library?.file||r.resource?.file||'';row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag ${e.level&&e.level.startsWith('primary')?'primary':''}">${esc(e.level||'unknown')}</span></div><div class="meta">${r.kind} · ${handle} · Frame ${r.resource?.frame??r.resource?.frames?.normal??'—'}</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}const controls=(l.control_constructors||[]);let internal=0;for(const r of controls){addInternalControl(r,windows,controlAnalysis);if(r.coordinate_status==='inside-window'||r.coordinate_status==='resolved-primary-redraw')internal++;const e=r.evidence||{};const row=document.createElement('div');row.className='row';row.dataset.id=r.id;row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag ${e.level&&e.level.startsWith('primary')?'primary':''}">${esc(e.level||'unknown')}</span></div><div class="meta">window control · Frame pair ${(r.resource?.frame_pair||[]).join('/')||'—'} · ${r.coordinate_status||'position unresolved'}${r.size?' · '+r.size.width+'×'+r.size.height:''}</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}const secondary=l.secondary_control_constructors||[];for(const r of secondary){addSecondaryControl(r);const row=document.createElement('div');row.className='row';row.dataset.id=r.id;row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag primary">primary-static-closed</span></div><div class="meta">${esc(r.resource.file)} · Frame ${r.resource.frame} · (${r.position.x},${r.position.y},${r.size.width}×${r.size.height})</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}for(const w of (l.secondary_window_candidates||[])){const row=document.createElement('div');row.className='row';row.dataset.id='secondary-window-'+w.constructor_va;row.innerHTML=`<div class="name">次级窗口候选 ${esc(w.constructor_va)} <span class="tag">candidate</span></div><div class="meta">Frame ${w.frame} · 资源 ${esc(w.resource)} · 原始参数语义待确认</div>`;rec.appendChild(row);}const global=DATA.global_control_catalog||{};const unassigned=(global.records||[]).filter(r=>r.classification==='unassigned-control-candidate');const gr=document.createElement('div');gr.className='row';gr.dataset.id='global-unassigned-controls';gr.innerHTML=`<div class="name">未归属控件候选 <span class="tag">evidence catalog</span></div><div class="meta">全局 0x00417550 调用 ${global.counts?.all||0} · 未归属 ${unassigned.length} · 仅保留反汇编/Frame证据，坐标待绑定</div>`;gr.onclick=()=>focusRecord('global-unassigned-controls');rec.appendChild(gr);const draw=DATA.draw_calls||{};const sites=draw.all_composition_call_sites||[];const baseDraw=DATA.window_base_draw?.routine?.direct_calls||[];const vt=DATA.window_vtables||{};const vRows=vt.vtable_tables||[];const vAssign=vt.constructor_assignments||[];const binds=DATA.window_vtable_bindings?.records||[];const npc=DATA.npc_paint?.calls||[];const handleStatus=DATA.resource_handle_bindings?.main_ui_resource?.wil_file||'resource handle unresolved';const dr=document.createElement('div');dr.className='row';dr.dataset.id='draw-chain';dr.innerHTML=`<div class="name">原版绘制链 <span class="tag primary">primary-static-draw-candidate</span></div><div class="meta">资源 ${esc(handleStatus)} · 按钮 0x4179B0 → 0x45F2D0 · ${sites.length} 个共享合成调用点 · 窗口基类 0x423D00 → ${baseDraw.length} 个分支 · vtable ${vRows.length}/${vAssign.length} · 绑定 ${binds.length} · NPC专用绘制 ${npc.length} 调用</div>`;rec.prepend(dr);$('#summary').textContent=`${buttons} 个按钮 · ${windowCount} 个窗口 · ${controls.length} 个窗口控件构造 · 次级控件 ${secondary.length} · ${internal} 个几何通过调试框 · 未归属控件 ${unassigned.length} · 主 UI 资源 ${handleStatus} · ${sites.length} 个共享合成调用点 · ${baseDraw.length} 个窗口基类绘制分支 · ${vRows.length} 个vtable · ${binds.length} 个窗口绑定候选 · ${l.version}`;}
-function load(){const s=state();if(typeof s.debug==='boolean')$('#debug').checked=s.debug;if(typeof s.frames==='boolean')$('#frames').checked=s.frames;$('#debug').onchange=()=>{screen.classList.toggle('debug',$('#debug').checked);save()};$('#frames').onchange=()=>{screen.classList.toggle('no-frames',!$('#frames').checked);save()};$('#reset').onclick=()=>{localStorage.removeItem(key);location.reload()};fetch('/api/ui-layout').then(r=>r.json()).then(d=>{DATA=d;render()}).catch(e=>$('#summary').textContent='读取布局失败：'+e);}
+function render(){if(!DATA)return;screen.querySelectorAll(':scope > *:not(#world-label)').forEach(x=>x.remove());const l=DATA.layout,base={'hud.left':0,'hud.top':465},windows=l.records.filter(q=>q.kind==='window'),controlAnalysis=DATA.window_control_resource_analysis?.records||[];if(SCREEN_MODE==='hud')addMain();else addSecondaryScreen(l,Number(SCREEN_MODE.slice(10)));const rec=$('#records');rec.innerHTML='';let buttons=0,windowCount=0;for(const r of l.records){if(r.kind==='button'){if(SCREEN_MODE==='hud')addButton(r,base);buttons++;}if(r.kind==='window'){if(SCREEN_MODE==='hud')addWindow(r,DATA.window_resource_analysis.records||[]);windowCount++;}const row=document.createElement('div');row.className='row';row.dataset.id=r.id;const e=r.evidence||{};const handle=r.resource_handle?.library?.file||r.resource?.file||'';row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag ${e.level&&e.level.startsWith('primary')?'primary':''}">${esc(e.level||'unknown')}</span></div><div class="meta">${r.kind} · ${handle} · Frame ${r.resource?.frame??r.resource?.frames?.normal??'—'}</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}const controls=(l.control_constructors||[]);let internal=0;for(const r of controls){if(SCREEN_MODE==='hud')addInternalControl(r,windows,controlAnalysis);if(r.coordinate_status==='inside-window'||r.coordinate_status==='resolved-primary-redraw')internal++;const e=r.evidence||{};const row=document.createElement('div');row.className='row';row.dataset.id=r.id;row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag ${e.level&&e.level.startsWith('primary')?'primary':''}">${esc(e.level||'unknown')}</span></div><div class="meta">window control · Frame pair ${(r.resource?.frame_pair||[]).join('/')||'—'} · ${r.coordinate_status||'position unresolved'}${r.size?' · '+r.size.width+'×'+r.size.height:''}</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}const secondary=l.secondary_control_constructors||[];for(const r of secondary){if(SCREEN_MODE!=='hud' && !SCREEN_MODE.startsWith('secondary'))continue;if(SCREEN_MODE==='hud')addSecondaryControl(r);const row=document.createElement('div');row.className='row';row.dataset.id=r.id;row.innerHTML=`<div class="name">${esc(r.id)} <span class="tag primary">primary-static-closed</span></div><div class="meta">${esc(r.resource.file)} · Frame ${r.resource.frame} · (${r.position.x},${r.position.y},${r.size.width}×${r.size.height})</div>`;row.onclick=()=>focusRecord(r.id);rec.appendChild(row);}for(const w of (l.secondary_window_candidates||[])){const row=document.createElement('div');row.className='row';row.dataset.id='secondary-window-'+w.constructor_va;row.innerHTML=`<div class="name">次级窗口候选 ${esc(w.constructor_va)} <span class="tag">candidate</span></div><div class="meta">Frame ${w.frame} · 资源 ${esc(w.resource)} · 原始参数语义待确认</div>`;rec.appendChild(row);}const global=DATA.global_control_catalog||{};const unassigned=(global.records||[]).filter(r=>r.classification==='unassigned-control-candidate');const gr=document.createElement('div');gr.className='row';gr.dataset.id='global-unassigned-controls';gr.innerHTML=`<div class="name">未归属控件候选 <span class="tag">evidence catalog</span></div><div class="meta">全局 0x00417550 调用 ${global.counts?.all||0} · 未归属 ${unassigned.length} · 仅保留反汇编/Frame证据，坐标待绑定</div>`;gr.onclick=()=>focusRecord('global-unassigned-controls');rec.appendChild(gr);const draw=DATA.draw_calls||{};const sites=draw.all_composition_call_sites||[];const baseDraw=DATA.window_base_draw?.routine?.direct_calls||[];const vt=DATA.window_vtables||{};const vRows=vt.vtable_tables||[];const vAssign=vt.constructor_assignments||[];const binds=DATA.window_vtable_bindings?.records||[];const npc=DATA.npc_paint?.calls||[];const handleStatus=DATA.resource_handle_bindings?.main_ui_resource?.wil_file||'resource handle unresolved';const dr=document.createElement('div');dr.className='row';dr.dataset.id='draw-chain';dr.innerHTML=`<div class="name">原版绘制链 <span class="tag primary">primary-static-draw-candidate</span></div><div class="meta">资源 ${esc(handleStatus)} · 按钮 0x4179B0 → 0x45F2D0 · ${sites.length} 个共享合成调用点 · 窗口基类 0x423D00 → ${baseDraw.length} 个分支 · vtable ${vRows.length}/${vAssign.length} · 绑定 ${binds.length} · NPC专用绘制 ${npc.length} 调用</div>`;rec.prepend(dr);$('#summary').textContent=`${buttons} 个按钮 · ${windowCount} 个窗口 · ${controls.length} 个窗口控件构造 · 次级控件 ${secondary.length} · ${internal} 个几何通过调试框 · 未归属控件 ${unassigned.length} · 主 UI 资源 ${handleStatus} · ${sites.length} 个共享合成调用点 · ${baseDraw.length} 个窗口基类绘制分支 · ${vRows.length} 个vtable · ${binds.length} 个窗口绑定候选 · ${l.version}`;}
+function load(){const s=state();if(typeof s.debug==='boolean')$('#debug').checked=s.debug;if(typeof s.frames==='boolean')$('#frames').checked=s.frames;if(typeof s.mode==='string')SCREEN_MODE=s.mode;$('#mode').value=SCREEN_MODE;$('#mode').onchange=()=>{SCREEN_MODE=$('#mode').value;save();render()};$('#debug').onchange=()=>{screen.classList.toggle('debug',$('#debug').checked);save()};$('#frames').onchange=()=>{screen.classList.toggle('no-frames',!$('#frames').checked);save()};$('#reset').onclick=()=>{localStorage.removeItem(key);location.reload()};fetch('/api/ui-layout').then(r=>r.json()).then(d=>{DATA=d;render()}).catch(e=>$('#summary').textContent='读取布局失败：'+e);}
 load();
 </script></body></html>"""
 
