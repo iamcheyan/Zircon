@@ -1,6 +1,12 @@
 {
   "version": "0.2-primary-windows-raw-position-inputs",
   "viewport": {"width": 800, "height": 600},
+  "position_basis": {
+    "record_x_y": "raw wrapper call-site inputs",
+    "final_screen_rect": "computed by shared constructor 0x00423B30 using WIL dimensions and anchor/centering branch",
+    "evidence_level": "primary-static-constructor-algorithm",
+    "warning": "This compact catalog intentionally preserves raw inputs; use window-initialization-evidence.json for the full constructor semantics."
+  },
   "records": [
     {"id":"window.inventory","kind":"window","resource":{"file":"GameInter.wil","frame":250},"window":{"id":0,"x":518,"y":0,"width":284,"height":324,"can_move":true,"position_semantics":"raw wrapper input; final Rect computed by 0x00423B30"},"object":{"base":"esi","offset":"0x6554"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x00427750"],"notes":"Frame and dimensions come from the call argument sequence; x/y are preserved raw inputs, not universally guaranteed final screen origin."}},
     {"id":"window.status","kind":"window","resource":{"file":"GameInter.wil","frame":200},"window":{"id":1,"x":0,"y":0,"width":244,"height":328,"can_move":true},"object":{"base":"esi","offset":"0x29ce4"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x00427776"]}},
