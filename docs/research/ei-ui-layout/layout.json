@@ -16889,6 +16889,36 @@
           }
         }
       ],
+      "hit_rects": {
+        "basis": "Shared control constructor 0x00417550 selects the GameInter frame and writes SetRect from the frame width/height.",
+        "records": [
+          {
+            "frame_pair": [
+              723,
+              724
+            ],
+            "relative_rect": [
+              290,
+              59,
+              28,
+              28
+            ]
+          },
+          {
+            "frame_pair": [
+              721,
+              722
+            ],
+            "relative_rect": [
+              290,
+              89,
+              28,
+              28
+            ]
+          }
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "text_list": {
         "source_chain": [
           "this+0x1E8",

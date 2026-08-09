@@ -15,6 +15,14 @@
     {"object_offset": "this+0x74", "call_va": "0x0044743B", "frame_pair": [723, 724], "position": {"x": 290, "y": 59, "coordinate_space": "window-relative"}},
     {"object_offset": "this+0x128", "call_va": "0x0044745E", "frame_pair": [721, 722], "position": {"x": 290, "y": 89, "coordinate_space": "window-relative"}}
   ],
+  "hit_rects": {
+    "basis": "Shared control constructor 0x00417550 selects the GameInter frame and writes SetRect from the frame width/height.",
+    "records": [
+      {"frame_pair": [723, 724], "relative_rect": [290, 59, 28, 28]},
+      {"frame_pair": [721, 722], "relative_rect": [290, 89, 28, 28]}
+    ],
+    "evidence_level": "primary-static-plus-primary-resource"
+  },
   "text_list": {
     "source_chain": ["this+0x1E8", "0x0045E0C0"],
     "first_column": {"x": 65, "y": 90, "coordinate_space": "window-relative"},
