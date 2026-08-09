@@ -125,6 +125,16 @@
     "state_input_evidence": {
       "handler": "0x0042BFE1",
       "owner": "main+0x33188",
+      "shared_handler_signature_candidate": {
+        "va": "0x0044E9B0",
+        "calling_convention": "this + two stack arguments; ret 0x8",
+        "argument_use": [
+          {"argument": "arg1", "stack_basis": "entry [esp+0x0C] after saving EBX/EBP", "passed_to": "state-dependent control vtable+0x10"},
+          {"argument": "arg2", "stack_basis": "entry [esp+0x18] after saving EBX/EBP/ESI/EDI", "passed_to": "state-dependent control vtable+0x10"}
+        ],
+        "interpretation": "The same routine is structurally an input/activation dispatcher as well as a state transition routine. The exact packet-versus-pointer meaning of its two arguments is not promoted without the surrounding caller ABI capture.",
+        "confidence": "primary-static-signature-candidate"
+      },
       "state_1_constructor": {
         "va": "0x0044F7E8",
         "frame": 1003,

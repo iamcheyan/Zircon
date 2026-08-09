@@ -2631,3 +2631,5 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 从 Mud3 原始脚本以 GBK 解码核对了三类代表性 NPC。`06Inn_Bichon-0.txt` 的 `NPC_Storage` / `NPC_Getback` 分支使用 `@storage` 与 `@PreGetback`，语义明确是仓库存入/取回；`04Potion_Bichon1-0.txt` 的 `NPC_Buy` / `NPC_Sell` 使用 `@buy` / `@sell`，语义明确是药品买卖；`01Meet_Bichon1-0.txt` 同样使用 `@buy` / `@sell`，但商品语义是肉类买卖。
 
 这一步确认了服务器资料中“仓库、购买、出售”不是凭文件名推测，而是由脚本动作词和 NPC 分支共同支持的 secondary evidence。但在 `Mir3.exe` 中没有找到这些 ASCII 动作词或 `NPC_*` 标签，也没有找到能直接把 `@buy/@sell/@storage` 映射到 state 0–4 的明文枚举。因此当前正确的数据模型是：服务器动作语义独立记录，客户端 state/Frame 独立记录，两者之间保留未闭合映射；不能因为某个 NPC 脚本调用了 `@buy` 就把客户端 Frame 1000 强行命名为购买窗口。
+
+继续检查 `0x0044E9B0` 的函数入口后，确认它使用 `this + 两个栈参数` 的候选调用约定（函数尾部 `ret 0x8`）。保存寄存器后，两个参数分别从入口栈帧的 `[esp+0x0C]` 与 `[esp+0x18]` 取出，并按当前 state 转发给多个控件对象的 vtable `+0x10` 处理器。由此可以确定它同时承担输入/激活分派与状态重建；但仅凭 `0x0042BFE1` 的调用边界，还不能把这两个参数直接命名为服务器数据包字段或鼠标坐标。该 ABI 事实已写入商店状态 JSON，参数语义继续保持 pending。

@@ -20,6 +20,13 @@
         {"va": "0x0042BFFA", "target": "0x0042ADB0", "argument": 2, "role": "show/retain window id 2 after successful handling"}
       ],
       "confidence": "primary-static"
+    },
+    "shared_handler_input_signature": {
+      "routine": "0x0044E9B0",
+      "stack_arguments": 2,
+      "cleanup": "ret 0x8",
+      "observed_use": "arguments are forwarded to state-dependent control vtable+0x10 handlers",
+      "status": "primary-static signature candidate; exact caller ABI and packet schema pending"
     }
   },
   "states": [
@@ -105,6 +112,7 @@
     "Runtime or stronger call-site evidence mapping states 0–4 to warehouse, buy, sell, selected item and extended action names.",
     "Final parent-relative origin after 0x00423E80 arithmetic in a live window instance.",
     "Packet field meanings passed to the state-1/state-2 constructors; the static code proves storage locations and arithmetic but not the server message schema.",
-    "Business labels for state 0/1/2/3/4; do not infer warehouse versus buy/sell solely from Frame 1000–1003 artwork."
+    "Business labels for state 0/1/2/3/4; do not infer warehouse versus buy/sell solely from Frame 1000–1003 artwork.",
+    "Exact caller ABI for 0x0044E9B0: it receives two stack arguments, but their semantic type is not yet proven at the protocol boundary."
   ]
 }
