@@ -16231,6 +16231,54 @@
           }
         }
       ],
+      "hit_rects": {
+        "basis": "The shared 0x00417550 constructor creates a SetRect from the selected WIL frame dimensions; positions below are window-relative and therefore remain valid when the window is moved.",
+        "records": [
+          {
+            "frame_pair": [
+              161,
+              162
+            ],
+            "resource_library": "GameInter.wil",
+            "relative_rect": [
+              249,
+              288,
+              28,
+              26
+            ],
+            "role": "close/confirm candidate"
+          },
+          {
+            "frame_pair": [
+              264,
+              265
+            ],
+            "resource_library": "GameInter.wil",
+            "relative_rect": [
+              176,
+              262,
+              64,
+              20
+            ],
+            "role": "inventory action candidate"
+          },
+          {
+            "frame_pair": [
+              267,
+              268
+            ],
+            "resource_library": "Interface1c.wil",
+            "relative_rect": [
+              176,
+              286,
+              76,
+              88
+            ],
+            "role": "inventory action candidate; resource differs from GameInter"
+          }
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "paint_geometry": [
         {
           "va": "0x0042EB9B",
@@ -16415,6 +16463,38 @@
           "resource_library_candidate": "GameInter.wil"
         }
       ],
+      "hit_rects": {
+        "basis": "The shared 0x00417550 control constructor derives the hit rectangle from the selected GameInter frame header; all coordinates are window-relative.",
+        "records": [
+          {
+            "frame_pair": [
+              161,
+              162
+            ],
+            "relative_rect": [
+              212,
+              298,
+              28,
+              26
+            ],
+            "role": "close/confirm candidate"
+          },
+          {
+            "frame_pair": [
+              171,
+              172
+            ],
+            "relative_rect": [
+              176,
+              286,
+              36,
+              36
+            ],
+            "role": "status action candidate"
+          }
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "equipment_and_attribute_rects": [
         {
           "object_offset": "this+0x1F0",

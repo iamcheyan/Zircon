@@ -15,6 +15,14 @@
     {"object_offset": "this+0x58", "call_va": "0x0044B18B", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil"},
     {"object_offset": "this+0x10C", "call_va": "0x0044B1B7", "frame_pair": [171, 172], "resource_library_candidate": "GameInter.wil"}
   ],
+  "hit_rects": {
+    "basis": "The shared 0x00417550 control constructor derives the hit rectangle from the selected GameInter frame header; all coordinates are window-relative.",
+    "records": [
+      {"frame_pair": [161, 162], "relative_rect": [212, 298, 28, 26], "role": "close/confirm candidate"},
+      {"frame_pair": [171, 172], "relative_rect": [176, 286, 36, 36], "role": "status action candidate"}
+    ],
+    "evidence_level": "primary-static-plus-primary-resource"
+  },
   "equipment_and_attribute_rects": [
     {"object_offset": "this+0x1F0", "left": 177, "top": 70, "right": 215, "bottom": 108, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
     {"object_offset": "this+0x1E0", "left": 27, "top": 264, "right": 65, "bottom": 302, "width": 38, "height": 38, "role": "equipment-slot-candidate"},
