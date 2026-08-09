@@ -62,6 +62,15 @@
         ],
         "warning": "These are artwork labels. The ON/OFF control state fields and the two slider/decorative Frame 751 entries still require code-path correlation."
       },
+      "resource_visual_inspection": {
+        "source": "Data/GameInter.wil direct pixel inspection of Frames 750–763",
+        "records": [
+          {"frame_pair": [760, 761], "visual_description": "small ON/OFF toggle pair used at four positions; the artwork visibly contains ON and OFF state text", "confidence": "high"},
+          {"frame_pair": [762, 763], "visual_description": "second small ON/OFF toggle pair used at four positions; the artwork visibly contains ON and OFF state text", "confidence": "high"},
+          {"frame": 751, "visual_description": "small gold circular slider knob", "confidence": "high"}
+        ],
+        "evidence_level": "primary-resource-visual"
+      },
       "pending": ["map each Korean option label to its backing state field", "business meaning of the two Frame 751 entries at y=96 and y=170"]
     },
     {
@@ -103,11 +112,15 @@
         "routine": "0x00426A80–0x00426B45",
         "control_order": ["this+0x54", "this+0x108", "this+0x1BC", "this+0x270", "this+0x324"],
         "state_global": "0x007DA060",
-        "message_or_action_string_candidates": ["0x0047B058", "0x0047B060", "0x0047B068"],
+        "message_or_action_strings": [
+          {"va": "0x0047B058", "text": "@收马"},
+          {"va": "0x0047B060", "text": "@上马"},
+          {"va": "0x0047B068", "text": "@遛马"}
+        ],
         "action_dispatch_helper": "0x004520F0",
         "cooldown_or_timer_fields": ["0x008A68BC", "0x008A68C0"],
         "evidence_level": "primary-static-hit-and-action-branch",
-        "warning": "The binary proves five clickable action paths and state-dependent dispatch, but the original string bytes and business labels are not yet decoded here."
+        "warning": "The binary proves five clickable action paths and state-dependent dispatch. Exact command strings are decoded; the Korean artwork labels and runtime state transitions remain separate evidence."
       },
       "pending": ["mount labels and horse data fields", "whether state-dependent overlays are painted outside Frame 850"]
     },
