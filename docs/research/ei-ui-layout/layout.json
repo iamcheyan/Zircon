@@ -29555,5 +29555,1779 @@
       "0x00429E4D"
     ],
     "caveat": "HP/MP/weight/experience semantics are confirmed by original GB18030 formatter literals; the call order is static, while live memory is still required to validate exact update timing, clipping direction and which of frames 60/61/62/63 is the visible foreground versus depleted overlay in every state."
+  },
+  "magic_exp_records": {
+    "source": {
+      "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp",
+      "sha256": "5b2300ee587aea774cca8a5a3fc0ee35172d6dbdf8583b42254fbc28e22fc8e1",
+      "decoder": "Tools/decode_mir3_exp.py",
+      "decode": {
+        "input_size": 14735,
+        "raw_length": 160578032,
+        "decoded_length": 14735,
+        "payload_length": 14727,
+        "raw_checksum": 3436495116,
+        "expected_checksum": 3436495116,
+        "key1": 160563327,
+        "key2": 2682133139,
+        "algorithm_source": "Mir3.exe 0x00452580 + 0x004525F0"
+      },
+      "text_encoding": "GB18030"
+    },
+    "record_count": 50,
+    "records": [
+      {
+        "id": 3,
+        "name": "基本剑术",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 7,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 9,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 11,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "提高准确率(命中率), 修炼值越高准确率也越高。",
+        "raw_block": "[基本剑术]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 7\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 9\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 11\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 提高准确率(命中率), 修炼值越高准确率也越高。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 7,
+        "name": "攻杀剑术",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 2,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 3,
+            "required_level": 18,
+            "practice_value": 500
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "按照一定概率增加破坏力和命中率，修炼值越高准确率和破坏力也越高。",
+        "raw_block": "[攻杀剑术]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 14 \r\n - 修炼值 : 300\r\n修炼2级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼3级需要等级 : 18\r\n - 修炼值 : 500\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 按照一定概率增加破坏力和命中率，修炼值越高准确率和破坏力也越高。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 12,
+        "name": "刺杀剑术",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 19,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 21,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 23,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "剑放射出的冲击对剑所触及到范围之外的敌人也产生效力，修炼越深破坏力也越强。",
+        "raw_block": "[刺杀剑术]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 19\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 21\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 23\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 剑放射出的冲击对剑所触及到范围之外的敌人也产生效力，修炼越深破坏力也越强。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 25,
+        "name": "半月弯刀",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 24,
+            "practice_value": 600
+          },
+          {
+            "level": 2,
+            "required_level": 26,
+            "practice_value": 700
+          },
+          {
+            "level": 3,
+            "required_level": 28,
+            "practice_value": 800
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用快速挥剑所散发出的冲击波，攻击周围多数敌人，修炼值越高破坏力也越强。",
+        "raw_block": "[半月弯刀]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 24\r\n - 修炼值 : 600\r\n修炼2级需要等级 : 26\r\n - 修炼值 : 700\r\n修炼3级需要等级 : 28\r\n - 修炼值 : 800\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用快速挥剑所散发出的冲击波，攻击周围多数敌人，修炼值越高破坏力也越强。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 27,
+        "name": "野蛮冲撞",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 27,
+            "practice_value": 700
+          },
+          {
+            "level": 2,
+            "required_level": 29,
+            "practice_value": 800
+          },
+          {
+            "level": 3,
+            "required_level": 31,
+            "practice_value": 900
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "使用此魔法可以冲撞怪物，修炼越深推出的距离和可冲撞的怪物数增多。",
+        "raw_block": "[野蛮冲撞]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 27\r\n - 修炼值 : 700\r\n修炼2级需要等级 : 29\r\n - 修炼值 : 800\r\n修炼3级需要等级 : 31\r\n - 修炼值 : 900\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 使用此魔法可以冲撞怪物，修炼越深推出的距离和可冲撞的怪物数增多。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 26,
+        "name": "烈火剑法",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 32,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 34,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 36,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将体内火热的气运聚集到丹田，再注入到武器中攻击敌人，增强破坏力。修炼增加，破坏力也随着一起增加。",
+        "raw_block": "[烈火剑法]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 32\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 34\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 36\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将体内火热的气运聚集到丹田，再注入到武器中攻击敌人，增强破坏力。修炼增加，破坏力也随着一起增加。 ",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 35,
+        "name": "翔空剑法",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 35,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 37,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 39,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "比半月弯刀更上层的魔法，修炼增加，破坏力也会加强。",
+        "raw_block": "[翔空剑法]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 35\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 37\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 39\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 比半月弯刀更上层的魔法，修炼增加，破坏力也会加强。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 34,
+        "name": "莲月剑法",
+        "attribute": "无属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 38,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 40,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 42,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "聚集内功瞬间连续两次攻击对方，修炼值增加，破坏力也增强。",
+        "raw_block": "[莲月剑法]\r\n属性 : 无属性\r\n元素 : 无\r\n修炼1级需要等级 : 38\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 40\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 42\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 聚集内功瞬间连续两次攻击对方，修炼值增加，破坏力也增强。",
+        "ordered_section": {
+          "marker_id": 3,
+          "semantic_candidate": "warrior-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 1,
+        "name": "火球术",
+        "attribute": "自然系",
+        "element": "火(火 : 火力)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 7,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 9,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 11,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "火球术是火系列最基本的魔法，修炼程度越深威力也越大。",
+        "raw_block": "[火球术]\r\n属性 : 自然系 \r\n元素 : 火(火 : 火力)\r\n修炼1级需要等级 : 7\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 9\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 11\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 火球术是火系列最基本的魔法，修炼程度越深威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 41,
+        "name": "霹雳掌",
+        "attribute": "自然系",
+        "element": "雷(雷 : 电击)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 8,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 10,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 12,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "霹雳掌是雷系列最基本魔法，随着修炼值增加，威力也增强。",
+        "raw_block": "[霹雳掌]\r\n属性 : 自然系\r\n元素 : 雷(雷 : 电击)\r\n修炼1级需要等级 : 8\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 10\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 12\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 霹雳掌是雷系列最基本魔法，随着修炼值增加，威力也增强。 ",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 39,
+        "name": "冰月神掌",
+        "attribute": "自然系",
+        "element": "冰(冰 : 冰,水)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 9,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 11,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 13,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "冰月神掌是冰系列最基本的魔法，修炼程度越深，破坏力也越大，冻僵敌人的持续时间也越长。",
+        "raw_block": "[冰月神掌]\r\n属性 : 自然系\r\n元素 : 冰(冰 : 冰,水)\r\n修炼1级需要等级 : 9\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 11\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 13\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 冰月神掌是冰系列最基本的魔法，修炼程度越深，破坏力也越大，冻僵敌人的持续时间也越长。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 67,
+        "name": "风掌",
+        "attribute": "自然系",
+        "element": "风(风 : 暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 10,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 12,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "风掌是风系列最基本的魔法，修炼程度越深，其破坏力也越大，推出敌人的概率也随着增大。",
+        "raw_block": "[风掌]\r\n属性 : 自然系\r\n元素 : 风(风 : 暴风)\r\n修炼1级需要等级 : 10\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 12\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 14\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 风掌是风系列最基本的魔法，修炼程度越深，其破坏力也越大，推出敌人的概率也随着增大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 8,
+        "name": "抗拒火环",
+        "attribute": "自然系",
+        "element": "风(风 : 暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 12,
+            "practice_value": 200
+          },
+          {
+            "level": 2,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 3,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "可以推开比自己等级低的怪物，属于护身魔法，修炼程度越深，推开的距离越长。",
+        "raw_block": "[抗拒火环]\r\n属性 : 自然系\r\n元素 : 风(风 : 暴风)\r\n修炼1级需要等级 : 12\r\n - 修炼值 : 200\r\n修炼2级需要等级 : 14\r\n - 修炼值 : 300\r\n修炼3级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 可以推开比自己等级低的怪物，属于护身魔法，修炼程度越深，推开的距离越长。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 20,
+        "name": "诱惑之光",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 13,
+            "practice_value": 200
+          },
+          {
+            "level": 2,
+            "required_level": 15,
+            "practice_value": 300
+          },
+          {
+            "level": 3,
+            "required_level": 17,
+            "practice_value": 400
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "注入强烈的电击力，昏迷怪物或者使怪物成为自己的手下，修炼程度越深，可俘虏的怪物数字也增多，维持的时间也更长。",
+        "raw_block": "[诱惑之光]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 13\r\n - 修炼值 : 200\r\n修炼2级需要等级 : 15\r\n - 修炼值 : 300\r\n修炼3级需要等级 : 17\r\n - 修炼值 : 400\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 注入强烈的电击力，昏迷怪物或者使怪物成为自己的手下，修炼程度越深，可俘虏的怪物数字也增多，维持的时间也更长。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 21,
+        "name": "瞬间移动",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 2,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 3,
+            "required_level": 18,
+            "practice_value": 500
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用强烈的力量贯通时空，可瞬间移动到期他地方，修炼值越高移动到村庄附近的概率越高。",
+        "raw_block": "[瞬间移动]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 14\r\n - 修炼值 : 300\r\n修炼2级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼3级需要等级 : 18\r\n - 修炼值 : 500\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用强烈的力量贯通时空，可瞬间移动到期他地方，修炼值越高移动到村庄附近的概率越高。 ",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 5,
+        "name": "大火球",
+        "attribute": "自然系",
+        "element": "火(火 : 火力)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 15,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 17,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 19,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "大火球是火球术的更高境界，修炼增加威力也增大。",
+        "raw_block": "[大火球]\r\n属性 : 自然系\r\n元素 : 火(火 : 火力)\r\n修炼1级需要等级 : 15\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 17\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 19\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 大火球是火球术的更高境界，修炼增加威力也增大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 11,
+        "name": "雷电术",
+        "attribute": "自然系",
+        "element": "雷(雷 : 电击)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 18,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 20,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "通过霹雷强烈攻击怪物，修炼程度越深，所发出的威力也越大。",
+        "raw_block": "[雷电术]\r\n属性 : 自然系\r\n元素 : 雷(雷 : 电击)\r\n修炼1级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 18\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 20\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 通过霹雷强烈攻击怪物，修炼程度越深，所发出的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 40,
+        "name": "冰月震天",
+        "attribute": "自然系",
+        "element": "冰(冰 : 冰,水)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 17,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 19,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 21,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "冰月神掌更高境界，修炼增加，破坏力也随着加强。",
+        "raw_block": "[冰月震天]\r\n属性 : 自然系\r\n元素 : 冰(冰 : 冰,水)\r\n修炼1级需要等级 : 17\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 19\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 21\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 冰月神掌更高境界，修炼增加，破坏力也随着加强。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 74,
+        "name": "击风",
+        "attribute": "自然系",
+        "element": "风(风：暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 18,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 20,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 22,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "风掌的更高境界，随着修炼加深，破坏力也增强。",
+        "raw_block": "[击风]\r\n属性 : 自然系\r\n元素 : 风(风：暴风)\r\n修炼1级需要等级 : 18\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 20\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 22\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 风掌的更高境界，随着修炼加深，破坏力也增强。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 9,
+        "name": "地域火",
+        "attribute": "自然系",
+        "element": "火 (火 : 火力)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 20,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 22,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 24,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "可以同时攻击排成一队的(8个空格)多个怪物，修炼值越大，所散发出的威力也越大。",
+        "raw_block": "[地域火]\r\n属性 : 自然系\r\n元素 : 火 (火 : 火力)\r\n修炼1级需要等级 : 20\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 22\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 24\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 可以同时攻击排成一队的(8个空格)多个怪物，修炼值越大，所散发出的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 10,
+        "name": "疾光电影",
+        "attribute": "自然系",
+        "element": "雷(雷 : 电击)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 21,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 23,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 25,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "放射出贯通力极强的霹雳闪电，对排成一队的多个怪物(8空格)同时进行攻击，修炼度越深，发出的威力也越大。",
+        "raw_block": "[疾光电影]\r\n属性 : 自然系\r\n元素 : 雷(雷 : 电击)\r\n修炼1级需要等级 : 21\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 23\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 25\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 放射出贯通力极强的霹雳闪电，对排成一队的多个怪物(8空格)同时进行攻击，修炼度越深，发出的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 53,
+        "name": "冰沙掌",
+        "attribute": "自然系",
+        "element": "冰(冰 : 冰,水)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 22,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 24,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 26,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "直线喷射出寒气，同时攻击排成一列的多个怪物(8空格)，修炼增加，威力也随着增强。",
+        "raw_block": "[冰沙掌]\r\n属性 : 自然系\r\n元素 : 冰(冰 : 冰,水)\r\n修炼1级需要等级 : 22\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 24\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 26\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 直线喷射出寒气，同时攻击排成一列的多个怪物(8空格)，修炼增加，威力也随着增强。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 73,
+        "name": "风震天",
+        "attribute": "自然系",
+        "element": "风(风：暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 23,
+            "practice_value": 600
+          },
+          {
+            "level": 2,
+            "required_level": 25,
+            "practice_value": 700
+          },
+          {
+            "level": 3,
+            "required_level": 27,
+            "practice_value": 800
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "同时攻击排成一列的多个怪物(8空格)，修炼度越深，其威力也越大。",
+        "raw_block": "[风震天]\r\n属性 : 自然系\r\n元素 : 风(风：暴风)\r\n修炼1级需要等级 : 23\r\n - 修炼值 : 600\r\n修炼2级需要等级 : 25\r\n - 修炼值 : 700\r\n修炼3级需要等级 : 27\r\n - 修炼值 : 800\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 同时攻击排成一列的多个怪物(8空格)，修炼度越深，其威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 22,
+        "name": "火墙",
+        "attribute": "自然系",
+        "element": "火(火 : 火力)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 24,
+            "practice_value": 600
+          },
+          {
+            "level": 2,
+            "required_level": 26,
+            "practice_value": 700
+          },
+          {
+            "level": 3,
+            "required_level": 28,
+            "practice_value": 800
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "在某一点周围(+ 形态)点燃熊熊烈火维持一段时间，可以一直攻击位于此范围内怪物，修炼值越大，持续的时间也越长，发出的威力也越大。",
+        "raw_block": "[火墙]\r\n属性 : 自然系\r\n元素 : 火(火 : 火力)\r\n修炼1级需要等级 : 24\r\n - 修炼值 : 600\r\n修炼2级需要等级 : 26\r\n - 修炼值 : 700\r\n修炼3级需要等级 : 28\r\n - 修炼值 : 800\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 在某一点周围(+ 形态)点燃熊熊烈火维持一段时间，可以一直攻击位于此范围内怪物，修炼值越大，持续的时间也越长，发出的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 32,
+        "name": "圣言术",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 26,
+            "practice_value": 700
+          },
+          {
+            "level": 2,
+            "required_level": 28,
+            "practice_value": 800
+          },
+          {
+            "level": 3,
+            "required_level": 30,
+            "practice_value": 900
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "专门对付死者系列的怪物，修炼度越深，支配这些怪物的概率越大。",
+        "raw_block": "[圣言术]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 26\r\n - 修炼值 : 700\r\n修炼2级需要等级 : 28\r\n - 修炼值 : 800\r\n修炼3级需要等级 : 30\r\n - 修炼值 : 900\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 专门对付死者系列的怪物，修炼度越深，支配这些怪物的概率越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 104,
+        "name": "异形换位",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 27,
+            "practice_value": 800
+          },
+          {
+            "level": 2,
+            "required_level": 29,
+            "practice_value": 900
+          },
+          {
+            "level": 3,
+            "required_level": 31,
+            "practice_value": 1000
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用强烈的力量，超越时空，按照自己的意愿到处移动，修炼度越深，可移动的概率也增大。",
+        "raw_block": "[异形换位]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 27\r\n - 修炼值 : 800\r\n修炼2级需要等级 : 29\r\n - 修炼值 : 900\r\n修炼3级需要等级 : 31\r\n - 修炼值 : 1000\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用强烈的力量，超越时空，按照自己的意愿到处移动，修炼度越深，可移动的概率也增大。 ",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 31,
+        "name": "魔法盾",
+        "attribute": "自然系",
+        "element": "风(风：暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 29,
+            "practice_value": 900
+          },
+          {
+            "level": 2,
+            "required_level": 31,
+            "practice_value": 1000
+          },
+          {
+            "level": 3,
+            "required_level": 33,
+            "practice_value": 1100
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "在自己周围形成保护膜，在一定时间内增强防御力，修炼值越高，持续时间也越长。",
+        "raw_block": "[魔法盾]\r\n属性 : 自然系\r\n元素 : 风(风：暴风)\r\n修炼1级需要等级 : 29\r\n - 修炼值 : 900\r\n修炼2级需要等级 : 31\r\n - 修炼值 : 1000\r\n修炼3级需要等级 : 33\r\n - 修炼值 : 1100\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 在自己周围形成保护膜，在一定时间内增强防御力，修炼值越高，持续时间也越长。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 23,
+        "name": "爆裂火焰",
+        "attribute": "自然系",
+        "element": "火(火 : 火力)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 32,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 34,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 36,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "可以攻击指定地点周围的所有怪物(3*3)，修炼程度越深，所散发出的威力也越大。",
+        "raw_block": "[爆裂火焰]\r\n属性 : 自然系\r\n元素 : 火(火 : 火力)\r\n修炼1级需要等级 : 32\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 34\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 36\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 可以攻击指定地点周围的所有怪物(3*3)，修炼程度越深，所散发出的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 24,
+        "name": "地狱雷光",
+        "attribute": "自然系",
+        "element": "雷(雷 : 电击)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 33,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 35,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 37,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "瞬间产生电力，攻击指定地点周围的所有怪物(3*3)，修炼值越高，其威力也越大。",
+        "raw_block": "[地狱雷光]\r\n属性 : 自然系\r\n元素 : 雷(雷 : 电击)\r\n修炼1级需要等级 : 33\r\n  - 修炼值 : 1000\r\n修炼2级需要等级 : 35\r\n  - 修炼值 : 1100\r\n修炼3级需要等级 : 37\r\n  - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n  - 修炼值 : 未知\r\n说明 : 瞬间产生电力，攻击指定地点周围的所有怪物(3*3)，修炼值越高，其威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 33,
+        "name": "冰咆哮",
+        "attribute": "自然系",
+        "element": "冰(冰 : 冰,水)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 34,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 36,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 38,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "召唤冰块攻击指定地点周围所有怪物(3*3)，修炼值越高，其威力也越大。",
+        "raw_block": "[冰咆哮]\r\n属性 : 自然系\r\n元素 : 冰(冰 : 冰,水)\r\n修炼1级需要等级 : 34\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 36\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 38\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 召唤冰块攻击指定地点周围所有怪物(3*3)，修炼值越高，其威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 72,
+        "name": "龙卷风",
+        "attribute": "自然系",
+        "element": "风(风：暴风)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 35,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 37,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 39,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "引起旋风，攻击指定地点周围所有怪物(3*3)，修炼程度越深，散发的威力也越大。",
+        "raw_block": "[龙卷风]\r\n属性 : 自然系\r\n元素 : 风(风：暴风)\r\n修炼1级需要等级 : 35\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 37\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 39\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 引起旋风，攻击指定地点周围所有怪物(3*3)，修炼程度越深，散发的威力也越大。",
+        "ordered_section": {
+          "marker_id": 1,
+          "semantic_candidate": "wizard-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 2,
+        "name": "治愈术",
+        "attribute": "灵魂系",
+        "element": "神圣(神圣 : 神圣)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 7,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 9,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 11,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用体内真气治愈自己或他人，修炼程度越深，治愈程度越高。",
+        "raw_block": "[治愈术]\r\n属性 : 灵魂系\r\n元素 : 神圣(神圣 : 神圣)\r\n修炼1级需要等级 : 7\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 9\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 11\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用体内真气治愈自己或他人，修炼程度越深，治愈程度越高。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 4,
+        "name": "精神力战法",
+        "attribute": "?属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 8,
+            "practice_value": 100
+          },
+          {
+            "level": 2,
+            "required_level": 10,
+            "practice_value": 200
+          },
+          {
+            "level": 3,
+            "required_level": 12,
+            "practice_value": 300
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "提高自己攻击准确率(命中率)，修炼值越高，准确率也越高。",
+        "raw_block": "[精神力战法]\r\n属性 : ?属性\r\n元素 : 无\r\n修炼1级需要等级 : 8\r\n - 修炼值 : 100\r\n修炼2级需要等级 : 10\r\n - 修炼值 : 200\r\n修炼3级需要等级 : 12\r\n - 修炼值 : 300\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 提高自己攻击准确率(命中率)，修炼值越高，准确率也越高。 ",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 6,
+        "name": "施毒术",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 12,
+            "practice_value": 200
+          },
+          {
+            "level": 2,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 3,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "根据毒粉的性质不同，可降低防御力或体力，修炼值越高，持续时间也越长。",
+        "raw_block": "[施毒术]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 12\r\n - 修炼值 : 200\r\n修炼2级需要等级 : 14\r\n - 修炼值 : 300\r\n修炼3级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 根据毒粉的性质不同，可降低防御力或体力，修炼值越高，持续时间也越长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 13,
+        "name": "灵魂火符",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 13,
+            "practice_value": 300
+          },
+          {
+            "level": 2,
+            "required_level": 15,
+            "practice_value": 400
+          },
+          {
+            "level": 3,
+            "required_level": 17,
+            "practice_value": 500
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将具有爆发力的护身符射向怪物(加强攻击非死者怪物)，修炼度增加，其威力也随着增强。",
+        "raw_block": "[灵魂火符]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 13\r\n - 修炼值 : 300\r\n修炼2级需要等级 : 15\r\n - 修炼值 : 400\r\n修炼3级需要等级 : 17\r\n - 修炼值 : 500\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将具有爆发力的护身符射向怪物(加强攻击非死者怪物)，修炼度增加，其威力也随着增强。 ",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 37,
+        "name": "月魂断玉",
+        "attribute": "灵魂系",
+        "element": "神?(神圣：神圣)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 14,
+            "practice_value": 300
+          },
+          {
+            "level": 2,
+            "required_level": 16,
+            "practice_value": 400
+          },
+          {
+            "level": 3,
+            "required_level": 18,
+            "practice_value": 500
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将体内真气集中在手掌攻击敌人(使用'神圣护身符'时还可加强攻击死者系列怪物)，修炼增加，破坏力也随着增强。",
+        "raw_block": "[月魂断玉]\r\n属性 : 灵魂系\r\n元素 :  神?(神圣：神圣)\r\n修炼1级需要等级 : 14\r\n - 修炼值 : 300\r\n修炼2级需要等级 : 16\r\n - 修炼值 : 400\r\n修炼3级需要等级 : 18\r\n - 修炼值 : 500\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将体内真气集中在手掌攻击敌人(使用'神圣护身符'时还可加强攻击死者系列怪物)，修炼增加，破坏力也随着增强。 ",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 17,
+        "name": "召唤骷髅",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 17,
+            "practice_value": 400
+          },
+          {
+            "level": 2,
+            "required_level": 19,
+            "practice_value": 500
+          },
+          {
+            "level": 3,
+            "required_level": 21,
+            "practice_value": 600
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将体内的真气注入到护身符里，召唤灵魂，被召唤的灵魂是骷髅的形状，成为道士的手下，一起抵抗怪物，修炼度越深，召唤的骷髅越强大。",
+        "raw_block": "[召唤骷髅]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 17\r\n - 修炼值 : 400\r\n修炼2级需要等级 : 19\r\n - 修炼值 : 500\r\n修炼3级需要等级 : 21\r\n - 修炼值 : 600\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将体内的真气注入到护身符里，召唤灵魂，被召唤的灵魂是骷髅的形状，成为道士的手下，一起抵抗怪物，修炼度越深，召唤的骷髅越强大。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 18,
+        "name": "隐身术",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 20,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 22,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 24,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "瞬间隐藏自己，躲避怪物。修炼程度越深，隐藏持续时间越长。",
+        "raw_block": "[隐身术]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 20\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 22\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 24\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 瞬间隐藏自己，躲避怪物。修炼程度越深，隐藏持续时间越长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 14,
+        "name": "幽灵盾",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 21,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 23,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 25,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用体内的真气，防御外来的攻击，修炼越深，防御能力持续时间越长。",
+        "raw_block": "[幽灵盾]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 21\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 23\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 25\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用体内的真气，防御外来的攻击，修炼越深，防御能力持续时间越长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 19,
+        "name": "集体隐身术",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 23,
+            "practice_value": 600
+          },
+          {
+            "level": 2,
+            "required_level": 25,
+            "practice_value": 700
+          },
+          {
+            "level": 3,
+            "required_level": 27,
+            "practice_value": 800
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "隐身术的更高境界，可以隐身3*3范围之内的所有人，修炼度越深隐身时间持续得会更长。",
+        "raw_block": "[集体隐身术]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 23\r\n - 修炼值 : 600\r\n修炼2级需要等级 : 25\r\n - 修炼值 : 700\r\n修炼3级需要等级 : 27\r\n - 修炼值 : 800\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 隐身术的更高境界，可以隐身3*3范围之内的所有人，修炼度越深隐身时间持续得会更长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 38,
+        "name": "月魂灵波",
+        "attribute": "灵魂系",
+        "element": "神?(神圣：神圣)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 24,
+            "practice_value": 600
+          },
+          {
+            "level": 2,
+            "required_level": 26,
+            "practice_value": 700
+          },
+          {
+            "level": 3,
+            "required_level": 28,
+            "practice_value": 800
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "月魂断玉更高境界的魔法，修炼值越高破坏力也越强。",
+        "raw_block": "[月魂灵波]\r\n属性 : 灵魂系\r\n元素 : 神?(神圣：神圣)\r\n修炼1级需要等级 : 24\r\n - 修炼值 : 600\r\n修炼2级需要等级 : 26\r\n - 修炼值 : 700\r\n修炼3级需要等级 : 28\r\n - 修炼值 : 800\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 月魂断玉更高境界的魔法，修炼值越高破坏力也越强。 ",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 15,
+        "name": "神圣战甲术",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 25,
+            "practice_value": 700
+          },
+          {
+            "level": 2,
+            "required_level": 27,
+            "practice_value": 800
+          },
+          {
+            "level": 3,
+            "required_level": 29,
+            "practice_value": 900
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "吸收大自然的真气，抵抗外部攻击，修炼程度越深，抵抗时间也越长。",
+        "raw_block": "[神圣战甲术]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 25\r\n - 修炼值 : 700\r\n修炼2级需要等级 : 27\r\n - 修炼值 : 800\r\n修炼3级需要等级 : 29\r\n - 修炼值 : 900\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 吸收大自然的真气，抵抗外部攻击，修炼程度越深，抵抗时间也越长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 16,
+        "name": "困魔咒",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 27,
+            "practice_value": 800
+          },
+          {
+            "level": 2,
+            "required_level": 29,
+            "practice_value": 900
+          },
+          {
+            "level": 3,
+            "required_level": 31,
+            "practice_value": 1000
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "利用护身符，在一定范围内捆住敌人，与外界隔离开，修炼程度越深持续时间也越长。",
+        "raw_block": "[困魔咒]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 27\r\n - 修炼值 : 800\r\n修炼2级需要等级 : 29\r\n - 修炼值 : 900\r\n修炼3级需要等级 : 31\r\n - 修炼值 : 1000\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 利用护身符，在一定范围内捆住敌人，与外界隔离开，修炼程度越深持续时间也越长。 ",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 36,
+        "name": "空拳刀法",
+        "attribute": "?属性",
+        "element": "无",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 28,
+            "practice_value": 900
+          },
+          {
+            "level": 2,
+            "required_level": 30,
+            "practice_value": 1000
+          },
+          {
+            "level": 3,
+            "required_level": 32,
+            "practice_value": 1100
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "用脚推开敌人，修炼值越高可推开的概率会越大，破坏力也会更大。",
+        "raw_block": "[空拳刀法]\r\n属性 : ?属性\r\n元素 : 无\r\n修炼1级需要等级 : 28\r\n - 修炼值 : 900\r\n修炼2级需要等级 : 30\r\n - 修炼值 : 1000\r\n修炼3级需要等级 : 32\r\n - 修炼值 : 1100\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 用脚推开敌人，修炼值越高可推开的概率会越大，破坏力也会更大。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 89,
+        "name": "强魔震法",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 29,
+            "practice_value": 900
+          },
+          {
+            "level": 2,
+            "required_level": 31,
+            "practice_value": 1000
+          },
+          {
+            "level": 3,
+            "required_level": 33,
+            "practice_value": 1100
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "使用护身符，提高自己或他人的魔法攻击力（火，冰，雷，风），并维持一定时间。",
+        "raw_block": "[强魔震法]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 29\r\n - 修炼值 : 900\r\n修炼2级需要等级 : 31\r\n - 修炼值 : 1000\r\n修炼3级需要等级 : 33\r\n - 修炼值 : 1100\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 使用护身符，提高自己或他人的魔法攻击力（火，冰，雷，风），并维持一定时间。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 30,
+        "name": "召唤神兽",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 30,
+            "practice_value": 900
+          },
+          {
+            "level": 2,
+            "required_level": 32,
+            "practice_value": 1000
+          },
+          {
+            "level": 3,
+            "required_level": 34,
+            "practice_value": 1100
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将体内的真气注入到护身符里，召唤具有神气的神兽，修炼程度越深，可召唤更强大的怪兽。",
+        "raw_block": "[召唤神兽]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 30\r\n - 修炼值 : 900\r\n修炼2级需要等级 : 32\r\n - 修炼值 : 1000\r\n修炼3级需要等级 : 34\r\n - 修炼值 : 1100\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将体内的真气注入到护身符里，召唤具有神气的神兽，修炼程度越深，可召唤更强大的怪兽。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 29,
+        "name": "群体治愈术",
+        "attribute": "灵魂系",
+        "element": "神?(神圣：神圣)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 31,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 33,
+            "practice_value": 1200
+          },
+          {
+            "level": 3,
+            "required_level": 35,
+            "practice_value": 1400
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "同时治愈3*3范围内的伙伴，修炼值越高，治愈程度也越高。",
+        "raw_block": "[群体治愈术]\r\n属性 : 灵魂系\r\n元素 : 神?(神圣：神圣)\r\n修炼1级需要等级 : 31\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 33\r\n - 修炼值 : 1200\r\n修炼3级需要等级 : 35\r\n - 修炼值 : 1400\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 同时治愈3*3范围内的伙伴，修炼值越高，治愈程度也越高。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 105,
+        "name": "超强召唤骷髅",
+        "attribute": "灵魂系",
+        "element": "幻影(幻影 : 幻想)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 33,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 35,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 37,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "将自己体内的真气注入到护身符里，召唤强有力的灵魂使之成为自己的手下，修炼程度越深，能够召唤更强有力的灵魂。",
+        "raw_block": "[超强召唤骷髅]\r\n属性 : 灵魂系\r\n元素 : 幻影(幻影 : 幻想)\r\n修炼1级需要等级 : 33\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 35\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 37\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 将自己体内的真气注入到护身符里，召唤强有力的灵魂使之成为自己的手下，修炼程度越深，能够召唤更强有力的灵魂。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 94,
+        "name": "猛虎强势",
+        "attribute": "灵魂系",
+        "element": "暗黑(暗黑 : 黑暗)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 34,
+            "practice_value": 1000
+          },
+          {
+            "level": 2,
+            "required_level": 36,
+            "practice_value": 1100
+          },
+          {
+            "level": 3,
+            "required_level": 38,
+            "practice_value": 1200
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "瞬间提高内功，对外部的打击产生很强的防御力，修炼值越高，破坏力的持续时间也越长。",
+        "raw_block": "[猛虎强势]\r\n属性 : 灵魂系\r\n元素 : 暗黑(暗黑 : 黑暗)\r\n修炼1级需要等级 : 34\r\n - 修炼值 : 1000\r\n修炼2级需要等级 : 36\r\n - 修炼值 : 1100\r\n修炼3级需要等级 : 38\r\n - 修炼值 : 1200\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 瞬间提高内功，对外部的打击产生很强的防御力，修炼值越高，破坏力的持续时间也越长。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      },
+      {
+        "id": 77,
+        "name": "回生术",
+        "attribute": "灵魂系",
+        "element": "神?(神圣：神圣)",
+        "levels": [
+          {
+            "level": 1,
+            "required_level": 35,
+            "practice_value": 500
+          },
+          {
+            "level": 2,
+            "required_level": 37,
+            "practice_value": 600
+          },
+          {
+            "level": 3,
+            "required_level": 39,
+            "practice_value": 700
+          },
+          {
+            "level": 4,
+            "required_level": "未知",
+            "practice_value": "未知"
+          }
+        ],
+        "description": "使用此魔法可以起死回生，修炼值越高，生还概率也越大。",
+        "raw_block": "[回生术]\r\n属性 : 灵魂系\r\n元素 : 神?(神圣：神圣)\r\n修炼1级需要等级 : 35\r\n - 修炼值 : 500\r\n修炼2级需要等级 : 37\r\n - 修炼值 : 600\r\n修炼3级需要等级 : 39\r\n - 修炼值 : 700\r\n修炼4级需要等级 : 未知\r\n - 修炼值 : 未知\r\n说明 : 使用此魔法可以起死回生，修炼值越高，生还概率也越大。",
+        "ordered_section": {
+          "marker_id": 2,
+          "semantic_candidate": "taoist-candidate",
+          "evidence_level": "primary-file-order-plus-content-candidate"
+        }
+      }
+    ],
+    "evidence_level": "primary-decoded-client-file",
+    "warning": "This is client Magic.exp content; do not merge it with Mud3 Envir/magic.dat without an explicit comparison key."
   }
 }

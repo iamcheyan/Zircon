@@ -42,6 +42,7 @@ def main() -> None:
     parser.add_argument("--window-visual-semantics", type=Path, default=Path("docs/research/ei-ui-layout/window-frame-visual-semantics.json"))
     parser.add_argument("--control-semantics", type=Path, default=Path("docs/research/ei-ui-layout/control-semantic-catalog.json"))
     parser.add_argument("--skill-window-context", type=Path, default=Path("docs/research/ei-ui-layout/skill-window-context.json"))
+    parser.add_argument("--magic-exp-records", type=Path, default=Path("docs/research/ei-ui-layout/magic-exp-records.json"))
     parser.add_argument("--inventory-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/inventory-window-render-evidence.json"))
     parser.add_argument("--status-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/status-window-render-evidence.json"))
     parser.add_argument("--quest-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/quest-window-render-evidence.json"))
@@ -111,6 +112,7 @@ def main() -> None:
     if args.control_semantics.exists():
         control_semantics = {r["control_id"]: r for r in json.loads(args.control_semantics.read_text(encoding="utf-8")).get("records", [])}
     skill_window_context = json.loads(args.skill_window_context.read_text(encoding="utf-8")) if args.skill_window_context.exists() else {}
+    magic_exp_records = json.loads(args.magic_exp_records.read_text(encoding="utf-8")) if args.magic_exp_records.exists() else {}
     inventory_window_evidence = json.loads(args.inventory_window_evidence.read_text(encoding="utf-8")) if args.inventory_window_evidence.exists() else {}
     status_window_evidence = json.loads(args.status_window_evidence.read_text(encoding="utf-8")) if args.status_window_evidence.exists() else {}
     quest_window_evidence = json.loads(args.quest_window_evidence.read_text(encoding="utf-8")) if args.quest_window_evidence.exists() else {}
@@ -280,6 +282,7 @@ def main() -> None:
     }
     layout["secondary_screen_candidates"] = [x for x in (interface1c_parent, interface1c_select) if x]
     layout["specialized_window_evidence"] = [x for x in (skill_window_context, inventory_window_evidence, status_window_evidence, quest_window_evidence, store_window_evidence, npc_window_evidence, social_window_evidence, system_window_evidence, notice_prompt_evidence, confirmation_prompt_evidence) if x]
+    layout["magic_exp_records"] = magic_exp_records
     if map_crossref:
         map_ui_evidence = dict(map_ui_evidence)
         map_ui_evidence["server_cross_reference_rows"] = map_crossref.get("rows", [])
