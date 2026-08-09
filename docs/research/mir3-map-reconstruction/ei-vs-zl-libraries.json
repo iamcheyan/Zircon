@@ -1,0 +1,974 @@
+{
+ "generated": "2026-08-10",
+ "note": "EI client Data vs Zircon Map Data; EI source: theme folder first, root fallback (c-names); ZL source: theme folder first, root fallback. Snow/Forest themes unused by EI server maps (all theme 0/1).",
+ "rows": [
+  {
+   "theme": "Wood",
+   "lib": "Tilesc",
+   "ei_frames": 3927,
+   "zl_frames": 13841,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "96x64": 300
+   },
+   "zl_sizes": {
+    "96x64": 12997
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Tiles30c",
+   "ei_frames": 1080,
+   "zl_frames": 389,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Wood",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 338
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Tiles5c",
+   "ei_frames": 12,
+   "zl_frames": 60,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "96x64": 10
+   },
+   "zl_sizes": {
+    "96x64": 60
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "SmTilesc",
+   "ei_frames": 10180,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Wood",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Housesc",
+   "ei_frames": 9010,
+   "zl_frames": 14607,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "48x32": 162,
+    "48x288": 16,
+    "48x192": 7,
+    "48x128": 5
+   },
+   "zl_sizes": {
+    "48x32": 11713,
+    "48x96": 339,
+    "48x128": 287,
+    "48x192": 200
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Cliffsc",
+   "ei_frames": 7619,
+   "zl_frames": 29513,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Wood",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 26415,
+    "48x320": 485,
+    "48x256": 306,
+    "48x288": 251
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Dungeonsc",
+   "ei_frames": 4710,
+   "zl_frames": 9202,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "48x32": 73,
+    "48x192": 29,
+    "48x160": 19,
+    "48x224": 12
+   },
+   "zl_sizes": {
+    "48x32": 7335,
+    "48x160": 148,
+    "48x192": 104,
+    "48x128": 100
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Innersc",
+   "ei_frames": 1797,
+   "zl_frames": 68,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "root",
+   "ei_sizes": {
+    "48x32": 279,
+    "48x288": 5,
+    "48x320": 3,
+    "48x352": 2
+   },
+   "zl_sizes": {
+    "48x192": 27,
+    "1x1": 24,
+    "48x160": 11,
+    "48x224": 2
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Furnituresc",
+   "ei_frames": 1714,
+   "zl_frames": 4887,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Wood",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 3725,
+    "48x96": 79,
+    "48x448": 74,
+    "48x320": 62
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Wallsc",
+   "ei_frames": 3791,
+   "zl_frames": 7531,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "48x32": 246,
+    "48x128": 20,
+    "48x96": 5,
+    "48x160": 5
+   },
+   "zl_sizes": {
+    "48x32": 5771,
+    "48x320": 252,
+    "48x128": 195,
+    "48x512": 178
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "SmObjectsc",
+   "ei_frames": 969,
+   "zl_frames": 12586,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "48x32": 178,
+    "48x96": 35,
+    "48x64": 19,
+    "48x128": 8
+   },
+   "zl_sizes": {
+    "48x32": 6863,
+    "48x96": 528,
+    "48x64": 501,
+    "1x1": 372
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Animationsc",
+   "ei_frames": 1393,
+   "zl_frames": 1471,
+   "cmp": "DIFF",
+   "ei_src": "Wood",
+   "zl_src": "Wood",
+   "ei_sizes": {
+    "48x32": 100,
+    "48x320": 32,
+    "48x288": 25,
+    "48x352": 19
+   },
+   "zl_sizes": {
+    "48x32": 178,
+    "48x192": 144,
+    "48x256": 102,
+    "48x224": 96
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Object1c",
+   "ei_frames": 33125,
+   "zl_frames": 33349,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 11644,
+    "48x160": 408,
+    "48x96": 355,
+    "48x192": 352
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Wood",
+   "lib": "Object2c",
+   "ei_frames": 30000,
+   "zl_frames": 30000,
+   "cmp": "SAME",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 9673,
+    "48x224": 334,
+    "48x256": 324,
+    "48x160": 314
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tilesc",
+   "ei_frames": 4299,
+   "zl_frames": 9476,
+   "cmp": "DIFF",
+   "ei_src": "Sand",
+   "zl_src": "Sand",
+   "ei_sizes": {
+    "96x64": 295
+   },
+   "zl_sizes": {
+    "96x64": 8570
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tiles30c",
+   "ei_frames": 1080,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tiles5c",
+   "ei_frames": 20000,
+   "zl_frames": 35,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 35
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "SmTilesc",
+   "ei_frames": 10180,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Housesc",
+   "ei_frames": 1274,
+   "zl_frames": 1815,
+   "cmp": "DIFF",
+   "ei_src": "Sand",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 1319,
+    "48x128": 46,
+    "48x160": 41,
+    "48x192": 31
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Cliffsc",
+   "ei_frames": 7619,
+   "zl_frames": 664,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 605,
+    "48x64": 10,
+    "48x96": 5,
+    "48x128": 5
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Dungeonsc",
+   "ei_frames": 5364,
+   "zl_frames": 16654,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 11799,
+    "48x320": 265,
+    "48x352": 260,
+    "48x224": 241
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Innersc",
+   "ei_frames": 68,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Furnituresc",
+   "ei_frames": 1714,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Wallsc",
+   "ei_frames": 860,
+   "zl_frames": 1845,
+   "cmp": "DIFF",
+   "ei_src": "Sand",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 1438,
+    "48x128": 43,
+    "48x384": 38,
+    "48x96": 30
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "SmObjectsc",
+   "ei_frames": 631,
+   "zl_frames": 3968,
+   "cmp": "DIFF",
+   "ei_src": "Sand",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 2577,
+    "48x64": 177,
+    "48x96": 164,
+    "48x128": 128
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Animationsc",
+   "ei_frames": 127,
+   "zl_frames": 173,
+   "cmp": "DIFF",
+   "ei_src": "Sand",
+   "zl_src": "Sand",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x288": 40,
+    "48x512": 30,
+    "48x224": 14,
+    "48x192": 14
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Object1c",
+   "ei_frames": 33125,
+   "zl_frames": 33349,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 11644,
+    "48x160": 408,
+    "48x96": 355,
+    "48x192": 352
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Sand",
+   "lib": "Object2c",
+   "ei_frames": 30000,
+   "zl_frames": 30000,
+   "cmp": "SAME",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 9673,
+    "48x224": 334,
+    "48x256": 324,
+    "48x160": 314
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tilesc",
+   "ei_frames": 9836,
+   "zl_frames": 9746,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 8545
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tiles30c",
+   "ei_frames": 1080,
+   "zl_frames": 600,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 520
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tiles5c",
+   "ei_frames": 20000,
+   "zl_frames": 60,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 60
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "SmTilesc",
+   "ei_frames": 10180,
+   "zl_frames": 240,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 224
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Housesc",
+   "ei_frames": 9577,
+   "zl_frames": 11616,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 9590,
+    "48x96": 146,
+    "48x192": 129,
+    "48x160": 129
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Cliffsc",
+   "ei_frames": 7619,
+   "zl_frames": 14475,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 12539,
+    "48x320": 133,
+    "48x64": 130,
+    "48x96": 127
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Dungeonsc",
+   "ei_frames": 5364,
+   "zl_frames": 19767,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 15458,
+    "48x224": 449,
+    "48x192": 352,
+    "48x256": 306
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Innersc",
+   "ei_frames": 68,
+   "zl_frames": 1930,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 1734,
+    "48x128": 52,
+    "48x96": 28,
+    "48x256": 19
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Furnituresc",
+   "ei_frames": 1714,
+   "zl_frames": 196,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 53,
+    "48x64": 22,
+    "48x192": 16,
+    "48x96": 15
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Wallsc",
+   "ei_frames": 9213,
+   "zl_frames": 3518,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 2706,
+    "48x96": 89,
+    "48x192": 87,
+    "48x160": 71
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "SmObjectsc",
+   "ei_frames": 7569,
+   "zl_frames": 11622,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 7420,
+    "48x64": 643,
+    "48x96": 442,
+    "48x128": 226
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Animationsc",
+   "ei_frames": 2921,
+   "zl_frames": 1148,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Snow",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 620,
+    "48x576": 60,
+    "48x192": 36,
+    "48x800": 29
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Object1c",
+   "ei_frames": 33125,
+   "zl_frames": 33349,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 11644,
+    "48x160": 408,
+    "48x96": 355,
+    "48x192": 352
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Snow",
+   "lib": "Object2c",
+   "ei_frames": 30000,
+   "zl_frames": 30000,
+   "cmp": "SAME",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 9673,
+    "48x224": 334,
+    "48x256": 324,
+    "48x160": 314
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tilesc",
+   "ei_frames": 9836,
+   "zl_frames": 10933,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 4861
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tiles30c",
+   "ei_frames": 1080,
+   "zl_frames": 180,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 156
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tiles5c",
+   "ei_frames": 20000,
+   "zl_frames": 73,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "96x64": 20
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "SmTilesc",
+   "ei_frames": 10180,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Housesc",
+   "ei_frames": 9577,
+   "zl_frames": 7581,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 5839,
+    "48x384": 159,
+    "48x416": 119,
+    "48x352": 96
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Cliffsc",
+   "ei_frames": 7619,
+   "zl_frames": 3140,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 1974,
+    "48x352": 162,
+    "48x384": 161,
+    "48x320": 134
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Dungeonsc",
+   "ei_frames": 5364,
+   "zl_frames": 5622,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 2419,
+    "48x256": 179,
+    "48x288": 146,
+    "48x320": 104
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Innersc",
+   "ei_frames": 68,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Furnituresc",
+   "ei_frames": 1714,
+   "zl_frames": 2,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {},
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Wallsc",
+   "ei_frames": 9213,
+   "zl_frames": 1564,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 1004,
+    "48x288": 50,
+    "48x96": 37,
+    "48x256": 35
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "SmObjectsc",
+   "ei_frames": 7569,
+   "zl_frames": 6379,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 4604,
+    "48x160": 136,
+    "48x128": 108,
+    "48x64": 78
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Animationsc",
+   "ei_frames": 2921,
+   "zl_frames": 116,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "Forest",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 48,
+    "48x224": 24,
+    "48x128": 12,
+    "48x64": 12
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Object1c",
+   "ei_frames": 33125,
+   "zl_frames": 33349,
+   "cmp": "DIFF",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 11644,
+    "48x160": 408,
+    "48x96": 355,
+    "48x192": 352
+   },
+   "ei_error": null,
+   "zl_error": null
+  },
+  {
+   "theme": "Forest",
+   "lib": "Object2c",
+   "ei_frames": 30000,
+   "zl_frames": 30000,
+   "cmp": "SAME",
+   "ei_src": "root",
+   "zl_src": "root",
+   "ei_sizes": {},
+   "zl_sizes": {
+    "48x32": 9673,
+    "48x224": 334,
+    "48x256": 324,
+    "48x160": 314
+   },
+   "ei_error": null,
+   "zl_error": null
+  }
+ ]
+}
