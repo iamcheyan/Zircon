@@ -22,7 +22,7 @@ namespace Server.Envir
         public static bool CheckVersion { get; set; } = true;
         public static string VersionPath { get; set; } = "./Zircon.dll";
 
-        public static string MapPath { get; set; } = "./Map/";
+        public static string MapPath { get; set; } = "Debug/ServerCore/Map/";
         public static byte[] ClientHash;
         public static string MasterPassword { get; set; } = @"REDACTED";
         public static string SyncKey { get; set; } = "REDACTED";

@@ -19,6 +19,9 @@ public partial class MagicBar : Control
     private readonly DXButton _downButton;
     private readonly DXLabel _setLabel;
     private bool _dragging;
+    private bool _pressed;
+    private Vector2 _pressPos;
+    private const float DragThreshold = 4f;
 
     /// <summary>旧版 MagicBarDialog 是可移动窗口；布局刷新不能覆盖用户拖动后的位置。</summary>
     public bool UserMoved { get; private set; }
@@ -32,14 +35,20 @@ public partial class MagicBar : Control
         // 原版 MagicBarDialog.Opacity = 0.6，图标本身另有 0.6 透明度。
         // 保留父级透明度，避免快捷栏比原版过亮。
         Modulate = new Color(1f, 1f, 1f, 0.6f);
-        Position = new Vector2(10, 0);
         // Client/Scenes/Views/MagicBarDialog.cs: frame on uses 49/46,
         // frame off uses 37/36. The extra 20px is reserved for set controls.
         Size = new Vector2(BarWidth(), BarHeight(1));
-        if (ClientSettings.MagicBarPosition.X >= 0 && ClientSettings.MagicBarPosition.Y >= 0)
+        // 不要用 (10,0) 当默认：LayoutHud 会在主面板左下锚定。
+        // 旧版可拖动记忆位置；仅当配置是有效且非「历史误写的顶部默认」时恢复。
+        if (IsPersistedUserPosition(ClientSettings.MagicBarPosition))
         {
             Position = ClientSettings.MagicBarPosition;
             UserMoved = true;
+        }
+        else
+        {
+            Position = Vector2.Zero;
+            UserMoved = false;
         }
 
         _upButton = new DXButton
@@ -169,37 +178,56 @@ public partial class MagicBar : Control
 
     public override void _GuiInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton dragButton && dragButton.ButtonIndex == MouseButton.Left)
+        // 左键按下时记录起点但不立即拖动；移动超过阈值才视为拖动整条栏，
+        // 否则松开时按落点所在技能槽施法。原版 MagicBarDialog 可移动，但
+        // 不能因为「按下即拖动」把所有点击都吞掉，导致点技能放不出来。
+        if (@event is InputEventMouseButton mb && mb.ButtonIndex == MouseButton.Left)
         {
-            if (dragButton.Pressed)
+            if (mb.Pressed)
             {
-                _dragging = true;
+                _pressed = true;
+                _pressPos = mb.Position;
+                _dragging = false;
             }
             else
             {
+                bool wasDrag = _dragging;
+                _pressed = false;
                 _dragging = false;
-                if (UserMoved)
+                if (wasDrag && UserMoved)
                 {
                     ClientSettings.MagicBarPosition = new Vector2I((int)Position.X, (int)Position.Y);
                     ClientSettings.Save();
+                }
+                else if (!wasDrag)
+                {
+                    ActivateSlotAt(mb.Position);
                 }
             }
             AcceptEvent();
             return;
         }
 
-        if (@event is InputEventMouseMotion motion && _dragging)
+        if (@event is InputEventMouseMotion motion && _pressed)
         {
-            Position += motion.Relative;
-            UserMoved = true;
-            ClampToViewport();
+            if (!_dragging && motion.Position.DistanceTo(_pressPos) > DragThreshold)
+            {
+                _dragging = true;
+                UserMoved = true;
+            }
+            if (_dragging)
+            {
+                Position += motion.Relative;
+                ClampToViewport();
+            }
             AcceptEvent();
             return;
         }
+    }
 
-        if (@event is not InputEventMouseButton mouse || !mouse.Pressed ||
-            mouse.ButtonIndex != MouseButton.Left) return;
-
+    private void ActivateSlotAt(Vector2 local)
+    {
+        if (_game == null) return;
         var slots = GetSlotsForSet(_game.MagicBarSpellSet);
         int slotSpacing = _game.ShowMagicBarFrames ? 49 : 37;
         int slotSize = _game.ShowMagicBarFrames ? 46 : 36;
@@ -209,10 +237,9 @@ public partial class MagicBar : Control
             int row = i / IconsPerRow;
             float x = column * slotSpacing + (column / 4) * GroupSpacing;
             float y = row * (slotSpacing + 5);
-            if (slots[i] != null && new Rect2(x, y, slotSize, slotSize).HasPoint(mouse.Position))
+            if (slots[i] != null && new Rect2(x, y, slotSize, slotSize).HasPoint(local))
             {
                 _game.UseMagicSlot(i);
-                AcceptEvent();
                 return;
             }
         }
@@ -262,6 +289,49 @@ public partial class MagicBar : Control
     };
 
     public void Refresh() => QueueRedraw();
+
+    /// <summary>
+    /// 未拖拽时由 GameScene.LayoutHud 调用：锚在主面板左上方（底栏旁）。
+    /// </summary>
+    public void ApplyDefaultAnchor(Vector2 logicalViewport, Vector2I mainPanelLocation, Vector2 mainPanelSize)
+    {
+        if (UserMoved) return;
+        float x = mainPanelLocation.X - Size.X - 5f;
+        float y = logicalViewport.Y - mainPanelSize.Y - Size.Y - 5f;
+        Position = new Vector2(Mathf.Max(0, x), Mathf.Max(0, y));
+        ClampToViewport();
+    }
+
+    /// <summary>
+    /// 可恢复的用户拖拽位置。迁移旧配置由 ClientSettings 的版本号完成；
+    /// 迁移之后任何画布内坐标都是合法的用户位置，包括用户拖到顶部的情况。
+    /// </summary>
+    private static bool IsPersistedUserPosition(Vector2I pos)
+    {
+        if (pos.X < 0 || pos.Y < 0) return false;
+        return true;
+    }
+
+    /// <summary>丢弃无效记忆位置，供启动/布局强制回底锚。</summary>
+    public void ClearInvalidPersistedPosition()
+    {
+        if (UserMoved && !IsPersistedUserPosition(new Vector2I((int)Position.X, (int)Position.Y)))
+        {
+            UserMoved = false;
+            if (!IsPersistedUserPosition(ClientSettings.MagicBarPosition))
+            {
+                ClientSettings.MagicBarPosition = new Vector2I(-1, -1);
+                ClientSettings.Save();
+            }
+        }
+        else if (!IsPersistedUserPosition(ClientSettings.MagicBarPosition) &&
+                 ClientSettings.MagicBarPosition.X >= 0)
+        {
+            ClientSettings.MagicBarPosition = new Vector2I(-1, -1);
+            ClientSettings.Save();
+            UserMoved = false;
+        }
+    }
 
     private void ClampToViewport()
     {

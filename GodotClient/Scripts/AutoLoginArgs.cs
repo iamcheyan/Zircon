@@ -33,6 +33,9 @@ public static class AutoLoginArgs
     public static bool OperationAuditExt => Has("--operation-audit-ext");
     public static bool ScreenshotAfterEnter => Has("--screenshot-after-enter");
 
+    /// <summary>给每个 DXControl 画红色边框 + 四角方块/四边黄条 (临时布局诊断)</summary>
+    public static bool UiDiagnosticBorders => Has("--ui-diagnostic-borders");
+
     /// <summary>
     /// --window [=WxH]：强制窗口模式（覆盖 Zircon.ini 的全屏设置，直接开窗口）。
     /// 可选分辨率：--window=1600x900 或 --window 1600x900；缺省按主屏幕 75%

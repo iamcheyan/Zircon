@@ -13,6 +13,7 @@
 输出 /tmp/three_versions.json
 """
 import json, os, re, glob
+from datetime import datetime, timezone
 from collections import Counter
 
 NAS = "/home/tetsuya/NAS/TMP"
@@ -188,7 +189,9 @@ skills = {
     "three_class_count": sum(v for k, v in klass_count.items() if k != "刺客"),
 }
 
-out = {"maps": maps, "monsters": monsters, "items": items, "skills": skills}
+out = {"maps": maps, "monsters": monsters, "items": items, "skills": skills,
+       "_meta": {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                 "script": "three_versions_check.py"}}
 json.dump(out, open("/tmp/three_versions.json", "w", encoding="utf-8"),
           ensure_ascii=False, indent=1)
 

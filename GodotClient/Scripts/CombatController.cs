@@ -59,6 +59,7 @@ public partial class CombatController : Node2D
     private readonly Func<bool> _isMagicPending;
     // 追击被阻挡时的原地转向（原版 AttemptAction(Standing)）。
     private readonly Action<MirDirection> _sendTurn;
+    private readonly Action _clearMagicLock;
 
     public bool Enabled = true;
 
@@ -163,7 +164,8 @@ public partial class CombatController : Node2D
         Func<bool> isHurricane = null,
         Func<bool> isAutoRun = null,
         Func<bool> isMagicPending = null,
-        Action<MirDirection> sendTurn = null)
+        Action<MirDirection> sendTurn = null,
+        Action clearMagicLock = null)
     {
         _mapView = mapView;
         _getObjects = getObjects;
@@ -184,6 +186,7 @@ public partial class CombatController : Node2D
         _isAutoRun = isAutoRun;
         _isMagicPending = isMagicPending;
         _sendTurn = sendTurn;
+        _clearMagicLock = clearMagicLock;
         SetProcessAlways();
     }
 
@@ -343,6 +346,7 @@ public partial class CombatController : Node2D
                 if (!attackable)
                 {
                     TargetObject = null;
+                    _clearMagicLock?.Invoke();
                     QueueRedraw();
                     return;
                 }
@@ -387,7 +391,10 @@ public partial class CombatController : Node2D
                 // 右键查看玩家装备不能意外清掉普通目标。
                 if ((_rightClickDeTarget?.Invoke() ?? true)
                     && TargetObject?.Type == ObjectRenderer.Kind.Monster)
+                {
                     TargetObject = null;
+                    _clearMagicLock?.Invoke();
+                }
             }
         }
     }

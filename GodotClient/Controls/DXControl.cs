@@ -188,6 +188,9 @@ public partial class DXControl : Control
         if (Border)
             DrawRect(new Rect2(Vector2.Zero, Size), BorderColour, false, 1f);
 
+        if (DiagnosticBorders)
+            DrawRect(new Rect2(Vector2.Zero, Size), Colors.Red, false, 1.5f);
+
         AfterDraw?.Invoke(this, EventArgs.Empty);
     }
 
@@ -288,10 +291,22 @@ public partial class DXControl : Control
             if (_dragging)
             {
                 Vector2 target = Position + mm.Relative;
-                if (!IgnoreMoveBounds && GetParent() is Control parent)
+                if (!IgnoreMoveBounds)
                 {
-                    target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, parent.Size.X - Size.X));
-                    target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, parent.Size.Y - Size.Y));
+                    // 父是 Control (如窗口内子控件) -> 限制在父边界内;
+                    // 父是 CanvasLayer (HUD 顶层窗口, 如 BeltDialog) -> 限制在
+                    // 逻辑画布内, 不能拖出屏幕边缘。
+                    if (GetParent() is Control parent)
+                    {
+                        target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, parent.Size.X - Size.X));
+                        target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, parent.Size.Y - Size.Y));
+                    }
+                    else
+                    {
+                        Vector2 vp = GetViewport().GetVisibleRect().Size / GameScene.UiScale;
+                        target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, vp.X - Size.X));
+                        target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, vp.Y - Size.Y));
+                    }
                 }
                 Position = target;
                 Moving?.Invoke(this, EventArgs.Empty);
@@ -305,6 +320,9 @@ public partial class DXControl : Control
         if (Sound != SoundIndex.None)
             GameScene.Game?.PlaySound(Sound);
     }
+
+    /// <summary>临时诊断: 全局开关, 给每个控件画红色描边框, 直观显示真实边界/是否被裁。</summary>
+    public static bool DiagnosticBorders;
 
     /// <summary>移除并释放控件 (原版 Dispose 的 Godot 等价)</summary>
     public new void Dispose()

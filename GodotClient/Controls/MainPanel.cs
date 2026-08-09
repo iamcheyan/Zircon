@@ -119,15 +119,15 @@ public partial class MainPanel : DXImageControl
         MCImage.TooltipText = "魔法攻击";
         SCImage.TooltipText = "道术攻击";
 
-        ClassLabel = CreateStatLabel(300, 20);
-        LevelLabel = CreateStatLabel(300, 40);
-        FPLabel = CreateStatLabel(385, 20);
-        CPLabel = CreateStatLabel(385, 40);
-        ACLabel = CreateStatLabel(470, 20);
-        DCLabel = CreateStatLabel(470, 40);
-        MACLabel = CreateStatLabel(567, 20);
-        MCLabel = CreateStatLabel(567, 40);
-        SCLabel = CreateStatLabel(567, 40);
+        ClassLabel = CreateStatLabel(300, 22);
+        LevelLabel = CreateStatLabel(300, 42);
+        FPLabel = CreateStatLabel(385, 22);
+        CPLabel = CreateStatLabel(385, 42);
+        ACLabel = CreateStatLabel(470, 22);
+        DCLabel = CreateStatLabel(470, 42);
+        MACLabel = CreateStatLabel(567, 22);
+        MCLabel = CreateStatLabel(567, 42);
+        SCLabel = CreateStatLabel(567, 42);
 
         HealthLabel = CreateBarLabel();
         ManaLabel = CreateBarLabel();
@@ -188,8 +188,12 @@ public partial class MainPanel : DXImageControl
         if (tex == null) return;
 
         var imgSize = tex.GetSize();
+        // 原版 PresentTexture 按 HealthBar 左上对齐；高度以条容器为准，避免图高
+        // 与 GetSize(52) 不一致时上下溢出入槽。
+        float h = bar.Size.Y > 0 ? Math.Min(imgSize.Y, bar.Size.Y) : imgSize.Y;
+        float y = bar.Size.Y > h ? (bar.Size.Y - h) / 2f : 0f;
         float w = imgSize.X * p;
-        bar.DrawTextureRect(tex, new Rect2(0, 0, w, imgSize.Y), false);
+        bar.DrawTextureRect(tex, new Rect2(0, y, w, h), false);
     }
 
     private void DrawExperienceFill(object sender, EventArgs e)
@@ -264,13 +268,14 @@ public partial class MainPanel : DXImageControl
         return label;
     }
 
-    // 条上文字居中 (原版 SizeChanged 里做, Godot 标签不自适应尺寸, 用 MeasureText)
+    // 条上文字居中 (原版 SizeChanged 里做)。描边字略偏高，垂直用 +1 贴凹槽中线。
     private void CenterBarLabel(DXLabel label, DXControl bar)
     {
-        var size = MirSkin.MeasureText(label.Text, label.FontSize);
+        if (label == null || bar == null) return;
+        var size = MirSkin.MeasureText(label.Text ?? string.Empty, label.FontSize);
         label.Location = new Vector2I(
-            bar.Location.X + (int)((bar.Size.X - size.X) / 2),
-            bar.Location.Y + (int)((bar.Size.Y - size.Y) / 2));
+            bar.Location.X + (int)((bar.Size.X - size.X) / 2f),
+            bar.Location.Y + (int)((bar.Size.Y - size.Y) / 2f) + 1);
     }
 
     // ---- GameScene 数据注入 (对应原版 GameScene 的 Changed 方法) ----

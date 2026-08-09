@@ -1483,6 +1483,9 @@ class Handler(BaseHTTPRequestHandler):
         n = sh["npcs"][0]
         # NPC 图 (头像优先, 回退全身)
         npc_pic = npc_img(n, "pic")
+        # 坐标
+        p = n.get("pos") or {}
+        pos_s = f"({p['x']}, {p['y']})" if p.get("x") is not None else "—"
         # 地图链接
         mlink = file_link(sh["map"] + ".map")
         # 货品表格: 图 + 名 + 类型 + 价格 (+ 物品详情链接)
@@ -1496,9 +1499,9 @@ class Handler(BaseHTTPRequestHandler):
                      f"<td>{price_s}</td></tr>")
         body = f"""<p class="crumbs"><a href="/stores">商店</a> › {esc(sh['name_zh'])}</p>
 <h1>{esc(sh['name_zh'])} <span class="dim">· {esc(sh['kind'])}</span></h1>
-<p class="lead">地图 {mlink} · 店主 {esc(n['zh'])} <span class="mono">{esc(n['name'])}</span></p>
+<p class="lead">地图 {mlink} · 店主 <a href="/npc/{n['id']}">{esc(n['zh'])}</a> <span class="mono">{esc(n['name'])}</span> · 坐标 {pos_s}</p>
 <div class="panel-npc">{npc_pic}<div><div class="name">{esc(n['zh'])}</div>
-<div class="sub">{esc(n['name'])} · {esc(n['map'])}</div></div></div>
+<div class="sub">{esc(n['name'])} · {esc(n['map'])} · 坐标 {pos_s}</div></div></div>
 <h2>在售货品 · {len(sh['goods'])} 件</h2>
 <table><tr><th>货品</th><th>类型</th><th>价格</th></tr>{rows or '<tr><td colspan="3" class="none">服务型商店, 无在售货品</td></tr>'}</table>
 <p class="sub">货品按商店类别匹配（同类型店共享货架）; 价格 = 物品基础价 × 商店倍率。</p>"""

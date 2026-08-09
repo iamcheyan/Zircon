@@ -43,8 +43,8 @@ public partial class DXImageControl : DXControl
     /// <summary>绘制图库的 Overlay 层，而不是普通 Image 层。</summary>
     public bool UseOverlayTexture;
 
-    /// <summary>true: 绘制时加上图的 OffSetX/OffSetY 偏移</summary>
-    public bool UseOffSet = true;
+    /// <summary>true: 绘制时加上图的 OffSetX/OffSetY 偏移（原版默认 false）</summary>
+    public bool UseOffSet;
 
     public float ImageOpacity = 1f;
     public bool GrayScale;

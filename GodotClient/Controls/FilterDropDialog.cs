@@ -108,7 +108,11 @@ public sealed partial class DXTextInput : DXControl
     {
         Border = true;
         BorderColour = DefaultBorderColour;
-        _edit = new LineEdit { Flat = true, MouseFilter = MouseFilterEnum.Stop, Position = new Vector2(2, 1), Size = new Vector2(Size.X - 4, Size.Y - 2) };
+        _edit = new LineEdit { Flat = true, MouseFilter = MouseFilterEnum.Stop, Position = new Vector2(2, 0), Size = new Vector2(Size.X - 4, Size.Y) };
+        var emptyStyle = new StyleBoxEmpty();
+        _edit.AddThemeStyleboxOverride("normal", emptyStyle);
+        _edit.AddThemeStyleboxOverride("focus", emptyStyle);
+        _edit.AddThemeStyleboxOverride("read_only", emptyStyle);
         var font = MirSkin.GetFont();
         if (font != null) _edit.AddThemeFontOverride("font", font);
         _edit.AddThemeFontSizeOverride("font_size", _fontSize);

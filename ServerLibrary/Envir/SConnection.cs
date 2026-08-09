@@ -1,4 +1,4 @@
-﻿using Library;
+using Library;
 using Library.Network;
 using Library.SystemModels;
 using Server.DBModels;
@@ -578,6 +578,8 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
+            SEnvir.Log($"[ItemUse] {Player.Character?.CharacterName} grid={p.Link?.GridType} slot={p.Link?.Slot} count={p.Link?.Count}");
+
             Player.ItemUse(p.Link);
         }
 
@@ -609,7 +611,11 @@ namespace Server.Envir
         {
             if (Stage != GameStage.Game) return;
 
+            SEnvir.Log($"[NPCCall] {Player.Character?.CharacterName} id={p.ObjectID} npc={(Player.NPC?.NPCInfo?.NPCName ?? "null")} page={(Player.NPCPage?.DialogType.ToString() ?? "null")} loc={Player.CurrentLocation}");
+
             Player.NPCCall(p.ObjectID);
+
+            SEnvir.Log($"[NPCCallDone] {Player.Character?.CharacterName} id={p.ObjectID} npc={(Player.NPC?.NPCInfo?.NPCName ?? "null")} page={(Player.NPCPage?.DialogType.ToString() ?? "null")}");
         }
 
         public void Process(C.NPCButton p)
@@ -635,6 +641,8 @@ namespace Server.Envir
         public void Process(C.NPCBuy p)
         {
             if (Stage != GameStage.Game) return;
+
+            SEnvir.Log($"[NPCBuy] {Player.Character?.CharacterName} index={p.Index} amt={p.Amount} npc={(Player.NPC?.NPCInfo?.NPCName ?? "null")} page={(Player.NPCPage?.DialogType.ToString() ?? "null")} guild={p.GuildFunds}");
 
             Player.NPCBuy(p);
         }

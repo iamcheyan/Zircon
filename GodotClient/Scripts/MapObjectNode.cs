@@ -307,10 +307,14 @@ public partial class MapObjectNode : Node2D
 
     public int DrawFrame => FrameIndex + _currentFrame.StartIndex + _currentFrame.OffSet * (int)Direction;
 
-    // 对象头顶血条 (受伤后显示, 原客户端同款: 黑底 + 绿/黄/红条)
+    // 受击/血量变动后显示的截止时间戳 (毫秒)，原版受击显示 5 秒血条
+    public double DrawHealthUntilMs;
+
+    // 对象头顶血条 (受击/伤害后显示 5 秒, 原客户端同款: 黑底 + 绿/黄/红条)
     protected void DrawHealthBar()
     {
         if (!ShowHealthBar || Dead || MaxHealth <= 0) return;
+        if (Godot.Time.GetTicksMsec() > DrawHealthUntilMs) return;
         if (this is ObjectRenderer objectRenderer && objectRenderer.Type == ObjectRenderer.Kind.Monster && !ClientSettings.ShowMonsterHealth)
             return;
         float percent = Math.Clamp(Health / (float)MaxHealth, 0f, 1f);

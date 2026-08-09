@@ -26,6 +26,10 @@ public static class ClientSettings
     public static bool ShowMagicBarFrames { get; set; } = true;
     /// <summary>快捷技能栏的逻辑像素位置；负数表示首次使用默认锚点。</summary>
     public static Vector2I MagicBarPosition { get; set; } = new(-1, -1);
+    /// <summary>腰带栏的逻辑像素位置；负数表示首次使用默认锚点。</summary>
+    public static Vector2I BeltDialogLocation { get; set; } = new(-1, -1);
+    /// <summary>技能栏坐标格式版本；用于一次性迁移旧版错误坐标。</summary>
+    public static int MagicBarPositionVersion { get; set; } = 1;
     public static bool MonsterBoxVisible { get; set; } = true;
     public static bool QuestTrackerVisible { get; set; } = true;
     public static bool LogChat { get; set; } = true;
@@ -147,7 +151,27 @@ public static class ClientSettings
         RightClickDeTarget = Read(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
         HideChatBar = Read(file, "Game", nameof(HideChatBar), HideChatBar);
         ShowMagicBarFrames = Read(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
-        MagicBarPosition = ReadVector2I(file, "Game", nameof(MagicBarPosition), MagicBarPosition);
+        MagicBarPositionVersion = Read(file, "Game", nameof(MagicBarPositionVersion), 0);
+        MagicBarPosition = ReadPoint(file, "Game", nameof(MagicBarPosition), MagicBarPosition);
+        BeltDialogLocation = ReadPoint(file, "Game", nameof(BeltDialogLocation), BeltDialogLocation);
+        // v1: 旧客户端保存的是未经过最终 Canvas/视口布局的临时坐标，一律丢弃。
+        // v2: ReadPoint 修复前，配置里的小坐标会被 ReadVector2I 的 320x240 下限
+        // 抬到屏幕中部；修复后这些坐标恢复原值，但其中贴顶带 (Y<48) 的位置是
+        // 早期「技能栏贴顶」bug 残留，不是用户刻意摆放 —— 一次性丢弃，让 LayoutHud
+        // 重新锚到主面板左下侧。
+        bool migrateMagicBarPosition = MagicBarPositionVersion < 1;
+        if (migrateMagicBarPosition)
+        {
+            MagicBarPosition = new Vector2I(-1, -1);
+            MagicBarPositionVersion = 1;
+        }
+        bool migrateMagicBarPositionV2 = MagicBarPositionVersion < 2;
+        if (migrateMagicBarPositionV2)
+        {
+            if (MagicBarPosition.Y >= 0 && MagicBarPosition.Y < 48)
+                MagicBarPosition = new Vector2I(-1, -1);
+            MagicBarPositionVersion = 2;
+        }
         MonsterBoxVisible = Read(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
         QuestTrackerVisible = Read(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
         LogChat = Read(file, "Game", nameof(LogChat), LogChat);
@@ -180,6 +204,8 @@ public static class ClientSettings
         RememberedEMail = Read(file, "Login", nameof(RememberedEMail), RememberedEMail);
         RememberedPassword = Read(file, "Login", nameof(RememberedPassword), RememberedPassword);
         LoadColours(file);
+        if (migrateMagicBarPosition || migrateMagicBarPositionV2)
+            Save();
     }
 
     public static void Save()
@@ -201,7 +227,9 @@ public static class ClientSettings
         Write(file, "Game", nameof(RightClickDeTarget), RightClickDeTarget);
         Write(file, "Game", nameof(HideChatBar), HideChatBar);
         Write(file, "Game", nameof(ShowMagicBarFrames), ShowMagicBarFrames);
+        Write(file, "Game", nameof(MagicBarPositionVersion), MagicBarPositionVersion);
         Write(file, "Game", nameof(MagicBarPosition), MagicBarPosition);
+        Write(file, "Game", nameof(BeltDialogLocation), BeltDialogLocation);
         Write(file, "Game", nameof(MonsterBoxVisible), MonsterBoxVisible);
         Write(file, "Game", nameof(QuestTrackerVisible), QuestTrackerVisible);
         Write(file, "Game", nameof(LogChat), LogChat);
@@ -273,7 +301,8 @@ public static class ClientSettings
         else
         {
             DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
-            DisplayServer.WindowSetSize(GameSize);
+            var targetSize = GameSize.X > 0 && GameSize.Y > 0 ? GameSize : new Vector2I(1024, 768);
+            DisplayServer.WindowSetSize(targetSize);
         }
 
         Engine.MaxFps = LimitFPS ? 60 : 0;
@@ -377,7 +406,16 @@ public static class ClientSettings
         Vector2I size = value.AsVector2I();
         return new Vector2I(Mathf.Max(320, size.X), Mathf.Max(240, size.Y));
     }
-
+    private static Vector2I ReadPoint(ConfigFile file, string section, string key, Vector2I fallback)
+    {
+        // UI 控件坐标 (MagicBar/Belt)：允许 (-1,-1) 表示未设置，不能套用
+        // ReadVector2I 的 320x240 最小尺寸下限 (那是给窗口分辨率 GameSize 用的)，
+        // 否则保存的小坐标会被强制抬到屏幕中部，控件永远飘在中间。
+        if (!file.HasSectionKey(section, key)) return fallback;
+        Variant value = file.GetValue(section, key);
+        if (value.VariantType == Variant.Type.Vector2I) return value.AsVector2I();
+        return fallback;
+    }
     private static void Write(ConfigFile file, string section, string key, Variant value)
         => file.SetValue(section, key, value);
 }

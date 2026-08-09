@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using Library;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
@@ -120,7 +121,7 @@ public abstract partial class DXWindow : DXControl
                 TextColour = new Color(1f, 0.95f, 0.7f),
                 Align = HorizontalAlignment.Center,
                 VAlign = VerticalAlignment.Center,
-                Location = new Vector2I(30, 2),
+                Location = new Vector2I(30, 4),
                 Size = new Vector2(Size.X - 60, TitleHeight - 4),
                 MouseFilter = MouseFilterEnum.Ignore,
                 ZIndex = 100, // 必须盖在背景贴图之上 (背景是后添加的子控件)
@@ -184,7 +185,10 @@ public abstract partial class DXWindow : DXControl
         Vector2 delta = GetGlobalMousePosition() - _resizeStartMouse;
         Vector2I nPos = _resizeStartPos;
         Vector2I nSize = _resizeStartSize;
-        var viewport = GetViewportRect().Size;
+        // HUD 窗口挂在 _uiLayer (CanvasLayer) 上, Position/Size 是逻辑坐标,
+        // 必须除以 UiScale 换算成逻辑画布再钳制; 直接用物理视口会把窗口
+        // 放到画布之外 (右/下缘溢出屏幕)。
+        Vector2 viewport = GetViewportRect().Size / GameScene.UiScale;
 
         if ((_resizeEdges & 2) != 0) // right
             nSize.X = _resizeStartSize.X + (int)delta.X;
@@ -207,9 +211,9 @@ public abstract partial class DXWindow : DXControl
         if ((_resizeEdges & 1) != 0) nPos.X = _resizeStartPos.X + (_resizeStartSize.X - nSize.X);
         if ((_resizeEdges & 4) != 0) nPos.Y = _resizeStartPos.Y + (_resizeStartSize.Y - nSize.Y);
 
-        // 钳制到视口
-        nPos.X = Mathf.Clamp(nPos.X, 0, (int)viewport.X - nSize.X);
-        nPos.Y = Mathf.Clamp(nPos.Y, 0, (int)viewport.Y - nSize.Y);
+        // 钳制到逻辑视口 (绝不让窗口越过屏幕边缘)
+        nPos.X = Mathf.Clamp(nPos.X, 0, Mathf.Max(0, (int)viewport.X - nSize.X));
+        nPos.Y = Mathf.Clamp(nPos.Y, 0, Mathf.Max(0, (int)viewport.Y - nSize.Y));
 
         Position = nPos;
         Size = nSize;
@@ -270,7 +274,11 @@ public abstract partial class DXWindow : DXControl
         }
         else if (e is InputEventMouseMotion mm && _moving)
         {
-            Position += mm.Relative;
+            Vector2 target = Position + mm.Relative;
+            Vector2 vp = GetViewport().GetVisibleRect().Size / GameScene.UiScale;
+            target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, vp.X - Size.X));
+            target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, vp.Y - Size.Y));
+            Position = target;
             AcceptEvent();
             return;
         }

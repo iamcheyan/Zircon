@@ -1,0 +1,894 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil",
+  "library_count": 1103,
+  "frames": {
+    "50": {
+      "frame": 50,
+      "groups": [
+        "main_hud"
+      ],
+      "width": 800,
+      "height": 136,
+      "header": {
+        "index": 50,
+        "width": 800,
+        "height": 136,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 100609,
+        "bytes": 201218
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "52": {
+      "frame": 52,
+      "groups": [
+        "hud_belt"
+      ],
+      "width": 12,
+      "height": 8,
+      "header": {
+        "index": 52,
+        "width": 12,
+        "height": 8,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 97,
+        "bytes": 194
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "53": {
+      "frame": 53,
+      "groups": [
+        "hud_belt"
+      ],
+      "width": 12,
+      "height": 8,
+      "header": {
+        "index": 53,
+        "width": 12,
+        "height": 8,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 97,
+        "bytes": 194
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "60": {
+      "frame": 60,
+      "groups": [
+        "hud_stats"
+      ],
+      "width": 56,
+      "height": 110,
+      "header": {
+        "index": 60,
+        "width": 56,
+        "height": 110,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 5530,
+        "bytes": 11060
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "61": {
+      "frame": 61,
+      "groups": [
+        "hud_stats"
+      ],
+      "width": 56,
+      "height": 110,
+      "header": {
+        "index": 61,
+        "width": 56,
+        "height": 110,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 5339,
+        "bytes": 10678
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "63": {
+      "frame": 63,
+      "groups": [
+        "hud_stats"
+      ],
+      "width": 164,
+      "height": 6,
+      "header": {
+        "index": 63,
+        "width": 164,
+        "height": 6,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1002,
+        "bytes": 2004
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "67": {
+      "frame": 67,
+      "groups": [
+        "hud_stats"
+      ],
+      "width": 4,
+      "height": 70,
+      "header": {
+        "index": 67,
+        "width": 4,
+        "height": 70,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 490,
+        "bytes": 980
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "80": {
+      "frame": 80,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 80,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "81": {
+      "frame": 81,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 81,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "82": {
+      "frame": 82,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 82,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "83": {
+      "frame": 83,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 83,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "84": {
+      "frame": 84,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 84,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "85": {
+      "frame": 85,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 24,
+      "height": 16,
+      "header": {
+        "index": 85,
+        "width": 24,
+        "height": 16,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 423,
+        "bytes": 846
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "90": {
+      "frame": 90,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 90,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 716,
+        "bytes": 1432
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "91": {
+      "frame": 91,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 91,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 713,
+        "bytes": 1426
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "92": {
+      "frame": 92,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 92,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 716,
+        "bytes": 1432
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "93": {
+      "frame": 93,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 93,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 710,
+        "bytes": 1420
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "94": {
+      "frame": 94,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 94,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 716,
+        "bytes": 1432
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "95": {
+      "frame": 95,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 95,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 716,
+        "bytes": 1432
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "96": {
+      "frame": 96,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 96,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 716,
+        "bytes": 1432
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "97": {
+      "frame": 97,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 28,
+      "height": 26,
+      "header": {
+        "index": 97,
+        "width": 28,
+        "height": 26,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 714,
+        "bytes": 1428
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "100": {
+      "frame": 100,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 100,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1118,
+        "bytes": 2236
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "101": {
+      "frame": 101,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 101,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1118,
+        "bytes": 2236
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "102": {
+      "frame": 102,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 102,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1183,
+        "bytes": 2366
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "103": {
+      "frame": 103,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 103,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1183,
+        "bytes": 2366
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "104": {
+      "frame": 104,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 104,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1193,
+        "bytes": 2386
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "105": {
+      "frame": 105,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 105,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1193,
+        "bytes": 2386
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "106": {
+      "frame": 106,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 106,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1144,
+        "bytes": 2288
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "107": {
+      "frame": 107,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 107,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1144,
+        "bytes": 2288
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "108": {
+      "frame": 108,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 108,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1196,
+        "bytes": 2392
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "109": {
+      "frame": 109,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 109,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1196,
+        "bytes": 2392
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "110": {
+      "frame": 110,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 110,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1195,
+        "bytes": 2390
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "111": {
+      "frame": 111,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 111,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1195,
+        "bytes": 2390
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "112": {
+      "frame": 112,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 112,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1181,
+        "bytes": 2362
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "113": {
+      "frame": 113,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 113,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1181,
+        "bytes": 2362
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "114": {
+      "frame": 114,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 114,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1182,
+        "bytes": 2364
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    },
+    "115": {
+      "frame": 115,
+      "groups": [
+        "hud_buttons"
+      ],
+      "width": 40,
+      "height": 38,
+      "header": {
+        "index": 115,
+        "width": 40,
+        "height": 38,
+        "offsetX": -24,
+        "offsetY": -16,
+        "shadow": false,
+        "shadowX": -24,
+        "shadowY": 104,
+        "words": 1181,
+        "bytes": 2362
+      },
+      "evidence": {
+        "level": "primary-resource",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil"
+      }
+    }
+  }
+}

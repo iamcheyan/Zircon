@@ -1,0 +1,130 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "constructor_va": "0x004026e0",
+  "resource_objects": [
+    {
+      "expression": "owner+0x46c",
+      "path": "Data/gameinter.wil",
+      "load_va": "0x0040272a"
+    },
+    {
+      "expression": "owner+0x5b0",
+      "path": "Data/Interface1c.wil",
+      "load_va": "0x0040273e"
+    }
+  ],
+  "callers": [
+    {
+      "call_va": "0x004020a8",
+      "neighborhood": [
+        "40207b: e8 e2 5f 06 00               \tcall\t0x468062 <.text+0x67062>",
+        "402080: 85 c0                        \ttest\teax, eax",
+        "402082: 74 10                        \tje\t0x402094 <.text+0x1094>",
+        "402084: 5f                           \tpop\tedi",
+        "402085: 5e                           \tpop\tesi",
+        "402086: 5d                           \tpop\tebp",
+        "402087: 83 c8 ff                     \tor\teax, -0x1",
+        "40208a: 5b                           \tpop\tebx",
+        "40208b: 81 c4 2c 05 00 00            \tadd\tesp, 0x52c",
+        "402091: c2 10 00                     \tret\t0x10",
+        "402094: b8 20 95 8a 00               \tmov\teax, 0x8a9520",
+        "402099: b9 20 95 8a 00               \tmov\tecx, 0x8a9520",
+        "40209e: a3 20 b8 8a 00               \tmov\tdword ptr [0x8ab820], eax",
+        "4020a3: a3 70 18 8b 00               \tmov\tdword ptr [0x8b1870], eax",
+        "4020a8: e8 33 06 00 00               \tcall\t0x4026e0 <.text+0x16e0>"
+      ]
+    }
+  ],
+  "interface1c_frames": {
+    "11": {
+      "width": 96,
+      "height": 24,
+      "offsetX": -24,
+      "offsetY": -16
+    },
+    "13": {
+      "width": 96,
+      "height": 26,
+      "offsetX": -24,
+      "offsetY": -16
+    },
+    "15": {
+      "width": 96,
+      "height": 26,
+      "offsetX": -24,
+      "offsetY": -16
+    },
+    "17": {
+      "width": 48,
+      "height": 26,
+      "offsetX": -24,
+      "offsetY": -16
+    },
+    "50": {
+      "width": 640,
+      "height": 480,
+      "offsetX": -24,
+      "offsetY": -16
+    }
+  },
+  "controls": [
+    {
+      "frame": 11,
+      "state_frame": 11,
+      "position": {
+        "x": 459,
+        "y": 436
+      },
+      "size": {
+        "width": 96,
+        "height": 24
+      }
+    },
+    {
+      "frame": 13,
+      "state_frame": 13,
+      "position": {
+        "x": 139,
+        "y": 379
+      },
+      "size": {
+        "width": 96,
+        "height": 26
+      }
+    },
+    {
+      "frame": 15,
+      "state_frame": 15,
+      "position": {
+        "x": 279,
+        "y": 379
+      },
+      "size": {
+        "width": 96,
+        "height": 26
+      }
+    },
+    {
+      "frame": 17,
+      "state_frame": 17,
+      "position": {
+        "x": 439,
+        "y": 379
+      },
+      "size": {
+        "width": 48,
+        "height": 26
+      }
+    }
+  ],
+  "static_interpretation": {
+    "candidate": "character-selection-screen",
+    "basis": [
+      "The four Interface1c labels visually correspond to the original character-selection button family.",
+      "The constructor is called during the client startup sequence at 0x004020A8.",
+      "The controls have fixed coordinates in the 640x480-era UI coordinate space."
+    ],
+    "confidence": "candidate-with-visual-and-static-support",
+    "warning": "Exact Chinese text and state-machine transition still require runtime confirmation."
+  }
+}

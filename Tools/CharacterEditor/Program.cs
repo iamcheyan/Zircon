@@ -415,7 +415,7 @@ static class Program
             .ToList();
         Console.WriteLine($"BaseStat 记录数(职业={mc?.ToString() ?? "全部"}): {stats.Count}, 等级范围: {stats.Min(x => x.Level)}-{stats.Max(x => x.Level)}");
         foreach (var b in stats)
-            Console.WriteLine($"  Lv.{b.Level,-4} HP={b.Health,-6} MP={b.Mana}");
+            Console.WriteLine($"  Lv.{b.Level,-4} HP={b.Health,-6} MP={b.Mana} Bag={b.BagWeight} Wear={b.WearWeight} Hand={b.HandWeight}");
     }
 
     // ---------- boost ----------

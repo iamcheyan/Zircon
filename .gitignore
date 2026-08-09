@@ -12,3 +12,9 @@ licenses.licx
 /.codex/skills/*
 /.godot/
 **/.godot/
+/Resource/
+# mir3ei 图鉴:views 为可重跑派生物(189MB),不进 git;HTML/contact/data/脚本均版本化
+/docs/research/mir3ei-map-catalog/views/
+__pycache__/
+# 运行时数据库(账号数据),不进 git
+/System.db

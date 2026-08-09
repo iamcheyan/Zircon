@@ -18,6 +18,11 @@ public sealed class BotConfig
     public int FieldAnchorY { get; set; } = 60;
     public int FieldRadius { get; set; } = 40;
     // 所有角色以城中心出生点为活动主场: 各自在出生点周围选一个"家"角落。
+    // 出生点是比奇县(地图索引 1), 登录时服务器返回的 SpawnMapIndex 是角色
+    // 下线位置, 不是固定出生图, 因此这里显式配置家的地图与坐标。
+    public int HomeMapIndex { get; set; } = 1;
+    public int HomeMapX { get; set; } = 159;
+    public int HomeMapY { get; set; } = 233;
     public int HomeAnchorRadius { get; set; } = 15;
     // 练级角色外出节奏: 在城驻留 HomeDwell 秒后去野外打 FieldTrip 秒再回城。
     public int HomeDwellSecondsMin { get; set; } = 240;

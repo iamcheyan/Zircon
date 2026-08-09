@@ -31,6 +31,13 @@ public sealed class BotAgent
     private bool _fieldPathToField;
     private bool _fieldPathHome;
     private DateTime _nextTownCast;
+    private DateTime _crossMapStuckSince = DateTime.MinValue;
+    private DateTime _nextCrossMapDiag;
+    private DateTime _nextSupplyDiag;
+    // 跨图 ItemUse 回城卷的追踪: 用卷后一段时间仍非家图 = 卷传送无效
+    // (BindPoint 被职业安全区/红区改写, 如刺客巢穴 459), 停止烧卷并重登。
+    private DateTime _portalUseAt = DateTime.MinValue;
+    private int? _portalUseSlot;
     private uint _targetMonsterId;
     private DateTime _nextTargetScan;
     private DateTime _nextGroupAction;
@@ -40,6 +47,15 @@ public sealed class BotAgent
     private DateTime _nextSupplyAction;
     private DateTime _nextSellAction;
     private bool _supplyPurchasePending;
+    private DateTime _supplyInteractionUntil = DateTime.MinValue;
+    private bool _npcCallPending;
+    private bool _repairCallPending;
+    // StartGame 已发出但迟迟未收到 S.StartGame 响应(服务器 Spawn 卡死等)时的显式失败。
+    private static readonly TimeSpan StartResponseTimeout = TimeSpan.FromSeconds(30);
+    private DateTime _startRequestedAt = DateTime.MinValue;
+    // 看到卖卷 NPC 时记录其位置(MapIndex → NPCInfo.Index → Point), 跨图兜底
+    // 移动用(视野外也能朝商店走); 竞技场等地图 AutoPath 无路线时必须靠它。
+    private readonly Dictionary<int, Dictionary<int, Point>> _knownSupplyNpcLocations = new();
     private int _shopPurchases;
     private int _shopSales;
     private DateTime _nextHarvest;
@@ -84,6 +100,8 @@ public sealed class BotAgent
     private uint _npcObjectId;
     private bool _autoPathActive;
     private DateTime _pullbackStuckSince = DateTime.MinValue;
+    private int _crossMapFailCount;
+    private DateTime _crossMapGraceUntil = DateTime.MinValue;
     private readonly int _index;
     private BotMap _map;
     private string _mapFile = string.Empty;
@@ -164,9 +182,21 @@ public sealed class BotAgent
                 break;
             case S.Login login:
                 if (login.Result != LoginResult.Success || login.Characters == null || login.Characters.Count == 0)
-                { Fail($"login failed: {login.Result} {login.Message}"); break; }
+                {
+                    // 服务器重启后旧会话的断连检测有延迟, 快速重连会撞上
+                    // AlreadyLoggedIn。等服务器踢掉残留会话再重试, 不算致命失败。
+                    if (login.Result == LoginResult.AlreadyLoggedIn)
+                    {
+                        Status = BotStatus.Connecting;
+                        _connection.TryDisconnect();
+                        Console.WriteLine($"[{Name}] login already logged in, wait for stale session");
+                        break;
+                    }
+                    Fail($"login failed: {login.Result} {login.Message}"); break;
+                }
                 _connection.Enqueue(new C.StartGame { CharacterIndex = login.Characters[0].CharacterIndex });
                 Status = BotStatus.Starting;
+                _startRequestedAt = DateTime.UtcNow + StartResponseTimeout;
                 break;
             case S.StartGame start:
                 if (start.Result != StartGameResult.Success) { Fail($"start failed: {start.Result} {start.Message}"); break; }
@@ -297,11 +327,28 @@ public sealed class BotAgent
 
     private void Tick()
     {
+        if (Status == BotStatus.Starting && DateTime.UtcNow >= _startRequestedAt)
+        {
+            // 服务器对 StartGame 无响应(如 Spawn 卡死/地图数据缺失), 不再无限挂起。
+            Fail($"start timeout: no S.StartGame response in {StartResponseTimeout.TotalSeconds:0}s");
+            _connection.TryDisconnect();
+            return;
+        }
         if (Status != BotStatus.Running) return;
         var now = DateTime.UtcNow;
         if (now >= _nextActivityReport)
         {
-        Console.WriteLine($"[{Name}] active map={World.MapIndex}:{World.Location} role={RoleName(_index)} class={World.Class} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} pvp={_pvpActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} targets={_targetSelections} pets={OwnedSummonCount()}");
+        Console.WriteLine($"[{Name}] active map={World.MapIndex} inst={World.InstanceIndex}:{World.Location} role={RoleName(_index)} class={World.Class} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} pvp={_pvpActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} targets={_targetSelections} pets={OwnedSummonCount()}");
+            foreach (var npc in World.Npcs.Values)
+            {
+                var info = Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == npc.NPCIndex);
+                if (info != null && SellsTownPortal(info))
+                {
+                    if (!_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var dict))
+                        _knownSupplyNpcLocations[World.MapIndex] = dict = new Dictionary<int, Point>();
+                    dict[info.Index] = npc.CurrentLocation;
+                }
+            }
             _nextActivityReport = now.AddSeconds(45 + _random.NextDouble() * 15);
         }
         if (World.Dead)
@@ -312,9 +359,35 @@ public sealed class BotAgent
 
         if (TryPvPBehavior(now)) goto AfterMovement;
 
+        // 任何非主城地图滞留兜底: 连续 ~10 分钟回不去(无卷/副本/寻路无路/供给断)
+        // 就主动重登, 重登后 SetBindPoint 会把绑定点重选为主城, 出生即回城。
+        // 正常练级外出/矿洞/副本时长都远短于此阈值。
+        if (World.MapIndex != _config.HomeMapIndex)
+        {
+            if (_crossMapStuckSince == DateTime.MinValue) _crossMapStuckSince = now;
+            else if ((now - _crossMapStuckSince).TotalMinutes >= 10)
+            {
+                _crossMapStuckSince = DateTime.MinValue;
+                Console.WriteLine($"[{Name}] stuck away from home, relog to rebind home");
+                _connection.TryDisconnect();
+                return;
+            }
+        }
+
         // A PvP round takes priority over long-running life routes. Otherwise
         // a mining/trade auto-path can starve the scheduled arena behavior.
-        if (_autoPathActive) goto AfterMovement;
+        // 跨图时 AutoPath 可能指向无效/不可达路线(如竞技场地图), 不短路,
+        // 让跨图检查的宽限逻辑接管(商店补给回城卷)。
+        if (_autoPathActive && World.MapIndex == _config.HomeMapIndex) goto AfterMovement;
+
+        // 已回主城: 清除跨图滞留计时, 避免下次计划外跨图误判。
+        if (World.MapIndex == _config.HomeMapIndex && _crossMapStuckSince != DateTime.MinValue)
+            _crossMapStuckSince = DateTime.MinValue;
+        if (World.MapIndex == _config.HomeMapIndex && _portalUseAt != DateTime.MinValue)
+        {
+            _portalUseAt = DateTime.MinValue;
+            _portalUseSlot = null;
+        }
 
         if (TryResourceBehavior(now)) goto AfterMovement;
 
@@ -323,6 +396,102 @@ public sealed class BotAgent
         if (TryFieldTripBehavior(now)) goto AfterMovement;
 
         if (TryInstanceBehavior(now)) goto AfterMovement;
+
+        // 计划外跨图(重启前遗留其他地图等): 直接 AutoPath 回城, 不在陌生地图
+        // 执行交易/闲逛等本地行为。挖矿中(矿洞)、练级外出中、副本中由各自
+        // 行为驱动豁免; PvP 跨图已由 TryPvPBehavior 处理。
+        bool fieldTripActive = _fieldPathToField || _fieldPathHome ||
+            (_fieldTripEnd != DateTime.MinValue && now < _fieldTripEnd);
+        bool miningActive = _resourceTripEnd != DateTime.MinValue && now < _resourceTripEnd;
+        // 服务器非副本时 InstanceIndex 为 -1(CurrentMap.Instance?.Index ?? -1),
+        // 副本中才是实例索引(>=0)。旧判断 !=0 把 -1 误判成副本, 导致
+        // %5==2 的角色在地图 11(竞技场)被永久豁免跨图回城。
+        bool inInstance = _index % 5 == 2 && World.InstanceIndex >= 0;
+        if (World.MapIndex != _config.HomeMapIndex && !fieldTripActive && !miningActive && !inInstance)
+        {
+            if (now >= _crossMapGraceUntil)
+            {
+                if (now >= _nextMove)
+                {
+                    // ItemUse 回城卷后 ~30s 仍非家图: 卷传送无效(BindPoint 被
+                    // 职业安全区/红区改写, 如刺客巢穴 459 绑定后卷原地传送)。
+                    // 停止烧卷, 重登让 SetBindPoint 重选绑定; 存档侧另行净化。
+                    if (_portalUseAt != DateTime.MinValue && _portalUseSlot.HasValue &&
+                        (now - _portalUseAt).TotalSeconds >= 30)
+                    {
+                        Console.WriteLine($"[{Name}] town portal ineffective (bindpoint hijacked), map={World.MapIndex} relog");
+                        _portalUseAt = DateTime.MinValue;
+                        _portalUseSlot = null;
+                        _connection.TryDisconnect();
+                        return;
+                    }
+                    // 跨图 AutoPath 常无路线(如竞技场地图), 优先用回城卷轴传送
+                    // 到绑定点(出生城); 无卷轴再试 AutoPath, 连续失败则宽限补给。
+                    var scroll = World.Inventory.FirstOrDefault(x => x?.Info != null &&
+                        x.Info.ItemType == ItemType.Consumable && x.Info.Shape == 2 &&
+                        x.Info.ItemName.Contains("Town Portal", StringComparison.OrdinalIgnoreCase));
+                    if (now >= _nextCrossMapDiag)
+                    {
+                        _nextCrossMapDiag = now.AddSeconds(90);
+                        Console.WriteLine($"[{Name}] cross-map scroll: found={scroll != null} count={scroll?.Count ?? -1} slot={scroll?.Slot ?? -999} stale={scroll?.Slot < 0}");
+                    }
+                    if (scroll != null && scroll.Count > 0)
+                    {
+                        // 在线购买(合并)的新物品在 ItemsGained 里 slot 恒为 -1
+                        // (服务器在入背包前序列化), 缓存不可信时整理背包拿正确 slot。
+                        if (scroll.Slot < 0)
+                        {
+                            _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+                            _nextMove = now.AddSeconds(10);
+                            Console.WriteLine($"[{Name}] stale inventory slot, refresh sort");
+                            return;
+                        }
+                        _connection.Enqueue(new C.ItemUse
+                        {
+                            Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = scroll.Slot, Count = 1 }
+                        });
+                        _portalUseAt = now;
+                        _portalUseSlot = scroll.Slot;
+                        _nextMove = now.AddSeconds(25);
+                        _supplyPurchasePending = false;
+                        Console.WriteLine($"[{Name}] away from home map, town portal home");
+                        return;
+                    }
+                    _crossMapFailCount++;
+                    if (_crossMapFailCount >= 4)
+                    {
+                        _crossMapFailCount = 0;
+                        _crossMapGraceUntil = now.AddSeconds(45);
+                        Console.WriteLine($"[{Name}] cross-map autopath failing, resupply grace");
+                        return;
+                    }
+                    // 竞技场等地图跨图 AutoPath 必失败: 优先朝缓存的卖卷 NPC 位置
+                    // 步行(进入视野后宽限期的 supply 会 approach 买卷回城)。
+                    if (_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var shopDict) && shopDict.Count > 0)
+                    {
+                        var shopPoint = shopDict.Values.First();
+                        MoveToward(shopPoint, 1, now);
+                        _nextMove = now.AddSeconds(5);
+                        Console.WriteLine($"[{Name}] away from home, walk to known shop {shopPoint}");
+                        return;
+                    }
+                    _connection.Enqueue(new C.AutoPathWaypoint
+                    {
+                        MapIndex = _config.HomeMapIndex,
+                        Location = _homeAnchor
+                    });
+                    _nextMove = now.AddSeconds(8);
+                    Console.WriteLine($"[{Name}] away from home map, autopath home");
+                }
+                return;
+            }
+            // 宽限期(now < _crossMapGraceUntil): 放行主链, 让商店补给买到回城卷轴
+        }
+        else if (World.MapIndex != _config.HomeMapIndex && now >= _nextCrossMapDiag)
+        {
+            _nextCrossMapDiag = now.AddSeconds(90);
+            Console.WriteLine($"[{Name}] cross-map exempt fieldTrip={fieldTripActive} mining={miningActive} inst={inInstance} tripEnd={(_fieldTripEnd == DateTime.MinValue ? "none" : _fieldTripEnd.ToString("HH:mm:ss"))} fail={_crossMapFailCount} grace={(_crossMapGraceUntil == DateTime.MinValue ? "none" : (_crossMapGraceUntil - now).TotalSeconds.ToString("F0") + "s")}");
+        }
 
         if (!_starterGuildAttempted && now >= _nextGuildAction)
         {
@@ -355,9 +524,7 @@ public sealed class BotAgent
         // 仅在同一张地图内做回拉(跨图坐标不可比);阈值比巡逻半径上限
         // 宽裕, 避免"走向目标途中被拽回锚点"的边界拉锯。
         // 练级角色外出(去程/打怪中/回程)是计划移动, 豁免回拉。
-        bool fieldTripActive = _fieldPathToField || _fieldPathHome ||
-            (_fieldTripEnd != DateTime.MinValue && now < _fieldTripEnd);
-        if (World.MapIndex == World.SpawnMapIndex && !fieldTripActive &&
+        if (World.MapIndex == _config.HomeMapIndex && !fieldTripActive &&
             Distance(World.Location, ActivityAnchor()) > _config.PatrolRadius + 8)
         {
             if (now >= _nextMove)
@@ -375,7 +542,7 @@ public sealed class BotAgent
                         _nextMove = now.AddSeconds(8);
                         _connection.Enqueue(new C.AutoPathWaypoint
                         {
-                            MapIndex = World.SpawnMapIndex,
+                            MapIndex = _config.HomeMapIndex,
                             Location = ActivityAnchor()
                         });
                         Console.WriteLine($"[{Name}] pullback stuck, autopath home");
@@ -398,6 +565,13 @@ public sealed class BotAgent
                 .FirstOrDefault();
             if (potion != null)
             {
+                if (potion.Slot < 0)
+                {
+                    // 在线购买的新物品 slot 缓存为 -1, 整理背包拿正确 slot
+                    _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+                    _nextPotion = now.AddSeconds(8);
+                    return;
+                }
                 _connection.Enqueue(new C.ItemUse
                 {
                     Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
@@ -440,7 +614,7 @@ public sealed class BotAgent
         }
 
         bool npcPriorityMove = false;
-        if (now >= _nextRepairAction && NeedsRepair())
+        if (now >= _nextRepairAction && now >= _supplyInteractionUntil && !_npcCallPending && NeedsRepair())
         {
             var repairNpc = World.Npcs.Values
                 .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
@@ -454,6 +628,8 @@ public sealed class BotAgent
                 if (distance <= 2)
                 {
                     _connection.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
+                    _npcCallPending = true;
+                    _repairCallPending = true;
                     _nextRepairAction = now.AddSeconds(8);
                 }
                 else if (now >= _nextMove)
@@ -464,7 +640,7 @@ public sealed class BotAgent
             }
         }
 
-        if (now >= _nextQuestAction)
+        if (now >= _nextQuestAction && now >= _supplyInteractionUntil && !_npcCallPending)
         {
             var questNpc = World.Npcs.Values
                 .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
@@ -478,6 +654,7 @@ public sealed class BotAgent
                 if (distance <= 2)
                 {
                     _connection.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
+                    _npcCallPending = true;
                     _nextQuestAction = now.AddSeconds(10);
                 }
                 else if (!npcPriorityMove && now >= _nextMove)
@@ -641,16 +818,37 @@ public sealed class BotAgent
     {
         if (!_config.EnableBotPvP || !IsPvpBot(_index) || now < _nextPvpAction) return false;
 
-        if (World.MapIndex != World.SpawnMapIndex)
+        if (World.MapIndex != _config.HomeMapIndex)
         {
             _autoPathActive = false;
-            if (now >= _nextMove)
+            // 有回城卷优先传送; 无卷放行主链, 由跨图检查的宽限逻辑去商店补给
+            var scroll = World.Inventory.FirstOrDefault(x => x?.Info != null &&
+                x.Info.ItemType == ItemType.Consumable && x.Info.Shape == 2 &&
+                x.Info.ItemName.Contains("Town Portal", StringComparison.OrdinalIgnoreCase));
+            if (scroll != null && scroll.Count > 0)
             {
-                _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = World.SpawnLocation });
-                _nextMove = now.AddSeconds(8);
-                Console.WriteLine($"[{Name}] pvp: return to map {World.SpawnMapIndex}");
+                if (now >= _nextMove)
+                {
+                    if (scroll.Slot < 0)
+                    {
+                        _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+                        _nextMove = now.AddSeconds(10);
+                        Console.WriteLine($"[{Name}] stale inventory slot, refresh sort");
+                        return true;
+                    }
+                    _connection.Enqueue(new C.ItemUse
+                    {
+                        Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = scroll.Slot, Count = 1 }
+                    });
+                    _portalUseAt = now;
+                    _portalUseSlot = scroll.Slot;
+                    _nextMove = now.AddSeconds(25);
+                    _supplyPurchasePending = false;
+                    Console.WriteLine($"[{Name}] pvp: town portal home");
+                }
+                return true;
             }
-            return true;
+            return false; // 无卷: 放行主链跨图检查的 grace 逻辑买卷
         }
         if (_pvpRoundEnd == DateTime.MinValue)
         {
@@ -869,19 +1067,29 @@ public sealed class BotAgent
     // PvP 回合中由 TryPvPBehavior 直接接管, 不经过这里的锚点。
     private Point ActivityAnchor() => _homeAnchor;
 
+    // 城中心出生点。登录时 SpawnMapIndex 是角色下线位置而非固定出生图,
+    // 因此家在配置的 HomeMap(比奇县), 仅当登录位置就在出生图时用其坐标。
+    private Point HomeLocation()
+    {
+        return World.SpawnMapIndex == _config.HomeMapIndex
+            ? World.SpawnLocation
+            : new Point(_config.HomeMapX, _config.HomeMapY);
+    }
+
     // 每个 bot 在城中心出生点周围选一个可走点作为自己的"家",
     // 带抖动让 20 人散在城中心不同角落而不是叠在同一点。
     private Point ChooseHomeAnchor()
     {
+        var home = HomeLocation();
         var map = CurrentMap();
         for (int i = 0; i < 30; i++)
         {
             var point = new Point(
-                Math.Clamp(World.SpawnLocation.X + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349),
-                Math.Clamp(World.SpawnLocation.Y + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349));
+                Math.Clamp(home.X + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349),
+                Math.Clamp(home.Y + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349));
             if (map == null || map.CanWalk(point)) return point;
         }
-        return World.SpawnLocation;
+        return home;
     }
 
     // 练级 bot 各自在野外怪区选一个可走锚点, 带抖动避免扎堆。
@@ -1322,7 +1530,7 @@ public sealed class BotAgent
     private bool TryFieldTripBehavior(DateTime now)
     {
         if (!IsFieldBot(_index)) return false;
-        if (World.MapIndex != World.SpawnMapIndex) return false; // 已在其他图, 由对应行为接管
+        if (World.MapIndex != _config.HomeMapIndex) return false; // 已在其他图, 由对应行为接管
 
         // 回程中: 到家附近即驻留(距离判到达, 同图无 MapChanged 事件)。
         if (_fieldPathHome)
@@ -1364,7 +1572,7 @@ public sealed class BotAgent
                 else
                 {
                     Console.WriteLine($"[{Name}] field: trip over, head home");
-                    _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = _homeAnchor });
+                    _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = _config.HomeMapIndex, Location = _homeAnchor });
                     _fieldPathHome = true;
                     _nextMove = now.AddSeconds(8);
                 }
@@ -1376,7 +1584,7 @@ public sealed class BotAgent
         if (now >= _nextFieldTrip)
         {
             Console.WriteLine($"[{Name}] field: trip to {_fieldAnchor}");
-            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = _fieldAnchor });
+            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = _config.HomeMapIndex, Location = _fieldAnchor });
             _fieldPathToField = true;
             _nextMove = now.AddSeconds(8);
             return true;
@@ -1521,6 +1729,12 @@ public sealed class BotAgent
                         .FirstOrDefault();
                     if (potion != null)
                     {
+                        if (potion.Slot < 0)
+                        {
+                            _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+                            _nextResourceAction = now.AddSeconds(8);
+                            return true;
+                        }
                         _connection.Enqueue(new C.ItemUse
                         {
                             Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
@@ -1535,8 +1749,8 @@ public sealed class BotAgent
                 return true;
             }
 
-            Point home = World.SpawnLocation;
-            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = home });
+            Point home = _homeAnchor;
+            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = _config.HomeMapIndex, Location = home });
             _resourcePathHome = true;
             _resourcePathToMine = false;
             _nextResourceAction = now.AddSeconds(10);
@@ -1560,7 +1774,7 @@ public sealed class BotAgent
             return true;
         }
 
-        if (World.MapIndex == World.SpawnMapIndex && _resourcePathHome)
+        if (World.MapIndex == _config.HomeMapIndex && _resourcePathHome)
         {
             _resourcePathHome = false;
             _resourceTripEnd = DateTime.MinValue;
@@ -1630,6 +1844,7 @@ public sealed class BotAgent
     private void HandleNpcResponse(S.NPCResponse response)
     {
         if (response == null) return;
+        _npcCallPending = false;
         _npcObjectId = response.ObjectID;
         var page = response.Page ?? Globals.NPCPageList?.Binding.FirstOrDefault(x => x.Index == response.Index);
         if (page == null) return;
@@ -1648,12 +1863,17 @@ public sealed class BotAgent
                     _connection.Enqueue(new C.QuestComplete { Index = quest.Index, ChoiceIndex = 0 });
         }
 
-        if (page.DialogType != NPCDialogType.Repair)
+        // 仅在本次 NPCResponse 确实是 repair 的 NPCCall 响应时点 Repair 按钮
+        // (时间节流不可靠: repair 块 NPCCall 后 8s 内 NPCResponse 到达,
+        // _nextRepairAction 还没到期会漏点, 造成 repair NPCCall 风暴反复清页,
+        // 打断商店购买)。supply 的响应时 _repairCallPending=false, 不会抢页。
+        if (page.DialogType != NPCDialogType.Repair && !_supplyPurchasePending && _repairCallPending)
         {
             var repairButton = page.Buttons?.FirstOrDefault(x => x.DestinationPage?.DialogType == NPCDialogType.Repair);
-            if (repairButton != null && NeedsRepair() && DateTime.UtcNow >= _nextRepairAction)
+            if (repairButton != null && NeedsRepair())
             {
                 _connection.Enqueue(new C.NPCButton { ButtonID = repairButton.ButtonID });
+                _repairCallPending = false;
                 _nextRepairAction = DateTime.UtcNow.AddSeconds(60);
             }
         }
@@ -1670,16 +1890,28 @@ public sealed class BotAgent
         {
             if (_supplyPurchasePending)
                 Console.WriteLine($"[{Name}] shop: candidates={string.Join(",", page.Goods?.Where(x => x.Item != null).Select(x => $"{x.Item.ItemName}:{x.Item.ItemType}") ?? Enumerable.Empty<string>())}");
+            // 跨图缺回城卷时优先补卷, 否则药水排序会一直压过卷轴,
+            // 导致困在陌生地图(如竞技场)买不到卷回城。
+            // Count>0: 用尽的卷轴条目(缓存残留)不算有卷, 否则永远补不上。
+            bool needPortal = World.MapIndex != _config.HomeMapIndex &&
+                !World.Inventory.Any(x => x?.Info != null && x.Count > 0 &&
+                    x.Info.ItemType == ItemType.Consumable && x.Info.Shape == 2 &&
+                    x.Info.ItemName.Contains("Town Portal", StringComparison.OrdinalIgnoreCase));
             var potion = page.Goods?.Where(x => x.Item != null)
                 .Where(x => x.Item.CanAutoPot || x.Item.ItemType == ItemType.Scroll ||
+                    (x.Item.ItemType == ItemType.Consumable && x.Item.Shape == 2) ||
                     (x.Item.ItemType == ItemType.Amulet && World.Class == MirClass.Taoist))
-                .Where(x => x.Item.CanAutoPot || x.Item.ItemType is ItemType.Scroll or ItemType.Amulet)
-                .OrderByDescending(x => x.Item.CanAutoPot && NeedsPotionSupply())
+                .Where(x => x.Item.CanAutoPot || x.Item.ItemType is ItemType.Scroll or ItemType.Amulet ||
+                    (x.Item.ItemType == ItemType.Consumable && x.Item.Shape == 2))
+                .OrderByDescending(x => needPortal && x.Item.ItemType == ItemType.Consumable && x.Item.Shape == 2 &&
+                    x.Item.ItemName?.Contains("Town Portal", StringComparison.OrdinalIgnoreCase) == true)
+                .ThenByDescending(x => x.Item.CanAutoPot && NeedsPotionSupply())
                 .ThenBy(x => x.Index)
                 .FirstOrDefault();
             if (potion?.Item != null)
             {
-                long amount = potion.Item.CanAutoPot ? (_supplyPurchasePending ? 1 : 5) : 1;
+                long amount = potion.Item.CanAutoPot ? (_supplyPurchasePending ? 1 : 5)
+                    : potion.Item.ItemType == ItemType.Consumable && potion.Item.Shape == 2 ? 3 : 1;
                 _connection.Enqueue(new C.NPCBuy { Index = potion.Index, Amount = amount, GuildFunds = false });
                 _nextSupplyAction = DateTime.UtcNow.AddSeconds(90);
                 _supplyPurchasePending = false;
@@ -1739,7 +1971,12 @@ public sealed class BotAgent
         if (World.Class == MirClass.Taoist &&
             World.Inventory.Where(x => x.Info?.ItemType == ItemType.Amulet).Sum(x => Math.Max(0, x.Count)) < 20)
             return true;
-        return World.Inventory.All(x => x.Info?.ItemType != ItemType.Scroll);
+        if (World.Inventory.All(x => x.Info?.ItemType != ItemType.Scroll))
+            return true;
+        // 跨图回城卷轴(Consumable Shape==2): 备 3 张, 免于卡在异地
+        return World.Inventory
+            .Where(x => x.Info?.ItemType == ItemType.Consumable && x.Info.Shape == 2)
+            .Sum(x => Math.Max(0, x.Count)) < 3;
     }
 
     private bool ShouldUseConsumable()
@@ -1776,6 +2013,15 @@ public sealed class BotAgent
     private bool TrySupplyBehavior(DateTime now)
     {
         if (now < _nextSupplyAction) return false;
+        if (now >= _nextSupplyDiag)
+        {
+            _nextSupplyDiag = now.AddSeconds(60);
+            var nearest = World.Npcs.Values
+                .Select(x => (Dist: Distance(World.Location, x.CurrentLocation),
+                              Name: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)?.NPCName ?? "?"))
+                .OrderBy(x => x.Dist).FirstOrDefault();
+            Console.WriteLine($"[{Name}] supply: called nextSupply={(_nextSupplyAction - now).TotalSeconds:F0}s npcs={World.Npcs.Count} nearest={nearest.Name}@{nearest.Dist} loc={World.Location}");
+        }
         // A failed/unfinished AutoPathStart must not permanently block the
         // supply state machine. The server remains the authority; we simply
         // retry at the next slow interval.
@@ -1784,13 +2030,43 @@ public sealed class BotAgent
         var npc = World.Npcs.Values
             .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
             .Where(x => x.Info != null && HasSupplyShop(x.Info))
-            .OrderBy(x => Distance(World.Location, x.Object.CurrentLocation))
+            .OrderBy(x => SellsTownPortal(x.Info) ? 0 : 1)
+            .ThenBy(x => Distance(World.Location, x.Object.CurrentLocation))
             .FirstOrDefault(x => Distance(World.Location, x.Object.CurrentLocation) <= Math.Max(20, _config.PatrolRadius * 2));
         if (npc.Object == null)
         {
             var supplyNpc = Globals.NPCInfoList?.Binding.FirstOrDefault(HasSupplyShop);
             if (supplyNpc == null) return false;
+            // 跨图时本地无供给 NPC。AutoPathWaypoint(跨图)必失败, 但
+            // AutoPathStart(卖卷 NPC) 的寻路目标是 NPC 的 Region——若该 NPC
+            // 就在本图(竞技场内的 Lavar)则同图寻路可行; 失败由服务器报错
+            // (chat: 无法找到自动寻路路线), BotRunner 下轮改用手动移动兜底。
+            if (World.MapIndex != _config.HomeMapIndex)
+            {
+                var portalNpc = Globals.NPCInfoList?.Binding.FirstOrDefault(SellsTownPortal);
+                if (portalNpc != null)
+                {
+                    _supplyInteractionUntil = now.AddSeconds(30);
+                    _npcCallPending = true;
+                    _nextSupplyAction = now.AddSeconds(30);
+                    _connection.Enqueue(new C.AutoPathStart { NPCIndex = portalNpc.Index });
+                    Console.WriteLine($"[{Name}] shop: auto-path portal NPC {portalNpc.NPCName}");
+                    return true;
+                }
+                if (now >= _nextSupplyDiag)
+                {
+                    _nextSupplyDiag = now.AddSeconds(60);
+                    var nearest = World.Npcs.Values
+                        .Select(x => (Dist: Distance(World.Location, x.CurrentLocation), Name: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)?.NPCName ?? "?"))
+                        .OrderBy(x => x.Dist)
+                        .FirstOrDefault();
+                    Console.WriteLine($"[{Name}] supply: no local shop npc, npcs={World.Npcs.Count} nearest={nearest.Name}@{nearest.Dist}");
+                }
+                return false;
+            }
             _supplyPurchasePending = true;
+            _supplyInteractionUntil = now.AddSeconds(30);
+            _npcCallPending = true;
             _nextSupplyAction = now.AddSeconds(120);
             _connection.Enqueue(new C.AutoPathStart { NPCIndex = supplyNpc.Index });
             Console.WriteLine($"[{Name}] shop: auto-path supply NPC {supplyNpc.NPCName}");
@@ -1806,6 +2082,9 @@ public sealed class BotAgent
 
         _connection.Enqueue(new C.NPCCall { ObjectID = _npcObjectId });
         _supplyPurchasePending = true;
+        _supplyInteractionUntil = now.AddSeconds(30);
+        _npcCallPending = true;
+        _repairCallPending = false;
         _nextSupplyAction = now.AddSeconds(120);
         Console.WriteLine($"[{Name}] shop: approach NPC {npc.Info.NPCName}");
         return true;
@@ -1814,6 +2093,8 @@ public sealed class BotAgent
     private bool TrySellBehavior(DateTime now)
     {
         if (now < _nextSellAction) return false;
+        // 跨图时先补给回城卷轴, 不卖东西(本地卖店可能太远触发跨图寻路失败)
+        if (World.MapIndex != _config.HomeMapIndex) return false;
 
         var npc = World.Npcs.Values
             .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
@@ -1851,13 +2132,24 @@ public sealed class BotAgent
         return pages.Any(x => x.DialogType == NPCDialogType.BuySell && x.Types?.Count > 0);
     }
 
+    private static bool SellsTownPortal(NPCInfo info)
+    {
+        if (info?.EntryPage == null) return false;
+        var pages = new[] { info.EntryPage }
+            .Concat(info.EntryPage.Buttons?.Where(x => x.DestinationPage != null).Select(x => x.DestinationPage) ?? Enumerable.Empty<NPCPage>());
+        return pages.Any(x => x.DialogType == NPCDialogType.BuySell &&
+            x.Goods?.Any(g => g.Item?.ItemType == ItemType.Consumable && g.Item.Shape == 2 &&
+                g.Item.ItemName?.Contains("Town Portal", StringComparison.OrdinalIgnoreCase) == true) == true);
+    }
+
     private static bool HasSupplyShop(NPCInfo info)
     {
         if (info?.EntryPage == null) return false;
         var pages = new[] { info.EntryPage }
             .Concat(info.EntryPage.Buttons?.Where(x => x.DestinationPage != null).Select(x => x.DestinationPage) ?? Enumerable.Empty<NPCPage>());
         return pages.Any(x => x.DialogType == NPCDialogType.BuySell &&
-            x.Goods?.Any(g => g.Item?.CanAutoPot == true || g.Item?.ItemType is ItemType.Scroll or ItemType.Amulet) == true);
+            x.Goods?.Any(g => g.Item?.CanAutoPot == true || g.Item?.ItemType is ItemType.Scroll or ItemType.Amulet ||
+                (g.Item?.ItemType == ItemType.Consumable && g.Item.Shape == 2)) == true);
     }
 
     private bool NeedsRepair() => World.Inventory.Any(x => x.Info != null && IsEquipped(x) &&

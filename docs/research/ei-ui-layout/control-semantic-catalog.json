@@ -1,0 +1,991 @@
+{
+  "method": "frame-pair repetition + original window-frame visual review",
+  "records": [
+    {
+      "control_id": "window.inventory.control.0x0042eadb",
+      "window_id": "window.inventory",
+      "call_va": "0x0042eadb",
+      "frame_pair": [
+        161,
+        162
+      ],
+      "semantic": {
+        "group": "window-close",
+        "notes": "Shared close-button frame pair used across windows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.status.control.0x0044b18b",
+      "window_id": "window.status",
+      "call_va": "0x0044b18b",
+      "frame_pair": [
+        161,
+        162
+      ],
+      "semantic": {
+        "group": "window-close",
+        "notes": "Shared close-button frame pair used across windows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d36b",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d36b",
+      "frame_pair": [
+        1010,
+        1011
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d394",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d394",
+      "frame_pair": [
+        1012,
+        1013
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d3c0",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d3c0",
+      "frame_pair": [
+        1010,
+        1011
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d3ec",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d3ec",
+      "frame_pair": [
+        1012,
+        1013
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d418",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d418",
+      "frame_pair": [
+        1014,
+        1015
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d444",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d444",
+      "frame_pair": [
+        1016,
+        1017
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d46d",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d46d",
+      "frame_pair": [
+        1010,
+        1011
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.store-candidate.control.0x0044d496",
+      "window_id": "window.store-candidate",
+      "call_va": "0x0044d496",
+      "frame_pair": [
+        1012,
+        1013
+      ],
+      "semantic": {
+        "group": "shop-navigation-or-item-action",
+        "notes": "Repeated store panel buttons; exact action names pending text/input trace."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.exchange-candidate.control.0x00415a9d",
+      "window_id": "window.exchange-candidate",
+      "call_va": "0x00415a9d",
+      "frame_pair": [
+        1061,
+        1062
+      ],
+      "semantic": {
+        "group": "trade-action",
+        "notes": "Trade panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.exchange-candidate.control.0x00415ac3",
+      "window_id": "window.exchange-candidate",
+      "call_va": "0x00415ac3",
+      "frame_pair": [
+        1064,
+        1065
+      ],
+      "semantic": {
+        "group": "trade-action",
+        "notes": "Trade panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424ef3",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424ef3",
+      "frame_pair": [
+        610,
+        611
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424f27",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424f27",
+      "frame_pair": [
+        612,
+        613
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424f54",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424f54",
+      "frame_pair": [
+        614,
+        615
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424f7b",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424f7b",
+      "frame_pair": [
+        616,
+        617
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424fa3",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424fa3",
+      "frame_pair": [
+        618,
+        619
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424fc3",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424fc3",
+      "frame_pair": [
+        620,
+        621
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x00424feb",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x00424feb",
+      "frame_pair": [
+        622,
+        623
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.guild-candidate.control.0x0042500f",
+      "window_id": "window.guild-candidate",
+      "call_va": "0x0042500f",
+      "frame_pair": [
+        624,
+        625
+      ],
+      "semantic": {
+        "group": "guild-tab-or-list-action",
+        "notes": "Repeated guild/social panel controls; exact tab names pending."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.group.control.0x004242d4",
+      "window_id": "window.group",
+      "call_va": "0x004242d4",
+      "frame_pair": [
+        910,
+        911
+      ],
+      "semantic": {
+        "group": "party-action",
+        "notes": "Bottom/center party panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.group.control.0x004242fd",
+      "window_id": "window.group",
+      "call_va": "0x004242fd",
+      "frame_pair": [
+        912,
+        913
+      ],
+      "semantic": {
+        "group": "party-action",
+        "notes": "Bottom/center party panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.group.control.0x00424329",
+      "window_id": "window.group",
+      "call_va": "0x00424329",
+      "frame_pair": [
+        914,
+        915
+      ],
+      "semantic": {
+        "group": "party-action",
+        "notes": "Bottom/center party panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.group.control.0x0042434f",
+      "window_id": "window.group",
+      "call_va": "0x0042434f",
+      "frame_pair": [
+        920,
+        921
+      ],
+      "semantic": {
+        "group": "party-action",
+        "notes": "Bottom/center party panel action controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x00414170",
+      "window_id": "window.chat-pop",
+      "call_va": "0x00414170",
+      "frame_pair": [
+        360,
+        361
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x00414196",
+      "window_id": "window.chat-pop",
+      "call_va": "0x00414196",
+      "frame_pair": [
+        362,
+        363
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x004141bc",
+      "window_id": "window.chat-pop",
+      "call_va": "0x004141bc",
+      "frame_pair": [
+        364,
+        365
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x004141e5",
+      "window_id": "window.chat-pop",
+      "call_va": "0x004141e5",
+      "frame_pair": [
+        366,
+        367
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x0041420e",
+      "window_id": "window.chat-pop",
+      "call_va": "0x0041420e",
+      "frame_pair": [
+        368,
+        369
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.chat-pop.control.0x00414237",
+      "window_id": "window.chat-pop",
+      "call_va": "0x00414237",
+      "frame_pair": [
+        370,
+        371
+      ],
+      "semantic": {
+        "group": "chat-channel-or-action",
+        "notes": "Six repeated bottom chat controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.group-pop-candidate.control.0x0045040b",
+      "window_id": "window.group-pop-candidate",
+      "call_va": "0x0045040b",
+      "frame_pair": [
+        161,
+        162
+      ],
+      "semantic": {
+        "group": "window-close",
+        "notes": "Shared close-button frame pair used across windows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x00441067",
+      "window_id": "window.option",
+      "call_va": "0x00441067",
+      "frame_pair": [
+        760,
+        761
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x00441090",
+      "window_id": "window.option",
+      "call_va": "0x00441090",
+      "frame_pair": [
+        762,
+        763
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x004410b9",
+      "window_id": "window.option",
+      "call_va": "0x004410b9",
+      "frame_pair": [
+        760,
+        761
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x004410e2",
+      "window_id": "window.option",
+      "call_va": "0x004410e2",
+      "frame_pair": [
+        762,
+        763
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x0044110e",
+      "window_id": "window.option",
+      "call_va": "0x0044110e",
+      "frame_pair": [
+        760,
+        761
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x0044113a",
+      "window_id": "window.option",
+      "call_va": "0x0044113a",
+      "frame_pair": [
+        762,
+        763
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x0044116a",
+      "window_id": "window.option",
+      "call_va": "0x0044116a",
+      "frame_pair": [
+        760,
+        761
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.option.control.0x0044119a",
+      "window_id": "window.option",
+      "call_va": "0x0044119a",
+      "frame_pair": [
+        762,
+        763
+      ],
+      "semantic": {
+        "group": "option-toggle-or-value",
+        "notes": "Repeated paired controls aligned to option rows."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.quest.control.0x0044743b",
+      "window_id": "window.quest",
+      "call_va": "0x0044743b",
+      "frame_pair": [
+        723,
+        724
+      ],
+      "semantic": {
+        "group": "quest-page-navigation",
+        "notes": "Two small controls on the quest scroll."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.quest.control.0x0044745e",
+      "window_id": "window.quest",
+      "call_va": "0x0044745e",
+      "frame_pair": [
+        721,
+        722
+      ],
+      "semantic": {
+        "group": "quest-page-navigation",
+        "notes": "Two small controls on the quest scroll."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.horse.control.0x00426944",
+      "window_id": "window.horse",
+      "call_va": "0x00426944",
+      "frame_pair": [
+        860,
+        861
+      ],
+      "semantic": {
+        "group": "mount-command",
+        "notes": "Four repeated command buttons along the mount panel bottom."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.horse.control.0x00426967",
+      "window_id": "window.horse",
+      "call_va": "0x00426967",
+      "frame_pair": [
+        862,
+        863
+      ],
+      "semantic": {
+        "group": "mount-command",
+        "notes": "Four repeated command buttons along the mount panel bottom."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.horse.control.0x0042698d",
+      "window_id": "window.horse",
+      "call_va": "0x0042698d",
+      "frame_pair": [
+        864,
+        865
+      ],
+      "semantic": {
+        "group": "mount-command",
+        "notes": "Four repeated command buttons along the mount panel bottom."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.horse.control.0x004269b3",
+      "window_id": "window.horse",
+      "call_va": "0x004269b3",
+      "frame_pair": [
+        866,
+        867
+      ],
+      "semantic": {
+        "group": "mount-command",
+        "notes": "Four repeated command buttons along the mount panel bottom."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x004392b6",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x004392b6",
+      "frame_pair": [
+        440,
+        441
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x004392df",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x004392df",
+      "frame_pair": [
+        410,
+        411
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x0043930b",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x0043930b",
+      "frame_pair": [
+        412,
+        413
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x00439334",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x00439334",
+      "frame_pair": [
+        450,
+        451
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x0043935d",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x0043935d",
+      "frame_pair": [
+        452,
+        453
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x00439386",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x00439386",
+      "frame_pair": [
+        454,
+        455
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x004393b3",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x004393b3",
+      "frame_pair": [
+        456,
+        457
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x004393e0",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x004393e0",
+      "frame_pair": [
+        458,
+        459
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x0043940d",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x0043940d",
+      "frame_pair": [
+        450,
+        451
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x00439437",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x00439437",
+      "frame_pair": [
+        452,
+        453
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.other-14-candidate.control.0x00439464",
+      "window_id": "window.other-14-candidate",
+      "call_va": "0x00439464",
+      "frame_pair": [
+        454,
+        455
+      ],
+      "semantic": {
+        "group": "skill-book-category-or-skill-slot",
+        "notes": "Frame 400 is a book; these repeated small paired frames form its category/slot controls."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.npc-candidate.control.0x0043ed8b",
+      "window_id": "window.npc-candidate",
+      "call_va": "0x0043ed8b",
+      "frame_pair": [
+        52,
+        53
+      ],
+      "semantic": {
+        "group": "npc-dialogue-choice-or-marker",
+        "notes": "Small repeated Interface-style markers inside NPC dialogue area."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    },
+    {
+      "control_id": "window.npc-candidate.control.0x0043edb1",
+      "window_id": "window.npc-candidate",
+      "call_va": "0x0043edb1",
+      "frame_pair": [
+        54,
+        55
+      ],
+      "semantic": {
+        "group": "npc-dialogue-choice-or-marker",
+        "notes": "Small repeated Interface-style markers inside NPC dialogue area."
+      },
+      "evidence": {
+        "level": "secondary-frame-pattern-review",
+        "warning": "Group label is not a final business name; confirm with text/input/runtime path."
+      }
+    }
+  ]
+}

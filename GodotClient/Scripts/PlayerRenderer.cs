@@ -819,6 +819,15 @@ public partial class PlayerRenderer : Node2D
             or MirAnimation.FishingReel => 80,
         _ => 0,
     };
+    public double DrawHealthUntilMs;
+
+    public void ApplyPacket(MirDirection dir, System.Drawing.Point location)
+    {
+        Direction = dir;
+        CellX = location.X;
+        CellY = location.Y;
+    }
+
     private int ArmourFrame => DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift;
     private int HairFrame => DrawFrame + (HairType - 1) * 5000;
     private int HelmetFrame => DrawFrame + ((HelmetShape - 1) % 10) * ArmourShapeOffSet + ArmourShift;
@@ -859,8 +868,8 @@ public partial class PlayerRenderer : Node2D
         if (ClientSettings.ShowPlayerNames && !string.IsNullOrWhiteSpace(ChatText) && Godot.Time.GetTicksMsec() < _chatUntil)
             RenderPrimitives.DrawLabel(this, ChatText, new Vector2(24f, nameY - 18f), Colors.White, 9f);
 
-        // 玩家头顶血条
-        if (ShowHealthBar && ClientSettings.ShowUserHealth && !Dead && MaxHealth > 0)
+        // 玩家头顶血条 (受击显示 5 秒)
+        if (ShowHealthBar && ClientSettings.ShowUserHealth && !Dead && MaxHealth > 0 && Godot.Time.GetTicksMsec() <= DrawHealthUntilMs)
         {
             float percent = Math.Clamp(Health / (float)MaxHealth, 0f, 1f);
             if (percent > 0f)

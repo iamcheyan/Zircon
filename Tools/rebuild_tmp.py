@@ -12,6 +12,7 @@
 """
 import json, os, re, struct, sys
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 
 NAS = "/home/tetsuya/NAS/TMP"
 EI_MAP = os.path.join(NAS, "EI传奇3.0客户端", "Map")
@@ -192,6 +193,7 @@ def build_report_full():
         "stats": stats,
         "merchants_all": merchants,
         "guards_all": guards,
+        "_meta": {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "script": "rebuild_tmp.py"},
     }
     json.dump(data, open("/tmp/report_full.json", "w", encoding="utf-8"), ensure_ascii=False)
     print(f"report_full.json: {len(report)} 图, ei_only={len(ei_only)}, mei_only={len(mei_only)}, "

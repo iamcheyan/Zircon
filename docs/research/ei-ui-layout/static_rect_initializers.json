@@ -1,0 +1,2890 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "method": "llvm-objdump x86 disassembly; calls to static helper 0x00449c50",
+  "warning": "Values are raw three-WORD initializers; they require association with the consuming UI class before being called screen rectangles.",
+  "records": [
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449c9c",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 24,
+        "address": 4496532
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 200
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449c8d",
+          "value": 200
+        },
+        {
+          "va": "0x00449c92",
+          "value": 4
+        },
+        {
+          "va": "0x00449c97",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449cad",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 30,
+        "address": 4496549
+      },
+      "values": {
+        "value1": 80,
+        "value2": 6,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449ca1",
+          "value": 100
+        },
+        {
+          "va": "0x00449ca3",
+          "value": 6
+        },
+        {
+          "va": "0x00449ca8",
+          "value": 80
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449cc1",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 36,
+        "address": 4496566
+      },
+      "values": {
+        "value1": 160,
+        "value2": 5,
+        "value3": 75
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449cb2",
+          "value": 75
+        },
+        {
+          "va": "0x00449cb4",
+          "value": 5
+        },
+        {
+          "va": "0x00449cb9",
+          "value": 160
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449cd5",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 42,
+        "address": 4496586
+      },
+      "values": {
+        "value1": 240,
+        "value2": 5,
+        "value3": 75
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449cc6",
+          "value": 75
+        },
+        {
+          "va": "0x00449cc8",
+          "value": 5
+        },
+        {
+          "va": "0x00449ccd",
+          "value": 240
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449ce9",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 48,
+        "address": 4496606
+      },
+      "values": {
+        "value1": 320,
+        "value2": 1,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449cda",
+          "value": 100
+        },
+        {
+          "va": "0x00449cdc",
+          "value": 1
+        },
+        {
+          "va": "0x00449ce1",
+          "value": 320
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449cfd",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 54,
+        "address": 4496626
+      },
+      "values": {
+        "value1": 400,
+        "value2": 1,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449cee",
+          "value": 100
+        },
+        {
+          "va": "0x00449cf0",
+          "value": 1
+        },
+        {
+          "va": "0x00449cf5",
+          "value": 400
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d11",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 60,
+        "address": 4496646
+      },
+      "values": {
+        "value1": 480,
+        "value2": 1,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d02",
+          "value": 100
+        },
+        {
+          "va": "0x00449d04",
+          "value": 1
+        },
+        {
+          "va": "0x00449d09",
+          "value": 480
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d28",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 66,
+        "address": 4496669
+      },
+      "values": {
+        "value1": 560,
+        "value2": 3,
+        "value3": 200
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d16",
+          "value": 200
+        },
+        {
+          "va": "0x00449d1b",
+          "value": 3
+        },
+        {
+          "va": "0x00449d20",
+          "value": 560
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d3f",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 72,
+        "address": 4496692
+      },
+      "values": {
+        "value1": 640,
+        "value2": 2,
+        "value3": 400
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d2d",
+          "value": 400
+        },
+        {
+          "va": "0x00449d32",
+          "value": 2
+        },
+        {
+          "va": "0x00449d37",
+          "value": 640
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d53",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 78,
+        "address": 4496712
+      },
+      "values": {
+        "value1": 720,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d44",
+          "value": 85
+        },
+        {
+          "va": "0x00449d46",
+          "value": 6
+        },
+        {
+          "va": "0x00449d4b",
+          "value": 720
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d67",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 84,
+        "address": 4496732
+      },
+      "values": {
+        "value1": 800,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d58",
+          "value": 85
+        },
+        {
+          "va": "0x00449d5a",
+          "value": 6
+        },
+        {
+          "va": "0x00449d5f",
+          "value": 800
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d7b",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 90,
+        "address": 4496752
+      },
+      "values": {
+        "value1": 880,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d6c",
+          "value": 85
+        },
+        {
+          "va": "0x00449d6e",
+          "value": 6
+        },
+        {
+          "va": "0x00449d73",
+          "value": 880
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449d8f",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 96,
+        "address": 4496772
+      },
+      "values": {
+        "value1": 960,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d80",
+          "value": 85
+        },
+        {
+          "va": "0x00449d82",
+          "value": 6
+        },
+        {
+          "va": "0x00449d87",
+          "value": 960
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449da3",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 102,
+        "address": 4496792
+      },
+      "values": {
+        "value1": 1040,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449d94",
+          "value": 85
+        },
+        {
+          "va": "0x00449d96",
+          "value": 6
+        },
+        {
+          "va": "0x00449d9b",
+          "value": 1040
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449db7",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 108,
+        "address": 4496812
+      },
+      "values": {
+        "value1": 1120,
+        "value2": 6,
+        "value3": 85
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449da8",
+          "value": 85
+        },
+        {
+          "va": "0x00449daa",
+          "value": 6
+        },
+        {
+          "va": "0x00449daf",
+          "value": 1120
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449dcb",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 114,
+        "address": 4496832
+      },
+      "values": {
+        "value1": 1200,
+        "value2": 3,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449dbc",
+          "value": 100
+        },
+        {
+          "va": "0x00449dbe",
+          "value": 3
+        },
+        {
+          "va": "0x00449dc3",
+          "value": 1200
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449ddf",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 120,
+        "address": 4496852
+      },
+      "values": {
+        "value1": 1280,
+        "value2": 10,
+        "value3": 70
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449dd0",
+          "value": 70
+        },
+        {
+          "va": "0x00449dd2",
+          "value": 10
+        },
+        {
+          "va": "0x00449dd7",
+          "value": 1280
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449df3",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 126,
+        "address": 4496872
+      },
+      "values": {
+        "value1": 1360,
+        "value2": 10,
+        "value3": 90
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449de4",
+          "value": 90
+        },
+        {
+          "va": "0x00449de6",
+          "value": 10
+        },
+        {
+          "va": "0x00449deb",
+          "value": 1360
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e0a",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 132,
+        "address": 4496892
+      },
+      "values": {
+        "value1": 1440,
+        "value2": 10,
+        "value3": 70
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449df8",
+          "value": 70
+        },
+        {
+          "va": "0x00449dfa",
+          "value": 10
+        },
+        {
+          "va": "0x00449e02",
+          "value": 1440
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e21",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 138,
+        "address": 4496915
+      },
+      "values": {
+        "value1": 1520,
+        "value2": 10,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e0f",
+          "value": 120
+        },
+        {
+          "va": "0x00449e11",
+          "value": 10
+        },
+        {
+          "va": "0x00449e19",
+          "value": 1520
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e38",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 144,
+        "address": 4496938
+      },
+      "values": {
+        "value1": 1600,
+        "value2": 10,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e26",
+          "value": 100
+        },
+        {
+          "va": "0x00449e28",
+          "value": 10
+        },
+        {
+          "va": "0x00449e30",
+          "value": 1600
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e4f",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 150,
+        "address": 4496961
+      },
+      "values": {
+        "value1": 1680,
+        "value2": 6,
+        "value3": 90
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e3d",
+          "value": 90
+        },
+        {
+          "va": "0x00449e3f",
+          "value": 6
+        },
+        {
+          "va": "0x00449e47",
+          "value": 1680
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e66",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 156,
+        "address": 4496989
+      },
+      "values": {
+        "value1": 1760,
+        "value2": 6,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e54",
+          "value": 120
+        },
+        {
+          "va": "0x00449e56",
+          "value": 6
+        },
+        {
+          "va": "0x00449e58",
+          "value": 1760
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e7d",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 162,
+        "address": 4497007
+      },
+      "values": {
+        "value1": 1840,
+        "value2": 6,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e6b",
+          "value": 100
+        },
+        {
+          "va": "0x00449e6d",
+          "value": 6
+        },
+        {
+          "va": "0x00449e75",
+          "value": 1840
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449e94",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 168,
+        "address": 4497030
+      },
+      "values": {
+        "value1": 1920,
+        "value2": 10,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e82",
+          "value": 100
+        },
+        {
+          "va": "0x00449e84",
+          "value": 10
+        },
+        {
+          "va": "0x00449e8c",
+          "value": 1920
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449eae",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 174,
+        "address": 4497056
+      },
+      "values": {
+        "value1": 2000,
+        "value2": 4,
+        "value3": 180
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449e99",
+          "value": 180
+        },
+        {
+          "va": "0x00449e9e",
+          "value": 4
+        },
+        {
+          "va": "0x00449ea6",
+          "value": 2000
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449ec8",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 180,
+        "address": 4497082
+      },
+      "values": {
+        "value1": 2080,
+        "value2": 3,
+        "value3": 180
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449eb3",
+          "value": 180
+        },
+        {
+          "va": "0x00449eb8",
+          "value": 3
+        },
+        {
+          "va": "0x00449ec0",
+          "value": 2080
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449ee2",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 186,
+        "address": 4497108
+      },
+      "values": {
+        "value1": 2160,
+        "value2": 8,
+        "value3": 180
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449ecd",
+          "value": 180
+        },
+        {
+          "va": "0x00449ed2",
+          "value": 8
+        },
+        {
+          "va": "0x00449eda",
+          "value": 2160
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449efc",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 192,
+        "address": 4497134
+      },
+      "values": {
+        "value1": 2240,
+        "value2": 8,
+        "value3": 180
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449ee7",
+          "value": 180
+        },
+        {
+          "va": "0x00449eec",
+          "value": 8
+        },
+        {
+          "va": "0x00449ef4",
+          "value": 2240
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f16",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 198,
+        "address": 4497160
+      },
+      "values": {
+        "value1": 2320,
+        "value2": 4,
+        "value3": 200
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f01",
+          "value": 200
+        },
+        {
+          "va": "0x00449f06",
+          "value": 4
+        },
+        {
+          "va": "0x00449f0e",
+          "value": 2320
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f2d",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 204,
+        "address": 4497183
+      },
+      "values": {
+        "value1": 2400,
+        "value2": 6,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f1b",
+          "value": 100
+        },
+        {
+          "va": "0x00449f1d",
+          "value": 6
+        },
+        {
+          "va": "0x00449f25",
+          "value": 2400
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f44",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 210,
+        "address": 4497206
+      },
+      "values": {
+        "value1": 2480,
+        "value2": 6,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f32",
+          "value": 100
+        },
+        {
+          "va": "0x00449f34",
+          "value": 6
+        },
+        {
+          "va": "0x00449f3c",
+          "value": 2480
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f5b",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 216,
+        "address": 4497229
+      },
+      "values": {
+        "value1": 2560,
+        "value2": 3,
+        "value3": 100
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f49",
+          "value": 100
+        },
+        {
+          "va": "0x00449f4b",
+          "value": 3
+        },
+        {
+          "va": "0x00449f53",
+          "value": 2560
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f72",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 222,
+        "address": 4497255
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f60",
+          "value": 300
+        },
+        {
+          "va": "0x00449f65",
+          "value": 4
+        },
+        {
+          "va": "0x00449f6d",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449f89",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 228,
+        "address": 4497278
+      },
+      "values": {
+        "value1": 80,
+        "value2": 6,
+        "value3": 130
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f77",
+          "value": 130
+        },
+        {
+          "va": "0x00449f7c",
+          "value": 6
+        },
+        {
+          "va": "0x00449f84",
+          "value": 80
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449fa0",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 234,
+        "address": 4497298
+      },
+      "values": {
+        "value1": 160,
+        "value2": 6,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449f8e",
+          "value": 120
+        },
+        {
+          "va": "0x00449f90",
+          "value": 6
+        },
+        {
+          "va": "0x00449f98",
+          "value": 160
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449fba",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 240,
+        "address": 4497324
+      },
+      "values": {
+        "value1": 240,
+        "value2": 2,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449fa5",
+          "value": 300
+        },
+        {
+          "va": "0x00449faa",
+          "value": 2
+        },
+        {
+          "va": "0x00449fb2",
+          "value": 240
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449fd4",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 246,
+        "address": 4497350
+      },
+      "values": {
+        "value1": 320,
+        "value2": 10,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449fbf",
+          "value": 150
+        },
+        {
+          "va": "0x00449fc4",
+          "value": 10
+        },
+        {
+          "va": "0x00449fcc",
+          "value": 320
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00449fee",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 252,
+        "address": 4497376
+      },
+      "values": {
+        "value1": 400,
+        "value2": 6,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449fd9",
+          "value": 150
+        },
+        {
+          "va": "0x00449fde",
+          "value": 6
+        },
+        {
+          "va": "0x00449fe6",
+          "value": 400
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a008",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 258,
+        "address": 4497402
+      },
+      "values": {
+        "value1": 480,
+        "value2": 10,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00449ff3",
+          "value": 150
+        },
+        {
+          "va": "0x00449ff8",
+          "value": 10
+        },
+        {
+          "va": "0x0044a000",
+          "value": 480
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a022",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 264,
+        "address": 4497428
+      },
+      "values": {
+        "value1": 560,
+        "value2": 10,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a00d",
+          "value": 150
+        },
+        {
+          "va": "0x0044a012",
+          "value": 10
+        },
+        {
+          "va": "0x0044a01a",
+          "value": 560
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a03c",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 270,
+        "address": 4497454
+      },
+      "values": {
+        "value1": 640,
+        "value2": 6,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a027",
+          "value": 150
+        },
+        {
+          "va": "0x0044a02c",
+          "value": 6
+        },
+        {
+          "va": "0x0044a034",
+          "value": 640
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a053",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 288,
+        "address": 4497480
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a041",
+          "value": 300
+        },
+        {
+          "va": "0x0044a046",
+          "value": 4
+        },
+        {
+          "va": "0x0044a04e",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a06a",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 294,
+        "address": 4497503
+      },
+      "values": {
+        "value1": 30,
+        "value2": 10,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a058",
+          "value": 300
+        },
+        {
+          "va": "0x0044a05d",
+          "value": 10
+        },
+        {
+          "va": "0x0044a065",
+          "value": 30
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a081",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 300,
+        "address": 4497526
+      },
+      "values": {
+        "value1": 60,
+        "value2": 6,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a06f",
+          "value": 300
+        },
+        {
+          "va": "0x0044a074",
+          "value": 6
+        },
+        {
+          "va": "0x0044a07c",
+          "value": 60
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a0e8",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 288,
+        "address": 4497629
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a0d6",
+          "value": 300
+        },
+        {
+          "va": "0x0044a0db",
+          "value": 4
+        },
+        {
+          "va": "0x0044a0e3",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a152",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 294,
+        "address": 4497735
+      },
+      "values": {
+        "value1": 30,
+        "value2": 10,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a140",
+          "value": 300
+        },
+        {
+          "va": "0x0044a145",
+          "value": 10
+        },
+        {
+          "va": "0x0044a14d",
+          "value": 30
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a180",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 300,
+        "address": 4497781
+      },
+      "values": {
+        "value1": 0,
+        "value2": 1,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a16e",
+          "value": 300
+        },
+        {
+          "va": "0x0044a173",
+          "value": 1
+        },
+        {
+          "va": "0x0044a17b",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a199",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 300,
+        "address": 4497806
+      },
+      "values": {
+        "value1": 0,
+        "value2": 12,
+        "value3": 80
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a18a",
+          "value": 80
+        },
+        {
+          "va": "0x0044a18c",
+          "value": 12
+        },
+        {
+          "va": "0x0044a194",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a1b5",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 300,
+        "address": 4497834
+      },
+      "values": {
+        "value1": 60,
+        "value2": 6,
+        "value3": 300
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a1a3",
+          "value": 300
+        },
+        {
+          "va": "0x0044a1a8",
+          "value": 6
+        },
+        {
+          "va": "0x0044a1b0",
+          "value": 60
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a26c",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 222,
+        "address": 4498017
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 250
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a25a",
+          "value": 250
+        },
+        {
+          "va": "0x0044a25f",
+          "value": 4
+        },
+        {
+          "va": "0x0044a267",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a280",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 228,
+        "address": 4498037
+      },
+      "values": {
+        "value1": 80,
+        "value2": 6,
+        "value3": 90
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a271",
+          "value": 90
+        },
+        {
+          "va": "0x0044a273",
+          "value": 6
+        },
+        {
+          "va": "0x0044a27b",
+          "value": 80
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a2c4",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 222,
+        "address": 4498105
+      },
+      "values": {
+        "value1": 0,
+        "value2": 4,
+        "value3": 250
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a2b2",
+          "value": 250
+        },
+        {
+          "va": "0x0044a2b7",
+          "value": 4
+        },
+        {
+          "va": "0x0044a2bf",
+          "value": 0
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a35b",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 234,
+        "address": 4498253
+      },
+      "values": {
+        "value1": 160,
+        "value2": 6,
+        "value3": 130
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a346",
+          "value": 130
+        },
+        {
+          "va": "0x0044a34b",
+          "value": 6
+        },
+        {
+          "va": "0x0044a353",
+          "value": 160
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a39e",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 240,
+        "address": 4498320
+      },
+      "values": {
+        "value1": 240,
+        "value2": 3,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a389",
+          "value": 150
+        },
+        {
+          "va": "0x0044a38e",
+          "value": 3
+        },
+        {
+          "va": "0x0044a396",
+          "value": 240
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a3b8",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 240,
+        "address": 4498346
+      },
+      "values": {
+        "value1": 240,
+        "value2": 2,
+        "value3": 180
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a3a3",
+          "value": 180
+        },
+        {
+          "va": "0x0044a3a8",
+          "value": 2
+        },
+        {
+          "va": "0x0044a3b0",
+          "value": 240
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a43d",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 246,
+        "address": 4498479
+      },
+      "values": {
+        "value1": 320,
+        "value2": 10,
+        "value3": 140
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a428",
+          "value": 140
+        },
+        {
+          "va": "0x0044a42d",
+          "value": 10
+        },
+        {
+          "va": "0x0044a435",
+          "value": 320
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a475",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 252,
+        "address": 4498535
+      },
+      "values": {
+        "value1": 400,
+        "value2": 6,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a460",
+          "value": 150
+        },
+        {
+          "va": "0x0044a465",
+          "value": 6
+        },
+        {
+          "va": "0x0044a46d",
+          "value": 400
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a4d0",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 258,
+        "address": 4498626
+      },
+      "values": {
+        "value1": 480,
+        "value2": 6,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a4bb",
+          "value": 150
+        },
+        {
+          "va": "0x0044a4c0",
+          "value": 6
+        },
+        {
+          "va": "0x0044a4c8",
+          "value": 480
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a522",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 264,
+        "address": 4498708
+      },
+      "values": {
+        "value1": 560,
+        "value2": 10,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a50d",
+          "value": 150
+        },
+        {
+          "va": "0x0044a512",
+          "value": 10
+        },
+        {
+          "va": "0x0044a51a",
+          "value": 560
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a59b",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 270,
+        "address": 4498829
+      },
+      "values": {
+        "value1": 640,
+        "value2": 10,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a589",
+          "value": 120
+        },
+        {
+          "va": "0x0044a58b",
+          "value": 10
+        },
+        {
+          "va": "0x0044a593",
+          "value": 640
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a5d3",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 276,
+        "address": 4498885
+      },
+      "values": {
+        "value1": 720,
+        "value2": 6,
+        "value3": 150
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a5be",
+          "value": 150
+        },
+        {
+          "va": "0x0044a5c3",
+          "value": 6
+        },
+        {
+          "va": "0x0044a5cb",
+          "value": 720
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x0044a5ed",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 282,
+        "address": 4498911
+      },
+      "values": {
+        "value1": 880,
+        "value2": 1,
+        "value3": 500
+      },
+      "raw_pushes": [
+        {
+          "va": "0x0044a5d8",
+          "value": 500
+        },
+        {
+          "va": "0x0044a5dd",
+          "value": 1
+        },
+        {
+          "va": "0x0044a5e5",
+          "value": 880
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458bc6",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2354,
+        "address": 4557754
+      },
+      "values": {
+        "value1": 200,
+        "value2": 210,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458bb3",
+          "value": 120
+        },
+        {
+          "va": "0x00458bb5",
+          "value": 210
+        },
+        {
+          "va": "0x00458bc0",
+          "value": 200
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458be0",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2360,
+        "address": 4557778
+      },
+      "values": {
+        "value1": 260,
+        "value2": 279,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458bcb",
+          "value": 120
+        },
+        {
+          "va": "0x00458bcd",
+          "value": 279
+        },
+        {
+          "va": "0x00458bd8",
+          "value": 260
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458bfa",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2366,
+        "address": 4557804
+      },
+      "values": {
+        "value1": 320,
+        "value2": 331,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458be5",
+          "value": 120
+        },
+        {
+          "va": "0x00458be7",
+          "value": 331
+        },
+        {
+          "va": "0x00458bf2",
+          "value": 320
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c14",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2372,
+        "address": 4557830
+      },
+      "values": {
+        "value1": 380,
+        "value2": 387,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458bff",
+          "value": 120
+        },
+        {
+          "va": "0x00458c01",
+          "value": 387
+        },
+        {
+          "va": "0x00458c0c",
+          "value": 380
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c2e",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2378,
+        "address": 4557856
+      },
+      "values": {
+        "value1": 440,
+        "value2": 457,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c19",
+          "value": 120
+        },
+        {
+          "va": "0x00458c1b",
+          "value": 457
+        },
+        {
+          "va": "0x00458c26",
+          "value": 440
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c48",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2384,
+        "address": 4557882
+      },
+      "values": {
+        "value1": 500,
+        "value2": 510,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c33",
+          "value": 120
+        },
+        {
+          "va": "0x00458c35",
+          "value": 510
+        },
+        {
+          "va": "0x00458c40",
+          "value": 500
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c62",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2390,
+        "address": 4557908
+      },
+      "values": {
+        "value1": 560,
+        "value2": 570,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c4d",
+          "value": 120
+        },
+        {
+          "va": "0x00458c4f",
+          "value": 570
+        },
+        {
+          "va": "0x00458c5a",
+          "value": 560
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c7c",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2396,
+        "address": 4557934
+      },
+      "values": {
+        "value1": 620,
+        "value2": 630,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c67",
+          "value": 120
+        },
+        {
+          "va": "0x00458c69",
+          "value": 630
+        },
+        {
+          "va": "0x00458c74",
+          "value": 620
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458c96",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2402,
+        "address": 4557960
+      },
+      "values": {
+        "value1": 680,
+        "value2": 691,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c81",
+          "value": 120
+        },
+        {
+          "va": "0x00458c83",
+          "value": 691
+        },
+        {
+          "va": "0x00458c8e",
+          "value": 680
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458cb0",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2408,
+        "address": 4557986
+      },
+      "values": {
+        "value1": 740,
+        "value2": 755,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458c9b",
+          "value": 120
+        },
+        {
+          "va": "0x00458c9d",
+          "value": 755
+        },
+        {
+          "va": "0x00458ca8",
+          "value": 740
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458cca",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2414,
+        "address": 4558012
+      },
+      "values": {
+        "value1": 800,
+        "value2": 810,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458cb5",
+          "value": 120
+        },
+        {
+          "va": "0x00458cb7",
+          "value": 810
+        },
+        {
+          "va": "0x00458cc2",
+          "value": 800
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458ce4",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2420,
+        "address": 4558043
+      },
+      "values": {
+        "value1": 860,
+        "value2": 871,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458ccf",
+          "value": 120
+        },
+        {
+          "va": "0x00458cd1",
+          "value": 871
+        },
+        {
+          "va": "0x00458cd6",
+          "value": 860
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458cfe",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2426,
+        "address": 4558064
+      },
+      "values": {
+        "value1": 920,
+        "value2": 930,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458ce9",
+          "value": 120
+        },
+        {
+          "va": "0x00458ceb",
+          "value": 930
+        },
+        {
+          "va": "0x00458cf6",
+          "value": 920
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d18",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2432,
+        "address": 4558090
+      },
+      "values": {
+        "value1": 980,
+        "value2": 990,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d03",
+          "value": 120
+        },
+        {
+          "va": "0x00458d05",
+          "value": 990
+        },
+        {
+          "va": "0x00458d10",
+          "value": 980
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d32",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2438,
+        "address": 4558116
+      },
+      "values": {
+        "value1": 1040,
+        "value2": 1054,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d1d",
+          "value": 120
+        },
+        {
+          "va": "0x00458d1f",
+          "value": 1054
+        },
+        {
+          "va": "0x00458d2a",
+          "value": 1040
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d4c",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2444,
+        "address": 4558142
+      },
+      "values": {
+        "value1": 1100,
+        "value2": 1110,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d37",
+          "value": 120
+        },
+        {
+          "va": "0x00458d39",
+          "value": 1110
+        },
+        {
+          "va": "0x00458d44",
+          "value": 1100
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d66",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2450,
+        "address": 4558168
+      },
+      "values": {
+        "value1": 1160,
+        "value2": 1177,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d51",
+          "value": 120
+        },
+        {
+          "va": "0x00458d53",
+          "value": 1177
+        },
+        {
+          "va": "0x00458d5e",
+          "value": 1160
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d80",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2456,
+        "address": 4558194
+      },
+      "values": {
+        "value1": 1220,
+        "value2": 1230,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d6b",
+          "value": 120
+        },
+        {
+          "va": "0x00458d6d",
+          "value": 1230
+        },
+        {
+          "va": "0x00458d78",
+          "value": 1220
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458d9a",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2462,
+        "address": 4558220
+      },
+      "values": {
+        "value1": 1280,
+        "value2": 1288,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d85",
+          "value": 120
+        },
+        {
+          "va": "0x00458d87",
+          "value": 1288
+        },
+        {
+          "va": "0x00458d92",
+          "value": 1280
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458db4",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2468,
+        "address": 4558246
+      },
+      "values": {
+        "value1": 1340,
+        "value2": 1356,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458d9f",
+          "value": 120
+        },
+        {
+          "va": "0x00458da1",
+          "value": 1356
+        },
+        {
+          "va": "0x00458dac",
+          "value": 1340
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458dce",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2474,
+        "address": 4558272
+      },
+      "values": {
+        "value1": 1400,
+        "value2": 1410,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458db9",
+          "value": 120
+        },
+        {
+          "va": "0x00458dbb",
+          "value": 1410
+        },
+        {
+          "va": "0x00458dc6",
+          "value": 1400
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458de8",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2480,
+        "address": 4558298
+      },
+      "values": {
+        "value1": 1460,
+        "value2": 1476,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458dd3",
+          "value": 120
+        },
+        {
+          "va": "0x00458dd5",
+          "value": 1476
+        },
+        {
+          "va": "0x00458de0",
+          "value": 1460
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e02",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2486,
+        "address": 4558324
+      },
+      "values": {
+        "value1": 1520,
+        "value2": 1539,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458ded",
+          "value": 120
+        },
+        {
+          "va": "0x00458def",
+          "value": 1539
+        },
+        {
+          "va": "0x00458dfa",
+          "value": 1520
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e1c",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2492,
+        "address": 4558350
+      },
+      "values": {
+        "value1": 1580,
+        "value2": 1591,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e07",
+          "value": 120
+        },
+        {
+          "va": "0x00458e09",
+          "value": 1591
+        },
+        {
+          "va": "0x00458e14",
+          "value": 1580
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e36",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2498,
+        "address": 4558376
+      },
+      "values": {
+        "value1": 1640,
+        "value2": 1656,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e21",
+          "value": 120
+        },
+        {
+          "va": "0x00458e23",
+          "value": 1656
+        },
+        {
+          "va": "0x00458e2e",
+          "value": 1640
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e50",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2504,
+        "address": 4558402
+      },
+      "values": {
+        "value1": 1700,
+        "value2": 1710,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e3b",
+          "value": 120
+        },
+        {
+          "va": "0x00458e3d",
+          "value": 1710
+        },
+        {
+          "va": "0x00458e48",
+          "value": 1700
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e6a",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2510,
+        "address": 4558428
+      },
+      "values": {
+        "value1": 1760,
+        "value2": 1776,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e55",
+          "value": 120
+        },
+        {
+          "va": "0x00458e57",
+          "value": 1776
+        },
+        {
+          "va": "0x00458e62",
+          "value": 1760
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e84",
+      "object": {
+        "register": "eax",
+        "base": "esi",
+        "offset": 2516,
+        "address": 4558454
+      },
+      "values": {
+        "value1": 1820,
+        "value2": 1830,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e6f",
+          "value": 120
+        },
+        {
+          "va": "0x00458e71",
+          "value": 1830
+        },
+        {
+          "va": "0x00458e7c",
+          "value": 1820
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458e9e",
+      "object": {
+        "register": "ecx",
+        "base": "esi",
+        "offset": 2522,
+        "address": 4558480
+      },
+      "values": {
+        "value1": 1880,
+        "value2": 1889,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458e89",
+          "value": 120
+        },
+        {
+          "va": "0x00458e8b",
+          "value": 1889
+        },
+        {
+          "va": "0x00458e96",
+          "value": 1880
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x00449c50",
+      "call_va": "0x00458eb8",
+      "object": {
+        "register": "edx",
+        "base": "esi",
+        "offset": 2528,
+        "address": 4558506
+      },
+      "values": {
+        "value1": 1940,
+        "value2": 1954,
+        "value3": 120
+      },
+      "raw_pushes": [
+        {
+          "va": "0x00458ea3",
+          "value": 120
+        },
+        {
+          "va": "0x00458ea5",
+          "value": 1954
+        },
+        {
+          "va": "0x00458eb0",
+          "value": 1940
+        }
+      ],
+      "confidence": "static-initializer-candidate"
+    }
+  ]
+}

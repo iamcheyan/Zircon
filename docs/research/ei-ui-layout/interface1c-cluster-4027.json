@@ -1,0 +1,174 @@
+{
+  "source": "Mir3.exe + Data/Interface1c.wil",
+  "cluster": "0x004027df-0x00402845",
+  "records": [
+    {
+      "id": "interface1c.0x4027.control.0x004027df",
+      "kind": "secondary-control",
+      "scope": "interface1c-cluster-0x4027",
+      "resource": {
+        "file": "Interface1c.wil",
+        "frame": 11,
+        "state_frame": 11,
+        "object_expression": "owner+0x5b0"
+      },
+      "position": {
+        "x": 459,
+        "y": 436,
+        "source": "Mir3.exe constructor push arguments",
+        "x_push_va": "0x004027cf",
+        "y_push_va": "0x004027ca"
+      },
+      "size": {
+        "width": 96,
+        "height": 24,
+        "source": "Data/Interface1c.wil Frame 11 header"
+      },
+      "hit_rect": {
+        "x": 459,
+        "y": 436,
+        "width": 96,
+        "height": 24,
+        "basis": "0x00417550 SetRect",
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
+      "resource_handle": {
+        "file": "Data/Interface1c.wil",
+        "path_literal_va": "0x0047aaa0",
+        "object_expression": "owner+0x5b0",
+        "load_call_va": "0x0040273e"
+      },
+      "evidence": {
+        "level": "primary-static-closed",
+        "source": "Mir3.exe + Interface1c.wil",
+        "warning": "Business control name and parent window remain unresolved."
+      }
+    },
+    {
+      "id": "interface1c.0x4027.control.0x00402801",
+      "kind": "secondary-control",
+      "scope": "interface1c-cluster-0x4027",
+      "resource": {
+        "file": "Interface1c.wil",
+        "frame": 13,
+        "state_frame": 13,
+        "object_expression": "owner+0x5b0"
+      },
+      "position": {
+        "x": 139,
+        "y": 379,
+        "source": "Mir3.exe constructor push arguments",
+        "x_push_va": "0x004027f1",
+        "y_push_va": "0x004027ec"
+      },
+      "size": {
+        "width": 96,
+        "height": 26,
+        "source": "Data/Interface1c.wil Frame 13 header"
+      },
+      "hit_rect": {
+        "x": 139,
+        "y": 379,
+        "width": 96,
+        "height": 26,
+        "basis": "0x00417550 SetRect",
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
+      "resource_handle": {
+        "file": "Data/Interface1c.wil",
+        "path_literal_va": "0x0047aaa0",
+        "object_expression": "owner+0x5b0",
+        "load_call_va": "0x0040273e"
+      },
+      "evidence": {
+        "level": "primary-static-closed",
+        "source": "Mir3.exe + Interface1c.wil",
+        "warning": "Business control name and parent window remain unresolved."
+      }
+    },
+    {
+      "id": "interface1c.0x4027.control.0x00402823",
+      "kind": "secondary-control",
+      "scope": "interface1c-cluster-0x4027",
+      "resource": {
+        "file": "Interface1c.wil",
+        "frame": 15,
+        "state_frame": 15,
+        "object_expression": "owner+0x5b0"
+      },
+      "position": {
+        "x": 279,
+        "y": 379,
+        "source": "Mir3.exe constructor push arguments",
+        "x_push_va": "0x00402813",
+        "y_push_va": "0x0040280e"
+      },
+      "size": {
+        "width": 96,
+        "height": 26,
+        "source": "Data/Interface1c.wil Frame 15 header"
+      },
+      "hit_rect": {
+        "x": 279,
+        "y": 379,
+        "width": 96,
+        "height": 26,
+        "basis": "0x00417550 SetRect",
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
+      "resource_handle": {
+        "file": "Data/Interface1c.wil",
+        "path_literal_va": "0x0047aaa0",
+        "object_expression": "owner+0x5b0",
+        "load_call_va": "0x0040273e"
+      },
+      "evidence": {
+        "level": "primary-static-closed",
+        "source": "Mir3.exe + Interface1c.wil",
+        "warning": "Business control name and parent window remain unresolved."
+      }
+    },
+    {
+      "id": "interface1c.0x4027.control.0x00402845",
+      "kind": "secondary-control",
+      "scope": "interface1c-cluster-0x4027",
+      "resource": {
+        "file": "Interface1c.wil",
+        "frame": 17,
+        "state_frame": 17,
+        "object_expression": "owner+0x5b0"
+      },
+      "position": {
+        "x": 439,
+        "y": 379,
+        "source": "Mir3.exe constructor push arguments",
+        "x_push_va": "0x00402835",
+        "y_push_va": "0x00402830"
+      },
+      "size": {
+        "width": 48,
+        "height": 26,
+        "source": "Data/Interface1c.wil Frame 17 header"
+      },
+      "hit_rect": {
+        "x": 439,
+        "y": 379,
+        "width": 48,
+        "height": 26,
+        "basis": "0x00417550 SetRect",
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
+      "resource_handle": {
+        "file": "Data/Interface1c.wil",
+        "path_literal_va": "0x0047aaa0",
+        "object_expression": "owner+0x5b0",
+        "load_call_va": "0x0040273e"
+      },
+      "evidence": {
+        "level": "primary-static-closed",
+        "source": "Mir3.exe + Interface1c.wil",
+        "warning": "Business control name and parent window remain unresolved."
+      }
+    }
+  ]
+}

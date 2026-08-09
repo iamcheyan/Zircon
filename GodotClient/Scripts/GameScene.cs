@@ -25,6 +25,8 @@ public partial class GameScene : Control
     private const float UiScaleBaseHeight = 768f;
     private const float WorldScale = 2f;
     private const string UiAuditArgument = "--ui-layout-audit";
+    private Vector2 _lastHudViewport;
+    private float _lastHudScale;
     public float DayTime { get; private set; } = 1f;
     public TimeOfDay TimeOfDay { get; private set; } = TimeOfDay.Day;
     public bool DrawWeather { get; private set; } = true;
@@ -97,6 +99,10 @@ public partial class GameScene : Control
     private GroupDialog _groupDialog;
     private GroupHealthPanel _groupHealthPanel;
     private double _statusRefreshMs;
+
+    // 进图过渡遮罩
+    private CanvasLayer _coverLayer;
+    private ColorRect _startupCoverRect;
 
     // M12: HUD + 键位
     private MainPanel _mainPanel;
@@ -771,6 +777,9 @@ public partial class GameScene : Control
     public DateTime ToggleTime { get; private set; } = DateTime.MinValue;
     // 原版 GameScene.OutputTime：技能超距提示的防刷屏时间。
     private DateTime _magicTooFarAt = DateTime.MinValue;
+    // 原版 MagicObject 的客户端目标记忆：单体魔法第一次命中后，
+    // 后续施法优先复用该对象，不要求鼠标继续悬停在目标上。
+    private uint _magicLockTargetObjectId;
     public int MagicBarSpellSet = 1;  // F1~F8 当前栏组 (1~4, 原版 Ctrl+1~4 切)
     public bool ShowMagicBarFrames { get; private set; } = true;
     private bool _autoRun;  // D 键切换自动跑步 (原版 AutoRun)
@@ -805,6 +814,11 @@ public partial class GameScene : Control
     private System.Drawing.Point _moveFrom;
     private double _moveStartMs;
     private int _moveFrameCount = 1;
+    // 原版 UserObject.ServerTime 门控: 发完一个移动请求后锁住, 等服务端回包
+    // (S.ObjectMove 确认 或 S.UserLocation 纠正)才解锁, 一次只发一个 C.Move。
+    // 0 = 未锁定(可发包); >0 = 锁定到该时刻。用 double 而非 DateTime 避免
+    // 每帧分配。锁定期内 MouseWalker 不再发新移动, 消除预判与回包重叠。
+    private double _moveServerLockUntilMs;
     private bool _runningTestStarted;
     private bool _interactionAuditStarted;
     private int _interactionInspectSent;
@@ -943,7 +957,11 @@ public partial class GameScene : Control
         CanPlayerMove,
         CanPlayerTurn,
         BlockLeftMouseMovement,
-        () => Input.IsKeyPressed(Key.Ctrl) && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player);
+        () => Input.IsKeyPressed(Key.Ctrl) && _combatController?.MouseObject?.Type == ObjectRenderer.Kind.Player,
+        // ServerTime 门控: 锁定期内 MouseWalker 不发新移动, 等服务端回包。
+        () => Godot.Time.GetTicksMsec() < _moveServerLockUntilMs,
+        // CanMove 阻挡判定的权威起点 = _playerLocation(原版 User.CurrentLocation)。
+        () => _playerLocation);
         AddChild(_mouseWalker);
         _combatController = new CombatController(_mapView,
             () => _objects,
@@ -991,7 +1009,8 @@ public partial class GameScene : Control
             () => _player?.ElementalHurricane == true,
             () => _mouseWalker?.AutoRun == true,
             () => _pendingMagicPacket != null,
-            SendTurn);
+            SendTurn,
+            ClearMagicLock);
         AddChild(_combatController);
         _combatController.ZIndex = 200;  // 高亮框画在物体之上
         UpdateViewRange();
@@ -1011,10 +1030,12 @@ public partial class GameScene : Control
         // 坐标/状态文本: 原版无此常驻文本 (Godot 移植端调试用)。
         // 必须挂 _uiLayer (逻辑坐标, 随 UiScale 缩放), 否则挂在世界层
         // (根节点 Scale=2 且随相机滚动) 会漂移出屏并被视口裁切。
+        // 正式 UI 默认隐藏，避免盖住 Buff/小地图；仅 DebugLabel 时显示。
         _statusLabel = new Label();
         _statusLabel.Position = new Vector2(10, 10);
         _statusLabel.Size = new Vector2(500, 80);
         _statusLabel.MouseFilter = Control.MouseFilterEnum.Ignore;
+        _statusLabel.Visible = ClientSettings.DebugLabel;
         _uiLayer.AddChild(_statusLabel);
         _debugLabel = new Label
         {
@@ -1029,6 +1050,19 @@ public partial class GameScene : Control
         _statusWindow = new StatusWindow(); // 初始隐藏, F2 打开
         CreateHud();
         Resized += OnGameResized;
+        LayoutHud(); // 立即执行首次同步布局
+
+        // 黑幕遮罩层 (Layer 100 永远最顶层，防止首帧地图未载入、实体在 (0,0) 坍塌闪烁)
+        _coverLayer = new CanvasLayer { Layer = 100 };
+        _startupCoverRect = new ColorRect
+        {
+            Color = Colors.Black,
+            MouseFilter = Control.MouseFilterEnum.Ignore
+        };
+        _startupCoverRect.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        _coverLayer.AddChild(_startupCoverRect);
+        AddChild(_coverLayer);
+
         CallDeferred(nameof(LayoutHud));
         if (OS.GetCmdlineUserArgs().Contains(UiAuditArgument))
             CallDeferred(nameof(RunUiLayoutAudit));
@@ -1787,6 +1821,7 @@ public partial class GameScene : Control
         // S.UserLocation 是服务端对非法/过早移动的纠正，不是 S.ObjectMove。
         // 原客户端收到它会校正格子并停止当前移动，不能再播放一次 Walking。
         if (_player == null) return;
+        _moveServerLockUntilMs = 0;  // 服务端纠正(拒绝移动), 同样解除门控
         _playerDirection = dir;
         _player.Direction = dir;
         ApplyAuthoritativePlayerLocation(loc);
@@ -1957,6 +1992,7 @@ public partial class GameScene : Control
         ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
+            _moveServerLockUntilMs = 0;  // 收到移动回包, 解除 ServerTime 门控
             bool autoPathActive = _autoPathRoutes.Count > 0 || _autoPathCancelPending;
             if (autoPathActive)
             {
@@ -2123,7 +2159,6 @@ public partial class GameScene : Control
         {
             player.MaxHealth = maxHealth;
             player.Light = light;
-            player.ShowHealthBar = maxHealth > 0;
             player.QueueRedraw();
         }
         if (_objects.TryGetValue(packet.ObjectID, out var objectNode))
@@ -2131,7 +2166,6 @@ public partial class GameScene : Control
             objectNode.Stats = packet.Stats;
             objectNode.MaxHealth = maxHealth;
             objectNode.Light = light;
-            objectNode.ShowHealthBar = maxHealth > 0;
             objectNode.QueueRedraw();
         }
     }
@@ -2778,6 +2812,8 @@ public partial class GameScene : Control
         // 与原版 CConnection.Process(S.ObjectRemove) 一致：先断开所有
         // 目标/悬停引用，再释放节点，避免自动攻击或悬停框访问迟到对象。
         _combatController?.RemoveObjectReference(objectID);
+        if (_magicLockTargetObjectId == objectID)
+            ClearMagicLock();
         ClearMovementEffect(objectID);
         if (_tamingRopes.Remove(objectID, out var rope)) rope.QueueFree();
         if (_spellEffects.Remove(objectID, out var spellFx)) spellFx.QueueFree();
@@ -3045,6 +3081,7 @@ public partial class GameScene : Control
     private void ApplyAuthoritativePlayerLocation(System.Drawing.Point loc, TimeSpan slow = default)
     {
         if (_player == null) return;
+        _moveServerLockUntilMs = 0;  // 权威位置应用即解锁, 覆盖所有纠正路径
         _playerLocation = loc;
         _pendingDistance = 1;
         _moveFrameCount = 1;
@@ -3984,12 +4021,14 @@ public partial class GameScene : Control
             if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(_player, change, critical);
             }
             _player.ShowHealthBar = true;
+            _player.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
             if (!miss && !block) _player.PlayStruck();
             return;
         }
         if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.ShowHealthBar = true;
+            ob.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
             if (!miss && !block)
             {
                 ob.Health += change;
@@ -4002,6 +4041,7 @@ public partial class GameScene : Control
         if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.ShowHealthBar = true;
+            player.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
             if (!miss && !block)
             {
                 player.Health += change;
@@ -4028,21 +4068,18 @@ public partial class GameScene : Control
             _player.Health = health;
             _currentHP = health;
             _mainPanel?.SetHealth(_currentHP);
-            _player.ShowHealthBar = true;
             return;
         }
         if (_otherPlayers.TryGetValue(objectID, out var player))
         {
             player.Health = health;
             player.Dead = dead;
-            player.ShowHealthBar = true;
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.Health = health;
             ob.Dead = dead;
-            ob.ShowHealthBar = true;
             _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
         }
     }
@@ -4059,7 +4096,6 @@ public partial class GameScene : Control
         {
             player.MaxHealth = maxHealth;
             player.MaxMana = maxMana;
-            player.ShowHealthBar = maxHealth > 0;
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
         else if (_objects.TryGetValue(objectID, out var ob))
@@ -4077,7 +4113,6 @@ public partial class GameScene : Control
         ob.MaxHealth = maxHealth;
         ob.Light = light;
         ob.Dead = dead;
-        ob.ShowHealthBar = maxHealth > 0;
         _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
     }
 
@@ -4177,6 +4212,7 @@ public partial class GameScene : Control
 
         _chatLog = new ChatLogPanel();
         _uiLayer.AddChild(_chatLog);
+        _chatLog.Visible = !ClientSettings.HideChatBar;
         _chatTextBox = new ChatTextBox();
         _uiLayer.AddChild(_chatTextBox);
         _chatTextBox.Visible = !ClientSettings.HideChatBar;
@@ -4196,7 +4232,9 @@ public partial class GameScene : Control
 
         _buffDialog = new BuffDialog();
         _uiLayer.AddChild(_buffDialog);
-        _buffDialog.Visible = true;
+        // 无 buff 时隐藏；有内容时 BuffsChanged 会打开并请求重新锚点。
+        _buffDialog.Visible = false;
+        _buffDialog.LayoutNeeded += LayoutBuffDialog;
 
         _bigMap = new BigMapDialog();
         _bigMap.SetRecenterMapProvider(() => GetMapInfo(_playerMapIndex), OpenBigMapForMap);
@@ -4363,6 +4401,8 @@ public partial class GameScene : Control
         _mainPanel.GroupButton.MouseClick += (o, e) => OpenGroupDialog();
         _mainPanel.CashShopButton.MouseClick += (o, e) => OpenGameStoreDialog();
 
+        if (AutoLoginArgs.UiDiagnosticBorders)
+            DXControl.DiagnosticBorders = true;
         LayoutHud();
     }
 
@@ -4375,15 +4415,33 @@ public partial class GameScene : Control
     }
 
     /// <summary>
-    /// 原版客户端的 HUD 使用固定两倍逻辑像素。窗口放大时只扩展可视地图，
-    /// 不再让 Godot 的全局 stretch 与 HUD 自身变换叠加。
+    /// HUD 唯一使用的画布尺寸。GetVisibleRect() 可能受可见区域/相机裁剪影响，
+    /// 但常驻 HUD 必须贴整个窗口 viewport 的四条边，不能贴到裁剪后的区域。
+    /// </summary>
+    private Vector2 GetHudViewportSize()
+    {
+        Vector2 size = GetViewportRect().Size;
+        return size.X > 0 && size.Y > 0 ? size : GetViewport().GetVisibleRect().Size;
+    }
+
+    /// <summary>
+    /// HUD 逻辑画布基于原版 1024x768 设计尺寸缩放。取高/宽两个方向中较小的缩放
+    /// 倍率 (限制因素), 保证逻辑画布「至少」1024x768 —— 固定 HUD (主面板宽 1024)
+    /// 在任何窗口比例下都装得下, 不会越过右/下屏幕边缘。常规 16:9/16:10 屏幕高度是
+    /// 限制因素, 倍率与原来按高度计算完全一致; 只有竖向/接近 4:3 的窄窗口才
+    /// 由宽度接管, 避免主面板溢出右边。
     /// </summary>
     private void RefreshUiScale()
     {
-        Vector2 viewport = GetViewport().GetVisibleRect().Size;
-        UiScale = viewport.Y > 0
-            ? Mathf.Clamp(viewport.Y / UiScaleBaseHeight, 1f, 2f)
-            : 2f;
+        Vector2 viewport = GetHudViewportSize();
+        if (viewport.X <= 0 || viewport.Y <= 0)
+            UiScale = 2f;
+        else
+        {
+            float byHeight = viewport.Y / UiScaleBaseHeight;
+            float byWidth = viewport.X / 1024f;
+            UiScale = Mathf.Clamp(Mathf.Min(byHeight, byWidth), 1f, 2f);
+        }
         if (_uiLayer != null && IsInstanceValid(_uiLayer))
             _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
     }
@@ -4395,7 +4453,7 @@ public partial class GameScene : Control
     /// </summary>
     private void RunUiLayoutAudit()
     {
-        Vector2 viewport = GetViewport().GetVisibleRect().Size;
+        Vector2 viewport = GetHudViewportSize();
         Vector2 logicalViewport = viewport / UiScale;
         bool pass = _uiLayer != null
             && Mathf.IsEqualApprox(_uiLayer.Transform.X.X, UiScale)
@@ -4436,12 +4494,27 @@ public partial class GameScene : Control
                     && local.End.X <= _mainPanel.Size.X + 1
                     && local.End.Y <= _mainPanel.Size.Y + 1;
             }
+
+            // 常驻 HUD 的两个历史偏移回归：技能栏必须落在主底栏左上方，
+            // 透明且无可见聊天内容时不能留下中央悬浮滚动条。
+            if (_magicBar != null && !_magicBar.UserMoved)
+            {
+                var expectedMagic = new Vector2(
+                    Math.Max(0, _mainPanel.Position.X - _magicBar.Size.X - 5),
+                    Math.Max(0, _mainPanel.Position.Y - _magicBar.Size.Y - 5));
+                pass &= _magicBar.Position.DistanceTo(expectedMagic) <= 1f;
+            }
+            if (_chatLog != null)
+                pass &= !_chatLog.IsScrollChromeVisible;
         }
 
+        string layout = $"viewport={viewport} logical={logicalViewport} "
+            + $"panel={_mainPanel?.Position}/{_mainPanel?.Size} "
+            + $"magic={_magicBar?.Position}/{_magicBar?.Size} userMoved={_magicBar?.UserMoved} "
+            + $"chatScroll={_chatLog?.IsScrollChromeVisible}";
         GD.Print(pass
-            ? $"[UILayoutAudit] PASS scale={UiScale} viewport={viewport} logical={logicalViewport}"
-            : $"[UILayoutAudit] FAIL scale={_uiLayer?.Transform} viewport={viewport} logical={logicalViewport}"
-              + $" panel={_mainPanel?.Position}/{_mainPanel?.Size} magic={_magicBar?.Position}/{_magicBar?.Size}");
+            ? $"[UILayoutAudit] PASS scale={UiScale} {layout}"
+            : $"[UILayoutAudit] FAIL scale={_uiLayer?.Transform} {layout}");
     }
 
     /// <summary>
@@ -4550,7 +4623,7 @@ public partial class GameScene : Control
     private void LayoutHud()
     {
         if (_uiLayer == null || !IsInstanceValid(_uiLayer)) return;
-        Vector2 vp = GetViewport().GetVisibleRect().Size / UiScale;
+        Vector2 vp = GetHudViewportSize() / UiScale;
         if (vp.X <= 0 || vp.Y <= 0) return;
 
         void Center(DXControl control, int yOffset = 0)
@@ -4566,6 +4639,9 @@ public partial class GameScene : Control
                 Math.Max(0, (int)((vp.X - _mainPanel.Size.X) / 2f)),
                 Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y)));
 
+        if (_beltDialog != null && _mainPanel != null)
+            _beltDialog.ApplyDefaultAnchor(vp, _mainPanel.Location, _mainPanel.Size);
+
         if (_chatLog != null && _mainPanel != null)
             _chatLog.Position = new Vector2(
                 Math.Max(0, _mainPanel.Position.X),
@@ -4574,7 +4650,6 @@ public partial class GameScene : Control
             _chatTextBox.Location = new Vector2I(
                 Math.Max(0, (int)_mainPanel.Position.X),
                 Math.Max(0, (int)(_mainPanel.Position.Y - _chatTextBox.Size.Y - 2)));
-
         if (_miniMap != null)
             _miniMap.Location = new Vector2I(
                 Math.Max(0, (int)(vp.X - _miniMap.Size.X)), 0);
@@ -4587,9 +4662,7 @@ public partial class GameScene : Control
         if (_questDialog != null)
             Center(_questDialog);
 
-        if (_buffDialog != null)
-            _buffDialog.Location = new Vector2I(
-                Math.Max(0, (int)(vp.X - _miniMap.Size.X - _buffDialog.Size.X - 5)), 0);
+        LayoutBuffDialog();
 
         if (_groupHealthPanel != null)
             _groupHealthPanel.Location = new Vector2I(12, 48);
@@ -4651,15 +4724,15 @@ public partial class GameScene : Control
         if (_dungeonFinderDialog != null)
             Center(_dungeonFinderDialog);
 
-        if (_beltDialog != null)
-            _beltDialog.Location = new Vector2I(
-                (int)(_mainPanel.Location.X + _mainPanel.Size.X - _beltDialog.Size.X),
-                Math.Max(0, (int)(_mainPanel.Location.Y - _beltDialog.Size.Y)));
+        if (_beltDialog != null && _mainPanel != null)
+            _beltDialog.ApplyDefaultAnchor(vp, _mainPanel.Location, _mainPanel.Size);
 
-        if (_magicBar != null && !_magicBar.UserMoved)
-            _magicBar.Position = new Vector2(
-                Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
-                Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));
+        if (_magicBar != null && _mainPanel != null)
+        {
+            // docs/UI_GLOBAL_OFFSET_ANALYSIS.md：清掉贴顶脏配置后再锚底。
+            _magicBar.ClearInvalidPersistedPosition();
+            _magicBar.ApplyDefaultAnchor(vp, _mainPanel.Location, _mainPanel.Size);
+        }
 
         // 原版 GameScene.SetDefaultLocations 的其余窗口位置。
         if (_menuDialog != null)
@@ -4690,6 +4763,28 @@ public partial class GameScene : Control
         if (_timerDialog != null && _mainPanel != null)
             _timerDialog.Location = new Vector2I((int)(_mainPanel.Position.X + _mainPanel.Size.X - 115),
                 Math.Max(0, (int)(vp.Y - 170)));
+
+        // 最后统一执行一次边界约束。上面的角落/居中布局负责“应该在哪里”，
+        // 这里负责“绝不能在哪里”：旧配置、窗口尺寸瞬变、窗口拖动都不能让
+        // 任何常驻 UI 控件越过当前逻辑画布。
+        ClampHudControlsToViewport(vp);
+    }
+
+    private void ClampHudControlsToViewport(Vector2 logicalViewport)
+    {
+        if (_uiLayer == null || !IsInstanceValid(_uiLayer)) return;
+        foreach (Node child in _uiLayer.GetChildren())
+        {
+            if (child is not Control control || !IsInstanceValid(control) || !control.Visible)
+                continue;
+            if (control.Size.X <= 0 || control.Size.Y <= 0) continue;
+
+            float maxX = Mathf.Max(0, logicalViewport.X - control.Size.X);
+            float maxY = Mathf.Max(0, logicalViewport.Y - control.Size.Y);
+            control.Position = new Vector2(
+                Mathf.Clamp(control.Position.X, 0, maxX),
+                Mathf.Clamp(control.Position.Y, 0, maxY));
+        }
     }
 
     private MapInfo GetMapInfo(int mapIndex)
@@ -4702,11 +4797,24 @@ public partial class GameScene : Control
     {
         if (_magicBar == null || !IsInstanceValid(_magicBar) || _magicBar.UserMoved) return;
         if (_mainPanel == null || !IsInstanceValid(_mainPanel)) return;
-        Vector2 vp = GetViewport().GetVisibleRect().Size / UiScale;
+        Vector2 vp = GetHudViewportSize() / UiScale;
         if (vp.X <= 0 || vp.Y <= 0) return;
-        _magicBar.Position = new Vector2(
-            Math.Max(0, (int)(_mainPanel.Location.X - _magicBar.Size.X - 5)),
-            Math.Max(0, (int)(vp.Y - _mainPanel.Size.Y - _magicBar.Size.Y - 5)));
+        _magicBar.ApplyDefaultAnchor(vp, _mainPanel.Location, _mainPanel.Size);
+    }
+
+    /// <summary>
+    /// Buff 栏贴小地图左侧。Size 随图标数变化后必须重算，否则会往右顶进小地图像「飘出去」。
+    /// 对齐原版 GameScene.SetDefaultLocations: Size.Width - MiniMap - Buff - 5, Y=0。
+    /// </summary>
+    private void LayoutBuffDialog()
+    {
+        if (_buffDialog == null || !IsInstanceValid(_buffDialog)) return;
+        if (_miniMap == null || !IsInstanceValid(_miniMap)) return;
+        Vector2 vp = GetHudViewportSize() / UiScale;
+        if (vp.X <= 0 || vp.Y <= 0) return;
+        int miniW = (int)_miniMap.Size.X;
+        _buffDialog.Location = new Vector2I(
+            Math.Max(0, (int)(vp.X - miniW - _buffDialog.Size.X - 5)), 0);
     }
 
     private void OpenBigMap()
@@ -4717,7 +4825,7 @@ public partial class GameScene : Control
     private void OpenBigMapForMap(MapInfo map)
     {
         if (map == null) return;
-        var vp = GetViewport().GetVisibleRect().Size / UiScale;
+        var vp = GetHudViewportSize() / UiScale;
         bool isCurrent = map.Index == _playerMapIndex;
         int mapWidth = _mapView.Map?.Width ?? 0;
         int mapHeight = _mapView.Map?.Height ?? 0;
@@ -6794,15 +6902,8 @@ public partial class GameScene : Control
         }
         if (_otherPlayers.TryGetValue(objectID, out var player))
         {
+            player.Dead = true;
             player.PlayDie();
-            var renderer = player;
-            GetTree().CreateTimer(1.2).Timeout += () =>
-            {
-                if (renderer.IsInsideTree() && _otherPlayers.Remove(objectID))
-                {
-                    if (_objects.Remove(objectID, out var proxy)) proxy.QueueFree();
-                }
-            };
         }
         else if (_objects.TryGetValue(objectID, out var ob))
         {
@@ -6817,12 +6918,6 @@ public partial class GameScene : Control
                 _operationAuditExtCombatKeptTarget = _combatController?.TargetObject == ob;
                 GD.Print($"[OperationAuditExt] S16 died-kept-target={_operationAuditExtCombatKeptTarget} target={_combatController?.TargetObject?.DisplayName ?? "null"}");
             }
-            var renderer = ob;
-            GetTree().CreateTimer(1.2).Timeout += () =>
-            {
-                if (renderer.IsInsideTree() && _objects.Remove(objectID, out _))
-                    renderer.QueueFree();
-            };
         }
     }
 
@@ -7044,6 +7139,26 @@ public partial class GameScene : Control
         MirDirection dir = (MirDirection)direction;
         _playerDirection = dir;
 
+        // 原版 S.ObjectMove 正常只解锁+设 Slow, 不重 SetAction, 插值由发包时的
+        // 预判(SetAction)一路播到底。复刻之: 若服务端确认的终点 == 预判终点,
+        // 插值已在播, 这里只补方向/动画/小地图, 不重启插值时间轴, 避免回拉。
+        // 仅当服务端位置≠预判(撞墙/被推/距离被改)时, 才走纠正路径重跳+重启插值。
+        if (_playerLocation.X == x && _playerLocation.Y == y && _pendingDistance == distance)
+        {
+            // 预判命中: 不动 _playerLocation/CellX/CellY/Offset/_moveStartMs/_moveFrameCount,
+            // 插值继续。只同步方向(服务端可能纠正朝向)与动画帧。
+            _player.Direction = dir;
+            UpdateAutoPathProgress();
+            if (AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest)
+                GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY(confirmed) distance={distance} animation={_player.Animation} " +
+                         $"frameStart={_player.FrameIndex} location=({x},{y})");
+            _statusLabel.Text = $"位置: ({x},{y}) 方向: {dir}";
+            _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
+            _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
+            return;
+        }
+
+        // 纠正路径: 服务端位置≠预判(原版 Displacement 等价), 必须重跳+重启插值。
         // 原版 MovingOffSet：权威格立即切到终点，视觉位置从起点回拉。
         _moveFrom = _playerLocation;
         _moveStartMs = Godot.Time.GetTicksMsec();
@@ -7060,7 +7175,7 @@ public partial class GameScene : Control
         // 右键只是请求跑步，最终动作必须以服务器接受的移动距离为准。
         _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
         if (AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest)
-            GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY distance={distance} animation={_player.Animation} " +
+            GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY(corrected) distance={distance} animation={_player.Animation} " +
                      $"frameStart={_player.FrameIndex} location=({x},{y})");
         _moveFrameCount = 2;
 
@@ -7141,25 +7256,53 @@ public partial class GameScene : Control
     private void SendMouseMove(MirDirection direction, int distance, bool running)
     {
         if (_net?.Connection?.Connected != true) return;
-        // 原版 UserObject.AttemptAction(Moving) 在发包前就切换本地动作；
-        // 服务端回包只负责确认终点和最终距离，不能让网络往返时间表现成站立。
-        _player?.BeginMove(direction, Math.Max(1, distance), _playerHorse != HorseType.None,
+        if (_player == null) return;
+        distance = Math.Max(1, distance);
+        // 原版 UserObject.AttemptAction(Moving) → SetAction(Moving) 立即把
+        // CurrentLocation 跳到预测终点并启动 MovingOffSet 插值; 回包(S.ObjectMove)
+        // 正常只解锁+设 Slow, 不重 SetAction, 故无双重视觉/回拉。
+        // 之前 Godot 这里只设动画不跳位置/不启动插值, 等回包 ShowUserLocation 才
+        // 跳位置+设 Offset+_moveStartMs 重启插值; 由于回包(RTT~几十ms)远快于插值
+        // 时长(~600ms), 回包到达时上一段插值还在播, ShowUserLocation 把 Offset
+        // 重置回起点 → 视觉跳回起点再走 = 回拉/晃动。
+        // 现复刻原版: 发包即跳到预测终点 + 设起点反向 Offset + 启动插值,
+        // 回包只在服务端位置≠预测时纠正(见 ShowUserLocation)。
+        var predicted = Functions.Move(_playerLocation, direction, distance);
+        _moveFrom = _playerLocation;
+        _moveStartMs = Godot.Time.GetTicksMsec();
+        _playerLocation = predicted;
+        _player.CellX = predicted.X;
+        _player.CellY = predicted.Y;
+        _player.OffsetX = (_moveFrom.X - predicted.X) * 48f;
+        _player.OffsetY = (_moveFrom.Y - predicted.Y) * 32f;
+        _player.Direction = direction;
+        _pendingDistance = distance;
+        _player.BeginMove(direction, distance, _playerHorse != HorseType.None,
             running && distance >= 2);
+        _moveFrameCount = 2;
+        UpdatePlayerPosition();
+        UpdateAutoPathProgress();
         _net.Connection.Enqueue(new C.Move { Direction = direction, Distance = distance });
+        // 原版 AttemptAction 末尾 ServerTime = Now.AddSeconds(5): 锁住直到回包。
+        // 5 秒是容错上限, 正常回包几十毫秒就解锁; 超时仍解锁避免永久卡死。
+        _moveServerLockUntilMs = Godot.Time.GetTicksMsec() + 5000.0;
         // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run。
         _canRun = true;
         if (AutoLoginArgs.RunningTest)
-            GD.Print($"[RunningTest] SEND distance={distance} running={running} direction={direction}");
+            GD.Print($"[RunningTest] SEND distance={distance} running={running} direction={direction} predicted=({predicted.X},{predicted.Y})");
         if (AutoLoginArgs.RightRunTest)
-            GD.Print($"[RightRunTest] SEND distance={distance} running={running} direction={direction}");
+            GD.Print($"[RightRunTest] SEND distance={distance} running={running} direction={direction} predicted=({predicted.X},{predicted.Y})");
     }
 
     private int GetRunSteps()
     {
         // 原版规则：站立后的第一段先走；后续只有背包和穿戴均未超重才跑。
-        int steps = Godot.Time.GetTicksMsec() >= _runCooldownUntilMs
-            && _canRun && BagWeight <= _playerStats[Stat.BagWeight]
-            && WearWeight <= _playerStats[Stat.WearWeight] ? 2 : 1;
+        bool cooldownOk = Godot.Time.GetTicksMsec() >= _runCooldownUntilMs;
+        bool bagOk = BagWeight <= _playerStats[Stat.BagWeight];
+        bool wearOk = WearWeight <= _playerStats[Stat.WearWeight];
+        int steps = cooldownOk && _canRun && bagOk && wearOk ? 2 : 1;
+        if (steps == 1 && IsRunInputHeld())
+            GD.Print($"[RunDebug] BLOCKED canRun={_canRun} cooldownOk={cooldownOk} bag={BagWeight}/{_playerStats[Stat.BagWeight]} wear={WearWeight}/{_playerStats[Stat.WearWeight]}");
         if (steps > 1 && _playerHorse != Library.HorseType.None) steps++;
         return steps;
     }
@@ -7234,6 +7377,7 @@ public partial class GameScene : Control
             _otherPlayers.Clear();
             _combatController.TargetObject = null;
             _combatController.MouseObject = null;
+            ClearMagicLock();
         }
         else
         {
@@ -7250,9 +7394,21 @@ public partial class GameScene : Control
         _player.UpdateAppearance(_pendingStartInfo ?? StartInfo);
         UpdatePlayerPosition();
 
-        // M12: 玩家标记 (小地图居中/大地图复位)
-        _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
-        _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
+        // 地图与相机精准定位完成后，平滑淡出并解耦进图黑幕
+        if (_startupCoverRect != null && IsInstanceValid(_startupCoverRect))
+        {
+            var tween = CreateTween();
+            tween.TweenProperty(_startupCoverRect, "color:a", 0f, 0.25f);
+            tween.TweenCallback(Callable.From(() =>
+            {
+                if (_coverLayer != null && IsInstanceValid(_coverLayer))
+                {
+                    _coverLayer.QueueFree();
+                    _coverLayer = null;
+                    _startupCoverRect = null;
+                }
+            }));
+        }
 
         if (AutoLoginArgs.ScreenshotAfterEnter)
             GetTree().CreateTimer(1.0).Timeout += SaveProductionAuditScreenshot;
@@ -7296,6 +7452,24 @@ public partial class GameScene : Control
 
     public override void _Process(double delta)
     {
+        // 高 DPI/窗口模式下，Godot 可能在 _Ready 之后才提交最终视口尺寸。
+        // 若只在 _Ready/Control.Resized 布局，HUD 会保留旧的 (13,23) 等逻辑坐标，
+        // 表现为技能栏跑到左上角、底栏与聊天控件互相错层。尺寸或缩放真正变化时
+        // 重新计算一次全部 HUD 锚点；稳定帧不重复改写用户拖动的位置。
+        Vector2 hudViewport = GetHudViewportSize();
+        if (hudViewport != _lastHudViewport || !Mathf.IsEqualApprox(UiScale, _lastHudScale))
+        {
+            _lastHudViewport = hudViewport;
+            _lastHudScale = UiScale;
+            RefreshUiScale();
+            LayoutHud();
+        }
+        else if (_uiLayer != null && IsInstanceValid(_uiLayer))
+        {
+            // 窗口拖动/缩放也必须实时受边界约束，而不是只在重排时约束。
+            ClampHudControlsToViewport(hudViewport / UiScale);
+        }
+
         // 原版 ProcessInput 第一步：MagicAction 队列在动作边界释放。
         // 释放条件：行动作已结束（当前帧不在移动动画），或超过走完期限
         // （覆盖自动寻路连续走、被击退打断等边界）。
@@ -7422,9 +7596,12 @@ public partial class GameScene : Control
             if (_debugLabel.Visible)
             {
                 string map = Globals.MapInfoList?.Binding.FirstOrDefault(x => x.Index == _playerMapIndex)?.FileName ?? $"Map{_playerMapIndex}";
-                _debugLabel.Text = $"FPS: {Engine.GetFramesPerSecond():0}  Map: {map}  Pos: ({_playerLocation.X},{_playerLocation.Y})";
+                string dir = _player?.Direction.ToString() ?? "?";
+                _debugLabel.Text = $"FPS: {Engine.GetFramesPerSecond():0}  Map: {map}  Pos: ({_playerLocation.X},{_playerLocation.Y})  Dir: {dir}";
             }
         }
+        if (_statusLabel != null)
+            _statusLabel.Visible = ClientSettings.DebugLabel;
 
         // M11: 状态窗口节流刷新 (200ms)
         if (_statusWindow != null && _statusWindow.Visible && _player != null)
@@ -8826,6 +9003,25 @@ public partial class GameScene : Control
         return _mapView.CellToScreen(cellX, cellY, false);
     }
 
+    private void ClearMagicLock()
+    {
+        if (_magicLockTargetObjectId == 0) return;
+        GD.Print($"[Magic] 清除锁定目标 ObjectID={_magicLockTargetObjectId}");
+        _magicLockTargetObjectId = 0;
+    }
+
+    private ObjectRenderer GetMagicLockTarget()
+    {
+        if (_magicLockTargetObjectId == 0) return null;
+        if (!_objects.TryGetValue(_magicLockTargetObjectId, out var target)
+            || !CombatController.CanAttackObject(target))
+        {
+            ClearMagicLock();
+            return null;
+        }
+        return target;
+    }
+
     // F1~F12 -> Spell01~12, Shift+F1~F12 -> Spell13~24。
     // 键盘输入和技能栏点击共用这一条链路。
     public void UseMagicSlot(int slot)
@@ -8900,16 +9096,26 @@ public partial class GameScene : Control
                 return;
         }
         var pCell = _playerLocation;
-        // 原版 UseMagic 目标解析：悬停目标 (MouseObject) 优先——悬停即可
-        // 锁定，无需点击选中；其次点击选中的目标 (TargetObject 承担原版
-        // MagicObject 上次目标记忆的角色，左键选中后持续保留)。两者都
-        // 不可攻击时 Target=0，服务端按纯地面落点处理 (与原版一致)。
-        // 只发点击选中目标的话，悬停施法会变成 Target=0 的地面落点，
-        // 服务端不结算伤害——特效命中但怪物不掉血。
+        // 目标解析顺序：用户刚刚左键选中的新目标 > 已锁定目标 > 鼠标悬停目标。
+        // 原版 MagicObject 会记住第一次成功施法的对象；仅临时读取 MouseObject
+        // 会导致鼠标移开后第二次魔法退化为地面落点。
         var hovered = _combatController?.MouseObject;
         var selected = _combatController?.TargetObject;
-        ObjectRenderer target = CombatController.CanAttackObject(hovered) ? hovered
-            : CombatController.CanAttackObject(selected) ? selected : null;
+        var locked = GetMagicLockTarget();
+        ObjectRenderer target;
+        if (locked != null)
+        {
+            // 有锁定时，只有用户明确左键选了另一个对象才切换锁定。
+            target = CombatController.CanAttackObject(selected)
+                && selected.ObjectID != locked.ObjectID ? selected : locked;
+        }
+        else
+        {
+            // 保留原有行为：首次施法仍然优先使用鼠标悬停目标，
+            // 没有悬停目标时才使用左键选中目标。
+            target = CombatController.CanAttackObject(hovered) ? hovered
+                : CombatController.CanAttackObject(selected) ? selected : null;
+        }
         uint targetID = target?.ObjectID ?? 0;
         var mouseCell = _combatController?.MouseCell() ?? new System.Drawing.Point(pCell.X, pCell.Y);
         var targetCell = target == null
@@ -8937,6 +9143,11 @@ public partial class GameScene : Control
                 or MagicType.BrainStorm => true,
             _ => false
         };
+        if (!useMouseLocation && target != null)
+        {
+            _magicLockTargetObjectId = target.ObjectID;
+            GD.Print($"[Magic] 锁定目标 ObjectID={target.ObjectID} name={target.DisplayName}");
+        }
         var castCell = useMouseLocation || target == null ? mouseCell : targetCell;
         if (magic.Info.School == MagicSchool.Toggle)
         {

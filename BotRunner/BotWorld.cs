@@ -140,7 +140,9 @@ public sealed class BotWorld
         var item = Inventory.FirstOrDefault(x => x.Slot == AbsoluteSlot(p.Link.GridType, p.Link.Slot));
         if (item == null) return;
         if (p.Success && p.Link.Count <= 0) Inventory.Remove(item);
-        else if (p.Link.Count > 0) item.Count = Math.Max(0, item.Count - p.Link.Count);
+        // 服务器发的是剩余总量(PlayerObject 消耗后 result.Link.Count = item.Count),
+        // 不是变化量; 直接覆盖, 否则会越减越少。
+        else if (p.Link.Count > 0) item.Count = p.Link.Count;
     }
     public void Apply(S.ItemMove p)
     {

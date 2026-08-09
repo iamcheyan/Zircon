@@ -18,6 +18,9 @@ public partial class BuffDialog : DXWindow
 
     private readonly List<ClientBuffInfo> _currentBuffs = new();
 
+    /// <summary>图标数量变化导致 Size 改变时，由 GameScene 重新锚到小地图左侧。</summary>
+    public event Action LayoutNeeded;
+
     public BuffDialog()
     {
         HasFooter = false;
@@ -33,6 +36,7 @@ public partial class BuffDialog : DXWindow
     /// <summary>GameScene 调用: buff 字典变化后刷新图标</summary>
     public void BuffsChanged(Dictionary<int, ClientBuffInfo> buffs)
     {
+        var previousSize = Size;
         foreach (Control child in GetChildren())
         {
             if (child is DXImageControl)
@@ -88,6 +92,11 @@ public partial class BuffDialog : DXWindow
             AddControl(icon);
             _currentBuffs.Add(buff);
         }
+
+        Visible = list.Count > 0;
+        // Size 可能仍是 30x30（单个 buff），也必须重锚，否则会停在构造默认 (0,0)。
+        if (Visible || Size != previousSize)
+            LayoutNeeded?.Invoke();
     }
 
     private static void ColorBuffIcon(DXImageControl icon, ClientBuffInfo buff)

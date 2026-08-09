@@ -1,0 +1,1891 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "method": "absolute path-literal and owner+offset copy-sequence recovery",
+  "warning": "The table identifies copied path fields; it does not by itself prove which runtime object later consumes every field.",
+  "records": [
+    {
+      "path_literal_va": "0x0047d51c",
+      "path": ".\\Data\\tilesc.wil",
+      "owner_field": "+0xb130",
+      "destination_lea_va": "0x00452b38",
+      "destination_basis": "following-lea-edx",
+      "copy_source_va": "0x00452b2d",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d508",
+      "path": ".\\Data\\tiles30c.wil",
+      "owner_field": "+0xb234",
+      "destination_lea_va": "0x00452b47",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452b5b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d4f4",
+      "path": ".\\Data\\Tiles5c.wil",
+      "owner_field": "+0xb338",
+      "destination_lea_va": "0x00452b6f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452b80",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d4e0",
+      "path": ".\\Data\\smtilesc.wil",
+      "owner_field": "+0xb43c",
+      "destination_lea_va": "0x00452b94",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ba8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d4cc",
+      "path": ".\\Data\\housesc.wil",
+      "owner_field": "+0xb540",
+      "destination_lea_va": "0x00452bbc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452bd0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d4b8",
+      "path": ".\\Data\\cliffsc.wil",
+      "owner_field": "+0xb644",
+      "destination_lea_va": "0x00452be4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452bf9",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d4a0",
+      "path": ".\\Data\\dungeonsc.wil",
+      "owner_field": "+0xb748",
+      "destination_lea_va": "0x00452c0f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452c23",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d48c",
+      "path": ".\\Data\\innersc.wil",
+      "owner_field": "+0xb84c",
+      "destination_lea_va": "0x00452c37",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452c4b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d474",
+      "path": ".\\Data\\furnituresc.wil",
+      "owner_field": "+0xb950",
+      "destination_lea_va": "0x00452c5c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452c70",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d460",
+      "path": ".\\Data\\wallsc.wil",
+      "owner_field": "+0xba54",
+      "destination_lea_va": "0x00452c84",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452c98",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d448",
+      "path": ".\\Data\\smobjectsc.wil",
+      "owner_field": "+0xbb58",
+      "destination_lea_va": "0x00452cac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452cc0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d430",
+      "path": ".\\Data\\animationsc.wil",
+      "owner_field": "+0xbc5c",
+      "destination_lea_va": "0x00452cd7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ceb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d41c",
+      "path": ".\\Data\\object1c.wil",
+      "owner_field": "+0xbd60",
+      "destination_lea_va": "0x00452cff",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452d13",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d408",
+      "path": ".\\Data\\object2c.wil",
+      "owner_field": "+0xbe64",
+      "destination_lea_va": "0x00452d27",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452d38",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d3f0",
+      "path": ".\\Data\\Wood\\tilesc.wil",
+      "owner_field": "+0xbf68",
+      "destination_lea_va": "0x00452d4c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452d60",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d3d4",
+      "path": ".\\Data\\Wood\\tiles30c.wil",
+      "owner_field": "+0xc06c",
+      "destination_lea_va": "0x00452d74",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452d88",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d3bc",
+      "path": ".\\Data\\Wood\\Tiles5c.wil",
+      "owner_field": "+0xc06c",
+      "destination_lea_va": "0x00452d74",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452dad",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d3a0",
+      "path": ".\\Data\\Wood\\smtilesc.wil",
+      "owner_field": "+0xc274",
+      "destination_lea_va": "0x00452dc7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ddb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d388",
+      "path": ".\\Data\\Wood\\housesc.wil",
+      "owner_field": "+0xc378",
+      "destination_lea_va": "0x00452def",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452e00",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d370",
+      "path": ".\\Data\\Wood\\cliffsc.wil",
+      "owner_field": "+0xc47c",
+      "destination_lea_va": "0x00452e14",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452e28",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d354",
+      "path": ".\\Data\\Wood\\dungeonsc.wil",
+      "owner_field": "+0xc580",
+      "destination_lea_va": "0x00452e3c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452e50",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d33c",
+      "path": ".\\Data\\Wood\\innersc.wil",
+      "owner_field": "+0xc684",
+      "destination_lea_va": "0x00452e64",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452e79",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d320",
+      "path": ".\\Data\\Wood\\furnituresc.wil",
+      "owner_field": "+0xc788",
+      "destination_lea_va": "0x00452e8f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ea3",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d308",
+      "path": ".\\Data\\Wood\\wallsc.wil",
+      "owner_field": "+0xc88c",
+      "destination_lea_va": "0x00452eb7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ecb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d2ec",
+      "path": ".\\Data\\Wood\\smobjectsc.wil",
+      "owner_field": "+0xc990",
+      "destination_lea_va": "0x00452edc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452ef0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d2d0",
+      "path": ".\\Data\\Wood\\animationsc.wil",
+      "owner_field": "+0xca94",
+      "destination_lea_va": "0x00452f04",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452f18",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d2b4",
+      "path": ".\\Data\\Wood\\object1c.wil",
+      "owner_field": "+0xcb98",
+      "destination_lea_va": "0x00452f2c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452f40",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d298",
+      "path": ".\\Data\\Wood\\object2c.wil",
+      "owner_field": "+0xcc9c",
+      "destination_lea_va": "0x00452f60",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452f6b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d280",
+      "path": ".\\Data\\Sand\\tilesc.wil",
+      "owner_field": "+0xcda0",
+      "destination_lea_va": "0x00452f7f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452f93",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d264",
+      "path": ".\\Data\\Sand\\tiles30c.wil",
+      "owner_field": "+0xcea4",
+      "destination_lea_va": "0x00452fa7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452fb8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d24c",
+      "path": ".\\Data\\Sand\\Tiles5c.wil",
+      "owner_field": "+0xcfa8",
+      "destination_lea_va": "0x00452fcc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00452fe0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d230",
+      "path": ".\\Data\\Sand\\smtilesc.wil",
+      "owner_field": "+0xd0ac",
+      "destination_lea_va": "0x00452ff4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453008",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d218",
+      "path": ".\\Data\\Sand\\housesc.wil",
+      "owner_field": "+0xd1b0",
+      "destination_lea_va": "0x0045301c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453031",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d200",
+      "path": ".\\Data\\Sand\\cliffsc.wil",
+      "owner_field": "+0xd2b4",
+      "destination_lea_va": "0x00453047",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045305b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d1e4",
+      "path": ".\\Data\\Sand\\dungeonsc.wil",
+      "owner_field": "+0xd3b8",
+      "destination_lea_va": "0x0045306f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453083",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d1cc",
+      "path": ".\\Data\\Sand\\innersc.wil",
+      "owner_field": "+0xd4bc",
+      "destination_lea_va": "0x00453094",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004530a8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d1b0",
+      "path": ".\\Data\\Sand\\furnituresc.wil",
+      "owner_field": "+0xd5c0",
+      "destination_lea_va": "0x004530bc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004530d0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d198",
+      "path": ".\\Data\\Sand\\wallsc.wil",
+      "owner_field": "+0xd6c4",
+      "destination_lea_va": "0x004530e4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004530f8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d17c",
+      "path": ".\\Data\\Sand\\smobjectsc.wil",
+      "owner_field": "+0xd7c8",
+      "destination_lea_va": "0x0045310f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453123",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d160",
+      "path": ".\\Data\\Sand\\animationsc.wil",
+      "owner_field": "+0xd8cc",
+      "destination_lea_va": "0x00453137",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045314b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d144",
+      "path": ".\\Data\\Sand\\object1c.wil",
+      "owner_field": "+0xd9d0",
+      "destination_lea_va": "0x0045315f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453170",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d128",
+      "path": ".\\Data\\Sand\\object2c.wil",
+      "owner_field": "+0xdad4",
+      "destination_lea_va": "0x00453184",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453198",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d10c",
+      "path": ".\\Data\\Forest\\tilesc.wil",
+      "owner_field": "+0xdbd8",
+      "destination_lea_va": "0x004531ac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004531c0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d0f0",
+      "path": ".\\Data\\Forest\\tiles30c.wil",
+      "owner_field": "+0xdbd8",
+      "destination_lea_va": "0x004531ac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004531e5",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d0d4",
+      "path": ".\\Data\\Forest\\Tiles5c.wil",
+      "owner_field": "+0xdde0",
+      "destination_lea_va": "0x004531ff",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453213",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d0b8",
+      "path": ".\\Data\\Forest\\smtilesc.wil",
+      "owner_field": "+0xdee4",
+      "destination_lea_va": "0x00453227",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453238",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d09c",
+      "path": ".\\Data\\Forest\\housesc.wil",
+      "owner_field": "+0xdfe8",
+      "destination_lea_va": "0x0045324c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453260",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d080",
+      "path": ".\\Data\\Forest\\cliffsc.wil",
+      "owner_field": "+0xe0ec",
+      "destination_lea_va": "0x00453274",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453288",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d064",
+      "path": ".\\Data\\Forest\\dungeonsc.wil",
+      "owner_field": "+0xe1f0",
+      "destination_lea_va": "0x0045329c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004532b1",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d048",
+      "path": ".\\Data\\Forest\\innersc.wil",
+      "owner_field": "+0xe2f4",
+      "destination_lea_va": "0x004532c7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004532db",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d028",
+      "path": ".\\Data\\Forest\\furnituresc.wil",
+      "owner_field": "+0xe3f8",
+      "destination_lea_va": "0x004532ef",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453303",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d00c",
+      "path": ".\\Data\\Forest\\wallsc.wil",
+      "owner_field": "+0xe4fc",
+      "destination_lea_va": "0x00453314",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453328",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cfec",
+      "path": ".\\Data\\Forest\\smobjectsc.wil",
+      "owner_field": "+0xe600",
+      "destination_lea_va": "0x0045333c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453350",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cfcc",
+      "path": ".\\Data\\Forest\\animationsc.wil",
+      "owner_field": "+0xe704",
+      "destination_lea_va": "0x00453364",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453378",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cfb0",
+      "path": ".\\Data\\Forest\\object1c.wil",
+      "owner_field": "+0xe808",
+      "destination_lea_va": "0x00453398",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004533a3",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf94",
+      "path": ".\\Data\\Forest\\object2c.wil",
+      "owner_field": "+0xe90c",
+      "destination_lea_va": "0x004533b7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004533cb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf7c",
+      "path": ".\\Data\\Snow\\tilesc.wil",
+      "owner_field": "+0xea10",
+      "destination_lea_va": "0x004533df",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004533f0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf60",
+      "path": ".\\Data\\Snow\\tiles30c.wil",
+      "owner_field": "+0xeb14",
+      "destination_lea_va": "0x00453404",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453418",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf48",
+      "path": ".\\Data\\Snow\\Tiles5c.wil",
+      "owner_field": "+0xec18",
+      "destination_lea_va": "0x0045342c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453440",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf2c",
+      "path": ".\\Data\\Snow\\smtilesc.wil",
+      "owner_field": "+0xed1c",
+      "destination_lea_va": "0x00453454",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453469",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cf14",
+      "path": ".\\Data\\Snow\\housesc.wil",
+      "owner_field": "+0xee20",
+      "destination_lea_va": "0x0045347f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453493",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cefc",
+      "path": ".\\Data\\Snow\\cliffsc.wil",
+      "owner_field": "+0xef24",
+      "destination_lea_va": "0x004534a7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004534bb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cee0",
+      "path": ".\\Data\\Snow\\dungeonsc.wil",
+      "owner_field": "+0xf028",
+      "destination_lea_va": "0x004534cc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004534e0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cec8",
+      "path": ".\\Data\\Snow\\innersc.wil",
+      "owner_field": "+0xf12c",
+      "destination_lea_va": "0x004534f4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453508",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ceac",
+      "path": ".\\Data\\Snow\\furnituresc.wil",
+      "owner_field": "+0xf230",
+      "destination_lea_va": "0x0045351c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453530",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce94",
+      "path": ".\\Data\\Snow\\wallsc.wil",
+      "owner_field": "+0xf334",
+      "destination_lea_va": "0x00453547",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045355b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce78",
+      "path": ".\\Data\\Snow\\smobjectsc.wil",
+      "owner_field": "+0xf438",
+      "destination_lea_va": "0x0045356f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453583",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce5c",
+      "path": ".\\Data\\Snow\\animationsc.wil",
+      "owner_field": "+0xf53c",
+      "destination_lea_va": "0x00453597",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004535a8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce40",
+      "path": ".\\Data\\Snow\\object1c.wil",
+      "owner_field": "+0xf640",
+      "destination_lea_va": "0x004535bc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004535d0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce24",
+      "path": ".\\Data\\Snow\\object2c.wil",
+      "owner_field": "+0xf744",
+      "destination_lea_va": "0x004535e4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004535f8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ce0c",
+      "path": ".\\Data\\GameInter.wil",
+      "owner_field": "+0xf744",
+      "destination_lea_va": "0x004535e4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045361d",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cdf8",
+      "path": ".\\Data\\M-Hum.wil",
+      "owner_field": "+0xf94c",
+      "destination_lea_va": "0x00453637",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045364b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cde0",
+      "path": ".\\Data\\M-Weapon1.wil",
+      "owner_field": "+0xfa50",
+      "destination_lea_va": "0x0045365f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453670",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cdc8",
+      "path": ".\\Data\\M-Weapon2.wil",
+      "owner_field": "+0xfb54",
+      "destination_lea_va": "0x00453684",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453698",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cdb0",
+      "path": ".\\Data\\M-Weapon3.wil",
+      "owner_field": "+0xfc58",
+      "destination_lea_va": "0x004536ac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004536c0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd98",
+      "path": ".\\Data\\M-Weapon4.wil",
+      "owner_field": "+0xfd5c",
+      "destination_lea_va": "0x004536d4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004536e9",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd84",
+      "path": ".\\Data\\WM-Hum.wil",
+      "owner_field": "+0xfe60",
+      "destination_lea_va": "0x004536ff",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453713",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd6c",
+      "path": ".\\Data\\WM-Weapon1.wil",
+      "owner_field": "+0xff64",
+      "destination_lea_va": "0x00453727",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045373b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd54",
+      "path": ".\\Data\\WM-Weapon2.wil",
+      "owner_field": "+0x10068",
+      "destination_lea_va": "0x0045374c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453760",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd3c",
+      "path": ".\\Data\\WM-Weapon3.wil",
+      "owner_field": "+0x1016c",
+      "destination_lea_va": "0x00453774",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453788",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd24",
+      "path": ".\\Data\\WM-Weapon4.wil",
+      "owner_field": "+0x10270",
+      "destination_lea_va": "0x0045379c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004537b0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cd10",
+      "path": ".\\Data\\Magic.wil",
+      "owner_field": "+0x10374",
+      "destination_lea_va": "0x004537d0",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004537db",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ccf8",
+      "path": ".\\Data\\Inventory.wil",
+      "owner_field": "+0x10478",
+      "destination_lea_va": "0x004537ef",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453803",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cce4",
+      "path": ".\\Data\\Equip.wil",
+      "owner_field": "+0x1057c",
+      "destination_lea_va": "0x00453817",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453828",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ccd0",
+      "path": ".\\Data\\Ground.wil",
+      "owner_field": "+0x10680",
+      "destination_lea_va": "0x0045383c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453850",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ccbc",
+      "path": ".\\Data\\MIcon.wil",
+      "owner_field": "+0x10784",
+      "destination_lea_va": "0x00453864",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453878",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cca8",
+      "path": ".\\Data\\ProgUse.wil",
+      "owner_field": "+0x10888",
+      "destination_lea_va": "0x0045388c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004538a1",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc94",
+      "path": ".\\Data\\Horse.wil",
+      "owner_field": "+0x1098c",
+      "destination_lea_va": "0x004538b7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004538cb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc80",
+      "path": ".\\Data\\Mon-1.wil",
+      "owner_field": "+0x10a90",
+      "destination_lea_va": "0x004538df",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004538f3",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc6c",
+      "path": ".\\Data\\Mon-2.wil",
+      "owner_field": "+0x10b94",
+      "destination_lea_va": "0x00453904",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453918",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc58",
+      "path": ".\\Data\\Mon-3.wil",
+      "owner_field": "+0x10c98",
+      "destination_lea_va": "0x0045392c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453940",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc44",
+      "path": ".\\Data\\Mon-4.wil",
+      "owner_field": "+0x10d9c",
+      "destination_lea_va": "0x00453954",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453968",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc30",
+      "path": ".\\Data\\Mon-5.wil",
+      "owner_field": "+0x10ea0",
+      "destination_lea_va": "0x0045397f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453993",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc1c",
+      "path": ".\\Data\\Mon-6.wil",
+      "owner_field": "+0x10fa4",
+      "destination_lea_va": "0x004539a7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004539bb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cc08",
+      "path": ".\\Data\\Mon-7.wil",
+      "owner_field": "+0x110a8",
+      "destination_lea_va": "0x004539cf",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004539e0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cbf4",
+      "path": ".\\Data\\Mon-8.wil",
+      "owner_field": "+0x111ac",
+      "destination_lea_va": "0x004539f4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453a08",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cbe0",
+      "path": ".\\Data\\Mon-9.wil",
+      "owner_field": "+0x112b0",
+      "destination_lea_va": "0x00453a1c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453a30",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cbcc",
+      "path": ".\\Data\\Mon-10.wil",
+      "owner_field": "+0x112b0",
+      "destination_lea_va": "0x00453a1c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453a55",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cbb8",
+      "path": ".\\Data\\Mon-11.wil",
+      "owner_field": "+0x114b8",
+      "destination_lea_va": "0x00453a6f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453a83",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cba4",
+      "path": ".\\Data\\Mon-12.wil",
+      "owner_field": "+0x115bc",
+      "destination_lea_va": "0x00453a97",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453aa8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb90",
+      "path": ".\\Data\\Mon-13.wil",
+      "owner_field": "+0x116c0",
+      "destination_lea_va": "0x00453abc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453ad0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb7c",
+      "path": ".\\Data\\Mon-14.wil",
+      "owner_field": "+0x117c4",
+      "destination_lea_va": "0x00453ae4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453af8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb68",
+      "path": ".\\Data\\Mon-15.wil",
+      "owner_field": "+0x118c8",
+      "destination_lea_va": "0x00453b0c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453b21",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb54",
+      "path": ".\\Data\\Mon-16.wil",
+      "owner_field": "+0x119cc",
+      "destination_lea_va": "0x00453b37",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453b4b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb40",
+      "path": ".\\Data\\Mon-17.wil",
+      "owner_field": "+0x11ad0",
+      "destination_lea_va": "0x00453b5f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453b73",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb2c",
+      "path": ".\\Data\\Mon-18.wil",
+      "owner_field": "+0x11bd4",
+      "destination_lea_va": "0x00453b84",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453b98",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb18",
+      "path": ".\\Data\\Mon-19.wil",
+      "owner_field": "+0x11cd8",
+      "destination_lea_va": "0x00453bac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453bc0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cb04",
+      "path": ".\\Data\\Mon-20.wil",
+      "owner_field": "+0x11ddc",
+      "destination_lea_va": "0x00453bd4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453be8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047caf0",
+      "path": ".\\Data\\MonS-1.wil",
+      "owner_field": "+0x11ee0",
+      "destination_lea_va": "0x00453c08",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453c13",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cadc",
+      "path": ".\\Data\\MonS-2.wil",
+      "owner_field": "+0x11fe4",
+      "destination_lea_va": "0x00453c27",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453c3b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cac8",
+      "path": ".\\Data\\MonS-3.wil",
+      "owner_field": "+0x120e8",
+      "destination_lea_va": "0x00453c4f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453c60",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047cab4",
+      "path": ".\\Data\\MonS-4.wil",
+      "owner_field": "+0x121ec",
+      "destination_lea_va": "0x00453c74",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453c88",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047caa0",
+      "path": ".\\Data\\MonS-5.wil",
+      "owner_field": "+0x122f0",
+      "destination_lea_va": "0x00453c9c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453cb0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca8c",
+      "path": ".\\Data\\MonS-6.wil",
+      "owner_field": "+0x123f4",
+      "destination_lea_va": "0x00453cc4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453cd9",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca78",
+      "path": ".\\Data\\MonS-7.wil",
+      "owner_field": "+0x124f8",
+      "destination_lea_va": "0x00453cef",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453d03",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca64",
+      "path": ".\\Data\\MonS-8.wil",
+      "owner_field": "+0x125fc",
+      "destination_lea_va": "0x00453d17",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453d2b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca50",
+      "path": ".\\Data\\MonS-9.wil",
+      "owner_field": "+0x12700",
+      "destination_lea_va": "0x00453d3c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453d50",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca3c",
+      "path": ".\\Data\\MonS-10.wil",
+      "owner_field": "+0x12804",
+      "destination_lea_va": "0x00453d64",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453d78",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca28",
+      "path": ".\\Data\\MonS-11.wil",
+      "owner_field": "+0x12908",
+      "destination_lea_va": "0x00453d8c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453da0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca14",
+      "path": ".\\Data\\MonS-12.wil",
+      "owner_field": "+0x12a0c",
+      "destination_lea_va": "0x00453db7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453dcb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047ca00",
+      "path": ".\\Data\\MonS-13.wil",
+      "owner_field": "+0x12b10",
+      "destination_lea_va": "0x00453ddf",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453df3",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c9ec",
+      "path": ".\\Data\\MonS-14.wil",
+      "owner_field": "+0x12c14",
+      "destination_lea_va": "0x00453e07",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453e18",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c9d8",
+      "path": ".\\Data\\MonS-15.wil",
+      "owner_field": "+0x12d18",
+      "destination_lea_va": "0x00453e2c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453e40",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c9c4",
+      "path": ".\\Data\\MonS-16.wil",
+      "owner_field": "+0x12e1c",
+      "destination_lea_va": "0x00453e54",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453e68",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c9b0",
+      "path": ".\\Data\\MonS-17.wil",
+      "owner_field": "+0x12e1c",
+      "destination_lea_va": "0x00453e54",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453e8d",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c99c",
+      "path": ".\\Data\\MonS-18.wil",
+      "owner_field": "+0x13024",
+      "destination_lea_va": "0x00453ea7",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453ebb",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c988",
+      "path": ".\\Data\\MonS-19.wil",
+      "owner_field": "+0x13128",
+      "destination_lea_va": "0x00453ecf",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453ee0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c974",
+      "path": ".\\Data\\MonS-20.wil",
+      "owner_field": "+0x1322c",
+      "destination_lea_va": "0x00453ef4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453f08",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c964",
+      "path": ".\\Data\\NPC.wil",
+      "owner_field": "+0x13330",
+      "destination_lea_va": "0x00453f1c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453f30",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c950",
+      "path": ".\\Data\\MonMagic.wil",
+      "owner_field": "+0x13434",
+      "destination_lea_va": "0x00453f44",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453f59",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c93c",
+      "path": ".\\Data\\MonImg.wil",
+      "owner_field": "+0x13538",
+      "destination_lea_va": "0x00453f6f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453f83",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c928",
+      "path": ".\\Data\\M-Hair.wil",
+      "owner_field": "+0x1363c",
+      "destination_lea_va": "0x00453f97",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453fab",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c910",
+      "path": ".\\Data\\M-Helmet1.wil",
+      "owner_field": "+0x13740",
+      "destination_lea_va": "0x00453fbc",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453fd0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c8fc",
+      "path": ".\\Data\\WM-Hair.wil",
+      "owner_field": "+0x13844",
+      "destination_lea_va": "0x00453fe4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00453ff8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c8e4",
+      "path": ".\\Data\\WM-Helmet1.wil",
+      "owner_field": "+0x13948",
+      "destination_lea_va": "0x0045400c",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00454020",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c8d0",
+      "path": ".\\Data\\DMon-1.wil",
+      "owner_field": "+0x13a4c",
+      "destination_lea_va": "0x00454040",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x0045404b",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c8bc",
+      "path": ".\\Data\\DMonS-1.wil",
+      "owner_field": "+0x13b50",
+      "destination_lea_va": "0x0045405f",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00454073",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c8a8",
+      "path": ".\\Data\\MagicEx.wil",
+      "owner_field": "+0x13c54",
+      "destination_lea_va": "0x00454087",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x00454098",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c890",
+      "path": ".\\Data\\MonMagicEx.wil",
+      "owner_field": "+0x13d58",
+      "destination_lea_va": "0x004540ac",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004540c0",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c878",
+      "path": ".\\Data\\StoreItem.wil",
+      "owner_field": "+0x13e5c",
+      "destination_lea_va": "0x004540d4",
+      "destination_basis": "preceding-lea-edx",
+      "copy_source_va": "0x004540e8",
+      "evidence": {
+        "level": "primary-static-path-table",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aab8",
+      "path": ".\\Data\\gameinter.wil",
+      "owner_field": "+0x46c",
+      "destination_lea_va": "0x00402724",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00402713",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aaa0",
+      "path": ".\\Data\\Interface1c.wil",
+      "owner_field": "+0x5b0",
+      "destination_lea_va": "0x0040272f",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00402737",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aa8c",
+      "path": ".\\Data\\wemade.dat",
+      "owner_field": "+0x6f4",
+      "destination_lea_va": "0x0040278a",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00402790",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aad0",
+      "path": ".\\Data\\ei_login.dat",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x00402d17",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047bcfc",
+      "path": ".\\Data\\%s(%s).slt",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x00428bb8",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047bd14",
+      "path": ".\\Data\\%s(%s).mlt",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x004292c8",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047bdc4",
+      "path": ".\\Data\\",
+      "owner_field": "+0xda4",
+      "destination_lea_va": "0x0042dcbd",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x0042dce6",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047bdc4",
+      "path": ".\\Data\\",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x0042e21e",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c428",
+      "path": ".\\Data\\MMap.wil",
+      "owner_field": "+0x148",
+      "destination_lea_va": "0x0043d4ec",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x0043d4e0",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c414",
+      "path": ".\\Data\\FMMap.wil",
+      "owner_field": "+0x2d0",
+      "destination_lea_va": "0x0043d507",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x0043d4fb",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c414",
+      "path": ".\\Data\\FMMap.wil",
+      "owner_field": "+0x148",
+      "destination_lea_va": "0x0043df69",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x0043df7f",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047c4ec",
+      "path": ".\\Data\\NPCFace.WIL",
+      "owner_field": "+0x278",
+      "destination_lea_va": "0x0043edb6",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x0043edc5",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aab8",
+      "path": ".\\Data\\gameinter.wil",
+      "owner_field": "+0x8",
+      "destination_lea_va": "0x00456cc1",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00456cbc",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047aaa0",
+      "path": ".\\Data\\Interface1c.wil",
+      "owner_field": "+0x14c",
+      "destination_lea_va": "0x00456cc9",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00456cd1",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d7e0",
+      "path": ".\\Data\\CreateChr.dat",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x0045925e",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d7c8",
+      "path": ".\\Data\\StartGame.dat",
+      "owner_field": null,
+      "destination_lea_va": null,
+      "destination_basis": null,
+      "copy_source_va": "0x00459494",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    },
+    {
+      "path_literal_va": "0x0047d7e0",
+      "path": ".\\Data\\CreateChr.dat",
+      "owner_field": "+0xb50",
+      "destination_lea_va": "0x00459b22",
+      "destination_basis": "nearby-lea-field",
+      "copy_source_va": "0x00459af5",
+      "evidence": {
+        "level": "primary-static-path-loader-argument",
+        "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe"
+      }
+    }
+  ]
+}

@@ -17,6 +17,9 @@ public partial class BeltDialog : DXWindow
     public DXItemGrid Grid;
     private bool _resizing;
 
+    /// <summary>玩家是否拖动过腰带栏; LayoutHud 不能覆盖已自定义的位置。</summary>
+    public bool UserMoved { get; private set; }
+
     public BeltDialog()
     {
         Movable = true;
@@ -26,6 +29,24 @@ public partial class BeltDialog : DXWindow
         ShowCloseButton = false;
         Size = new Vector2I(10 * (DXItemCell.CellWidth - 1) + 1, DXItemCell.CellHeight - 1 + 1);
 
+        // 恢复上一次拖动后的位置; (-1,-1) 表示首次使用, 由 LayoutHud 给默认锚点。
+        Vector2I saved = ClientSettings.BeltDialogLocation;
+        if (saved.X >= 0 && saved.Y >= 0)
+        {
+            Position = saved;
+            UserMoved = true;
+        }
+
+        // DXControl.Movable 拖动时触发 Moving; 松开时 MouseUp 持久化。
+        Moving += (_, _) => UserMoved = true;
+        MouseUp += (_, _) =>
+        {
+            if (UserMoved)
+            {
+                ClientSettings.BeltDialogLocation = new Vector2I((int)Position.X, (int)Position.Y);
+                ClientSettings.Save();
+            }
+        };
         Links = new ClientBeltLink[Globals.MaxBeltCount];
         for (int i = 0; i < Globals.MaxBeltCount; i++)
             Links[i] = new ClientBeltLink { Slot = i };
@@ -50,6 +71,14 @@ public partial class BeltDialog : DXWindow
     }
 
     private void OnResized() => RefreshGridLayout();
+    /// <summary>未拖动时由 LayoutHud 调用: 锚在主面板右上侧 (底栏旁), 贴右对齐。</summary>
+    public void ApplyDefaultAnchor(Vector2 logicalViewport, Vector2I mainPanelLocation, Vector2 mainPanelSize)
+    {
+        if (UserMoved) return;
+        float x = mainPanelLocation.X + mainPanelSize.X - Size.X;
+        float y = mainPanelLocation.Y - Size.Y;
+        Position = new Vector2(Mathf.Max(0, x), Mathf.Max(0, y));
+    }
 
     /// <summary>原版 AllowResize：按格子吸附尺寸，并在横向/纵向之间自动切换。</summary>
     public override Vector2I GetAcceptableResize(Vector2 requested)

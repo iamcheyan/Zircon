@@ -1,0 +1,4370 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "method": "llvm-objdump x86 disassembly; direct calls to VA 0x00466130",
+  "warning": "The last immediate push is treated as a frame candidate only when the helper's one-argument calling convention is confirmed; all records retain raw pushes.",
+  "ui_frame_frequency": {
+    "50": 3,
+    "51": 1,
+    "60": 1,
+    "61": 1,
+    "62": 1,
+    "63": 1,
+    "67": 1,
+    "80": 1,
+    "81": 1,
+    "82": 1,
+    "1100": 2
+  },
+  "records": [
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00402c63",
+      "frame_candidate": 0,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00402c45",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00402c5b",
+          "args": "0x0",
+          "immediate": 0
+        }
+      ],
+      "raw_neighborhood": [
+        "402c41: 8b f1                        \tmov\tesi, ecx",
+        "402c43: 33 c0                        \txor\teax, eax",
+        "402c45: 57                           \tpush\tedi",
+        "402c46: 8a 86 a5 08 00 00            \tmov\tal, byte ptr [esi + 0x8a5]",
+        "402c4c: 83 e8 00                     \tsub\teax, 0x0",
+        "402c4f: 74 7c                        \tje\t0x402ccd <.text+0x1ccd>",
+        "402c51: 48                           \tdec\teax",
+        "402c52: 74 4d                        \tje\t0x402ca1 <.text+0x1ca1>",
+        "402c54: 48                           \tdec\teax",
+        "402c55: 0f 85 ec 00 00 00            \tjne\t0x402d47 <.text+0x1d47>",
+        "402c5b: 6a 00                        \tpush\t0x0",
+        "402c5d: 8d 8e b0 05 00 00            \tlea\tecx, [esi + 0x5b0]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00402f11",
+      "frame_candidate": 2,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "402ee7: 8b ce                        \tmov\tecx, esi",
+        "402eff: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00402ee6",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00402ef6",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x00402ef8",
+          "args": "0x6496c8",
+          "immediate": 6592200
+        },
+        {
+          "va": "0x00402efd",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00402efe",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00402f09",
+          "args": "0x2",
+          "immediate": 2
+        }
+      ],
+      "raw_neighborhood": [
+        "402ee6: 51                           \tpush\tecx",
+        "402ee7: 8b ce                        \tmov\tecx, esi",
+        "402ee9: c7 44 24 70 c9 c8 48 3e      \tmov\tdword ptr [esp + 0x70], 0x3e48c8c9",
+        "402ef1: e8 aa fa ff ff               \tcall\t0x4029a0 <.text+0x19a0>",
+        "402ef6: 6a 01                        \tpush\t0x1",
+        "402ef8: 68 c8 96 64 00               \tpush\t0x6496c8",
+        "402efd: 53                           \tpush\tebx",
+        "402efe: 57                           \tpush\tedi",
+        "402eff: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "402f04: e8 67 b6 05 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "402f09: 6a 02                        \tpush\t0x2",
+        "402f0b: 8d 8e b0 05 00 00            \tlea\tecx, [esi + 0x5b0]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040a94b",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40a921: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "40a949: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040a920",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040a93b",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40a920: 51                           \tpush\tecx",
+        "40a921: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "40a926: e8 75 99 04 00               \tcall\t0x4542a0 <.text+0x532a0>",
+        "40a92b: 8b d8                        \tmov\tebx, eax",
+        "40a92d: 33 c0                        \txor\teax, eax",
+        "40a92f: 8a 86 8d 00 00 00            \tmov\tal, byte ptr [esi + 0x8d]",
+        "40a935: 8b 96 9c 1b 06 00            \tmov\tedx, dword ptr [esi + 0x61b9c]",
+        "40a93b: 52                           \tpush\tedx",
+        "40a93c: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "40a93f: 8d 0c c0                     \tlea\tecx, [eax + 8*eax]",
+        "40a942: 8d 3c 8d fc 00 56 00         \tlea\tedi, [4*ecx + 0x5600fc]",
+        "40a949: 8b cf                        \tmov\tecx, edi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040b383",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0040b37e",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40b358: eb 24                        \tjmp\t0x40b37e <.text+0xa37e>",
+        "40b35a: 84 c0                        \ttest\tal, al",
+        "40b35c: 74 08                        \tje\t0x40b366 <.text+0xa366>",
+        "40b35e: 8b 86 c4 00 00 00            \tmov\teax, dword ptr [esi + 0xc4]",
+        "40b364: eb 18                        \tjmp\t0x40b37e <.text+0xa37e>",
+        "40b366: 8b 96 b8 00 00 00            \tmov\tedx, dword ptr [esi + 0xb8]",
+        "40b36c: 8b 86 c4 00 00 00            \tmov\teax, dword ptr [esi + 0xc4]",
+        "40b372: 2b d0                        \tsub\tedx, eax",
+        "40b374: 8b 86 b4 00 00 00            \tmov\teax, dword ptr [esi + 0xb4]",
+        "40b37a: 8d 44 02 ff                  \tlea\teax, [edx + eax - 0x1]",
+        "40b37e: 50                           \tpush\teax",
+        "40b37f: 89 44 24 24                  \tmov\tdword ptr [esp + 0x24], eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040b507",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40b500: 8b 4c 24 20                  \tmov\tecx, dword ptr [esp + 0x20]",
+        "40b505: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040b504",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40b4dc: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "40b4df: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "40b4e2: 8d 3c 95 40 02 56 00         \tlea\tedi, [4*edx + 0x560240]",
+        "40b4e9: eb 15                        \tjmp\t0x40b500 <.text+0xa500>",
+        "40b4eb: 33 c0                        \txor\teax, eax",
+        "40b4ed: 8a 86 8c 00 00 00            \tmov\tal, byte ptr [esi + 0x8c]",
+        "40b4f3: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "40b4f6: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "40b4f9: 8d 3c 85 4c 1a 56 00         \tlea\tedi, [4*eax + 0x561a4c]",
+        "40b500: 8b 4c 24 20                  \tmov\tecx, dword ptr [esp + 0x20]",
+        "40b504: 51                           \tpush\tecx",
+        "40b505: 8b cf                        \tmov\tecx, edi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040b7ac",
+      "frame_candidate": 2,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40b79b: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040b799",
+          "args": "0x2",
+          "immediate": 2
+        }
+      ],
+      "raw_neighborhood": [
+        "40b772: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "40b776: 89 44 24 14                  \tmov\tdword ptr [esp + 0x14], eax",
+        "40b77a: 8a 83 c8 1b 06 00            \tmov\tal, byte ptr [ebx + 0x61bc8]",
+        "40b780: 89 44 24 0c                  \tmov\tdword ptr [esp + 0xc], eax",
+        "40b784: db 44 24 0c                  \tfild\tdword ptr [esp + 0xc]",
+        "40b788: d8 0d 7c 64 47 00            \tfmul\tdword ptr [0x47647c]",
+        "40b78e: d8 0d 78 64 47 00            \tfmul\tdword ptr [0x476478]",
+        "40b794: e8 87 cd 05 00               \tcall\t0x468520 <.text+0x67520>",
+        "40b799: 6a 02                        \tpush\t0x2",
+        "40b79b: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4",
+        "40b7a0: 89 44 24 1c                  \tmov\tdword ptr [esp + 0x1c], eax",
+        "40b7a4: c7 44 24 20 04 00 00 00      \tmov\tdword ptr [esp + 0x20], 0x4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040b815",
+      "frame_candidate": 3,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40b7fa: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40b810: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040b7f5",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040b7f6",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040b7f7",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0040b7f8",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0040b7f9",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0040b80e",
+          "args": "0x3",
+          "immediate": 3
+        }
+      ],
+      "raw_neighborhood": [
+        "40b7f5: 51                           \tpush\tecx",
+        "40b7f6: 52                           \tpush\tedx",
+        "40b7f7: 50                           \tpush\teax",
+        "40b7f8: 56                           \tpush\tesi",
+        "40b7f9: 57                           \tpush\tedi",
+        "40b7fa: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40b7ff: e8 4c 45 05 00               \tcall\t0x45fd50 <.text+0x5ed50>",
+        "40b804: eb 08                        \tjmp\t0x40b80e <.text+0xa80e>",
+        "40b806: 8b 74 24 28                  \tmov\tesi, dword ptr [esp + 0x28]",
+        "40b80a: 8b 7c 24 24                  \tmov\tedi, dword ptr [esp + 0x24]",
+        "40b80e: 6a 03                        \tpush\t0x3",
+        "40b810: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040c09d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40c088: 8b 8e 90 00 00 00            \tmov\tecx, dword ptr [esi + 0x90]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040c09c",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40c068: 8b b9 38 01 00 00            \tmov\tedi, dword ptr [ecx + 0x138]",
+        "40c06e: 8b 86 d8 00 00 00            \tmov\teax, dword ptr [esi + 0xd8]",
+        "40c074: 2b d5                        \tsub\tedx, ebp",
+        "40c076: c1 e2 05                     \tshl\tedx, 0x5",
+        "40c079: 2b d7                        \tsub\tedx, edi",
+        "40c07b: 8d 8c 02 63 ff ff ff         \tlea\tecx, [edx + eax - 0x9d]",
+        "40c082: 89 8e e8 00 00 00            \tmov\tdword ptr [esi + 0xe8], ecx",
+        "40c088: 8b 8e 90 00 00 00            \tmov\tecx, dword ptr [esi + 0x90]",
+        "40c08e: 85 c9                        \ttest\tecx, ecx",
+        "40c090: 0f 84 22 02 00 00            \tje\t0x40c2b8 <.text+0xb2b8>",
+        "40c096: 8b 96 c4 00 00 00            \tmov\tedx, dword ptr [esi + 0xc4]",
+        "40c09c: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040c968",
+      "frame_candidate": 2,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40c957: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040c955",
+          "args": "0x2",
+          "immediate": 2
+        }
+      ],
+      "raw_neighborhood": [
+        "40c926: c7 44 24 10 00 00 00 00      \tmov\tdword ptr [esp + 0x10], 0x0",
+        "40c92e: 8a 87 c8 1b 06 00            \tmov\tal, byte ptr [edi + 0x61bc8]",
+        "40c934: c7 44 24 14 00 00 00 00      \tmov\tdword ptr [esp + 0x14], 0x0",
+        "40c93c: 89 44 24 0c                  \tmov\tdword ptr [esp + 0xc], eax",
+        "40c940: db 44 24 0c                  \tfild\tdword ptr [esp + 0xc]",
+        "40c944: d8 0d 7c 64 47 00            \tfmul\tdword ptr [0x47647c]",
+        "40c94a: d8 0d 78 64 47 00            \tfmul\tdword ptr [0x476478]",
+        "40c950: e8 cb bb 05 00               \tcall\t0x468520 <.text+0x67520>",
+        "40c955: 6a 02                        \tpush\t0x2",
+        "40c957: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4",
+        "40c95c: 89 44 24 1c                  \tmov\tdword ptr [esp + 0x1c], eax",
+        "40c960: c7 44 24 20 04 00 00 00      \tmov\tdword ptr [esp + 0x20], 0x4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040c9e0",
+      "frame_candidate": 3,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40c9c5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40c9db: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040c9c0",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040c9c1",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040c9c2",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0040c9c3",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0040c9c4",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0040c9d9",
+          "args": "0x3",
+          "immediate": 3
+        }
+      ],
+      "raw_neighborhood": [
+        "40c9c0: 51                           \tpush\tecx",
+        "40c9c1: 52                           \tpush\tedx",
+        "40c9c2: 50                           \tpush\teax",
+        "40c9c3: 56                           \tpush\tesi",
+        "40c9c4: 55                           \tpush\tebp",
+        "40c9c5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40c9ca: e8 81 33 05 00               \tcall\t0x45fd50 <.text+0x5ed50>",
+        "40c9cf: eb 08                        \tjmp\t0x40c9d9 <.text+0xb9d9>",
+        "40c9d1: 8b 74 24 28                  \tmov\tesi, dword ptr [esp + 0x28]",
+        "40c9d5: 8b 6c 24 24                  \tmov\tebp, dword ptr [esp + 0x24]",
+        "40c9d9: 6a 03                        \tpush\t0x3",
+        "40c9db: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040ce9c",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40ce85: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "40ce95: b9 80 67 56 00               \tmov\tecx, 0x566780"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040ce8a",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0040ce8b",
+          "args": "0x51",
+          "immediate": 81
+        },
+        {
+          "va": "0x0040ce8d",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0040ce94",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40ce72: a1 bc b7 8a 00               \tmov\teax, dword ptr [0x8ab7bc]",
+        "40ce77: 85 c0                        \ttest\teax, eax",
+        "40ce79: 0f 84 58 02 00 00            \tje\t0x40d0d7 <.text+0xc0d7>",
+        "40ce7f: 81 e7 ff ff 00 00            \tand\tedi, 0xffff",
+        "40ce85: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "40ce8a: 57                           \tpush\tedi",
+        "40ce8b: 6a 51                        \tpush\t0x51",
+        "40ce8d: 6a 00                        \tpush\t0x0",
+        "40ce8f: e8 0c 74 04 00               \tcall\t0x4542a0 <.text+0x532a0>",
+        "40ce94: 57                           \tpush\tedi",
+        "40ce95: b9 80 67 56 00               \tmov\tecx, 0x566780",
+        "40ce9a: 8b d8                        \tmov\tebx, eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040f6e9",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0040f6d6",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40f6bd: 8d 14 92                     \tlea\tedx, [edx + 4*edx]",
+        "40f6c0: c1 e2 03                     \tshl\tedx, 0x3",
+        "40f6c3: 2b c2                        \tsub\teax, edx",
+        "40f6c5: 8b 96 c4 00 00 00            \tmov\tedx, dword ptr [esi + 0xc4]",
+        "40f6cb: 8d bc 10 60 f5 ff ff         \tlea\tedi, [eax + edx - 0xaa0]",
+        "40f6d2: 33 d2                        \txor\tedx, edx",
+        "40f6d4: 8b c7                        \tmov\teax, edi",
+        "40f6d6: 57                           \tpush\tedi",
+        "40f6d7: f7 f3                        \tdiv\tebx",
+        "40f6d9: 89 be 20 2a 06 00            \tmov\tdword ptr [esi + 0x62a20], edi",
+        "40f6df: 81 c2 10 27 00 00            \tadd\tedx, 0x2710",
+        "40f6e5: 89 54 24 14                  \tmov\tdword ptr [esp + 0x14], edx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040f7b1",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0040f7aa",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40f788: 8a 86 8a 00 00 00            \tmov\tal, byte ptr [esi + 0x8a]",
+        "40f78e: c1 e2 03                     \tshl\tedx, 0x3",
+        "40f791: 8d 04 40                     \tlea\teax, [eax + 2*eax]",
+        "40f794: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f797: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f79a: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f79d: c1 e0 03                     \tshl\teax, 0x3",
+        "40f7a0: 2b d0                        \tsub\tedx, eax",
+        "40f7a2: 8b 86 c4 00 00 00            \tmov\teax, dword ptr [esi + 0xc4]",
+        "40f7a8: 03 c2                        \tadd\teax, edx",
+        "40f7aa: 50                           \tpush\teax",
+        "40f7ab: 89 86 1c 2a 06 00            \tmov\tdword ptr [esi + 0x62a1c], eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040f820",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40f80b: 8b 8e 90 00 00 00            \tmov\tecx, dword ptr [esi + 0x90]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040f7f9",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0040f7fa",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040f803",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040f804",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040f81f",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40f7f9: 50                           \tpush\teax",
+        "40f7fa: 51                           \tpush\tecx",
+        "40f7fb: 03 df                        \tadd\tebx, edi",
+        "40f7fd: 8d 8e ec 29 06 00            \tlea\tecx, [esi + 0x629ec]",
+        "40f803: 53                           \tpush\tebx",
+        "40f804: 51                           \tpush\tecx",
+        "40f805: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "40f80b: 8b 8e 90 00 00 00            \tmov\tecx, dword ptr [esi + 0x90]",
+        "40f811: 85 c9                        \ttest\tecx, ecx",
+        "40f813: 0f 84 f0 00 00 00            \tje\t0x40f909 <.text+0xe909>",
+        "40f819: 8b 96 c4 00 00 00            \tmov\tedx, dword ptr [esi + 0xc4]",
+        "40f81f: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040f96a",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0040f963",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40f941: 8a 86 8a 00 00 00            \tmov\tal, byte ptr [esi + 0x8a]",
+        "40f947: c1 e2 03                     \tshl\tedx, 0x3",
+        "40f94a: 8d 04 40                     \tlea\teax, [eax + 2*eax]",
+        "40f94d: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f950: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f953: 8d 04 80                     \tlea\teax, [eax + 4*eax]",
+        "40f956: c1 e0 03                     \tshl\teax, 0x3",
+        "40f959: 2b d0                        \tsub\tedx, eax",
+        "40f95b: 8b 86 c4 00 00 00            \tmov\teax, dword ptr [esi + 0xc4]",
+        "40f961: 03 c2                        \tadd\teax, edx",
+        "40f963: 50                           \tpush\teax",
+        "40f964: 89 86 18 2a 06 00            \tmov\tdword ptr [esi + 0x62a18], eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040faa1",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40fa75: 8b 8e 14 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040faa0",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40fa6d: 84 c0                        \ttest\tal, al",
+        "40fa6f: 0f 84 07 01 00 00            \tje\t0x40fb7c <.text+0xeb7c>",
+        "40fa75: 8b 8e 14 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a14]",
+        "40fa7b: 85 c9                        \ttest\tecx, ecx",
+        "40fa7d: 0f 84 f9 00 00 00            \tje\t0x40fb7c <.text+0xeb7c>",
+        "40fa83: 80 be c0 00 00 00 1d         \tcmp\tbyte ptr [esi + 0xc0], 0x1d",
+        "40fa8a: 0f 82 ec 00 00 00            \tjb\t0x40fb7c <.text+0xeb7c>",
+        "40fa90: 8b 44 24 34                  \tmov\teax, dword ptr [esp + 0x34]",
+        "40fa94: 85 c0                        \ttest\teax, eax",
+        "40fa96: 0f 84 e0 00 00 00            \tje\t0x40fb7c <.text+0xeb7c>",
+        "40fa9c: 8b 54 24 10                  \tmov\tedx, dword ptr [esp + 0x10]",
+        "40faa0: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0040fb69",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "40fb49: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40fb5c: 8b 8e 20 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a20]",
+        "40fb63: 8b 8e 14 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0040fb45",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0040fb46",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040fb47",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0040fb48",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0040fb62",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "40fb45: 57                           \tpush\tedi",
+        "40fb46: 53                           \tpush\tebx",
+        "40fb47: 51                           \tpush\tecx",
+        "40fb48: 50                           \tpush\teax",
+        "40fb49: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "40fb4e: 74 07                        \tje\t0x40fb57 <.text+0xeb57>",
+        "40fb50: e8 db 37 05 00               \tcall\t0x463330 <.text+0x62330>",
+        "40fb55: eb 05                        \tjmp\t0x40fb5c <.text+0xeb5c>",
+        "40fb57: e8 e4 06 05 00               \tcall\t0x460240 <.text+0x5f240>",
+        "40fb5c: 8b 8e 20 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a20]",
+        "40fb62: 51                           \tpush\tecx",
+        "40fb63: 8b 8e 14 2a 06 00            \tmov\tecx, dword ptr [esi + 0x62a14]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00416a9b",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "416a92: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00416a91",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "416a6c: 8b 83 bc 05 00 00            \tmov\teax, dword ptr [ebx + 0x5bc]",
+        "416a72: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "416a75: 8d 04 96                     \tlea\teax, [esi + 4*edx]",
+        "416a78: 89 44 24 3c                  \tmov\tdword ptr [esp + 0x3c], eax",
+        "416a7c: 8b 83 c0 05 00 00            \tmov\teax, dword ptr [ebx + 0x5c0]",
+        "416a82: 8d 0c c0                     \tlea\tecx, [eax + 8*eax]",
+        "416a85: 33 c0                        \txor\teax, eax",
+        "416a87: 66 8b 83 ec 05 00 00         \tmov\tax, word ptr [ebx + 0x5ec]",
+        "416a8e: 8d 14 8f                     \tlea\tedx, [edi + 4*ecx]",
+        "416a91: 50                           \tpush\teax",
+        "416a92: b9 c4 68 56 00               \tmov\tecx, 0x5668c4",
+        "416a97: 89 54 24 44                  \tmov\tdword ptr [esp + 0x44], edx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00417584",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41755d: 8b 4c 24 10                  \tmov\tecx, dword ptr [esp + 0x10]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00417576",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41755d: 8b 4c 24 10                  \tmov\tecx, dword ptr [esp + 0x10]",
+        "417561: 89 56 1c                     \tmov\tdword ptr [esi + 0x1c], edx",
+        "417564: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "417568: 88 46 24                     \tmov\tbyte ptr [esi + 0x24], al",
+        "41756b: 8b 44 24 14                  \tmov\teax, dword ptr [esp + 0x14]",
+        "41756f: 89 56 20                     \tmov\tdword ptr [esi + 0x20], edx",
+        "417572: 8b 54 24 30                  \tmov\tedx, dword ptr [esp + 0x30]",
+        "417576: 50                           \tpush\teax",
+        "417577: c6 46 25 00                  \tmov\tbyte ptr [esi + 0x25], 0x0",
+        "41757b: 89 4e 14                     \tmov\tdword ptr [esi + 0x14], ecx",
+        "41757e: 89 46 18                     \tmov\tdword ptr [esi + 0x18], eax",
+        "417581: 89 56 30                     \tmov\tdword ptr [esi + 0x30], edx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00417661",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41765d: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00417660",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "417641: 8b f1                        \tmov\tesi, ecx",
+        "417643: b1 01                        \tmov\tcl, 0x1",
+        "417645: 8a 46 25                     \tmov\tal, byte ptr [esi + 0x25]",
+        "417648: 84 c0                        \ttest\tal, al",
+        "41764a: 75 5d                        \tjne\t0x4176a9 <.text+0x166a9>",
+        "41764c: 38 4e 24                     \tcmp\tbyte ptr [esi + 0x24], cl",
+        "41764f: 75 58                        \tjne\t0x4176a9 <.text+0x166a9>",
+        "417651: 8b 46 20                     \tmov\teax, dword ptr [esi + 0x20]",
+        "417654: 83 f8 ff                     \tcmp\teax, -0x1",
+        "417657: 0f 84 12 01 00 00            \tje\t0x41776f <.text+0x1676f>",
+        "41765d: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "417660: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004176c0",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4176bc: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004176bf",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4176a7: 5e                           \tpop\tesi",
+        "4176a8: c3                           \tret",
+        "4176a9: 3a c1                        \tcmp\tal, cl",
+        "4176ab: 75 75                        \tjne\t0x417722 <.text+0x16722>",
+        "4176ad: 38 4e 24                     \tcmp\tbyte ptr [esi + 0x24], cl",
+        "4176b0: 75 70                        \tjne\t0x417722 <.text+0x16722>",
+        "4176b2: 8b 46 30                     \tmov\teax, dword ptr [esi + 0x30]",
+        "4176b5: 85 c0                        \ttest\teax, eax",
+        "4176b7: 74 12                        \tje\t0x4176cb <.text+0x166cb>",
+        "4176b9: 8b 46 18                     \tmov\teax, dword ptr [esi + 0x18]",
+        "4176bc: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "4176bf: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004176d7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4176bc: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "4176d3: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004176bf",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004176d6",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4176b9: 8b 46 18                     \tmov\teax, dword ptr [esi + 0x18]",
+        "4176bc: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "4176bf: 50                           \tpush\teax",
+        "4176c0: e8 6b ea 04 00               \tcall\t0x466130 <.text+0x65130>",
+        "4176c5: 85 c0                        \ttest\teax, eax",
+        "4176c7: 74 50                        \tje\t0x417719 <.text+0x16719>",
+        "4176c9: eb 15                        \tjmp\t0x4176e0 <.text+0x166e0>",
+        "4176cb: 8b 46 20                     \tmov\teax, dword ptr [esi + 0x20]",
+        "4176ce: 83 f8 ff                     \tcmp\teax, -0x1",
+        "4176d1: 74 46                        \tje\t0x417719 <.text+0x16719>",
+        "4176d3: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "4176d6: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041772d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "417719: 8b ce                        \tmov\tecx, esi",
+        "417726: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
+        "41772a: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041770e",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00417729",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41770e: 50                           \tpush\teax",
+        "41770f: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "417714: e8 27 8b 04 00               \tcall\t0x460240 <.text+0x5f240>",
+        "417719: 8b ce                        \tmov\tecx, esi",
+        "41771b: e8 50 fc ff ff               \tcall\t0x417370 <.text+0x16370>",
+        "417720: 5e                           \tpop\tesi",
+        "417721: c3                           \tret",
+        "417722: 3c 02                        \tcmp\tal, 0x2",
+        "417724: 75 49                        \tjne\t0x41776f <.text+0x1676f>",
+        "417726: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
+        "417729: 51                           \tpush\tecx",
+        "41772a: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041784a",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "417840: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00417830",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00417835",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00417838",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00417843",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41782f: 90                           \tnop",
+        "417830: 53                           \tpush\tebx",
+        "417831: 8b 5c 24 0c                  \tmov\tebx, dword ptr [esp + 0xc]",
+        "417835: 56                           \tpush\tesi",
+        "417836: 8b f1                        \tmov\tesi, ecx",
+        "417838: 57                           \tpush\tedi",
+        "417839: 8b 7c 24 10                  \tmov\tedi, dword ptr [esp + 0x10]",
+        "41783d: 8b 46 18                     \tmov\teax, dword ptr [esi + 0x18]",
+        "417840: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "417843: 50                           \tpush\teax",
+        "417844: 89 7e 28                     \tmov\tdword ptr [esi + 0x28], edi",
+        "417847: 89 5e 2c                     \tmov\tdword ptr [esi + 0x2c], ebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004178a0",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "417887: 8b 4c 24 0c                  \tmov\tecx, dword ptr [esp + 0xc]",
+        "417895: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00417884",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00417898",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41787f: 90                           \tnop",
+        "417880: 8b 44 24 0c                  \tmov\teax, dword ptr [esp + 0xc]",
+        "417884: 56                           \tpush\tesi",
+        "417885: 8b f1                        \tmov\tesi, ecx",
+        "417887: 8b 4c 24 0c                  \tmov\tecx, dword ptr [esp + 0xc]",
+        "41788b: 89 46 20                     \tmov\tdword ptr [esi + 0x20], eax",
+        "41788e: 8b 44 24 08                  \tmov\teax, dword ptr [esp + 0x8]",
+        "417892: 89 4e 1c                     \tmov\tdword ptr [esi + 0x1c], ecx",
+        "417895: 8b 4e 14                     \tmov\tecx, dword ptr [esi + 0x14]",
+        "417898: 50                           \tpush\teax",
+        "417899: c6 46 25 00                  \tmov\tbyte ptr [esi + 0x25], 0x0",
+        "41789d: 89 46 18                     \tmov\tdword ptr [esi + 0x18], eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004179bf",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4179bb: 8b 4e 04                     \tmov\tecx, dword ptr [esi + 0x4]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004179b3",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x004179b4",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x004179b7",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x004179be",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4179ac: 90                           \tnop",
+        "4179ad: 90                           \tnop",
+        "4179ae: 90                           \tnop",
+        "4179af: 90                           \tnop",
+        "4179b0: 83 ec 2c                     \tsub\tesp, 0x2c",
+        "4179b3: 53                           \tpush\tebx",
+        "4179b4: 56                           \tpush\tesi",
+        "4179b5: 8b f1                        \tmov\tesi, ecx",
+        "4179b7: 57                           \tpush\tedi",
+        "4179b8: 8b 46 08                     \tmov\teax, dword ptr [esi + 0x8]",
+        "4179bb: 8b 4e 04                     \tmov\tecx, dword ptr [esi + 0x4]",
+        "4179be: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041804e",
+      "frame_candidate": 950,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "418038: 8b 4c 24 08                  \tmov\tecx, dword ptr [esp + 0x8]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00418030",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0041803c",
+          "args": "0x3b6",
+          "immediate": 950
+        }
+      ],
+      "raw_neighborhood": [
+        "41802b: 90                           \tnop",
+        "41802c: 90                           \tnop",
+        "41802d: 90                           \tnop",
+        "41802e: 90                           \tnop",
+        "41802f: 90                           \tnop",
+        "418030: 55                           \tpush\tebp",
+        "418031: 8b e9                        \tmov\tebp, ecx",
+        "418033: e8 78 ff ff ff               \tcall\t0x417fb0 <.text+0x16fb0>",
+        "418038: 8b 4c 24 08                  \tmov\tecx, dword ptr [esp + 0x8]",
+        "41803c: 68 b6 03 00 00               \tpush\t0x3b6",
+        "418041: 89 8d 5c 04 00 00            \tmov\tdword ptr [ebp + 0x45c], ecx",
+        "418047: c7 45 04 b6 03 00 00         \tmov\tdword ptr [ebp + 0x4], 0x3b6"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004182bb",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4182b4: 8b 8f 5c 04 00 00            \tmov\tecx, dword ptr [edi + 0x45c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004182a0",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x004182a1",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x004182a2",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x004182a3",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x004182ba",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41829f: 90                           \tnop",
+        "4182a0: 53                           \tpush\tebx",
+        "4182a1: 55                           \tpush\tebp",
+        "4182a2: 56                           \tpush\tesi",
+        "4182a3: 57                           \tpush\tedi",
+        "4182a4: 8b f9                        \tmov\tedi, ecx",
+        "4182a6: 8b 47 28                     \tmov\teax, dword ptr [edi + 0x28]",
+        "4182a9: 85 c0                        \ttest\teax, eax",
+        "4182ab: 0f 84 3a 01 00 00            \tje\t0x4183eb <.text+0x173eb>",
+        "4182b1: 8b 47 04                     \tmov\teax, dword ptr [edi + 0x4]",
+        "4182b4: 8b 8f 5c 04 00 00            \tmov\tecx, dword ptr [edi + 0x45c]",
+        "4182ba: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041838a",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "418380: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "418384: 8b 8f 5c 04 00 00            \tmov\tecx, dword ptr [edi + 0x45c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00418383",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "418365: 8b 56 dc                     \tmov\tedx, dword ptr [esi - 0x24]",
+        "418368: 8d 4e dc                     \tlea\tecx, [esi - 0x24]",
+        "41836b: ff 52 04                     \tcall\tdword ptr [edx + 0x4]",
+        "41836e: 33 c0                        \txor\teax, eax",
+        "418370: 8a 87 62 04 00 00            \tmov\tal, byte ptr [edi + 0x462]",
+        "418376: 3b d8                        \tcmp\tebx, eax",
+        "418378: 75 55                        \tjne\t0x4183cf <.text+0x173cf>",
+        "41837a: 80 7e 01 02                  \tcmp\tbyte ptr [esi + 0x1], 0x2",
+        "41837e: 74 4f                        \tje\t0x4183cf <.text+0x173cf>",
+        "418380: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "418383: 51                           \tpush\tecx",
+        "418384: 8b 8f 5c 04 00 00            \tmov\tecx, dword ptr [edi + 0x45c]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00419844",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41982c: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041981e",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x00419820",
+          "args": "0x787878",
+          "immediate": 7895160
+        },
+        {
+          "va": "0x00419829",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0041982b",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419843",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "419811: c7 44 24 64 c9 c8 c8 3e      \tmov\tdword ptr [esp + 0x64], 0x3ec8c8c9",
+        "419819: e8 d2 aa 03 00               \tcall\t0x4542f0 <.text+0x532f0>",
+        "41981e: 6a 01                        \tpush\t0x1",
+        "419820: 68 78 78 78 00               \tpush\t0x787878",
+        "419825: 8d 4c 24 1c                  \tlea\tecx, [esp + 0x1c]",
+        "419829: 6a 00                        \tpush\t0x0",
+        "41982b: 51                           \tpush\tecx",
+        "41982c: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "419831: e8 3a 4d 04 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "419836: 8b 94 24 a4 07 00 00         \tmov\tedx, dword ptr [esp + 0x7a4]",
+        "41983d: 8d 8e 6c b6 0e 00            \tlea\tecx, [esi + 0xeb66c]",
+        "419843: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004199b2",
+      "frame_candidate": 4,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4199ad: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041999f",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004199a0",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x004199a6",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x004199a8",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004199ab",
+          "args": "0x4",
+          "immediate": 4
+        }
+      ],
+      "raw_neighborhood": [
+        "41998a: db 44 24 14                  \tfild\tdword ptr [esp + 0x14]",
+        "41998e: d8 0d 7c 64 47 00            \tfmul\tdword ptr [0x47647c]",
+        "419994: d8 0d 0c 67 47 00            \tfmul\tdword ptr [0x47670c]",
+        "41999a: e8 81 eb 04 00               \tcall\t0x468520 <.text+0x67520>",
+        "41999f: 50                           \tpush\teax",
+        "4199a0: 6a 00                        \tpush\t0x0",
+        "4199a2: 8d 4c 24 20                  \tlea\tecx, [esp + 0x20]",
+        "4199a6: 6a 00                        \tpush\t0x0",
+        "4199a8: 51                           \tpush\tecx",
+        "4199a9: ff d5                        \tcall\tebp",
+        "4199ab: 6a 04                        \tpush\t0x4",
+        "4199ad: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004199f6",
+      "frame_candidate": 5,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4199e5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "4199f1: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004199d4",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004199d5",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004199df",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004199e3",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004199e4",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004199ef",
+          "args": "0x5",
+          "immediate": 5
+        }
+      ],
+      "raw_neighborhood": [
+        "4199d4: 52                           \tpush\tedx",
+        "4199d5: 51                           \tpush\tecx",
+        "4199d6: 0f bf 10                     \tmovsx\tedx, word ptr [eax]",
+        "4199d9: 8d 87 8a 00 00 00            \tlea\teax, [edi + 0x8a]",
+        "4199df: 52                           \tpush\tedx",
+        "4199e0: 8d 4b 13                     \tlea\tecx, [ebx + 0x13]",
+        "4199e3: 50                           \tpush\teax",
+        "4199e4: 51                           \tpush\tecx",
+        "4199e5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "4199ea: e8 61 63 04 00               \tcall\t0x45fd50 <.text+0x5ed50>",
+        "4199ef: 6a 05                        \tpush\t0x5",
+        "4199f1: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041b17b",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41b14f: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "41b166: 8b ce                        \tmov\tecx, esi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041b17a",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41b14f: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "41b154: e8 f7 2c 04 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "41b159: 33 f6                        \txor\tesi, esi",
+        "41b15b: 8b 87 a0 79 42 00            \tmov\teax, dword ptr [edi + 0x4279a0]",
+        "41b161: ba 01 00 00 00               \tmov\tedx, 0x1",
+        "41b166: 8b ce                        \tmov\tecx, esi",
+        "41b168: d3 e2                        \tshl\tedx, cl",
+        "41b16a: 85 d0                        \ttest\teax, edx",
+        "41b16c: 74 43                        \tje\t0x41b1b1 <.text+0x1a1b1>",
+        "41b16e: 8d 86 96 00 00 00            \tlea\teax, [esi + 0x96]",
+        "41b174: 8d 8f bc 7e 0e 00            \tlea\tecx, [edi + 0xe7ebc]",
+        "41b17a: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041ba9d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41ba9a: 8b ca                        \tmov\tecx, edx"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041ba9c",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41ba7a: 41                           \tinc\tecx",
+        "41ba7b: 8b c1                        \tmov\teax, ecx",
+        "41ba7d: 89 4e f4                     \tmov\tdword ptr [esi - 0xc], ecx",
+        "41ba80: 3d 99 00 00 00               \tcmp\teax, 0x99",
+        "41ba85: 7e 07                        \tjle\t0x41ba8e <.text+0x1aa8e>",
+        "41ba87: c7 46 f4 96 00 00 00         \tmov\tdword ptr [esi - 0xc], 0x96",
+        "41ba8e: ba c4 68 56 00               \tmov\tedx, 0x5668c4",
+        "41ba93: 85 d2                        \ttest\tedx, edx",
+        "41ba95: 74 4a                        \tje\t0x41bae1 <.text+0x1aae1>",
+        "41ba97: 8b 46 f4                     \tmov\teax, dword ptr [esi - 0xc]",
+        "41ba9a: 8b ca                        \tmov\tecx, edx",
+        "41ba9c: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041c32e",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41c31f: 8b 4e 1a                     \tmov\tecx, dword ptr [esi + 0x1a]",
+        "41c32c: 8b cb                        \tmov\tecx, ebx"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041c32b",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41c30a: 8b c3                        \tmov\teax, ebx",
+        "41c30c: 89 5e 1a                     \tmov\tdword ptr [esi + 0x1a], ebx",
+        "41c30f: 83 f8 09                     \tcmp\teax, 0x9",
+        "41c312: 76 0b                        \tjbe\t0x41c31f <.text+0x1b31f>",
+        "41c314: 89 4e 0e                     \tmov\tdword ptr [esi + 0xe], ecx",
+        "41c317: 89 6e 1a                     \tmov\tdword ptr [esi + 0x1a], ebp",
+        "41c31a: e9 ff 00 00 00               \tjmp\t0x41c41e <.text+0x1b41e>",
+        "41c31f: 8b 4e 1a                     \tmov\tecx, dword ptr [esi + 0x1a]",
+        "41c322: 8d 9f bc 7e 0e 00            \tlea\tebx, [edi + 0xe7ebc]",
+        "41c328: 83 c1 28                     \tadd\tecx, 0x28",
+        "41c32b: 51                           \tpush\tecx",
+        "41c32c: 8b cb                        \tmov\tecx, ebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041c8be",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41c8b4: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041c8bd",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41c893: 0f 84 7a 01 00 00            \tje\t0x41ca13 <.text+0x1ba13>",
+        "41c899: ff 15 0c 63 47 00            \tcall\tdword ptr [0x47630c]",
+        "41c89f: 8b 6e 0c                     \tmov\tebp, dword ptr [esi + 0xc]",
+        "41c8a2: 33 c9                        \txor\tecx, ecx",
+        "41c8a4: 66 8b 4e 0a                  \tmov\tcx, word ptr [esi + 0xa]",
+        "41c8a8: 2b c5                        \tsub\teax, ebp",
+        "41c8aa: 3b c1                        \tcmp\teax, ecx",
+        "41c8ac: 0f 86 4c 01 00 00            \tjbe\t0x41c9fe <.text+0x1b9fe>",
+        "41c8b2: 33 d2                        \txor\tedx, edx",
+        "41c8b4: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4",
+        "41c8b9: 66 8b 56 08                  \tmov\tdx, word ptr [esi + 0x8]",
+        "41c8bd: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0041ca6d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "41ca53: 8b 4c 24 10                  \tmov\tecx, dword ptr [esp + 0x10]",
+        "41ca63: b9 4c 6b 56 00               \tmov\tecx, 0x566b4c"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0041ca6c",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41ca42: 8d 14 80                     \tlea\tedx, [eax + 4*eax]",
+        "41ca45: c1 e2 06                     \tshl\tedx, 0x6",
+        "41ca48: 8d 84 1a 74 04 00 00         \tlea\teax, [edx + ebx + 0x474]",
+        "41ca4f: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "41ca53: 8b 4c 24 10                  \tmov\tecx, dword ptr [esp + 0x10]",
+        "41ca57: 8b 39                        \tmov\tedi, dword ptr [ecx]",
+        "41ca59: 85 ff                        \ttest\tedi, edi",
+        "41ca5b: 0f 84 5a 01 00 00            \tje\t0x41cbbb <.text+0x1bbbb>",
+        "41ca61: 33 d2                        \txor\tedx, edx",
+        "41ca63: b9 4c 6b 56 00               \tmov\tecx, 0x566b4c",
+        "41ca68: 66 8b 57 0c                  \tmov\tdx, word ptr [edi + 0xc]",
+        "41ca6c: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00423b68",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00423b44",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00423b4e",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "423b44: 57                           \tpush\tedi",
+        "423b45: 89 46 04                     \tmov\tdword ptr [esi + 0x4], eax",
+        "423b48: 8b 44 24 2c                  \tmov\teax, dword ptr [esp + 0x2c]",
+        "423b4c: 33 db                        \txor\tebx, ebx",
+        "423b4e: 50                           \tpush\teax",
+        "423b4f: 89 46 28                     \tmov\tdword ptr [esi + 0x28], eax",
+        "423b52: 89 4e 2c                     \tmov\tdword ptr [esi + 0x2c], ecx",
+        "423b55: 89 56 3c                     \tmov\tdword ptr [esi + 0x3c], edx",
+        "423b58: 89 5c 24 14                  \tmov\tdword ptr [esp + 0x14], ebx",
+        "423b5c: 89 5c 24 18                  \tmov\tdword ptr [esp + 0x18], ebx",
+        "423b60: 89 5c 24 1c                  \tmov\tdword ptr [esp + 0x1c], ebx",
+        "423b64: 89 5c 24 20                  \tmov\tdword ptr [esp + 0x20], ebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00423d21",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "423d1d: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00423d03",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00423d20",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "423d00: 83 ec 6c                     \tsub\tesp, 0x6c",
+        "423d03: 56                           \tpush\tesi",
+        "423d04: 8b f1                        \tmov\tesi, ecx",
+        "423d06: 8b 46 30                     \tmov\teax, dword ptr [esi + 0x30]",
+        "423d09: 85 c0                        \ttest\teax, eax",
+        "423d0b: 0f 84 5b 01 00 00            \tje\t0x423e6c <.text+0x22e6c>",
+        "423d11: a1 74 18 8b 00               \tmov\teax, dword ptr [0x8b1874]",
+        "423d16: 85 c0                        \ttest\teax, eax",
+        "423d18: 74 52                        \tje\t0x423d6c <.text+0x22d6c>",
+        "423d1a: 8b 46 28                     \tmov\teax, dword ptr [esi + 0x28]",
+        "423d1d: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "423d20: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00423e8f",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "423e8c: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00423e83",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00423e84",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00423e8b",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "423e7b: 90                           \tnop",
+        "423e7c: 90                           \tnop",
+        "423e7d: 90                           \tnop",
+        "423e7e: 90                           \tnop",
+        "423e7f: 90                           \tnop",
+        "423e80: 83 ec 10                     \tsub\tesp, 0x10",
+        "423e83: 56                           \tpush\tesi",
+        "423e84: 57                           \tpush\tedi",
+        "423e85: 8b 7c 24 1c                  \tmov\tedi, dword ptr [esp + 0x1c]",
+        "423e89: 8b f1                        \tmov\tesi, ecx",
+        "423e8b: 57                           \tpush\tedi",
+        "423e8c: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00427646",
+      "frame_candidate": 50,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "427641: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00427625",
+          "args": "0x10",
+          "immediate": 16
+        },
+        {
+          "va": "0x0042762d",
+          "args": "0x162",
+          "immediate": 354
+        },
+        {
+          "va": "0x00427638",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00427639",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042763a",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00427644",
+          "args": "0x32",
+          "immediate": 50
+        }
+      ],
+      "raw_neighborhood": [
+        "42761a: 8b 15 f0 b7 8a 00            \tmov\tedx, dword ptr [0x8ab7f0]",
+        "427620: a1 8c a4 8a 00               \tmov\teax, dword ptr [0x8aa48c]",
+        "427625: 6a 10                        \tpush\t0x10",
+        "427627: 81 c1 3a 02 00 00            \tadd\tecx, 0x23a",
+        "42762d: 68 62 01 00 00               \tpush\t0x162",
+        "427632: 81 c2 df 00 00 00            \tadd\tedx, 0xdf",
+        "427638: 51                           \tpush\tecx",
+        "427639: 52                           \tpush\tedx",
+        "42763a: 50                           \tpush\teax",
+        "42763b: ff 15 bc 62 47 00            \tcall\tdword ptr [0x4762bc]",
+        "427641: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
+        "427644: 6a 32                        \tpush\t0x32"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004294ed",
+      "frame_candidate": 50,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "4294e8: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004294e0",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x004294eb",
+          "args": "0x32",
+          "immediate": 50
+        }
+      ],
+      "raw_neighborhood": [
+        "4294d9: 90                           \tnop",
+        "4294da: 90                           \tnop",
+        "4294db: 90                           \tnop",
+        "4294dc: 90                           \tnop",
+        "4294dd: 90                           \tnop",
+        "4294de: 90                           \tnop",
+        "4294df: 90                           \tnop",
+        "4294e0: 56                           \tpush\tesi",
+        "4294e1: 8b f1                        \tmov\tesi, ecx",
+        "4294e3: e8 48 01 00 00               \tcall\t0x429630 <.text+0x28630>",
+        "4294e8: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
+        "4294eb: 6a 32                        \tpush\t0x32"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00429696",
+      "frame_candidate": 51,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "429691: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00429694",
+          "args": "0x33",
+          "immediate": 51
+        }
+      ],
+      "raw_neighborhood": [
+        "42965d: 3c 02                        \tcmp\tal, 0x2",
+        "42965f: 75 22                        \tjne\t0x429683 <.text+0x28683>",
+        "429661: 66 83 86 40 0d 00 00 f6      \tadd\tword ptr [esi + 0xd40], -0xa",
+        "429669: 66 83 be 40 0d 00 00 00      \tcmp\tword ptr [esi + 0xd40], 0x0",
+        "429671: 7f 10                        \tjg\t0x429683 <.text+0x28683>",
+        "429673: 66 c7 86 40 0d 00 00 00 00   \tmov\tword ptr [esi + 0xd40], 0x0",
+        "42967c: c6 86 42 0d 00 00 00         \tmov\tbyte ptr [esi + 0xd42], 0x0",
+        "429683: 8a 86 42 0d 00 00            \tmov\tal, byte ptr [esi + 0xd42]",
+        "429689: 84 c0                        \ttest\tal, al",
+        "42968b: 0f 84 a0 00 00 00            \tje\t0x429731 <.text+0x28731>",
+        "429691: 8b 4e 1c                     \tmov\tecx, dword ptr [esi + 0x1c]",
+        "429694: 6a 33                        \tpush\t0x33"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00429822",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "429819: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00429821",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4297f9: b8 82 00 00 00               \tmov\teax, 0x82",
+        "4297fe: eb 19                        \tjmp\t0x429819 <.text+0x28819>",
+        "429800: b8 83 00 00 00               \tmov\teax, 0x83",
+        "429805: eb 12                        \tjmp\t0x429819 <.text+0x28819>",
+        "429807: b8 84 00 00 00               \tmov\teax, 0x84",
+        "42980c: eb 0b                        \tjmp\t0x429819 <.text+0x28819>",
+        "42980e: b8 85 00 00 00               \tmov\teax, 0x85",
+        "429813: eb 04                        \tjmp\t0x429819 <.text+0x28819>",
+        "429815: 8b 44 24 20                  \tmov\teax, dword ptr [esp + 0x20]",
+        "429819: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "42981c: 25 ff ff 00 00               \tand\teax, 0xffff",
+        "429821: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004299d0",
+      "frame_candidate": 62,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "4299cb: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004299ce",
+          "args": "0x3e",
+          "immediate": 62
+        }
+      ],
+      "raw_neighborhood": [
+        "42999a: 75 12                        \tjne\t0x4299ae <.text+0x289ae>",
+        "42999c: c7 44 24 54 00 00 80 3f      \tmov\tdword ptr [esp + 0x54], 0x3f800000",
+        "4299a4: eb 08                        \tjmp\t0x4299ae <.text+0x289ae>",
+        "4299a6: c7 44 24 54 00 00 00 00      \tmov\tdword ptr [esp + 0x54], 0x0",
+        "4299ae: 8a 44 24 37                  \tmov\tal, byte ptr [esp + 0x37]",
+        "4299b2: 8b 35 b0 62 47 00            \tmov\tesi, dword ptr [0x4762b0]",
+        "4299b8: 84 c0                        \ttest\tal, al",
+        "4299ba: 0f 85 1b 02 00 00            \tjne\t0x429bdb <.text+0x28bdb>",
+        "4299c0: 80 7c 24 36 1c               \tcmp\tbyte ptr [esp + 0x36], 0x1c",
+        "4299c5: 0f 83 10 02 00 00            \tjae\t0x429bdb <.text+0x28bdb>",
+        "4299cb: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "4299ce: 6a 3e                        \tpush\t0x3e"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00429be0",
+      "frame_candidate": 60,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "429bc5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429bdb: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00429bcf",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x00429bd1",
+          "args": "0x5050a0",
+          "immediate": 5263520
+        },
+        {
+          "va": "0x00429bde",
+          "args": "0x3c",
+          "immediate": 60
+        }
+      ],
+      "raw_neighborhood": [
+        "429bb4: 8b 54 24 3c                  \tmov\tedx, dword ptr [esp + 0x3c]",
+        "429bb8: 89 41 04                     \tmov\tdword ptr [ecx + 0x4], eax",
+        "429bbb: 8b 44 24 40                  \tmov\teax, dword ptr [esp + 0x40]",
+        "429bbf: 89 51 08                     \tmov\tdword ptr [ecx + 0x8], edx",
+        "429bc2: 89 41 0c                     \tmov\tdword ptr [ecx + 0xc], eax",
+        "429bc5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429bca: e8 81 42 03 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "429bcf: 6a 01                        \tpush\t0x1",
+        "429bd1: 68 a0 50 50 00               \tpush\t0x5050a0",
+        "429bd6: e9 e9 03 00 00               \tjmp\t0x429fc4 <.text+0x28fc4>",
+        "429bdb: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "429bde: 6a 3c                        \tpush\t0x3c"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00429c58",
+      "frame_candidate": 61,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "429c49: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429c53: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00429c39",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429c43",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429c47",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429c48",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429c56",
+          "args": "0x3d",
+          "immediate": 61
+        }
+      ],
+      "raw_neighborhood": [
+        "429c33: 8b 97 5c 0c 00 00            \tmov\tedx, dword ptr [edi + 0xc5c]",
+        "429c39: 50                           \tpush\teax",
+        "429c3a: 8b 87 58 0c 00 00            \tmov\teax, dword ptr [edi + 0xc58]",
+        "429c40: 83 c2 0c                     \tadd\tedx, 0xc",
+        "429c43: 51                           \tpush\tecx",
+        "429c44: 83 c0 31                     \tadd\teax, 0x31",
+        "429c47: 52                           \tpush\tedx",
+        "429c48: 50                           \tpush\teax",
+        "429c49: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429c4e: e8 7d 56 03 00               \tcall\t0x45f2d0 <.text+0x5e2d0>",
+        "429c53: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "429c56: 6a 3d                        \tpush\t0x3d"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00429fda",
+      "frame_candidate": 63,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "429fb3: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429fcb: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429fd5: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00429fbd",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x00429fbf",
+          "args": "0xa05050",
+          "immediate": 10506320
+        },
+        {
+          "va": "0x00429fc8",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x00429fca",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429fd8",
+          "args": "0x3f",
+          "immediate": 63
+        }
+      ],
+      "raw_neighborhood": [
+        "429fb0: 89 41 0c                     \tmov\tdword ptr [ecx + 0xc], eax",
+        "429fb3: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429fb8: e8 93 3e 03 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "429fbd: 6a 01                        \tpush\t0x1",
+        "429fbf: 68 50 50 a0 00               \tpush\t0xa05050",
+        "429fc4: 8d 4c 24 18                  \tlea\tecx, [esp + 0x18]",
+        "429fc8: 6a 00                        \tpush\t0x0",
+        "429fca: 51                           \tpush\tecx",
+        "429fcb: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429fd0: e8 9b 45 03 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "429fd5: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "429fd8: 6a 3f                        \tpush\t0x3f"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0042a1d4",
+      "frame_candidate": 67,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "42a1ad: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a1c5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a1cf: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0042a1b7",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x0042a1b9",
+          "args": "0x324b64",
+          "immediate": 3296100
+        },
+        {
+          "va": "0x0042a1c2",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0042a1c4",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a1d2",
+          "args": "0x43",
+          "immediate": 67
+        }
+      ],
+      "raw_neighborhood": [
+        "42a1aa: 89 41 0c                     \tmov\tdword ptr [ecx + 0xc], eax",
+        "42a1ad: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a1b2: e8 99 3c 03 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "42a1b7: 6a 01                        \tpush\t0x1",
+        "42a1b9: 68 64 4b 32 00               \tpush\t0x324b64",
+        "42a1be: 8d 4c 24 18                  \tlea\tecx, [esp + 0x18]",
+        "42a1c2: 6a 00                        \tpush\t0x0",
+        "42a1c4: 51                           \tpush\tecx",
+        "42a1c5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a1ca: e8 a1 43 03 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "42a1cf: 8b 4f 1c                     \tmov\tecx, dword ptr [edi + 0x1c]",
+        "42a1d2: 6a 43                        \tpush\t0x43"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0042a8bc",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "42a8b1: b9 90 6c 56 00               \tmov\tecx, 0x566c90"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0042a8bb",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42a893: 83 f8 04                     \tcmp\teax, 0x4",
+        "42a896: 74 05                        \tje\t0x42a89d <.text+0x2989d>",
+        "42a898: 83 f8 08                     \tcmp\teax, 0x8",
+        "42a89b: 75 05                        \tjne\t0x42a8a2 <.text+0x298a2>",
+        "42a89d: 83 44 24 14 28               \tadd\tdword ptr [esp + 0x14], 0x28",
+        "42a8a2: 8a 06                        \tmov\tal, byte ptr [esi]",
+        "42a8a4: 84 c0                        \ttest\tal, al",
+        "42a8a6: 0f 84 f5 00 00 00            \tje\t0x42a9a1 <.text+0x299a1>",
+        "42a8ac: 25 ff 00 00 00               \tand\teax, 0xff",
+        "42a8b1: b9 90 6c 56 00               \tmov\tecx, 0x566c90",
+        "42a8b6: 05 e7 03 00 00               \tadd\teax, 0x3e7",
+        "42a8bb: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0042a9a7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "42a9a1: 8b 4b 1c                     \tmov\tecx, dword ptr [ebx + 0x1c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0042a984",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0042a986",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a987",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a98e",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a98f",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a99b",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a9a6",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42a984: 6a 00                        \tpush\t0x0",
+        "42a986: 57                           \tpush\tedi",
+        "42a987: 52                           \tpush\tedx",
+        "42a988: 8b 15 bc b7 8a 00            \tmov\tedx, dword ptr [0x8ab7bc]",
+        "42a98e: 50                           \tpush\teax",
+        "42a98f: 51                           \tpush\tecx",
+        "42a990: c7 84 24 84 00 00 00 00 00 00 00     \tmov\tdword ptr [esp + 0x84], 0x0",
+        "42a99b: 52                           \tpush\tedx",
+        "42a99c: e9 de 00 00 00               \tjmp\t0x42aa7f <.text+0x29a7f>",
+        "42a9a1: 8b 4b 1c                     \tmov\tecx, dword ptr [ebx + 0x1c]",
+        "42a9a4: 03 fe                        \tadd\tedi, esi",
+        "42a9a6: 57                           \tpush\tedi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0042f6df",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "42f6d4: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0042f6de",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42f6c8: 90                           \tnop",
+        "42f6c9: 90                           \tnop",
+        "42f6ca: 90                           \tnop",
+        "42f6cb: 90                           \tnop",
+        "42f6cc: 90                           \tnop",
+        "42f6cd: 90                           \tnop",
+        "42f6ce: 90                           \tnop",
+        "42f6cf: 90                           \tnop",
+        "42f6d0: 8b 44 24 04                  \tmov\teax, dword ptr [esp + 0x4]",
+        "42f6d4: b9 c4 68 56 00               \tmov\tecx, 0x5668c4",
+        "42f6d9: 25 ff ff 00 00               \tand\teax, 0xffff",
+        "42f6de: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0042f858",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "42f839: 8b 8b 7c 07 00 00            \tmov\tecx, dword ptr [ebx + 0x77c]",
+        "42f853: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0042f852",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42f829: 8b 93 78 07 00 00            \tmov\tedx, dword ptr [ebx + 0x778]",
+        "42f82f: 8d 14 d2                     \tlea\tedx, [edx + 8*edx]",
+        "42f832: 8d 0c 91                     \tlea\tecx, [ecx + 4*edx]",
+        "42f835: 89 4c 24 2c                  \tmov\tdword ptr [esp + 0x2c], ecx",
+        "42f839: 8b 8b 7c 07 00 00            \tmov\tecx, dword ptr [ebx + 0x77c]",
+        "42f83f: 8d 14 c9                     \tlea\tedx, [ecx + 8*ecx]",
+        "42f842: 33 c9                        \txor\tecx, ecx",
+        "42f844: 8d 04 90                     \tlea\teax, [eax + 4*edx]",
+        "42f847: 89 44 24 30                  \tmov\tdword ptr [esp + 0x30], eax",
+        "42f84b: 66 8b 8b a8 07 00 00         \tmov\tcx, word ptr [ebx + 0x7a8]",
+        "42f852: 51                           \tpush\tecx",
+        "42f853: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00430a6e",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "430a6b: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00430a4f",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00430a6d",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "430a4f: 57                           \tpush\tedi",
+        "430a50: 8b f1                        \tmov\tesi, ecx",
+        "430a52: 74 65                        \tje\t0x430ab9 <.text+0x2fab9>",
+        "430a54: 48                           \tdec\teax",
+        "430a55: 74 2c                        \tje\t0x430a83 <.text+0x2fa83>",
+        "430a57: 83 e8 02                     \tsub\teax, 0x2",
+        "430a5a: 0f 85 00 01 00 00            \tjne\t0x430b60 <.text+0x2fb60>",
+        "430a60: 33 c0                        \txor\teax, eax",
+        "430a62: bf e8 b0 56 00               \tmov\tedi, 0x56b0e8",
+        "430a67: 66 8b 46 28                  \tmov\tax, word ptr [esi + 0x28]",
+        "430a6b: 8b cf                        \tmov\tecx, edi",
+        "430a6d: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00430a91",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "430a6b: 8b cf                        \tmov\tecx, edi",
+        "430a7b: 8b 0d 20 b1 56 00            \tmov\tecx, dword ptr [0x56b120]",
+        "430a8e: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00430a6d",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00430a90",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "430a6b: 8b cf                        \tmov\tecx, edi",
+        "430a6d: 50                           \tpush\teax",
+        "430a6e: e8 bd 56 03 00               \tcall\t0x466130 <.text+0x65130>",
+        "430a73: 85 c0                        \ttest\teax, eax",
+        "430a75: 0f 84 e5 00 00 00            \tje\t0x430b60 <.text+0x2fb60>",
+        "430a7b: 8b 0d 20 b1 56 00            \tmov\tecx, dword ptr [0x56b120]",
+        "430a81: eb 57                        \tjmp\t0x430ada <.text+0x2fada>",
+        "430a83: 33 d2                        \txor\tedx, edx",
+        "430a85: bf 08 6a 56 00               \tmov\tedi, 0x566a08",
+        "430a8a: 66 8b 56 28                  \tmov\tdx, word ptr [esi + 0x28]",
+        "430a8e: 8b cf                        \tmov\tecx, edi",
+        "430a90: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00430ac7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "430ac4: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00430ac6",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "430aa3: 8b 5c 24 14                  \tmov\tebx, dword ptr [esp + 0x14]",
+        "430aa7: 8b 6c 24 18                  \tmov\tebp, dword ptr [esp + 0x18]",
+        "430aab: 0f bf 48 04                  \tmovsx\tecx, word ptr [eax + 0x4]",
+        "430aaf: 0f bf 50 06                  \tmovsx\tedx, word ptr [eax + 0x6]",
+        "430ab3: 03 d9                        \tadd\tebx, ecx",
+        "430ab5: 03 ea                        \tadd\tebp, edx",
+        "430ab7: eb 4c                        \tjmp\t0x430b05 <.text+0x2fb05>",
+        "430ab9: 33 c0                        \txor\teax, eax",
+        "430abb: bf c4 68 56 00               \tmov\tedi, 0x5668c4",
+        "430ac0: 66 8b 46 28                  \tmov\tax, word ptr [esi + 0x28]",
+        "430ac4: 8b cf                        \tmov\tecx, edi",
+        "430ac6: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043428f",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "434269: 8b 4c 24 14                  \tmov\tecx, dword ptr [esp + 0x14]",
+        "434278: 8b 8c 24 ac 00 00 00         \tmov\tecx, dword ptr [esp + 0xac]",
+        "434285: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043428e",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "434265: 8d 74 0e 05                  \tlea\tesi, [esi + ecx + 0x5]",
+        "434269: 8b 4c 24 14                  \tmov\tecx, dword ptr [esp + 0x14]",
+        "43426d: 89 44 24 48                  \tmov\tdword ptr [esp + 0x48], eax",
+        "434271: 8d 6a fb                     \tlea\tebp, [edx - 0x5]",
+        "434274: 8d 5c 11 02                  \tlea\tebx, [ecx + edx + 0x2]",
+        "434278: 8b 8c 24 ac 00 00 00         \tmov\tecx, dword ptr [esp + 0xac]",
+        "43427f: 85 c9                        \ttest\tecx, ecx",
+        "434281: 74 35                        \tje\t0x4342b8 <.text+0x332b8>",
+        "434283: 33 d2                        \txor\tedx, edx",
+        "434285: b9 c4 68 56 00               \tmov\tecx, 0x5668c4",
+        "43428a: 66 8b 57 28                  \tmov\tdx, word ptr [edi + 0x28]",
+        "43428e: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004343ae",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "434383: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "4343a9: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00434382",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004343a8",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "434382: 50                           \tpush\teax",
+        "434383: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "434388: e8 e3 a1 02 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "43438d: 8b 84 24 ac 00 00 00         \tmov\teax, dword ptr [esp + 0xac]",
+        "434394: 33 ed                        \txor\tebp, ebp",
+        "434396: 3b c3                        \tcmp\teax, ebx",
+        "434398: 89 5c 24 28                  \tmov\tdword ptr [esp + 0x28], ebx",
+        "43439c: 0f 84 9b 00 00 00            \tje\t0x43443d <.text+0x3343d>",
+        "4343a2: 33 c9                        \txor\tecx, ecx",
+        "4343a4: 66 8b 4f 28                  \tmov\tcx, word ptr [edi + 0x28]",
+        "4343a8: 51                           \tpush\tecx",
+        "4343a9: b9 c4 68 56 00               \tmov\tecx, 0x5668c4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004362dd",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4362c2: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "4362cc: 8b 8e fc 00 00 00            \tmov\tecx, dword ptr [esi + 0xfc]",
+        "4362d7: 8b 8e 9c 00 00 00            \tmov\tecx, dword ptr [esi + 0x9c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004362bf",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004362c0",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004362c1",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004362d6",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4362ab: 8b 8e fc 00 00 00            \tmov\tecx, dword ptr [esi + 0xfc]",
+        "4362b1: 66 8b 96 2c 01 00 00         \tmov\tdx, word ptr [esi + 0x12c]",
+        "4362b8: 66 8b 86 2a 01 00 00         \tmov\tax, word ptr [esi + 0x12a]",
+        "4362bf: 51                           \tpush\tecx",
+        "4362c0: 52                           \tpush\tedx",
+        "4362c1: 50                           \tpush\teax",
+        "4362c2: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "4362c7: e8 d4 df 01 00               \tcall\t0x4542a0 <.text+0x532a0>",
+        "4362cc: 8b 8e fc 00 00 00            \tmov\tecx, dword ptr [esi + 0xfc]",
+        "4362d2: 89 44 24 24                  \tmov\tdword ptr [esp + 0x24], eax",
+        "4362d6: 51                           \tpush\tecx",
+        "4362d7: 8b 8e 9c 00 00 00            \tmov\tecx, dword ptr [esi + 0x9c]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004383b3",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43839a: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "4383aa: 8b 8e 9c 00 00 00            \tmov\tecx, dword ptr [esi + 0x9c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00438397",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00438398",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00438399",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004383b0",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "438383: 8b 96 fc 00 00 00            \tmov\tedx, dword ptr [esi + 0xfc]",
+        "438389: 66 8b 86 2c 01 00 00         \tmov\tax, word ptr [esi + 0x12c]",
+        "438390: 66 8b 8e 2a 01 00 00         \tmov\tcx, word ptr [esi + 0x12a]",
+        "438397: 52                           \tpush\tedx",
+        "438398: 50                           \tpush\teax",
+        "438399: 51                           \tpush\tecx",
+        "43839a: b9 fc 00 56 00               \tmov\tecx, 0x5600fc",
+        "43839f: e8 fc be 01 00               \tcall\t0x4542a0 <.text+0x532a0>",
+        "4383a4: 8b 96 fc 00 00 00            \tmov\tedx, dword ptr [esi + 0xfc]",
+        "4383aa: 8b 8e 9c 00 00 00            \tmov\tecx, dword ptr [esi + 0x9c]",
+        "4383b0: 52                           \tpush\tedx",
+        "4383b1: 8b f8                        \tmov\tedi, eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043982f",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "439825: b9 90 6c 56 00               \tmov\tecx, 0x566c90"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043982a",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43980c: 8b 5a fc                     \tmov\tebx, dword ptr [edx - 0x4]",
+        "43980f: 8b 69 18                     \tmov\tebp, dword ptr [ecx + 0x18]",
+        "439812: 8b 02                        \tmov\teax, dword ptr [edx]",
+        "439814: 03 dd                        \tadd\tebx, ebp",
+        "439816: 8b 69 1c                     \tmov\tebp, dword ptr [ecx + 0x1c]",
+        "439819: 33 c9                        \txor\tecx, ecx",
+        "43981b: 66 8b 4e 06                  \tmov\tcx, word ptr [esi + 0x6]",
+        "43981f: 03 e8                        \tadd\tebp, eax",
+        "439821: 8d 44 09 fe                  \tlea\teax, [ecx + ecx - 0x2]",
+        "439825: b9 90 6c 56 00               \tmov\tecx, 0x566c90",
+        "43982a: 50                           \tpush\teax",
+        "43982b: 89 44 24 50                  \tmov\tdword ptr [esp + 0x50], eax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00439a24",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "439a07: 8b 4c 24 34                  \tmov\tecx, dword ptr [esp + 0x34]",
+        "439a19: 8b 4c 24 4c                  \tmov\tecx, dword ptr [esp + 0x4c]",
+        "439a1f: b9 90 6c 56 00               \tmov\tecx, 0x566c90"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00439a1e",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4399fa: 89 41 0c                     \tmov\tdword ptr [ecx + 0xc], eax",
+        "4399fd: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "439a02: e8 49 44 02 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "439a07: 8b 4c 24 34                  \tmov\tecx, dword ptr [esp + 0x34]",
+        "439a0b: 8a 41 04                     \tmov\tal, byte ptr [ecx + 0x4]",
+        "439a0e: 8d 71 04                     \tlea\tesi, [ecx + 0x4]",
+        "439a11: 84 c0                        \ttest\tal, al",
+        "439a13: 0f 84 ad 00 00 00            \tje\t0x439ac6 <.text+0x38ac6>",
+        "439a19: 8b 4c 24 4c                  \tmov\tecx, dword ptr [esp + 0x4c]",
+        "439a1d: 41                           \tinc\tecx",
+        "439a1e: 51                           \tpush\tecx",
+        "439a1f: b9 90 6c 56 00               \tmov\tecx, 0x566c90"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00439a8a",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "439a76: 8b 4c 24 44                  \tmov\tecx, dword ptr [esp + 0x44]",
+        "439a87: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00439a86",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "439a64: 7d 04                        \tjge\t0x439a6a <.text+0x38a6a>",
+        "439a66: 85 c0                        \ttest\teax, eax",
+        "439a68: 7f 04                        \tjg\t0x439a6e <.text+0x38a6e>",
+        "439a6a: 8a 06                        \tmov\tal, byte ptr [esi]",
+        "439a6c: 2c 37                        \tsub\tal, 0x37",
+        "439a6e: 8b 74 24 3c                  \tmov\tesi, dword ptr [esp + 0x3c]",
+        "439a72: 88 44 24 44                  \tmov\tbyte ptr [esp + 0x44], al",
+        "439a76: 8b 4c 24 44                  \tmov\tecx, dword ptr [esp + 0x44]",
+        "439a7a: 81 e1 ff 00 00 00            \tand\tecx, 0xff",
+        "439a80: 81 c1 a3 01 00 00            \tadd\tecx, 0x1a3",
+        "439a86: 51                           \tpush\tecx",
+        "439a87: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043b337",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b32c",
+          "args": "esi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b314: 99                           \tcdq",
+        "43b315: f7 fb                        \tidiv\tebx",
+        "43b317: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43b31a: 7f 20                        \tjg\t0x43b33c <.text+0x3a33c>",
+        "43b31c: 83 f9 45                     \tcmp\tecx, 0x45",
+        "43b31f: 7f 1b                        \tjg\t0x43b33c <.text+0x3a33c>",
+        "43b321: 81 fe ff ff 00 00            \tcmp\tesi, 0xffff",
+        "43b327: 74 13                        \tje\t0x43b33c <.text+0x3a33c>",
+        "43b329: 8d 0c c9                     \tlea\tecx, [ecx + 8*ecx]",
+        "43b32c: 56                           \tpush\tesi",
+        "43b32d: 8d 0c c9                     \tlea\tecx, [ecx + 8*ecx]",
+        "43b330: 8d 0c 8d fc 00 56 00         \tlea\tecx, [4*ecx + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043b3d6",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b3ce",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b3b5: 99                           \tcdq",
+        "43b3b6: f7 fd                        \tidiv\tebp",
+        "43b3b8: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43b3bb: 7e 1e                        \tjle\t0x43b3db <.text+0x3a3db>",
+        "43b3bd: 83 f9 45                     \tcmp\tecx, 0x45",
+        "43b3c0: 7f 19                        \tjg\t0x43b3db <.text+0x3a3db>",
+        "43b3c2: 8d 0c c9                     \tlea\tecx, [ecx + 8*ecx]",
+        "43b3c5: 33 d2                        \txor\tedx, edx",
+        "43b3c7: 66 8b 53 05                  \tmov\tdx, word ptr [ebx + 0x5]",
+        "43b3cb: 8d 04 c9                     \tlea\teax, [ecx + 8*ecx]",
+        "43b3ce: 52                           \tpush\tedx",
+        "43b3cf: 8d 0c 85 fc 00 56 00         \tlea\tecx, [4*eax + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043b3fd",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43b3dd: b9 0e 00 00 00               \tmov\tecx, 0xe"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b3f2",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b3db: 8b c6                        \tmov\teax, esi",
+        "43b3dd: b9 0e 00 00 00               \tmov\tecx, 0xe",
+        "43b3e2: 99                           \tcdq",
+        "43b3e3: f7 f9                        \tidiv\tecx",
+        "43b3e5: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43b3e8: 7e 18                        \tjle\t0x43b402 <.text+0x3a402>",
+        "43b3ea: 83 fe 45                     \tcmp\tesi, 0x45",
+        "43b3ed: 7f 13                        \tjg\t0x43b402 <.text+0x3a402>",
+        "43b3ef: 8d 34 f6                     \tlea\tesi, [esi + 8*esi]",
+        "43b3f2: 57                           \tpush\tedi",
+        "43b3f3: 8d 14 f6                     \tlea\tedx, [esi + 8*esi]",
+        "43b3f6: 8d 0c 95 fc 00 56 00         \tlea\tecx, [4*edx + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043b562",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b555",
+          "args": "esi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b53a: f7 ff                        \tidiv\tedi",
+        "43b53c: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43b53f: 0f 8f 82 00 00 00            \tjg\t0x43b5c7 <.text+0x3a5c7>",
+        "43b545: 83 f9 45                     \tcmp\tecx, 0x45",
+        "43b548: 7f 7d                        \tjg\t0x43b5c7 <.text+0x3a5c7>",
+        "43b54a: 81 fe ff ff 00 00            \tcmp\tesi, 0xffff",
+        "43b550: 74 75                        \tje\t0x43b5c7 <.text+0x3a5c7>",
+        "43b552: 8d 04 c9                     \tlea\teax, [ecx + 8*ecx]",
+        "43b555: 56                           \tpush\tesi",
+        "43b556: 8d 3c c0                     \tlea\tedi, [eax + 8*eax]",
+        "43b559: c1 e7 02                     \tshl\tedi, 0x2",
+        "43b55c: 8d 8f fc 00 56 00            \tlea\tecx, [edi + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043ba9c",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043ba8f",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43ba78: f7 fb                        \tidiv\tebx",
+        "43ba7a: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43ba7d: 7f 7f                        \tjg\t0x43bafe <.text+0x3aafe>",
+        "43ba7f: 83 f9 45                     \tcmp\tecx, 0x45",
+        "43ba82: 7f 7a                        \tjg\t0x43bafe <.text+0x3aafe>",
+        "43ba84: 81 ff ff ff 00 00            \tcmp\tedi, 0xffff",
+        "43ba8a: 74 72                        \tje\t0x43bafe <.text+0x3aafe>",
+        "43ba8c: 8d 04 c9                     \tlea\teax, [ecx + 8*ecx]",
+        "43ba8f: 57                           \tpush\tedi",
+        "43ba90: 8d 1c c0                     \tlea\tebx, [eax + 8*eax]",
+        "43ba93: c1 e3 02                     \tshl\tebx, 0x2",
+        "43ba96: 8d 8b fc 00 56 00            \tlea\tecx, [ebx + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043bbdc",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043bbca",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43bba5: 83 fa 03                     \tcmp\tedx, 0x3",
+        "43bba8: 0f 8c 3f 02 00 00            \tjl\t0x43bded <.text+0x3aded>",
+        "43bbae: 8b 44 24 78                  \tmov\teax, dword ptr [esp + 0x78]",
+        "43bbb2: 83 f8 45                     \tcmp\teax, 0x45",
+        "43bbb5: 0f 8f 32 02 00 00            \tjg\t0x43bded <.text+0x3aded>",
+        "43bbbb: 81 fb ff ff 00 00            \tcmp\tebx, 0xffff",
+        "43bbc1: 0f 84 26 02 00 00            \tje\t0x43bded <.text+0x3aded>",
+        "43bbc7: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "43bbca: 53                           \tpush\tebx",
+        "43bbcb: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "43bbce: 8d 0c 95 fc 00 56 00         \tlea\tecx, [4*edx + 0x5600fc]",
+        "43bbd5: 89 8c 24 80 00 00 00         \tmov\tdword ptr [esp + 0x80], ecx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043bc6d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043bc6c",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43bc41: 83 e2 0f                     \tand\tedx, 0xf",
+        "43bc44: a8 80                        \ttest\tal, -0x80",
+        "43bc46: 74 08                        \tje\t0x43bc50 <.text+0x3ac50>",
+        "43bc48: c7 44 24 14 01 00 00 00      \tmov\tdword ptr [esp + 0x14], 0x1",
+        "43bc50: 8b 84 24 80 00 00 00         \tmov\teax, dword ptr [esp + 0x80]",
+        "43bc57: 25 ff 00 00 00               \tand\teax, 0xff",
+        "43bc5c: c1 e0 04                     \tshl\teax, 0x4",
+        "43bc5f: 03 c2                        \tadd\teax, edx",
+        "43bc61: 33 d2                        \txor\tedx, edx",
+        "43bc63: 8a 94 30 d4 01 1b 00         \tmov\tdl, byte ptr [eax + esi + 0x1b01d4]",
+        "43bc6a: 03 da                        \tadd\tebx, edx",
+        "43bc6c: 53                           \tpush\tebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043becc",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043beba",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43be95: 83 fa 03                     \tcmp\tedx, 0x3",
+        "43be98: 0f 8c 3b 02 00 00            \tjl\t0x43c0d9 <.text+0x3b0d9>",
+        "43be9e: 8b 44 24 78                  \tmov\teax, dword ptr [esp + 0x78]",
+        "43bea2: 83 f8 45                     \tcmp\teax, 0x45",
+        "43bea5: 0f 8f 2e 02 00 00            \tjg\t0x43c0d9 <.text+0x3b0d9>",
+        "43beab: 81 fb ff ff 00 00            \tcmp\tebx, 0xffff",
+        "43beb1: 0f 84 22 02 00 00            \tje\t0x43c0d9 <.text+0x3b0d9>",
+        "43beb7: 8d 04 c0                     \tlea\teax, [eax + 8*eax]",
+        "43beba: 53                           \tpush\tebx",
+        "43bebb: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "43bebe: 8d 0c 95 fc 00 56 00         \tlea\tecx, [4*edx + 0x5600fc]",
+        "43bec5: 89 8c 24 80 00 00 00         \tmov\tdword ptr [esp + 0x80], ecx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043bf59",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043bf58",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43bf2d: 83 e2 0f                     \tand\tedx, 0xf",
+        "43bf30: a8 80                        \ttest\tal, -0x80",
+        "43bf32: 74 08                        \tje\t0x43bf3c <.text+0x3af3c>",
+        "43bf34: c7 44 24 14 01 00 00 00      \tmov\tdword ptr [esp + 0x14], 0x1",
+        "43bf3c: 8b 84 24 80 00 00 00         \tmov\teax, dword ptr [esp + 0x80]",
+        "43bf43: 25 ff 00 00 00               \tand\teax, 0xff",
+        "43bf48: c1 e0 04                     \tshl\teax, 0x4",
+        "43bf4b: 03 c2                        \tadd\teax, edx",
+        "43bf4d: 33 d2                        \txor\tedx, edx",
+        "43bf4f: 8a 94 30 d4 01 1b 00         \tmov\tdl, byte ptr [eax + esi + 0x1b01d4]",
+        "43bf56: 03 da                        \tadd\tebx, edx",
+        "43bf58: 53                           \tpush\tebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043c454",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043c447",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43c424: f7 fb                        \tidiv\tebx",
+        "43c426: 83 fa 02                     \tcmp\tedx, 0x2",
+        "43c429: 0f 8f 9f 00 00 00            \tjg\t0x43c4ce <.text+0x3b4ce>",
+        "43c42f: 83 f9 45                     \tcmp\tecx, 0x45",
+        "43c432: 0f 8f 96 00 00 00            \tjg\t0x43c4ce <.text+0x3b4ce>",
+        "43c438: 81 ff ff ff 00 00            \tcmp\tedi, 0xffff",
+        "43c43e: 0f 84 8a 00 00 00            \tje\t0x43c4ce <.text+0x3b4ce>",
+        "43c444: 8d 04 c9                     \tlea\teax, [ecx + 8*ecx]",
+        "43c447: 57                           \tpush\tedi",
+        "43c448: 8d 1c c0                     \tlea\tebx, [eax + 8*eax]",
+        "43c44b: c1 e3 02                     \tshl\tebx, 0x2",
+        "43c44e: 8d 8b fc 00 56 00            \tlea\tecx, [ebx + 0x5600fc]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043d7a0",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043d784",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043d79f",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43d77d: 90                           \tnop",
+        "43d77e: 90                           \tnop",
+        "43d77f: 90                           \tnop",
+        "43d780: 8b 44 24 04                  \tmov\teax, dword ptr [esp + 0x4]",
+        "43d784: 56                           \tpush\tesi",
+        "43d785: 8b f1                        \tmov\tesi, ecx",
+        "43d787: 3d e8 03 00 00               \tcmp\teax, 0x3e8",
+        "43d78c: 89 86 8c 02 00 00            \tmov\tdword ptr [esi + 0x28c], eax",
+        "43d792: 7c 5d                        \tjl\t0x43d7f1 <.text+0x3c7f1>",
+        "43d794: 05 18 fc ff ff               \tadd\teax, 0xfffffc18",
+        "43d799: 8d 8e 48 01 00 00            \tlea\tecx, [esi + 0x148]",
+        "43d79f: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043d7f5",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43d7e1: 8b ce                        \tmov\tecx, esi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043d7de",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043d7df",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043d7e0",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043d7f1",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43d7d3: 8b 96 b8 02 00 00            \tmov\tedx, dword ptr [esi + 0x2b8]",
+        "43d7d9: a1 bc b7 8a 00               \tmov\teax, dword ptr [0x8ab7bc]",
+        "43d7de: 51                           \tpush\tecx",
+        "43d7df: 52                           \tpush\tedx",
+        "43d7e0: 50                           \tpush\teax",
+        "43d7e1: 8b ce                        \tmov\tecx, esi",
+        "43d7e3: e8 08 fe ff ff               \tcall\t0x43d5f0 <.text+0x3c5f0>",
+        "43d7e8: b8 01 00 00 00               \tmov\teax, 0x1",
+        "43d7ed: 5e                           \tpop\tesi",
+        "43d7ee: c2 04 00                     \tret\t0x4",
+        "43d7f1: 50                           \tpush\teax",
+        "43d7f2: 8d 4e 04                     \tlea\tecx, [esi + 0x4]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043da2f",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043da0b",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da0c",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da0d",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da2e",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43da0b: 50                           \tpush\teax",
+        "43da0c: 52                           \tpush\tedx",
+        "43da0d: 51                           \tpush\tecx",
+        "43da0e: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "43da14: 8b 86 8c 02 00 00            \tmov\teax, dword ptr [esi + 0x28c]",
+        "43da1a: 5f                           \tpop\tedi",
+        "43da1b: 3d e8 03 00 00               \tcmp\teax, 0x3e8",
+        "43da20: 5d                           \tpop\tebp",
+        "43da21: 7c 32                        \tjl\t0x43da55 <.text+0x3ca55>",
+        "43da23: 05 18 fc ff ff               \tadd\teax, 0xfffffc18",
+        "43da28: 8d 8e 48 01 00 00            \tlea\tecx, [esi + 0x148]",
+        "43da2e: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043da59",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43da43: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043da40",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da41",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da42",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043da55",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43da3a: 8b 86 84 01 00 00            \tmov\teax, dword ptr [esi + 0x184]",
+        "43da40: 52                           \tpush\tedx",
+        "43da41: 50                           \tpush\teax",
+        "43da42: 53                           \tpush\tebx",
+        "43da43: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "43da48: e8 13 7b 02 00               \tcall\t0x465560 <.text+0x64560>",
+        "43da4d: 5e                           \tpop\tesi",
+        "43da4e: 5b                           \tpop\tebx",
+        "43da4f: 83 c4 64                     \tadd\tesp, 0x64",
+        "43da52: c2 08 00                     \tret\t0x8",
+        "43da55: 50                           \tpush\teax",
+        "43da56: 8d 4e 04                     \tlea\tecx, [esi + 0x4]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043ee27",
+      "frame_candidate": 1100,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "43ee08: 8b 4c 24 20                  \tmov\tecx, dword ptr [esp + 0x20]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043ee04",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ee05",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ee0c",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ee0f",
+          "args": "0x44c",
+          "immediate": 1100
+        }
+      ],
+      "raw_neighborhood": [
+        "43ee04: 55                           \tpush\tebp",
+        "43ee05: 56                           \tpush\tesi",
+        "43ee06: 8b f1                        \tmov\tesi, ecx",
+        "43ee08: 8b 4c 24 20                  \tmov\tecx, dword ptr [esp + 0x20]",
+        "43ee0c: 57                           \tpush\tedi",
+        "43ee0d: 33 db                        \txor\tebx, ebx",
+        "43ee0f: 68 4c 04 00 00               \tpush\t0x44c",
+        "43ee14: 89 5c 24 14                  \tmov\tdword ptr [esp + 0x14], ebx",
+        "43ee18: 89 5c 24 18                  \tmov\tdword ptr [esp + 0x18], ebx",
+        "43ee1c: 89 5c 24 1c                  \tmov\tdword ptr [esp + 0x1c], ebx",
+        "43ee20: 89 5c 24 20                  \tmov\tdword ptr [esp + 0x20], ebx",
+        "43ee24: 89 4e 2c                     \tmov\tdword ptr [esi + 0x2c], ecx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043eec2",
+      "frame_candidate": 1101,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43eeb4: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043ee9a",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ee9d",
+          "args": "0x8a",
+          "immediate": 138
+        },
+        {
+          "va": "0x0043eea2",
+          "args": "0x180",
+          "immediate": 384
+        },
+        {
+          "va": "0x0043eea7",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0043eeaf",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0043eeb1",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043eebd",
+          "args": "0x44d",
+          "immediate": 1101
+        }
+      ],
+      "raw_neighborhood": [
+        "43ee9a: 51                           \tpush\tecx",
+        "43ee9b: ff d7                        \tcall\tedi",
+        "43ee9d: 68 8a 00 00 00               \tpush\t0x8a",
+        "43eea2: 68 80 01 00 00               \tpush\t0x180",
+        "43eea7: 6a 00                        \tpush\t0x0",
+        "43eea9: 8d 96 50 05 00 00            \tlea\tedx, [esi + 0x550]",
+        "43eeaf: 6a 00                        \tpush\t0x0",
+        "43eeb1: 52                           \tpush\tedx",
+        "43eeb2: ff d7                        \tcall\tedi",
+        "43eeb4: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "43eeb7: 8b ae 5c 05 00 00            \tmov\tebp, dword ptr [esi + 0x55c]",
+        "43eebd: 68 4d 04 00 00               \tpush\t0x44d"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043ef63",
+      "frame_candidate": 1102,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43ef55: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043ef49",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ef4a",
+          "args": "0x180",
+          "immediate": 384
+        },
+        {
+          "va": "0x0043ef4f",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ef50",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0043ef52",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ef5e",
+          "args": "0x44e",
+          "immediate": 1102
+        }
+      ],
+      "raw_neighborhood": [
+        "43ef3e: ff d7                        \tcall\tedi",
+        "43ef40: 8d 45 12                     \tlea\teax, [ebp + 0x12]",
+        "43ef43: 8d 8e 60 05 00 00            \tlea\tecx, [esi + 0x560]",
+        "43ef49: 50                           \tpush\teax",
+        "43ef4a: 68 80 01 00 00               \tpush\t0x180",
+        "43ef4f: 55                           \tpush\tebp",
+        "43ef50: 6a 00                        \tpush\t0x0",
+        "43ef52: 51                           \tpush\tecx",
+        "43ef53: ff d7                        \tcall\tedi",
+        "43ef55: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "43ef58: 8b ae 6c 05 00 00            \tmov\tebp, dword ptr [esi + 0x56c]",
+        "43ef5e: 68 4e 04 00 00               \tpush\t0x44e"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043f06a",
+      "frame_candidate": 1100,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "43f062: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043f044",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f047",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f065",
+          "args": "0x44c",
+          "immediate": 1100
+        }
+      ],
+      "raw_neighborhood": [
+        "43f044: 56                           \tpush\tesi",
+        "43f045: 8b f1                        \tmov\tesi, ecx",
+        "43f047: 57                           \tpush\tedi",
+        "43f048: 33 ff                        \txor\tedi, edi",
+        "43f04a: 8b 46 30                     \tmov\teax, dword ptr [esi + 0x30]",
+        "43f04d: 85 c0                        \ttest\teax, eax",
+        "43f04f: 0f 84 f8 03 00 00            \tje\t0x43f44d <.text+0x3e44d>",
+        "43f055: a1 74 18 8b 00               \tmov\teax, dword ptr [0x8b1874]",
+        "43f05a: 85 c0                        \ttest\teax, eax",
+        "43f05c: 0f 84 17 01 00 00            \tje\t0x43f179 <.text+0x3e179>",
+        "43f062: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "43f065: 68 4c 04 00 00               \tpush\t0x44c"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043f0bc",
+      "frame_candidate": 1101,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43f098: 8b 8e 24 05 00 00            \tmov\tecx, dword ptr [esi + 0x524]",
+        "43f0a8: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "43f0b4: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043f09e",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f0a5",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f0a6",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f0a7",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f0b7",
+          "args": "0x44d",
+          "immediate": 1101
+        }
+      ],
+      "raw_neighborhood": [
+        "43f095: 0f bf 01                     \tmovsx\teax, word ptr [ecx]",
+        "43f098: 8b 8e 24 05 00 00            \tmov\tecx, dword ptr [esi + 0x524]",
+        "43f09e: 52                           \tpush\tedx",
+        "43f09f: 8b 96 20 05 00 00            \tmov\tedx, dword ptr [esi + 0x520]",
+        "43f0a5: 50                           \tpush\teax",
+        "43f0a6: 51                           \tpush\tecx",
+        "43f0a7: 52                           \tpush\tedx",
+        "43f0a8: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "43f0ad: e8 8e 11 02 00               \tcall\t0x460240 <.text+0x5f240>",
+        "43f0b2: 33 db                        \txor\tebx, ebx",
+        "43f0b4: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "43f0b7: 68 4d 04 00 00               \tpush\t0x44d"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0043f120",
+      "frame_candidate": 1102,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "43f0fd: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "43f118: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0043f0fc",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043f11b",
+          "args": "0x44e",
+          "immediate": 1102
+        }
+      ],
+      "raw_neighborhood": [
+        "43f0fc: 52                           \tpush\tedx",
+        "43f0fd: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "43f102: e8 39 11 02 00               \tcall\t0x460240 <.text+0x5f240>",
+        "43f107: 47                           \tinc\tedi",
+        "43f108: 83 c3 12                     \tadd\tebx, 0x12",
+        "43f10b: 3b be 1c 05 00 00            \tcmp\tedi, dword ptr [esi + 0x51c]",
+        "43f111: 7c a1                        \tjl\t0x43f0b4 <.text+0x3e0b4>",
+        "43f113: 85 ff                        \ttest\tedi, edi",
+        "43f115: 74 01                        \tje\t0x43f118 <.text+0x3e118>",
+        "43f117: 4f                           \tdec\tedi",
+        "43f118: 8b 4e 2c                     \tmov\tecx, dword ptr [esi + 0x2c]",
+        "43f11b: 68 4e 04 00 00               \tpush\t0x44e"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00440030",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00440020",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0044002f",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "440010: 33 c0                        \txor\teax, eax",
+        "440012: eb 05                        \tjmp\t0x440019 <.text+0x3f019>",
+        "440014: 1b c0                        \tsbb\teax, eax",
+        "440016: 83 d8 ff                     \tsbb\teax, -0x1",
+        "440019: 85 c0                        \ttest\teax, eax",
+        "44001b: 75 4c                        \tjne\t0x440069 <.text+0x3f069>",
+        "44001d: 8b 43 08                     \tmov\teax, dword ptr [ebx + 0x8]",
+        "440020: 50                           \tpush\teax",
+        "440021: e8 d3 81 02 00               \tcall\t0x4681f9 <.text+0x671f9>",
+        "440026: 83 c4 04                     \tadd\tesp, 0x4",
+        "440029: 8d 8d 78 02 00 00            \tlea\tecx, [ebp + 0x278]",
+        "44002f: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00447e07",
+      "frame_candidate": 705,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "447dff: 8b 4e 70                     \tmov\tecx, dword ptr [esi + 0x70]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00447e02",
+          "args": "0x2c1",
+          "immediate": 705
+        }
+      ],
+      "raw_neighborhood": [
+        "447dd8: 8b 44 24 38                  \tmov\teax, dword ptr [esp + 0x38]",
+        "447ddc: 85 c0                        \ttest\teax, eax",
+        "447dde: 0f 85 39 f7 ff ff            \tjne\t0x44751d <.text+0x4651d>",
+        "447de4: 8b 46 6c                     \tmov\teax, dword ptr [esi + 0x6c]",
+        "447de7: 8b 54 24 10                  \tmov\tedx, dword ptr [esp + 0x10]",
+        "447deb: 85 c0                        \ttest\teax, eax",
+        "447ded: 89 56 5c                     \tmov\tdword ptr [esi + 0x5c], edx",
+        "447df0: 0f 84 99 01 00 00            \tje\t0x447f8f <.text+0x46f8f>",
+        "447df6: 80 38 00                     \tcmp\tbyte ptr [eax], 0x0",
+        "447df9: 0f 84 90 01 00 00            \tje\t0x447f8f <.text+0x46f8f>",
+        "447dff: 8b 4e 70                     \tmov\tecx, dword ptr [esi + 0x70]",
+        "447e02: 68 c1 02 00 00               \tpush\t0x2c1"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044b3cb",
+      "frame_candidate": 167,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44b3b0: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "44b3ba: 8b ce                        \tmov\tecx, esi",
+        "44b3c6: b9 94 59 56 00               \tmov\tecx, 0x565994"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044b3a1",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0044b3c1",
+          "args": "0xa7",
+          "immediate": 167
+        }
+      ],
+      "raw_neighborhood": [
+        "44b39d: 89 4c 24 38                  \tmov\tdword ptr [esp + 0x38], ecx",
+        "44b3a1: 6a 00                        \tpush\t0x0",
+        "44b3a3: 89 42 04                     \tmov\tdword ptr [edx + 0x4], eax",
+        "44b3a6: 8b 44 24 38                  \tmov\teax, dword ptr [esp + 0x38]",
+        "44b3aa: 89 42 08                     \tmov\tdword ptr [edx + 0x8], eax",
+        "44b3ad: 89 4a 0c                     \tmov\tdword ptr [edx + 0xc], ecx",
+        "44b3b0: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "44b3b5: e8 96 2a 01 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "44b3ba: 8b ce                        \tmov\tecx, esi",
+        "44b3bc: e8 bf 08 00 00               \tcall\t0x44bc80 <.text+0x4ac80>",
+        "44b3c1: 68 a7 00 00 00               \tpush\t0xa7",
+        "44b3c6: b9 94 59 56 00               \tmov\tecx, 0x565994"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044b4b6",
+      "frame_candidate": 170,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44b4a2: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "44b4b1: b9 94 59 56 00               \tmov\tecx, 0x565994"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044b493",
+          "args": "0x0",
+          "immediate": 0
+        },
+        {
+          "va": "0x0044b4ac",
+          "args": "0xaa",
+          "immediate": 170
+        }
+      ],
+      "raw_neighborhood": [
+        "44b48a: 83 c1 11                     \tadd\tecx, 0x11",
+        "44b48d: 89 3a                        \tmov\tdword ptr [edx], edi",
+        "44b48f: 89 4c 24 38                  \tmov\tdword ptr [esp + 0x38], ecx",
+        "44b493: 6a 00                        \tpush\t0x0",
+        "44b495: 89 42 04                     \tmov\tdword ptr [edx + 0x4], eax",
+        "44b498: 8b 44 24 38                  \tmov\teax, dword ptr [esp + 0x38]",
+        "44b49c: 89 42 08                     \tmov\tdword ptr [edx + 0x8], eax",
+        "44b49f: 89 4a 0c                     \tmov\tdword ptr [edx + 0xc], ecx",
+        "44b4a2: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "44b4a7: e8 a4 29 01 00               \tcall\t0x45de50 <.text+0x5ce50>",
+        "44b4ac: 68 aa 00 00 00               \tpush\t0xaa",
+        "44b4b1: b9 94 59 56 00               \tmov\tecx, 0x565994"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044b57b",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44b569: 8b 0d 20 77 77 00            \tmov\tecx, dword ptr [0x777720]",
+        "44b576: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044b560",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b561",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b575",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44b55d: 90                           \tnop",
+        "44b55e: 90                           \tnop",
+        "44b55f: 90                           \tnop",
+        "44b560: 51                           \tpush\tecx",
+        "44b561: 56                           \tpush\tesi",
+        "44b562: 8b f1                        \tmov\tesi, ecx",
+        "44b564: 8b 06                        \tmov\teax, dword ptr [esi]",
+        "44b566: ff 50 0c                     \tcall\tdword ptr [eax + 0xc]",
+        "44b569: 8b 0d 20 77 77 00            \tmov\tecx, dword ptr [0x777720]",
+        "44b56f: 81 e1 ff 00 00 00            \tand\tecx, 0xff",
+        "44b575: 51                           \tpush\tecx",
+        "44b576: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044b65d",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44b648: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044b65c",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44b638: 80 f9 0a                     \tcmp\tcl, 0xa",
+        "44b63b: 77 70                        \tja\t0x44b6ad <.text+0x4a6ad>",
+        "44b63d: a0 20 77 77 00               \tmov\tal, byte ptr [0x777720]",
+        "44b642: b2 0a                        \tmov\tdl, 0xa",
+        "44b644: f6 ea                        \timul\tdl",
+        "44b646: 02 c1                        \tadd\tal, cl",
+        "44b648: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4",
+        "44b64d: 04 3b                        \tadd\tal, 0x3b",
+        "44b64f: 88 44 24 04                  \tmov\tbyte ptr [esp + 0x4], al",
+        "44b653: 8b 44 24 04                  \tmov\teax, dword ptr [esp + 0x4]",
+        "44b657: 25 ff 00 00 00               \tand\teax, 0xff",
+        "44b65c: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044d661",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44d637: 8b 4c 24 18                  \tmov\tecx, dword ptr [esp + 0x18]",
+        "44d65b: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044d660",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44d631: 8d 9f 64 06 00 00            \tlea\tebx, [edi + 0x664]",
+        "44d637: 8b 4c 24 18                  \tmov\tecx, dword ptr [esp + 0x18]",
+        "44d63b: 8b 87 00 07 00 00            \tmov\teax, dword ptr [edi + 0x700]",
+        "44d641: 3b c8                        \tcmp\tecx, eax",
+        "44d643: 0f 8c b0 04 00 00            \tjl\t0x44daf9 <.text+0x4caf9>",
+        "44d649: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "44d64d: 8b 72 04                     \tmov\tesi, dword ptr [edx + 0x4]",
+        "44d650: 85 f6                        \ttest\tesi, esi",
+        "44d652: 0f 84 90 04 00 00            \tje\t0x44dae8 <.text+0x4cae8>",
+        "44d658: 8b 46 30                     \tmov\teax, dword ptr [esi + 0x30]",
+        "44d65b: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8",
+        "44d660: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044dbb7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44db9c: 8b 4c 24 24                  \tmov\tecx, dword ptr [esp + 0x24]",
+        "44dbad: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044dbb6",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44db8e: 8d 04 40                     \tlea\teax, [eax + 2*eax]",
+        "44db91: c1 e0 02                     \tshl\teax, 0x2",
+        "44db94: 3b c8                        \tcmp\tecx, eax",
+        "44db96: 0f 8c 7b 02 00 00            \tjl\t0x44de17 <.text+0x4ce17>",
+        "44db9c: 8b 4c 24 24                  \tmov\tecx, dword ptr [esp + 0x24]",
+        "44dba0: 8b 69 04                     \tmov\tebp, dword ptr [ecx + 0x4]",
+        "44dba3: 85 ed                        \ttest\tebp, ebp",
+        "44dba5: 0f 84 5b 02 00 00            \tje\t0x44de06 <.text+0x4ce06>",
+        "44dbab: 33 d2                        \txor\tedx, edx",
+        "44dbad: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8",
+        "44dbb2: 66 8b 55 28                  \tmov\tdx, word ptr [ebp + 0x28]",
+        "44dbb6: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0044e062",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "44e05c: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x0044e046",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e047",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e04a",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e061",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44e03f: 90                           \tnop",
+        "44e040: 81 ec 34 01 00 00            \tsub\tesp, 0x134",
+        "44e046: 53                           \tpush\tebx",
+        "44e047: 56                           \tpush\tesi",
+        "44e048: 8b f1                        \tmov\tesi, ecx",
+        "44e04a: 57                           \tpush\tedi",
+        "44e04b: 8b 86 f0 07 00 00            \tmov\teax, dword ptr [esi + 0x7f0]",
+        "44e051: 85 c0                        \ttest\teax, eax",
+        "44e053: 0f 84 f6 01 00 00            \tje\t0x44e24f <.text+0x4d24f>",
+        "44e059: 8b 40 30                     \tmov\teax, dword ptr [eax + 0x30]",
+        "44e05c: b9 e8 b0 56 00               \tmov\tecx, 0x56b0e8",
+        "44e061: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0045054c",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "450547: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00450533",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00450534",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x00450535",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00450538",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00450546",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "450530: 83 ec 3c                     \tsub\tesp, 0x3c",
+        "450533: 53                           \tpush\tebx",
+        "450534: 55                           \tpush\tebp",
+        "450535: 56                           \tpush\tesi",
+        "450536: 8b f1                        \tmov\tesi, ecx",
+        "450538: 57                           \tpush\tedi",
+        "450539: 8b 06                        \tmov\teax, dword ptr [esi]",
+        "45053b: ff 50 0c                     \tcall\tdword ptr [eax + 0xc]",
+        "45053e: 33 c9                        \txor\tecx, ecx",
+        "450540: 8a 8e 51 05 00 00            \tmov\tcl, byte ptr [esi + 0x551]",
+        "450546: 51                           \tpush\tecx",
+        "450547: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00450629",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "450614: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00450628",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "450603: 80 f9 0a                     \tcmp\tcl, 0xa",
+        "450606: 77 71                        \tja\t0x450679 <.text+0x4f679>",
+        "450608: 8a 86 51 05 00 00            \tmov\tal, byte ptr [esi + 0x551]",
+        "45060e: b2 0a                        \tmov\tdl, 0xa",
+        "450610: f6 ea                        \timul\tdl",
+        "450612: 02 c1                        \tadd\tal, cl",
+        "450614: b9 d4 6d 56 00               \tmov\tecx, 0x566dd4",
+        "450619: 04 3b                        \tadd\tal, 0x3b",
+        "45061b: 88 44 24 10                  \tmov\tbyte ptr [esp + 0x10], al",
+        "45061f: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "450623: 25 ff 00 00 00               \tand\teax, 0xff",
+        "450628: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004545a9",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "454589: 8b 08                        \tmov\tecx, dword ptr [eax]",
+        "45459f: 8b 4e 18                     \tmov\tecx, dword ptr [esi + 0x18]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00454592",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00454593",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004545a8",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "454583: 0f 84 d8 01 00 00            \tje\t0x454761 <.text+0x53761>",
+        "454589: 8b 08                        \tmov\tecx, dword ptr [eax]",
+        "45458b: 8d 94 24 94 00 00 00         \tlea\tedx, [esp + 0x94]",
+        "454592: 52                           \tpush\tedx",
+        "454593: 50                           \tpush\teax",
+        "454594: ff 51 0c                     \tcall\tdword ptr [ecx + 0xc]",
+        "454597: 85 c0                        \ttest\teax, eax",
+        "454599: 0f 8c c2 01 00 00            \tjl\t0x454761 <.text+0x53761>",
+        "45459f: 8b 4e 18                     \tmov\tecx, dword ptr [esi + 0x18]",
+        "4545a2: 33 c0                        \txor\teax, eax",
+        "4545a4: 66 8b 46 14                  \tmov\tax, word ptr [esi + 0x14]",
+        "4545a8: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00454ced",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "454cda: 8b 4d 04                     \tmov\tecx, dword ptr [ebp + 0x4]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00454ce0",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "454cc5: 8b 7c 24 1c                  \tmov\tedi, dword ptr [esp + 0x1c]",
+        "454cc9: 8b 44 24 20                  \tmov\teax, dword ptr [esp + 0x20]",
+        "454ccd: 81 e7 ff ff 00 00            \tand\tedi, 0xffff",
+        "454cd3: 8b e9                        \tmov\tebp, ecx",
+        "454cd5: 25 ff ff 00 00               \tand\teax, 0xffff",
+        "454cda: 8b 4d 04                     \tmov\tecx, dword ptr [ebp + 0x4]",
+        "454cdd: 8d 1c ff                     \tlea\tebx, [edi + 8*edi]",
+        "454ce0: 50                           \tpush\teax",
+        "454ce1: 89 44 24 14                  \tmov\tdword ptr [esp + 0x14], eax",
+        "454ce5: 8d 1c db                     \tlea\tebx, [ebx + 8*ebx]",
+        "454ce8: c1 e3 02                     \tshl\tebx, 0x2",
+        "454ceb: 03 cb                        \tadd\tecx, ebx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00455b69",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "455b62: 8b 8e ec 20 00 00            \tmov\tecx, dword ptr [esi + 0x20ec]"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00455b50",
+          "args": "esi",
+          "immediate": null
+        },
+        {
+          "va": "0x00455b68",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "455b4c: 90                           \tnop",
+        "455b4d: 90                           \tnop",
+        "455b4e: 90                           \tnop",
+        "455b4f: 90                           \tnop",
+        "455b50: 56                           \tpush\tesi",
+        "455b51: 8b f1                        \tmov\tesi, ecx",
+        "455b53: 8b 46 24                     \tmov\teax, dword ptr [esi + 0x24]",
+        "455b56: 85 c0                        \ttest\teax, eax",
+        "455b58: 0f 84 98 00 00 00            \tje\t0x455bf6 <.text+0x54bf6>",
+        "455b5e: 8b 44 24 08                  \tmov\teax, dword ptr [esp + 0x8]",
+        "455b62: 8b 8e ec 20 00 00            \tmov\tecx, dword ptr [esi + 0x20ec]",
+        "455b68: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004577e3",
+      "frame_candidate": 50,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "4577c5: b9 30 b1 8a 00               \tmov\tecx, 0x8ab130"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004577be",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x004577c0",
+          "args": "0x47d624",
+          "immediate": 4707876
+        },
+        {
+          "va": "0x004577e1",
+          "args": "0x32",
+          "immediate": 50
+        }
+      ],
+      "raw_neighborhood": [
+        "4577af: 8b c1                        \tmov\teax, ecx",
+        "4577b1: 89 8f 64 11 00 00            \tmov\tdword ptr [edi + 0x1164], ecx",
+        "4577b7: 3d e8 03 00 00               \tcmp\teax, 0x3e8",
+        "4577bc: 76 1d                        \tjbe\t0x4577db <.text+0x567db>",
+        "4577be: 6a 01                        \tpush\t0x1",
+        "4577c0: 68 24 d6 47 00               \tpush\t0x47d624",
+        "4577c5: b9 30 b1 8a 00               \tmov\tecx, 0x8ab130",
+        "4577ca: e8 c1 3b 00 00               \tcall\t0x45b390 <.text+0x5a390>",
+        "4577cf: 89 9f 60 11 00 00            \tmov\tdword ptr [edi + 0x1160], ebx",
+        "4577d5: 89 9f 64 11 00 00            \tmov\tdword ptr [edi + 0x1164], ebx",
+        "4577db: 8d 8f 4c 01 00 00            \tlea\tecx, [edi + 0x14c]",
+        "4577e1: 6a 32                        \tpush\t0x32"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x004578a7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457884: 8b cf                        \tmov\tecx, edi",
+        "4578a1: 8b cd                        \tmov\tecx, ebp"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457883",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x004578a6",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457883: 53                           \tpush\tebx",
+        "457884: 8b cf                        \tmov\tecx, edi",
+        "457886: e8 95 12 00 00               \tcall\t0x458b20 <.text+0x57b20>",
+        "45788b: eb 08                        \tjmp\t0x457895 <.text+0x56895>",
+        "45788d: 66 8b 4d 00                  \tmov\tcx, word ptr [ebp]",
+        "457891: 66 89 4e 02                  \tmov\tword ptr [esi + 0x2], cx",
+        "457895: 33 d2                        \txor\tedx, edx",
+        "457897: 8d af 4c 01 00 00            \tlea\tebp, [edi + 0x14c]",
+        "45789d: 66 8b 56 02                  \tmov\tdx, word ptr [esi + 0x2]",
+        "4578a1: 8b cd                        \tmov\tecx, ebp",
+        "4578a3: 83 c2 14                     \tadd\tedx, 0x14",
+        "4578a6: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457903",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "4578e9: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457901: 8b cd                        \tmov\tecx, ebp"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x004578ee",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004578f4",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457900",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4578e3: 0f bf 40 04                  \tmovsx\teax, word ptr [eax + 0x4]",
+        "4578e7: 03 d1                        \tadd\tedx, ecx",
+        "4578e9: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "4578ee: 52                           \tpush\tedx",
+        "4578ef: 8b 56 f8                     \tmov\tedx, dword ptr [esi - 0x8]",
+        "4578f2: 03 c2                        \tadd\teax, edx",
+        "4578f4: 50                           \tpush\teax",
+        "4578f5: e8 b6 93 00 00               \tcall\t0x460cb0 <.text+0x5fcb0>",
+        "4578fa: 33 c9                        \txor\tecx, ecx",
+        "4578fc: 66 8b 4e 02                  \tmov\tcx, word ptr [esi + 0x2]",
+        "457900: 51                           \tpush\tecx",
+        "457901: 8b cd                        \tmov\tecx, ebp"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x0045798e",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457974: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457970",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x00457971",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457972",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457973",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457987",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "45796d: 0f bf 00                     \tmovsx\teax, word ptr [eax]",
+        "457970: 55                           \tpush\tebp",
+        "457971: 50                           \tpush\teax",
+        "457972: 52                           \tpush\tedx",
+        "457973: 51                           \tpush\tecx",
+        "457974: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457979: e8 62 cc 00 00               \tcall\t0x4645e0 <.text+0x635e0>",
+        "45797e: 33 c9                        \txor\tecx, ecx",
+        "457980: 66 8b 4e 02                  \tmov\tcx, word ptr [esi + 0x2]",
+        "457984: 83 c1 28                     \tadd\tecx, 0x28",
+        "457987: 51                           \tpush\tecx",
+        "457988: 8d 8f 4c 01 00 00            \tlea\tecx, [edi + 0x14c]"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457b0b",
+      "frame_candidate": 80,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "457aed: b9 30 b1 8a 00               \tmov\tecx, 0x8ab130"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457ae6",
+          "args": "0x1",
+          "immediate": 1
+        },
+        {
+          "va": "0x00457ae8",
+          "args": "0x47d690",
+          "immediate": 4707984
+        },
+        {
+          "va": "0x00457b09",
+          "args": "0x50",
+          "immediate": 80
+        }
+      ],
+      "raw_neighborhood": [
+        "457ad7: 8b c1                        \tmov\teax, ecx",
+        "457ad9: 89 8b 64 11 00 00            \tmov\tdword ptr [ebx + 0x1164], ecx",
+        "457adf: 3d e8 03 00 00               \tcmp\teax, 0x3e8",
+        "457ae4: 76 1d                        \tjbe\t0x457b03 <.text+0x56b03>",
+        "457ae6: 6a 01                        \tpush\t0x1",
+        "457ae8: 68 90 d6 47 00               \tpush\t0x47d690",
+        "457aed: b9 30 b1 8a 00               \tmov\tecx, 0x8ab130",
+        "457af2: e8 99 38 00 00               \tcall\t0x45b390 <.text+0x5a390>",
+        "457af7: 89 ab 60 11 00 00            \tmov\tdword ptr [ebx + 0x1160], ebp",
+        "457afd: 89 ab 64 11 00 00            \tmov\tdword ptr [ebx + 0x1164], ebp",
+        "457b03: 8d 8b 4c 01 00 00            \tlea\tecx, [ebx + 0x14c]",
+        "457b09: 6a 50                        \tpush\t0x50"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457be7",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457be1: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457be6",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457bbf: e8 ac 0e 00 00               \tcall\t0x458a70 <.text+0x57a70>",
+        "457bc4: 66 8b 4e fe                  \tmov\tcx, word ptr [esi - 0x2]",
+        "457bc8: 66 3b 4f 02                  \tcmp\tcx, word ptr [edi + 0x2]",
+        "457bcc: 76 07                        \tjbe\t0x457bd5 <.text+0x56bd5>",
+        "457bce: 66 8b 17                     \tmov\tdx, word ptr [edi]",
+        "457bd1: 66 89 56 fe                  \tmov\tword ptr [esi - 0x2], dx",
+        "457bd5: 33 c0                        \txor\teax, eax",
+        "457bd7: 8d bb 4c 01 00 00            \tlea\tedi, [ebx + 0x14c]",
+        "457bdd: 66 8b 46 fe                  \tmov\tax, word ptr [esi - 0x2]",
+        "457be1: 8b cf                        \tmov\tecx, edi",
+        "457be3: 83 c0 14                     \tadd\teax, 0x14",
+        "457be6: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457c4b",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457c29: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457c49: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457c2e",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457c34",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457c48",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457c29: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457c2e: 52                           \tpush\tedx",
+        "457c2f: 8b 56 f4                     \tmov\tedx, dword ptr [esi - 0xc]",
+        "457c32: 03 c2                        \tadd\teax, edx",
+        "457c34: 50                           \tpush\teax",
+        "457c35: e8 76 90 00 00               \tcall\t0x460cb0 <.text+0x5fcb0>",
+        "457c3a: 39 ab 88 14 00 00            \tcmp\tdword ptr [ebx + 0x1488], ebp",
+        "457c40: 75 56                        \tjne\t0x457c98 <.text+0x56c98>",
+        "457c42: 33 c9                        \txor\tecx, ecx",
+        "457c44: 66 8b 4e fe                  \tmov\tcx, word ptr [esi - 0x2]",
+        "457c48: 51                           \tpush\tecx",
+        "457c49: 8b cf                        \tmov\tecx, edi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457ca3",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457c86: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "457c8b: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457ca1: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457c85",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457c90",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457ca0",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457c85: 51                           \tpush\tecx",
+        "457c86: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "457c89: 03 d1                        \tadd\tedx, ecx",
+        "457c8b: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457c90: 52                           \tpush\tedx",
+        "457c91: e8 ba 80 00 00               \tcall\t0x45fd50 <.text+0x5ed50>",
+        "457c96: eb 58                        \tjmp\t0x457cf0 <.text+0x56cf0>",
+        "457c98: 8b 46 18                     \tmov\teax, dword ptr [esi + 0x18]",
+        "457c9b: 33 c9                        \txor\tecx, ecx",
+        "457c9d: 66 8b 08                     \tmov\tcx, word ptr [eax]",
+        "457ca0: 51                           \tpush\tecx",
+        "457ca1: 8b cf                        \tmov\tecx, edi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457d08",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "457ce0: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "457ce5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457cea",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d07",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457ce0: 8b 4e f4                     \tmov\tecx, dword ptr [esi - 0xc]",
+        "457ce3: 03 d1                        \tadd\tedx, ecx",
+        "457ce5: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457cea: 52                           \tpush\tedx",
+        "457ceb: e8 f0 c8 00 00               \tcall\t0x4645e0 <.text+0x635e0>",
+        "457cf0: 39 ab 88 14 00 00            \tcmp\tdword ptr [ebx + 0x1488], ebp",
+        "457cf6: 75 32                        \tjne\t0x457d2a <.text+0x56d2a>",
+        "457cf8: 33 c0                        \txor\teax, eax",
+        "457cfa: 8d 8b 4c 01 00 00            \tlea\tecx, [ebx + 0x14c]",
+        "457d00: 66 8b 46 fe                  \tmov\tax, word ptr [esi - 0x2]",
+        "457d04: 83 c0 28                     \tadd\teax, 0x28",
+        "457d07: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457d41",
+      "frame_candidate": 82,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "457d22: 8b cb                        \tmov\tecx, ebx",
+        "457d3f: 8b ce                        \tmov\tecx, esi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457d1e",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d24",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d3d",
+          "args": "0x52",
+          "immediate": 82
+        }
+      ],
+      "raw_neighborhood": [
+        "457d1e: 52                           \tpush\tedx",
+        "457d1f: 83 c0 28                     \tadd\teax, 0x28",
+        "457d22: 8b cb                        \tmov\tecx, ebx",
+        "457d24: 50                           \tpush\teax",
+        "457d25: e8 e6 f5 ff ff               \tcall\t0x457310 <.text+0x56310>",
+        "457d2a: 45                           \tinc\tebp",
+        "457d2b: 83 c6 40                     \tadd\tesi, 0x40",
+        "457d2e: 83 fd 02                     \tcmp\tebp, 0x2",
+        "457d31: 0f 8c 16 fe ff ff            \tjl\t0x457b4d <.text+0x56b4d>",
+        "457d37: 8d b3 4c 01 00 00            \tlea\tesi, [ebx + 0x14c]",
+        "457d3d: 6a 52                        \tpush\t0x52",
+        "457d3f: 8b ce                        \tmov\tecx, esi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00457d8e",
+      "frame_candidate": 81,
+      "known_ui_frame_candidate": true,
+      "ecx_setup": [
+        "457d80: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457d8c: 8b ce                        \tmov\tecx, esi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00457d64",
+          "args": "0xffff",
+          "immediate": 65535
+        },
+        {
+          "va": "0x00457d69",
+          "args": "0x1e0",
+          "immediate": 480
+        },
+        {
+          "va": "0x00457d6e",
+          "args": "0x280",
+          "immediate": 640
+        },
+        {
+          "va": "0x00457d73",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d74",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d75",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457d76",
+          "args": "0x1b2",
+          "immediate": 434
+        },
+        {
+          "va": "0x00457d7b",
+          "args": "0xc9",
+          "immediate": 201
+        },
+        {
+          "va": "0x00457d8a",
+          "args": "0x51",
+          "immediate": 81
+        }
+      ],
+      "raw_neighborhood": [
+        "457d64: 68 ff ff 00 00               \tpush\t0xffff",
+        "457d69: 68 e0 01 00 00               \tpush\t0x1e0",
+        "457d6e: 68 80 02 00 00               \tpush\t0x280",
+        "457d73: 51                           \tpush\tecx",
+        "457d74: 52                           \tpush\tedx",
+        "457d75: 50                           \tpush\teax",
+        "457d76: 68 b2 01 00 00               \tpush\t0x1b2",
+        "457d7b: 68 c9 00 00 00               \tpush\t0xc9",
+        "457d80: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "457d85: e8 26 8f 00 00               \tcall\t0x460cb0 <.text+0x5fcb0>",
+        "457d8a: 6a 51                        \tpush\t0x51",
+        "457d8c: 8b ce                        \tmov\tecx, esi"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    },
+    {
+      "source": "Mir3.exe",
+      "helper_va": "0x466130",
+      "call_va": "0x00458ae0",
+      "frame_candidate": null,
+      "known_ui_frame_candidate": false,
+      "ecx_setup": [
+        "458ac5: 8b cf                        \tmov\tecx, edi"
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00458ac2",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00458ac3",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00458ac4",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00458adf",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "458ac2: 52                           \tpush\tedx",
+        "458ac3: 50                           \tpush\teax",
+        "458ac4: 51                           \tpush\tecx",
+        "458ac5: 8b cf                        \tmov\tecx, edi",
+        "458ac7: e8 f4 03 00 00               \tcall\t0x458ec0 <.text+0x57ec0>",
+        "458acc: 85 c0                        \ttest\teax, eax",
+        "458ace: 89 46 3c                     \tmov\tdword ptr [esi + 0x3c], eax",
+        "458ad1: 74 47                        \tje\t0x458b1a <.text+0x57b1a>",
+        "458ad3: 33 d2                        \txor\tedx, edx",
+        "458ad5: 8d 8f 4c 01 00 00            \tlea\tecx, [edi + 0x14c]",
+        "458adb: 66 8b 56 22                  \tmov\tdx, word ptr [esi + 0x22]",
+        "458adf: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-resource-select-candidate"
+    }
+  ]
+}

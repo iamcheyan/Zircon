@@ -36,6 +36,12 @@ public partial class MouseWalker : Node2D
     private readonly Func<bool> _turnAllowed;
     private readonly Func<bool> _blockLeftMouse;
     private readonly Func<bool> _blockRightMouse;
+    // 原版 ServerTime 门控: 返回 true = 正在等服务端回包, 本帧不发移动/不判阻挡。
+    private readonly Func<bool> _awaitingServer;
+    // 原版 CanMove 用 User.CurrentLocation(权威格子)做起点; Godot 相机基准 CenterX/Y
+    // 由回包驱动且经 CallDeferred 延迟一帧, 与真实玩家位置有窗口期不同步, 会误判阻挡
+    // (空气墙)。改用权威 _playerLocation 做起点判定。null 时回退到 CenterX/Y。
+    private readonly Func<System.Drawing.Point> _playerCell;
 
     // 原版 Globals.MoveTime = 600ms。一段移动完成后才允许下一段；
     // 跑步不是把动画播得更快，而是在相同 6 帧/600ms 内移动 2 格，
@@ -57,7 +63,8 @@ public partial class MouseWalker : Node2D
         Action<MirDirection> sendTurn = null, Func<bool> mouseOverUi = null,
         Func<int, int, bool> cellBlocked = null, Func<bool> movementAllowed = null,
         Func<bool> turnAllowed = null, Func<bool> blockLeftMouse = null,
-        Func<bool> blockRightMouse = null)
+        Func<bool> blockRightMouse = null, Func<bool> awaitingServer = null,
+        Func<System.Drawing.Point> playerCell = null)
     {
         _mapView = mapView;
         _sendMove = sendMove;
@@ -70,6 +77,8 @@ public partial class MouseWalker : Node2D
         _turnAllowed = turnAllowed;
         _blockLeftMouse = blockLeftMouse;
         _blockRightMouse = blockRightMouse;
+        _awaitingServer = awaitingServer;
+        _playerCell = playerCell;
     }
 
     public override void _Process(double delta)
@@ -121,6 +130,8 @@ public partial class MouseWalker : Node2D
         int distance = run ? steps : 1;
         double interval = run ? RunIntervalMs : WalkIntervalMs;
         if (now < _nextSendMs) return;
+        // 原版 AttemptAction: if (Now < ServerTime) return; 一次只发一个移动, 等回包。
+        if (_awaitingServer?.Invoke() == true) return;
 
         MirDirection target = ComputeDirection(mouseWorld);
         // 原版右键在玩家附近只转身，不会向脚下移动。
@@ -200,12 +211,15 @@ public partial class MouseWalker : Node2D
     }
 
     /// <summary>
-    /// 玩家在 CenterX/CenterY, 朝 dir 走 distance 格, 途经任一格阻挡则不可行。
-    /// 复刻原版 CanMove(direction, distance)。
+    /// 玩家朝 dir 走 distance 格, 途经任一格阻挡则不可行。
+    /// 复刻原版 CanMove(direction, distance); 起点用权威 _playerLocation(原版用 User.CurrentLocation)。
     /// </summary>
     private bool CanMove(MirDirection dir, int distance)
     {
-        int px = _mapView.CenterX, py = _mapView.CenterY;
+        // 原版用 User.CurrentLocation(权威格); Godot CenterX/Y 由回包驱动且
+        // 经 CallDeferred 延迟, 与真实位置有窗口期不同步 → 误判空气墙。
+        var cell = _playerCell?.Invoke() ?? new System.Drawing.Point(_mapView.CenterX, _mapView.CenterY);
+        int px = cell.X, py = cell.Y;
         for (int i = 1; i <= distance; i++)
         {
             var p = Functions.Move(new System.Drawing.Point(px, py), dir, i);

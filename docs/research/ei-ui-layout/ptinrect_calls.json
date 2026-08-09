@@ -1,0 +1,2386 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "method": "llvm-objdump x86 disassembly; direct calls through USER32.PtInRect IAT 0x004762B4",
+  "warning": "Most call sites are only candidates until their owning window/control object is traced.",
+  "records": [
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00402e39",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00402e36",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00402e37",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00402e38",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "402e14: 8b 07                        \tmov\teax, dword ptr [edi]",
+        "402e16: 8b cf                        \tmov\tecx, edi",
+        "402e18: ff 50 04                     \tcall\tdword ptr [eax + 0x4]",
+        "402e1b: 81 c7 b4 00 00 00            \tadd\tedi, 0xb4",
+        "402e21: 4d                           \tdec\tebp",
+        "402e22: 75 f0                        \tjne\t0x402e14 <.text+0x1e14>",
+        "402e24: 8b 8e ac 08 00 00            \tmov\tecx, dword ptr [esi + 0x8ac]",
+        "402e2a: 8b 96 a8 08 00 00            \tmov\tedx, dword ptr [esi + 0x8a8]",
+        "402e30: 8d be 6c 0a 00 00            \tlea\tedi, [esi + 0xa6c]",
+        "402e36: 51                           \tpush\tecx",
+        "402e37: 52                           \tpush\tedx",
+        "402e38: 57                           \tpush\tedi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004032b4",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004032b1",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004032b2",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004032b3",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "403285: 8b 75 04                     \tmov\tesi, dword ptr [ebp + 0x4]",
+        "403288: 85 f6                        \ttest\tesi, esi",
+        "40328a: 0f 84 ae 02 00 00            \tje\t0x40353e <.text+0x253e>",
+        "403290: 8b 87 64 0a 00 00            \tmov\teax, dword ptr [edi + 0xa64]",
+        "403296: 83 f8 ff                     \tcmp\teax, -0x1",
+        "403299: 0f 85 51 01 00 00            \tjne\t0x4033f0 <.text+0x23f0>",
+        "40329f: 8b 87 ac 08 00 00            \tmov\teax, dword ptr [edi + 0x8ac]",
+        "4032a5: 8b 8f a8 08 00 00            \tmov\tecx, dword ptr [edi + 0x8a8]",
+        "4032ab: 8d 9e 08 02 00 00            \tlea\tebx, [esi + 0x208]",
+        "4032b1: 50                           \tpush\teax",
+        "4032b2: 51                           \tpush\tecx",
+        "4032b3: 53                           \tpush\tebx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00403a67",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00403a5f",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00403a65",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x00403a66",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "403a4a: 33 ff                        \txor\tedi, edi",
+        "403a4c: 85 f6                        \ttest\tesi, esi",
+        "403a4e: 74 29                        \tje\t0x403a79 <.text+0x2a79>",
+        "403a50: 8b 5c 24 18                  \tmov\tebx, dword ptr [esp + 0x18]",
+        "403a54: 8b 6c 24 14                  \tmov\tebp, dword ptr [esp + 0x14]",
+        "403a58: 8b 46 04                     \tmov\teax, dword ptr [esi + 0x4]",
+        "403a5b: 85 c0                        \ttest\teax, eax",
+        "403a5d: 74 12                        \tje\t0x403a71 <.text+0x2a71>",
+        "403a5f: 53                           \tpush\tebx",
+        "403a60: 05 08 02 00 00               \tadd\teax, 0x208",
+        "403a65: 55                           \tpush\tebp",
+        "403a66: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004118e5",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004118de",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004118df",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004118e0",
+          "args": "0x8ab7f0",
+          "immediate": 9091056
+        }
+      ],
+      "raw_neighborhood": [
+        "4118bf: 3c 1d                        \tcmp\tal, 0x1d",
+        "4118c1: 74 08                        \tje\t0x4118cb <.text+0x108cb>",
+        "4118c3: 3c 07                        \tcmp\tal, 0x7",
+        "4118c5: 0f 85 c1 01 00 00            \tjne\t0x411a8c <.text+0x10a8c>",
+        "4118cb: 8d 4c 24 10                  \tlea\tecx, [esp + 0x10]",
+        "4118cf: 51                           \tpush\tecx",
+        "4118d0: ff 15 40 62 47 00            \tcall\tdword ptr [0x476240]",
+        "4118d6: 8b 54 24 14                  \tmov\tedx, dword ptr [esp + 0x14]",
+        "4118da: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "4118de: 52                           \tpush\tedx",
+        "4118df: 50                           \tpush\teax",
+        "4118e0: 68 f0 b7 8a 00               \tpush\t0x8ab7f0"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00411e31",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00411e2a",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00411e2b",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00411e2c",
+          "args": "0x8ab7f0",
+          "immediate": 9091056
+        }
+      ],
+      "raw_neighborhood": [
+        "411e0b: 3c 1d                        \tcmp\tal, 0x1d",
+        "411e0d: 74 08                        \tje\t0x411e17 <.text+0x10e17>",
+        "411e0f: 3c 07                        \tcmp\tal, 0x7",
+        "411e11: 0f 85 4e 02 00 00            \tjne\t0x412065 <.text+0x11065>",
+        "411e17: 8d 4c 24 10                  \tlea\tecx, [esp + 0x10]",
+        "411e1b: 51                           \tpush\tecx",
+        "411e1c: ff 15 40 62 47 00            \tcall\tdword ptr [0x476240]",
+        "411e22: 8b 54 24 14                  \tmov\tedx, dword ptr [esp + 0x14]",
+        "411e26: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "411e2a: 52                           \tpush\tedx",
+        "411e2b: 50                           \tpush\teax",
+        "411e2c: 68 f0 b7 8a 00               \tpush\t0x8ab7f0"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00412397",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00412390",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00412391",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00412392",
+          "args": "0x724ffc",
+          "immediate": 7491580
+        }
+      ],
+      "raw_neighborhood": [
+        "41237c: 83 f8 ff                     \tcmp\teax, -0x1",
+        "41237f: 74 0f                        \tje\t0x412390 <.text+0x11390>",
+        "412381: 5f                           \tpop\tedi",
+        "412382: 5e                           \tpop\tesi",
+        "412383: 5d                           \tpop\tebp",
+        "412384: b8 01 00 00 00               \tmov\teax, 0x1",
+        "412389: 5b                           \tpop\tebx",
+        "41238a: 83 c4 14                     \tadd\tesp, 0x14",
+        "41238d: c2 14 00                     \tret\t0x14",
+        "412390: 57                           \tpush\tedi",
+        "412391: 53                           \tpush\tebx",
+        "412392: 68 fc 4f 72 00               \tpush\t0x724ffc"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004142ed",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004142ea",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004142eb",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004142ec",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4142c8: 8b e9                        \tmov\tebp, ecx",
+        "4142ca: 56                           \tpush\tesi",
+        "4142cb: 57                           \tpush\tedi",
+        "4142cc: 33 db                        \txor\tebx, ebx",
+        "4142ce: 8d 85 20 07 00 00            \tlea\teax, [ebp + 0x720]",
+        "4142d4: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "4142d8: 8b 8c 24 20 01 00 00         \tmov\tecx, dword ptr [esp + 0x120]",
+        "4142df: 8b 94 24 1c 01 00 00         \tmov\tedx, dword ptr [esp + 0x11c]",
+        "4142e6: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "4142ea: 51                           \tpush\tecx",
+        "4142eb: 52                           \tpush\tedx",
+        "4142ec: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004167b3",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004167ad",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004167b1",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004167b2",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "416791: a1 c4 43 72 00               \tmov\teax, dword ptr [0x7243c4]",
+        "416796: 56                           \tpush\tesi",
+        "416797: 57                           \tpush\tedi",
+        "416798: 8b f9                        \tmov\tedi, ecx",
+        "41679a: 85 c0                        \ttest\teax, eax",
+        "41679c: 0f 85 8a 00 00 00            \tjne\t0x41682c <.text+0x1582c>",
+        "4167a2: a1 c4 a1 7d 00               \tmov\teax, dword ptr [0x7da1c4]",
+        "4167a7: 8b 0d c0 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c0]",
+        "4167ad: 50                           \tpush\teax",
+        "4167ae: 8d 57 5c                     \tlea\tedx, [edi + 0x5c]",
+        "4167b1: 51                           \tpush\tecx",
+        "4167b2: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041688a",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00416883",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00416888",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00416889",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "416868: 50                           \tpush\teax",
+        "416869: 81 c1 fd 00 00 00            \tadd\tecx, 0xfd",
+        "41686f: 8d 44 24 20                  \tlea\teax, [esp + 0x20]",
+        "416873: 51                           \tpush\tecx",
+        "416874: 50                           \tpush\teax",
+        "416875: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "41687b: 8b 4c 24 30                  \tmov\tecx, dword ptr [esp + 0x30]",
+        "41687f: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "416883: 51                           \tpush\tecx",
+        "416884: 8d 44 24 18                  \tlea\teax, [esp + 0x18]",
+        "416888: 52                           \tpush\tedx",
+        "416889: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004168ef",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004168e8",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004168ed",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004168ee",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4168d2: 52                           \tpush\tedx",
+        "4168d3: 51                           \tpush\tecx",
+        "4168d4: 50                           \tpush\teax",
+        "4168d5: 8d 44 24 24                  \tlea\teax, [esp + 0x24]",
+        "4168d9: 50                           \tpush\teax",
+        "4168da: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "4168e0: 8b 4c 24 30                  \tmov\tecx, dword ptr [esp + 0x30]",
+        "4168e4: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "4168e8: 51                           \tpush\tecx",
+        "4168e9: 8d 44 24 18                  \tlea\teax, [esp + 0x18]",
+        "4168ed: 52                           \tpush\tedx",
+        "4168ee: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00416f70",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00416f69",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00416f6e",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00416f6f",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "416f54: 33 c0                        \txor\teax, eax",
+        "416f56: eb 05                        \tjmp\t0x416f5d <.text+0x15f5d>",
+        "416f58: 1b c0                        \tsbb\teax, eax",
+        "416f5a: 83 d8 ff                     \tsbb\teax, -0x1",
+        "416f5d: 85 c0                        \ttest\teax, eax",
+        "416f5f: 75 53                        \tjne\t0x416fb4 <.text+0x15fb4>",
+        "416f61: 8b 44 24 30                  \tmov\teax, dword ptr [esp + 0x30]",
+        "416f65: 8b 4c 24 2c                  \tmov\tecx, dword ptr [esp + 0x2c]",
+        "416f69: 50                           \tpush\teax",
+        "416f6a: 8d 54 24 18                  \tlea\tedx, [esp + 0x18]",
+        "416f6e: 51                           \tpush\tecx",
+        "416f6f: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041708e",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00417088",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041708c",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041708d",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "417068: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "41706c: 81 c3 b4 00 00 00            \tadd\tebx, 0xb4",
+        "417072: 40                           \tinc\teax",
+        "417073: 83 f8 03                     \tcmp\teax, 0x3",
+        "417076: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "41707a: 7c db                        \tjl\t0x417057 <.text+0x16057>",
+        "41707c: 8b 0d c4 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c4]",
+        "417082: 8b 15 c0 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c0]",
+        "417088: 51                           \tpush\tecx",
+        "417089: 8d 46 5c                     \tlea\teax, [esi + 0x5c]",
+        "41708c: 52                           \tpush\tedx",
+        "41708d: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004172d4",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004172c8",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004172d2",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004172d3",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4172bc: 90                           \tnop",
+        "4172bd: 90                           \tnop",
+        "4172be: 90                           \tnop",
+        "4172bf: 90                           \tnop",
+        "4172c0: a1 c4 a1 7d 00               \tmov\teax, dword ptr [0x7da1c4]",
+        "4172c5: 56                           \tpush\tesi",
+        "4172c6: 8b f1                        \tmov\tesi, ecx",
+        "4172c8: 50                           \tpush\teax",
+        "4172c9: 8b 0d c0 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c0]",
+        "4172cf: 8d 56 5c                     \tlea\tedx, [esi + 0x5c]",
+        "4172d2: 51                           \tpush\tecx",
+        "4172d3: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00417314",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00417308",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00417312",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00417313",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4172fc: 90                           \tnop",
+        "4172fd: 90                           \tnop",
+        "4172fe: 90                           \tnop",
+        "4172ff: 90                           \tnop",
+        "417300: a1 c4 a1 7d 00               \tmov\teax, dword ptr [0x7da1c4]",
+        "417305: 56                           \tpush\tesi",
+        "417306: 8b f1                        \tmov\tesi, ecx",
+        "417308: 50                           \tpush\teax",
+        "417309: 8b 0d c0 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c0]",
+        "41730f: 8d 56 5c                     \tlea\tedx, [esi + 0x5c]",
+        "417312: 51                           \tpush\tecx",
+        "417313: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00417791",
+      "known_role": "button-hover-or-state-update",
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00417787",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0041778f",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00417790",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41777c: 90                           \tnop",
+        "41777d: 90                           \tnop",
+        "41777e: 90                           \tnop",
+        "41777f: 90                           \tnop",
+        "417780: 8b 44 24 08                  \tmov\teax, dword ptr [esp + 0x8]",
+        "417784: 56                           \tpush\tesi",
+        "417785: 8b f1                        \tmov\tesi, ecx",
+        "417787: 50                           \tpush\teax",
+        "417788: 8b 4c 24 0c                  \tmov\tecx, dword ptr [esp + 0xc]",
+        "41778c: 8d 56 04                     \tlea\tedx, [esi + 0x4]",
+        "41778f: 51                           \tpush\tecx",
+        "417790: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004177d1",
+      "known_role": "button-click-test",
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004177c7",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x004177cf",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004177d0",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4177bc: 90                           \tnop",
+        "4177bd: 90                           \tnop",
+        "4177be: 90                           \tnop",
+        "4177bf: 90                           \tnop",
+        "4177c0: 8b 44 24 08                  \tmov\teax, dword ptr [esp + 0x8]",
+        "4177c4: 56                           \tpush\tesi",
+        "4177c5: 8b f1                        \tmov\tesi, ecx",
+        "4177c7: 50                           \tpush\teax",
+        "4177c8: 8b 4c 24 0c                  \tmov\tecx, dword ptr [esp + 0xc]",
+        "4177cc: 8d 56 04                     \tlea\tedx, [esi + 0x4]",
+        "4177cf: 51                           \tpush\tecx",
+        "4177d0: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00417802",
+      "known_role": "button-secondary-click-test",
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004177fc",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00417800",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00417801",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4177e8: 33 c0                        \txor\teax, eax",
+        "4177ea: 5e                           \tpop\tesi",
+        "4177eb: c2 08 00                     \tret\t0x8",
+        "4177ee: 90                           \tnop",
+        "4177ef: 90                           \tnop",
+        "4177f0: 8b 44 24 08                  \tmov\teax, dword ptr [esp + 0x8]",
+        "4177f4: 8b 54 24 04                  \tmov\tedx, dword ptr [esp + 0x4]",
+        "4177f8: c6 41 25 00                  \tmov\tbyte ptr [ecx + 0x25], 0x0",
+        "4177fc: 50                           \tpush\teax",
+        "4177fd: 83 c1 04                     \tadd\tecx, 0x4",
+        "417800: 52                           \tpush\tedx",
+        "417801: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00418358",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00418355",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00418356",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00418357",
+          "args": "ebp",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "418332: e8 e9 5b 04 00               \tcall\t0x45df20 <.text+0x5cf20>",
+        "418337: 33 db                        \txor\tebx, ebx",
+        "418339: 8d b7 5c 02 00 00            \tlea\tesi, [edi + 0x25c]",
+        "41833f: 8b 46 d8                     \tmov\teax, dword ptr [esi - 0x28]",
+        "418342: 85 c0                        \ttest\teax, eax",
+        "418344: 0f 84 85 00 00 00            \tje\t0x4183cf <.text+0x173cf>",
+        "41834a: 8b 44 24 18                  \tmov\teax, dword ptr [esp + 0x18]",
+        "41834e: 8b 4c 24 14                  \tmov\tecx, dword ptr [esp + 0x14]",
+        "418352: 8d 6e e0                     \tlea\tebp, [esi - 0x20]",
+        "418355: 50                           \tpush\teax",
+        "418356: 51                           \tpush\tecx",
+        "418357: 55                           \tpush\tebp"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00419df0",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00419de9",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419dea",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00419def",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "419dcd: 8b 94 24 c0 01 00 00         \tmov\tedx, dword ptr [esp + 0x1c0]",
+        "419dd4: 8b 06                        \tmov\teax, dword ptr [esi]",
+        "419dd6: 51                           \tpush\tecx",
+        "419dd7: 52                           \tpush\tedx",
+        "419dd8: 8b ce                        \tmov\tecx, esi",
+        "419dda: ff 50 1c                     \tcall\tdword ptr [eax + 0x1c]",
+        "419ddd: 8b 8e d0 00 00 00            \tmov\tecx, dword ptr [esi + 0xd0]",
+        "419de3: 8b 86 cc 00 00 00            \tmov\teax, dword ptr [esi + 0xcc]",
+        "419de9: 51                           \tpush\tecx",
+        "419dea: 50                           \tpush\teax",
+        "419deb: 8d 44 24 24                  \tlea\teax, [esp + 0x24]",
+        "419def: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00419f80",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00419f75",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00419f76",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419f7f",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "419f57: 8b 85 44 44 36 00            \tmov\teax, dword ptr [ebp + 0x364444]",
+        "419f5d: 85 c0                        \ttest\teax, eax",
+        "419f5f: 75 4e                        \tjne\t0x419faf <.text+0x18faf>",
+        "419f61: 8b 86 74 1c 06 00            \tmov\teax, dword ptr [esi + 0x61c74]",
+        "419f67: 8b 8d a8 b2 35 00            \tmov\tecx, dword ptr [ebp + 0x35b2a8]",
+        "419f6d: 85 c0                        \ttest\teax, eax",
+        "419f6f: 8b 85 ac b2 35 00            \tmov\teax, dword ptr [ebp + 0x35b2ac]",
+        "419f75: 50                           \tpush\teax",
+        "419f76: 51                           \tpush\tecx",
+        "419f77: 75 19                        \tjne\t0x419f92 <.text+0x18f92>",
+        "419f79: 8d 96 94 00 00 00            \tlea\tedx, [esi + 0x94]",
+        "419f7f: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00419f99",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00419f76",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419f7f",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419f98",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "419f75: 50                           \tpush\teax",
+        "419f76: 51                           \tpush\tecx",
+        "419f77: 75 19                        \tjne\t0x419f92 <.text+0x18f92>",
+        "419f79: 8d 96 94 00 00 00            \tlea\tedx, [esi + 0x94]",
+        "419f7f: 52                           \tpush\tedx",
+        "419f80: ff 15 b4 62 47 00            \tcall\tdword ptr [0x4762b4]",
+        "419f86: 85 c0                        \ttest\teax, eax",
+        "419f88: 74 5a                        \tje\t0x419fe4 <.text+0x18fe4>",
+        "419f8a: 89 b5 44 44 36 00            \tmov\tdword ptr [ebp + 0x364444], esi",
+        "419f90: eb 52                        \tjmp\t0x419fe4 <.text+0x18fe4>",
+        "419f92: 8d 96 a4 00 00 00            \tlea\tedx, [esi + 0xa4]",
+        "419f98: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00419fc4",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00419fbb",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00419fc2",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00419fc3",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "419f99: ff 15 b4 62 47 00            \tcall\tdword ptr [0x4762b4]",
+        "419f9f: 85 c0                        \ttest\teax, eax",
+        "419fa1: 74 41                        \tje\t0x419fe4 <.text+0x18fe4>",
+        "419fa3: 89 74 24 10                  \tmov\tdword ptr [esp + 0x10], esi",
+        "419fa7: 89 b5 44 44 36 00            \tmov\tdword ptr [ebp + 0x364444], esi",
+        "419fad: eb 35                        \tjmp\t0x419fe4 <.text+0x18fe4>",
+        "419faf: 8b 85 ac b2 35 00            \tmov\teax, dword ptr [ebp + 0x35b2ac]",
+        "419fb5: 8b 8d a8 b2 35 00            \tmov\tecx, dword ptr [ebp + 0x35b2a8]",
+        "419fbb: 50                           \tpush\teax",
+        "419fbc: 8d 96 a4 00 00 00            \tlea\tedx, [esi + 0xa4]",
+        "419fc2: 51                           \tpush\tecx",
+        "419fc3: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041a397",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0041a390",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041a391",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0041a396",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41a373: 0f 84 cd 00 00 00            \tje\t0x41a446 <.text+0x19446>",
+        "41a379: eb 04                        \tjmp\t0x41a37f <.text+0x1937f>",
+        "41a37b: 8b 7c 24 10                  \tmov\tedi, dword ptr [esp + 0x10]",
+        "41a37f: 8b 77 04                     \tmov\tesi, dword ptr [edi + 0x4]",
+        "41a382: 85 f6                        \ttest\tesi, esi",
+        "41a384: 0f 84 a5 00 00 00            \tje\t0x41a42f <.text+0x1942f>",
+        "41a38a: 8b 4e 08                     \tmov\tecx, dword ptr [esi + 0x8]",
+        "41a38d: 8b 46 04                     \tmov\teax, dword ptr [esi + 0x4]",
+        "41a390: 51                           \tpush\tecx",
+        "41a391: 50                           \tpush\teax",
+        "41a392: 8d 44 24 24                  \tlea\teax, [esp + 0x24]",
+        "41a396: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041c70c",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0041c6fb",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041c702",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0041c703",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41c6d3: 8b 4c 24 24                  \tmov\tecx, dword ptr [esp + 0x24]",
+        "41c6d7: 3b 9e 4c 88 2f 00            \tcmp\tebx, dword ptr [esi + 0x2f884c]",
+        "41c6dd: 0f 85 8e 00 00 00            \tjne\t0x41c771 <.text+0x1b771>",
+        "41c6e3: 3b 8e 50 88 2f 00            \tcmp\tecx, dword ptr [esi + 0x2f8850]",
+        "41c6e9: 0f 85 82 00 00 00            \tjne\t0x41c771 <.text+0x1b771>",
+        "41c6ef: 8b 96 ac b2 35 00            \tmov\tedx, dword ptr [esi + 0x35b2ac]",
+        "41c6f5: 8b 86 a8 b2 35 00            \tmov\teax, dword ptr [esi + 0x35b2a8]",
+        "41c6fb: 52                           \tpush\tedx",
+        "41c6fc: 8d 8e 14 88 2f 00            \tlea\tecx, [esi + 0x2f8814]",
+        "41c702: 50                           \tpush\teax",
+        "41c703: 51                           \tpush\tecx",
+        "41c704: c7 44 24 1c 00 00 00 00      \tmov\tdword ptr [esp + 0x1c], 0x0"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041d59d",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0041d594",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041d59b",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041d59c",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41d56e: 89 86 b4 b2 35 00            \tmov\tdword ptr [esi + 0x35b2b4], eax",
+        "41d574: 8b 86 a8 b2 35 00            \tmov\teax, dword ptr [esi + 0x35b2a8]",
+        "41d57a: 50                           \tpush\teax",
+        "41d57b: e8 a0 e4 00 00               \tcall\t0x42ba20 <.text+0x2aa20>",
+        "41d580: 85 c0                        \ttest\teax, eax",
+        "41d582: 0f 85 fe 03 00 00            \tjne\t0x41d986 <.text+0x1c986>",
+        "41d588: 8b 8e ac b2 35 00            \tmov\tecx, dword ptr [esi + 0x35b2ac]",
+        "41d58e: 8b 96 a8 b2 35 00            \tmov\tedx, dword ptr [esi + 0x35b2a8]",
+        "41d594: 51                           \tpush\tecx",
+        "41d595: 8d 86 e4 60 2a 00            \tlea\teax, [esi + 0x2a60e4]",
+        "41d59b: 52                           \tpush\tedx",
+        "41d59c: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0041daa5",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0041da9c",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041daa3",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0041daa4",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "41da7b: 52                           \tpush\tedx",
+        "41da7c: 50                           \tpush\teax",
+        "41da7d: 8d 8e 8c 54 2a 00            \tlea\tecx, [esi + 0x2a548c]",
+        "41da83: e8 38 df 00 00               \tcall\t0x42b9c0 <.text+0x2a9c0>",
+        "41da88: 85 c0                        \ttest\teax, eax",
+        "41da8a: 0f 85 e8 00 00 00            \tjne\t0x41db78 <.text+0x1cb78>",
+        "41da90: 8b 8e ac b2 35 00            \tmov\tecx, dword ptr [esi + 0x35b2ac]",
+        "41da96: 8b 96 a8 b2 35 00            \tmov\tedx, dword ptr [esi + 0x35b2a8]",
+        "41da9c: 51                           \tpush\tecx",
+        "41da9d: 8d 86 e4 60 2a 00            \tlea\teax, [esi + 0x2a60e4]",
+        "41daa3: 52                           \tpush\tedx",
+        "41daa4: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042859d",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042859a",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042859b",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042859c",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "428578: 8b e9                        \tmov\tebp, ecx",
+        "42857a: 56                           \tpush\tesi",
+        "42857b: 57                           \tpush\tedi",
+        "42857c: 33 db                        \txor\tebx, ebx",
+        "42857e: 8d 85 a8 0c 00 00            \tlea\teax, [ebp + 0xca8]",
+        "428584: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "428588: 8b 8c 24 20 01 00 00         \tmov\tecx, dword ptr [esp + 0x120]",
+        "42858f: 8b 94 24 1c 01 00 00         \tmov\tedx, dword ptr [esp + 0x11c]",
+        "428596: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "42859a: 51                           \tpush\tecx",
+        "42859b: 52                           \tpush\tedx",
+        "42859c: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00429a5b",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00429a52",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429a59",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429a5a",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "429a37: 52                           \tpush\tedx",
+        "429a38: 83 c1 31                     \tadd\tecx, 0x31",
+        "429a3b: 50                           \tpush\teax",
+        "429a3c: 51                           \tpush\tecx",
+        "429a3d: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429a42: e8 89 58 03 00               \tcall\t0x45f2d0 <.text+0x5e2d0>",
+        "429a47: 8b 15 c4 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c4]",
+        "429a4d: a1 c0 a1 7d 00               \tmov\teax, dword ptr [0x7da1c0]",
+        "429a52: 52                           \tpush\tedx",
+        "429a53: 8d 8f 68 0c 00 00            \tlea\tecx, [edi + 0xc68]",
+        "429a59: 50                           \tpush\teax",
+        "429a5a: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00429a79",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00429a70",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429a77",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429a78",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "429a53: 8d 8f 68 0c 00 00            \tlea\tecx, [edi + 0xc68]",
+        "429a59: 50                           \tpush\teax",
+        "429a5a: 51                           \tpush\tecx",
+        "429a5b: ff 15 b4 62 47 00            \tcall\tdword ptr [0x4762b4]",
+        "429a61: 85 c0                        \ttest\teax, eax",
+        "429a63: 75 22                        \tjne\t0x429a87 <.text+0x28a87>",
+        "429a65: 8b 15 c4 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c4]",
+        "429a6b: a1 c0 a1 7d 00               \tmov\teax, dword ptr [0x7da1c0]",
+        "429a70: 52                           \tpush\tedx",
+        "429a71: 8d 8f 78 0c 00 00            \tlea\tecx, [edi + 0xc78]",
+        "429a77: 50                           \tpush\teax",
+        "429a78: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00429cdf",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00429cd6",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429cdd",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429cde",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "429cbb: 50                           \tpush\teax",
+        "429cbc: 83 c2 6a                     \tadd\tedx, 0x6a",
+        "429cbf: 51                           \tpush\tecx",
+        "429cc0: 52                           \tpush\tedx",
+        "429cc1: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429cc6: e8 05 56 03 00               \tcall\t0x45f2d0 <.text+0x5e2d0>",
+        "429ccb: a1 c4 a1 7d 00               \tmov\teax, dword ptr [0x7da1c4]",
+        "429cd0: 8b 0d c0 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c0]",
+        "429cd6: 50                           \tpush\teax",
+        "429cd7: 8d 97 68 0c 00 00            \tlea\tedx, [edi + 0xc68]",
+        "429cdd: 51                           \tpush\tecx",
+        "429cde: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00429e61",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00429e58",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x00429e5f",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00429e60",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "429e37: 68 a0 50 50 00               \tpush\t0x5050a0",
+        "429e3c: 8d 4c 24 18                  \tlea\tecx, [esp + 0x18]",
+        "429e40: 6a 00                        \tpush\t0x0",
+        "429e42: 51                           \tpush\tecx",
+        "429e43: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "429e48: e8 23 47 03 00               \tcall\t0x45e570 <.text+0x5d570>",
+        "429e4d: 8b 15 c4 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c4]",
+        "429e53: a1 c0 a1 7d 00               \tmov\teax, dword ptr [0x7da1c0]",
+        "429e58: 52                           \tpush\tedx",
+        "429e59: 8d 8f 78 0c 00 00            \tlea\tecx, [edi + 0xc78]",
+        "429e5f: 50                           \tpush\teax",
+        "429e60: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042a057",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042a04e",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a055",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a056",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42a02c: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a031: 52                           \tpush\tedx",
+        "42a032: 50                           \tpush\teax",
+        "42a033: 68 4e 02 00 00               \tpush\t0x24e",
+        "42a038: 68 ee 00 00 00               \tpush\t0xee",
+        "42a03d: e8 8e 52 03 00               \tcall\t0x45f2d0 <.text+0x5e2d0>",
+        "42a042: 8b 0d c4 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c4]",
+        "42a048: 8b 15 c0 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c0]",
+        "42a04e: 51                           \tpush\tecx",
+        "42a04f: 8d 87 88 0c 00 00            \tlea\teax, [edi + 0xc88]",
+        "42a055: 52                           \tpush\tedx",
+        "42a056: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042a262",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042a259",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a260",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042a261",
+          "args": "edi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42a23b: 51                           \tpush\tecx",
+        "42a23c: 05 d1 00 00 00               \tadd\teax, 0xd1",
+        "42a241: 52                           \tpush\tedx",
+        "42a242: 50                           \tpush\teax",
+        "42a243: b9 a8 b7 8a 00               \tmov\tecx, 0x8ab7a8",
+        "42a248: e8 83 50 03 00               \tcall\t0x45f2d0 <.text+0x5e2d0>",
+        "42a24d: 8b 0d c4 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c4]",
+        "42a253: 8b 15 c0 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c0]",
+        "42a259: 51                           \tpush\tecx",
+        "42a25a: 81 c7 98 0c 00 00            \tadd\tedi, 0xc98",
+        "42a260: 52                           \tpush\tedx",
+        "42a261: 57                           \tpush\tedi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042ab95",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042ab8e",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0042ab93",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042ab94",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42ab71: 89 44 24 10                  \tmov\tdword ptr [esp + 0x10], eax",
+        "42ab75: 8b 4a 04                     \tmov\tecx, dword ptr [edx + 0x4]",
+        "42ab78: 89 4c 24 14                  \tmov\tdword ptr [esp + 0x14], ecx",
+        "42ab7c: 8b 42 08                     \tmov\teax, dword ptr [edx + 0x8]",
+        "42ab7f: 89 44 24 18                  \tmov\tdword ptr [esp + 0x18], eax",
+        "42ab83: 8b 4a 0c                     \tmov\tecx, dword ptr [edx + 0xc]",
+        "42ab86: 89 4c 24 1c                  \tmov\tdword ptr [esp + 0x1c], ecx",
+        "42ab8a: 8b 54 24 24                  \tmov\tedx, dword ptr [esp + 0x24]",
+        "42ab8e: 55                           \tpush\tebp",
+        "42ab8f: 8d 44 24 14                  \tlea\teax, [esp + 0x14]",
+        "42ab93: 52                           \tpush\tedx",
+        "42ab94: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042d762",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042d75b",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042d760",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0042d761",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42d749: 52                           \tpush\tedx",
+        "42d74a: 8d 51 26                     \tlea\tedx, [ecx + 0x26]",
+        "42d74d: 52                           \tpush\tedx",
+        "42d74e: 50                           \tpush\teax",
+        "42d74f: 8d 44 24 1c                  \tlea\teax, [esp + 0x1c]",
+        "42d753: 51                           \tpush\tecx",
+        "42d754: 50                           \tpush\teax",
+        "42d755: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "42d75b: 53                           \tpush\tebx",
+        "42d75c: 8d 4c 24 14                  \tlea\tecx, [esp + 0x14]",
+        "42d760: 55                           \tpush\tebp",
+        "42d761: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042ebf1",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042ebea",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042ebef",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042ebf0",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42ebd2: 50                           \tpush\teax",
+        "42ebd3: 83 c1 19                     \tadd\tecx, 0x19",
+        "42ebd6: 8d 44 24 6c                  \tlea\teax, [esp + 0x6c]",
+        "42ebda: 51                           \tpush\tecx",
+        "42ebdb: 50                           \tpush\teax",
+        "42ebdc: ff d3                        \tcall\tebx",
+        "42ebde: 8b 0d c4 a1 7d 00            \tmov\tecx, dword ptr [0x7da1c4]",
+        "42ebe4: 8b 15 c0 a1 7d 00            \tmov\tedx, dword ptr [0x7da1c0]",
+        "42ebea: 51                           \tpush\tecx",
+        "42ebeb: 8d 44 24 64                  \tlea\teax, [esp + 0x64]",
+        "42ebef: 52                           \tpush\tedx",
+        "42ebf0: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042f191",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042f18a",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042f18f",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042f190",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42f176: 50                           \tpush\teax",
+        "42f177: 83 c1 19                     \tadd\tecx, 0x19",
+        "42f17a: 8d 44 24 24                  \tlea\teax, [esp + 0x24]",
+        "42f17e: 51                           \tpush\tecx",
+        "42f17f: 50                           \tpush\teax",
+        "42f180: ff d5                        \tcall\tebp",
+        "42f182: 8b 4c 24 30                  \tmov\tecx, dword ptr [esp + 0x30]",
+        "42f186: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "42f18a: 51                           \tpush\tecx",
+        "42f18b: 8d 44 24 1c                  \tlea\teax, [esp + 0x1c]",
+        "42f18f: 52                           \tpush\tedx",
+        "42f190: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0042f1d5",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0042f1ce",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042f1d3",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0042f1d4",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42f1bc: 52                           \tpush\tedx",
+        "42f1bd: 51                           \tpush\tecx",
+        "42f1be: 50                           \tpush\teax",
+        "42f1bf: 8d 44 24 28                  \tlea\teax, [esp + 0x28]",
+        "42f1c3: 50                           \tpush\teax",
+        "42f1c4: ff d5                        \tcall\tebp",
+        "42f1c6: 8b 4c 24 30                  \tmov\tecx, dword ptr [esp + 0x30]",
+        "42f1ca: 8b 54 24 2c                  \tmov\tedx, dword ptr [esp + 0x2c]",
+        "42f1ce: 51                           \tpush\tecx",
+        "42f1cf: 8d 44 24 1c                  \tlea\teax, [esp + 0x1c]",
+        "42f1d3: 52                           \tpush\tedx",
+        "42f1d4: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00430011",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043000a",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043000f",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x00430010",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "42fff2: 50                           \tpush\teax",
+        "42fff3: 83 c1 22                     \tadd\tecx, 0x22",
+        "42fff6: 8d 44 24 1c                  \tlea\teax, [esp + 0x1c]",
+        "42fffa: 51                           \tpush\tecx",
+        "42fffb: 50                           \tpush\teax",
+        "42fffc: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "430002: 8b 6c 24 2c                  \tmov\tebp, dword ptr [esp + 0x2c]",
+        "430006: 8b 7c 24 28                  \tmov\tedi, dword ptr [esp + 0x28]",
+        "43000a: 55                           \tpush\tebp",
+        "43000b: 8d 4c 24 14                  \tlea\tecx, [esp + 0x14]",
+        "43000f: 57                           \tpush\tedi",
+        "430010: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043074f",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00430748",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043074d",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043074e",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "430734: 50                           \tpush\teax",
+        "430735: 83 c1 22                     \tadd\tecx, 0x22",
+        "430738: 8d 44 24 1c                  \tlea\teax, [esp + 0x1c]",
+        "43073c: 51                           \tpush\tecx",
+        "43073d: 50                           \tpush\teax",
+        "43073e: ff d5                        \tcall\tebp",
+        "430740: 8b 7c 24 3c                  \tmov\tedi, dword ptr [esp + 0x3c]",
+        "430744: 8b 5c 24 38                  \tmov\tebx, dword ptr [esp + 0x38]",
+        "430748: 57                           \tpush\tedi",
+        "430749: 8d 4c 24 14                  \tlea\tecx, [esp + 0x14]",
+        "43074d: 53                           \tpush\tebx",
+        "43074e: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004308d9",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004308d2",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x004308d7",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x004308d8",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4308c2: 83 c0 29                     \tadd\teax, 0x29",
+        "4308c5: 52                           \tpush\tedx",
+        "4308c6: 50                           \tpush\teax",
+        "4308c7: 83 c6 19                     \tadd\tesi, 0x19",
+        "4308ca: 8d 44 24 2c                  \tlea\teax, [esp + 0x2c]",
+        "4308ce: 56                           \tpush\tesi",
+        "4308cf: 50                           \tpush\teax",
+        "4308d0: ff d5                        \tcall\tebp",
+        "4308d2: 57                           \tpush\tedi",
+        "4308d3: 8d 4c 24 24                  \tlea\tecx, [esp + 0x24]",
+        "4308d7: 53                           \tpush\tebx",
+        "4308d8: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043a146",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043a13b",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a140",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a141",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43a125: 8b 72 04                     \tmov\tesi, dword ptr [edx + 0x4]",
+        "43a128: 8b 52 08                     \tmov\tedx, dword ptr [edx + 0x8]",
+        "43a12b: 03 f0                        \tadd\tesi, eax",
+        "43a12d: 8b 44 24 40                  \tmov\teax, dword ptr [esp + 0x40]",
+        "43a131: 03 d1                        \tadd\tedx, ecx",
+        "43a133: 8b 4c 24 3c                  \tmov\tecx, dword ptr [esp + 0x3c]",
+        "43a137: 89 54 24 34                  \tmov\tdword ptr [esp + 0x34], edx",
+        "43a13b: 50                           \tpush\teax",
+        "43a13c: 8d 54 24 2c                  \tlea\tedx, [esp + 0x2c]",
+        "43a140: 51                           \tpush\tecx",
+        "43a141: 52                           \tpush\tedx",
+        "43a142: 89 74 24 3c                  \tmov\tdword ptr [esp + 0x3c], esi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043a3bc",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043a39f",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a3b2",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a3b3",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43a39d: 03 d1                        \tadd\tedx, ecx",
+        "43a39f: 53                           \tpush\tebx",
+        "43a3a0: 89 54 24 1c                  \tmov\tdword ptr [esp + 0x1c], edx",
+        "43a3a4: 8b 56 04                     \tmov\tedx, dword ptr [esi + 0x4]",
+        "43a3a7: 03 d0                        \tadd\tedx, eax",
+        "43a3a9: 8b 46 08                     \tmov\teax, dword ptr [esi + 0x8]",
+        "43a3ac: 03 c1                        \tadd\teax, ecx",
+        "43a3ae: 8d 4c 24 18                  \tlea\tecx, [esp + 0x18]",
+        "43a3b2: 55                           \tpush\tebp",
+        "43a3b3: 51                           \tpush\tecx",
+        "43a3b4: 89 54 24 28                  \tmov\tdword ptr [esp + 0x28], edx",
+        "43a3b8: 89 44 24 2c                  \tmov\tdword ptr [esp + 0x2c], eax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043a827",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043a821",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a822",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a826",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43a810: 83 ec 10                     \tsub\tesp, 0x10",
+        "43a813: 53                           \tpush\tebx",
+        "43a814: 8b 5c 24 24                  \tmov\tebx, dword ptr [esp + 0x24]",
+        "43a818: 55                           \tpush\tebp",
+        "43a819: 8b 6c 24 24                  \tmov\tebp, dword ptr [esp + 0x24]",
+        "43a81d: 56                           \tpush\tesi",
+        "43a81e: 57                           \tpush\tedi",
+        "43a81f: 8b f9                        \tmov\tedi, ecx",
+        "43a821: 53                           \tpush\tebx",
+        "43a822: 55                           \tpush\tebp",
+        "43a823: 8d 47 18                     \tlea\teax, [edi + 0x18]",
+        "43a826: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043a87b",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043a85e",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a871",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043a872",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43a85c: 03 d1                        \tadd\tedx, ecx",
+        "43a85e: 53                           \tpush\tebx",
+        "43a85f: 89 54 24 18                  \tmov\tdword ptr [esp + 0x18], edx",
+        "43a863: 8b 56 04                     \tmov\tedx, dword ptr [esi + 0x4]",
+        "43a866: 03 d0                        \tadd\tedx, eax",
+        "43a868: 8b 46 08                     \tmov\teax, dword ptr [esi + 0x8]",
+        "43a86b: 03 c1                        \tadd\teax, ecx",
+        "43a86d: 8d 4c 24 14                  \tlea\tecx, [esp + 0x14]",
+        "43a871: 55                           \tpush\tebp",
+        "43a872: 51                           \tpush\tecx",
+        "43a873: 89 54 24 24                  \tmov\tdword ptr [esp + 0x24], edx",
+        "43a877: 89 44 24 28                  \tmov\tdword ptr [esp + 0x28], eax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043aa47",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043aa41",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043aa42",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0043aa46",
+          "args": "ebx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43aa2f: 00 83 ec 14 8b 44            \tadd\tbyte ptr [ebx + 0x448b14ec], al",
+        "43aa35: 24 20                        \tand\tal, 0x20",
+        "43aa37: 53                           \tpush\tebx",
+        "43aa38: 55                           \tpush\tebp",
+        "43aa39: 8b 6c 24 2c                  \tmov\tebp, dword ptr [esp + 0x2c]",
+        "43aa3d: 56                           \tpush\tesi",
+        "43aa3e: 57                           \tpush\tedi",
+        "43aa3f: 8b f9                        \tmov\tedi, ecx",
+        "43aa41: 55                           \tpush\tebp",
+        "43aa42: 50                           \tpush\teax",
+        "43aa43: 8d 5f 18                     \tlea\tebx, [edi + 0x18]",
+        "43aa46: 53                           \tpush\tebx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043aa99",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043aa78",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0043aa93",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043aa94",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43aa78: 55                           \tpush\tebp",
+        "43aa79: 89 54 24 1c                  \tmov\tdword ptr [esp + 0x1c], edx",
+        "43aa7d: 8b 56 04                     \tmov\tedx, dword ptr [esi + 0x4]",
+        "43aa80: 03 d0                        \tadd\tedx, eax",
+        "43aa82: 8b 46 08                     \tmov\teax, dword ptr [esi + 0x8]",
+        "43aa85: 03 c1                        \tadd\teax, ecx",
+        "43aa87: 8b 4c 24 34                  \tmov\tecx, dword ptr [esp + 0x34]",
+        "43aa8b: 89 54 24 20                  \tmov\tdword ptr [esp + 0x20], edx",
+        "43aa8f: 8d 54 24 18                  \tlea\tedx, [esp + 0x18]",
+        "43aa93: 51                           \tpush\tecx",
+        "43aa94: 52                           \tpush\tedx",
+        "43aa95: 89 44 24 2c                  \tmov\tdword ptr [esp + 0x2c], eax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043ddc7",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043ddbe",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ddbf",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043ddc6",
+          "args": "ebp",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43ddaf: 90                           \tnop",
+        "43ddb0: 53                           \tpush\tebx",
+        "43ddb1: 8b 5c 24 08                  \tmov\tebx, dword ptr [esp + 0x8]",
+        "43ddb5: 55                           \tpush\tebp",
+        "43ddb6: 56                           \tpush\tesi",
+        "43ddb7: 57                           \tpush\tedi",
+        "43ddb8: 8b 7c 24 18                  \tmov\tedi, dword ptr [esp + 0x18]",
+        "43ddbc: 8b f1                        \tmov\tesi, ecx",
+        "43ddbe: 57                           \tpush\tedi",
+        "43ddbf: 53                           \tpush\tebx",
+        "43ddc0: 8d ae c0 02 00 00            \tlea\tebp, [esi + 0x2c0]",
+        "43ddc6: 55                           \tpush\tebp"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0043dec7",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0043debe",
+          "args": "edi",
+          "immediate": null
+        },
+        {
+          "va": "0x0043debf",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0043dec6",
+          "args": "ebp",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43dead: c2 08 00                     \tret\t0x8",
+        "43deb0: 53                           \tpush\tebx",
+        "43deb1: 8b 5c 24 08                  \tmov\tebx, dword ptr [esp + 0x8]",
+        "43deb5: 55                           \tpush\tebp",
+        "43deb6: 56                           \tpush\tesi",
+        "43deb7: 57                           \tpush\tedi",
+        "43deb8: 8b 7c 24 18                  \tmov\tedi, dword ptr [esp + 0x18]",
+        "43debc: 8b f1                        \tmov\tesi, ecx",
+        "43debe: 57                           \tpush\tedi",
+        "43debf: 53                           \tpush\tebx",
+        "43dec0: 8d ae c0 02 00 00            \tlea\tebp, [esi + 0x2c0]",
+        "43dec6: 55                           \tpush\tebp"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00440262",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044025f",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00440260",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00440261",
+          "args": "esi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "440241: eb 04                        \tjmp\t0x440247 <.text+0x3f247>",
+        "440243: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "440247: 8b 78 04                     \tmov\tedi, dword ptr [eax + 0x4]",
+        "44024a: 80 3f 02                     \tcmp\tbyte ptr [edi], 0x2",
+        "44024d: 75 2b                        \tjne\t0x44027a <.text+0x3f27a>",
+        "44024f: c6 47 5c 00                  \tmov\tbyte ptr [edi + 0x5c], 0x0",
+        "440253: 8d 77 0c                     \tlea\tesi, [edi + 0xc]",
+        "440256: bd 05 00 00 00               \tmov\tebp, 0x5",
+        "44025b: 8b 44 24 18                  \tmov\teax, dword ptr [esp + 0x18]",
+        "44025f: 53                           \tpush\tebx",
+        "440260: 50                           \tpush\teax",
+        "440261: 56                           \tpush\tesi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004403c0",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004403bd",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004403be",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x004403bf",
+          "args": "esi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "440398: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "44039c: 8b 68 04                     \tmov\tebp, dword ptr [eax + 0x4]",
+        "44039f: 80 7d 00 02                  \tcmp\tbyte ptr [ebp], 0x2",
+        "4403a3: 0f 85 14 01 00 00            \tjne\t0x4404bd <.text+0x3f4bd>",
+        "4403a9: c6 45 5c 00                  \tmov\tbyte ptr [ebp + 0x5c], 0x0",
+        "4403ad: 8d 75 0c                     \tlea\tesi, [ebp + 0xc]",
+        "4403b0: bf 05 00 00 00               \tmov\tedi, 0x5",
+        "4403b5: 8b 4c 24 1c                  \tmov\tecx, dword ptr [esp + 0x1c]",
+        "4403b9: 8b 54 24 18                  \tmov\tedx, dword ptr [esp + 0x18]",
+        "4403bd: 51                           \tpush\tecx",
+        "4403be: 52                           \tpush\tedx",
+        "4403bf: 56                           \tpush\tesi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x004405f9",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x004405f6",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x004405f7",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x004405f8",
+          "args": "esi",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "4405d8: eb 04                        \tjmp\t0x4405de <.text+0x3f5de>",
+        "4405da: 8b 44 24 10                  \tmov\teax, dword ptr [esp + 0x10]",
+        "4405de: 8b 78 04                     \tmov\tedi, dword ptr [eax + 0x4]",
+        "4405e1: 80 3f 02                     \tcmp\tbyte ptr [edi], 0x2",
+        "4405e4: 75 2b                        \tjne\t0x440611 <.text+0x3f611>",
+        "4405e6: c6 47 5d 00                  \tmov\tbyte ptr [edi + 0x5d], 0x0",
+        "4405ea: 8d 77 0c                     \tlea\tesi, [edi + 0xc]",
+        "4405ed: bd 05 00 00 00               \tmov\tebp, 0x5",
+        "4405f2: 8b 4c 24 18                  \tmov\tecx, dword ptr [esp + 0x18]",
+        "4405f6: 53                           \tpush\tebx",
+        "4405f7: 51                           \tpush\tecx",
+        "4405f8: 56                           \tpush\tesi"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044b76e",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044b767",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b76c",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b76d",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44b753: 03 d0                        \tadd\tedx, eax",
+        "44b755: 8b 46 f8                     \tmov\teax, dword ptr [esi - 0x8]",
+        "44b758: 03 c1                        \tadd\teax, ecx",
+        "44b75a: 52                           \tpush\tedx",
+        "44b75b: 8d 4c 24 20                  \tlea\tecx, [esp + 0x20]",
+        "44b75f: 50                           \tpush\teax",
+        "44b760: 51                           \tpush\tecx",
+        "44b761: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "44b767: 53                           \tpush\tebx",
+        "44b768: 8d 54 24 18                  \tlea\tedx, [esp + 0x18]",
+        "44b76c: 55                           \tpush\tebp",
+        "44b76d: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044b7f2",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044b7eb",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b7f0",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044b7f1",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44b7d5: 8b 46 f8                     \tmov\teax, dword ptr [esi - 0x8]",
+        "44b7d8: 03 c1                        \tadd\teax, ecx",
+        "44b7da: 52                           \tpush\tedx",
+        "44b7db: 8d 4c 24 20                  \tlea\tecx, [esp + 0x20]",
+        "44b7df: 50                           \tpush\teax",
+        "44b7e0: 51                           \tpush\tecx",
+        "44b7e1: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "44b7e7: 8b 54 24 30                  \tmov\tedx, dword ptr [esp + 0x30]",
+        "44b7eb: 55                           \tpush\tebp",
+        "44b7ec: 8d 44 24 18                  \tlea\teax, [esp + 0x18]",
+        "44b7f0: 52                           \tpush\tedx",
+        "44b7f1: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044e775",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044e76e",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e773",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e774",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44e75c: 8b 46 48                     \tmov\teax, dword ptr [esi + 0x48]",
+        "44e75f: 03 c1                        \tadd\teax, ecx",
+        "44e761: 52                           \tpush\tedx",
+        "44e762: 8d 4c 24 30                  \tlea\tecx, [esp + 0x30]",
+        "44e766: 50                           \tpush\teax",
+        "44e767: 51                           \tpush\tecx",
+        "44e768: ff d3                        \tcall\tebx",
+        "44e76a: 8b 54 24 38                  \tmov\tedx, dword ptr [esp + 0x38]",
+        "44e76e: 55                           \tpush\tebp",
+        "44e76f: 8d 44 24 18                  \tlea\teax, [esp + 0x18]",
+        "44e773: 52                           \tpush\tedx",
+        "44e774: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044e78a",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044e783",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e788",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e789",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44e76e: 55                           \tpush\tebp",
+        "44e76f: 8d 44 24 18                  \tlea\teax, [esp + 0x18]",
+        "44e773: 52                           \tpush\tedx",
+        "44e774: 50                           \tpush\teax",
+        "44e775: ff 15 b4 62 47 00            \tcall\tdword ptr [0x4762b4]",
+        "44e77b: 85 c0                        \ttest\teax, eax",
+        "44e77d: 75 37                        \tjne\t0x44e7b6 <.text+0x4d7b6>",
+        "44e77f: 8b 4c 24 38                  \tmov\tecx, dword ptr [esp + 0x38]",
+        "44e783: 55                           \tpush\tebp",
+        "44e784: 8d 54 24 28                  \tlea\tedx, [esp + 0x28]",
+        "44e788: 51                           \tpush\tecx",
+        "44e789: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044e859",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044e852",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e857",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e858",
+          "args": "ecx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44e83b: 03 c1                        \tadd\teax, ecx",
+        "44e83d: 52                           \tpush\tedx",
+        "44e83e: 8d 4c 24 24                  \tlea\tecx, [esp + 0x24]",
+        "44e842: 50                           \tpush\teax",
+        "44e843: 51                           \tpush\tecx",
+        "44e844: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "44e84a: 8b 54 24 30                  \tmov\tedx, dword ptr [esp + 0x30]",
+        "44e84e: 8b 44 24 2c                  \tmov\teax, dword ptr [esp + 0x2c]",
+        "44e852: 52                           \tpush\tedx",
+        "44e853: 8d 4c 24 1c                  \tlea\tecx, [esp + 0x1c]",
+        "44e857: 50                           \tpush\teax",
+        "44e858: 51                           \tpush\tecx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x0044e98d",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x0044e986",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e98b",
+          "args": "edx",
+          "immediate": null
+        },
+        {
+          "va": "0x0044e98c",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "44e968: 89 54 24 00                  \tmov\tdword ptr [esp], edx",
+        "44e96c: 8b 51 20                     \tmov\tedx, dword ptr [ecx + 0x20]",
+        "44e96f: 89 44 24 04                  \tmov\tdword ptr [esp + 0x4], eax",
+        "44e973: 8b 41 24                     \tmov\teax, dword ptr [ecx + 0x24]",
+        "44e976: 8b 4c 24 18                  \tmov\tecx, dword ptr [esp + 0x18]",
+        "44e97a: 89 54 24 08                  \tmov\tdword ptr [esp + 0x8], edx",
+        "44e97e: 8b 54 24 14                  \tmov\tedx, dword ptr [esp + 0x14]",
+        "44e982: 89 44 24 0c                  \tmov\tdword ptr [esp + 0xc], eax",
+        "44e986: 51                           \tpush\tecx",
+        "44e987: 8d 44 24 04                  \tlea\teax, [esp + 0x4]",
+        "44e98b: 52                           \tpush\tedx",
+        "44e98c: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00450a8e",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00450a87",
+          "args": "ebx",
+          "immediate": null
+        },
+        {
+          "va": "0x00450a8c",
+          "args": "ebp",
+          "immediate": null
+        },
+        {
+          "va": "0x00450a8d",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "450a73: 03 d0                        \tadd\tedx, eax",
+        "450a75: 8b 46 f8                     \tmov\teax, dword ptr [esi - 0x8]",
+        "450a78: 03 c1                        \tadd\teax, ecx",
+        "450a7a: 52                           \tpush\tedx",
+        "450a7b: 8d 4c 24 20                  \tlea\tecx, [esp + 0x20]",
+        "450a7f: 50                           \tpush\teax",
+        "450a80: 51                           \tpush\tecx",
+        "450a81: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "450a87: 53                           \tpush\tebx",
+        "450a88: 8d 54 24 18                  \tlea\tedx, [esp + 0x18]",
+        "450a8c: 55                           \tpush\tebp",
+        "450a8d: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00457e10",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00457e00",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00457e04",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00457e0f",
+          "args": "eax",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "457de6: 8b 6c 24 28                  \tmov\tebp, dword ptr [esp + 0x28]",
+        "457dea: 8b 74 24 24                  \tmov\tesi, dword ptr [esp + 0x24]",
+        "457dee: 33 ff                        \txor\tedi, edi",
+        "457df0: 89 7c 24 20                  \tmov\tdword ptr [esp + 0x20], edi",
+        "457df4: 8b 83 78 07 00 00            \tmov\teax, dword ptr [ebx + 0x778]",
+        "457dfa: 8b 8b 74 07 00 00            \tmov\tecx, dword ptr [ebx + 0x774]",
+        "457e00: 50                           \tpush\teax",
+        "457e01: 8d 04 bf                     \tlea\teax, [edi + 4*edi]",
+        "457e04: 51                           \tpush\tecx",
+        "457e05: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "457e08: 8d 84 93 3c 0d 00 00         \tlea\teax, [ebx + 4*edx + 0xd3c]",
+        "457e0f: 50                           \tpush\teax"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    },
+    {
+      "source": "Mir3.exe",
+      "ptinrect_iat": "0x4762b4",
+      "call_va": "0x00459cbe",
+      "known_role": null,
+      "argument_convention": "PtInRect(rect_ptr, POINT{x,y}); caller pushes y, x, rect_ptr",
+      "recent_pushes": [
+        {
+          "va": "0x00459cb7",
+          "args": "eax",
+          "immediate": null
+        },
+        {
+          "va": "0x00459cbc",
+          "args": "ecx",
+          "immediate": null
+        },
+        {
+          "va": "0x00459cbd",
+          "args": "edx",
+          "immediate": null
+        }
+      ],
+      "raw_neighborhood": [
+        "459c91: 68 73 01 00 00               \tpush\t0x173",
+        "459c96: 68 94 01 00 00               \tpush\t0x194",
+        "459c9b: 8d 54 24 18                  \tlea\tedx, [esp + 0x18]",
+        "459c9f: 68 26 01 00 00               \tpush\t0x126",
+        "459ca4: 52                           \tpush\tedx",
+        "459ca5: ff 15 b0 62 47 00            \tcall\tdword ptr [0x4762b0]",
+        "459cab: 8b 86 78 07 00 00            \tmov\teax, dword ptr [esi + 0x778]",
+        "459cb1: 8b 8e 74 07 00 00            \tmov\tecx, dword ptr [esi + 0x774]",
+        "459cb7: 50                           \tpush\teax",
+        "459cb8: 8d 54 24 10                  \tlea\tedx, [esp + 0x10]",
+        "459cbc: 51                           \tpush\tecx",
+        "459cbd: 52                           \tpush\tedx"
+      ],
+      "confidence": "primary-static-ptinrect-call"
+    }
+  ]
+}

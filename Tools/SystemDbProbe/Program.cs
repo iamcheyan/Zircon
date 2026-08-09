@@ -20,6 +20,7 @@ string dumpDir = null;
 string viewDir = null;
 string imagesOut = null;
 string storesOut = null;
+string minimapOut = null;
 string bc7Lib = null, bc7Frame = null, bc7Out = null;
 
 for (int i = 0; i < args.Length; i++)
@@ -46,6 +47,11 @@ for (int i = 0; i < args.Length; i++)
         bc7Out = args[++i];
         continue;
     }
+    if (args[i] == "--minimap")
+    {
+        minimapOut = args[++i];
+        continue;
+    }
     if (args[i] == "--stores")
     {
         storesOut = args[++i];
@@ -69,6 +75,18 @@ session.Initialize(
 
 Console.WriteLine($"数据库: {session.SystemPath}");
 Console.WriteLine($"版本:   {session.SystemDatabaseVersion}");
+
+if (minimapOut != null)
+{
+    var maps = session.GetCollection<MapInfo>();
+    var binding = (IList)maps.GetType().GetField("Binding").GetValue(maps);
+    var lines = new List<string>();
+    foreach (MapInfo m in binding)
+        lines.Add($"{m.FileName}\t{m.MiniMap}");
+    File.WriteAllLines(minimapOut, lines);
+    Console.WriteLine($"MiniMap 映射 -> {minimapOut} ({maps.Count} 条)");
+    return;
+}
 
 if (dumpDir == null && viewDir == null && imagesOut == null && storesOut == null)
 {
@@ -1015,6 +1033,8 @@ static void GenerateStores(Session session, string outPath)
             goodsIndex = n.GoodsIndex,
             image = n.Image,
             face = n.FaceImage,
+            // 实际坐标 = Region.PointRegion (DB 字段; PointList 为运行时复制, 不入库)
+            points = n.Region?.PointRegion?.Select(p => (object)new { x = p.X, y = p.Y }).ToList() ?? new List<object>(),
         })
         .OrderBy(x => x.goodsIndex).ThenBy(x => x.index)
         .ToList();

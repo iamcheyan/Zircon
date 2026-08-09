@@ -1,0 +1,7234 @@
+[
+ {
+  "id": 255,
+  "name": "!Bat Fang (OLD)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 450 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 246,
+  "name": "!Cat's Claw",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 200 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 249,
+  "name": "!Rejuvenation Potion (III)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 900 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 250,
+  "name": "!Rejuvenation Potion (IV)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 2700 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 251,
+  "name": "!Rejuvenation Potion (V)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 8100 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 253,
+  "name": "!Shell Fragment",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 350 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 248,
+  "name": "!Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 250 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 247,
+  "name": "!Tuft of Fur",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 350 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 254,
+  "name": "!Worm Guts",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 800 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 933,
+  "name": "[Part]",
+  "cat": "全职业",
+  "meta": "类型 部件 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 542,
+  "name": "Amethyst",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 500 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 954,
+  "name": "Ancestral Tablet Of Sama Mage",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 500 · 稀有度 Superior"
+ },
+ {
+  "id": 780,
+  "name": "Angel Head Band",
+  "cat": "全职业",
+  "stats": "性：宠物负重 +30",
+  "meta": "类型 宠物头饰 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 779,
+  "name": "Angel Wings",
+  "cat": "全职业",
+  "stats": "性：宠物负重 +30",
+  "meta": "类型 宠物背饰 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 260,
+  "name": "Ant Egg",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 600 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 804,
+  "name": "Arachnid Teeth",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 759,
+  "name": "Armour Dye",
+  "cat": "战法道",
+  "meta": "类型 系统物品 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 1099,
+  "name": "Armour Polisher",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 332,
+  "name": "Banya Gem Stone",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 600 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 776,
+  "name": "Basic Worn Bag",
+  "cat": "全职业",
+  "stats": "性：宠物背包 +5 · 宠物负重 +50",
+  "meta": "类型 宠物背包 · 价格 100000 · 重量 0"
+ },
+ {
+  "id": 447,
+  "name": "Big Skeleton Bone",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 24000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 541,
+  "name": "Black Iron Ore",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 1000 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 973,
+  "name": "Blue Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 979,
+  "name": "Blue Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 985,
+  "name": "Blue Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 238,
+  "name": "Bronze Chestnut",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 3000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 237,
+  "name": "Brown Chestnut",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 242,
+  "name": "Carnivorous Plant Fruit",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 300 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 241,
+  "name": "Carnivorous Plant Leaf",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 50 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 378,
+  "name": "Claw",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1200 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 815,
+  "name": "Companion Ticket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 100"
+ },
+ {
+  "id": 1128,
+  "name": "Contribution Point",
+  "cat": "全职业",
+  "meta": "类型 货币 · 价格 0 · 重量 0 · 可修理 · 可堆叠 25000"
+ },
+ {
+  "id": 537,
+  "name": "Copper Ore",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 500 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 545,
+  "name": "Corundum",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 6000 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 761,
+  "name": "Crafting Vault",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 327,
+  "name": "Crystal",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000000 · 重量 1 · 可修理 · 可堆叠 5000 · 稀有度 Superior"
+ },
+ {
+  "id": 501,
+  "name": "Crystallized Dark Ore",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1800 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 508,
+  "name": "Dark Banya Gem Stone",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1400 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 809,
+  "name": "David's Key",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 544,
+  "name": "Diamond",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 2500 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 898,
+  "name": "East Chiwoo Iron",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 5 · 可修理 · 可堆叠 100 · 稀有度 Superior"
+ },
+ {
+  "id": 806,
+  "name": "Edible Chestnut",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 801,
+  "name": "Experience",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 1127,
+  "name": "Fame Point",
+  "cat": "全职业",
+  "meta": "类型 货币 · 价格 0 · 重量 0 · 可修理 · 可堆叠 25000"
+ },
+ {
+  "id": 777,
+  "name": "Fantastic Wool Bag",
+  "cat": "全职业",
+  "stats": "性：宠物背包 +10 · 宠物负重 +100",
+  "meta": "类型 宠物背包 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 261,
+  "name": "Flea Husk",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 400 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 932,
+  "name": "Fortune Checker",
+  "cat": "全职业",
+  "meta": "类型 系统物品 · 价格 0 · 重量 0 · 可堆叠 250 · 稀有度 Superior"
+ },
+ {
+  "id": 829,
+  "name": "Fragment",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 830,
+  "name": "Fragment (II)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 831,
+  "name": "Fragment (III)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 832,
+  "name": "Fragment (IV)",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 394,
+  "name": "Fragment Of Zuma King",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理"
+ },
+ {
+  "id": 483,
+  "name": "Freedom Pass",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 50 · 重量 0 · 可修理 · 可堆叠 5000 · 稀有度 Elite"
+ },
+ {
+  "id": 775,
+  "name": "Fresh Meat",
+  "cat": "全职业",
+  "stats": "性：宠物饥饿 +175",
+  "meta": "类型 宠物食物 · 价格 10000 · 重量 1 · 可堆叠 50"
+ },
+ {
+  "id": 543,
+  "name": "Garnet",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 1000 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 758,
+  "name": "Gender Change",
+  "cat": "全职业",
+  "meta": "类型 系统物品 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 1,
+  "name": "Gold",
+  "cat": "全职业",
+  "meta": "类型 货币 · 价格 0 · 重量 0 · 可修理 · 可堆叠 25000"
+ },
+ {
+  "id": 1097,
+  "name": "Gold Chest",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000000000 · 重量 1 · 可修理 · 可堆叠 5000 · 稀有度 Elite"
+ },
+ {
+  "id": 240,
+  "name": "Gold Chestnut",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 10000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 540,
+  "name": "Gold Ore",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 6000 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 976,
+  "name": "Green Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 982,
+  "name": "Green Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 988,
+  "name": "Green Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 813,
+  "name": "Gresham's Journal",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 977,
+  "name": "Grey Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 983,
+  "name": "Grey Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 989,
+  "name": "Grey Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 757,
+  "name": "Hair Change",
+  "cat": "全职业",
+  "meta": "类型 系统物品 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 810,
+  "name": "Haylee's Key",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 808,
+  "name": "Henry's Journal",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 356,
+  "name": "Horn",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 600 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 358,
+  "name": "Horn Of Uma King",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 可堆叠 5"
+ },
+ {
+  "id": 322,
+  "name": "Husk",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 800 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 538,
+  "name": "Iron Ore",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 1000 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 814,
+  "name": "Isaac's Journal",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 1098,
+  "name": "Item Polisher",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 493,
+  "name": "Jewel",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 811,
+  "name": "Kacy's Key",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 778,
+  "name": "Luxury Silk Box",
+  "cat": "全职业",
+  "stats": "性：宠物背包 +20 · 宠物负重 +200",
+  "meta": "类型 宠物背包 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 259,
+  "name": "Maggot Pill",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 500 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 1049,
+  "name": "Masters Emblem",
+  "cat": "全职业",
+  "stats": "性：物防 12-12 · 魔防 12-12 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 暴击率 +5 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000 · 重量 0 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 774,
+  "name": "Meat Dumpling",
+  "cat": "全职业",
+  "stats": "性：宠物饥饿 +6",
+  "meta": "类型 宠物食物 · 价格 9000 · 重量 1 · 可堆叠 10"
+ },
+ {
+  "id": 762,
+  "name": "Name Change",
+  "cat": "全职业",
+  "meta": "类型 系统物品 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 962,
+  "name": "Old Carrot",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 20000 · 重量 0 · 可堆叠 10000 · 稀有度 Elite"
+ },
+ {
+  "id": 771,
+  "name": "Potion Of Awareness",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 827,
+  "name": "Pure Quartz",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 10000 · 重量 5 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 975,
+  "name": "Purple Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 981,
+  "name": "Purple Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 987,
+  "name": "Purple Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 781,
+  "name": "Rabbit Head Band",
+  "cat": "全职业",
+  "stats": "性：宠物负重 +30",
+  "meta": "类型 宠物头饰 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 974,
+  "name": "Red Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 980,
+  "name": "Red Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 986,
+  "name": "Red Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 828,
+  "name": "Refinement Stone",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 1 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 785,
+  "name": "Refiner's Ore (Armour)",
+  "cat": "全职业",
+  "stats": "性：精炼成功率 +5",
+  "meta": "类型 精炼材料 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 786,
+  "name": "Refiner's Ore (Master)",
+  "cat": "全职业",
+  "stats": "性：精炼成功率 +5",
+  "meta": "类型 精炼材料 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 783,
+  "name": "Refiner's Ore (Reset)",
+  "cat": "全职业",
+  "stats": "性：精炼成功率 +5",
+  "meta": "类型 精炼材料 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 784,
+  "name": "Refiner's Ore (Safe Master)",
+  "cat": "全职业",
+  "stats": "性：精炼成功率 +20 · 碎片率 -1",
+  "meta": "类型 精炼材料 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 782,
+  "name": "Refiner's Ore (Weapon)",
+  "cat": "全职业",
+  "stats": "性：精炼成功率 +5",
+  "meta": "类型 精炼材料 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 639,
+  "name": "Relic",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1800 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 551,
+  "name": "Runed Emblem",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1600 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 644,
+  "name": "Rusty Amulet Of Dark Sorcery",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 648,
+  "name": "Rusty Bracelet Of Ascension",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 646,
+  "name": "Rusty Bracer Of Revelation",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 643,
+  "name": "Rusty Charm Of The Destroyer",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 645,
+  "name": "Rusty Pendant Of Purification",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 647,
+  "name": "Rusty Ring Of Enlightenment",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 641,
+  "name": "Rusty Signet Of Evoker",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 640,
+  "name": "Rusty Signet Of Myrmidon",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 642,
+  "name": "Rusty Signet Of Vicar",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 1000 · 重量 1 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 437,
+  "name": "Sanyum Bead",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1400 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 257,
+  "name": "Scorpion Tail",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 100 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 766,
+  "name": "Scroll Of Greater Teleportation",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 765,
+  "name": "Scroll Of Teleportation",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 239,
+  "name": "Silver Chestnut",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 4000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 539,
+  "name": "Silver Ore",
+  "cat": "全职业",
+  "meta": "类型 矿石 · 价格 2500 · 重量 4 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 807,
+  "name": "Skeletal Spine",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 256,
+  "name": "Skeleton Bone",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 200 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 243,
+  "name": "Snake Gall",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 100 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 805,
+  "name": "Spider Curare",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 369,
+  "name": "Spider Web Thread",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1000 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 244,
+  "name": "Spitting Spider Tooth",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 50 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 405,
+  "name": "Statue Fragment",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 1400 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 528,
+  "name": "Tears Of Banya",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 800 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 245,
+  "name": "Tooth",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 800 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 803,
+  "name": "Venom",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 967,
+  "name": "Weapon Template",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 50"
+ },
+ {
+  "id": 899,
+  "name": "West Chiwoo Iron",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 5 · 可修理 · 可堆叠 100 · 稀有度 Superior"
+ },
+ {
+  "id": 802,
+  "name": "Wool",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 972,
+  "name": "Yellow Cube",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 978,
+  "name": "Yellow Orb",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 984,
+  "name": "Yellow Trinket",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 5000"
+ },
+ {
+  "id": 623,
+  "name": "Yun Wine",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 258,
+  "name": "Zombie Bone",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 无 · 价格 400 · 重量 0 · 可修理 · 可堆叠 10000"
+ },
+ {
+  "id": 812,
+  "name": "Zombie Flesh",
+  "cat": "全职业",
+  "meta": "类型 无 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 1090,
+  "name": "PVP Apprentice",
+  "cat": "全职业 · 1 级",
+  "meta": "类型 徽章 · 价格 1000000 · 重量 0"
+ },
+ {
+  "id": 1089,
+  "name": "PVP Champion",
+  "cat": "全职业 · 1 级",
+  "meta": "类型 徽章 · 价格 1000 · 重量 0 · 稀有度 Superior"
+ },
+ {
+  "id": 667,
+  "name": "Relic Fragment",
+  "cat": "全职业 · 1 级",
+  "meta": "类型 无 · 价格 1000 · 重量 0 · 可修理 · 可堆叠 5"
+ },
+ {
+  "id": 772,
+  "name": "Green Apple",
+  "cat": "全职业 · 4 级",
+  "stats": "性：宠物饥饿 +6",
+  "meta": "类型 宠物食物 · 价格 3000 · 重量 1 · 可堆叠 10"
+ },
+ {
+  "id": 773,
+  "name": "Chestnut Rice Ball",
+  "cat": "全职业 · 8 级",
+  "stats": "性：宠物饥饿 +6",
+  "meta": "类型 宠物食物 · 价格 6000 · 重量 1 · 可堆叠 10"
+ },
+ {
+  "id": 408,
+  "name": "Burning Dark Stone",
+  "cat": "全职业 · 35 级",
+  "stats": "性：火亲和 +10",
+  "meta": "类型 暗石 · 价格 10000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 413,
+  "name": "Frozen Dark Stone",
+  "cat": "全职业 · 35 级",
+  "stats": "性：冰亲和 +10",
+  "meta": "类型 暗石 · 价格 10000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 423,
+  "name": "Gusting Dark Stone",
+  "cat": "全职业 · 35 级",
+  "stats": "性：风亲和 +10",
+  "meta": "类型 暗石 · 价格 10000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 418,
+  "name": "Shocking Dark Stone",
+  "cat": "全职业 · 35 级",
+  "stats": "性：雷亲和 +10",
+  "meta": "类型 暗石 · 价格 10000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 409,
+  "name": "Burning Dark Stone (II)",
+  "cat": "全职业 · 40 级",
+  "stats": "性：火亲和 +15",
+  "meta": "类型 暗石 · 价格 20000 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 414,
+  "name": "Frozen Dark Stone (II)",
+  "cat": "全职业 · 40 级",
+  "stats": "性：冰亲和 +15",
+  "meta": "类型 暗石 · 价格 20000 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 424,
+  "name": "Gusting Dark Stone (II)",
+  "cat": "全职业 · 40 级",
+  "stats": "性：风亲和 +15",
+  "meta": "类型 暗石 · 价格 20000 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 419,
+  "name": "Shocking Dark Stone (II)",
+  "cat": "全职业 · 40 级",
+  "stats": "性：雷亲和 +15",
+  "meta": "类型 暗石 · 价格 20000 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 410,
+  "name": "Burning Dark Stone (III)",
+  "cat": "全职业 · 45 级",
+  "stats": "性：火亲和 +20",
+  "meta": "类型 暗石 · 价格 50000 · 重量 8 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 415,
+  "name": "Frozen Dark Stone (III)",
+  "cat": "全职业 · 45 级",
+  "stats": "性：冰亲和 +20",
+  "meta": "类型 暗石 · 价格 50000 · 重量 8 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 425,
+  "name": "Gusting Dark Stone (III)",
+  "cat": "全职业 · 45 级",
+  "stats": "性：风亲和 +20",
+  "meta": "类型 暗石 · 价格 50000 · 重量 8 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 420,
+  "name": "Shocking Dark Stone (III)",
+  "cat": "全职业 · 45 级",
+  "stats": "性：雷亲和 +20",
+  "meta": "类型 暗石 · 价格 50000 · 重量 8 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 411,
+  "name": "Burning Dark Stone (IV)",
+  "cat": "全职业 · 50 级",
+  "stats": "性：火亲和 +30",
+  "meta": "类型 暗石 · 价格 150000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 416,
+  "name": "Frozen Dark Stone (IV)",
+  "cat": "全职业 · 50 级",
+  "stats": "性：冰亲和 +30",
+  "meta": "类型 暗石 · 价格 150000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 426,
+  "name": "Gusting Dark Stone (IV)",
+  "cat": "全职业 · 50 级",
+  "stats": "性：风亲和 +30",
+  "meta": "类型 暗石 · 价格 150000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 421,
+  "name": "Shocking Dark Stone (IV)",
+  "cat": "全职业 · 50 级",
+  "stats": "性：雷亲和 +30",
+  "meta": "类型 暗石 · 价格 150000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 417,
+  "name": "Frozen Dark Stone (V)",
+  "cat": "全职业 · 51 级",
+  "stats": "性：冰亲和 +35",
+  "meta": "类型 暗石 · 价格 250000 · 重量 17 · 耐久 40000 · 可修理"
+ },
+ {
+  "id": 412,
+  "name": "Burning Dark Stone (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：火亲和 +35",
+  "meta": "类型 暗石 · 价格 250000 · 重量 17 · 耐久 40000 · 可修理"
+ },
+ {
+  "id": 427,
+  "name": "Gusting Dark Stone (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：风亲和 +35",
+  "meta": "类型 暗石 · 价格 250000 · 重量 17 · 耐久 40000 · 可修理"
+ },
+ {
+  "id": 422,
+  "name": "Shocking Dark Stone (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：雷亲和 +35",
+  "meta": "类型 暗石 · 价格 250000 · 重量 17 · 耐久 40000 · 可修理"
+ },
+ {
+  "id": 992,
+  "name": "Novice Emblem",
+  "cat": "全职业 · 60 级",
+  "stats": "性：物防 2-8 · 魔防 2-8 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 物理抗性 +1",
+  "meta": "类型 徽章 · 价格 1000000 · 重量 2 · 可修理"
+ },
+ {
+  "id": 993,
+  "name": "Expert Emblem",
+  "cat": "全职业 · 70 级",
+  "stats": "性：物防 5-10 · 魔防 5-10 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000000 · 重量 2 · 可修理"
+ },
+ {
+  "id": 1050,
+  "name": "Champions Emblem",
+  "cat": "全职业 · 77 级",
+  "stats": "性：物防 5-7 · 魔防 12-17 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 爆率加成 +15 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000 · 重量 0 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 994,
+  "name": "Elite Emblem",
+  "cat": "全职业 · 80 级",
+  "stats": "性：物防 9-12 · 魔防 9-12 · 幸运 +1 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000000 · 重量 2 · 可修理"
+ },
+ {
+  "id": 1051,
+  "name": "Kings Emblem",
+  "cat": "全职业 · 82 级",
+  "stats": "性：物防 20-20 · 魔防 20-20 · 物攻 5-10 · 魔攻 5-10 · 道术 5-10 · 幸运 +1 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000 · 重量 0 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1052,
+  "name": "Zirconian Emblem",
+  "cat": "全职业 · 85 级",
+  "stats": "性：物防 23-26 · 魔防 23-26 · 幸运 +1 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 暴击率 +10 · 物理抗性 +2",
+  "meta": "类型 徽章 · 价格 1000 · 重量 0 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 152,
+  "name": "!Mana Pill (V)",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 9600 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 147,
+  "name": "!Mana Potion (V)",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 2750 · 重量 3 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 788,
+  "name": "Accessory Repair Oil",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 760,
+  "name": "Additional Vault",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 50"
+ },
+ {
+  "id": 789,
+  "name": "Armour Repair Oil",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 181,
+  "name": "Beef",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 250 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 157,
+  "name": "Bright Candle",
+  "cat": "全职业",
+  "stats": "性：光照 +25",
+  "meta": "类型 火把 · 价格 30 · 重量 1 · 耐久 8000"
+ },
+ {
+  "id": 159,
+  "name": "Bright Torch",
+  "cat": "全职业",
+  "stats": "性：光照 +25",
+  "meta": "类型 火把 · 价格 1500 · 重量 3 · 耐久 20000"
+ },
+ {
+  "id": 132,
+  "name": "Candle",
+  "cat": "全职业",
+  "stats": "性：光照 +15",
+  "meta": "类型 火把 · 价格 10 · 重量 1 · 耐久 8000"
+ },
+ {
+  "id": 990,
+  "name": "Carrot",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +100 · SaleBonus10 +200 · SaleBonus15 +500 · SaleBonus20 +1000 · 经验 +50000",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 0 · 可堆叠 10000 · 稀有度 Elite"
+ },
+ {
+  "id": 438,
+  "name": "Chicken Blood",
+  "cat": "全职业",
+  "stats": "性：生命 +5 · 魔法 +5 · SaleBonus5 +10 · SaleBonus10 +20 · SaleBonus15 +50 · SaleBonus20 +100",
+  "meta": "类型 消耗品 · 价格 10 · 重量 1 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 179,
+  "name": "Chicken Meat",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 80 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 1126,
+  "name": "Companion Experience Tonic [T]",
+  "cat": "全职业",
+  "stats": "性：宠物生成率 +5 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 182,
+  "name": "Deer Meat",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 200 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 791,
+  "name": "Elixir Of Purification",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 1000 · 重量 0 · 耐久 1000 · 可堆叠 5000"
+ },
+ {
+  "id": 323,
+  "name": "Ginseng Of Eternity",
+  "cat": "全职业",
+  "stats": "性：生命 +170 · 魔法 +250",
+  "meta": "类型 消耗品 · 价格 5000 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 229,
+  "name": "Green Poison",
+  "cat": "战法道",
+  "meta": "类型 毒药 · 价格 2 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 133,
+  "name": "Healing Potion",
+  "cat": "全职业",
+  "stats": "性：生命 +30",
+  "meta": "类型 消耗品 · 价格 80 · 重量 1 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 134,
+  "name": "Healing Potion (II)",
+  "cat": "全职业",
+  "stats": "性：生命 +70",
+  "meta": "类型 消耗品 · 价格 200 · 重量 1 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 135,
+  "name": "Healing Potion (III)",
+  "cat": "全职业",
+  "stats": "性：生命 +110",
+  "meta": "类型 消耗品 · 价格 500 · 重量 2 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 136,
+  "name": "Healing Potion (IV)",
+  "cat": "全职业",
+  "stats": "性：生命 +170",
+  "meta": "类型 消耗品 · 价格 1250 · 重量 3 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 137,
+  "name": "Healing Potion (V)",
+  "cat": "全职业",
+  "stats": "性：生命 +250",
+  "meta": "类型 消耗品 · 价格 2500 · 重量 3 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 138,
+  "name": "Life Pill",
+  "cat": "全职业",
+  "stats": "性：生命 +30",
+  "meta": "类型 消耗品 · 价格 200 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 139,
+  "name": "Life Pill (II)",
+  "cat": "全职业",
+  "stats": "性：生命 +70",
+  "meta": "类型 消耗品 · 价格 500 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 140,
+  "name": "Life Pill (III)",
+  "cat": "全职业",
+  "stats": "性：生命 +110",
+  "meta": "类型 消耗品 · 价格 1500 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 141,
+  "name": "Life Pill (IV)",
+  "cat": "全职业",
+  "stats": "性：生命 +170",
+  "meta": "类型 消耗品 · 价格 3500 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 142,
+  "name": "Life Pill (V)",
+  "cat": "全职业",
+  "stats": "性：生命 +250",
+  "meta": "类型 消耗品 · 价格 8000 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 148,
+  "name": "Mana Pill",
+  "cat": "全职业",
+  "stats": "性：魔法 +40",
+  "meta": "类型 消耗品 · 价格 240 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 149,
+  "name": "Mana Pill (II)",
+  "cat": "全职业",
+  "stats": "性：魔法 +110",
+  "meta": "类型 消耗品 · 价格 600 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 150,
+  "name": "Mana Pill (III)",
+  "cat": "全职业",
+  "stats": "性：魔法 +180",
+  "meta": "类型 消耗品 · 价格 1800 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 151,
+  "name": "Mana Pill (IV)",
+  "cat": "全职业",
+  "stats": "性：魔法 +250",
+  "meta": "类型 消耗品 · 价格 4200 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 143,
+  "name": "Mana Potion",
+  "cat": "全职业",
+  "stats": "性：魔法 +40",
+  "meta": "类型 消耗品 · 价格 84 · 重量 1 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 144,
+  "name": "Mana Potion (II)",
+  "cat": "全职业",
+  "stats": "性：魔法 +110",
+  "meta": "类型 消耗品 · 价格 210 · 重量 1 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 145,
+  "name": "Mana Potion (III)",
+  "cat": "全职业",
+  "stats": "性：魔法 +180",
+  "meta": "类型 消耗品 · 价格 525 · 重量 2 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 146,
+  "name": "Mana Potion (IV)",
+  "cat": "全职业",
+  "stats": "性：魔法 +250",
+  "meta": "类型 消耗品 · 价格 1375 · 重量 3 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 727,
+  "name": "Mark Of Dark [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 暗黑攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 717,
+  "name": "Mark Of Dark [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 暗黑攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 719,
+  "name": "Mark Of Destruction [P]",
+  "cat": "全职业",
+  "stats": "性：物攻 2-4 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 709,
+  "name": "Mark Of Destruction [T]",
+  "cat": "全职业",
+  "stats": "性：物攻 2-4 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 722,
+  "name": "Mark Of Fire [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 火攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 712,
+  "name": "Mark Of Fire [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 火攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 726,
+  "name": "Mark Of Holy [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 神圣攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 716,
+  "name": "Mark Of Holy [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 神圣攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 723,
+  "name": "Mark Of Ice [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 冰攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 713,
+  "name": "Mark Of Ice [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 冰攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 724,
+  "name": "Mark Of Lightning [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 雷攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 714,
+  "name": "Mark Of Lightning [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 雷攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 720,
+  "name": "Mark Of Nature [P]",
+  "cat": "全职业",
+  "stats": "性：魔攻 1-3 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 710,
+  "name": "Mark Of Nature [T]",
+  "cat": "全职业",
+  "stats": "性：魔攻 1-3 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 728,
+  "name": "Mark Of Phantom [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 幻影攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 718,
+  "name": "Mark Of Phantom [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 幻影攻击 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 721,
+  "name": "Mark Of Spirit [P]",
+  "cat": "全职业",
+  "stats": "性：道术 1-3 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 711,
+  "name": "Mark Of Spirit [T]",
+  "cat": "全职业",
+  "stats": "性：道术 1-3 · 光照 +25",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 725,
+  "name": "Mark Of Wind [P]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 风攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 715,
+  "name": "Mark Of Wind [T]",
+  "cat": "全职业",
+  "stats": "性：光照 +25 · 风攻 +5",
+  "meta": "类型 火把 · 价格 0 · 重量 0 · 耐久 100000"
+ },
+ {
+  "id": 756,
+  "name": "Megaphone [P]",
+  "cat": "全职业",
+  "stats": "性：GlobalShout +1 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 743,
+  "name": "Mir Package [P]",
+  "cat": "全职业",
+  "stats": "性：物防 1-1 · 魔防 1-1 · 物攻 +2 · 魔攻 +2 · 道术 +2 · 经验加成 +5 · 爆率加成 +5 · 拾取半径 +1 · 金币加成 +5 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 729,
+  "name": "Mir Package [T]",
+  "cat": "全职业",
+  "stats": "性：物防 2-2 · 魔防 2-2 · 物攻 +4 · 魔攻 +3 · 道术 +3 · 幸运 +1 · 经验加成 +15 · 爆率加成 +15 · 金币加成 +15 · 宠物生成率 +1 · Duration +604800",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 252,
+  "name": "Mutton",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 200 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 296,
+  "name": "Oil Of Benediction",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 1000 · 重量 1 · 耐久 250 · 可修理 · 可堆叠 1000"
+ },
+ {
+  "id": 297,
+  "name": "Oil Of Conservation",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 1 · 耐久 250 · 可修理 · 可堆叠 1000"
+ },
+ {
+  "id": 298,
+  "name": "Oil Of The War God",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 1000 · 重量 1 · 耐久 250 · 可修理 · 可堆叠 1000"
+ },
+ {
+  "id": 996,
+  "name": "Old Whistle",
+  "cat": "全职业",
+  "stats": "性：SaleBonus5 +100 · SaleBonus10 +200 · SaleBonus15 +500 · SaleBonus20 +1000 · PK值 +2 · 经验 +100000 · FootballArmourAction +1000",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 0 · 耐久 250 · 可修理 · 可堆叠 10000 · 稀有度 Superior"
+ },
+ {
+  "id": 790,
+  "name": "Pill Of Reincarnation",
+  "cat": "全职业",
+  "stats": "性：物品复活时间 +300",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 180,
+  "name": "Pork",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 180 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 583,
+  "name": "Potion Of Repentance",
+  "cat": "全职业",
+  "stats": "性：PK值 -30",
+  "meta": "类型 消耗品 · 价格 100 · 重量 10 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 792,
+  "name": "Potion Of Repentence (II)",
+  "cat": "全职业",
+  "stats": "性：PK值 -50",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 230,
+  "name": "Red Poison",
+  "cat": "战法道",
+  "meta": "类型 毒药 · 价格 2 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 584,
+  "name": "Redemption Key Stone",
+  "cat": "全职业",
+  "stats": "性：Redemption +1 · Duration +300",
+  "meta": "类型 消耗品 · 价格 1000 · 重量 1 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 1110,
+  "name": "Refine Extractor",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 1 · 可修理"
+ },
+ {
+  "id": 1111,
+  "name": "Refine Extractor",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 1 · 可修理"
+ },
+ {
+  "id": 153,
+  "name": "Rejuvenation Potion",
+  "cat": "全职业",
+  "stats": "性：生命 +70 · 魔法 +110",
+  "meta": "类型 消耗品 · 价格 500 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 154,
+  "name": "Rejuvenation Potion (II)",
+  "cat": "全职业",
+  "stats": "性：生命 +110 · 魔法 +180",
+  "meta": "类型 消耗品 · 价格 3000 · 重量 0 · 耐久 2000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 763,
+  "name": "Scroll Of Boss Tracking",
+  "cat": "全职业",
+  "stats": "性：Boss追踪 +1 · Duration +120",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 1000 · 可堆叠 100"
+ },
+ {
+  "id": 764,
+  "name": "Scroll Of Player Tracking",
+  "cat": "全职业",
+  "stats": "性：玩家追踪 +1 · Duration +120",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 1000 · 可堆叠 100"
+ },
+ {
+  "id": 155,
+  "name": "Scroll Of Random Teleport",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 100 · 重量 1 · 耐久 500 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 156,
+  "name": "Scroll Of Town Portal",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 500 · 重量 1 · 耐久 500 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 1092,
+  "name": "Stat Extractor",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 1 · 可修理"
+ },
+ {
+  "id": 1093,
+  "name": "Stat Extractor",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 1 · 可修理"
+ },
+ {
+  "id": 787,
+  "name": "Superior Repair Oil",
+  "cat": "全职业",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 1066,
+  "name": "Tonic of Collection [T]",
+  "cat": "全职业",
+  "stats": "性：宠物收集 +1 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 934,
+  "name": "Tonic of Comfort [T]",
+  "cat": "全职业",
+  "stats": "性：舒适度 +1 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 748,
+  "name": "Tonic Of Destruction [P]",
+  "cat": "全职业",
+  "stats": "性：物攻 +3 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 734,
+  "name": "Tonic Of Destruction [T]",
+  "cat": "全职业",
+  "stats": "性：物攻 +7 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 754,
+  "name": "Tonic Of Dexterity [P]",
+  "cat": "全职业",
+  "stats": "性：命中 +1 · 敏捷 +1 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 740,
+  "name": "Tonic Of Dexterity [T]",
+  "cat": "全职业",
+  "stats": "性：命中 +2 · 敏捷 +2 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 744,
+  "name": "Tonic Of Experience [P]",
+  "cat": "全职业",
+  "stats": "性：经验加成 +10 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 730,
+  "name": "Tonic Of Experience [T]",
+  "cat": "全职业",
+  "stats": "性：经验加成 +20 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 755,
+  "name": "Tonic Of Knowledge [P]",
+  "cat": "全职业",
+  "stats": "性：技能熟练度 +1 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 741,
+  "name": "Tonic Of Knowledge [T]",
+  "cat": "全职业",
+  "stats": "性：技能熟练度 +3 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 751,
+  "name": "Tonic Of Life [P]",
+  "cat": "全职业",
+  "stats": "性：生命 +30 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 737,
+  "name": "Tonic Of Life [T]",
+  "cat": "全职业",
+  "stats": "性：生命 +70 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 742,
+  "name": "Tonic Of Luck [T]",
+  "cat": "全职业",
+  "stats": "性：幸运 +1 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 752,
+  "name": "Tonic Of Mana [P]",
+  "cat": "全职业",
+  "stats": "性：魔法 +30 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 738,
+  "name": "Tonic Of Mana [T]",
+  "cat": "全职业",
+  "stats": "性：魔法 +70 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 749,
+  "name": "Tonic Of Nature [P]",
+  "cat": "全职业",
+  "stats": "性：魔攻 +2 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 735,
+  "name": "Tonic Of Nature [T]",
+  "cat": "全职业",
+  "stats": "性：魔攻 +5 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 747,
+  "name": "Tonic Of Spelunking [P]",
+  "cat": "全职业",
+  "stats": "性：经验加成 +5 · 爆率加成 +5 · 金币加成 +5 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 733,
+  "name": "Tonic Of Spelunking [T]",
+  "cat": "全职业",
+  "stats": "性：经验加成 +10 · 爆率加成 +10 · 金币加成 +10 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 750,
+  "name": "Tonic Of Spirit [P]",
+  "cat": "全职业",
+  "stats": "性：道术 +2 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 736,
+  "name": "Tonic Of Spirit [T]",
+  "cat": "全职业",
+  "stats": "性：道术 +5 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 745,
+  "name": "Tonic Of Treasure [P]",
+  "cat": "全职业",
+  "stats": "性：爆率加成 +10 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 731,
+  "name": "Tonic Of Treasure [T]",
+  "cat": "全职业",
+  "stats": "性：爆率加成 +20 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 753,
+  "name": "Tonic Of Velocity [P]",
+  "cat": "全职业",
+  "stats": "性：攻速 +1 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 739,
+  "name": "Tonic Of Velocity [T]",
+  "cat": "全职业",
+  "stats": "性：攻速 +2 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 746,
+  "name": "Tonic Of Wealth [P]",
+  "cat": "全职业",
+  "stats": "性：金币加成 +10 · Duration -1",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500"
+ },
+ {
+  "id": 732,
+  "name": "Tonic Of Wealth [T]",
+  "cat": "全职业",
+  "stats": "性：金币加成 +20 · Duration +86400",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 500 · 可堆叠 100"
+ },
+ {
+  "id": 158,
+  "name": "Torch",
+  "cat": "全职业",
+  "stats": "性：光照 +15",
+  "meta": "类型 火把 · 价格 500 · 重量 3 · 耐久 20000"
+ },
+ {
+  "id": 183,
+  "name": "Wolf Meat",
+  "cat": "全职业",
+  "meta": "类型 肉类 · 价格 300 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 991,
+  "name": "Potion of Greed",
+  "cat": "全职业 · 1 级",
+  "stats": "性：爆率加成 +50 · 金币加成 +100 · 死亡掉落 +1 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 75000 · 重量 5 · 耐久 500 · 可修理 · 可堆叠 100"
+ },
+ {
+  "id": 767,
+  "name": "Elixir Of Regret Lv 3",
+  "cat": "全职业 · 3 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 768,
+  "name": "Elixir Of Regret Lv 5",
+  "cat": "全职业 · 5 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 769,
+  "name": "Elixir Of Regret Lv 7",
+  "cat": "全职业 · 7 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 24,
+  "name": "Fire Ball",
+  "cat": "法师 · 7 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 60,
+  "name": "Heal",
+  "cat": "道士 · 7 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 2,
+  "name": "Swordsmanship",
+  "cat": "战士 · 7 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 88,
+  "name": "Willow Dance",
+  "cat": "刺客 · 7 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 25,
+  "name": "Lightning Ball",
+  "cat": "法师 · 8 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 61,
+  "name": "Spirit Sword",
+  "cat": "道士 · 8 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 26,
+  "name": "Ice Bolt",
+  "cat": "法师 · 9 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 770,
+  "name": "Elixir Of Regret Lv 10",
+  "cat": "全职业 · 10 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 27,
+  "name": "Gust Blast",
+  "cat": "法师 · 10 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 89,
+  "name": "Vine Tree Dance",
+  "cat": "刺客 · 10 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 262,
+  "name": "Elixir Of Destruction",
+  "cat": "全职业 · 11 级",
+  "stats": "性：物攻 +5 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 267,
+  "name": "Elixir Of Haste",
+  "cat": "全职业 · 11 级",
+  "stats": "性：攻速 +1 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 272,
+  "name": "Elixir Of Life",
+  "cat": "全职业 · 11 级",
+  "stats": "性：生命 +50 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 277,
+  "name": "Elixir Of Mana",
+  "cat": "全职业 · 11 级",
+  "stats": "性：魔法 +50 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 282,
+  "name": "Elixir Of Nature",
+  "cat": "全职业 · 11 级",
+  "stats": "性：魔攻 +3 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 1094,
+  "name": "Elixir Of Regret Lv 11",
+  "cat": "全职业 · 11 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 463,
+  "name": "Elixir Of Spirit",
+  "cat": "全职业 · 11 级",
+  "stats": "性：道术 +3 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 3 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 113,
+  "name": "Bloody Flower",
+  "cat": "刺客 · 12 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 90,
+  "name": "Discipline",
+  "cat": "刺客 · 12 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 62,
+  "name": "Poison Dust",
+  "cat": "道士 · 12 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 3,
+  "name": "Potion Mastery",
+  "cat": "战士 · 12 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 28,
+  "name": "Repulsion",
+  "cat": "法师 · 12 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 29,
+  "name": "Electric Shock",
+  "cat": "法师 · 13 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1095,
+  "name": "Elixir Of Regret Lv 13",
+  "cat": "全职业 · 13 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 63,
+  "name": "Explosive Talisman",
+  "cat": "道士 · 13 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 64,
+  "name": "Evil Slayer",
+  "cat": "道士 · 14 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 91,
+  "name": "Poisonous Cloud",
+  "cat": "刺客 · 14 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 4,
+  "name": "Slaying",
+  "cat": "战士 · 14 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 30,
+  "name": "Teleportation",
+  "cat": "法师 · 14 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 31,
+  "name": "Adamantine Fire Ball",
+  "cat": "法师 · 15 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1096,
+  "name": "Elixir Of Regret Lv 15",
+  "cat": "全职业 · 15 级",
+  "meta": "类型 消耗品 · 价格 10000 · 重量 0 · 可堆叠 100"
+ },
+ {
+  "id": 793,
+  "name": "Thorned Rose",
+  "cat": "全职业 · 15 级",
+  "stats": "性：物防 +1 · 魔防 +1 · 物品复活时间 +3600",
+  "meta": "类型 花 · 价格 500 · 重量 0"
+ },
+ {
+  "id": 32,
+  "name": "Thunder Bolt",
+  "cat": "法师 · 16 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 215,
+  "name": "Empowered Evil Slayer",
+  "cat": "道士 · 17 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 214,
+  "name": "Empowered Explosive Talisman",
+  "cat": "道士 · 17 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 33,
+  "name": "Ice Blades",
+  "cat": "法师 · 17 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 585,
+  "name": "Summon Skeleton",
+  "cat": "道士 · 17 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 34,
+  "name": "Cyclone",
+  "cat": "法师 · 18 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 92,
+  "name": "Full Bloom",
+  "cat": "刺客 · 19 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 5,
+  "name": "Thrusting",
+  "cat": "战士 · 19 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 93,
+  "name": "Cloak",
+  "cat": "刺客 · 20 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 65,
+  "name": "Invisibility",
+  "cat": "道士 · 20 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 35,
+  "name": "Scorched Earth",
+  "cat": "法师 · 20 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 36,
+  "name": "Lightning Beam",
+  "cat": "法师 · 21 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 66,
+  "name": "Magic Resistance",
+  "cat": "道士 · 21 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 95,
+  "name": "Calamity Of Full Moon",
+  "cat": "刺客 · 22 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 263,
+  "name": "Elixir Of Destruction (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：物攻 +8 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 268,
+  "name": "Elixir Of Haste (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：攻速 +2 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 273,
+  "name": "Elixir Of Life (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：生命 +80 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 278,
+  "name": "Elixir Of Mana (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：魔法 +80 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 283,
+  "name": "Elixir Of Nature (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：魔攻 +6 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 464,
+  "name": "Elixir Of Spirit (II)",
+  "cat": "全职业 · 22 级",
+  "stats": "性：道术 +6 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 20000 · 重量 5 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 37,
+  "name": "Frozen Earth",
+  "cat": "法师 · 22 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 94,
+  "name": "White Lotus",
+  "cat": "刺客 · 22 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 38,
+  "name": "Blow Earth",
+  "cat": "法师 · 23 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 67,
+  "name": "Mass Invisibility",
+  "cat": "道士 · 23 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 39,
+  "name": "Fire Wall",
+  "cat": "法师 · 24 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 68,
+  "name": "Greater Evil Slayer",
+  "cat": "道士 · 24 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 6,
+  "name": "Half Moon",
+  "cat": "战士 · 24 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 97,
+  "name": "Red Lotus",
+  "cat": "刺客 · 24 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 96,
+  "name": "Wraith Grip",
+  "cat": "刺客 · 24 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 69,
+  "name": "Resilience",
+  "cat": "道士 · 25 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 40,
+  "name": "Expel Undead",
+  "cat": "法师 · 26 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 98,
+  "name": "Hell Fire",
+  "cat": "刺客 · 26 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 99,
+  "name": "Pledge Of Blood",
+  "cat": "刺客 · 26 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 100,
+  "name": "Rake",
+  "cat": "刺客 · 26 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 41,
+  "name": "Geo Manipulation",
+  "cat": "法师 · 27 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 7,
+  "name": "Shoulder Dash",
+  "cat": "战士 · 27 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 101,
+  "name": "Sweetbrier",
+  "cat": "刺客 · 27 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 70,
+  "name": "Trap Octagon",
+  "cat": "道士 · 27 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 71,
+  "name": "Taoist Combat Kick",
+  "cat": "道士 · 28 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 72,
+  "name": "Elemental Superiority",
+  "cat": "道士 · 29 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 42,
+  "name": "Magic Shield",
+  "cat": "法师 · 29 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 103,
+  "name": "Karma",
+  "cat": "刺客 · 30 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 102,
+  "name": "Summon Puppet",
+  "cat": "刺客 · 30 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 586,
+  "name": "Summon Shinsu",
+  "cat": "道士 · 30 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 104,
+  "name": "Touch Of The Departed",
+  "cat": "刺客 · 30 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 73,
+  "name": "Mass Heal",
+  "cat": "道士 · 31 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 43,
+  "name": "Fire Storm",
+  "cat": "法师 · 32 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 8,
+  "name": "Flaming Sword",
+  "cat": "战士 · 32 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 106,
+  "name": "Ghost Walk",
+  "cat": "刺客 · 32 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 105,
+  "name": "Waning Moon",
+  "cat": "刺客 · 32 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 13,
+  "name": "Defiance",
+  "cat": "战士 · 33 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 264,
+  "name": "Elixir Of Destruction (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：物攻 +12 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 269,
+  "name": "Elixir Of Haste (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：攻速 +3 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 274,
+  "name": "Elixir Of Life (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：生命 +120 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 279,
+  "name": "Elixir Of Mana (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：魔法 +120 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 284,
+  "name": "Elixir Of Nature (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：魔攻 +10 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 465,
+  "name": "Elixir Of Spirit (III)",
+  "cat": "全职业 · 33 级",
+  "stats": "性：道术 +10 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 50000 · 重量 9 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 44,
+  "name": "Lightning Wave",
+  "cat": "法师 · 33 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 216,
+  "name": "Summon Jin Skeleton",
+  "cat": "道士 · 33 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 74,
+  "name": "Blood Lust",
+  "cat": "道士 · 34 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 107,
+  "name": "Elemental Puppet",
+  "cat": "刺客 · 34 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 45,
+  "name": "Ice Storm",
+  "cat": "法师 · 34 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 9,
+  "name": "Dragon Rise",
+  "cat": "战士 · 35 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 46,
+  "name": "Dragon Tornado",
+  "cat": "法师 · 35 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 108,
+  "name": "Rejuvenation",
+  "cat": "刺客 · 35 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 109,
+  "name": "Resolution",
+  "cat": "刺客 · 35 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 75,
+  "name": "Resurrection",
+  "cat": "道士 · 35 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 110,
+  "name": "Change Of Seasons",
+  "cat": "刺客 · 36 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 111,
+  "name": "Release",
+  "cat": "刺客 · 36 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 10,
+  "name": "Blade Storm",
+  "cat": "战士 · 38 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 112,
+  "name": "Flame Splash",
+  "cat": "刺客 · 38 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 47,
+  "name": "Greater Frozen Earth",
+  "cat": "法师 · 38 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 76,
+  "name": "Purification",
+  "cat": "道士 · 38 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 847,
+  "name": "Advanced Bloody Flower",
+  "cat": "刺客 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1129,
+  "name": "Advanced Potion Mastery",
+  "cat": "战士 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 48,
+  "name": "Chain Lightning",
+  "cat": "法师 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 115,
+  "name": "Dance Of Swallow",
+  "cat": "刺客 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 11,
+  "name": "Destructive Surge",
+  "cat": "战士 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 794,
+  "name": "Guardian Angel's Flower",
+  "cat": "全职业 · 40 级",
+  "stats": "性：物防 +1 · 魔防 +1 · 物品复活时间 +1800",
+  "meta": "类型 花 · 价格 1000 · 重量 0"
+ },
+ {
+  "id": 534,
+  "name": "Potion Of Forgetfulness",
+  "cat": "全职业 · 40 级",
+  "meta": "类型 消耗品 · 价格 100 · 重量 2 · 耐久 1000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 634,
+  "name": "Potion Of Oblivion",
+  "cat": "全职业 · 40 级",
+  "meta": "类型 消耗品 · 价格 100 · 重量 2 · 耐久 1000 · 可修理 · 可堆叠 750"
+ },
+ {
+  "id": 219,
+  "name": "Strength Of Faith",
+  "cat": "道士 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 114,
+  "name": "The New Beginning",
+  "cat": "刺客 · 40 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 116,
+  "name": "Dark Conversion",
+  "cat": "刺客 · 42 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 12,
+  "name": "Interchange",
+  "cat": "战士 · 42 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 49,
+  "name": "Meteor Shower",
+  "cat": "法师 · 43 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 77,
+  "name": "Transparency",
+  "cat": "道士 · 43 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 265,
+  "name": "Elixir Of Destruction (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：物攻 +17 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 270,
+  "name": "Elixir Of Haste (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：攻速 +4 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 275,
+  "name": "Elixir Of Life (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：生命 +170 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 280,
+  "name": "Elixir Of Mana (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：魔法 +170 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 285,
+  "name": "Elixir Of Nature (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：魔攻 +15 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 466,
+  "name": "Elixir Of Spirit (IV)",
+  "cat": "全职业 · 44 级",
+  "stats": "性：道术 +15 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 100000 · 重量 13 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 120,
+  "name": "Abyss",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 118,
+  "name": "Advent Of Demon",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 119,
+  "name": "Advent Of Devil",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 117,
+  "name": "Dragon Repulse",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 121,
+  "name": "Flash Of Light",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 122,
+  "name": "Stealth",
+  "cat": "刺客 · 45 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 14,
+  "name": "Beckon",
+  "cat": "战士 · 46 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 78,
+  "name": "Celestial Light",
+  "cat": "道士 · 46 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 50,
+  "name": "Renounce",
+  "cat": "法师 · 46 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 79,
+  "name": "Empowered Healing",
+  "cat": "道士 · 47 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 123,
+  "name": "Evasion",
+  "cat": "刺客 · 47 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 124,
+  "name": "Raging Wind",
+  "cat": "刺客 · 47 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 80,
+  "name": "Life Steal",
+  "cat": "道士 · 48 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 15,
+  "name": "Might",
+  "cat": "战士 · 48 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 81,
+  "name": "Improved Explosive Talisman",
+  "cat": "道士 · 49 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 16,
+  "name": "Swift Blade",
+  "cat": "战士 · 49 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 51,
+  "name": "Tempest",
+  "cat": "法师 · 49 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 17,
+  "name": "Assault",
+  "cat": "战士 · 50 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 82,
+  "name": "Empowered Poison Dust",
+  "cat": "道士 · 50 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 217,
+  "name": "Summon Demonic Creature",
+  "cat": "道士 · 50 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 18,
+  "name": "Endurance",
+  "cat": "战士 · 51 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 83,
+  "name": "Cursed Doll",
+  "cat": "道士 · 52 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 218,
+  "name": "Demon Explosion",
+  "cat": "道士 · 52 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 52,
+  "name": "Judgement Of Heaven",
+  "cat": "法师 · 52 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 19,
+  "name": "Reflect Damage",
+  "cat": "战士 · 53 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 84,
+  "name": "Thunder Kick",
+  "cat": "道士 · 54 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 53,
+  "name": "Thunder Storm",
+  "cat": "法师 · 54 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 266,
+  "name": "Elixir Of Destruction (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物攻 +25 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 271,
+  "name": "Elixir Of Haste (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：攻速 +5 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 276,
+  "name": "Elixir Of Life (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：生命 +250 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 281,
+  "name": "Elixir Of Mana (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：魔法 +250 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 286,
+  "name": "Elixir Of Nature (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：魔攻 +20 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 467,
+  "name": "Elixir Of Spirit (V)",
+  "cat": "全职业 · 55 级",
+  "stats": "性：道术 +20 · Duration +3600",
+  "meta": "类型 消耗品 · 价格 180000 · 重量 19 · 耐久 1000 · 可修理 · 可堆叠 20"
+ },
+ {
+  "id": 589,
+  "name": "Empowered Purification",
+  "cat": "道士 · 55 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 20,
+  "name": "Fetter",
+  "cat": "战士 · 55 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 59,
+  "name": "Mirror Image",
+  "cat": "法师 · 56 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 906,
+  "name": "Frost Bite",
+  "cat": "法师 · 58 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1145,
+  "name": "Dragon Blood",
+  "cat": "刺客 · 60 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1146,
+  "name": "Fatal Blow",
+  "cat": "刺客 · 60 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 963,
+  "name": "Mass Beckon",
+  "cat": "战士 · 60 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 997,
+  "name": "White Whistle",
+  "cat": "全职业 · 60 级",
+  "stats": "性：PK值 +50 · 经验 +5000000 · 地图召唤 +20 · FootballArmourAction +1000",
+  "meta": "类型 消耗品 · 价格 0 · 重量 0 · 耐久 250 · 可修理 · 可堆叠 10000 · 稀有度 Elite"
+ },
+ {
+  "id": 86,
+  "name": "Parasite",
+  "cat": "道士 · 62 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 965,
+  "name": "Infection",
+  "cat": "道士 · 65 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1130,
+  "name": "Invincibility",
+  "cat": "战士 · 65 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1147,
+  "name": "Last Stand",
+  "cat": "刺客 · 65 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 966,
+  "name": "Massacre",
+  "cat": "刺客 · 65 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 55,
+  "name": "Superior Magic Shield",
+  "cat": "法师 · 65 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1132,
+  "name": "Defensive Mastery",
+  "cat": "战士 · 70 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1148,
+  "name": "Magic Combustion",
+  "cat": "刺客 · 70 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1149,
+  "name": "Vitality",
+  "cat": "刺客 · 70 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1087,
+  "name": "Art of Shadows",
+  "cat": "刺客 · 75 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1150,
+  "name": "Chain",
+  "cat": "刺客 · 75 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1085,
+  "name": "Demonic Recovery",
+  "cat": "道士 · 75 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 590,
+  "name": "Empowered Resurrection",
+  "cat": "道士 · 75 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 56,
+  "name": "Burning",
+  "cat": "法师 · 76 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 22,
+  "name": "Advanced Defiance",
+  "cat": "战士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 964,
+  "name": "Asteroid",
+  "cat": "法师 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1151,
+  "name": "Concentration",
+  "cat": "刺客 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1139,
+  "name": "Empowered Neutralize",
+  "cat": "道士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1134,
+  "name": "Magic Immunity",
+  "cat": "战士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1138,
+  "name": "Neutralize",
+  "cat": "道士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1133,
+  "name": "Physical Immunity",
+  "cat": "战士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 87,
+  "name": "Spiritualism",
+  "cat": "道士 · 80 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 23,
+  "name": "Advanced Reflect Damage",
+  "cat": "战士 · 82 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1152,
+  "name": "Dual Weapon Skills",
+  "cat": "刺客 · 82 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1142,
+  "name": "Empowered Celestial Light",
+  "cat": "道士 · 82 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 588,
+  "name": "Ice Rain",
+  "cat": "法师 · 82 级",
+  "meta": "类型 技能书 · 价格 0 · 重量 1 · 可修理"
+ },
+ {
+  "id": 1153,
+  "name": "Containment",
+  "cat": "刺客 · 83 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 54,
+  "name": "Elemental Hurricane",
+  "cat": "法师 · 83 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1141,
+  "name": "Searing Light",
+  "cat": "道士 · 83 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1084,
+  "name": "Seismic Slam",
+  "cat": "战士 · 83 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 21,
+  "name": "Advanced Destructive Surge",
+  "cat": "战士 · 84 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 85,
+  "name": "Soul Resonance",
+  "cat": "道士 · 84 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1154,
+  "name": "Dragon Wave",
+  "cat": "刺客 · 85 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 57,
+  "name": "Shock",
+  "cat": "法师 · 85 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1143,
+  "name": "Corpse Exploder",
+  "cat": "道士 · 86 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1135,
+  "name": "Defensive Blow",
+  "cat": "战士 · 86 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1155,
+  "name": "Hemorrhage",
+  "cat": "刺客 · 86 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1086,
+  "name": "Storm",
+  "cat": "法师 · 86 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1156,
+  "name": "Burning Fire",
+  "cat": "刺客 · 90 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1131,
+  "name": "Crushing Wave",
+  "cat": "战士 · 90 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1140,
+  "name": "Dark Soul Prison",
+  "cat": "道士 · 90 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 58,
+  "name": "Lightning Strike",
+  "cat": "法师 · 90 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1157,
+  "name": "Chain Of Fire",
+  "cat": "刺客 · 95 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1136,
+  "name": "Elemental Swords",
+  "cat": "战士 · 95 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1144,
+  "name": "Summon Dead",
+  "cat": "道士 · 95 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 1137,
+  "name": "Tornado",
+  "cat": "法师 · 95 级",
+  "meta": "类型 技能书 · 价格 1000 · 重量 1 · 耐久 100 · 可修理"
+ },
+ {
+  "id": 943,
+  "name": "Amulet Of Redemption",
+  "cat": "全职业",
+  "stats": "性：魔攻 4-11 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 250000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 903,
+  "name": "Amulet Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：物攻 3-10",
+  "meta": "类型 项链 · 价格 250000 · 重量 4 · 耐久 7000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 902,
+  "name": "Armband Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：魔防 1-4",
+  "meta": "类型 手镯 · 价格 180000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 939,
+  "name": "Armguard Of Dragon Abyss",
+  "cat": "全职业",
+  "stats": "性：物防 3-9 · 魔防 4-9",
+  "meta": "类型 手镯 · 价格 180000 · 重量 0 · 耐久 7000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 940,
+  "name": "Band Of Dragon Abyss",
+  "cat": "全职业",
+  "stats": "性：物攻 2-7 · 魔攻 2-6 · 道术 2-6",
+  "meta": "类型 戒指 · 价格 180000 · 重量 0 · 耐久 7000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 945,
+  "name": "Bracelet Of Redemption",
+  "cat": "全职业",
+  "stats": "性：魔攻 5-7 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 180000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 301,
+  "name": "Choker Of Learning",
+  "cat": "全职业",
+  "stats": "性：技能熟练度 +3",
+  "meta": "类型 项链 · 价格 50000 · 重量 1 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 951,
+  "name": "Dragon Bracelet Of Revival",
+  "cat": "全职业",
+  "stats": "性：物攻 5-7 · 命中 +4 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 180000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 950,
+  "name": "Dragon Necklace Of Revival",
+  "cat": "全职业",
+  "stats": "性：物攻 4-16 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 180000 · 重量 4 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 952,
+  "name": "Dragon Ring Of Revival",
+  "cat": "全职业",
+  "stats": "性：物攻 5-17 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 250000 · 重量 3 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 682,
+  "name": "Hero's Band Of Supremacy",
+  "cat": "全职业",
+  "stats": "性：魔防 1-5 · 物攻 2-3 · 魔攻 2-3 · 道术 2-3 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 50000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 867,
+  "name": "Holy Bracer Of Grace",
+  "cat": "全职业",
+  "stats": "性：物防 1-5 · 魔防 1-5 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 6 · 耐久 7000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 946,
+  "name": "Jade Band Of Purity",
+  "cat": "全职业",
+  "stats": "性：道术 5-12 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 180000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 944,
+  "name": "Jade Bracelet Of Purity",
+  "cat": "全职业",
+  "stats": "性：道术 5-7 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 180000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 942,
+  "name": "Jade Choker Of Purity",
+  "cat": "全职业",
+  "stats": "性：道术 6-11 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 250000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 304,
+  "name": "Loop Of Invisibility",
+  "cat": "全职业",
+  "stats": "性：清除戒指 +1",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 300,
+  "name": "Loop Of Paralysis",
+  "cat": "全职业",
+  "stats": "性：麻痹概率 +20",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 303,
+  "name": "Loop Of Protection",
+  "cat": "全职业",
+  "stats": "性：保护戒指 +1",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 302,
+  "name": "Loop Of Ressurection",
+  "cat": "全职业",
+  "stats": "性：物品复活时间 +300",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 299,
+  "name": "Loop Of Teleportation",
+  "cat": "全职业",
+  "stats": "性：传送戒指 +1",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 901,
+  "name": "Loop Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：魔攻 3-6 · 道术 3-6",
+  "meta": "类型 戒指 · 价格 180000 · 重量 3 · 耐久 4000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 938,
+  "name": "Pendant Of Dragon Abyss",
+  "cat": "全职业",
+  "stats": "性：物攻 2-6 · 魔攻 2-5 · 道术 2-5",
+  "meta": "类型 项链 · 价格 250000 · 重量 0 · 耐久 7000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 305,
+  "name": "Pendant Of Tracking",
+  "cat": "全职业",
+  "stats": "性：Boss追踪 +1 · 玩家追踪 +1",
+  "meta": "类型 项链 · 价格 100000 · 重量 0 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 454,
+  "name": "Seal Of Titans",
+  "cat": "全职业",
+  "stats": "性：物攻 +1 · 负重加成 +1",
+  "meta": "类型 戒指 · 价格 100000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 947,
+  "name": "Signet Of Redemption",
+  "cat": "全职业",
+  "stats": "性：魔攻 6-11 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 180000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 866,
+  "name": "Symbol Of Holy Grounds",
+  "cat": "全职业",
+  "stats": "性：魔防 +7 · 物攻 +6 · 魔攻 +5 · 道术 +5 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 2 · 耐久 9000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 220,
+  "name": "Talisman",
+  "cat": "战法道",
+  "meta": "类型 护身符 · 价格 2 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 221,
+  "name": "Talisman Of Darkness",
+  "cat": "战法道",
+  "stats": "性：暗黑亲和 +1",
+  "meta": "类型 护身符 · 价格 10 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 222,
+  "name": "Talisman Of Fire",
+  "cat": "战法道",
+  "stats": "性：火亲和 +1",
+  "meta": "类型 护身符 · 价格 6 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 223,
+  "name": "Talisman Of Holiness",
+  "cat": "战法道",
+  "stats": "性：神圣亲和 +1",
+  "meta": "类型 护身符 · 价格 10 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 224,
+  "name": "Talisman Of Ice",
+  "cat": "战法道",
+  "stats": "性：冰亲和 +1",
+  "meta": "类型 护身符 · 价格 6 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 225,
+  "name": "Talisman Of Illusions",
+  "cat": "战法道",
+  "stats": "性：幻影亲和 +1",
+  "meta": "类型 护身符 · 价格 20 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 226,
+  "name": "Talisman Of Lightning",
+  "cat": "战法道",
+  "stats": "性：雷亲和 +1",
+  "meta": "类型 护身符 · 价格 6 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 228,
+  "name": "Talisman Of Soul",
+  "cat": "战法道",
+  "meta": "类型 护身符 · 价格 4000 · 重量 2 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 227,
+  "name": "Talisman Of Wind Storm",
+  "cat": "战法道",
+  "stats": "性：风亲和 +1",
+  "meta": "类型 护身符 · 价格 6 · 重量 1 · 可修理 · 可堆叠 50000"
+ },
+ {
+  "id": 164,
+  "name": "Gold Necklace",
+  "cat": "全职业 · 2 级",
+  "stats": "性：敏捷 +1",
+  "meta": "类型 项链 · 价格 100 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 161,
+  "name": "Iron Bracer",
+  "cat": "全职业 · 3 级",
+  "stats": "性：命中 +1",
+  "meta": "类型 手镯 · 价格 300 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 162,
+  "name": "Necklace Of Tranquility",
+  "cat": "全职业 · 3 级",
+  "stats": "性：命中 +1",
+  "meta": "类型 项链 · 价格 150 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 444,
+  "name": "Gold-Plated Bracelet",
+  "cat": "全职业 · 4 级",
+  "stats": "性：魔防 +1",
+  "meta": "类型 手镯 · 价格 400 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 167,
+  "name": "Leather Glove",
+  "cat": "全职业 · 5 级",
+  "stats": "性：物防 +1",
+  "meta": "类型 手镯 · 价格 500 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 160,
+  "name": "Plain Ring",
+  "cat": "全职业 · 5 级",
+  "stats": "性：物防 +1",
+  "meta": "类型 戒指 · 价格 500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 163,
+  "name": "Silver Bracelet",
+  "cat": "全职业 · 5 级",
+  "stats": "性：敏捷 +1",
+  "meta": "类型 手镯 · 价格 500 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 488,
+  "name": "Bracelet Of Evasion",
+  "cat": "全职业 · 7 级",
+  "stats": "性：敏捷 +2 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 440,
+  "name": "Copper Ring",
+  "cat": "全职业 · 7 级",
+  "stats": "性：物攻 +1",
+  "meta": "类型 戒指 · 价格 800 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 487,
+  "name": "Dark Blade",
+  "cat": "全职业 · 7 级",
+  "stats": "性：命中 +2 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 166,
+  "name": "Glass Ring",
+  "cat": "全职业 · 7 级",
+  "stats": "性：道术 +1",
+  "meta": "类型 戒指 · 价格 1000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 168,
+  "name": "Golden Bracelet",
+  "cat": "全职业 · 7 级",
+  "stats": "性：物防 +1 · 魔防 +2",
+  "meta": "类型 手镯 · 价格 1500 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 442,
+  "name": "Hexagonal Ring",
+  "cat": "全职业 · 7 级",
+  "stats": "性：魔攻 +1",
+  "meta": "类型 戒指 · 价格 1500 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 165,
+  "name": "Horned Ring",
+  "cat": "全职业 · 7 级",
+  "stats": "性：魔防 +1 · 物攻 +1",
+  "meta": "类型 戒指 · 价格 1200 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 486,
+  "name": "Necklace Of Evasion",
+  "cat": "全职业 · 7 级",
+  "stats": "性：敏捷 +3 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 443,
+  "name": "Steel Bracelet",
+  "cat": "全职业 · 8 级",
+  "stats": "性：物防 +1 · 魔防 +1",
+  "meta": "类型 手镯 · 价格 1000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 441,
+  "name": "Blue Crystal Ring",
+  "cat": "全职业 · 9 级",
+  "stats": "性：魔防 +2 · 物攻 +1",
+  "meta": "类型 戒指 · 价格 1500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 582,
+  "name": "Iron Ring",
+  "cat": "全职业 · 9 级",
+  "stats": "性：物防 +2 · 魔攻 +1",
+  "meta": "类型 戒指 · 价格 6000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 170,
+  "name": "Arisu Bracelet",
+  "cat": "全职业 · 10 级",
+  "stats": "性：魔攻 +1",
+  "meta": "类型 手镯 · 价格 3000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 451,
+  "name": "Bracer Of Magic",
+  "cat": "全职业 · 10 级",
+  "stats": "性：道术 +1",
+  "meta": "类型 手镯 · 价格 2000 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 355,
+  "name": "Gale Necklace",
+  "cat": "全职业 · 10 级",
+  "stats": "性：攻速 +2 · 风攻 +4",
+  "meta": "类型 项链 · 价格 50000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 354,
+  "name": "Gale Ring",
+  "cat": "全职业 · 10 级",
+  "stats": "性：攻速 +1 · 风攻 +2",
+  "meta": "类型 戒指 · 价格 50000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 504,
+  "name": "Hero's Bracelet",
+  "cat": "全职业 · 10 级",
+  "stats": "性：物攻 2-2 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 10000 · 重量 2 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 505,
+  "name": "Holy Bracer",
+  "cat": "全职业 · 10 级",
+  "stats": "性：道术 1-2 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 15000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 295,
+  "name": "Platinum Necklace",
+  "cat": "全职业 · 10 级",
+  "stats": "性：魔攻 +2",
+  "meta": "类型 项链 · 价格 4500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 506,
+  "name": "Wyvern Bracelet",
+  "cat": "全职业 · 10 级",
+  "stats": "性：魔攻 +3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 45000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 213,
+  "name": "Arisu Necklace",
+  "cat": "全职业 · 11 级",
+  "stats": "性：魔攻 +1",
+  "meta": "类型 项链 · 价格 6000 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 212,
+  "name": "Black Crystal Necklace",
+  "cat": "全职业 · 11 级",
+  "stats": "性：物攻 +1",
+  "meta": "类型 项链 · 价格 2000 · 重量 1 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 450,
+  "name": "Yellow Crystal Necklace",
+  "cat": "全职业 · 11 级",
+  "stats": "性：道术 +1",
+  "meta": "类型 项链 · 价格 4000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 169,
+  "name": "Magic Bracelet",
+  "cat": "全职业 · 12 级",
+  "stats": "性：物防 +1 · 魔防 1-2",
+  "meta": "类型 手镯 · 价格 2500 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 477,
+  "name": "Amulet Of Wisdom",
+  "cat": "全职业 · 13 级",
+  "stats": "性：道术 2-5 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 371,
+  "name": "Anti Evil Necklace",
+  "cat": "全职业 · 13 级",
+  "stats": "性：魔攻 +7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 40000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 556,
+  "name": "Augmented Bronze Gauntlet",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物防 +6 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 10 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 172,
+  "name": "Black Crystal Ring",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物攻 +2",
+  "meta": "类型 戒指 · 价格 2000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 370,
+  "name": "Green Bead Necklace",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物攻 +7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 15000 · 重量 3 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 205,
+  "name": "Necklace Of Lantern",
+  "cat": "全职业 · 13 级",
+  "stats": "性：魔防 +5 · 物攻 +1",
+  "meta": "类型 项链 · 价格 4000 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 173,
+  "name": "Pearl Ring",
+  "cat": "全职业 · 13 级",
+  "stats": "性：道术 +2",
+  "meta": "类型 戒指 · 价格 2500 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 368,
+  "name": "Pendant Of Courage",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物攻 3-4 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 15000 · 重量 3 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 374,
+  "name": "Pendant Of Life Stealing",
+  "cat": "全职业 · 13 级",
+  "stats": "性：魔攻 +4 · 吸血 +5",
+  "meta": "类型 项链 · 价格 9000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 367,
+  "name": "Pendant Of Luminary",
+  "cat": "全职业 · 13 级",
+  "stats": "性：魔攻 3-4 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 40000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 478,
+  "name": "Pendent Of Holy Spirit",
+  "cat": "全职业 · 13 级",
+  "stats": "性：道术 1-6 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 372,
+  "name": "Ring Of Life Stealing",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物攻 2-2 · 吸血 +5",
+  "meta": "类型 戒指 · 价格 9000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 452,
+  "name": "Serpent Ring",
+  "cat": "全职业 · 13 级",
+  "stats": "性：魔攻 +2",
+  "meta": "类型 戒指 · 价格 3750 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 373,
+  "name": "Wrist Guard Of Life Stealing",
+  "cat": "全职业 · 13 级",
+  "stats": "性：道术 +2 · 吸血 +5",
+  "meta": "类型 手镯 · 价格 9000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 453,
+  "name": "Amber Necklace",
+  "cat": "全职业 · 15 级",
+  "stats": "性：魔攻 +2",
+  "meta": "类型 项链 · 价格 7500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 432,
+  "name": "Amulet Of Ancient Kingdom",
+  "cat": "全职业 · 15 级",
+  "stats": "性：物攻 3-4",
+  "meta": "类型 项链 · 价格 6000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 435,
+  "name": "Armoured Bracer Of Ancient Kingdom",
+  "cat": "全职业 · 15 级",
+  "stats": "性：物防 2-2",
+  "meta": "类型 手镯 · 价格 6000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 171,
+  "name": "Bracelet Of Exertion",
+  "cat": "全职业 · 15 级",
+  "stats": "性：物攻 1-1",
+  "meta": "类型 手镯 · 价格 1500 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 436,
+  "name": "Holy Bracer Of Ancient Kingdom",
+  "cat": "全职业 · 15 级",
+  "stats": "性：魔防 3-3",
+  "meta": "类型 手镯 · 价格 6000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 204,
+  "name": "Naga Necklace",
+  "cat": "全职业 · 15 级",
+  "stats": "性：物攻 +2",
+  "meta": "类型 项链 · 价格 2500 · 重量 1 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 433,
+  "name": "Nature Band Of Ancient Kingdom",
+  "cat": "全职业 · 15 级",
+  "stats": "性：魔攻 2-3",
+  "meta": "类型 戒指 · 价格 6000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 206,
+  "name": "Necklace Of Meditation",
+  "cat": "全职业 · 15 级",
+  "stats": "性：道术 +2",
+  "meta": "类型 项链 · 价格 5000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 434,
+  "name": "Spirit Band Of Ancient Kingdom",
+  "cat": "全职业 · 15 级",
+  "stats": "性：道术 2-3",
+  "meta": "类型 戒指 · 价格 6000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 365,
+  "name": "Arm Wrap Of Vigor",
+  "cat": "全职业 · 17 级",
+  "stats": "性：生命 +25 · 魔法 +25 · 魔攻 1-1 · 道术 1-1",
+  "meta": "类型 手镯 · 价格 7000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 366,
+  "name": "Pendant Of Vigor",
+  "cat": "全职业 · 17 级",
+  "stats": "性：生命 +25 · 魔法 +25 · 魔攻 1-3 · 道术 1-3",
+  "meta": "类型 项链 · 价格 7000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 532,
+  "name": "Platinum Ring",
+  "cat": "全职业 · 17 级",
+  "stats": "性：道术 +4",
+  "meta": "类型 戒指 · 价格 10000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 531,
+  "name": "Ruby Ring",
+  "cat": "全职业 · 17 级",
+  "stats": "性：魔攻 +4",
+  "meta": "类型 戒指 · 价格 15000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 293,
+  "name": "Rugged Leather Gauntlet",
+  "cat": "全职业 · 17 级",
+  "stats": "性：物防 +3",
+  "meta": "类型 手镯 · 价格 5000 · 重量 3 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 364,
+  "name": "Signet Of Vigor",
+  "cat": "全职业 · 17 级",
+  "stats": "性：生命 +25 · 魔法 +25 · 物攻 1-3",
+  "meta": "类型 戒指 · 价格 7000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 629,
+  "name": "Amulet Of Absorption",
+  "cat": "全职业 · 18 级",
+  "stats": "性：魔攻 2-6 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 50000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 395,
+  "name": "Amulet Of Vanquishment",
+  "cat": "全职业 · 18 级",
+  "stats": "性：道术 2-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 50000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 628,
+  "name": "Iron Plate Necklace",
+  "cat": "全职业 · 18 级",
+  "stats": "性：物攻 +8 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 20000 · 重量 1 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 630,
+  "name": "Pendant Of Wind Elemental",
+  "cat": "全职业 · 18 级",
+  "stats": "性：物攻 2-6 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 20000 · 重量 1 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 631,
+  "name": "Soul Trapped Necklace",
+  "cat": "全职业 · 18 级",
+  "stats": "性：道术 3-5 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 40000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 207,
+  "name": "White Tiger Tooth Necklace",
+  "cat": "全职业 · 18 级",
+  "stats": "性：魔防 +5 · 道术 +1",
+  "meta": "类型 项链 · 价格 6000 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 308,
+  "name": "Band Of Sorcery",
+  "cat": "全职业 · 19 级",
+  "stats": "性：魔攻 1-2",
+  "meta": "类型 戒指 · 价格 9000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 468,
+  "name": "Ring Of Discipline",
+  "cat": "全职业 · 19 级",
+  "stats": "性：道术 +3",
+  "meta": "类型 戒指 · 价格 6000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 209,
+  "name": "White Serpent Ring",
+  "cat": "全职业 · 19 级",
+  "stats": "性：魔攻 +3",
+  "meta": "类型 戒指 · 价格 6000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 558,
+  "name": "Blue Jade Signet",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 +6 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 45000 · 重量 1 · 耐久 4000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 208,
+  "name": "Coral Ring",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 +4",
+  "meta": "类型 戒指 · 价格 3000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 649,
+  "name": "Courage Of Kelsar",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 +1",
+  "meta": "类型 项链 · 价格 50000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 896,
+  "name": "Cracked Amulet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 2-1",
+  "meta": "类型 项链 · 价格 60000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 889,
+  "name": "Cracked Band Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 1-3 · 魔攻 1-1",
+  "meta": "类型 戒指 · 价格 45000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 892,
+  "name": "Cracked Bracelet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 1-2 · 冰攻 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 872,
+  "name": "Cracked Bracelet Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 2-2 · 物攻 1-1",
+  "meta": "类型 手镯 · 价格 55000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 882,
+  "name": "Cracked Bracer Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +5",
+  "meta": "类型 手镯 · 价格 65000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 876,
+  "name": "Cracked Medallion Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 8-3",
+  "meta": "类型 项链 · 价格 80000 · 重量 2 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 886,
+  "name": "Cracked Pendant Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 2-1 · 道术 +3",
+  "meta": "类型 项链 · 价格 80000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 869,
+  "name": "Cracked Seal Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 2-3 · 物攻 2-2",
+  "meta": "类型 戒指 · 价格 45000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 879,
+  "name": "Cracked Signet Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 2-2 · 道术 +3",
+  "meta": "类型 戒指 · 价格 45000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 651,
+  "name": "Determination Of Tanguere",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 307,
+  "name": "Gold Ring",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 +3 · 物攻 1-1 · 魔攻 1-1 · 道术 1-1",
+  "meta": "类型 戒指 · 价格 7000 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 653,
+  "name": "Justice Of Natura",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +1",
+  "meta": "类型 戒指 · 价格 50000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 559,
+  "name": "Loop Of Reincarnation",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +6 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 20000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 480,
+  "name": "Ring Of Destruction",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 +4 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 568,
+  "name": "Ring Of Sovereignty",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 +7 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 10000 · 重量 4 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 895,
+  "name": "Rusty Amulet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 +7",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 1000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 888,
+  "name": "Rusty Band Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 1-4",
+  "meta": "类型 戒指 · 价格 45000 · 重量 1 · 耐久 1000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 891,
+  "name": "Rusty Bracelet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 1-2 · 火攻 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 1000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 871,
+  "name": "Rusty Bracelet Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 3-3",
+  "meta": "类型 手镯 · 价格 55000 · 重量 3 · 耐久 3000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 881,
+  "name": "Rusty Bracer Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +4",
+  "meta": "类型 手镯 · 价格 60000 · 重量 2 · 耐久 2000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 875,
+  "name": "Rusty Medallion Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 2-2 · 命中 +1",
+  "meta": "类型 项链 · 价格 65000 · 重量 2 · 耐久 3000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 885,
+  "name": "Rusty Pendant Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +7 · 命中 +1",
+  "meta": "类型 项链 · 价格 80000 · 重量 2 · 耐久 2000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 868,
+  "name": "Rusty Seal Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 10-1",
+  "meta": "类型 戒指 · 价格 45000 · 重量 3 · 耐久 3000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 878,
+  "name": "Rusty Signet Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 2-2 · 道术 +3",
+  "meta": "类型 戒指 · 价格 45000 · 重量 2 · 耐久 2000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 894,
+  "name": "Scratched Bracelet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 1-2 · 风攻 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 874,
+  "name": "Scratched Bracelet Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 1-1 · 命中 +2",
+  "meta": "类型 手镯 · 价格 55000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 884,
+  "name": "Scratched Bracer Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔防 1-3 · 道术 +1",
+  "meta": "类型 手镯 · 价格 65000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 377,
+  "name": "Tainted Bracelet",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 2-3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 15000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 650,
+  "name": "Temperance Of Hunta",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 652,
+  "name": "Wisdom Of Dumachi",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 +1",
+  "meta": "类型 戒指 · 价格 50000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 897,
+  "name": "Worn Amulet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 +3",
+  "meta": "类型 项链 · 价格 60000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 890,
+  "name": "Worn Band Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 +2 · 魔攻 +4",
+  "meta": "类型 戒指 · 价格 45000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 893,
+  "name": "Worn Bracelet Of Dignity",
+  "cat": "全职业 · 20 级",
+  "stats": "性：魔攻 1-2 · 雷攻 +1",
+  "meta": "类型 手镯 · 价格 50000 · 重量 1 · 耐久 1000 · 可修理"
+ },
+ {
+  "id": 873,
+  "name": "Worn Bracelet Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 2-2 · 物攻 1-1",
+  "meta": "类型 手镯 · 价格 55000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 883,
+  "name": "Worn Bracer Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 1-3 · 道术 +1",
+  "meta": "类型 手镯 · 价格 65000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 877,
+  "name": "Worn Medallion Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 1-3 · 命中 +1",
+  "meta": "类型 项链 · 价格 65000 · 重量 2 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 887,
+  "name": "Worn Pendant Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 +3 · 道术 +3 · 命中 +1",
+  "meta": "类型 项链 · 价格 80000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 870,
+  "name": "Worn Seal Of Overlord",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 2-2 · 物攻 2-2",
+  "meta": "类型 戒指 · 价格 45000 · 重量 3 · 耐久 3000 · 可修理"
+ },
+ {
+  "id": 880,
+  "name": "Worn Signet Of Moon",
+  "cat": "全职业 · 20 级",
+  "stats": "性：道术 +6",
+  "meta": "类型 戒指 · 价格 65000 · 重量 2 · 耐久 2000 · 可修理"
+ },
+ {
+  "id": 309,
+  "name": "Blue Jade Necklace",
+  "cat": "全职业 · 21 级",
+  "stats": "性：物攻 2-2",
+  "meta": "类型 项链 · 价格 5000 · 重量 1 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 360,
+  "name": "Amulet Of Summoning",
+  "cat": "全职业 · 22 级",
+  "stats": "性：物攻 2-4",
+  "meta": "类型 项链 · 价格 8000 · 重量 1 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 469,
+  "name": "Bamboo Necklace",
+  "cat": "全职业 · 22 级",
+  "stats": "性：道术 1-3",
+  "meta": "类型 项链 · 价格 10000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 211,
+  "name": "Bracelet Of Sorcery",
+  "cat": "全职业 · 22 级",
+  "stats": "性：魔攻 +2",
+  "meta": "类型 手镯 · 价格 8000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 361,
+  "name": "Bracelet Of Summoning",
+  "cat": "全职业 · 22 级",
+  "stats": "性：魔攻 1-1",
+  "meta": "类型 手镯 · 价格 8000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 470,
+  "name": "Bracelet Of Three Eyes",
+  "cat": "全职业 · 22 级",
+  "stats": "性：道术 +2",
+  "meta": "类型 手镯 · 价格 8000 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 310,
+  "name": "Pendant Of Image",
+  "cat": "全职业 · 22 级",
+  "stats": "性：魔攻 1-3",
+  "meta": "类型 项链 · 价格 15000 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 359,
+  "name": "Signet Of Summoning",
+  "cat": "全职业 · 22 级",
+  "stats": "性：道术 1-3",
+  "meta": "类型 戒指 · 价格 8000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 481,
+  "name": "Amulet Of Chaos",
+  "cat": "全职业 · 23 级",
+  "stats": "性：魔攻 +9 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 662,
+  "name": "Amulet Of Dark Sorcery",
+  "cat": "全职业 · 23 级",
+  "stats": "性：魔攻 2-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 387,
+  "name": "Amulet Of Empowerment",
+  "cat": "全职业 · 23 级",
+  "stats": "性：物攻 +10 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 20000 · 重量 2 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 661,
+  "name": "Charm Of The Destroyer",
+  "cat": "全职业 · 23 级",
+  "stats": "性：物攻 2-8 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 482,
+  "name": "Pendant Of Destruction",
+  "cat": "全职业 · 23 级",
+  "stats": "性：物攻 1-9 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 4 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 663,
+  "name": "Pendant Of Purification",
+  "cat": "全职业 · 23 级",
+  "stats": "性：道术 +9 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 50000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 474,
+  "name": "Band Of Magic",
+  "cat": "全职业 · 25 级",
+  "stats": "性：魔攻 +4",
+  "meta": "类型 戒指 · 价格 12000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 624,
+  "name": "Band Of Netherworld",
+  "cat": "全职业 · 25 级",
+  "stats": "性：道术 2-5 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 30000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 385,
+  "name": "Battle Necklace",
+  "cat": "全职业 · 25 级",
+  "stats": "性：物攻 1-4",
+  "meta": "类型 项链 · 价格 7500 · 重量 2 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 625,
+  "name": "Diamond Encrusted Band",
+  "cat": "全职业 · 25 级",
+  "stats": "性：魔攻 2-5 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 60000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 383,
+  "name": "Fierce Dragon Ring",
+  "cat": "全职业 · 25 级",
+  "stats": "性：物攻 +5",
+  "meta": "类型 戒指 · 价格 5000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 210,
+  "name": "Gauntlet Of Deathbringer",
+  "cat": "全职业 · 25 级",
+  "stats": "性：物攻 1-2",
+  "meta": "类型 手镯 · 价格 5000 · 重量 2 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 381,
+  "name": "Gold Plated Bracelet",
+  "cat": "全职业 · 25 级",
+  "stats": "性：魔防 2-3 · 物攻 +1",
+  "meta": "类型 手镯 · 价格 10000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 475,
+  "name": "Pendant Of Wrath",
+  "cat": "全职业 · 25 级",
+  "stats": "性：魔攻 1-4",
+  "meta": "类型 项链 · 价格 22500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 626,
+  "name": "Perfection Ring",
+  "cat": "全职业 · 25 级",
+  "stats": "性：物攻 2-6 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 13000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 386,
+  "name": "Phantom Choker",
+  "cat": "全职业 · 25 级",
+  "stats": "性：道术 1-4",
+  "meta": "类型 项链 · 价格 15000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 384,
+  "name": "Ring Of Dawn",
+  "cat": "全职业 · 25 级",
+  "stats": "性：道术 +4",
+  "meta": "类型 戒指 · 价格 8000 · 重量 1 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 659,
+  "name": "Signet Of Evoker",
+  "cat": "全职业 · 25 级",
+  "stats": "性：魔攻 +7 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 60000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 660,
+  "name": "Signet Of Vicar",
+  "cat": "全职业 · 25 级",
+  "stats": "性：道术 +7 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 30000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 627,
+  "name": "Universe Ring",
+  "cat": "全职业 · 25 级",
+  "stats": "性：物攻 +8 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 13000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 375,
+  "name": "Bracer Of Artisan",
+  "cat": "全职业 · 26 级",
+  "stats": "性：道术 +4 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 492,
+  "name": "Red Maple Ring",
+  "cat": "全职业 · 26 级",
+  "stats": "性：物攻 2-4",
+  "meta": "类型 戒指 · 价格 7000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 334,
+  "name": "Claw Necklace",
+  "cat": "全职业 · 27 级",
+  "stats": "性：物攻 3-3",
+  "meta": "类型 项链 · 价格 10000 · 重量 1 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 491,
+  "name": "Hieroglyphic Ring",
+  "cat": "全职业 · 27 级",
+  "stats": "性：道术 +5",
+  "meta": "类型 戒指 · 价格 10000 · 重量 2 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 490,
+  "name": "Opal Ring",
+  "cat": "全职业 · 27 级",
+  "stats": "性：魔攻 +5",
+  "meta": "类型 戒指 · 价格 15000 · 重量 1 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 333,
+  "name": "Ring Of Exorcism",
+  "cat": "全职业 · 27 级",
+  "stats": "性：魔防 +4 · 物攻 1-2 · 魔攻 1-2 · 道术 1-2",
+  "meta": "类型 戒指 · 价格 10000 · 重量 2 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 517,
+  "name": "Amulet Of Five Elements",
+  "cat": "全职业 · 28 级",
+  "stats": "性：魔攻 3-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 100000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 516,
+  "name": "Amulet Of The Cult Leader",
+  "cat": "全职业 · 28 级",
+  "stats": "性：物攻 +11 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 50000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 518,
+  "name": "Amulet Of The Enlightened",
+  "cat": "全职业 · 28 级",
+  "stats": "性：道术 4-6 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 80000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 380,
+  "name": "Bronze Gauntlet",
+  "cat": "全职业 · 28 级",
+  "stats": "性：物防 1-4",
+  "meta": "类型 手镯 · 价格 15000 · 重量 5 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 376,
+  "name": "Dark Iron Gauntlet",
+  "cat": "全职业 · 28 级",
+  "stats": "性：物防 +4 · 魔防 +4 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 9 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 400,
+  "name": "Meteorite Pendant",
+  "cat": "全职业 · 28 级",
+  "stats": "性：物攻 4-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 30000 · 重量 4 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 473,
+  "name": "Necklace Of Nature",
+  "cat": "全职业 · 29 级",
+  "stats": "性：魔攻 +6",
+  "meta": "类型 项链 · 价格 30500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 489,
+  "name": "Spiked Ring",
+  "cat": "全职业 · 29 级",
+  "stats": "性：物攻 +6",
+  "meta": "类型 戒指 · 价格 9000 · 重量 3 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 343,
+  "name": "Tri Stone Necklace",
+  "cat": "全职业 · 29 级",
+  "stats": "性：道术 2-4",
+  "meta": "类型 项链 · 价格 23000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 666,
+  "name": "Bracelet Of Ascension",
+  "cat": "全职业 · 30 级",
+  "stats": "性：道术 2-3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 50000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 315,
+  "name": "Bracelet Of Spirit Caller",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 3-5 · 魔攻 2-4 · 道术 2-4",
+  "meta": "类型 手镯 · 价格 20000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 664,
+  "name": "Bracer Of Revelation",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 3-4 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 20000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 344,
+  "name": "Butcher's Necklace",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 +6",
+  "meta": "类型 项链 · 价格 12500 · 重量 2 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 472,
+  "name": "Choker Of Ashes",
+  "cat": "全职业 · 30 级",
+  "stats": "性：道术 1-5",
+  "meta": "类型 项链 · 价格 25000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 326,
+  "name": "Glowing Diamond Band",
+  "cat": "全职业 · 30 级",
+  "stats": "性：魔攻 +8 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 70000 · 重量 1 · 耐久 4000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 536,
+  "name": "Loop Of Secrets",
+  "cat": "全职业 · 30 级",
+  "stats": "性：道术 +8 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 40000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 314,
+  "name": "Necklace Of Spirit Caller",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 3-12 · 魔攻 2-9 · 道术 2-9",
+  "meta": "类型 项链 · 价格 20000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 345,
+  "name": "Puple Crystal Pendant",
+  "cat": "全职业 · 30 级",
+  "stats": "性：魔攻 1-5",
+  "meta": "类型 项链 · 价格 32500 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 665,
+  "name": "Ring Of Enlightenment",
+  "cat": "全职业 · 30 级",
+  "stats": "性：魔攻 2-3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 80000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 316,
+  "name": "Ring Of Spirit Caller",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 5-15 · 魔攻 4-9 · 道术 4-9",
+  "meta": "类型 戒指 · 价格 20000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 658,
+  "name": "Signet Of Myrmidon",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 1-8 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 13000 · 重量 1 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 581,
+  "name": "Skeleton Ring",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 +3",
+  "meta": "类型 戒指 · 价格 3000 · 重量 1 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 388,
+  "name": "Gloves Of Black Guard",
+  "cat": "全职业 · 32 级",
+  "stats": "性：物防 +3 · 魔防 +3",
+  "meta": "类型 手镯 · 价格 20000 · 重量 5 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 389,
+  "name": "Gauntlet Of Hero",
+  "cat": "全职业 · 33 级",
+  "stats": "性：物防 +5 · 魔防 +5 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 30000 · 重量 12 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 401,
+  "name": "Blessed Ring Of Exorcism",
+  "cat": "全职业 · 34 级",
+  "stats": "性：魔防 1-5 · 物攻 2-2 · 魔攻 2-2 · 道术 2-2",
+  "meta": "类型 戒指 · 价格 20000 · 重量 2 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 399,
+  "name": "Loop Of Seven Gems",
+  "cat": "全职业 · 35 级",
+  "stats": "性：魔攻 3-6 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 100000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 396,
+  "name": "Ring Of Endless Circle",
+  "cat": "全职业 · 35 级",
+  "stats": "性：道术 3-6 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 50000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 530,
+  "name": "Ring Of Unification",
+  "cat": "全职业 · 35 级",
+  "stats": "性：物攻 +10 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 16000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 533,
+  "name": "Gold Dragon Ring",
+  "cat": "全职业 · 37 级",
+  "stats": "性：物攻 +5",
+  "meta": "类型 戒指 · 价格 5000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 671,
+  "name": "Amulet Of Sirius",
+  "cat": "全职业 · 40 级",
+  "stats": "性：物攻 +12 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 70000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 397,
+  "name": "Ancient Myrmidon Band",
+  "cat": "全职业 · 40 级",
+  "stats": "性：物攻 2-9 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 19000 · 重量 3 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 674,
+  "name": "Celestial Necklace Of Eternity",
+  "cat": "全职业 · 40 级",
+  "stats": "性：道术 4-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 90000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 398,
+  "name": "Loop Of Endless Combat",
+  "cat": "全职业 · 40 级",
+  "stats": "性：物攻 +11 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 19000 · 重量 4 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 677,
+  "name": "The Master's Pendant",
+  "cat": "全职业 · 40 级",
+  "stats": "性：魔攻 4-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 120000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 672,
+  "name": "Bracelet Of Canopus",
+  "cat": "全职业 · 42 级",
+  "stats": "性：物攻 3-5 · 命中 +3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 22000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 675,
+  "name": "Dazzling Bracelet Of Earth",
+  "cat": "全职业 · 42 级",
+  "stats": "性：道术 2-4 · 敏捷 +1 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 60000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 678,
+  "name": "The Master's Bracelet",
+  "cat": "全职业 · 42 级",
+  "stats": "性：魔攻 3-3 · 暴击率 +2",
+  "meta": "类型 手镯 · 价格 85000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 676,
+  "name": "Brilliant Band Of Harmony",
+  "cat": "全职业 · 45 级",
+  "stats": "性：道术 3-7 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 60000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 673,
+  "name": "Ring Of Alpha Centauri",
+  "cat": "全职业 · 45 级",
+  "stats": "性：物攻 +12 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 20000 · 重量 4 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 679,
+  "name": "The Master's Ring",
+  "cat": "全职业 · 45 级",
+  "stats": "性：魔攻 4-7 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 120000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 835,
+  "name": "Ascension Bracelet",
+  "cat": "全职业 · 49 级",
+  "stats": "性：物攻 4-5 · 命中 +2",
+  "meta": "类型 手镯 · 价格 23000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 838,
+  "name": "Dragon Bracelet Of Supremacy",
+  "cat": "全职业 · 49 级",
+  "stats": "性：魔攻 3-4 · 敏捷 +2",
+  "meta": "类型 手镯 · 价格 90000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 841,
+  "name": "Keeper's Bracelet Of Insight",
+  "cat": "全职业 · 49 级",
+  "stats": "性：道术 3-4 · 命中 +2",
+  "meta": "类型 手镯 · 价格 70000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 836,
+  "name": "Band Of Unstable Energy",
+  "cat": "全职业 · 51 级",
+  "stats": "性：魔攻 6-7",
+  "meta": "类型 戒指 · 价格 130000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 839,
+  "name": "Gift Of Aquatic Guardian",
+  "cat": "全职业 · 51 级",
+  "stats": "性：道术 5-7",
+  "meta": "类型 戒指 · 价格 70000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 833,
+  "name": "The Sun Raiser",
+  "cat": "全职业 · 51 级",
+  "stats": "性：物攻 2-12",
+  "meta": "类型 戒指 · 价格 25000 · 重量 4 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 834,
+  "name": "Medallion Of The Eight Kings",
+  "cat": "全职业 · 52 级",
+  "stats": "性：物攻 2-12",
+  "meta": "类型 项链 · 价格 80000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 840,
+  "name": "Medallion Of Underworld",
+  "cat": "全职业 · 52 级",
+  "stats": "性：道术 6-7",
+  "meta": "类型 项链 · 价格 100000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 837,
+  "name": "Pendant Of The Full Moon",
+  "cat": "全职业 · 52 级",
+  "stats": "性：魔攻 6-7",
+  "meta": "类型 项链 · 价格 130000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 860,
+  "name": "Bloodthirsty Bracelet Of Carnage",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物攻 5-7",
+  "meta": "类型 手镯 · 价格 200000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 861,
+  "name": "Celestial Bracelet Of The Stars",
+  "cat": "全职业 · 55 级",
+  "stats": "性：魔防 +2 · 魔攻 4-4",
+  "meta": "类型 手镯 · 价格 180000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 687,
+  "name": "Chrome Armguard Of Earth",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物防 2-5 · 魔防 1-2",
+  "meta": "类型 手镯 · 价格 320000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 689,
+  "name": "Glowing Armguard Of Crescent",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物防 2-3 · 魔防 1-2",
+  "meta": "类型 手镯 · 价格 400000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 688,
+  "name": "Jade Armguard Of Purity",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物防 1-3 · 魔防 1-3",
+  "meta": "类型 手镯 · 价格 360000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 691,
+  "name": "Medallion Of Black Magic",
+  "cat": "全职业 · 55 级",
+  "stats": "性：魔防 +7 · 物攻 2-10 · 魔攻 3-7 · 道术 3-7 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 230000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 862,
+  "name": "Oracle's Bracer Of Serenity",
+  "cat": "全职业 · 55 级",
+  "stats": "性：物防 +2 · 道术 4-5",
+  "meta": "类型 手镯 · 价格 150000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 857,
+  "name": "Bloodthirsty Signet Of Carnage",
+  "cat": "全职业 · 56 级",
+  "stats": "性：物攻 4-14",
+  "meta": "类型 戒指 · 价格 200000 · 重量 5 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 858,
+  "name": "Celestial Loop Of The Stars",
+  "cat": "全职业 · 56 级",
+  "stats": "性：魔攻 4-9",
+  "meta": "类型 戒指 · 价格 180000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 859,
+  "name": "Oracle's Loop Of Serenity",
+  "cat": "全职业 · 56 级",
+  "stats": "性：道术 4-9",
+  "meta": "类型 戒指 · 价格 150000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 700,
+  "name": "Azure Armguard Of Purity",
+  "cat": "全职业 · 57 级",
+  "stats": "性：物防 2-3 · 魔防 2-3",
+  "meta": "类型 手镯 · 价格 450000 · 重量 3 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 701,
+  "name": "Blazing Armguard Of Crescent",
+  "cat": "全职业 · 57 级",
+  "stats": "性：物防 2-4 · 魔防 2-3",
+  "meta": "类型 手镯 · 价格 520000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 863,
+  "name": "Bloodthirsty Pendant Of Carnage",
+  "cat": "全职业 · 57 级",
+  "stats": "性：物攻 4-14",
+  "meta": "类型 项链 · 价格 300000 · 重量 4 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 864,
+  "name": "Celestial Amulet Of The Stars",
+  "cat": "全职业 · 57 级",
+  "stats": "性：魔攻 4-9",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 699,
+  "name": "Cobalt Armguard Of Earth",
+  "cat": "全职业 · 57 级",
+  "stats": "性：物防 3-4 · 魔防 1-2",
+  "meta": "类型 手镯 · 价格 400000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 865,
+  "name": "Oracle's Locket Of Serenity",
+  "cat": "全职业 · 57 级",
+  "stats": "性：道术 4-9",
+  "meta": "类型 项链 · 价格 200000 · 重量 3 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 697,
+  "name": "Aged Gold Band Of Mystic",
+  "cat": "全职业 · 60 级",
+  "stats": "性：道术 5-10 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 220000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 696,
+  "name": "Band Of Azure Sky",
+  "cat": "全职业 · 60 级",
+  "stats": "性：物攻 6-16 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 180000 · 重量 3 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 698,
+  "name": "Channeler's Signet Of Wizardry",
+  "cat": "全职业 · 60 级",
+  "stats": "性：魔攻 5-10 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 260000 · 重量 3 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 928,
+  "name": "Arcanist's Amulet Of Dignity",
+  "cat": "全职业 · 65 级",
+  "stats": "性：魔攻 4-9 · 暴击率 +2 · 魔法加成 +1 · 毒抗 +1",
+  "meta": "类型 项链 · 价格 250000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 926,
+  "name": "Arcanist's Band Of Dignity",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 +1 · 魔防 2-3 · 魔攻 4-9 · 暴击率 +2 · 魔法加成 +1 · 毒抗 +1",
+  "meta": "类型 戒指 · 价格 180000 · 重量 1 · 耐久 4000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 927,
+  "name": "Arcanist's Bracelet Of Dignity",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 +2 · 魔防 2-3 · 魔攻 5-6 · 暴击率 +2 · 魔法加成 +1 · 毒抗 +1",
+  "meta": "类型 手镯 · 价格 180000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 924,
+  "name": "Bracelet Of Overlord",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物攻 5-7 · 命中 +3 · 暴击率 +2 · 物攻加成 +1 · 毒抗 +1",
+  "meta": "类型 手镯 · 价格 180000 · 重量 3 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 930,
+  "name": "Hierophant's Bracer Of Moon",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 1-2 · 魔防 1-2 · 道术 4-6 · 暗黑攻击 +2 · 暴击率 +2 · 道术加成 +1 · 毒抗 +1",
+  "meta": "类型 手镯 · 价格 180000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 931,
+  "name": "Hierophant's Pendant Of Moon",
+  "cat": "全职业 · 65 级",
+  "stats": "性：道术 4-9 · 暴击率 +2 · 道术加成 +1 · 毒抗 +1",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 929,
+  "name": "Hierophant's Signet Of Moon",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 1-2 · 魔防 1-2 · 道术 4-9 · 暴击率 +2 · 道术加成 +1 · 毒抗 +1",
+  "meta": "类型 戒指 · 价格 180000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 925,
+  "name": "Medallion Of Overlord",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物攻 4-15 · 命中 +2 · 暴击率 +2 · 物攻加成 +1 · 毒抗 +1",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 9000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 923,
+  "name": "Seal Of Overlord",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 1-3 · 魔防 1-3 · 物攻 4-14 · 暴击率 +2 · 物攻加成 +1 · 毒抗 +1",
+  "meta": "类型 戒指 · 价格 180000 · 重量 3 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1015,
+  "name": "Garnet Bracelet",
+  "cat": "刺战 · 70 级",
+  "stats": "性：物攻 5-12 · 命中 +4 · 暴击伤害 +5",
+  "meta": "类型 手镯 · 价格 80000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1018,
+  "name": "Garnet Necklace",
+  "cat": "刺战 · 70 级",
+  "stats": "性：物攻 5-20 · 攻速 +1 · 暴击伤害 +5",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1012,
+  "name": "Garnet Ring",
+  "cat": "刺战 · 70 级",
+  "stats": "性：物攻 10-18 · 攻速 +1 · 暴击伤害 +5",
+  "meta": "类型 戒指 · 价格 80000 · 重量 1 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1016,
+  "name": "Lapis Lazuli Bracelet",
+  "cat": "法师 · 70 级",
+  "stats": "性：魔攻 5-10 · 敏捷 +2 · 暴击伤害 +5",
+  "meta": "类型 手镯 · 价格 80000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1019,
+  "name": "Lapis Lazuli Necklace",
+  "cat": "法师 · 70 级",
+  "stats": "性：生命 +100 · 魔攻 6-14 · 暴击伤害 +5",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1013,
+  "name": "Lapis Lazuli Ring",
+  "cat": "法师 · 70 级",
+  "stats": "性：魔攻 10-12 · 敏捷 +3 · 暴击伤害 +5",
+  "meta": "类型 戒指 · 价格 80000 · 重量 1 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1017,
+  "name": "Malachite Bracelet",
+  "cat": "道士 · 70 级",
+  "stats": "性：道术 5-10 · 敏捷 +2 · 暴击伤害 +5",
+  "meta": "类型 手镯 · 价格 80000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1020,
+  "name": "Malachite Necklace",
+  "cat": "道士 · 70 级",
+  "stats": "性：道术 6-14 · 敏捷 +4 · 暴击伤害 +5",
+  "meta": "类型 项链 · 价格 80000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1014,
+  "name": "Malachite Ring",
+  "cat": "道士 · 70 级",
+  "stats": "性：道术 9-15 · 敏捷 +3 · 暴击伤害 +5",
+  "meta": "类型 戒指 · 价格 80000 · 重量 1 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1062,
+  "name": "Alexandrite Bracelet",
+  "cat": "道士 · 79 级",
+  "stats": "性：道术 8-14 · 宠物攻加成 +25 · 暴击伤害 +10 · 物理抗性 +1",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 1065,
+  "name": "Alexandrite Necklace",
+  "cat": "道士 · 79 级",
+  "stats": "性：道术 10-18 · 敏捷 +5 · 暴击率 +2 · 宠物攻加成 +25 · 暴击伤害 +75",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 1059,
+  "name": "Alexandrite Ring",
+  "cat": "道士 · 79 级",
+  "stats": "性：道术 12-20 · 暴击率 +3 · 宠物攻加成 +25",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 1060,
+  "name": "Obsidian Bracelet",
+  "cat": "刺战 · 79 级",
+  "stats": "性：物攻 7-14 · 暴击伤害 +10 · 物理抗性 +1",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 1063,
+  "name": "Obsidian Necklace",
+  "cat": "刺战 · 79 级",
+  "stats": "性：物攻 12-24 · 攻速 +2 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 1057,
+  "name": "Obsidian Ring",
+  "cat": "刺战 · 79 级",
+  "stats": "性：物攻 12-25 · 命中 +3 · 暴击率 +2",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 1061,
+  "name": "Sapphire Bracelet",
+  "cat": "法师 · 79 级",
+  "stats": "性：魔攻 7-14 · 暴击伤害 +10 · 物理抗性 +1",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 1064,
+  "name": "Sapphire Necklace",
+  "cat": "法师 · 79 级",
+  "stats": "性：魔攻 9-17 · 敏捷 +5 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 1058,
+  "name": "Sapphire Ring",
+  "cat": "法师 · 79 级",
+  "stats": "性：魔攻 14-18 · 火攻 +10 · 暴击率 +3",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 1068,
+  "name": "Crushing Bracelet",
+  "cat": "战士 · 82 级",
+  "stats": "性：物攻 13-20 · 暴击率 +3 · 物攻加成 +5 · 格挡概率 +3",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1082,
+  "name": "Crushing Necklace",
+  "cat": "战士 · 82 级",
+  "stats": "性：物攻 20-30 · 攻速 +2 · 暴击率 +3 · 暴击伤害 +75",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1073,
+  "name": "Crushing Ring",
+  "cat": "战士 · 82 级",
+  "stats": "性：物攻 8-30 · 命中 +5 · 攻速 +2 · 暴击率 +2 · 物攻加成 +1",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1067,
+  "name": "Dusk Bracelet",
+  "cat": "刺客 · 82 级",
+  "stats": "性：魔法 +150 · 物攻 6-12 · 暴击率 +3 · 魔法加成 +2 · 格挡概率 +3",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1083,
+  "name": "Dusk Necklace",
+  "cat": "刺客 · 82 级",
+  "stats": "性：魔法 +125 · 物攻 24-28 · 攻速 +2 · 暴击率 +2",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1078,
+  "name": "Dusk Ring",
+  "cat": "刺客 · 82 级",
+  "stats": "性：魔法 +75 · 物攻 15-25 · 敏捷 +5 · 暴击率 +3 · 物攻加成 +1",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1076,
+  "name": "Occult Bracelet",
+  "cat": "法师 · 82 级",
+  "stats": "性：魔攻 11-15 · 暴击率 +3 · 魔法加成 +1 · 格挡概率 +3",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1081,
+  "name": "Occult Necklace",
+  "cat": "法师 · 82 级",
+  "stats": "性：魔攻 13-16 · 火攻 +15 · 冰攻 +25 · 暴击率 +3",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1074,
+  "name": "Occult Ring",
+  "cat": "法师 · 82 级",
+  "stats": "性：魔攻 11-20 · 雷攻 +10 · 暴击率 +3 · 魔法加成 +1",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 6000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1077,
+  "name": "Radiant Bracelet",
+  "cat": "道士 · 82 级",
+  "stats": "性：生命 +125 · 道术 8-16 · 暴击率 +3 · 宠物攻加成 +35 · 格挡概率 +3",
+  "meta": "类型 手镯 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1080,
+  "name": "Radiant Necklace",
+  "cat": "道士 · 82 级",
+  "stats": "性：道术 12-16 · 敏捷 +6 · 幻影攻击 +40 · 暴击率 +3 · 暴击伤害 +80",
+  "meta": "类型 项链 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1075,
+  "name": "Radiant Ring",
+  "cat": "道士 · 82 级",
+  "stats": "性：道术 8-23 · 神圣攻击 +8 · 暴击率 +3 · 宠物攻加成 +35",
+  "meta": "类型 戒指 · 价格 250000 · 重量 2 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 294,
+  "name": "!Balanced Bracelet (OLD)",
+  "cat": "全职业 · 100 级",
+  "meta": "类型 手镯 · 价格 5000 · 重量 0 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 320,
+  "name": "Blood Prophet's Cowl",
+  "cat": "刺客",
+  "stats": "性：物防 +5 · 魔防 1-11 · 物攻 +4",
+  "meta": "类型 头盔 · 价格 30000 · 重量 4 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 526,
+  "name": "Boots Of Black Tortoise",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 穿戴负重 +7 · 手持负重 +7",
+  "meta": "类型 鞋子 · 价格 30000 · 重量 3 · 耐久 12000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 318,
+  "name": "Boots Of Crimson Steed",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 穿戴负重 +11 · 手持负重 +11",
+  "meta": "类型 鞋子 · 价格 50000 · 重量 4 · 耐久 12000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 519,
+  "name": "Boots Of Despair",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 穿戴负重 +3 · 手持负重 +14",
+  "meta": "类型 鞋子 · 价格 30000 · 重量 2 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 521,
+  "name": "Boots Of Levitation",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 穿戴负重 +14 · 手持负重 +3",
+  "meta": "类型 鞋子 · 价格 30000 · 重量 2 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 520,
+  "name": "Boots Of Swiftness",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 穿戴负重 +20",
+  "meta": "类型 鞋子 · 价格 30000 · 重量 4 · 耐久 12000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1160,
+  "name": "Censorship Thurible",
+  "cat": "全职业",
+  "meta": "类型 盾牌 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 557,
+  "name": "Crown Of Dark Crusader",
+  "cat": "战法道",
+  "stats": "性：物防 2-6 · 魔防 2-5",
+  "meta": "类型 头盔 · 价格 30000 · 重量 20 · 耐久 10000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 325,
+  "name": "Crown Of Feral Lord",
+  "cat": "战法道",
+  "stats": "性：物防 1-4 · 魔防 2-10",
+  "meta": "类型 头盔 · 价格 30000 · 重量 4 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 535,
+  "name": "Enraged Demon's Hood",
+  "cat": "刺客",
+  "stats": "性：物防 +12 · 魔防 1-4 · 物攻 +4 · 魔攻 8-8 · 道术 8-8",
+  "meta": "类型 头盔 · 价格 30000 · 重量 20 · 耐久 10000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 579,
+  "name": "Enraged Falcon's Mask",
+  "cat": "刺客",
+  "stats": "性：物防 +8 · 魔防 1-6 · 物攻 +4 · 魔攻 12-12 · 道术 12-12",
+  "meta": "类型 头盔 · 价格 30000 · 重量 20 · 耐久 10000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 999,
+  "name": "FootBall Kit (F)",
+  "cat": "全职业",
+  "stats": "性：生命 +250 · 物防 2-12 · 魔防 3-14 · 物攻 5-10 · 魔攻 5-10 · 道术 5-10 · 幸运 +2 · 暴击伤害 +25",
+  "meta": "类型 护甲 · 价格 1000 · 重量 0 · 耐久 5000000 · 稀有度 Elite"
+ },
+ {
+  "id": 998,
+  "name": "FootBall Kit (M)",
+  "cat": "全职业",
+  "stats": "性：生命 +250 · 物防 2-12 · 魔防 3-14 · 物攻 5-10 · 魔攻 5-10 · 道术 5-10 · 幸运 +2 · 暴击伤害 +25",
+  "meta": "类型 护甲 · 价格 1000 · 重量 0 · 耐久 5000000 · 稀有度 Elite"
+ },
+ {
+  "id": 941,
+  "name": "Greaves Of Dragon Abyss",
+  "cat": "全职业",
+  "stats": "性：舒适度 +8 · 穿戴负重 +8 · 手持负重 +8",
+  "meta": "类型 鞋子 · 价格 35000 · 重量 0 · 耐久 18000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 904,
+  "name": "Greaves Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：舒适度 +8 · 穿戴负重 +16 · 手持负重 +14",
+  "meta": "类型 鞋子 · 价格 35000 · 重量 3 · 耐久 20000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 905,
+  "name": "Headcover Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：物防 2-5 · 魔防 3-11",
+  "meta": "类型 头盔 · 价格 40000 · 重量 13 · 耐久 8000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 995,
+  "name": "Heavy Boots",
+  "cat": "全职业",
+  "stats": "性：火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 舒适度 +8 · 穿戴负重 +12 · 手持负重 +12 · 物理抗性 +1",
+  "meta": "类型 鞋子 · 价格 75000 · 重量 3 · 耐久 15000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 935,
+  "name": "Helmet Of Dragon Abyss",
+  "cat": "全职业",
+  "stats": "性：物防 3-9 · 魔防 3-9",
+  "meta": "类型 头盔 · 价格 40000 · 重量 0 · 耐久 6000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 324,
+  "name": "Helmet Of The War God",
+  "cat": "战法道",
+  "stats": "性：物防 2-10 · 魔防 1-4",
+  "meta": "类型 头盔 · 价格 30000 · 重量 20 · 耐久 10000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1159,
+  "name": "Penance Thurible",
+  "cat": "全职业",
+  "meta": "类型 盾牌 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 1161,
+  "name": "Petrichor Thurible",
+  "cat": "全职业",
+  "meta": "类型 盾牌 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 1120,
+  "name": "Santa Outfit (F)",
+  "cat": "全职业",
+  "stats": "性：幸运 +2 · 经验加成 +150",
+  "meta": "类型 护甲 · 价格 1000 · 重量 0 · 耐久 50000 · 稀有度 Superior"
+ },
+ {
+  "id": 1121,
+  "name": "Santa Outfit (M)",
+  "cat": "全职业",
+  "stats": "性：幸运 +2 · 经验加成 +150",
+  "meta": "类型 护甲 · 价格 1000 · 重量 0 · 耐久 50000 · 稀有度 Superior"
+ },
+ {
+  "id": 587,
+  "name": "Shadow Chaser",
+  "cat": "全职业",
+  "stats": "性：舒适度 +7 · 手持负重 +20",
+  "meta": "类型 鞋子 · 价格 30000 · 重量 4 · 耐久 12000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1158,
+  "name": "War Thurible",
+  "cat": "全职业",
+  "meta": "类型 盾牌 · 价格 0 · 重量 0 · 可修理"
+ },
+ {
+  "id": 128,
+  "name": "Commoner Outfit (F)",
+  "cat": "战法道 · 1 级",
+  "stats": "性：物防 2-2 · 魔防 +1",
+  "meta": "类型 护甲 · 价格 500 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 127,
+  "name": "Commoner Outfit (M)",
+  "cat": "战法道 · 1 级",
+  "stats": "性：物防 2-2 · 魔防 +1",
+  "meta": "类型 护甲 · 价格 500 · 重量 5 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 131,
+  "name": "Trainee's Armour (F)",
+  "cat": "刺客 · 1 级",
+  "stats": "性：物防 +4 · 魔防 +1",
+  "meta": "类型 护甲 · 价格 500 · 重量 11 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 130,
+  "name": "Trainee's Armour (M)",
+  "cat": "刺客 · 1 级",
+  "stats": "性：物防 +4 · 魔防 +1",
+  "meta": "类型 护甲 · 价格 500 · 重量 11 · 耐久 5000 · 可修理"
+ },
+ {
+  "id": 235,
+  "name": "Straw Sandles",
+  "cat": "全职业 · 6 级",
+  "stats": "性：舒适度 +1 · 穿戴负重 +1 · 手持负重 +1",
+  "meta": "类型 鞋子 · 价格 1000 · 重量 1 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 231,
+  "name": "Bronze Helmet",
+  "cat": "战法道 · 9 级",
+  "stats": "性：物防 +1",
+  "meta": "类型 头盔 · 价格 1000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 232,
+  "name": "Trainee's Mask",
+  "cat": "刺客 · 9 级",
+  "stats": "性：物防 +2 · 魔攻 2-2 · 道术 2-2",
+  "meta": "类型 头盔 · 价格 1000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 189,
+  "name": "Light Armour (F)",
+  "cat": "战法道 · 11 级",
+  "stats": "性：物防 3-3 · 魔防 1-2",
+  "meta": "类型 护甲 · 价格 5000 · 重量 8 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 188,
+  "name": "Light Armour (M)",
+  "cat": "战法道 · 11 级",
+  "stats": "性：物防 3-3 · 魔防 1-2",
+  "meta": "类型 护甲 · 价格 5000 · 重量 8 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 191,
+  "name": "Shroud Of Stealth (F)",
+  "cat": "刺客 · 11 级",
+  "stats": "性：物防 +6 · 魔防 1-2",
+  "meta": "类型 护甲 · 价格 5000 · 重量 13 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 190,
+  "name": "Shroud Of Stealth (M)",
+  "cat": "刺客 · 11 级",
+  "stats": "性：物防 +6 · 魔防 1-2",
+  "meta": "类型 护甲 · 价格 5000 · 重量 13 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 1112,
+  "name": "Wooden Shield",
+  "cat": "全职业 · 13 级",
+  "stats": "性：物防 3-5 · 魔防 2-6 · 物攻 +5 · 魔攻 +4 · 道术 +4 · 命中 +2 · 敏捷 +2 · 经验加成 +75",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 5 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 233,
+  "name": "Apprentice's Mask",
+  "cat": "刺客 · 15 级",
+  "stats": "性：物防 +1 · 魔防 +1 · 魔攻 2-2 · 道术 2-2",
+  "meta": "类型 头盔 · 价格 3000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 234,
+  "name": "Magic Bronze Helmet",
+  "cat": "战法道 · 15 级",
+  "stats": "性：物防 +1 · 魔防 1-1",
+  "meta": "类型 头盔 · 价格 3000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 236,
+  "name": "Leather Shoes",
+  "cat": "全职业 · 16 级",
+  "stats": "性：舒适度 +2 · 穿戴负重 +2 · 手持负重 +2",
+  "meta": "类型 鞋子 · 价格 5000 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 319,
+  "name": "Disguise Of The Master",
+  "cat": "刺客 · 20 级",
+  "stats": "性：物防 +3 · 魔防 1-2 · 魔攻 4-4 · 道术 4-4",
+  "meta": "类型 头盔 · 价格 5500 · 重量 3 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 311,
+  "name": "Helmet Of Shaman",
+  "cat": "战法道 · 20 级",
+  "stats": "性：物防 1-2 · 魔防 2-3",
+  "meta": "类型 头盔 · 价格 5500 · 重量 3 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 795,
+  "name": "Iron Horse Armour",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物防 1-2 · 魔防 1-2",
+  "meta": "类型 马甲 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 321,
+  "name": "Assassination Mask",
+  "cat": "刺客 · 21 级",
+  "stats": "性：物防 +4 · 魔防 1-4 · 魔攻 4-4 · 道术 4-4",
+  "meta": "类型 头盔 · 价格 6000 · 重量 5 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 317,
+  "name": "White Skull Helmet",
+  "cat": "战法道 · 21 级",
+  "stats": "性：物防 2-3 · 魔防 1-2",
+  "meta": "类型 头盔 · 价格 6000 · 重量 5 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 1113,
+  "name": "Bronze Shield",
+  "cat": "全职业 · 22 级",
+  "stats": "性：物防 3-8 · 魔防 2-9 · 物攻 +7 · 魔攻 +6 · 道术 +6 · 命中 +3 · 敏捷 +3 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 物理抗性 +1",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 15 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 197,
+  "name": "Faith Robe (F)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 3-8 · 魔防 3-3 · 道术 +2",
+  "meta": "类型 护甲 · 价格 10000 · 重量 15 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 196,
+  "name": "Faith Robe (M)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 3-8 · 魔防 3-3 · 道术 +2",
+  "meta": "类型 护甲 · 价格 10000 · 重量 15 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 195,
+  "name": "Flame Robe (F)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 3-7 · 魔防 3-4 · 魔攻 +2",
+  "meta": "类型 护甲 · 价格 10000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 194,
+  "name": "Flame Robe (M)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 3-7 · 魔防 3-4 · 魔攻 +2",
+  "meta": "类型 护甲 · 价格 10000 · 重量 12 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 362,
+  "name": "Head-Guard Of Summoning",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 3-3",
+  "meta": "类型 头盔 · 价格 8000 · 重量 7 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 193,
+  "name": "Medium Armour (F)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 4-9 · 魔防 2-3",
+  "meta": "类型 护甲 · 价格 7000 · 重量 23 · 耐久 25000 · 可修理"
+ },
+ {
+  "id": 192,
+  "name": "Medium Armour (M)",
+  "cat": "战法道 · 22 级",
+  "stats": "性：物防 4-9 · 魔防 2-3",
+  "meta": "类型 护甲 · 价格 7000 · 重量 23 · 耐久 25000 · 可修理"
+ },
+ {
+  "id": 199,
+  "name": "Tunic Of Velocity (F)",
+  "cat": "刺客 · 22 级",
+  "stats": "性：物防 +13 · 魔防 1-4",
+  "meta": "类型 护甲 · 价格 7000 · 重量 20 · 耐久 25000 · 可修理"
+ },
+ {
+  "id": 198,
+  "name": "Tunic Of Velocity (M)",
+  "cat": "刺客 · 22 级",
+  "stats": "性：物防 +13 · 魔防 1-4",
+  "meta": "类型 护甲 · 价格 7000 · 重量 20 · 耐久 25000 · 可修理"
+ },
+ {
+  "id": 390,
+  "name": "Brightly Coloured Shoes",
+  "cat": "全职业 · 26 级",
+  "stats": "性：舒适度 +3 · 穿戴负重 +2 · 手持负重 +2",
+  "meta": "类型 鞋子 · 价格 8000 · 重量 1 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 382,
+  "name": "Bamboo Hat",
+  "cat": "战法道 · 27 级",
+  "stats": "性：物防 1-3 · 魔防 3-4",
+  "meta": "类型 头盔 · 价格 8000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 392,
+  "name": "White Lotus Disguise",
+  "cat": "刺客 · 27 级",
+  "stats": "性：物防 +5 · 魔防 1-3 · 物攻 +2 · 魔攻 5-5 · 道术 5-5",
+  "meta": "类型 头盔 · 价格 8000 · 重量 4 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 391,
+  "name": "Iron Wood Helmet",
+  "cat": "战法道 · 29 级",
+  "stats": "性：物防 3-4 · 魔防 1-3",
+  "meta": "类型 头盔 · 价格 9000 · 重量 6 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 393,
+  "name": "Red Lotus Disguise",
+  "cat": "刺客 · 29 级",
+  "stats": "性：物防 +5 · 魔防 1-5 · 物攻 +2 · 魔攻 6-6 · 道术 6-6",
+  "meta": "类型 头盔 · 价格 9000 · 重量 6 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 313,
+  "name": "Helmet Of Spirit Caller",
+  "cat": "战法道 · 30 级",
+  "stats": "性：物防 3-4 · 魔防 1-2",
+  "meta": "类型 头盔 · 价格 30000 · 重量 2 · 耐久 5000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 796,
+  "name": "Silver Horse Armour",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物防 2-2 · 魔防 2-2",
+  "meta": "类型 马甲 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 336,
+  "name": "Iron Plate Armour (F)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 5-15 · 魔防 3-4",
+  "meta": "类型 护甲 · 价格 21000 · 重量 51 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 335,
+  "name": "Iron Plate Armour (M)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 5-15 · 魔防 3-4",
+  "meta": "类型 护甲 · 价格 21000 · 重量 51 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 1114,
+  "name": "Iron Shield",
+  "cat": "全职业 · 33 级",
+  "stats": "性：物防 3-12 · 魔防 2-11 · 物攻 +13 · 魔攻 +12 · 道术 +12 · 命中 +4 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 物理抗性 +1",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 25 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 340,
+  "name": "Robe Of Balance (F)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 3-12 · 魔防 4-5 · 道术 +4",
+  "meta": "类型 护甲 · 价格 30000 · 重量 28 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 339,
+  "name": "Robe Of Balance (M)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 3-12 · 魔防 4-5 · 道术 +4",
+  "meta": "类型 护甲 · 价格 30000 · 重量 28 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 338,
+  "name": "Robe Of Dark Flame (F)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 3-10 · 魔防 5-6 · 魔攻 +4",
+  "meta": "类型 护甲 · 价格 30000 · 重量 17 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 337,
+  "name": "Robe Of Dark Flame (M)",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物防 3-10 · 魔防 5-6 · 魔攻 +4",
+  "meta": "类型 护甲 · 价格 30000 · 重量 17 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 525,
+  "name": "Rugged Leather Boots",
+  "cat": "全职业 · 33 级",
+  "stats": "性：舒适度 +4 · 穿戴负重 +3 · 手持负重 +3",
+  "meta": "类型 鞋子 · 价格 10000 · 重量 2 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 342,
+  "name": "Shadow Armour Of Deviation (F)",
+  "cat": "刺客 · 33 级",
+  "stats": "性：物防 +20 · 魔防 1-6",
+  "meta": "类型 护甲 · 价格 21000 · 重量 32 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 341,
+  "name": "Shadow Armour Of Deviation (M)",
+  "cat": "刺客 · 33 级",
+  "stats": "性：物防 +20 · 魔防 1-6",
+  "meta": "类型 护甲 · 价格 21000 · 重量 32 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 407,
+  "name": "Laurel Mask",
+  "cat": "刺客 · 35 级",
+  "stats": "性：物防 +6 · 魔防 1-7 · 物攻 +3 · 魔攻 7-7 · 道术 7-7 · 敏捷 +2",
+  "meta": "类型 头盔 · 价格 12000 · 重量 6 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 560,
+  "name": "Turban Of Discipline",
+  "cat": "战法道 · 35 级",
+  "stats": "性：物防 1-4 · 魔防 2-6",
+  "meta": "类型 头盔 · 价格 15000 · 重量 5 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 561,
+  "name": "Helmet Of The Conqueror",
+  "cat": "战法道 · 37 级",
+  "stats": "性：物防 2-6 · 魔防 1-4",
+  "meta": "类型 头盔 · 价格 18000 · 重量 7 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 578,
+  "name": "Hood Of Nemesis",
+  "cat": "刺客 · 37 级",
+  "stats": "性：物防 +8 · 魔防 1-4 · 物攻 +4 · 魔攻 7-7 · 道术 7-7",
+  "meta": "类型 头盔 · 价格 18000 · 重量 7 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 563,
+  "name": "Enchanted Iron Plate Armour (F)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 5-19 · 魔防 3-5",
+  "meta": "类型 护甲 · 价格 35000 · 重量 61 · 耐久 35000 · 可修理"
+ },
+ {
+  "id": 562,
+  "name": "Enchanted Iron Plate Armour (M)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 5-19 · 魔防 3-5",
+  "meta": "类型 护甲 · 价格 35000 · 重量 61 · 耐久 35000 · 可修理"
+ },
+ {
+  "id": 555,
+  "name": "Raiment Of Executioner(F)",
+  "cat": "刺客 · 38 级",
+  "stats": "性：物防 +24 · 魔防 1-7",
+  "meta": "类型 护甲 · 价格 35000 · 重量 39 · 耐久 35000 · 可修理"
+ },
+ {
+  "id": 554,
+  "name": "Raiment Of Executioner(M)",
+  "cat": "刺客 · 38 级",
+  "stats": "性：物防 +24 · 魔防 1-7",
+  "meta": "类型 护甲 · 价格 35000 · 重量 39 · 耐久 35000 · 可修理"
+ },
+ {
+  "id": 565,
+  "name": "Robe Of Conjurer (F)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 3-12 · 魔防 5-8 · 魔攻 +5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 20 · 耐久 23000 · 可修理"
+ },
+ {
+  "id": 564,
+  "name": "Robe Of Conjurer (M)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 3-12 · 魔防 5-8 · 魔攻 +5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 20 · 耐久 23000 · 可修理"
+ },
+ {
+  "id": 567,
+  "name": "Robe Of Preserver (F)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 3-14 · 魔防 4-6 · 道术 +5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 30 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 566,
+  "name": "Robe Of Preserver (M)",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物防 3-14 · 魔防 4-6 · 道术 +5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 30 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 527,
+  "name": "Silk Boots",
+  "cat": "全职业 · 38 级",
+  "stats": "性：舒适度 +5 · 穿戴负重 +4 · 手持负重 +4",
+  "meta": "类型 鞋子 · 价格 20000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 797,
+  "name": "Gold Horse Armour",
+  "cat": "全职业 · 40 级",
+  "stats": "性：物防 2-3 · 魔防 2-3",
+  "meta": "类型 马甲 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 349,
+  "name": "Nephrite Armour (F)",
+  "cat": "刺客 · 40 级",
+  "stats": "性：物防 +10 · 魔防 1-8 · 物攻 2-2 · 魔攻 6-6 · 道术 6-6 · 敏捷 +1",
+  "meta": "类型 护甲 · 价格 30000 · 重量 43 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 348,
+  "name": "Nephrite Armour (M)",
+  "cat": "刺客 · 40 级",
+  "stats": "性：物防 +10 · 魔防 1-8 · 物攻 2-2 · 魔攻 6-6 · 道术 6-6 · 敏捷 +1",
+  "meta": "类型 护甲 · 价格 30000 · 重量 43 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 347,
+  "name": "Wyvern Armour (F)",
+  "cat": "战法道 · 40 级",
+  "stats": "性：物防 2-8 · 魔防 3-6 · 物攻 1-3 · 魔攻 3-6 · 道术 3-6",
+  "meta": "类型 护甲 · 价格 30000 · 重量 35 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 346,
+  "name": "Wyvern Armour (M)",
+  "cat": "战法道 · 40 级",
+  "stats": "性：物防 2-8 · 魔防 3-6 · 物攻 1-3 · 魔攻 3-6 · 道术 3-6",
+  "meta": "类型 护甲 · 价格 30000 · 重量 35 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 958,
+  "name": "Archon's Battleplate (F)",
+  "cat": "道士 · 44 级",
+  "stats": "性：物防 8-23 · 魔防 10-19 · 道术 11-12",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 957,
+  "name": "Archon's Battleplate (M)",
+  "cat": "道士 · 44 级",
+  "stats": "性：物防 8-23 · 魔防 10-19 · 道术 11-12",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 937,
+  "name": "Armour Of Abyss (F)",
+  "cat": "刺客 · 44 级",
+  "stats": "性：物防 2-38 · 魔防 4-22 · 物攻 7-7 · 魔攻 3-3 · 道术 3-3 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 50000 · 重量 70 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 936,
+  "name": "Armour Of Abyss (M)",
+  "cat": "刺客 · 44 级",
+  "stats": "性：物防 2-38 · 魔防 4-22 · 物攻 7-7 · 魔攻 3-3 · 道术 3-3 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 50000 · 重量 70 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 570,
+  "name": "Armour Of Condemned (F)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 6-21 · 魔防 3-6 · 物攻 +2",
+  "meta": "类型 护甲 · 价格 35000 · 重量 81 · 耐久 39000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 569,
+  "name": "Armour Of Condemned (M)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 6-21 · 魔防 3-6 · 物攻 +2",
+  "meta": "类型 护甲 · 价格 35000 · 重量 81 · 耐久 39000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 956,
+  "name": "Elementalist's Battleplate (F)",
+  "cat": "法师 · 44 级",
+  "stats": "性：物防 8-21 · 魔防 11-21 · 魔攻 11-11",
+  "meta": "类型 护甲 · 价格 50000 · 重量 23 · 耐久 22000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 955,
+  "name": "Elementalist's Battleplate (M)",
+  "cat": "法师 · 44 级",
+  "stats": "性：物防 8-21 · 魔防 11-21 · 魔攻 11-11",
+  "meta": "类型 护甲 · 价格 50000 · 重量 23 · 耐久 22000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1115,
+  "name": "Ice Spike Shield",
+  "cat": "全职业 · 44 级",
+  "stats": "性：物防 3-14 · 魔防 2-13 · 物攻 +15 · 魔攻 +14 · 道术 +14 · 命中 +4 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 爆率加成 +25 · 物理抗性 +1",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 35 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 949,
+  "name": "Overlord's Battleplate (F)",
+  "cat": "战士 · 44 级",
+  "stats": "性：物防 10-30 · 魔防 8-16 · 物攻 12-12 · 命中 +2",
+  "meta": "类型 护甲 · 价格 50000 · 重量 90 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 948,
+  "name": "Overlord's Battleplate (M)",
+  "cat": "战士 · 44 级",
+  "stats": "性：物防 10-30 · 魔防 8-16 · 物攻 12-12 · 命中 +2",
+  "meta": "类型 护甲 · 价格 50000 · 重量 90 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 572,
+  "name": "Raiment Of Arch Mage (F)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 3-13 · 魔防 6-10 · 魔攻 2-5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 571,
+  "name": "Raiment Of Arch Mage (M)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 3-13 · 魔防 6-10 · 魔攻 2-5",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 574,
+  "name": "Raiment Of High Priest (F)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 4-15 · 魔防 5-7 · 道术 1-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 40 · 耐久 29000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 573,
+  "name": "Raiment Of High Priest (M)",
+  "cat": "战法道 · 44 级",
+  "stats": "性：物防 4-15 · 魔防 5-7 · 道术 1-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 40 · 耐久 29000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 576,
+  "name": "Tunic Of Annihilation (F)",
+  "cat": "刺客 · 44 级",
+  "stats": "性：物防 +27 · 魔防 1-8 · 物攻 2-2",
+  "meta": "类型 护甲 · 价格 35000 · 重量 49 · 耐久 39000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 575,
+  "name": "Tunic Of Annihilation (M)",
+  "cat": "刺客 · 44 级",
+  "stats": "性：物防 +27 · 魔防 1-8 · 物攻 2-2",
+  "meta": "类型 护甲 · 价格 35000 · 重量 49 · 耐久 39000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 844,
+  "name": "Lupine Greaves",
+  "cat": "全职业 · 45 级",
+  "stats": "性：舒适度 +7 · 穿戴负重 +12 · 手持负重 +7",
+  "meta": "类型 鞋子 · 价格 35000 · 重量 3 · 耐久 12000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 693,
+  "name": "Ghost Armour (F)",
+  "cat": "战法道 · 48 级",
+  "stats": "性：物防 6-21 · 魔防 9-10 · 物攻 1-5 · 魔攻 2-6 · 道术 2-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 692,
+  "name": "Ghost Armour (M)",
+  "cat": "战法道 · 48 级",
+  "stats": "性：物防 6-21 · 魔防 9-10 · 物攻 1-5 · 魔攻 2-6 · 道术 2-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 25 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 695,
+  "name": "Raiment Of Spectral Energy (F)",
+  "cat": "刺客 · 48 级",
+  "stats": "性：物防 +27 · 魔防 1-15 · 物攻 3-3 · 魔攻 6-6 · 道术 6-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 57 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 694,
+  "name": "Raiment Of Spectral Energy (M)",
+  "cat": "刺客 · 48 级",
+  "stats": "性：物防 +27 · 魔防 1-15 · 物攻 3-3 · 魔攻 6-6 · 道术 6-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 57 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 798,
+  "name": "Blue Horse Armour",
+  "cat": "全职业 · 50 级",
+  "stats": "性：物防 3-3 · 魔防 3-3",
+  "meta": "类型 马甲 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 843,
+  "name": "Lupine Headgear",
+  "cat": "战法道 · 50 级",
+  "stats": "性：物防 3-7 · 魔防 3-6",
+  "meta": "类型 头盔 · 价格 40000 · 重量 13 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 845,
+  "name": "Raven Hood Of Covertness",
+  "cat": "刺客 · 50 级",
+  "stats": "性：物防 +10 · 魔防 1-8 · 物攻 +5 · 魔攻 8-8 · 道术 8-8",
+  "meta": "类型 头盔 · 价格 40000 · 重量 13 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1116,
+  "name": "Defenders Embrace",
+  "cat": "全职业 · 51 级",
+  "stats": "性：物防 3-16 · 魔防 2-15 · 物攻 +17 · 魔攻 +15 · 道术 +15 · 命中 +4 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 金币加成 +45 · 物理抗性 +1",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 45 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 353,
+  "name": "Demon Hunter's Shroud (F)",
+  "cat": "刺客 · 51 级",
+  "stats": "性：物防 +15 · 魔防 1-11 · 物攻 9-9 · 魔攻 9-9 · 道术 9-9 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 63 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 352,
+  "name": "Demon Hunter's Shroud (M)",
+  "cat": "刺客 · 51 级",
+  "stats": "性：物防 +15 · 魔防 1-11 · 物攻 9-9 · 魔攻 9-9 · 道术 9-9 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 63 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 351,
+  "name": "Wyvern Armour Of Protection (F)",
+  "cat": "战法道 · 51 级",
+  "stats": "性：物防 3-12 · 魔防 4-8 · 物攻 9-9 · 魔攻 11-11 · 道术 11-11 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 44 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 350,
+  "name": "Wyvern Armour Of Protection (M)",
+  "cat": "战法道 · 51 级",
+  "stats": "性：物防 3-12 · 魔防 4-8 · 物攻 9-9 · 魔攻 11-11 · 道术 11-11 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 44 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 842,
+  "name": "Argent Sabatons Of Comet",
+  "cat": "全职业 · 55 级",
+  "stats": "性：舒适度 +7 · 穿戴负重 +14 · 手持负重 +16",
+  "meta": "类型 鞋子 · 价格 200000 · 重量 3 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 908,
+  "name": "Argent Battleplate Of Might (F)",
+  "cat": "战士 · 60 级",
+  "stats": "性：物防 7-25 · 魔防 5-12 · 物攻 2-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 85 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 907,
+  "name": "Argent Battleplate Of Might (M)",
+  "cat": "战士 · 60 级",
+  "stats": "性：物防 7-25 · 魔防 5-12 · 物攻 2-6",
+  "meta": "类型 护甲 · 价格 50000 · 重量 85 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 920,
+  "name": "Blazing Raiment Of Embers (F)",
+  "cat": "法师 · 60 级",
+  "stats": "性：物防 4-18 · 魔防 7-16 · 魔攻 9-9",
+  "meta": "类型 护甲 · 价格 65000 · 重量 30 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 919,
+  "name": "Blazing Raiment Of Embers (M)",
+  "cat": "法师 · 60 级",
+  "stats": "性：物防 4-18 · 魔防 7-16 · 魔攻 9-9",
+  "meta": "类型 护甲 · 价格 65000 · 重量 30 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1167,
+  "name": "Blue Dragon Armour",
+  "cat": "全职业 · 60 级",
+  "meta": "类型 马甲 · 价格 0 · 重量 0 · 稀有度 Elite"
+ },
+ {
+  "id": 799,
+  "name": "Dark Horse Armour",
+  "cat": "全职业 · 60 级",
+  "stats": "性：物防 3-4 · 魔防 3-4",
+  "meta": "类型 马甲 · 价格 0 · 重量 0"
+ },
+ {
+  "id": 922,
+  "name": "Demonic Raiment Of Illusion (F)",
+  "cat": "道士 · 60 级",
+  "stats": "性：物防 5-20 · 魔防 6-14 · 物攻 1-4 · 道术 9-9",
+  "meta": "类型 护甲 · 价格 65000 · 重量 35 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 921,
+  "name": "Demonic Raiment Of Illusion (M)",
+  "cat": "道士 · 60 级",
+  "stats": "性：物防 5-20 · 魔防 6-14 · 物攻 1-4 · 道术 9-9",
+  "meta": "类型 护甲 · 价格 65000 · 重量 35 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1166,
+  "name": "Royal Horse Armour",
+  "cat": "全职业 · 60 级",
+  "meta": "类型 马甲 · 价格 0 · 重量 0 · 稀有度 Elite"
+ },
+ {
+  "id": 690,
+  "name": "Wind Walkers",
+  "cat": "全职业 · 60 级",
+  "stats": "性：舒适度 +7 · 穿戴负重 +14 · 手持负重 +16",
+  "meta": "类型 鞋子 · 价格 220000 · 重量 3 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 916,
+  "name": "Wyvern Scale Armour (F)",
+  "cat": "刺客 · 60 级",
+  "stats": "性：物防 +34 · 魔防 1-20 · 物攻 10-10 · 魔攻 10-10 · 道术 10-10 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 58000 · 重量 83 · 耐久 42000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 915,
+  "name": "Wyvern Scale Armour (M)",
+  "cat": "刺客 · 60 级",
+  "stats": "性：物防 +34 · 魔防 1-20 · 物攻 10-10 · 魔攻 10-10 · 道术 10-10 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 58000 · 重量 83 · 耐久 42000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 918,
+  "name": "Armour Of Demonic Wrath (F)",
+  "cat": "刺客 · 64 级",
+  "stats": "性：物防 +33 · 魔防 1-34 · 物攻 13-13 · 魔攻 12-12 · 道术 12-12 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 90000 · 重量 92 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 917,
+  "name": "Armour Of Demonic Wrath (M)",
+  "cat": "刺客 · 64 级",
+  "stats": "性：物防 5-33 · 魔防 5-34 · 物攻 13-13 · 魔攻 12-12 · 道术 12-12 · 命中 +2 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 90000 · 重量 92 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 914,
+  "name": "Azure Raiment Of Illusion (F)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 6-24 · 魔防 8-24 · 物攻 2-5 · 道术 12-12",
+  "meta": "类型 护甲 · 价格 80000 · 重量 60 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 913,
+  "name": "Azure Raiment Of Illusion (M)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 6-24 · 魔防 8-24 · 物攻 2-5 · 道术 12-12",
+  "meta": "类型 护甲 · 价格 80000 · 重量 60 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 912,
+  "name": "Blazing Raiment Of Phoenix (F)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 5-24 · 魔防 9-24 · 魔攻 11-11",
+  "meta": "类型 护甲 · 价格 90000 · 重量 35 · 耐久 22000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 911,
+  "name": "Blazing Raiment Of Phoenix (M)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 5-24 · 魔防 9-24 · 魔攻 11-11",
+  "meta": "类型 护甲 · 价格 90000 · 重量 35 · 耐久 22000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 910,
+  "name": "Sacred Warplate Of Mastery (F)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 8-30 · 魔防 7-25 · 物攻 12-12",
+  "meta": "类型 护甲 · 价格 60000 · 重量 105 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 909,
+  "name": "Sacred Warplate Of Mastery (M)",
+  "cat": "战法道 · 64 级",
+  "stats": "性：物防 8-30 · 魔防 7-25 · 物攻 12-12",
+  "meta": "类型 护甲 · 价格 60000 · 重量 105 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1117,
+  "name": "Reflection Mirror Shield",
+  "cat": "全职业 · 65 级",
+  "stats": "性：物防 3-16 · 魔防 2-15 · 物攻 +17 · 魔攻 +15 · 道术 +15 · 命中 +4 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 经验加成 +10 · 爆率加成 +15 · 金币加成 +10 · 物理抗性 +1 · 毒抗 +5",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 55 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1002,
+  "name": "Armour of the Blessed King",
+  "cat": "战士 · 70 级",
+  "stats": "性：生命 +250 · 魔法 +200 · 物防 15-35 · 魔防 12-27 · 物攻 13-13 · 命中 +4",
+  "meta": "类型 护甲 · 价格 60000 · 重量 100 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1003,
+  "name": "Armour of the Blessed Queen",
+  "cat": "战士 · 70 级",
+  "stats": "性：生命 +250 · 魔法 +200 · 物防 15-35 · 魔防 12-27 · 物攻 13-13 · 命中 +4",
+  "meta": "类型 护甲 · 价格 60000 · 重量 100 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1007,
+  "name": "Robes of the Blessed One (F)",
+  "cat": "道士 · 70 级",
+  "stats": "性：生命 +150 · 魔法 +150 · 物防 10-20 · 魔防 12-24 · 道术 15-15 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 28 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1006,
+  "name": "Robes of the Blessed One (M)",
+  "cat": "道士 · 70 级",
+  "stats": "性：生命 +150 · 魔法 +150 · 物防 10-20 · 魔防 12-24 · 道术 15-15 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 28 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1001,
+  "name": "Tunic of the Blood God (F)",
+  "cat": "刺客 · 70 级",
+  "stats": "性：魔法 +125 · 物防 5-35 · 魔防 10-25 · 物攻 10-10 · 魔攻 5-5 · 道术 5-5 · 命中 +3 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 60000 · 重量 100 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1000,
+  "name": "Tunic of the Blood God (M)",
+  "cat": "刺客 · 70 级",
+  "stats": "性：魔法 +125 · 物防 5-35 · 魔防 10-25 · 物攻 10-10 · 魔攻 5-5 · 道术 5-5 · 命中 +3 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 60000 · 重量 100 · 耐久 45000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1005,
+  "name": "Vestment of Shattered Souls (F)",
+  "cat": "法师 · 70 级",
+  "stats": "性：生命 +100 · 物防 2-8 · 魔防 6-12 · 魔攻 15-15 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 25 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1004,
+  "name": "Vestment of Shattered Souls (M)",
+  "cat": "法师 · 70 级",
+  "stats": "性：生命 +100 · 物防 2-8 · 魔防 6-12 · 魔攻 15-15 · 敏捷 +2",
+  "meta": "类型 护甲 · 价格 60000 · 重量 25 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1040,
+  "name": "Armour of Arcane Fury (F)",
+  "cat": "法师 · 75 级",
+  "stats": "性：生命 +200 · 魔法 +500 · 物防 12-20 · 魔防 10-30 · 魔攻 4-16 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 250000 · 重量 20 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1039,
+  "name": "Armour of Arcane Fury (M)",
+  "cat": "法师 · 75 级",
+  "stats": "性：生命 +200 · 魔法 +500 · 物防 12-20 · 魔防 10-30 · 魔攻 4-16 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 250000 · 重量 20 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1042,
+  "name": "Armour of Eternal Rest (F)",
+  "cat": "道士 · 75 级",
+  "stats": "性：生命 +100 · 魔法 +500 · 物防 20-30 · 魔防 15-27 · 道术 7-20 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 250000 · 重量 30 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1041,
+  "name": "Armour of Eternal Rest (M)",
+  "cat": "道士 · 75 级",
+  "stats": "性：生命 +100 · 魔法 +500 · 物防 20-30 · 魔防 15-27 · 道术 7-20 · 敏捷 +3",
+  "meta": "类型 护甲 · 价格 250000 · 重量 30 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1038,
+  "name": "Armour of the Sun Keeper (F)",
+  "cat": "战士 · 75 级",
+  "stats": "性：生命 +75 · 魔法 +500 · 物防 20-45 · 魔防 20-32 · 物攻 8-20",
+  "meta": "类型 护甲 · 价格 250000 · 重量 40 · 耐久 50000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1037,
+  "name": "Armour of the Sun Keeper (M)",
+  "cat": "战士 · 75 级",
+  "stats": "性：生命 +75 · 魔法 +500 · 物防 20-45 · 魔防 20-32 · 物攻 8-20",
+  "meta": "类型 护甲 · 价格 250000 · 重量 40 · 耐久 50000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1047,
+  "name": "Half Moon Hood",
+  "cat": "道士 · 75 级",
+  "stats": "性：物防 5-10 · 魔防 7-12 · 道术 2-6",
+  "meta": "类型 头盔 · 价格 250000 · 重量 15 · 耐久 8000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1045,
+  "name": "Kingsguard Helmet",
+  "cat": "战士 · 75 级",
+  "stats": "性：物防 6-15 · 魔防 7-14 · 物攻 4-6",
+  "meta": "类型 头盔 · 价格 250000 · 重量 25 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1118,
+  "name": "Maple Guard Adamantine Shield",
+  "cat": "全职业 · 75 级",
+  "stats": "性：物防 3-16 · 魔防 2-15 · 物攻 +17 · 魔攻 +15 · 道术 +15 · 命中 +4 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 经验加成 +25 · 爆率加成 +15 · 金币加成 +25 · 物理抗性 +1 · 闪避概率 +4",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 65 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1048,
+  "name": "Nightstalkers Cowl",
+  "cat": "刺客 · 75 级",
+  "stats": "性：物防 4-13 · 魔防 5-12 · 物攻 +8",
+  "meta": "类型 头盔 · 价格 250000 · 重量 20 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1046,
+  "name": "Shimmering Light Crown",
+  "cat": "法师 · 75 级",
+  "stats": "性：物防 5-10 · 魔防 6-9 · 魔攻 3-4",
+  "meta": "类型 头盔 · 价格 250000 · 重量 10 · 耐久 7000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1044,
+  "name": "Tunic of Whispers (F)",
+  "cat": "刺客 · 75 级",
+  "stats": "性：生命 +200 · 魔法 +300 · 物防 10-40 · 魔防 12-34 · 物攻 15-15 · 魔攻 8-8 · 道术 8-8 · 命中 +4 · 敏捷 +4",
+  "meta": "类型 护甲 · 价格 250000 · 重量 35 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1043,
+  "name": "Tunic of Whispers (M)",
+  "cat": "刺客 · 75 级",
+  "stats": "性：生命 +200 · 魔法 +300 · 物防 10-40 · 魔防 12-34 · 物攻 15-15 · 魔攻 8-8 · 道术 8-8 · 命中 +4 · 敏捷 +4",
+  "meta": "类型 护甲 · 价格 250000 · 重量 35 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1055,
+  "name": "Lifeseeker Boots",
+  "cat": "道士 · 77 级",
+  "stats": "性：物防 4-7 · 魔防 4-7 · 火抗 +1 · 雷抗 +1 · 舒适度 +8 · 穿戴负重 +15 · 手持负重 +10 · 物理抗性 +1",
+  "meta": "类型 鞋子 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1053,
+  "name": "Striking Boots",
+  "cat": "刺战 · 77 级",
+  "stats": "性：物防 5-10 · 魔防 5-10 · 火抗 +1 · 风抗 +1 · 神圣抗性 +1 · 舒适度 +8 · 穿戴负重 +15 · 手持负重 +10",
+  "meta": "类型 鞋子 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1054,
+  "name": "Swiftcaster Boots",
+  "cat": "法师 · 77 级",
+  "stats": "性：物防 3-5 · 魔防 3-5 · 火抗 +1 · 幻影抗性 +1 · 舒适度 +8 · 穿戴负重 +15 · 手持负重 +10 · 物理抗性 +1",
+  "meta": "类型 鞋子 · 价格 250000 · 重量 2 · 耐久 10000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1105,
+  "name": "Armour of the Titan Slayer (F)",
+  "cat": "战士 · 83 级",
+  "stats": "性：生命 +275 · 魔法 +250 · 物防 33-67 · 魔防 25-56 · 物攻 15-25 · 命中 +6 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 40 · 耐久 50000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1104,
+  "name": "Armour of the Titan Slayer (M)",
+  "cat": "战士 · 83 级",
+  "stats": "性：生命 +275 · 魔法 +250 · 物防 33-67 · 魔防 25-56 · 物攻 15-25 · 命中 +6 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 40 · 耐久 50000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1107,
+  "name": "Rainments of the Blazing Comet (F)",
+  "cat": "法师 · 83 级",
+  "stats": "性：生命 +125 · 魔法 +500 · 物防 15-35 · 魔防 15-35 · 魔攻 12-19 · 敏捷 +5 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 20 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1106,
+  "name": "Rainments of the Blazing Comet (M)",
+  "cat": "法师 · 83 级",
+  "stats": "性：生命 +125 · 魔法 +500 · 物防 15-35 · 魔防 15-35 · 魔攻 12-19 · 敏捷 +5 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 20 · 耐久 30000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1109,
+  "name": "Robes of the Titan Slayer (F)",
+  "cat": "道士 · 83 级",
+  "stats": "性：生命 +155 · 魔法 +300 · 物防 20-35 · 魔防 22-35 · 道术 9-22 · 敏捷 +5 · 幻影攻击 +25 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 30 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1108,
+  "name": "Robes of the Titan Slayer (M)",
+  "cat": "道士 · 83 级",
+  "stats": "性：生命 +155 · 魔法 +300 · 物防 20-35 · 魔防 22-35 · 道术 9-22 · 敏捷 +5 · 幻影攻击 +25 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 30 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1101,
+  "name": "Tunic of Vengence (F)",
+  "cat": "刺客 · 83 级",
+  "stats": "性：生命 +100 · 魔法 +200 · 物防 33-44 · 魔防 25-40 · 物攻 15-18 · 魔攻 8-8 · 道术 8-8 · 命中 +5 · 敏捷 +6 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 35 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1103,
+  "name": "Tunic of Vengence (M)",
+  "cat": "刺客 · 83 级",
+  "stats": "性：生命 +100 · 魔法 +200 · 物防 +44 · 魔防 25-40 · 物攻 15-18 · 魔攻 8-8 · 道术 8-8 · 命中 +5 · 敏捷 +6 · 爆率加成 +20 · 毒抗 +2",
+  "meta": "类型 护甲 · 价格 250000 · 重量 35 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1088,
+  "name": "Worm Squashers",
+  "cat": "全职业 · 83 级",
+  "stats": "性：生命 +250 · 物防 22-20 · 魔防 22-20 · 火抗 +2 · 冰抗 +2 · 雷抗 +2 · 风抗 +2 · 神圣抗性 +2 · 暗黑抗性 +2 · 幻影抗性 +2 · 舒适度 +8 · 背包负重 +350 · 穿戴负重 +22 · 手持负重 +25",
+  "meta": "类型 鞋子 · 价格 75000 · 重量 3 · 耐久 15000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1119,
+  "name": "Barrage breaker Phoenix Shield",
+  "cat": "全职业 · 86 级",
+  "stats": "性：物防 12-36 · 魔防 8-30 · 物攻 +30 · 魔攻 +30 · 道术 +30 · 命中 +14 · 敏捷 +4 · 火抗 +1 · 冰抗 +1 · 雷抗 +1 · 风抗 +1 · 神圣抗性 +1 · 暗黑抗性 +1 · 幻影抗性 +1 · 经验加成 +55 · 爆率加成 +75 · 金币加成 +75 · Boss追踪 +1 · 物理抗性 +1",
+  "meta": "类型 盾牌 · 价格 10000 · 重量 75 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 685,
+  "name": "Afterlife",
+  "cat": "战法道",
+  "stats": "性：物攻 9-21 · 道术 5-17 · 命中 +4 · 神圣攻击 +11 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 26000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 683,
+  "name": "Apocalypse",
+  "cat": "战法道",
+  "stats": "性：物攻 +55 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 100000 · 重量 0 · 耐久 35000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 971,
+  "name": "Assassin's Edge",
+  "cat": "刺客",
+  "stats": "性：物攻 6-41 · 攻速 +2 · 暴击率 +5",
+  "meta": "类型 武器 · 价格 125000 · 重量 0 · 耐久 60000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 900,
+  "name": "Blade Of The Dragon Lord",
+  "cat": "全职业",
+  "stats": "性：物攻 15-55 · 魔攻 8-22 · 道术 8-22 · 命中 +6 · 攻速 +4",
+  "meta": "类型 武器 · 价格 360000 · 重量 17 · 耐久 30000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 961,
+  "name": "Blades Of Sama",
+  "cat": "刺客",
+  "stats": "性：物攻 7-50 · 命中 +2 · 攻速 +2 · 物攻加成 +2",
+  "meta": "类型 武器 · 价格 40000 · 重量 90 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 959,
+  "name": "Burning Blade Of Sama",
+  "cat": "法师",
+  "stats": "性：物攻 6-23 · 魔攻 4-30 · 火攻 +10",
+  "meta": "类型 武器 · 价格 40000 · 重量 18 · 耐久 22000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1027,
+  "name": "Celestia, Fan of the Heavens",
+  "cat": "道士",
+  "stats": "性：物攻 10-60 · 道术 22-55 · 幻影攻击 +42 · 暴击率 +2 · 道术加成 +3 · 暴击伤害 +30",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 40000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1028,
+  "name": "Chaos, The Spiral Death",
+  "cat": "刺客",
+  "stats": "性：魔法 +300 · 物攻 30-104 · 命中 +6 · 攻速 +4 · 暴击率 +2 · 暴击伤害 +30",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 75000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1162,
+  "name": "Chaotic Heaven Blade",
+  "cat": "战法道",
+  "meta": "类型 武器 · 价格 0 · 重量 0 · 耐久 100000 · 可修理"
+ },
+ {
+  "id": 1165,
+  "name": "Chaotic Heaven Blade 2",
+  "cat": "刺客",
+  "meta": "类型 武器 · 价格 0 · 重量 0 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 1124,
+  "name": "Crescent Moon Cry of the Fallen",
+  "cat": "刺客",
+  "stats": "性：魔法 +400 · 物攻 44-160 · 命中 +8 · 攻速 +4 · 火攻 +25 · 吸血 +5 · 暴击率 +4 · 物攻加成 +4 · 暴击伤害 +45 · 格挡概率 +2 · 闪避概率 +5",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 75000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1026,
+  "name": "Deluge, Winter's Might",
+  "cat": "法师",
+  "stats": "性：魔法 +750 · 物攻 10-25 · 魔攻 20-50 · 火攻 +50 · 暴击率 +2 · 暴击伤害 +30",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 30000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 820,
+  "name": "Divine Blade Of Judgement",
+  "cat": "战法道",
+  "stats": "性：物攻 9-24 · 道术 4-14 · 命中 +3 · 神圣攻击 +10 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 26000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 638,
+  "name": "Divine Command",
+  "cat": "刺客",
+  "stats": "性：物攻 8-37 · 攻速 +2 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 35000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 636,
+  "name": "Glaive Of Doom",
+  "cat": "战法道",
+  "stats": "性：物攻 9-20 · 魔攻 3-33 · 命中 +7 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 18000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 684,
+  "name": "Heavenly Staff Of Immortality",
+  "cat": "战法道",
+  "stats": "性：物攻 6-22 · 魔攻 4-24 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 100000 · 重量 0 · 耐久 19000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1164,
+  "name": "Janitors Dual Blade",
+  "cat": "刺客",
+  "meta": "类型 武器 · 价格 0 · 重量 0 · 耐久 100000 · 可修理"
+ },
+ {
+  "id": 1163,
+  "name": "Janitors Scimitar",
+  "cat": "战法道",
+  "meta": "类型 武器 · 价格 0 · 重量 0 · 耐久 100000 · 可修理"
+ },
+ {
+  "id": 1123,
+  "name": "Lifebinder The Ancient Healer",
+  "cat": "道士",
+  "stats": "性：生命 +300 · 魔法 +450 · 物攻 33-90 · 道术 55-90 · 敏捷 +12 · 幻影攻击 +55 · 拾取半径 +3 · 暴击率 +5 · 道术加成 +3 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 40000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1025,
+  "name": "Nemesis, The Blade of Betrayal",
+  "cat": "战士",
+  "stats": "性：物攻 30-130 · 命中 +12 · 攻速 +6 · 吸血 +2 · 暴击率 +2 · 暴击伤害 +30",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 100000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 819,
+  "name": "Obsidian Giant Blade",
+  "cat": "战法道",
+  "stats": "性：物攻 2-50 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 36000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 686,
+  "name": "Phoenix Glaive Of Havoc",
+  "cat": "刺客",
+  "stats": "性：物攻 10-45 · 攻速 +2 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 100000 · 重量 0 · 耐久 35000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 822,
+  "name": "Ruination",
+  "cat": "刺客",
+  "stats": "性：物攻 6-41 · 攻速 +2 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 36000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 821,
+  "name": "Staff Of Retribution",
+  "cat": "战法道",
+  "stats": "性：物攻 6-20 · 魔攻 6-20 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 19000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 1125,
+  "name": "StormCaller The Sky Blade",
+  "cat": "法师",
+  "stats": "性：生命 +300 · 魔法 +500 · 魔攻 25-90 · 敏捷 +8 · 风攻 +55 · 拾取半径 +3 · 反伤 +5 · 暴击率 +3 · 魔法加成 +4 · JudgementOfHeaven +100 · 背包负重 +1000 · 暴击伤害 +45",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 30000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 635,
+  "name": "Sword Of Abyss",
+  "cat": "战法道",
+  "stats": "性：物攻 8-44 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 35000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 970,
+  "name": "Taoist's Edge",
+  "cat": "道士",
+  "stats": "性：物攻 9-24 · 道术 4-14 · 命中 +3 · 神圣攻击 +10 · 暴击率 +5",
+  "meta": "类型 武器 · 价格 125000 · 重量 0 · 耐久 60000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 960,
+  "name": "Unholy Blade Of Sama",
+  "cat": "道士",
+  "stats": "性：物攻 10-23 · 道术 6-25 · 暗黑攻击 +10 · 道术加成 +2",
+  "meta": "类型 武器 · 价格 40000 · 重量 37 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1122,
+  "name": "Valkyrie Blade of Reckoning",
+  "cat": "战士",
+  "stats": "性：生命 +150 · 物攻 35-185 · 命中 +8 · 攻速 +3 · 火攻 +35 · 吸血 +12 · 经验加成 +20 · 暴击率 +4 · 物攻加成 +4 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 800000 · 重量 0 · 耐久 100000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 637,
+  "name": "Warden's Fan Of Obedience",
+  "cat": "战法道",
+  "stats": "性：物攻 8-20 · 道术 5-16 · 命中 +3 · 神圣攻击 +10 · 暴击率 +2",
+  "meta": "类型 武器 · 价格 80000 · 重量 0 · 耐久 25000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 968,
+  "name": "Warrior's Edge",
+  "cat": "战士",
+  "stats": "性：物攻 2-50 · 暴击率 +5",
+  "meta": "类型 武器 · 价格 125000 · 重量 0 · 耐久 60000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 969,
+  "name": "Wizard's Edge",
+  "cat": "法师",
+  "stats": "性：物攻 6-20 · 魔攻 6-20 · 暴击率 +5",
+  "meta": "类型 武器 · 价格 125000 · 重量 0 · 耐久 60000 · 可修理 · 稀有度 Elite"
+ },
+ {
+  "id": 953,
+  "name": "Wraith Blade Of Sama",
+  "cat": "战士",
+  "stats": "性：物攻 +60 · 命中 +2 · 物攻加成 +2",
+  "meta": "类型 武器 · 价格 40000 · 重量 100 · 耐久 37000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 129,
+  "name": "Trainee's Glaive",
+  "cat": "刺客 · 1 级",
+  "stats": "性：物攻 2-5",
+  "meta": "类型 武器 · 价格 50 · 重量 5 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 126,
+  "name": "Wood Sword",
+  "cat": "战法道 · 1 级",
+  "stats": "性：物攻 2-5",
+  "meta": "类型 武器 · 价格 50 · 重量 5 · 耐久 4000 · 可修理"
+ },
+ {
+  "id": 445,
+  "name": "Apprentice's Hand Blade",
+  "cat": "刺客 · 3 级",
+  "stats": "性：物攻 3-5",
+  "meta": "类型 武器 · 价格 100 · 重量 5 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 174,
+  "name": "Dagger",
+  "cat": "战法道 · 3 级",
+  "stats": "性：物攻 3-5",
+  "meta": "类型 武器 · 价格 100 · 重量 7 · 耐久 6000 · 可修理"
+ },
+ {
+  "id": 439,
+  "name": "Bronze Sword",
+  "cat": "战法道 · 5 级",
+  "stats": "性：物攻 3-6",
+  "meta": "类型 武器 · 价格 500 · 重量 9 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 446,
+  "name": "Expert's Hand Blade",
+  "cat": "刺客 · 5 级",
+  "stats": "性：物攻 3-6 · 攻速 +1",
+  "meta": "类型 武器 · 价格 500 · 重量 7 · 耐久 8000 · 可修理"
+ },
+ {
+  "id": 178,
+  "name": "Arisu Wood Sword",
+  "cat": "战法道 · 7 级",
+  "stats": "性：物攻 3-7 · 魔攻 +1",
+  "meta": "类型 武器 · 价格 1000 · 重量 5 · 耐久 7000 · 可修理"
+ },
+ {
+  "id": 176,
+  "name": "Iron Sword",
+  "cat": "战法道 · 7 级",
+  "stats": "性：物攻 4-9",
+  "meta": "类型 武器 · 价格 1000 · 重量 10 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 449,
+  "name": "Razor Sharp Hand Blade",
+  "cat": "刺客 · 7 级",
+  "stats": "性：物攻 5-8 · 攻速 +1",
+  "meta": "类型 武器 · 价格 1000 · 重量 9 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 184,
+  "name": "Bronze Axe",
+  "cat": "战法道 · 14 级",
+  "stats": "性：物攻 +15",
+  "meta": "类型 武器 · 价格 3500 · 重量 20 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 185,
+  "name": "Claw Of Horror",
+  "cat": "刺客 · 14 级",
+  "stats": "性：物攻 2-13 · 攻速 +1",
+  "meta": "类型 武器 · 价格 3500 · 重量 14 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 187,
+  "name": "Scimitar",
+  "cat": "战法道 · 14 级",
+  "stats": "性：物攻 4-10 · 道术 +2",
+  "meta": "类型 武器 · 价格 3500 · 重量 13 · 耐久 12000 · 可修理"
+ },
+ {
+  "id": 186,
+  "name": "Trident",
+  "cat": "战法道 · 14 级",
+  "stats": "性：物攻 3-10 · 魔攻 1-2",
+  "meta": "类型 武器 · 价格 3500 · 重量 10 · 耐久 9000 · 可修理"
+ },
+ {
+  "id": 200,
+  "name": "Hexagon Blade",
+  "cat": "战法道 · 18 级",
+  "stats": "性：物攻 5-16",
+  "meta": "类型 武器 · 价格 5000 · 重量 27 · 耐久 18000 · 可修理"
+ },
+ {
+  "id": 203,
+  "name": "Master's Glaive",
+  "cat": "刺客 · 18 级",
+  "stats": "性：物攻 7-14 · 攻速 +1",
+  "meta": "类型 武器 · 价格 5000 · 重量 20 · 耐久 18000 · 可修理"
+ },
+ {
+  "id": 202,
+  "name": "War Blade",
+  "cat": "战法道 · 18 级",
+  "stats": "性：物攻 5-12 · 道术 1-2 · 命中 +1",
+  "meta": "类型 武器 · 价格 5000 · 重量 15 · 耐久 14000 · 可修理"
+ },
+ {
+  "id": 201,
+  "name": "War Spear",
+  "cat": "战法道 · 18 级",
+  "stats": "性：物攻 4-10 · 魔攻 1-3",
+  "meta": "类型 武器 · 价格 5000 · 重量 11 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 457,
+  "name": "Deathblow Talon",
+  "cat": "刺客 · 20 级",
+  "stats": "性：物攻 3-19 · 攻速 +1",
+  "meta": "类型 武器 · 价格 6000 · 重量 25 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 816,
+  "name": "Pick Axe",
+  "cat": "全职业 · 20 级",
+  "stats": "性：物攻 +8",
+  "meta": "类型 武器 · 价格 700 · 重量 10 · 耐久 10000 · 可修理"
+ },
+ {
+  "id": 306,
+  "name": "Power Axe",
+  "cat": "战法道 · 20 级",
+  "stats": "性：物攻 +22",
+  "meta": "类型 武器 · 价格 6000 · 重量 30 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 471,
+  "name": "Assassin's Ripper",
+  "cat": "刺客 · 25 级",
+  "stats": "性：物攻 11-14 · 攻速 +1",
+  "meta": "类型 武器 · 价格 8000 · 重量 33 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 357,
+  "name": "Sword Of Purification",
+  "cat": "战法道 · 25 级",
+  "stats": "性：物攻 10-16",
+  "meta": "类型 武器 · 价格 8000 · 重量 33 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 328,
+  "name": "Bone Claymore",
+  "cat": "战法道 · 26 级",
+  "stats": "性：物攻 10-18",
+  "meta": "类型 武器 · 价格 8500 · 重量 33 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 331,
+  "name": "Glaive Of Manes",
+  "cat": "刺客 · 26 级",
+  "stats": "性：物攻 13-14 · 攻速 +1",
+  "meta": "类型 武器 · 价格 8500 · 重量 30 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 329,
+  "name": "Mage Staff",
+  "cat": "战法道 · 26 级",
+  "stats": "性：物攻 5-12 · 魔攻 3-5",
+  "meta": "类型 武器 · 价格 10000 · 重量 10 · 耐久 13000 · 可修理"
+ },
+ {
+  "id": 330,
+  "name": "Serpent Sword",
+  "cat": "战法道 · 26 级",
+  "stats": "性：物攻 6-17 · 道术 2-4 · 命中 +2",
+  "meta": "类型 武器 · 价格 10000 · 重量 21 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 497,
+  "name": "Cursed Serpent Sword",
+  "cat": "战法道 · 27 级",
+  "stats": "性：物攻 6-16 · 道术 +3 · 命中 +2 · 暗黑攻击 +5",
+  "meta": "类型 武器 · 价格 9000 · 重量 23 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 495,
+  "name": "Numa Mage Staff",
+  "cat": "战法道 · 27 级",
+  "stats": "性：物攻 5-12 · 魔攻 1-3 · 雷攻 +5",
+  "meta": "类型 武器 · 价格 9000 · 重量 12 · 耐久 13000 · 可修理"
+ },
+ {
+  "id": 494,
+  "name": "Numa Power Axe",
+  "cat": "战法道 · 27 级",
+  "stats": "性：物攻 2-27",
+  "meta": "类型 武器 · 价格 9000 · 重量 50 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 496,
+  "name": "Rogue's Render",
+  "cat": "刺客 · 27 级",
+  "stats": "性：物攻 4-22 · 攻速 +2",
+  "meta": "类型 武器 · 价格 9000 · 重量 31 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 522,
+  "name": "Blue Sword Of Purification",
+  "cat": "战法道 · 28 级",
+  "stats": "性：物攻 11-18",
+  "meta": "类型 武器 · 价格 10000 · 重量 40 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 529,
+  "name": "Death Glaive",
+  "cat": "刺客 · 28 级",
+  "stats": "性：物攻 11-14 · 攻速 +2",
+  "meta": "类型 武器 · 价格 10000 · 重量 33 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 363,
+  "name": "Enchanted Blade",
+  "cat": "战法道 · 29 级",
+  "stats": "性：物攻 9-21 · 命中 +2",
+  "meta": "类型 武器 · 价格 15000 · 重量 47 · 耐久 24000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 512,
+  "name": "Glaive Of Frozen Heart",
+  "cat": "刺客 · 29 级",
+  "stats": "性：物攻 10-17 · 攻速 +2",
+  "meta": "类型 武器 · 价格 15000 · 重量 35 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 312,
+  "name": "Blade Of Spirit Caller",
+  "cat": "战法道 · 30 级",
+  "stats": "性：物攻 2-48 · 魔攻 5-25 · 道术 5-25 · 命中 +3 · 攻速 +1 · 暴击率 +1",
+  "meta": "类型 武器 · 价格 80000 · 重量 15 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 817,
+  "name": "Pick Axe Of Wind",
+  "cat": "全职业 · 30 级",
+  "stats": "性：物攻 +3 · 攻速 +3",
+  "meta": "类型 武器 · 价格 30000 · 重量 21 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 524,
+  "name": "Banya Mage Staff",
+  "cat": "战法道 · 31 级",
+  "stats": "性：物攻 5-15 · 魔攻 2-7",
+  "meta": "类型 武器 · 价格 20000 · 重量 14 · 耐久 14000 · 可修理"
+ },
+ {
+  "id": 515,
+  "name": "Conqueror's Talon",
+  "cat": "刺客 · 31 级",
+  "stats": "性：物攻 14-18 · 攻速 +2",
+  "meta": "类型 武器 · 价格 23000 · 重量 39 · 耐久 28000 · 可修理"
+ },
+ {
+  "id": 507,
+  "name": "Enchanted Blade Of Banya",
+  "cat": "战法道 · 31 级",
+  "stats": "性：物攻 14-22",
+  "meta": "类型 武器 · 价格 23000 · 重量 61 · 耐久 28000 · 可修理"
+ },
+ {
+  "id": 523,
+  "name": "Serpent Sword Of Banya",
+  "cat": "战法道 · 31 级",
+  "stats": "性：物攻 7-18 · 道术 3-5 · 命中 +2",
+  "meta": "类型 武器 · 价格 20000 · 重量 27 · 耐久 22000 · 可修理"
+ },
+ {
+  "id": 406,
+  "name": "Claw Of Black Tortoise",
+  "cat": "刺客 · 33 级",
+  "stats": "性：物攻 4-27 · 攻速 +1",
+  "meta": "类型 武器 · 价格 23000 · 重量 43 · 耐久 32000 · 可修理"
+ },
+ {
+  "id": 428,
+  "name": "Great Axe",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 1-32",
+  "meta": "类型 武器 · 价格 23000 · 重量 70 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 429,
+  "name": "Mage Sword",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 5-20 · 魔攻 3-7 · 命中 +5",
+  "meta": "类型 武器 · 价格 23000 · 重量 13 · 耐久 20000 · 可修理"
+ },
+ {
+  "id": 430,
+  "name": "Valor Blade",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 7-18 · 道术 3-6 · 命中 +2",
+  "meta": "类型 武器 · 价格 23000 · 重量 25 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 431,
+  "name": "White Lotus Glaive",
+  "cat": "刺客 · 33 级",
+  "stats": "性：物攻 4-25 · 攻速 +2",
+  "meta": "类型 武器 · 价格 23000 · 重量 43 · 耐久 30000 · 可修理"
+ },
+ {
+  "id": 404,
+  "name": "Zuma Dragon Bone Staff",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 6-15 · 魔攻 2-9",
+  "meta": "类型 武器 · 价格 23000 · 重量 14 · 耐久 15000 · 可修理"
+ },
+ {
+  "id": 402,
+  "name": "Zuma Judgement Mace",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 +35 · 攻速 -1",
+  "meta": "类型 武器 · 价格 23000 · 重量 80 · 耐久 32000 · 可修理"
+ },
+ {
+  "id": 403,
+  "name": "Zuma Runed Staff",
+  "cat": "战法道 · 33 级",
+  "stats": "性：物攻 6-18 · 道术 3-6 · 神圣攻击 +2",
+  "meta": "类型 武器 · 价格 23000 · 重量 29 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 511,
+  "name": "Forged Scimitar Of Banya",
+  "cat": "战法道 · 34 级",
+  "stats": "性：物攻 10-25",
+  "meta": "类型 武器 · 价格 27000 · 重量 54 · 耐久 23000 · 可修理"
+ },
+ {
+  "id": 509,
+  "name": "Mage Sword Of Banya",
+  "cat": "战法道 · 34 级",
+  "stats": "性：物攻 6-16 · 魔攻 3-8 · 命中 +5",
+  "meta": "类型 武器 · 价格 25000 · 重量 15 · 耐久 16000 · 可修理"
+ },
+ {
+  "id": 513,
+  "name": "Red Lotus Glaive",
+  "cat": "刺客 · 34 级",
+  "stats": "性：物攻 12-20 · 攻速 +2",
+  "meta": "类型 武器 · 价格 27000 · 重量 45 · 耐久 23000 · 可修理"
+ },
+ {
+  "id": 510,
+  "name": "Runed Staff Of Banya",
+  "cat": "战法道 · 34 级",
+  "stats": "性：物攻 6-19 · 道术 2-7 · 命中 +2 · 神圣攻击 +3",
+  "meta": "类型 武器 · 价格 25000 · 重量 33 · 耐久 24000 · 可修理"
+ },
+ {
+  "id": 552,
+  "name": "Death Steel Claw",
+  "cat": "刺客 · 35 级",
+  "stats": "性：物攻 15-18 · 攻速 +2",
+  "meta": "类型 武器 · 价格 28000 · 重量 48 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 547,
+  "name": "Forged Scimitar",
+  "cat": "战法道 · 35 级",
+  "stats": "性：物攻 13-23",
+  "meta": "类型 武器 · 价格 28000 · 重量 54 · 耐久 26000 · 可修理"
+ },
+ {
+  "id": 824,
+  "name": "Muk's Divine Blade Of Judgement",
+  "cat": "战法道 · 36 级",
+  "stats": "性：物攻 9-22 · 道术 33-40 · 命中 +3",
+  "meta": "类型 武器 · 价格 30000 · 重量 37 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 823,
+  "name": "Muk's Obsidian Giant Blade",
+  "cat": "战法道 · 36 级",
+  "stats": "性：物攻 7-89 · 攻速 +3",
+  "meta": "类型 武器 · 价格 30000 · 重量 100 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 825,
+  "name": "Muk's Staff Of Retribution",
+  "cat": "战法道 · 36 级",
+  "stats": "性：物攻 6-20 · 魔攻 33-40",
+  "meta": "类型 武器 · 价格 30000 · 重量 16 · 耐久 19000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 826,
+  "name": "Muk's Unparalleled Polearm",
+  "cat": "刺客 · 36 级",
+  "stats": "性：物攻 70-80 · 攻速 +4",
+  "meta": "类型 武器 · 价格 30000 · 重量 50 · 耐久 36000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 553,
+  "name": "Carmine Claw Determination",
+  "cat": "刺客 · 38 级",
+  "stats": "性：物攻 6-27 · 攻速 +2",
+  "meta": "类型 武器 · 价格 40000 · 重量 55 · 耐久 34000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 550,
+  "name": "Dragon Bone Staff",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物攻 6-17 · 魔攻 4-9",
+  "meta": "类型 武器 · 价格 40000 · 重量 15 · 耐久 17000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 549,
+  "name": "Judgement Mace",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物攻 +38",
+  "meta": "类型 武器 · 价格 40000 · 重量 90 · 耐久 34000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 548,
+  "name": "Runed Staff",
+  "cat": "战法道 · 38 级",
+  "stats": "性：物攻 6-20 · 道术 4-8 · 命中 +2 · 神圣攻击 +4",
+  "meta": "类型 武器 · 价格 40000 · 重量 33 · 耐久 24000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 657,
+  "name": "Falcon Glaive",
+  "cat": "刺客 · 42 级",
+  "stats": "性：物攻 9-25 · 攻速 +1",
+  "meta": "类型 武器 · 价格 50000 · 重量 65 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 655,
+  "name": "Shamal's Divine Blade Of Judgment",
+  "cat": "战法道 · 42 级",
+  "stats": "性：物攻 7-22 · 道术 2-4 · 命中 +3 · 神圣攻击 +5",
+  "meta": "类型 武器 · 价格 50000 · 重量 37 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 654,
+  "name": "Shamal's Obsidian Giant Blade",
+  "cat": "战法道 · 42 级",
+  "stats": "性：物攻 5-34",
+  "meta": "类型 武器 · 价格 50000 · 重量 100 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 656,
+  "name": "Shamal's Staff Of Retribution",
+  "cat": "战法道 · 42 级",
+  "stats": "性：物攻 6-20 · 魔攻 6-8",
+  "meta": "类型 武器 · 价格 50000 · 重量 16 · 耐久 18000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 632,
+  "name": "Celestial Blade",
+  "cat": "战法道 · 45 级",
+  "stats": "性：物攻 7-22 · 道术 4-9 · 命中 +3 · 神圣攻击 +4",
+  "meta": "类型 武器 · 价格 60000 · 重量 36 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 621,
+  "name": "Fury Blade",
+  "cat": "战法道 · 45 级",
+  "stats": "性：物攻 10-30",
+  "meta": "类型 武器 · 价格 60000 · 重量 87 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 633,
+  "name": "Halberd Of Integrity",
+  "cat": "刺客 · 45 级",
+  "stats": "性：物攻 12-23 · 攻速 +2",
+  "meta": "类型 武器 · 价格 60000 · 重量 87 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 818,
+  "name": "Pick Axe Of Storm",
+  "cat": "全职业 · 45 级",
+  "stats": "性：物攻 +3 · 攻速 +4",
+  "meta": "类型 武器 · 价格 100000 · 重量 21 · 耐久 60000 · 可修理"
+ },
+ {
+  "id": 622,
+  "name": "Twisted Blade Of Souls",
+  "cat": "战法道 · 45 级",
+  "stats": "性：物攻 9-20 · 魔攻 5-9 · 命中 +6",
+  "meta": "类型 武器 · 价格 60000 · 重量 18 · 耐久 19000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 500,
+  "name": "Ambitious Glaive Of Doom",
+  "cat": "战法道 · 49 级",
+  "stats": "性：物攻 9-20 · 魔攻 6-9 · 命中 +7",
+  "meta": "类型 武器 · 价格 70000 · 重量 16 · 耐久 18000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 498,
+  "name": "Ambitious Sword Of Abyss",
+  "cat": "战法道 · 49 级",
+  "stats": "性：物攻 8-33",
+  "meta": "类型 武器 · 价格 70000 · 重量 95 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 499,
+  "name": "Ambitious Warden's Fan Of Obedience",
+  "cat": "战法道 · 49 级",
+  "stats": "性：物攻 8-20 · 道术 4-8 · 命中 +3 · 神圣攻击 +5",
+  "meta": "类型 武器 · 价格 70000 · 重量 35 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 502,
+  "name": "Lance Of Obedience",
+  "cat": "刺客 · 49 级",
+  "stats": "性：物攻 10-28 · 攻速 +2",
+  "meta": "类型 武器 · 价格 70000 · 重量 86 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1072,
+  "name": "Odyn Elemental",
+  "cat": "道士 · 55 级",
+  "stats": "性：生命 +300 · 魔法 +450 · 物攻 33-66 · 道术 45-60 · 敏捷 +12 · 幻影攻击 +45 · 拾取半径 +3 · 暴击率 +5 · JudgementOfHeaven +75 · 道术加成 +3 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 100000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1070,
+  "name": "Odyn Mythical",
+  "cat": "法师 · 55 级",
+  "stats": "性：生命 +475 · 魔法 +500 · 魔攻 25-58 · 敏捷 +8 · 风攻 +55 · 拾取半径 +3 · 暴击率 +3 · 魔法加成 +4 · JudgementOfHeaven +100 · 背包负重 +750 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 100000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1079,
+  "name": "Odyn Sin",
+  "cat": "刺客 · 55 级",
+  "stats": "性：魔法 +400 · 物攻 44-118 · 命中 +8 · 攻速 +4 · 火攻 +25 · 吸血 +5 · 暴击率 +4 · JudgementOfHeaven +75 · 物攻加成 +4 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 100000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1069,
+  "name": "Odyn Son",
+  "cat": "战士 · 55 级",
+  "stats": "性：生命 +150 · 物攻 35-128 · 命中 +8 · 攻速 +3 · 火攻 +25 · 吸血 +12 · 暴击率 +4 · JudgementOfHeaven +75 · 物攻加成 +4 · 暴击伤害 +45 · 格挡概率 +5",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 100000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 670,
+  "name": "Calamity",
+  "cat": "战法道 · 56 级",
+  "stats": "性：物攻 +48 · 命中 +2",
+  "meta": "类型 武器 · 价格 120000 · 重量 99 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 680,
+  "name": "Claw Of The Demon God",
+  "cat": "刺客 · 56 级",
+  "stats": "性：物攻 5-37 · 命中 +2 · 攻速 +2",
+  "meta": "类型 武器 · 价格 120000 · 重量 110 · 耐久 35000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 668,
+  "name": "Heavenly Blade Of Tranquility",
+  "cat": "战法道 · 56 级",
+  "stats": "性：物攻 9-22 · 道术 5-13 · 命中 +4 · 神圣攻击 +7",
+  "meta": "类型 武器 · 价格 100000 · 重量 37 · 耐久 26000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 669,
+  "name": "Talon Staff Of A'Ryong",
+  "cat": "战法道 · 56 级",
+  "stats": "性：物攻 6-22 · 魔攻 4-15",
+  "meta": "类型 武器 · 价格 120000 · 重量 18 · 耐久 20000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1011,
+  "name": "Echo, Blades of Torment",
+  "cat": "刺客 · 70 级",
+  "stats": "性：魔法 +250 · 物攻 10-65 · 命中 +4 · 攻速 +2",
+  "meta": "类型 武器 · 价格 120000 · 重量 100 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1010,
+  "name": "Moonlight, Light in the Darkness",
+  "cat": "道士 · 70 级",
+  "stats": "性：物攻 6-30 · 道术 15-30 · 暗黑攻击 +15 · 道术加成 +5",
+  "meta": "类型 武器 · 价格 120000 · 重量 40 · 耐久 32000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1009,
+  "name": "Spellkeeper, Knowledge of the Ancients",
+  "cat": "法师 · 70 级",
+  "stats": "性：生命 +100 · 物攻 5-28 · 魔攻 7-35 · 风攻 +15",
+  "meta": "类型 武器 · 价格 120000 · 重量 22 · 耐久 25000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1008,
+  "name": "Valhalla, The Last Hope",
+  "cat": "战士 · 70 级",
+  "stats": "性：物攻 7-80 · 命中 +8 · 攻速 +2 · 吸血 +3",
+  "meta": "类型 武器 · 价格 120000 · 重量 110 · 耐久 40000 · 可修理 · 稀有度 Superior"
+ },
+ {
+  "id": 1021,
+  "name": "Alpha, Hammer of Cruelty",
+  "cat": "战士 · 75 级",
+  "stats": "性：物攻 50-120 · 命中 +4 · 攻速 -6 · 暴击率 +3",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 100000 · 可修理"
+ },
+ {
+  "id": 1023,
+  "name": "Dawnseeker,  Lights Vengeance",
+  "cat": "道士 · 75 级",
+  "stats": "性：物攻 12-80 · 道术 3-41 · 暗黑攻击 +20 · 暴击率 +3 · 道术加成 +5",
+  "meta": "类型 武器 · 价格 400000 · 重量 35 · 耐久 40000 · 可修理"
+ },
+ {
+  "id": 1024,
+  "name": "Reaper, The Tri-blade",
+  "cat": "刺客 · 75 级",
+  "stats": "性：物攻 10-90 · 命中 +8 · 攻速 +3 · 暴击率 +3",
+  "meta": "类型 武器 · 价格 400000 · 重量 50 · 耐久 75000 · 可修理"
+ },
+ {
+  "id": 1022,
+  "name": "Sunshard, Elements Fury",
+  "cat": "法师 · 75 级",
+  "stats": "性：物攻 12-38 · 魔攻 12-45 · 风攻 +30 · 暴击率 +3",
+  "meta": "类型 武器 · 价格 400000 · 重量 30 · 耐久 30000 · 可修理"
+ }
+]

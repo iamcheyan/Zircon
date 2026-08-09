@@ -1,0 +1,871 @@
+{
+  "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+  "method": "llvm-objdump x86 disassembly; direct calls to 0x004660E0",
+  "warning": "Only calls carrying a recognized .rdata path are labeled; resource handle propagation remains to be traced.",
+  "records": [
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0040272a",
+      "object_lea_candidate": "402724: 8d 8b 6c 04 00 00            \tlea\tecx, [ebx + 0x46c]",
+      "path_push_candidates": [
+        {
+          "va": "0x00402713",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        }
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00402708",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00402713",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        }
+      ],
+      "raw_neighborhood": [
+        "4026fc: 33 c0                        \txor\teax, eax",
+        "4026fe: 89 7c 24 10                  \tmov\tdword ptr [esp + 0x10], edi",
+        "402702: f2 ae                        \trepne\t\tscasb\tal, byte ptr es:[edi]",
+        "402704: f7 d1                        \tnot\tecx",
+        "402706: 2b f9                        \tsub\tedi, ecx",
+        "402708: 6a 00                        \tpush\t0x0",
+        "40270a: 8b c1                        \tmov\teax, ecx",
+        "40270c: 8b f7                        \tmov\tesi, edi",
+        "40270e: bf c0 ee 47 00               \tmov\tedi, 0x47eec0",
+        "402713: 68 b8 aa 47 00               \tpush\t0x47aab8",
+        "402718: c1 e9 02                     \tshr\tecx, 0x2",
+        "40271b: f3 a5                        \trep\t\tmovsd\tdword ptr es:[edi], dword ptr [esi]",
+        "40271d: 8b c8                        \tmov\tecx, eax",
+        "40271f: 83 e1 03                     \tand\tecx, 0x3",
+        "402722: f3 a4                        \trep\t\tmovsb\tbyte ptr es:[edi], byte ptr [esi]",
+        "402724: 8d 8b 6c 04 00 00            \tlea\tecx, [ebx + 0x46c]"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0040273e",
+      "object_lea_candidate": "402724: 8d 8b 6c 04 00 00            \tlea\tecx, [ebx + 0x46c]",
+      "path_push_candidates": [
+        {
+          "va": "0x00402713",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        },
+        {
+          "va": "0x00402737",
+          "args": "0x47aaa0",
+          "immediate": 4696736,
+          "known_path": ".\\Data\\Interface1c.wil"
+        }
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00402708",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00402713",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        },
+        {
+          "va": "0x00402735",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00402737",
+          "args": "0x47aaa0",
+          "immediate": 4696736,
+          "known_path": ".\\Data\\Interface1c.wil"
+        }
+      ],
+      "raw_neighborhood": [
+        "402708: 6a 00                        \tpush\t0x0",
+        "40270a: 8b c1                        \tmov\teax, ecx",
+        "40270c: 8b f7                        \tmov\tesi, edi",
+        "40270e: bf c0 ee 47 00               \tmov\tedi, 0x47eec0",
+        "402713: 68 b8 aa 47 00               \tpush\t0x47aab8",
+        "402718: c1 e9 02                     \tshr\tecx, 0x2",
+        "40271b: f3 a5                        \trep\t\tmovsd\tdword ptr es:[edi], dword ptr [esi]",
+        "40271d: 8b c8                        \tmov\tecx, eax",
+        "40271f: 83 e1 03                     \tand\tecx, 0x3",
+        "402722: f3 a4                        \trep\t\tmovsb\tbyte ptr es:[edi], byte ptr [esi]",
+        "402724: 8d 8b 6c 04 00 00            \tlea\tecx, [ebx + 0x46c]",
+        "40272a: e8 b1 39 06 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "40272f: 8d b3 b0 05 00 00            \tlea\tesi, [ebx + 0x5b0]",
+        "402735: 6a 00                        \tpush\t0x0",
+        "402737: 68 a0 aa 47 00               \tpush\t0x47aaa0",
+        "40273c: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043b7b7",
+      "object_lea_candidate": "43b789: 8d 48 0e                     \tlea\tecx, [eax + 0xe]",
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b793",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043b7b2",
+          "args": "0x1",
+          "immediate": 1,
+          "known_path": null
+        },
+        {
+          "va": "0x0043b7b4",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b789: 8d 48 0e                     \tlea\tecx, [eax + 0xe]",
+        "43b78c: 3b c1                        \tcmp\teax, ecx",
+        "43b78e: 7d 59                        \tjge\t0x43b7e9 <.text+0x3a7e9>",
+        "43b790: 8d 14 c0                     \tlea\tedx, [eax + 8*eax]",
+        "43b793: 55                           \tpush\tebp",
+        "43b794: 8d 14 d2                     \tlea\tedx, [edx + 8*edx]",
+        "43b797: 8d 34 95 fc 00 56 00         \tlea\tesi, [4*edx + 0x5600fc]",
+        "43b79e: 8b d0                        \tmov\tedx, eax",
+        "43b7a0: c1 e2 06                     \tshl\tedx, 0x6",
+        "43b7a3: 03 d0                        \tadd\tedx, eax",
+        "43b7a5: 2b c8                        \tsub\tecx, eax",
+        "43b7a7: 89 4c 24 10                  \tmov\tdword ptr [esp + 0x10], ecx",
+        "43b7ab: 8d 2c 95 2c b2 56 00         \tlea\tebp, [4*edx + 0x56b22c]",
+        "43b7b2: 6a 01                        \tpush\t0x1",
+        "43b7b4: 55                           \tpush\tebp",
+        "43b7b5: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043b7cc",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043b7b2",
+          "args": "0x1",
+          "immediate": 1,
+          "known_path": null
+        },
+        {
+          "va": "0x0043b7b4",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043b7c7",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043b7c9",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43b7a0: c1 e2 06                     \tshl\tedx, 0x6",
+        "43b7a3: 03 d0                        \tadd\tedx, eax",
+        "43b7a5: 2b c8                        \tsub\tecx, eax",
+        "43b7a7: 89 4c 24 10                  \tmov\tdword ptr [esp + 0x10], ecx",
+        "43b7ab: 8d 2c 95 2c b2 56 00         \tlea\tebp, [4*edx + 0x56b22c]",
+        "43b7b2: 6a 01                        \tpush\t0x1",
+        "43b7b4: 55                           \tpush\tebp",
+        "43b7b5: 8b ce                        \tmov\tecx, esi",
+        "43b7b7: e8 24 a9 02 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "43b7bc: 85 c0                        \ttest\teax, eax",
+        "43b7be: 75 11                        \tjne\t0x43b7d1 <.text+0x3a7d1>",
+        "43b7c0: 8b ce                        \tmov\tecx, esi",
+        "43b7c2: e8 19 a8 02 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "43b7c7: 6a 00                        \tpush\t0x0",
+        "43b7c9: 55                           \tpush\tebp",
+        "43b7ca: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043d4e7",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043d4d0",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4d3",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4de",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4e0",
+          "args": "0x47c428",
+          "immediate": 4703272,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43d4c7: 83 c4 10                     \tadd\tesp, 0x10",
+        "43d4ca: c3                           \tret",
+        "43d4cb: 90                           \tnop",
+        "43d4cc: 90                           \tnop",
+        "43d4cd: 90                           \tnop",
+        "43d4ce: 90                           \tnop",
+        "43d4cf: 90                           \tnop",
+        "43d4d0: 56                           \tpush\tesi",
+        "43d4d1: 8b f1                        \tmov\tesi, ecx",
+        "43d4d3: 57                           \tpush\tedi",
+        "43d4d4: 8d 7e 04                     \tlea\tedi, [esi + 0x4]",
+        "43d4d7: 8b cf                        \tmov\tecx, edi",
+        "43d4d9: e8 c2 8a 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43d4de: 6a 00                        \tpush\t0x0",
+        "43d4e0: 68 28 c4 47 00               \tpush\t0x47c428",
+        "43d4e5: 8b cf                        \tmov\tecx, edi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043d502",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043d4d0",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4d3",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4de",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4e0",
+          "args": "0x47c428",
+          "immediate": 4703272,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4f9",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043d4fb",
+          "args": "0x47c414",
+          "immediate": 4703252,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43d4d0: 56                           \tpush\tesi",
+        "43d4d1: 8b f1                        \tmov\tesi, ecx",
+        "43d4d3: 57                           \tpush\tedi",
+        "43d4d4: 8d 7e 04                     \tlea\tedi, [esi + 0x4]",
+        "43d4d7: 8b cf                        \tmov\tecx, edi",
+        "43d4d9: e8 c2 8a 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43d4de: 6a 00                        \tpush\t0x0",
+        "43d4e0: 68 28 c4 47 00               \tpush\t0x47c428",
+        "43d4e5: 8b cf                        \tmov\tecx, edi",
+        "43d4e7: e8 f4 8b 02 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "43d4ec: 8d be 48 01 00 00            \tlea\tedi, [esi + 0x148]",
+        "43d4f2: 8b cf                        \tmov\tecx, edi",
+        "43d4f4: e8 a7 8a 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43d4f9: 6a 00                        \tpush\t0x0",
+        "43d4fb: 68 14 c4 47 00               \tpush\t0x47c414",
+        "43d500: 8b cf                        \tmov\tecx, edi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043df64",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043df46",
+          "args": "ebx",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df49",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df5b",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df5d",
+          "args": "0x47c428",
+          "immediate": 4703272,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43df3c: 90                           \tnop",
+        "43df3d: 90                           \tnop",
+        "43df3e: 90                           \tnop",
+        "43df3f: 90                           \tnop",
+        "43df40: 81 ec 68 01 00 00            \tsub\tesp, 0x168",
+        "43df46: 53                           \tpush\tebx",
+        "43df47: 8b d9                        \tmov\tebx, ecx",
+        "43df49: 56                           \tpush\tesi",
+        "43df4a: 8d 73 04                     \tlea\tesi, [ebx + 0x4]",
+        "43df4d: 8b ce                        \tmov\tecx, esi",
+        "43df4f: e8 8c 80 02 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "43df54: 8b ce                        \tmov\tecx, esi",
+        "43df56: e8 45 80 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43df5b: 6a 00                        \tpush\t0x0",
+        "43df5d: 68 28 c4 47 00               \tpush\t0x47c428",
+        "43df62: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043df86",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043df5b",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df5d",
+          "args": "0x47c428",
+          "immediate": 4703272,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df7d",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043df7f",
+          "args": "0x47c414",
+          "immediate": 4703252,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43df4d: 8b ce                        \tmov\tecx, esi",
+        "43df4f: e8 8c 80 02 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "43df54: 8b ce                        \tmov\tecx, esi",
+        "43df56: e8 45 80 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43df5b: 6a 00                        \tpush\t0x0",
+        "43df5d: 68 28 c4 47 00               \tpush\t0x47c428",
+        "43df62: 8b ce                        \tmov\tecx, esi",
+        "43df64: e8 77 81 02 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "43df69: 8d b3 48 01 00 00            \tlea\tesi, [ebx + 0x148]",
+        "43df6f: 8b ce                        \tmov\tecx, esi",
+        "43df71: e8 6a 80 02 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "43df76: 8b ce                        \tmov\tecx, esi",
+        "43df78: e8 23 80 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43df7d: 6a 00                        \tpush\t0x0",
+        "43df7f: 68 14 c4 47 00               \tpush\t0x47c414",
+        "43df84: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x0043edcc",
+      "object_lea_candidate": "43edab: 8d 8e 0c 01 00 00            \tlea\tecx, [esi + 0x10c]",
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x0043ed9c",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043eda4",
+          "args": "ebx",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043eda5",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043eda6",
+          "args": "0x37",
+          "immediate": 55,
+          "known_path": null
+        },
+        {
+          "va": "0x0043eda8",
+          "args": "0x36",
+          "immediate": 54,
+          "known_path": null
+        },
+        {
+          "va": "0x0043edaa",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x0043edc3",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x0043edc5",
+          "args": "0x47c4ec",
+          "immediate": 4703468,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "43ed96: 81 c3 88 00 00 00            \tadd\tebx, 0x88",
+        "43ed9c: 6a 00                        \tpush\t0x0",
+        "43ed9e: 81 c5 32 01 00 00            \tadd\tebp, 0x132",
+        "43eda4: 53                           \tpush\tebx",
+        "43eda5: 55                           \tpush\tebp",
+        "43eda6: 6a 37                        \tpush\t0x37",
+        "43eda8: 6a 36                        \tpush\t0x36",
+        "43edaa: 57                           \tpush\tedi",
+        "43edab: 8d 8e 0c 01 00 00            \tlea\tecx, [esi + 0x10c]",
+        "43edb1: e8 9a 87 fd ff               \tcall\t0x417550 <.text+0x16550>",
+        "43edb6: 8d 9e 78 02 00 00            \tlea\tebx, [esi + 0x278]",
+        "43edbc: 8b cb                        \tmov\tecx, ebx",
+        "43edbe: e8 dd 71 02 00               \tcall\t0x465fa0 <.text+0x64fa0>",
+        "43edc3: 6a 00                        \tpush\t0x0",
+        "43edc5: 68 ec c4 47 00               \tpush\t0x47c4ec",
+        "43edca: 8b cb                        \tmov\tecx, ebx"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x00452abd",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00452aa0",
+          "args": "ebx",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452aa1",
+          "args": "ebp",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452aa2",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452aa3",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452ab8",
+          "args": "0x1",
+          "immediate": 1,
+          "known_path": null
+        },
+        {
+          "va": "0x00452aba",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "452a9c: 90                           \tnop",
+        "452a9d: 90                           \tnop",
+        "452a9e: 90                           \tnop",
+        "452a9f: 90                           \tnop",
+        "452aa0: 53                           \tpush\tebx",
+        "452aa1: 55                           \tpush\tebp",
+        "452aa2: 56                           \tpush\tesi",
+        "452aa3: 57                           \tpush\tedi",
+        "452aa4: 8b d9                        \tmov\tebx, ecx",
+        "452aa6: e8 75 00 00 00               \tcall\t0x452b20 <.text+0x51b20>",
+        "452aab: 8b f3                        \tmov\tesi, ebx",
+        "452aad: 8d bb 30 b1 00 00            \tlea\tedi, [ebx + 0xb130]",
+        "452ab3: bd 0e 00 00 00               \tmov\tebp, 0xe",
+        "452ab8: 6a 01                        \tpush\t0x1",
+        "452aba: 57                           \tpush\tedi",
+        "452abb: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x00452ad2",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00452ab8",
+          "args": "0x1",
+          "immediate": 1,
+          "known_path": null
+        },
+        {
+          "va": "0x00452aba",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452acd",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00452acf",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "452aa4: 8b d9                        \tmov\tebx, ecx",
+        "452aa6: e8 75 00 00 00               \tcall\t0x452b20 <.text+0x51b20>",
+        "452aab: 8b f3                        \tmov\tesi, ebx",
+        "452aad: 8d bb 30 b1 00 00            \tlea\tedi, [ebx + 0xb130]",
+        "452ab3: bd 0e 00 00 00               \tmov\tebp, 0xe",
+        "452ab8: 6a 01                        \tpush\t0x1",
+        "452aba: 57                           \tpush\tedi",
+        "452abb: 8b ce                        \tmov\tecx, esi",
+        "452abd: e8 1e 36 01 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "452ac2: 85 c0                        \ttest\teax, eax",
+        "452ac4: 75 11                        \tjne\t0x452ad7 <.text+0x51ad7>",
+        "452ac6: 8b ce                        \tmov\tecx, esi",
+        "452ac8: e8 13 35 01 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "452acd: 6a 00                        \tpush\t0x0",
+        "452acf: 57                           \tpush\tedi",
+        "452ad0: 8b ce                        \tmov\tecx, esi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x00452afc",
+      "object_lea_candidate": null,
+      "path_push_candidates": [],
+      "preceding_pushes": [
+        {
+          "va": "0x00452acd",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00452acf",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00452af7",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00452af9",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        }
+      ],
+      "raw_neighborhood": [
+        "452ac6: 8b ce                        \tmov\tecx, esi",
+        "452ac8: e8 13 35 01 00               \tcall\t0x465fe0 <.text+0x64fe0>",
+        "452acd: 6a 00                        \tpush\t0x0",
+        "452acf: 57                           \tpush\tedi",
+        "452ad0: 8b ce                        \tmov\tecx, esi",
+        "452ad2: e8 09 36 01 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "452ad7: 81 c7 04 01 00 00            \tadd\tedi, 0x104",
+        "452add: 81 c6 44 01 00 00            \tadd\tesi, 0x144",
+        "452ae3: 4d                           \tdec\tebp",
+        "452ae4: 75 d2                        \tjne\t0x452ab8 <.text+0x51ab8>",
+        "452ae6: 8d bb 98 58 00 00            \tlea\tedi, [ebx + 0x5898]",
+        "452aec: 8d b3 48 f8 00 00            \tlea\tesi, [ebx + 0xf848]",
+        "452af2: bb 46 00 00 00               \tmov\tebx, 0x46",
+        "452af7: 6a 00                        \tpush\t0x0",
+        "452af9: 56                           \tpush\tesi",
+        "452afa: 8b cf                        \tmov\tecx, edi"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x00456cc4",
+      "object_lea_candidate": "456cc1: 8d 4e 08                     \tlea\tecx, [esi + 0x8]",
+      "path_push_candidates": [
+        {
+          "va": "0x00456cbc",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        }
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00456cb0",
+          "args": "ebx",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cb1",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cb2",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cba",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cbc",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        }
+      ],
+      "raw_neighborhood": [
+        "456ca8: 90                           \tnop",
+        "456ca9: 90                           \tnop",
+        "456caa: 90                           \tnop",
+        "456cab: 90                           \tnop",
+        "456cac: 90                           \tnop",
+        "456cad: 90                           \tnop",
+        "456cae: 90                           \tnop",
+        "456caf: 90                           \tnop",
+        "456cb0: 53                           \tpush\tebx",
+        "456cb1: 56                           \tpush\tesi",
+        "456cb2: 57                           \tpush\tedi",
+        "456cb3: 8b f1                        \tmov\tesi, ecx",
+        "456cb5: e8 d6 fd ff ff               \tcall\t0x456a90 <.text+0x55a90>",
+        "456cba: 6a 00                        \tpush\t0x0",
+        "456cbc: 68 b8 aa 47 00               \tpush\t0x47aab8",
+        "456cc1: 8d 4e 08                     \tlea\tecx, [esi + 0x8]"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    },
+    {
+      "source": "Mir3.exe",
+      "load_helper_va": "0x4660e0",
+      "call_va": "0x00456cd8",
+      "object_lea_candidate": "456cc1: 8d 4e 08                     \tlea\tecx, [esi + 0x8]",
+      "path_push_candidates": [
+        {
+          "va": "0x00456cbc",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        },
+        {
+          "va": "0x00456cd1",
+          "args": "0x47aaa0",
+          "immediate": 4696736,
+          "known_path": ".\\Data\\Interface1c.wil"
+        }
+      ],
+      "preceding_pushes": [
+        {
+          "va": "0x00456cb0",
+          "args": "ebx",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cb1",
+          "args": "esi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cb2",
+          "args": "edi",
+          "immediate": null,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cba",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cbc",
+          "args": "0x47aab8",
+          "immediate": 4696760,
+          "known_path": ".\\Data\\gameinter.wil"
+        },
+        {
+          "va": "0x00456ccf",
+          "args": "0x0",
+          "immediate": 0,
+          "known_path": null
+        },
+        {
+          "va": "0x00456cd1",
+          "args": "0x47aaa0",
+          "immediate": 4696736,
+          "known_path": ".\\Data\\Interface1c.wil"
+        }
+      ],
+      "raw_neighborhood": [
+        "456cad: 90                           \tnop",
+        "456cae: 90                           \tnop",
+        "456caf: 90                           \tnop",
+        "456cb0: 53                           \tpush\tebx",
+        "456cb1: 56                           \tpush\tesi",
+        "456cb2: 57                           \tpush\tedi",
+        "456cb3: 8b f1                        \tmov\tesi, ecx",
+        "456cb5: e8 d6 fd ff ff               \tcall\t0x456a90 <.text+0x55a90>",
+        "456cba: 6a 00                        \tpush\t0x0",
+        "456cbc: 68 b8 aa 47 00               \tpush\t0x47aab8",
+        "456cc1: 8d 4e 08                     \tlea\tecx, [esi + 0x8]",
+        "456cc4: e8 17 f4 00 00               \tcall\t0x4660e0 <.text+0x650e0>",
+        "456cc9: 8d 9e 4c 01 00 00            \tlea\tebx, [esi + 0x14c]",
+        "456ccf: 6a 00                        \tpush\t0x0",
+        "456cd1: 68 a0 aa 47 00               \tpush\t0x47aaa0",
+        "456cd6: 8b cb                        \tmov\tecx, ebx"
+      ],
+      "evidence": {
+        "level": "primary-static",
+        "notes": "Path labels are based on PE .rdata string VA; object ownership still requires constructor tracing."
+      }
+    }
+  ]
+}

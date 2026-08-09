@@ -10,6 +10,7 @@
 输出: /tmp/wiki_data.json
 """
 import json, os, re, sys
+from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DOCS = os.path.join(ROOT, "..", "docs")
@@ -27,7 +28,7 @@ def parse_monsters(text):
         line = line.strip()
         m = re.match(r"### (\d+) · (.+?)(?: · (\d+) 级)?$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "level": int(m.group(3)) if m.group(3) else None,
                    "attrs": [], "traits": "", "spawns": "", "drops": "",
                    "zh": "", "boss": False, "undead": False}
@@ -55,7 +56,7 @@ def parse_items(text, category):
         line = line.strip()
         m = re.match(r"### (\d+) · (.+?)(?:（(.+?)）)?$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "class": m.group(3) or "全职业", "category": category,
                    "type_zh": "", "attrs": [], "meta": "", "drops": "", "set": "", "desc": "",
                    "zh": ""}
@@ -86,7 +87,7 @@ def parse_skills(text):
             continue
         m = re.match(r"### (\d+) · (.+)$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2), "klass": klass,
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(), "klass": klass,
                    "type": "", "school": "", "prop": "", "power": "", "cost": "",
                    "delay": "", "levels": "", "exp": "", "icon": "", "desc": "",
                    "zh": ""}
@@ -126,7 +127,7 @@ def parse_npcs(text):
         line = line.strip()
         m = re.match(r"### (\d+) · (.+)$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "map": None, "icon": None, "face": None, "desc": "",
                    "quests_in": 0, "quests_out": 0, "zh": ""}
             out[cur["id"]] = cur
@@ -150,7 +151,7 @@ def parse_quests(text):
         line = line.strip()
         m = re.match(r"### (\d+) · (.+?)(?:（(.+?)）)?$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "type": m.group(3) or "", "npc": "", "desc": "",
                    "goals": "", "rewards": "", "zh": ""}
             out[cur["id"]] = cur
@@ -171,7 +172,7 @@ def parse_maps(text):
         line = line.strip()
         m = re.match(r"### (\d+) · (.+)$", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "file": "", "env": "", "monsters": [], "zh": ""}
             out[cur["id"]] = cur
             continue
@@ -214,7 +215,7 @@ def parse_companion(text):
         line = line.strip()
         m = re.match(r"### #(\d+) · (.+?) \(#(\d+)\)", line)
         if m:
-            cur = {"id": int(m.group(1)), "name": m.group(2),
+            cur = {"id": int(m.group(1)), "name": m.group(2).strip(),
                    "monster_id": int(m.group(3)), "price": None, "available": None}
             out[cur["id"]] = cur
             continue
@@ -286,6 +287,8 @@ def main():
         "terminology": term,
         "stages": read(os.path.join(DOCS, "notes", "22-传奇EI2.0资料整理-地图装备技能阶段.md")),
         "diff": read(os.path.join(DOCS, "EI_CLIENT_DIFF_2026-08-09.md")),
+        "_meta": {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                  "script": "wiki_build.py"},
     }
     out = "/tmp/wiki_data.json"
     with open(out, "w", encoding="utf-8") as f:

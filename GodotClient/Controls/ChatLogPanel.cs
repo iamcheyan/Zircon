@@ -67,7 +67,7 @@ public partial class ChatLogPanel : Control
         defaultSettings.EnabledTypes.Remove(MessageType.System);
         defaultSettings.EnabledTypes.Remove(MessageType.Combat);
         ApplySettings();
-
+        Visible = !ClientSettings.HideChatBar;
     }
 
     public override void _Process(double delta)
@@ -87,12 +87,19 @@ public partial class ChatLogPanel : Control
 
         float opacity = settings.FadeOut && settings.Transparent && _idleSeconds > 10.0 ? 0.15f : 1f;
         _textArea.Opacity = opacity;
+        // 透明/淡出时禁止滚动条被 HideWhenNoScroll 重新打开（地图中「悬空滑块」）。
+        UpdateChromeVisibility(opacity);
     }
 
     public override void _Draw()
     {
-        bool transparent = _tabSettings.Count > 0 && _tabSettings[_selectedTab].Transparent;
-        DrawRect(new Rect2(Vector2.Zero, Size), new Color(0f, 0f, 0f, transparent ? 0.06f : 0.26f));
+        if (_tabSettings.Count == 0) return;
+        var settings = _tabSettings[_selectedTab];
+        bool transparent = settings.Transparent;
+        bool faded = settings.FadeOut && transparent && _idleSeconds > 10.0;
+        // 无消息、透明设置或已淡出：不画背景底色，消除主面板上方悬浮的灰色块
+        if (_lines.Count == 0 || faded || transparent) return;
+        DrawRect(new Rect2(Vector2.Zero, Size), new Color(0f, 0f, 0f, 0.26f));
     }
 
     public void AddMessage(string text, Color colour)
@@ -350,9 +357,34 @@ public partial class ChatLogPanel : Control
         if (_tabSettings.Count == 0) return;
         var settings = _tabSettings[_selectedTab];
         _tabBar.Visible = !settings.HideTab || _tabs.Count > 1;
-        _scroll.Visible = !settings.Transparent;
+        UpdateChromeVisibility(_textArea.Opacity);
         QueueRedraw();
     }
+
+    /// <summary>
+    /// 透明主聊天默认不显示滚动条；有溢出内容且非透明时才显示。
+    /// DXVScrollBar.HideWhenNoScroll 会在 MaxValue 变化后强制 Visible，必须在其后覆盖。
+    /// </summary>
+    private void UpdateChromeVisibility(float textOpacity = 1f)
+    {
+        if (_scroll == null) return;
+        if (_tabSettings.Count == 0)
+        {
+            _scroll.Visible = false;
+            return;
+        }
+        var settings = _tabSettings[_selectedTab];
+        bool faded = settings.FadeOut && settings.Transparent && _idleSeconds > 10.0;
+        bool showScroll = !settings.Transparent
+            && !faded
+            && textOpacity > 0.2f
+            && _lines.Count > 0
+            && _scroll.MaxValue > _scroll.VisibleSize;
+        _scroll.Visible = showScroll;
+    }
+
+    /// <summary>供 GameScene 布局回归审计使用；透明主聊天不应留下悬浮滚动条。</summary>
+    public bool IsScrollChromeVisible => _scroll?.Visible == true;
 
     private void RebuildVisibleLines(bool keepBottom)
     {
@@ -389,6 +421,7 @@ public partial class ChatLogPanel : Control
         _scroll.MaxValue = Mathf.Max(_scroll.VisibleSize, _lines.Sum(line => (int)line.Size.Y) + 4);
         if (keepBottom) _scroll.Value = _scroll.MaxValue;
         UpdateLines();
+        UpdateChromeVisibility(_textArea.Opacity);
         QueueRedraw();
     }
 

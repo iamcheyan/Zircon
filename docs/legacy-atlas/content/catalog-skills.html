@@ -1,0 +1,641 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>技能逐条目录 · Legacy Atlas</title><link rel="stylesheet" href="../style.css"></head><body><main class="site-shell"><nav class="breadcrumb"><a href="index.html">内容百科</a> / 技能逐条目录</nav><header class="page-hero"><p class="eyebrow">CONTENT CATALOG · 内容逐条目录</p><h1>技能逐条目录</h1><p>老版基线先列已确认的三职业范围；右侧完整展开当前 Zircon 的 174 条技能记录。</p><label class="catalog-search">筛选当前目录：<input id="catalogFilter" type="search" placeholder="输入名称、编号、职业、属性……"></label></header><section class="catalog-section"><h2>老版基线：EI 2.0 / Mud3 已确认范围</h2><p>早期版本的核心是战士、法师、道士三职业。刺客及后期强化技能不应倒灌到“20年前基线”。老版 magic.dat 已按原始 DAT 逐字段解码并验证（解码器、偏移/类型/来源与证据见 <a href="../../research/mud3-dat-decoded/">docs/research/mud3-dat-decoded/</a>），完整 105 条老版技能逐条对照已展开如下，标记 old-only/both/changed/unverified；汇总对照见 <a href="catalog-mud3.html">老版 DAT 解码逐条表</a>。</p></section><section class="catalog-section"><h2>✨ 老版技能 · magic.dat（105 条）</h2><p class="catalog-note">magic.dat 全 105 条逐条对照：等级门槛/耗蓝/威力三锚点对齐 Zircon；带数字后缀的为老版特有或装备技能。</p><label class="catalog-search">筛选：<input id="skillLegacyFilter" type="search" placeholder="输入名称、编号、标记……"></label><div class="tagbar" id="skillLegacyBar"><button data-ftag="all" class="active">全部</button><button data-ftag="old-only">old-only</button><button data-ftag="current-only">current-only</button><button data-ftag="both">both</button><button data-ftag="changed">changed</button><button data-ftag="unverified">unverified</button></div><div class="table-wrap"><table class="catalog-table"><thead><tr><th>#</th><th>老版名称</th><th>等级门槛</th><th>修炼经验</th><th>耗蓝B1</th><th>威力TrioA</th><th>Zircon 对照</th><th>标记</th></tr></thead><tbody><tr data-tags="changed"><td>25</td><td>半月弯刀</td><td>24/26/28</td><td>60/70/80</td><td>3</td><td>(0,0,0)</td><td>Half Moon (id=5)</td><td><span class="tag changed">changed</span> <small>→ Half Moon (id=5)</small></td></tr>
+<tr data-tags="both"><td>23</td><td>爆裂火焰</td><td>32/34/36</td><td>100/110/120</td><td>20</td><td>(15,14,18)</td><td>Fire Storm (id=42)</td><td><span class="tag both">both</span> <small>→ Fire Storm (id=42)</small></td></tr>
+<tr data-tags="both"><td>33</td><td>冰咆哮</td><td>34/36/38</td><td>100/110/120</td><td>20</td><td>(19,12,16)</td><td>Ice Storm (id=44)</td><td><span class="tag both">both</span> <small>→ Ice Storm (id=44)</small></td></tr>
+<tr data-tags="both"><td>53</td><td>冰沙掌</td><td>22/24/26</td><td>50/60/70</td><td>15</td><td>(12,12,16)</td><td>Frozen Earth (id=36)</td><td><span class="tag both">both</span> <small>→ Frozen Earth (id=36)</small></td></tr>
+<tr data-tags="changed"><td>107</td><td>乾坤大挪移</td><td>42/45/48</td><td>50/50/50</td><td>0</td><td>(0,0,40)</td><td>Interchange (id=11)</td><td><span class="tag changed">changed</span> <small>→ Interchange (id=11)</small></td></tr>
+<tr data-tags="changed"><td>108</td><td>斗转星移</td><td>46/49/52</td><td>50/50/50</td><td>25</td><td>(20,0,0)</td><td>Beckon (id=13)</td><td><span class="tag changed">changed</span> <small>→ Beckon (id=13)</small></td></tr>
+<tr data-tags="both"><td>39</td><td>冰月神掌</td><td>9/11/13</td><td>10/20/30</td><td>1</td><td>(4,4,8)</td><td>Ice Bolt (id=25)</td><td><span class="tag both">both</span> <small>→ Ice Bolt (id=25)</small></td></tr>
+<tr data-tags="both"><td>40</td><td>冰月震天</td><td>17/19/21</td><td>40/50/60</td><td>6</td><td>(7,13,17)</td><td>Ice Blades (id=32)</td><td><span class="tag both">both</span> <small>→ Ice Blades (id=32)</small></td></tr>
+<tr data-tags="changed"><td>110</td><td>魄冰刺</td><td>38/41/44</td><td>50/50/50</td><td>22</td><td>(20,16,20)</td><td>Greater Frozen Earth (id=46)</td><td><span class="tag changed">changed</span> <small>→ Greater Frozen Earth (id=46)</small></td></tr>
+<tr data-tags="both"><td>105</td><td>超强召唤骷髅</td><td>33/35/37</td><td>10/11/12</td><td>25</td><td>(20,0,0)</td><td>Summon Jin Skeleton (id=132)</td><td><span class="tag both">both</span> <small>→ Summon Jin Skeleton (id=132)</small></td></tr>
+<tr data-tags="changed"><td>111</td><td>怒神霹雳</td><td>40/42/44</td><td>50/50/50</td><td>38</td><td>(35,16,22)</td><td>Chain Lightning (id=47)</td><td><span class="tag changed">changed</span> <small>→ Chain Lightning (id=47)</small></td></tr>
+<tr data-tags="changed"><td>12</td><td>刺杀剑术</td><td>19/21/23</td><td>40/50/60</td><td>0</td><td>(0,0,0)</td><td>Thrusting (id=4)</td><td><span class="tag changed">changed</span> <small>→ Thrusting (id=4)</small></td></tr>
+<tr data-tags="both"><td>5</td><td>大火球</td><td>15/17/19</td><td>40/50/60</td><td>6</td><td>(6,15,19)</td><td>Adamantine Fire Ball (id=30)</td><td><span class="tag both">both</span> <small>→ Adamantine Fire Ball (id=30)</small></td></tr>
+<tr data-tags="changed"><td>113</td><td>焰天火雨</td><td>43/45/47</td><td>50/50/50</td><td>33</td><td>(28,15,19)</td><td>Meteor Shower (id=48)</td><td><span class="tag changed">changed</span> <small>→ Meteor Shower (id=48)</small></td></tr>
+<tr data-tags="old-only"><td>112</td><td>凝血离魂</td><td>46/48/50</td><td>50/50/50</td><td>30</td><td>(30,5,5)</td><td>老版特有技能，Zircon 无对应</td><td><span class="tag old-only">old-only</span> <small>老版特有技能，Zircon 无对应</small></td></tr>
+<tr data-tags="changed"><td>120</td><td>云寂术</td><td>38/41/44</td><td>50/50/50</td><td>22</td><td>(18,0,0)</td><td>Purification (id=75)</td><td><span class="tag changed">changed</span> <small>→ Purification (id=75)</small></td></tr>
+<tr data-tags="both"><td>9</td><td>地狱火</td><td>20/22/24</td><td>50/60/70</td><td>15</td><td>(11,14,18)</td><td>Scorched Earth (id=34)</td><td><span class="tag both">both</span> <small>→ Scorched Earth (id=34)</small></td></tr>
+<tr data-tags="both"><td>24</td><td>地狱雷光</td><td>33/35/37</td><td>100/110/120</td><td>20</td><td>(17,14,18)</td><td>Lightning Wave (id=43)</td><td><span class="tag both">both</span> <small>→ Lightning Wave (id=43)</small></td></tr>
+<tr data-tags="old-only"><td>101</td><td>防御系术</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>123</td><td>移花接玉</td><td>38/41/44</td><td>50/50/50</td><td>15</td><td>(15,0,0)</td><td>老版特有技能，Zircon 无对应</td><td><span class="tag old-only">old-only</span> <small>老版特有技能，Zircon 无对应</small></td></tr>
+<tr data-tags="changed"><td>121</td><td>妙影无踪</td><td>43/45/47</td><td>50/50/50</td><td>13</td><td>(10,0,0)</td><td>Transparency (id=76)</td><td><span class="tag changed">changed</span> <small>→ Transparency (id=76)</small></td></tr>
+<tr data-tags="changed"><td>122</td><td>阴阳法环</td><td>46/48/50</td><td>50/50/50</td><td>25</td><td>(20,0,0)</td><td>Renounce (id=49)</td><td><span class="tag changed">changed</span> <small>→ Renounce (id=49)</small></td></tr>
+<tr data-tags="old-only"><td>84</td><td>分散灵魂火符</td><td>99/99/99</td><td>100/100/100</td><td>2</td><td>(5,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>58</td><td>分散霹雳掌</td><td>99/99/99</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>80</td><td>分散月魂断玉</td><td>99/99/99</td><td>100/100/100</td><td>2</td><td>(5,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>95</td><td>分身术</td><td>99/99/99</td><td>100/100/100</td><td>24</td><td>(16,0,0)</td><td>老版特有技能，Zircon 无对应</td><td><span class="tag old-only">old-only</span> <small>老版特有技能，Zircon 无对应</small></td></tr>
+<tr data-tags="both"><td>67</td><td>风掌</td><td>10/12/14</td><td>10/20/30</td><td>1</td><td>(3,5,9)</td><td>Gust Blast (id=26)</td><td><span class="tag both">both</span> <small>→ Gust Blast (id=26)</small></td></tr>
+<tr data-tags="both"><td>73</td><td>风震天</td><td>23/25/27</td><td>60/70/80</td><td>15</td><td>(13,13,17)</td><td>Blow Earth (id=37)</td><td><span class="tag both">both</span> <small>→ Blow Earth (id=37)</small></td></tr>
+<tr data-tags="changed"><td>103</td><td>十方斩</td><td>40/43/46</td><td>50/50/50</td><td>8</td><td>(5,0,0)</td><td>Destructive Surge (id=10)</td><td><span class="tag changed">changed</span> <small>→ Destructive Surge (id=10)</small></td></tr>
+<tr data-tags="changed"><td>7</td><td>攻杀剑术</td><td>14/16/18</td><td>30/40/50</td><td>0</td><td>(0,0,0)</td><td>Slaying (id=3)</td><td><span class="tag changed">changed</span> <small>→ Slaying (id=3)</small></td></tr>
+<tr data-tags="changed"><td>77</td><td>回生术</td><td>35/37/39</td><td>50/60/70</td><td>100</td><td>(100,0,0)</td><td>Resurrection (id=74)</td><td><span class="tag changed">changed</span> <small>→ Resurrection (id=74)</small></td></tr>
+<tr data-tags="both"><td>22</td><td>火墙</td><td>24/26/28</td><td>60/70/80</td><td>30</td><td>(22,2,9)</td><td>Fire Wall (id=38)</td><td><span class="tag both">both</span> <small>→ Fire Wall (id=38)</small></td></tr>
+<tr data-tags="both"><td>1</td><td>火球术</td><td>7/9/11</td><td>10/20/30</td><td>1</td><td>(3,6,10)</td><td>Fire Ball (id=23)</td><td><span class="tag both">both</span> <small>→ Fire Ball (id=23)</small></td></tr>
+<tr data-tags="old-only"><td>46</td><td>火焰壁</td><td>99/99/99</td><td>100/100/100</td><td>10</td><td>(10,20,20)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="both"><td>74</td><td>击风</td><td>18/20/22</td><td>40/50/60</td><td>6</td><td>(6,14,18)</td><td>Cyclone (id=33)</td><td><span class="tag both">both</span> <small>→ Cyclone (id=33)</small></td></tr>
+<tr data-tags="changed"><td>3</td><td>基本剑术</td><td>7/9/11</td><td>10/20/30</td><td>0</td><td>(0,0,0)</td><td>Swordsmanship (id=1)</td><td><span class="tag changed">changed</span> <small>→ Swordsmanship (id=1)</small></td></tr>
+<tr data-tags="both"><td>10</td><td>疾光电影</td><td>21/23/25</td><td>50/60/70</td><td>15</td><td>(12,14,14)</td><td>Lightning Beam (id=35)</td><td><span class="tag both">both</span> <small>→ Lightning Beam (id=35)</small></td></tr>
+<tr data-tags="changed"><td>19</td><td>集体隐身术</td><td>23/25/27</td><td>600/700/800</td><td>5</td><td>(10,0,0)</td><td>Mass Invisibility (id=66)</td><td><span class="tag changed">changed</span> <small>→ Mass Invisibility (id=66)</small></td></tr>
+<tr data-tags="changed"><td>4</td><td>精神力战法</td><td>8/10/12</td><td>10/20/30</td><td>0</td><td>(0,0,0)</td><td>Spirit Sword (id=60)</td><td><span class="tag changed">changed</span> <small>→ Spirit Sword (id=60)</small></td></tr>
+<tr data-tags="old-only"><td>49</td><td>聚集冰月神掌</td><td>99/99/99</td><td>100/100/100</td><td>2</td><td>(5,7,7)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>68</td><td>聚集风掌</td><td>99/18/19</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>42</td><td>聚集火球</td><td>99/99/99</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>61</td><td>聚集雷电术</td><td>99/99/99</td><td>100/100/100</td><td>6</td><td>(12,8,28)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>83</td><td>聚集灵魂火符</td><td>99/99/99</td><td>100/100/100</td><td>2</td><td>(5,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>57</td><td>聚集霹雳掌</td><td>99/99/99</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>79</td><td>聚集月魂断玉</td><td>99/99/99</td><td>100/100/100</td><td>2</td><td>(5,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>8</td><td>抗拒火环</td><td>12/14/16</td><td>20/30/40</td><td>1</td><td>(8,0,2)</td><td>Repulsion (id=27)</td><td><span class="tag changed">changed</span> <small>→ Repulsion (id=27)</small></td></tr>
+<tr data-tags="changed"><td>36</td><td>空拳刀法</td><td>28/30/32</td><td>90/100/110</td><td>10</td><td>(20,0,0)</td><td>Combat Kick (id=70)</td><td><span class="tag changed">changed</span> <small>→ Combat Kick (id=70)</small></td></tr>
+<tr data-tags="changed"><td>16</td><td>困魔咒</td><td>27/29/31</td><td>80/90/100</td><td>10</td><td>(15,0,0)</td><td>Trap Octagon (id=69)</td><td><span class="tag changed">changed</span> <small>→ Trap Octagon (id=69)</small></td></tr>
+<tr data-tags="both"><td>11</td><td>雷电术</td><td>16/18/20</td><td>40/50/60</td><td>6</td><td>(7,15,19)</td><td>Thunder Bolt (id=31)</td><td><span class="tag both">both</span> <small>→ Thunder Bolt (id=31)</small></td></tr>
+<tr data-tags="old-only"><td>52</td><td>连锁冰月神掌</td><td>99/99/99</td><td>100/100/100</td><td>6</td><td>(4,5,5)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>45</td><td>连锁大火球</td><td>99/99/99</td><td>100/100/100</td><td>5</td><td>(3,6,6)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>71</td><td>连锁风掌</td><td>99/18/19</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>60</td><td>连锁霹雳掌</td><td>99/99/99</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>82</td><td>连锁月魂断波</td><td>99/99/99</td><td>100/100/100</td><td>5</td><td>(6,10,10)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>34</td><td>莲月剑法</td><td>38/40/42</td><td>100/110/120</td><td>9</td><td>(3,0,0)</td><td>Blade Storm (id=9)</td><td><span class="tag changed">changed</span> <small>→ Blade Storm (id=9)</small></td></tr>
+<tr data-tags="changed"><td>26</td><td>烈火剑法</td><td>32/34/36</td><td>100/110/120</td><td>7</td><td>(2,0,0)</td><td>Flaming Sword (id=7)</td><td><span class="tag changed">changed</span> <small>→ Flaming Sword (id=7)</small></td></tr>
+<tr data-tags="both"><td>13</td><td>灵魂火符</td><td>13/15/17</td><td>20/30/40</td><td>3</td><td>(6,6,10)</td><td>Explosive Talisman (id=62)</td><td><span class="tag both">both</span> <small>→ Explosive Talisman (id=62)</small></td></tr>
+<tr data-tags="both"><td>72</td><td>龙卷风</td><td>35/37/39</td><td>100/110/120</td><td>20</td><td>(18,13,17)</td><td>Dragon Tornado (id=45)</td><td><span class="tag both">both</span> <small>→ Dragon Tornado (id=45)</small></td></tr>
+<tr data-tags="old-only"><td>62</td><td>乱降雷电术</td><td>99/99/99</td><td>100/100/100</td><td>6</td><td>(12,8,28)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>94</td><td>猛虎强势</td><td>34/36/38</td><td>100/110/120</td><td>5</td><td>(10,0,0)</td><td>Blood Lust (id=73)</td><td><span class="tag changed">changed</span> <small>→ Blood Lust (id=73)</small></td></tr>
+<tr data-tags="both"><td>31</td><td>魔法盾</td><td>29/31/33</td><td>90/100/110</td><td>30</td><td>(20,0,0)</td><td>Magic Shield (id=41)</td><td><span class="tag both">both</span> <small>→ Magic Shield (id=41)</small></td></tr>
+<tr data-tags="changed"><td>102</td><td>铁布衫</td><td>44/47/50</td><td>50/50/50</td><td>25</td><td>(20,0,0)</td><td>Defiance (id=12)</td><td><span class="tag changed">changed</span> <small>→ Defiance (id=12)</small></td></tr>
+<tr data-tags="old-only"><td>96</td><td>魔防系术</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>98</td><td>魔防系术（冰）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>100</td><td>魔防系术（风）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>97</td><td>魔防系术（火）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>99</td><td>魔防系术（雷）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>63</td><td>霹雳壁</td><td>99/99/99</td><td>100/100/100</td><td>30</td><td>(30,14,14)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>66</td><td>霹雳圈</td><td>99/34/35</td><td>100/100/100</td><td>30</td><td>(12,12,12)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="both"><td>41</td><td>霹雳掌</td><td>8/10/12</td><td>100/200/300</td><td>1</td><td>(4,6,10)</td><td>Lightning Ball (id=24)</td><td><span class="tag both">both</span> <small>→ Lightning Ball (id=24)</small></td></tr>
+<tr data-tags="changed"><td>89</td><td>强魔震法</td><td>29/31/33</td><td>90/100/110</td><td>5</td><td>(10,0,0)</td><td>Elemental Superiority (id=71)</td><td><span class="tag changed">changed</span> <small>→ Elemental Superiority (id=71)</small></td></tr>
+<tr data-tags="old-only"><td>91</td><td>强魔震法（冰）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>93</td><td>强魔震法（风）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>90</td><td>强魔震法（火）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>92</td><td>强魔震法（雷）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>29</td><td>群体治愈术</td><td>31/33/35</td><td>100/110/120</td><td>20</td><td>(10,8,12)</td><td>Mass Heal (id=72)</td><td><span class="tag changed">changed</span> <small>→ Mass Heal (id=72)</small></td></tr>
+<tr data-tags="changed"><td>15</td><td>神圣战甲术</td><td>25/27/29</td><td>70/80/90</td><td>5</td><td>(10,0,0)</td><td>Resilience (id=68)</td><td><span class="tag changed">changed</span> <small>→ Resilience (id=68)</small></td></tr>
+<tr data-tags="both"><td>32</td><td>圣言术</td><td>26/28/30</td><td>70/80/90</td><td>30</td><td>(30,0,0)</td><td>Expel Undead (id=39)</td><td><span class="tag both">both</span> <small>→ Expel Undead (id=39)</small></td></tr>
+<tr data-tags="changed"><td>6</td><td>施毒术</td><td>12/14/16</td><td>20/30/40</td><td>5</td><td>(10,0,0)</td><td>Poison Dust (id=61)</td><td><span class="tag changed">changed</span> <small>→ Poison Dust (id=61)</small></td></tr>
+<tr data-tags="both"><td>21</td><td>瞬息移动</td><td>14/16/18</td><td>30/40/50</td><td>10</td><td>(10,0,0)</td><td>Teleportation (id=29)</td><td><span class="tag both">both</span> <small>→ Teleportation (id=29)</small></td></tr>
+<tr data-tags="old-only"><td>51</td><td>通天冰月神掌</td><td>99/99/99</td><td>100/100/100</td><td>6</td><td>(4,5,5)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>44</td><td>通天大火球</td><td>99/99/99</td><td>100/100/100</td><td>5</td><td>(3,6,6)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>70</td><td>通天风掌</td><td>99/18/19</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>59</td><td>通天霹雳掌</td><td>99/99/99</td><td>100/100/100</td><td>1</td><td>(4,8,8)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>81</td><td>通天月魂断波</td><td>99/99/99</td><td>100/100/100</td><td>5</td><td>(6,10,10)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>35</td><td>翔空剑法</td><td>35/37/39</td><td>100/110/120</td><td>8</td><td>(2,0,0)</td><td>Dragon Rise (id=8)</td><td><span class="tag changed">changed</span> <small>→ Dragon Rise (id=8)</small></td></tr>
+<tr data-tags="old-only"><td>28</td><td>心灵启示</td><td>99/99/99</td><td>50000/50000/50000</td><td>0</td><td>(16,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="changed"><td>27</td><td>野蛮冲撞</td><td>27/29/31</td><td>70/80/90</td><td>0</td><td>(20,0,0)</td><td>Shoulder Dash (id=6)</td><td><span class="tag changed">changed</span> <small>→ Shoulder Dash (id=6)</small></td></tr>
+<tr data-tags="old-only"><td>78</td><td>移花术</td><td>99/99/99</td><td>100/100/100</td><td>25</td><td>(12,10,10)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="both"><td>104</td><td>异形换位</td><td>27/29/31</td><td>80/90/100</td><td>20</td><td>(20,0,0)</td><td>Geo Manipulation (id=40)</td><td><span class="tag both">both</span> <small>→ Geo Manipulation (id=40)</small></td></tr>
+<tr data-tags="changed"><td>18</td><td>隐身术</td><td>20/22/24</td><td>50/60/70</td><td>5</td><td>(5,0,0)</td><td>Invisibility (id=64)</td><td><span class="tag changed">changed</span> <small>→ Invisibility (id=64)</small></td></tr>
+<tr data-tags="changed"><td>14</td><td>幽灵盾</td><td>21/23/25</td><td>50/60/70</td><td>5</td><td>(10,0,0)</td><td>Magic Resistance (id=65)</td><td><span class="tag changed">changed</span> <small>→ Magic Resistance (id=65)</small></td></tr>
+<tr data-tags="old-only"><td>86</td><td>幽灵盾（冰）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>88</td><td>幽灵盾（风）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>85</td><td>幽灵盾（火）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="old-only"><td>87</td><td>幽灵盾（雷）</td><td>99/99/99</td><td>100/100/100</td><td>0</td><td>(15,0,0)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="both"><td>20</td><td>诱惑之光</td><td>13/15/17</td><td>20/30/40</td><td>3</td><td>(3,0,0)</td><td>Electric Shock (id=28)</td><td><span class="tag both">both</span> <small>→ Electric Shock (id=28)</small></td></tr>
+<tr data-tags="changed"><td>106</td><td>破血狂杀</td><td>48/51/54</td><td>50/50/50</td><td>40</td><td>(40,0,0)</td><td>Might (id=14)</td><td><span class="tag changed">changed</span> <small>→ Might (id=14)</small></td></tr>
+<tr data-tags="both"><td>37</td><td>月魂断玉</td><td>14/16/18</td><td>30/40/50</td><td>3</td><td>(6,6,10)</td><td>Evil Slayer (id=63)</td><td><span class="tag both">both</span> <small>→ Evil Slayer (id=63)</small></td></tr>
+<tr data-tags="changed"><td>38</td><td>月魂灵波</td><td>24/26/28</td><td>60/70/80</td><td>4</td><td>(8,8,12)</td><td>Greater Evil Slayer (id=67)</td><td><span class="tag changed">changed</span> <small>→ Greater Evil Slayer (id=67)</small></td></tr>
+<tr data-tags="old-only"><td>48</td><td>云石召唤</td><td>99/99/99</td><td>100/100/100</td><td>25</td><td>(20,3,3)</td><td>装备技能体系，Zircon 无 1:1 对应</td><td><span class="tag old-only">old-only</span> <small>装备技能体系，Zircon 无 1:1 对应</small></td></tr>
+<tr data-tags="both"><td>17</td><td>召唤骷髅</td><td>17/19/21</td><td>4/5/6</td><td>10</td><td>(15,0,0)</td><td>Summon Skeleton (id=130)</td><td><span class="tag both">both</span> <small>→ Summon Skeleton (id=130)</small></td></tr>
+<tr data-tags="both"><td>30</td><td>召唤神兽</td><td>30/32/34</td><td>9/10/11</td><td>15</td><td>(15,0,0)</td><td>Summon Shinsu (id=133)</td><td><span class="tag both">both</span> <small>→ Summon Shinsu (id=133)</small></td></tr>
+<tr data-tags="both"><td>2</td><td>治愈术</td><td>7/9/11</td><td>10/20/30</td><td>2</td><td>(7,11,15)</td><td>Heal (id=59)</td><td><span class="tag both">both</span> <small>→ Heal (id=59)</small></td></tr></tbody></table></div></section><script>(function(){var bar=document.getElementById('skillLegacyBar'),input=document.getElementById('skillLegacyFilter');if(!bar||!input)return;bar.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){bar.querySelectorAll('button').forEach(function(x){x.classList.remove('active')});b.classList.add('active');var t=b.dataset.ftag,rows=bar.closest('section').querySelectorAll('tbody tr');rows.forEach(function(r){r.hidden=t!=='all'&&r.dataset.tags!==t})})});input.addEventListener('input',function(){var q=input.value.toLowerCase();bar.closest('section').querySelectorAll('tbody tr').forEach(function(r){r.hidden=q&&!r.textContent.toLowerCase().includes(q)})})})();</script><section class="catalog-section"><h2>当前 Zircon：174 条技能记录</h2><p>&lt;!-- 由 Tools/SystemDbProbe 自动生成，请勿手改。重新生成: dotnet run --project Tools/SystemDbProbe -- --view docs/database/views --&gt;</p>
+<h2>职业技能总览</h2>
+<p class="catalog-note">四职业全部 174 个技能：表格速查，条目看详情。</p>
+<h3>战士（32 个）</h3>
+<div class="table-wrap"><table class="catalog-table"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>属性</th><th>威力</th><th>耗蓝</th><th>延迟</th><th>等级门槛</th></tr></thead><tbody>
+<tr><td>1</td><td>Swordsmanship</td><td>Swordsmanship</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>7/9/11</td></tr>
+<tr><td>2</td><td>Potion Mastery</td><td>PotionMastery</td><td>Passive</td><td>10-10</td><td>0</td><td>0</td><td>12/22/33</td></tr>
+<tr><td>3</td><td>Slaying</td><td>Slaying</td><td>Passive</td><td>8-8</td><td>0</td><td>0</td><td>14/16/18</td></tr>
+<tr><td>4</td><td>Thrusting</td><td>Thrusting</td><td>Toggle</td><td>50-50</td><td>0</td><td>0</td><td>19/21/23</td></tr>
+<tr><td>5</td><td>Half Moon</td><td>HalfMoon</td><td>Toggle</td><td>40-40</td><td>3</td><td>0</td><td>24/26/28</td></tr>
+<tr><td>6</td><td>Shoulder Dash</td><td>ShoulderDash</td><td>Active</td><td>2-3</td><td>0</td><td>4000</td><td>27/29/31</td></tr>
+<tr><td>7</td><td>Flaming Sword</td><td>FlamingSword</td><td>Charge</td><td>160-160</td><td>7</td><td>7000</td><td>32/34/36</td></tr>
+<tr><td>8</td><td>Dragon Rise</td><td>DragonRise</td><td>Charge</td><td>120-120</td><td>8</td><td>7000</td><td>35/37/39</td></tr>
+<tr><td>9</td><td>Blade Storm</td><td>BladeStorm</td><td>Charge</td><td>240-240</td><td>9</td><td>7000</td><td>38/40/42</td></tr>
+<tr><td>10</td><td>Destructive Surge</td><td>DestructiveSurge</td><td>Toggle</td><td>70-70</td><td>7</td><td>0</td><td>40/43/46</td></tr>
+<tr><td>135</td><td>Advanced Potion Mastery</td><td>AdvancedPotionMastery</td><td>Augmentation</td><td>10-10</td><td>0</td><td>0</td><td>40/50/60</td></tr>
+<tr><td>11</td><td>Interchange</td><td>Interchange</td><td>Active</td><td>0-0</td><td>10</td><td>5000</td><td>42/45/48</td></tr>
+<tr><td>12</td><td>Defiance</td><td>Defiance</td><td>Active</td><td>30-30</td><td>40</td><td>0</td><td>44/47/50</td></tr>
+<tr><td>13</td><td>Beckon</td><td>Beckon</td><td>Active</td><td>0-0</td><td>20</td><td>5000</td><td>46/49/52</td></tr>
+<tr><td>14</td><td>Might</td><td>Might</td><td>Active</td><td>30-30</td><td>50</td><td>0</td><td>48/51/54</td></tr>
+<tr><td>15</td><td>Swift Blade</td><td>SwiftBlade</td><td>Active</td><td>80-80</td><td>50</td><td>7000</td><td>49/57/65</td></tr>
+<tr><td>16</td><td>Assault</td><td>Assault</td><td>Augmentation</td><td>1000-1000</td><td>0</td><td>8000</td><td>50/53/56</td></tr>
+<tr><td>17</td><td>Endurance</td><td>Endurance</td><td>Active</td><td>10-10</td><td>20</td><td>120000</td><td>51/55/59</td></tr>
+<tr><td>18</td><td>Reflect Damage</td><td>ReflectDamage</td><td>Active</td><td>35-35</td><td>10</td><td>120000</td><td>53/58/63</td></tr>
+<tr><td>19</td><td>Fetter</td><td>Fetter</td><td>Active</td><td>5000-5000</td><td>35</td><td>0</td><td>55/61/67</td></tr>
+<tr><td>138</td><td>Mass Beckon</td><td>MassBeckon</td><td>Active</td><td>0-0</td><td>100</td><td>5000</td><td>60/63/66</td></tr>
+<tr><td>146</td><td>Invincibility</td><td>Invincibility</td><td>Active</td><td>0-30</td><td>0</td><td>5000</td><td>65/70/75</td></tr>
+<tr><td>152</td><td>Defensive Mastery</td><td>DefensiveMastery</td><td>Passive</td><td>1-1</td><td>0</td><td>0</td><td>70/75/80</td></tr>
+<tr><td>21</td><td>Advanced Defiance</td><td>AugmentDefiance</td><td>Augmentation</td><td>0-0</td><td>0</td><td>0</td><td>80/82/84</td></tr>
+<tr><td>153</td><td>Physical Immunity</td><td>PhysicalImmunity</td><td>Passive</td><td>1-6</td><td>0</td><td>0</td><td>80/84/88</td></tr>
+<tr><td>154</td><td>Magic Immunity</td><td>MagicImmunity</td><td>Passive</td><td>1-6</td><td>0</td><td>0</td><td>80/84/88</td></tr>
+<tr><td>22</td><td>Advanced Reflect Damage</td><td>AugmentReflectDamage</td><td>Augmentation</td><td>1-1</td><td>0</td><td>0</td><td>82/82/82</td></tr>
+<tr><td>142</td><td>Seismic Slam</td><td>SeismicSlam</td><td>Active</td><td>120-120</td><td>50</td><td>18000</td><td>83/85/87</td></tr>
+<tr><td>20</td><td>Advanced Destructive Surge</td><td>AugmentDestructiveSurge</td><td>Augmentation</td><td>15-15</td><td>0</td><td>0</td><td>84/90/96</td></tr>
+<tr><td>155</td><td>Defensive Blow</td><td>DefensiveBlow</td><td>Charge</td><td>10-10</td><td>50</td><td>10000</td><td>86/88/91</td></tr>
+<tr><td>147</td><td>Crushing Wave</td><td>CrushingWave</td><td>Active</td><td>0-30</td><td>0</td><td>0</td><td>90/90/90</td></tr>
+<tr><td>156</td><td>Elemental Swords</td><td>ElementalSwords</td><td>Active</td><td>5-15</td><td>10</td><td>5000</td><td>95/96/97</td></tr>
+</tbody></table></div>
+<h4>1 · Swordsmanship</h4>
+<ul><li>类型：Swordsmanship · 派系：Passive · 属性：Passive · 图标：4</li><li>威力：0-0，每级 +10-10 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：7 / 9 / 11 级 · 熟练度：100 / 200 / 300</li><li>说明：A skill that increases your accuracy. The skill becomes more effective as you train.</li></ul>
+<h4>2 · Potion Mastery</h4>
+<ul><li>类型：PotionMastery · 派系：Passive · 属性：Passive · 图标：262</li><li>威力：10-10，每级 +15-15 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：12 / 22 / 33 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：You become adept at using recovery items. You may recover more depending upon the level of your training.</li></ul>
+<h4>3 · Slaying</h4>
+<ul><li>类型：Slaying · 派系：Passive · 属性：Passive · 图标：12</li><li>威力：8-8，每级 +7-7 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：14 / 16 / 18 级 · 熟练度：300 / 400 / 500</li><li>说明：A skill that increases your accuracy and damage. The skill becomes more effective as you train.</li></ul>
+<h4>4 · Thrusting</h4>
+<ul><li>类型：Thrusting · 派系：Toggle · 属性：Toggle · 图标：22</li><li>威力：50-50，每级 +50-50 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：19 / 21 / 23 级 · 熟练度：400 / 500 / 600</li><li>说明：Attack enemies outside of the melee range using the energy of your weapon. The damage done increases with training.</li></ul>
+<h4>5 · Half Moon</h4>
+<ul><li>类型：HalfMoon · 派系：Toggle · 属性：Toggle · 图标：48</li><li>威力：40-40，每级 +50-50 · 耗蓝：3，每级 +0 · 延迟：0ms</li><li>等级门槛：24 / 26 / 28 级 · 熟练度：600 / 700 / 800</li><li>说明：An ancient skill attack that hits 4 nearby enemies with the power of wind created from the swing of a weapon. Its damage increases with training.</li></ul>
+<h4>6 · Shoulder Dash</h4>
+<ul><li>类型：ShoulderDash · 派系：Active · 属性：Active · 图标：52</li><li>威力：2-3，每级 +3-3 · 耗蓝：0，每级 +20 · 延迟：4000ms</li><li>等级门槛：27 / 29 / 31 级 · 熟练度：700 / 800 / 900</li><li>说明：A shoulder blow to push away enemies of lower levels. As you train harder, you&#x27;ll be able to push more enemies.</li></ul>
+<h4>7 · Flaming Sword</h4>
+<ul><li>类型：FlamingSword · 派系：Active · 属性：Charge · 图标：50</li><li>威力：160-160，每级 +100-100 · 耗蓝：7，每级 +2 · 延迟：7000ms</li><li>等级门槛：32 / 34 / 36 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：Transfer your body&#x27;s energy onto the weapon to increase its damage.  The damage bonus increases with training.</li></ul>
+<h4>8 · Dragon Rise</h4>
+<ul><li>类型：DragonRise · 派系：Active · 属性：Charge · 图标：68</li><li>威力：120-120，每级 +100-100 · 耗蓝：8，每级 +2 · 延迟：7000ms</li><li>等级门槛：35 / 37 / 39 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：Harness the body&#x27;s energy to throw yourself into the enemies. Its damage increases with training.</li></ul>
+<h4>9 · Blade Storm</h4>
+<ul><li>类型：BladeStorm · 派系：Active · 属性：Charge · 图标：66</li><li>威力：240-240，每级 +100-100 · 耗蓝：9，每级 +3 · 延迟：7000ms</li><li>等级门槛：38 / 40 / 42 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A fast attack that deals 2 blows to the enemy. Its damage increases with training.</li></ul>
+<h4>10 · Destructive Surge</h4>
+<ul><li>类型：DestructiveSurge · 派系：Toggle · 属性：Toggle · 图标：204</li><li>威力：70-70，每级 +30-30 · 耗蓝：7，每级 +0 · 延迟：0ms</li><li>等级门槛：40 / 43 / 46 级 · 熟练度：2000 / 3000 / 6000</li><li>说明：Transfers your body&#x27;s energy onto your weapon to deal damage to your enemies around you. Its damage increases with training.</li></ul>
+<h4>135 · Advanced Potion Mastery</h4>
+<ul><li>类型：AdvancedPotionMastery · 派系：None · 属性：Augmentation · 图标：262</li><li>威力：10-10，每级 +15-15 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：40 / 50 / 60 级 · 熟练度：20000 / 40000 / 80000</li><li>说明：You become further adept at using recovery items. You may recover more depending upon the level of your training. Works with Regular Potion Mastery.</li></ul>
+<h4>11 · Interchange</h4>
+<ul><li>类型：Interchange · 派系：Active · 属性：Active · 图标：212</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +40 · 延迟：5000ms</li><li>等级门槛：42 / 45 / 48 级 · 熟练度：4000 / 6000 / 12000</li><li>说明：A skill that allows you to switch the location of you and your target. Its chance of success increases with training.</li></ul>
+<h4>12 · Defiance</h4>
+<ul><li>类型：Defiance · 派系：Active · 属性：Active · 图标：202</li><li>威力：30-30，每级 +90-90 · 耗蓝：40，每级 +80 · 延迟：0ms</li><li>等级门槛：44 / 47 / 50 级 · 熟练度：6000 / 9000 / 18000</li><li>说明：Significantly increase your defense and magic resistance whilst reducing attack power. Duration increases with training.</li></ul>
+<h4>13 · Beckon</h4>
+<ul><li>类型：Beckon · 派系：Active · 属性：Active · 图标：214</li><li>威力：0-0，每级 +0-0 · 耗蓝：20，每级 +40 · 延迟：5000ms</li><li>等级门槛：46 / 49 / 52 级 · 熟练度：8000 / 12000 / 24000</li><li>说明：A skill that pulls a distant target into melee range. Its success rate increases with training.</li></ul>
+<h4>14 · Might</h4>
+<ul><li>类型：Might · 派系：Active · 属性：Active · 图标：210</li><li>威力：30-30，每级 +90-90 · 耗蓝：50，每级 +100 · 延迟：0ms</li><li>等级门槛：48 / 51 / 54 级 · 熟练度：10000 / 15000 / 30000</li><li>说明：Moderately increase your damage. The damage bonus and duration increases with training.</li></ul>
+<h4>15 · Swift Blade</h4>
+<ul><li>类型：SwiftBlade · 派系：Active · 属性：Active · 图标：260</li><li>威力：80-80，每级 +100-100 · 耗蓝：50，每级 +80 · 延迟：7000ms</li><li>等级门槛：49 / 57 / 65 级 · 熟练度：12000 / 16000 / 32000</li><li>说明：A skill that deals damage to enemies by releasing the energy within your weapon as you thrust it into the ground.</li></ul>
+<h4>16 · Assault</h4>
+<ul><li>类型：Assault · 派系：Active · 属性：Augmentation · 图标：216</li><li>威力：1000-1000，每级 +2000-2000 · 耗蓝：0，每级 +50 · 延迟：8000ms</li><li>等级门槛：50 / 53 / 56 级 · 熟练度：10000 / 15000 / 30000</li><li>说明：Enemies affected by shoulder dash becomes unconscious.</li></ul>
+<h4>17 · Endurance</h4>
+<ul><li>类型：Endurance · 派系：Active · 属性：Active · 图标：254</li><li>威力：10-10，每级 +10-10 · 耗蓝：20，每级 +40 · 延迟：120000ms</li><li>等级门槛：51 / 55 / 59 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：Uses your body&#x27;s energy to avoid being poisoned, pushed back from enemy attacks, and any other harmful status effects.</li></ul>
+<h4>18 · Reflect Damage</h4>
+<ul><li>类型：ReflectDamage · 派系：Active · 属性：Active · 图标：250</li><li>威力：35-35，每级 +40-40 · 耗蓝：10，每级 +10 · 延迟：120000ms</li><li>等级门槛：53 / 58 / 63 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：Returns a percentage of damage done to you back to the attacker.</li></ul>
+<h4>19 · Fetter</h4>
+<ul><li>类型：Fetter · 派系：Active · 属性：Active · 图标：258</li><li>威力：5000-5000，每级 +7000-7000 · 耗蓝：35，每级 +55 · 延迟：0ms</li><li>等级门槛：55 / 61 / 67 级 · 熟练度：20000 / 30000 / 40000</li><li>说明：You slow your enemy&#x27;s movement speed and attack speed using your body&#x27;s energy.</li></ul>
+<h4>138 · Mass Beckon</h4>
+<ul><li>类型：MassBeckon · 派系：Active · 属性：Active · 图标：386</li><li>威力：0-0，每级 +0-0 · 耗蓝：100，每级 +50 · 延迟：5000ms</li><li>等级门槛：60 / 63 / 66 级 · 熟练度：5000 / 10000 / 25000</li><li>说明：When successful all enemies around the caster are pulled to the perimeter of the caster. Success increases with training.</li></ul>
+<h4>146 · Invincibility</h4>
+<ul><li>类型：Invincibility · 派系：Active · 属性：Active · 图标：442</li><li>威力：0-30，每级 +20-20 · 耗蓝：0，每级 +100 · 延迟：5000ms</li><li>等级门槛：65 / 70 / 75 级 · 熟练度：1200 / 1800 / 3000</li><li>说明：Ignores all attacks except internal attacks for a certain period of time. The duration increases with training.</li></ul>
+<h4>152 · Defensive Mastery</h4>
+<ul><li>类型：DefensiveMastery · 派系：Passive · 属性：Passive · 图标：466</li><li>威力：1-1，每级 +1-1 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：70 / 75 / 80 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：Increases the probability of using your maximum defensive capabilities. Probability increases with training.</li></ul>
+<h4>21 · Advanced Defiance</h4>
+<ul><li>类型：AugmentDefiance · 派系：Passive · 属性：Augmentation · 图标：388</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：80 / 82 / 84 级 · 熟练度：3000 / 4500 / 9000</li><li>说明：Improves Defiance by removing the need to reduce attack power. Duration increases even further with training.</li></ul>
+<h4>153 · Physical Immunity</h4>
+<ul><li>类型：PhysicalImmunity · 派系：Passive · 属性：Passive · 图标：468</li><li>威力：1-6，每级 +1-1 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：80 / 84 / 88 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：Permanently reduce all incoming physical attacks. Reduction amount increases with training.</li></ul>
+<h4>154 · Magic Immunity</h4>
+<ul><li>类型：MagicImmunity · 派系：Passive · 属性：Passive · 图标：470</li><li>威力：1-6，每级 +1-1 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：80 / 84 / 88 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：Permanently reduce all incoming magic attacks. Reduction amount increases with training.</li></ul>
+<h4>22 · Advanced Reflect Damage</h4>
+<ul><li>类型：AugmentReflectDamage · 派系：Passive · 属性：Augmentation · 图标：458</li><li>威力：1-1，每级 +1-1 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：82 / 82 / 82 级 · 熟练度：20000 / 40000 / 60000</li><li>说明：Improves Reflect Damage by increasing reflect damage percentage and duration even further with training.</li></ul>
+<h4>142 · Seismic Slam</h4>
+<ul><li>类型：SeismicSlam · 派系：Active · 属性：Active · 图标：434</li><li>威力：120-120，每级 +150-150 · 耗蓝：50，每级 +100 · 延迟：18000ms</li><li>等级门槛：83 / 85 / 87 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：Attacks an area with deadly force that has the potential to knock out enemies for a period of time.</li></ul>
+<h4>20 · Advanced Destructive Surge</h4>
+<ul><li>类型：AugmentDestructiveSurge · 派系：Toggle · 属性：Augmentation · 图标：526</li><li>威力：15-15，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：84 / 90 / 96 级 · 熟练度：20000 / 30000 / 60000</li><li>说明：Provides a wider area of attack for Destructive Surge at level 3 or above, and increases overall power. Damage dealt increases with training.</li></ul>
+<h4>155 · Defensive Blow</h4>
+<ul><li>类型：DefensiveBlow · 派系：Active · 属性：Charge · 图标：488</li><li>威力：10-10，每级 +10-10 · 耗蓝：50，每级 +0 · 延迟：10000ms</li><li>等级门槛：86 / 88 / 91 级 · 熟练度：15000 / 20000 / 30000</li><li>说明：Use the full force of your swing to temporarily decrease your targets defensive abilities. Defensives reduces increases with training.</li></ul>
+<h4>147 · Crushing Wave</h4>
+<ul><li>类型：CrushingWave · 派系：Active · 属性：Active · 图标：450</li><li>威力：0-30，每级 +20-20 · 耗蓝：0，每级 +100 · 延迟：0ms</li><li>等级门槛：90 / 90 / 90 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：Sends a powerful energy through your weapon which cuts down enemies from a distance. Damage increases with training.</li></ul>
+<h4>156 · Elemental Swords</h4>
+<ul><li>类型：ElementalSwords · 派系：Active · 属性：Active · 图标：502</li><li>威力：5-15，每级 +5-10 · 耗蓝：10，每级 +5 · 延迟：5000ms</li><li>等级门槛：95 / 96 / 97 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：Throws a sword at the target inflicting damage. If the target is killed there is a chance to regain a percentage of your drained mana. Amount of swords thrown, damage dealt and mana regained increases with training.</li></ul>
+<h3>法师（42 个）</h3>
+<div class="table-wrap"><table class="catalog-table"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>属性</th><th>威力</th><th>耗蓝</th><th>延迟</th><th>等级门槛</th></tr></thead><tbody>
+<tr><td>23</td><td>Fire Ball</td><td>FireBall</td><td>Active</td><td>0-4</td><td>1</td><td>0</td><td>7/9/11</td></tr>
+<tr><td>24</td><td>Lightning Ball</td><td>LightningBall</td><td>Active</td><td>0-4</td><td>1</td><td>0</td><td>8/10/12</td></tr>
+<tr><td>25</td><td>Ice Bolt</td><td>IceBolt</td><td>Active</td><td>0-4</td><td>1</td><td>0</td><td>9/11/13</td></tr>
+<tr><td>26</td><td>Gust Blast</td><td>GustBlast</td><td>Active</td><td>0-4</td><td>1</td><td>0</td><td>10/12/14</td></tr>
+<tr><td>27</td><td>Repulsion</td><td>Repulsion</td><td>Active</td><td>2-3</td><td>1</td><td>0</td><td>12/14/16</td></tr>
+<tr><td>28</td><td>Electric Shock</td><td>ElectricShock</td><td>Active</td><td>0-0</td><td>3</td><td>0</td><td>13/15/17</td></tr>
+<tr><td>29</td><td>Teleportation</td><td>Teleportation</td><td>Active</td><td>0-0</td><td>10</td><td>7000</td><td>14/16/18</td></tr>
+<tr><td>30</td><td>Adamantine Fire Ball</td><td>AdamantineFireBall</td><td>Active</td><td>7-11</td><td>6</td><td>0</td><td>15/17/19</td></tr>
+<tr><td>53</td><td>Fire Bounce</td><td>FireBounce</td><td>Active</td><td>7-11</td><td>6</td><td>0</td><td>15/17/19</td></tr>
+<tr><td>31</td><td>Thunder Bolt</td><td>ThunderBolt</td><td>Active</td><td>7-11</td><td>6</td><td>0</td><td>16/18/20</td></tr>
+<tr><td>32</td><td>Ice Blades</td><td>IceBlades</td><td>Active</td><td>7-11</td><td>6</td><td>0</td><td>17/19/21</td></tr>
+<tr><td>33</td><td>Cyclone</td><td>Cyclone</td><td>Active</td><td>7-11</td><td>6</td><td>0</td><td>18/20/22</td></tr>
+<tr><td>34</td><td>Scorched Earth</td><td>ScortchedEarth</td><td>Active</td><td>12-16</td><td>15</td><td>0</td><td>20/22/24</td></tr>
+<tr><td>35</td><td>Lightning Beam</td><td>LightningBeam</td><td>Active</td><td>12-16</td><td>15</td><td>0</td><td>21/23/25</td></tr>
+<tr><td>36</td><td>Frozen Earth</td><td>FrozenEarth</td><td>Active</td><td>12-16</td><td>15</td><td>0</td><td>22/24/26</td></tr>
+<tr><td>37</td><td>Blow Earth</td><td>BlowEarth</td><td>Active</td><td>12-16</td><td>15</td><td>0</td><td>23/25/27</td></tr>
+<tr><td>38</td><td>Fire Wall</td><td>FireWall</td><td>Active</td><td>1-6</td><td>30</td><td>0</td><td>24/26/28</td></tr>
+<tr><td>39</td><td>Expel Undead</td><td>ExpelUndead</td><td>Active</td><td>0-0</td><td>30</td><td>0</td><td>26/28/30</td></tr>
+<tr><td>40</td><td>Geo Manipulation</td><td>GeoManipulation</td><td>Active</td><td>0-0</td><td>20</td><td>5000</td><td>27/29/31</td></tr>
+<tr><td>41</td><td>Magic Shield</td><td>MagicShield</td><td>Active</td><td>0-0</td><td>30</td><td>0</td><td>29/31/33</td></tr>
+<tr><td>42</td><td>Fire Storm</td><td>FireStorm</td><td>Active</td><td>14-18</td><td>20</td><td>0</td><td>32/34/36</td></tr>
+<tr><td>43</td><td>Lightning Wave</td><td>LightningWave</td><td>Active</td><td>14-18</td><td>20</td><td>0</td><td>33/35/37</td></tr>
+<tr><td>44</td><td>Ice Storm</td><td>IceStorm</td><td>Active</td><td>14-18</td><td>20</td><td>0</td><td>34/36/38</td></tr>
+<tr><td>45</td><td>Dragon Tornado</td><td>DragonTornado</td><td>Active</td><td>14-18</td><td>20</td><td>0</td><td>35/37/39</td></tr>
+<tr><td>46</td><td>Greater Frozen Earth</td><td>GreaterFrozenEarth</td><td>Active</td><td>16-20</td><td>20</td><td>0</td><td>38/41/44</td></tr>
+<tr><td>47</td><td>Chain Lightning</td><td>ChainLightning</td><td>Active</td><td>20-30</td><td>30</td><td>0</td><td>40/42/44</td></tr>
+<tr><td>48</td><td>Meteor Shower</td><td>MeteorShower</td><td>Active</td><td>14-22</td><td>40</td><td>0</td><td>43/45/47</td></tr>
+<tr><td>49</td><td>Renounce</td><td>Renounce</td><td>Active</td><td>0-0</td><td>10</td><td>0</td><td>46/48/50</td></tr>
+<tr><td>50</td><td>Tempest</td><td>Tempest</td><td>Active</td><td>3-8</td><td>40</td><td>0</td><td>49/51/53</td></tr>
+<tr><td>51</td><td>Judgement Of Heaven</td><td>JudgementOfHeaven</td><td>Active</td><td>0-0</td><td>40</td><td>0</td><td>52/57/62</td></tr>
+<tr><td>52</td><td>Thunder Storm</td><td>ThunderStrike</td><td>Active</td><td>14-18</td><td>30</td><td>0</td><td>54/59/64</td></tr>
+<tr><td>131</td><td>Mirror Image</td><td>MirrorImage</td><td>Active</td><td>0-0</td><td>10</td><td>0</td><td>56/61/66</td></tr>
+<tr><td>139</td><td>Frost Bite</td><td>FrostBite</td><td>Active</td><td>50-50</td><td>100</td><td>25000</td><td>58/60/62</td></tr>
+<tr><td>55</td><td>Superior Magic Shield</td><td>SuperiorMagicShield</td><td>Active</td><td>0-0</td><td>20</td><td>0</td><td>65/70/75</td></tr>
+<tr><td>56</td><td>Burning</td><td>Burning</td><td>Augmentation</td><td>12-18</td><td>20</td><td>0</td><td>76/80/86</td></tr>
+<tr><td>144</td><td>Asteroid</td><td>Asteroid</td><td>Active</td><td>50-80</td><td>200</td><td>3300</td><td>80/82/84</td></tr>
+<tr><td>137</td><td>Ice Rain</td><td>IceRain</td><td>Active</td><td>5-10</td><td>50</td><td>0</td><td>82/86/90</td></tr>
+<tr><td>54</td><td>Elemental Hurricane</td><td>ElementalHurricane</td><td>Active</td><td>16-24</td><td>20</td><td>0</td><td>83/85/87</td></tr>
+<tr><td>57</td><td>Shock</td><td>Shocked</td><td>Augmentation</td><td>20-30</td><td>20</td><td>0</td><td>85/88/91</td></tr>
+<tr><td>157</td><td>Storm</td><td>Storm</td><td>Active</td><td>0-0</td><td>0</td><td>0</td><td>86/88/91</td></tr>
+<tr><td>58</td><td>Lightning Strike</td><td>LightningStrike</td><td>Active</td><td>16-22</td><td>50</td><td>0</td><td>90/90/90</td></tr>
+<tr><td>158</td><td>Tornado</td><td>Tornado</td><td>Active</td><td>0-0</td><td>0</td><td>0</td><td>95/96/97</td></tr>
+</tbody></table></div>
+<h4>23 · Fire Ball</h4>
+<ul><li>类型：FireBall · 派系：Fire · 属性：Active · 图标：0</li><li>威力：0-4，每级 +6-10 · 耗蓝：1，每级 +3 · 延迟：0ms</li><li>等级门槛：7 / 9 / 11 级 · 熟练度：100 / 200 / 300</li><li>说明：The most basic Fire spell. Its damage increases with training.</li></ul>
+<h4>24 · Lightning Ball</h4>
+<ul><li>类型：LightningBall · 派系：Lightning · 属性：Active · 图标：80</li><li>威力：0-4，每级 +6-10 · 耗蓝：1，每级 +4 · 延迟：0ms</li><li>等级门槛：8 / 10 / 12 级 · 熟练度：100 / 200 / 300</li><li>说明：The most basic Lightning spell. Its damage increases with training.</li></ul>
+<h4>25 · Ice Bolt</h4>
+<ul><li>类型：IceBolt · 派系：Ice · 属性：Active · 图标：76</li><li>威力：0-4，每级 +4-8 · 耗蓝：1，每级 +4 · 延迟：0ms</li><li>等级门槛：9 / 11 / 13 级 · 熟练度：100 / 200 / 300</li><li>说明：The most basic Ice spell that damages the enemy and slows its movement speed. Its damage increases with training.</li></ul>
+<h4>26 · Gust Blast</h4>
+<ul><li>类型：GustBlast · 派系：Wind · 属性：Active · 图标：132</li><li>威力：0-4，每级 +5-9 · 耗蓝：1，每级 +3 · 延迟：0ms</li><li>等级门槛：10 / 12 / 14 级 · 熟练度：100 / 200 / 300</li><li>说明：The most basic Wind spell that pushes away enemies. Its damage and chance to push away your enemy increases with training.</li></ul>
+<h4>27 · Repulsion</h4>
+<ul><li>类型：Repulsion · 派系：Wind · 属性：Active · 图标：14</li><li>威力：2-3，每级 +3-3 · 耗蓝：1，每级 +8 · 延迟：0ms</li><li>等级门槛：12 / 14 / 16 级 · 熟练度：200 / 300 / 400</li><li>说明：A defensive spell that allows you to push away enemies of lower level. This spell has a fixed chance for success. The range of the spell and chance of success increase with training.</li></ul>
+<h4>28 · Electric Shock</h4>
+<ul><li>类型：ElectricShock · 派系：Lightning · 属性：Active · 图标：38</li><li>威力：0-0，每级 +0-0 · 耗蓝：3，每级 +3 · 延迟：0ms</li><li>等级门槛：13 / 15 / 17 级 · 熟练度：200 / 300 / 400</li><li>说明：A spell that knocks the enemy unconscious.  Your chance of success and duration of its effect increases with training.</li></ul>
+<h4>29 · Teleportation</h4>
+<ul><li>类型：Teleportation · 派系：Phantom · 属性：Active · 图标：40</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +10 · 延迟：7000ms</li><li>等级门槛：14 / 16 / 18 级 · 熟练度：300 / 400 / 500</li><li>说明：A spell that moves you to a random location. Your chance of success increases with training.</li></ul>
+<h4>30 · Adamantine Fire Ball</h4>
+<ul><li>类型：AdamantineFireBall · 派系：Fire · 属性：Active · 图标：8</li><li>威力：7-11，每级 +15-19 · 耗蓝：6，每级 +6 · 延迟：0ms</li><li>等级门槛：15 / 17 / 19 级 · 熟练度：400 / 500 / 600</li><li>说明：A spell that is more powerful than the Fireball. Its damage increases with training.</li></ul>
+<h4>53 · Fire Bounce</h4>
+<ul><li>类型：FireBounce · 派系：None · 属性：Active · 图标：0</li><li>威力：7-11，每级 +15-19 · 耗蓝：6，每级 +6 · 延迟：0ms</li><li>等级门槛：15 / 17 / 19 级 · 熟练度：400 / 500 / 600</li><li>说明：Bounces a powerful fireball between close targets. The number of bounces increase with training.</li></ul>
+<h4>31 · Thunder Bolt</h4>
+<ul><li>类型：ThunderBolt · 派系：Lightning · 属性：Active · 图标：20</li><li>威力：7-11，每级 +15-19 · 耗蓝：6，每级 +7 · 延迟：0ms</li><li>等级门槛：16 / 18 / 20 级 · 熟练度：400 / 500 / 600</li><li>说明：A spell that creates Thunderbolts to strike down on your enemies. Its damage increases with training.</li></ul>
+<h4>32 · Ice Blades</h4>
+<ul><li>类型：IceBlades · 派系：Ice · 属性：Active · 图标：78</li><li>威力：7-11，每级 +13-17 · 耗蓝：6，每级 +7 · 延迟：0ms</li><li>等级门槛：17 / 19 / 21 级 · 熟练度：400 / 500 / 600</li><li>说明：A spell that is more powerful than the Iceball. Its damage increases with training.</li></ul>
+<h4>33 · Cyclone</h4>
+<ul><li>类型：Cyclone · 派系：Wind · 属性：Active · 图标：146</li><li>威力：7-11，每级 +14-18 · 耗蓝：6，每级 +6 · 延迟：0ms</li><li>等级门槛：18 / 20 / 22 级 · 熟练度：400 / 500 / 600</li><li>说明：A Cyclone attack spell that damages a single enemy. Its damage increases with training.</li></ul>
+<h4>34 · Scorched Earth</h4>
+<ul><li>类型：ScortchedEarth · 派系：Fire · 属性：Active · 图标：16</li><li>威力：12-16，每级 +14-18 · 耗蓝：15，每级 +11 · 延迟：0ms</li><li>等级门槛：20 / 22 / 24 级 · 熟练度：500 / 600 / 700</li><li>说明：A spell that shoots out line of fire along the ground, damaging all enemies caught within the fire. Its damage increases with training.</li></ul>
+<h4>35 · Lightning Beam</h4>
+<ul><li>类型：LightningBeam · 派系：Lightning · 属性：Active · 图标：18</li><li>威力：12-16，每级 +14-14 · 耗蓝：15，每级 +12 · 延迟：0ms</li><li>等级门槛：21 / 23 / 25 级 · 熟练度：500 / 600 / 700</li><li>说明：A spell that shoots out a beam of lightning, damaging all enemies caught within the lightning. Its damage increases with training.</li></ul>
+<h4>36 · Frozen Earth</h4>
+<ul><li>类型：FrozenEarth · 派系：Ice · 属性：Active · 图标：104</li><li>威力：12-16，每级 +12-16 · 耗蓝：15，每级 +12 · 延迟：0ms</li><li>等级门槛：22 / 24 / 26 级 · 熟练度：500 / 600 / 700</li><li>说明：A spell that erects shards of ice from the ground in a line, damaging all enemies in the path. Its damage increases with training.</li></ul>
+<h4>37 · Blow Earth</h4>
+<ul><li>类型：BlowEarth · 派系：Wind · 属性：Active · 图标：144</li><li>威力：12-16，每级 +13-17 · 耗蓝：15，每级 +13 · 延迟：0ms</li><li>等级门槛：23 / 25 / 27 级 · 熟练度：600 / 700 / 800</li><li>说明：A spell that allows you to harness the power of the winds and cause it to blow in front of the caster in a straight line. Its damage increases with training.</li></ul>
+<h4>38 · Fire Wall</h4>
+<ul><li>类型：FireWall · 派系：Fire · 属性：Active · 图标：42</li><li>威力：1-6，每级 +2-9 · 耗蓝：30，每级 +22 · 延迟：0ms</li><li>等级门槛：24 / 26 / 28 级 · 熟练度：600 / 700 / 800</li><li>说明：A spell that creates a wall of fire in the shape of a cross damaging enemies over a period of time. Its damage increases with training.</li></ul>
+<h4>39 · Expel Undead</h4>
+<ul><li>类型：ExpelUndead · 派系：Phantom · 属性：Active · 图标：62</li><li>威力：0-0，每级 +0-0 · 耗蓝：30，每级 +30 · 延迟：0ms</li><li>等级门槛：26 / 28 / 30 级 · 熟练度：700 / 800 / 900</li><li>说明：A spell that instantly kills undead enemies. Its chance of success increases with training.</li></ul>
+<h4>40 · Geo Manipulation</h4>
+<ul><li>类型：GeoManipulation · 派系：Phantom · 属性：Active · 图标：206</li><li>威力：0-0，每级 +0-0 · 耗蓝：20，每级 +25 · 延迟：5000ms</li><li>等级门槛：27 / 29 / 31 级 · 熟练度：800 / 900 / 1000</li><li>说明：A spell that harnesses the body&#x27;s energy to move to a desired location. The chance of success increases with training.</li></ul>
+<h4>41 · Magic Shield</h4>
+<ul><li>类型：MagicShield · 派系：Phantom · 属性：Active · 图标：60</li><li>威力：0-0，每级 +0-0 · 耗蓝：30，每级 +20 · 延迟：0ms</li><li>等级门槛：29 / 31 / 33 级 · 熟练度：900 / 1000 / 1100</li><li>说明：Creates a magical shield around the caster that reduces the damage taken for a set period of time. The duration of the spell increases with training.</li></ul>
+<h4>42 · Fire Storm</h4>
+<ul><li>类型：FireStorm · 派系：Fire · 属性：Active · 图标：44</li><li>威力：14-18，每级 +14-18 · 耗蓝：20，每级 +15 · 延迟：0ms</li><li>等级门槛：32 / 34 / 36 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A spell that deals fire damage to all enemies within a fixed area(3x3) of choice. Its damage increases with training.</li></ul>
+<h4>43 · Lightning Wave</h4>
+<ul><li>类型：LightningWave · 派系：Lightning · 属性：Active · 图标：46</li><li>威力：14-18，每级 +14-18 · 耗蓝：20，每级 +17 · 延迟：0ms</li><li>等级门槛：33 / 35 / 37 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A spell that deals lightning damage to all enemies within a fixed area(3x3) of choice. Its damage increases with training.</li></ul>
+<h4>44 · Ice Storm</h4>
+<ul><li>类型：IceStorm · 派系：Ice · 属性：Active · 图标：64</li><li>威力：14-18，每级 +12-16 · 耗蓝：20，每级 +19 · 延迟：0ms</li><li>等级门槛：34 / 36 / 38 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A spell that deals ice damage to all enemies within a fixed area(3x3) of choice with ice. Its damage increases with training.</li></ul>
+<h4>45 · Dragon Tornado</h4>
+<ul><li>类型：DragonTornado · 派系：Wind · 属性：Active · 图标：142</li><li>威力：14-18，每级 +13-17 · 耗蓝：20，每级 +18 · 延迟：0ms</li><li>等级门槛：35 / 37 / 39 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A spell that attacks all enemies within a fixed area(3x3) of choice with a cyclone. Its damage increases with training.</li></ul>
+<h4>46 · Greater Frozen Earth</h4>
+<ul><li>类型：GreaterFrozenEarth · 派系：Ice · 属性：Active · 图标：218</li><li>威力：16-20，每级 +16-20 · 耗蓝：20，每级 +20 · 延迟：0ms</li><li>等级门槛：38 / 41 / 44 级 · 熟练度：1000 / 1500 / 3000</li><li>说明：A spell that erects 3 lines of ice shards from the ground in three directions to damage and slow the enemies. Its damage increases with training.</li></ul>
+<h4>47 · Chain Lightning</h4>
+<ul><li>类型：ChainLightning · 派系：Lightning · 属性：Active · 图标：220</li><li>威力：20-30，每级 +20-40 · 耗蓝：30，每级 +40 · 延迟：0ms</li><li>等级门槛：40 / 42 / 44 级 · 熟练度：2000 / 3000 / 6000</li><li>说明：A spell that inflicts lightning damage to enemies in a large area(9x9), but the damage inflicted decreases as the lightning spreads out from its attack point. Its damage increases with training.</li></ul>
+<h4>48 · Meteor Shower</h4>
+<ul><li>类型：MeteorShower · 派系：Fire · 属性：Active · 图标：224</li><li>威力：14-22，每级 +32-40 · 耗蓝：40，每级 +38 · 延迟：0ms</li><li>等级门槛：43 / 45 / 47 级 · 熟练度：5000 / 7500 / 15000</li><li>说明：A spell that damages enemies within a set range. Its damage and the number of enemies affected increases with training.</li></ul>
+<h4>49 · Renounce</h4>
+<ul><li>类型：Renounce · 派系：Phantom · 属性：Active · 图标：222</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +60 · 延迟：0ms</li><li>等级门槛：46 / 48 / 50 级 · 熟练度：8000 / 12000 / 24000</li><li>说明：A spell that sacrifices your HP to increase your Spell Power for a fixed period of time.  The Spell Power bonus increases with training.</li></ul>
+<h4>50 · Tempest</h4>
+<ul><li>类型：Tempest · 派系：Wind · 属性：Active · 图标：226</li><li>威力：3-8，每级 +4-11 · 耗蓝：40，每级 +30 · 延迟：0ms</li><li>等级门槛：49 / 51 / 53 级 · 熟练度：10000 / 15000 / 30000</li><li>说明：A spell that creates a Cyclone to attack enemies in a set area(3x3) for a set period of time. Its damage and duration increases with training.</li></ul>
+<h4>51 · Judgement Of Heaven</h4>
+<ul><li>类型：JudgementOfHeaven · 派系：Lightning · 属性：Active · 图标：264</li><li>威力：0-0，每级 +0-0 · 耗蓝：40，每级 +30 · 延迟：0ms</li><li>等级门槛：52 / 57 / 62 级 · 熟练度：20000 / 30000 / 50000</li><li>说明：The enemy that attacks you gets struck by lightning each time you take damage.</li></ul>
+<h4>52 · Thunder Storm</h4>
+<ul><li>类型：ThunderStrike · 派系：Lightning · 属性：Active · 图标：266</li><li>威力：14-18，每级 +14-18 · 耗蓝：30，每级 +70 · 延迟：0ms</li><li>等级门槛：54 / 59 / 64 级 · 熟练度：15000 / 20000 / 30000</li><li>说明：When cast, lightning strikes down randomly in a fixed area, dealing massive damage.</li></ul>
+<h4>131 · Mirror Image</h4>
+<ul><li>类型：MirrorImage · 派系：None · 属性：Active · 图标：252</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +10 · 延迟：0ms</li><li>等级门槛：56 / 61 / 66 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：The spell creates an illusion of yourself which has the same magic attack abilities. You must have a dark ore to cast this spell.</li></ul>
+<h4>139 · Frost Bite</h4>
+<ul><li>类型：FrostBite · 派系：Ice · 属性：Active · 图标：390</li><li>威力：50-50，每级 +75-75 · 耗蓝：100，每级 +100 · 延迟：25000ms</li><li>等级门槛：58 / 60 / 62 级 · 熟练度：2500 / 5000 / 9000</li><li>说明：Protect yourself with frost magic that stores up received damage over time and then expells it in a wide radius to damage and slow the enemy. Damage stored, chance to store and duration all increase with training.</li></ul>
+<h4>55 · Superior Magic Shield</h4>
+<ul><li>类型：SuperiorMagicShield · 派系：Phantom · 属性：Active · 图标：444</li><li>威力：0-0，每级 +0-0 · 耗蓝：20，每级 +60 · 延迟：0ms</li><li>等级门槛：65 / 70 / 75 级 · 熟练度：2000 / 4000 / 6000</li><li>说明：Creates a barrier around the caster that blocks all damage taken until depleted. The amount of damage absorbed increases with training.</li></ul>
+<h4>56 · Burning</h4>
+<ul><li>类型：Burning · 派系：Fire · 属性：Augmentation · 图标：484</li><li>威力：12-18，每级 +12-16 · 耗蓝：20，每级 +120 · 延迟：0ms</li><li>等级门槛：76 / 80 / 86 级 · 熟练度：40000 / 60000 / 80000</li><li>说明：Ignites the enemy and inflicts a continuous fire attack for a certain period of time. Passively applies to all fire skills. Damage and duration increase with training.</li></ul>
+<h4>144 · Asteroid</h4>
+<ul><li>类型：Asteroid · 派系：Fire · 属性：Active · 图标：392</li><li>威力：50-80，每级 +70-120 · 耗蓝：200，每级 +200 · 延迟：3300ms</li><li>等级门槛：80 / 82 / 84 级 · 熟练度：7500 / 15000 / 22500</li><li>说明：Summons fire from the sky to inflict massive area damage, leaving fire walls in its wake. Damage increases with training.</li></ul>
+<h4>137 · Ice Rain</h4>
+<ul><li>类型：IceRain · 派系：Ice · 属性：Active · 图标：486</li><li>威力：5-10，每级 +2-4 · 耗蓝：50，每级 +50 · 延迟：0ms</li><li>等级门槛：82 / 86 / 90 级 · 熟练度：50000 / 100000 / 150000</li><li>说明：A spell that rains down with ice shards, repeatedly damaging anyone inside with a chance to freeze them. Duration increases with training.</li></ul>
+<h4>54 · Elemental Hurricane</h4>
+<ul><li>类型：ElementalHurricane · 派系：Wind · 属性：Active · 图标：436</li><li>威力：16-24，每级 +15-18 · 耗蓝：20，每级 +35 · 延迟：0ms</li><li>等级门槛：83 / 85 / 87 级 · 熟练度：15000 / 30000 / 45000</li><li>说明：You condense your body&#x27;s energy and burst it in a line, dealing damage to anyone caught in its path. The energy does not have any properties unless used with a dark stone.</li></ul>
+<h4>57 · Shock</h4>
+<ul><li>类型：Shocked · 派系：Lightning · 属性：Augmentation · 图标：532</li><li>威力：20-30，每级 +18-24 · 耗蓝：20，每级 +45 · 延迟：0ms</li><li>等级门槛：85 / 88 / 91 级 · 熟练度：450 / 1000 / 1650</li><li>说明：Put the enemy in a state of temporary shock for a certain period of time. Passively applies to all lightning skills. Success and duration increases with training.</li></ul>
+<h4>157 · Storm</h4>
+<ul><li>类型：Storm · 派系：None · 属性：Active · 图标：492</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：86 / 88 / 91 级 · 熟练度：20000 / 30500 / 41000</li><li>说明：Creates a massive area storm that continously damages anything in its radius. Damage increases with training.</li></ul>
+<h4>58 · Lightning Strike</h4>
+<ul><li>类型：LightningStrike · 派系：Lightning · 属性：Active · 图标：452</li><li>威力：16-22，每级 +10-14 · 耗蓝：50，每级 +45 · 延迟：0ms</li><li>等级门槛：90 / 90 / 90 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：A spell that bounces a powerful elecric shock between close targets, getting stronger each hit. Number of bounces and power multiplier increases with training.</li></ul>
+<h4>158 · Tornado</h4>
+<ul><li>类型：Tornado · 派系：Wind · 属性：Active · 图标：508</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：95 / 96 / 97 级 · 熟练度：15000 / 30000 / 45000</li><li>说明：Summon a tornado which damages anything in its path. The effects of the tornado increase with training.</li></ul>
+<h3>道士（47 个）</h3>
+<div class="table-wrap"><table class="catalog-table"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>属性</th><th>威力</th><th>耗蓝</th><th>延迟</th><th>等级门槛</th></tr></thead><tbody>
+<tr><td>59</td><td>Heal</td><td>Heal</td><td>Active</td><td>0-0</td><td>2</td><td>0</td><td>7/9/11</td></tr>
+<tr><td>60</td><td>Spirit Sword</td><td>SpiritSword</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>8/10/12</td></tr>
+<tr><td>61</td><td>Poison Dust</td><td>PoisonDust</td><td>Active</td><td>15-25</td><td>5</td><td>0</td><td>12/14/16</td></tr>
+<tr><td>62</td><td>Explosive Talisman</td><td>ExplosiveTalisman</td><td>Active</td><td>3-3</td><td>3</td><td>0</td><td>13/15/17</td></tr>
+<tr><td>63</td><td>Evil Slayer</td><td>EvilSlayer</td><td>Active</td><td>3-3</td><td>3</td><td>0</td><td>14/16/18</td></tr>
+<tr><td>124</td><td>Empowered Explosive Talisman</td><td>AugmentExplosiveTalisman</td><td>Augmentation</td><td>1-1</td><td>0</td><td>3000</td><td>17/34/51</td></tr>
+<tr><td>125</td><td>Empowered Evil Slayer</td><td>AugmentEvilSlayer</td><td>Augmentation</td><td>1-1</td><td>0</td><td>3000</td><td>17/34/51</td></tr>
+<tr><td>130</td><td>Summon Skeleton</td><td>SummonSkeleton</td><td>Active</td><td>0-0</td><td>10</td><td>0</td><td>17/19/21</td></tr>
+<tr><td>64</td><td>Invisibility</td><td>Invisibility</td><td>Active</td><td>5-10</td><td>5</td><td>0</td><td>20/22/24</td></tr>
+<tr><td>65</td><td>Magic Resistance</td><td>MagicResistance</td><td>Active</td><td>30-50</td><td>5</td><td>0</td><td>21/23/25</td></tr>
+<tr><td>66</td><td>Mass Invisibility</td><td>MassInvisibility</td><td>Active</td><td>5-10</td><td>5</td><td>0</td><td>23/25/27</td></tr>
+<tr><td>67</td><td>Greater Evil Slayer</td><td>GreaterEvilSlayer</td><td>Active</td><td>7-7</td><td>4</td><td>0</td><td>24/26/28</td></tr>
+<tr><td>68</td><td>Resilience</td><td>Resilience</td><td>Active</td><td>30-50</td><td>5</td><td>0</td><td>25/27/29</td></tr>
+<tr><td>69</td><td>Trap Octagon</td><td>TrapOctagon</td><td>Active</td><td>10-20</td><td>10</td><td>0</td><td>27/29/31</td></tr>
+<tr><td>70</td><td>Combat Kick</td><td>CombatKick</td><td>Active</td><td>2-3</td><td>10</td><td>0</td><td>28/30/32</td></tr>
+<tr><td>71</td><td>Elemental Superiority</td><td>ElementalSuperiority</td><td>Active</td><td>30-50</td><td>5</td><td>0</td><td>29/31/33</td></tr>
+<tr><td>133</td><td>Summon Shinsu</td><td>SummonShinsu</td><td>Active</td><td>0-0</td><td>15</td><td>0</td><td>30/32/34</td></tr>
+<tr><td>72</td><td>Mass Heal</td><td>MassHeal</td><td>Active</td><td>8-8</td><td>20</td><td>0</td><td>31/33/35</td></tr>
+<tr><td>132</td><td>Summon Jin Skeleton</td><td>SummonJinSkeleton</td><td>Active</td><td>0-0</td><td>25</td><td>0</td><td>33/35/37</td></tr>
+<tr><td>73</td><td>Blood Lust</td><td>BloodLust</td><td>Active</td><td>30-50</td><td>5</td><td>0</td><td>34/36/38</td></tr>
+<tr><td>74</td><td>Resurrection</td><td>Resurrection</td><td>Active</td><td>10-20</td><td>100</td><td>0</td><td>35/37/39</td></tr>
+<tr><td>75</td><td>Purification</td><td>Purification</td><td>Active</td><td>10-20</td><td>10</td><td>0</td><td>38/41/44</td></tr>
+<tr><td>129</td><td>Strength Of Faith</td><td>StrengthOfFaith</td><td>Active</td><td>60-60</td><td>30</td><td>0</td><td>40/42/44</td></tr>
+<tr><td>76</td><td>Transparency</td><td>Transparency</td><td>Active</td><td>5-10</td><td>80</td><td>5000</td><td>43/45/47</td></tr>
+<tr><td>77</td><td>Celestial Light</td><td>CelestialLight</td><td>Active</td><td>30-30</td><td>50</td><td>0</td><td>46/48/50</td></tr>
+<tr><td>78</td><td>Empowered Healing</td><td>EmpoweredHealing</td><td>Augmentation</td><td>12-12</td><td>2</td><td>0</td><td>47/53/60</td></tr>
+<tr><td>79</td><td>Life Steal</td><td>LifeSteal</td><td>Active</td><td>30-30</td><td>10</td><td>0</td><td>48/55/62</td></tr>
+<tr><td>143</td><td>Demonic Recovery</td><td>DemonicRecovery</td><td>Active</td><td>25-25</td><td>100</td><td>0</td><td>48/51/54</td></tr>
+<tr><td>80</td><td>Improved Explosive Talisman</td><td>ImprovedExplosiveTalisman</td><td>Active</td><td>8-8</td><td>10</td><td>0</td><td>49/51/53</td></tr>
+<tr><td>81</td><td>Empowered Poison Dust</td><td>AugmentPoisonDust</td><td>Augmentation</td><td>3-3</td><td>0</td><td>5000</td><td>50/54/58</td></tr>
+<tr><td>134</td><td>Summon Demonic Creature</td><td>SummonDemonicCreature</td><td>Active</td><td>0-0</td><td>20</td><td>0</td><td>50/54/56</td></tr>
+<tr><td>82</td><td>Cursed Doll</td><td>CursedDoll</td><td>Active</td><td>10-10</td><td>15</td><td>0</td><td>52/56/61</td></tr>
+<tr><td>128</td><td>Demon Explosion</td><td>DemonExplosion</td><td>Active</td><td>25-25</td><td>100</td><td>10000</td><td>52/56/58</td></tr>
+<tr><td>83</td><td>Thunder Kick</td><td>ThunderKick</td><td>Active</td><td>2-3</td><td>10</td><td>0</td><td>54/59/64</td></tr>
+<tr><td>126</td><td>Empowered Purification</td><td>AugmentPurification</td><td>Augmentation</td><td>1-1</td><td>0</td><td>10000</td><td>55/58/62</td></tr>
+<tr><td>85</td><td>Parasite</td><td>Parasite</td><td>Active</td><td>2-2</td><td>80</td><td>0</td><td>62/66/70</td></tr>
+<tr><td>140</td><td>Infection</td><td>Infection</td><td>Augmentation</td><td>2-2</td><td>0</td><td>3000</td><td>65/70/75</td></tr>
+<tr><td>127</td><td>Empowered Resurrection</td><td>AugmentResurrection</td><td>Augmentation</td><td>1-1</td><td>0</td><td>60000</td><td>75/77/80</td></tr>
+<tr><td>86</td><td>Spiritualism</td><td>Spiritualism</td><td>Active</td><td>1-1</td><td>15</td><td>0</td><td>80/82/84</td></tr>
+<tr><td>148</td><td>Neutralize</td><td>Neutralize</td><td>Active</td><td>0-0</td><td>10</td><td>0</td><td>80/86/91</td></tr>
+<tr><td>149</td><td>Empowered Neutralize</td><td>AugmentNeutralize</td><td>Augmentation</td><td>1-1</td><td>0</td><td>0</td><td>80/86/91</td></tr>
+<tr><td>159</td><td>Empowered Celestial Light</td><td>AugmentCelestialLight</td><td>Augmentation</td><td>0-0</td><td>0</td><td>0</td><td>82/83/84</td></tr>
+<tr><td>151</td><td>Searing Light</td><td>SearingLight</td><td>Active</td><td>12-15</td><td>15</td><td>5000</td><td>83/85/87</td></tr>
+<tr><td>84</td><td>Soul Resonance</td><td>SoulResonance</td><td>Active</td><td>20-20</td><td>55</td><td>0</td><td>84/84/84</td></tr>
+<tr><td>160</td><td>Corpse Exploder</td><td>CorpseExploder</td><td>Active</td><td>15-30</td><td>30</td><td>0</td><td>86/88/95</td></tr>
+<tr><td>150</td><td>Dark Soul Prison</td><td>DarkSoulPrison</td><td>Active</td><td>12-15</td><td>10</td><td>0</td><td>90/90/90</td></tr>
+<tr><td>161</td><td>Summon Dead</td><td>SummonDead</td><td>Active</td><td>0-0</td><td>0</td><td>0</td><td>95/96/97</td></tr>
+</tbody></table></div>
+<h4>59 · Heal</h4>
+<ul><li>类型：Heal · 派系：Holy · 属性：Active · 图标：2</li><li>威力：0-0，每级 +11-15 · 耗蓝：2，每级 +7 · 延迟：0ms</li><li>等级门槛：7 / 9 / 11 级 · 熟练度：100 / 200 / 300</li><li>说明：A spell to heal yourself or others by using your body&#x27;s energy. The amount healed increases with training.</li></ul>
+<h4>60 · Spirit Sword</h4>
+<ul><li>类型：SpiritSword · 派系：Physical · 属性：Passive · 图标：6</li><li>威力：0-0，每级 +9-9 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：8 / 10 / 12 级 · 熟练度：100 / 200 / 300</li><li>说明：A skill that increases your Accuracy. The Accuracy bonus increases with training.</li></ul>
+<h4>61 · Poison Dust</h4>
+<ul><li>类型：PoisonDust · 派系：Dark · 属性：Active · 图标：10</li><li>威力：15-25，每级 +25-55 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：12 / 14 / 16 级 · 熟练度：200 / 300 / 400</li><li>说明：A spell that decreases your enemy&#x27;s defense or strength, depending on the Poison Powder, for a set period of time. The effect&#x27;s duration increases with training.</li></ul>
+<h4>62 · Explosive Talisman</h4>
+<ul><li>类型：ExplosiveTalisman · 派系：Dark · 属性：Active · 图标：24</li><li>威力：3-3，每级 +6-10 · 耗蓝：3，每级 +6 · 延迟：0ms</li><li>等级门槛：13 / 15 / 17 级 · 熟练度：200 / 300 / 400</li><li>说明：Throws an explosive talisman at the enemy. Its power is increased when used with a Dark Talisman.  Its damage increases with training.</li></ul>
+<h4>63 · Evil Slayer</h4>
+<ul><li>类型：EvilSlayer · 派系：Holy · 属性：Active · 图标：72</li><li>威力：3-3，每级 +6-10 · 耗蓝：3，每级 +6 · 延迟：0ms</li><li>等级门槛：14 / 16 / 18 级 · 熟练度：300 / 400 / 500</li><li>说明：Harness the holy energy in your hands to throw at your enemy. Its power is increased when used with a Holy Talisman. Its damage increases with training.</li></ul>
+<h4>124 · Empowered Explosive Talisman</h4>
+<ul><li>类型：AugmentExplosiveTalisman · 派系：None · 属性：Augmentation · 图标：24</li><li>威力：1-1，每级 +3-3 · 耗蓝：0，每级 +0 · 延迟：3000ms</li><li>等级门槛：17 / 34 / 51 级 · 熟练度：6000 / 12000 / 24000</li><li>说明：Augments Explosive Talisman (and Improved), When casting Explosive Talisman there is a chance it will effect nearby enemies.</li></ul>
+<h4>125 · Empowered Evil Slayer</h4>
+<ul><li>类型：AugmentEvilSlayer · 派系：None · 属性：Augmentation · 图标：72</li><li>威力：1-1，每级 +3-3 · 耗蓝：0，每级 +0 · 延迟：3000ms</li><li>等级门槛：17 / 34 / 51 级 · 熟练度：6000 / 12000 / 24000</li><li>说明：Augments Evil Slayer (and Greater), When casting Evil Slayer there is a chance it will effect nearby enemies.</li></ul>
+<h4>130 · Summon Skeleton</h4>
+<ul><li>类型：SummonSkeleton · 派系：Phantom · 属性：Active · 图标：32</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +15 · 延迟：0ms</li><li>等级门槛：17 / 19 / 21 级 · 熟练度：400 / 500 / 600</li><li>说明：By inserting your body&#x27;s energy into the talisman, you summon a powerful spirit to fight for you. The strength of your summoned spirit increases with training.</li></ul>
+<h4>64 · Invisibility</h4>
+<ul><li>类型：Invisibility · 派系：Dark · 属性：Active · 图标：34</li><li>威力：5-10，每级 +5-15 · 耗蓝：5，每级 +5 · 延迟：0ms</li><li>等级门槛：20 / 22 / 24 级 · 熟练度：500 / 600 / 700</li><li>说明：Temporarily hide yourself, vanishing from your enemy&#x27;s sight.  Its duration increases with training.</li></ul>
+<h4>65 · Magic Resistance</h4>
+<ul><li>类型：MagicResistance · 派系：Dark · 属性：Active · 图标：26</li><li>威力：30-50，每级 +40-120 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：21 / 23 / 25 级 · 熟练度：500 / 600 / 700</li><li>说明：Using your body&#x27;s energy, you increase your resistance to magic. The resistance bonus and duration of the effect increases with training.</li></ul>
+<h4>66 · Mass Invisibility</h4>
+<ul><li>类型：MassInvisibility · 派系：Dark · 属性：Active · 图标：36</li><li>威力：5-10，每级 +5-15 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：23 / 25 / 27 级 · 熟练度：600 / 700 / 800</li><li>说明：An advanced invisibility technique that allows you to hide everyone in a fixed area(3x3). Its duration increases with training.</li></ul>
+<h4>67 · Greater Evil Slayer</h4>
+<ul><li>类型：GreaterEvilSlayer · 派系：Holy · 属性：Active · 图标：74</li><li>威力：7-7，每级 +8-14 · 耗蓝：4，每级 +8 · 延迟：0ms</li><li>等级门槛：24 / 26 / 28 级 · 熟练度：600 / 700 / 800</li><li>说明：A spell that is more powerful than the Holy Strike. Its damage increases with training, and even more so if used with a Holy Talisman.</li></ul>
+<h4>68 · Resilience</h4>
+<ul><li>类型：Resilience · 派系：Dark · 属性：Active · 图标：28</li><li>威力：30-50，每级 +40-120 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：25 / 27 / 29 级 · 熟练度：700 / 800 / 900</li><li>说明：Using your body&#x27;s energy, you increase your defense against physical attacks. Its duration and defense bonus increases with training.</li></ul>
+<h4>69 · Trap Octagon</h4>
+<ul><li>类型：TrapOctagon · 派系：Dark · 属性：Active · 图标：30</li><li>威力：10-20，每级 +10-20 · 耗蓝：10，每级 +15 · 延迟：0ms</li><li>等级门槛：27 / 29 / 31 级 · 熟练度：800 / 900 / 1000</li><li>说明：A spell that uses a talisman to trap enemies in a small area. Its duration increases with training.</li></ul>
+<h4>70 · Combat Kick</h4>
+<ul><li>类型：CombatKick · 派系：Physical · 属性：Active · 图标：70</li><li>威力：2-3，每级 +3-3 · 耗蓝：10，每级 +20 · 延迟：0ms</li><li>等级门槛：28 / 30 / 32 级 · 熟练度：900 / 1000 / 1100</li><li>说明：Kick your enemies away from you. Its damage and chance to push back your enemies increases with training.</li></ul>
+<h4>71 · Elemental Superiority</h4>
+<ul><li>类型：ElementalSuperiority · 派系：Dark · 属性：Active · 图标：176</li><li>威力：30-50，每级 +40-120 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：29 / 31 / 33 级 · 熟练度：900 / 1000 / 1100</li><li>说明：Use a talisman to increase the spell power of yourself or others, or use the elemental talisman to increase the attack elements.  Its duration increases with training.</li></ul>
+<h4>133 · Summon Shinsu</h4>
+<ul><li>类型：SummonShinsu · 派系：Phantom · 属性：Active · 图标：58</li><li>威力：0-0，每级 +0-0 · 耗蓝：15，每级 +15 · 延迟：0ms</li><li>等级门槛：30 / 32 / 34 级 · 熟练度：900 / 1000 / 1100</li><li>说明：By focusing your body&#x27;s energy onto a talisman, you call upon the Holy Beasts to fight for you. The strength of the Holy Beast increases with training.</li></ul>
+<h4>72 · Mass Heal</h4>
+<ul><li>类型：MassHeal · 派系：Holy · 属性：Active · 图标：56</li><li>威力：8-8，每级 +16-24 · 耗蓝：20，每级 +10 · 延迟：0ms</li><li>等级门槛：31 / 33 / 35 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：A spell that heals multiple people within a fixed area(5x5) tiles at the same time. The amount healed increases with training.</li></ul>
+<h4>132 · Summon Jin Skeleton</h4>
+<ul><li>类型：SummonJinSkeleton · 派系：Phantom · 属性：Active · 图标：208</li><li>威力：0-0，每级 +0-0 · 耗蓝：25，每级 +20 · 延迟：0ms</li><li>等级门槛：33 / 35 / 37 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：By focusing your body&#x27;s energy onto a talisman, you summon a mighty spirit to fight for you. You may use this Mu-Gong even if you have already summoned a Holy Beast or a Skeleton. The strength of the mighty spirit increases with training.</li></ul>
+<h4>73 · Blood Lust</h4>
+<ul><li>类型：BloodLust · 派系：Dark · 属性：Active · 图标：186</li><li>威力：30-50，每级 +40-120 · 耗蓝：5，每级 +10 · 延迟：0ms</li><li>等级门槛：34 / 36 / 38 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：Use your body&#x27;s energy to increase the attack of yourself or others. Its duration and damage bonus increases with training.</li></ul>
+<h4>74 · Resurrection</h4>
+<ul><li>类型：Resurrection · 派系：Holy · 属性：Active · 图标：152</li><li>威力：10-20，每级 +15-30 · 耗蓝：100，每级 +100 · 延迟：0ms</li><li>等级门槛：35 / 37 / 39 级 · 熟练度：500 / 600 / 700</li><li>说明：Revive the dead by using a Talisman of Soul. The chance to revive increases with training.</li></ul>
+<h4>75 · Purification</h4>
+<ul><li>类型：Purification · 派系：Holy · 属性：Active · 图标：238</li><li>威力：10-20，每级 +15-30 · 耗蓝：10，每级 +20 · 延迟：0ms</li><li>等级门槛：38 / 41 / 44 级 · 熟练度：1000 / 1500 / 3000</li><li>说明：Removes all magical and skill effects. Not only does it remove poison and paralysis, but any ability enhancement effects also.</li></ul>
+<h4>129 · Strength Of Faith</h4>
+<ul><li>类型：StrengthOfFaith · 派系：Phantom · 属性：Active · 图标：244</li><li>威力：60-60，每级 +180-180 · 耗蓝：30，每级 +40 · 延迟：0ms</li><li>等级门槛：40 / 42 / 44 级 · 熟练度：2000 / 3000 / 6000</li><li>说明：Increases the damage of your summoned creature by sacrificing your own damage. The damage bonus of your summoned creature increases with training.</li></ul>
+<h4>76 · Transparency</h4>
+<ul><li>类型：Transparency · 派系：Dark · 属性：Active · 图标：240</li><li>威力：5-10，每级 +5-15 · 耗蓝：80，每级 +120 · 延迟：5000ms</li><li>等级门槛：43 / 45 / 47 级 · 熟练度：5000 / 7500 / 15000</li><li>说明：You become invisible to monsters and other players. Its duration increases with training.</li></ul>
+<h4>77 · Celestial Light</h4>
+<ul><li>类型：CelestialLight · 派系：Holy · 属性：Active · 图标：242</li><li>威力：30-30，每级 +30-30 · 耗蓝：50，每级 +60 · 延迟：0ms</li><li>等级门槛：46 / 48 / 50 级 · 熟练度：8000 / 12000 / 24000</li><li>说明：Draws upon your remaining bit of energy to block an enemy attack that would otherwise kill you. Also restores a small amount of HP.</li></ul>
+<h4>78 · Empowered Healing</h4>
+<ul><li>类型：EmpoweredHealing · 派系：Holy · 属性：Augmentation · 图标：256</li><li>威力：12-12，每级 +24-32 · 耗蓝：2，每级 +7 · 延迟：0ms</li><li>等级门槛：47 / 53 / 60 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：Increases the amount healed by your next healing spell. The bonus amount healed depends on your level and training.</li></ul>
+<h4>79 · Life Steal</h4>
+<ul><li>类型：LifeSteal · 派系：Holy · 属性：Active · 图标：270</li><li>威力：30-30，每级 +60-60 · 耗蓝：10，每级 +25 · 延迟：0ms</li><li>等级门槛：48 / 55 / 62 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：Use your body&#x27;s energy to increase the Life stealing of yourself or others. Its duration and Life steal bonus increases with training.</li></ul>
+<h4>143 · Demonic Recovery</h4>
+<ul><li>类型：DemonicRecovery · 派系：Phantom · 属性：Active · 图标：536</li><li>威力：25-25，每级 +75-75 · 耗蓝：100，每级 +80 · 延迟：0ms</li><li>等级门槛：48 / 51 / 54 级 · 熟练度：9000 / 10000 / 11000</li><li>说明：Passively increases the health of all summoned creatures, and actively restores the health of any summoned demonic creature. Health restored increases with training.</li></ul>
+<h4>80 · Improved Explosive Talisman</h4>
+<ul><li>类型：ImprovedExplosiveTalisman · 派系：Dark · 属性：Active · 图标：246</li><li>威力：8-8，每级 +12-20 · 耗蓝：10，每级 +18 · 延迟：0ms</li><li>等级门槛：49 / 51 / 53 级 · 熟练度：10000 / 15000 / 30000</li><li>说明：An upgraded version of the Explosive Talisman, used to throw 3 explosive talismans to deal massive amounts of damage. Its damage increases if used with Dark Talisman.</li></ul>
+<h4>81 · Empowered Poison Dust</h4>
+<ul><li>类型：AugmentPoisonDust · 派系：Dark · 属性：Augmentation · 图标：268</li><li>威力：3-3，每级 +9-9 · 耗蓝：0，每级 +0 · 延迟：5000ms</li><li>等级门槛：50 / 54 / 58 级 · 熟练度：30000 / 33000 / 36000</li><li>说明：Augment&#x27;s Poison dust, When casting poison dust there is a chance it will effect nearby enemies.</li></ul>
+<h4>134 · Summon Demonic Creature</h4>
+<ul><li>类型：SummonDemonicCreature · 派系：Phantom · 属性：Active · 图标：304</li><li>威力：0-0，每级 +0-0 · 耗蓝：20，每级 +30 · 延迟：0ms</li><li>等级门槛：50 / 54 / 56 级 · 熟练度：7000 / 9000 / 11000</li><li>说明：By inserting your body&#x27;s energy into the talisman, you summon a infernal creature to fight for you. The power of your summoned creature increases with training.</li></ul>
+<h4>82 · Cursed Doll</h4>
+<ul><li>类型：CursedDoll · 派系：Phantom · 属性：Active · 图标：272</li><li>威力：10-10，每级 +20-20 · 耗蓝：15，每级 +50 · 延迟：0ms</li><li>等级门槛：52 / 56 / 61 级 · 熟练度：10000 / 15000 / 25000</li><li>说明：Create a dummy that resembles your target by cursing them with a Talisman of Soul. Damage done to this dummy will damage your enemy instead. Duration of curse increases with training.</li></ul>
+<h4>128 · Demon Explosion</h4>
+<ul><li>类型：DemonExplosion · 派系：Phantom · 属性：Active · 图标：306</li><li>威力：25-25，每级 +25-25 · 耗蓝：100，每级 +80 · 延迟：10000ms</li><li>等级门槛：52 / 56 / 58 级 · 熟练度：5500 / 6500 / 8500</li><li>说明：Cause your summoned creature to explode, inflicting damage to nearby enemies. damage inflicted depends on the level of your summoned creature.</li></ul>
+<h4>83 · Thunder Kick</h4>
+<ul><li>类型：ThunderKick · 派系：Physical · 属性：Active · 图标：248</li><li>威力：2-3，每级 +3-3 · 耗蓝：10，每级 +20 · 延迟：0ms</li><li>等级门槛：54 / 59 / 64 级 · 熟练度：10000 / 18000 / 32000</li><li>说明：When you kick an enemy, your target enemy remains in place, but the surrounding enemies gets pushed back or receives a large amount of damage.</li></ul>
+<h4>126 · Empowered Purification</h4>
+<ul><li>类型：AugmentPurification · 派系：None · 属性：Augmentation · 图标：238</li><li>威力：1-1，每级 +3-3 · 耗蓝：0，每级 +0 · 延迟：10000ms</li><li>等级门槛：55 / 58 / 62 级 · 熟练度：15000 / 20000 / 28000</li><li>说明：Augments Purification, When casting Purification, there is a chance it will effect nearby targets.</li></ul>
+<h4>85 · Parasite</h4>
+<ul><li>类型：Parasite · 派系：Dark · 属性：Active · 图标：396</li><li>威力：2-2，每级 +1-1 · 耗蓝：80，每级 +150 · 延迟：0ms</li><li>等级门槛：62 / 66 / 70 级 · 熟练度：7500 / 10000 / 13000</li><li>说明：Attaches a dark parasite to the target which slowly drains their health, then eventually explodes and damages surrounding enemies. Duration of parasite increases with training.</li></ul>
+<h4>140 · Infection</h4>
+<ul><li>类型：Infection · 派系：Dark · 属性：Augmentation · 图标：446</li><li>威力：2-2，每级 +2-3 · 耗蓝：0，每级 +0 · 延迟：3000ms</li><li>等级门槛：65 / 70 / 75 级 · 熟练度：7500 / 15000 / 30000</li><li>说明：When a monster is infected with a parasite, the parasite and all other poisons will now spread to all nearby monsters. Transferred damage of infection increases with training.</li></ul>
+<h4>127 · Empowered Resurrection</h4>
+<ul><li>类型：AugmentResurrection · 派系：None · 属性：Augmentation · 图标：152</li><li>威力：1-1，每级 +3-3 · 耗蓝：0，每级 +0 · 延迟：60000ms</li><li>等级门槛：75 / 77 / 80 级 · 熟练度：2500 / 5000 / 10000</li><li>说明：Augments Resurrection, When casting Resurrection, there is a chance it will effect nearby Allies.</li></ul>
+<h4>86 · Spiritualism</h4>
+<ul><li>类型：Spiritualism · 派系：Dark · 属性：Active · 图标：394</li><li>威力：1-1，每级 +1-1 · 耗蓝：15，每级 +5 · 延迟：0ms</li><li>等级门槛：80 / 82 / 84 级 · 熟练度：5500 / 7000 / 9000</li><li>说明：Using the energy of your talisman you increase your elemental defense strength. Its duration and ability increases with training.</li></ul>
+<h4>148 · Neutralize</h4>
+<ul><li>类型：Neutralize · 派系：Dark · 属性：Active · 图标：480</li><li>威力：0-0，每级 +0-0 · 耗蓝：10，每级 +5 · 延迟：0ms</li><li>等级门槛：80 / 86 / 91 级 · 熟练度：20000 / 40000 / 60000</li><li>说明：Lowers the targets attack power, movement and attack speed. When incapacited they will not be able to recover health. Duration of effect increases with training.</li></ul>
+<h4>149 · Empowered Neutralize</h4>
+<ul><li>类型：AugmentNeutralize · 派系：None · 属性：Augmentation · 图标：480</li><li>威力：1-1，每级 +1-1 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：80 / 86 / 91 级 · 熟练度：4000 / 6000 / 8000</li><li>说明：Augments Neutralize, When casting Neutralize it will now affect nearby targets. Amount of targets affected increases with training.</li></ul>
+<h4>159 · Empowered Celestial Light</h4>
+<ul><li>类型：AugmentCelestialLight · 派系：Holy · 属性：Augmentation · 图标：462</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：82 / 83 / 84 级 · 熟练度：4000 / 6000 / 12000</li><li>说明：Provides further HP regain to Celestial Light at level 3 or above, and acts as a shield giving the caster a small offensive and defensive bonus. Amount increases with training.</li></ul>
+<h4>151 · Searing Light</h4>
+<ul><li>类型：SearingLight · 派系：Holy · 属性：Active · 图标：438</li><li>威力：12-15，每级 +1-2 · 耗蓝：15，每级 +5 · 延迟：5000ms</li><li>等级门槛：83 / 85 / 87 级 · 熟练度：7000 / 10000 / 16000</li><li>说明：Deals a certain amount of soul damage, and depending on the target also temporarily prevents attack or movement. Damage dealt and effect duration increases with training.</li></ul>
+<h4>84 · Soul Resonance</h4>
+<ul><li>类型：SoulResonance · 派系：Holy · 属性：Active · 图标：482</li><li>威力：20-20，每级 +5-5 · 耗蓝：55，每级 +60 · 延迟：0ms</li><li>等级门槛：84 / 84 / 84 级 · 熟练度：0 / 0 / 0</li><li>说明：Resonates your soul with the target to increase both of your healths. If either of you die the other does too. Only available when in a group.</li></ul>
+<h4>160 · Corpse Exploder</h4>
+<ul><li>类型：CorpseExploder · 派系：Dark · 属性：Active · 图标：490</li><li>威力：15-30，每级 +5-10 · 耗蓝：30，每级 +5 · 延迟：0ms</li><li>等级门槛：86 / 88 / 95 级 · 熟练度：30000 / 30000 / 30000</li><li>说明：Throw a talisman at a dead target to explode their body and damage the surrounding area.</li></ul>
+<h4>150 · Dark Soul Prison</h4>
+<ul><li>类型：DarkSoulPrison · 派系：Dark · 属性：Active · 图标：454</li><li>威力：12-15，每级 +1-2 · 耗蓝：10，每级 +5 · 延迟：0ms</li><li>等级门槛：90 / 90 / 90 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：Cast a 7x7 spell of darkness that instills pain and fear in the enemy, continously damaging anyone in its radius. Duration and damage increases with training.</li></ul>
+<h4>161 · Summon Dead</h4>
+<ul><li>类型：SummonDead · 派系：Phantom · 属性：Active · 图标：514</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：95 / 96 / 97 级 · 熟练度：10000 / 11000 / 12000</li><li>说明：Reawake a corpse and command the dead. Requires a soul amulet.</li></ul>
+<h3>刺客（53 个）</h3>
+<div class="table-wrap"><table class="catalog-table"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>属性</th><th>威力</th><th>耗蓝</th><th>延迟</th><th>等级门槛</th></tr></thead><tbody>
+<tr><td>136</td><td>_Blank_</td><td>Unused</td><td>None</td><td>0-0</td><td>0</td><td>0</td><td>0/0/0</td></tr>
+<tr><td>87</td><td>Willow Dance</td><td>WillowDance</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>7/9/11</td></tr>
+<tr><td>88</td><td>Vine Tree Dance</td><td>VineTreeDance</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>10/12/14</td></tr>
+<tr><td>89</td><td>Discipline</td><td>Discipline</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>12/14/16</td></tr>
+<tr><td>112</td><td>Bloody Flower</td><td>BloodyFlower</td><td>Charge</td><td>5-5</td><td>0</td><td>0</td><td>12/22/33</td></tr>
+<tr><td>90</td><td>Poisonous Cloud</td><td>PoisonousCloud</td><td>Active</td><td>5-5</td><td>5</td><td>20000</td><td>14/16/18</td></tr>
+<tr><td>91</td><td>Full Bloom</td><td>FullBloom</td><td>Charge</td><td>85-85</td><td>2</td><td>3000</td><td>19/21/23</td></tr>
+<tr><td>92</td><td>Cloak</td><td>Cloak</td><td>Active</td><td>0-0</td><td>50</td><td>0</td><td>20/22/24</td></tr>
+<tr><td>93</td><td>White Lotus</td><td>WhiteLotus</td><td>Charge</td><td>65-65</td><td>3</td><td>3000</td><td>22/24/26</td></tr>
+<tr><td>94</td><td>Calamity Of Full Moon</td><td>CalamityOfFullMoon</td><td>Passive</td><td>15-15</td><td>4</td><td>0</td><td>22/24/26</td></tr>
+<tr><td>95</td><td>Wraith Grip</td><td>WraithGrip</td><td>Active</td><td>4-4</td><td>10</td><td>60000</td><td>24/26/28</td></tr>
+<tr><td>96</td><td>Red Lotus</td><td>RedLotus</td><td>Charge</td><td>70-70</td><td>4</td><td>3000</td><td>24/26/28</td></tr>
+<tr><td>97</td><td>Hell Fire</td><td>HellFire</td><td>Active</td><td>5-5</td><td>10</td><td>20000</td><td>26/28/30</td></tr>
+<tr><td>98</td><td>Pledge Of Blood</td><td>PledgeOfBlood</td><td>Passive</td><td>0-0</td><td>0</td><td>0</td><td>26/28/30</td></tr>
+<tr><td>99</td><td>Rake</td><td>Rake</td><td>Active</td><td>50-50</td><td>5</td><td>5000</td><td>26/28/30</td></tr>
+<tr><td>100</td><td>Sweetbrier</td><td>SweetBrier</td><td>Charge</td><td>75-75</td><td>5</td><td>3000</td><td>27/29/31</td></tr>
+<tr><td>101</td><td>Summon Puppet</td><td>SummonPuppet</td><td>Active</td><td>60-60</td><td>10</td><td>30000</td><td>30/32/34</td></tr>
+<tr><td>102</td><td>Karma</td><td>Karma</td><td>Charge</td><td>10-10</td><td>0</td><td>15000</td><td>30/35/40</td></tr>
+<tr><td>103</td><td>Touch Of The Departed</td><td>TouchOfTheDeparted</td><td>Augmentation</td><td>0-0</td><td>0</td><td>0</td><td>30/32/34</td></tr>
+<tr><td>104</td><td>Waning Moon</td><td>WaningMoon</td><td>Passive</td><td>20-20</td><td>4</td><td>0</td><td>32/34/36</td></tr>
+<tr><td>105</td><td>Ghost Walk</td><td>GhostWalk</td><td>Augmentation</td><td>0-0</td><td>0</td><td>0</td><td>32/34/36</td></tr>
+<tr><td>106</td><td>Elemental Puppet</td><td>ElementalPuppet</td><td>Augmentation</td><td>0-0</td><td>0</td><td>0</td><td>34/36/38</td></tr>
+<tr><td>107</td><td>Rejuvenation</td><td>Rejuvenation</td><td>Passive</td><td>0-0</td><td>6</td><td>0</td><td>35/37/39</td></tr>
+<tr><td>108</td><td>Resolution</td><td>Resolution</td><td>Augmentation</td><td>5-5</td><td>2</td><td>0</td><td>35/37/39</td></tr>
+<tr><td>109</td><td>Change Of Seasons</td><td>ChangeOfSeasons</td><td>None</td><td>0-0</td><td>0</td><td>0</td><td>36/0/0</td></tr>
+<tr><td>110</td><td>Release</td><td>Release</td><td>Passive</td><td>0-0</td><td>1</td><td>0</td><td>36/38/40</td></tr>
+<tr><td>111</td><td>Flame Splash</td><td>FlameSplash</td><td>Toggle</td><td>30-30</td><td>0</td><td>0</td><td>38/40/42</td></tr>
+<tr><td>113</td><td>The New Beginning</td><td>TheNewBeginning</td><td>Active</td><td>20-20</td><td>0</td><td>1000</td><td>40/43/46</td></tr>
+<tr><td>114</td><td>Dance Of Swallow</td><td>DanceOfSwallow</td><td>Active</td><td>1-1</td><td>0</td><td>5000</td><td>40/42/44</td></tr>
+<tr><td>115</td><td>Dark Conversion</td><td>DarkConversion</td><td>Active</td><td>2-2</td><td>0</td><td>0</td><td>42/44/46</td></tr>
+<tr><td>116</td><td>Dragon Repulse</td><td>DragonRepulse</td><td>Active</td><td>50-50</td><td>100</td><td>30000</td><td>45/47/49</td></tr>
+<tr><td>117</td><td>Advent Of Demon</td><td>AdventOfDemon</td><td>Passive</td><td>3-3</td><td>4</td><td>0</td><td>45/47/49</td></tr>
+<tr><td>118</td><td>Advent Of Devil</td><td>AdventOfDevil</td><td>Passive</td><td>3-3</td><td>3</td><td>0</td><td>45/47/49</td></tr>
+<tr><td>119</td><td>Abyss</td><td>Abyss</td><td>Active</td><td>0-0</td><td>1</td><td>10000</td><td>45/47/49</td></tr>
+<tr><td>120</td><td>Flash Of Light</td><td>FlashOfLight</td><td>Active</td><td>180-180</td><td>22</td><td>5000</td><td>45/47/50</td></tr>
+<tr><td>121</td><td>Stealth</td><td>Stealth</td><td>Augmentation</td><td>10-10</td><td>0</td><td>0</td><td>45/47/49</td></tr>
+<tr><td>122</td><td>Evasion</td><td>Evasion</td><td>Active</td><td>45-45</td><td>20</td><td>0</td><td>47/49/51</td></tr>
+<tr><td>123</td><td>Raging Wind</td><td>RagingWind</td><td>Active</td><td>45-45</td><td>20</td><td>0</td><td>47/49/51</td></tr>
+<tr><td>162</td><td>Dragon Blood</td><td>DragonBlood</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>60/62/64</td></tr>
+<tr><td>163</td><td>Fatal Blow</td><td>FatalBlow</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>60/70/80</td></tr>
+<tr><td>141</td><td>Massacre</td><td>Massacre</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>65/70/75</td></tr>
+<tr><td>164</td><td>Last Stand</td><td>LastStand</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>65/75/85</td></tr>
+<tr><td>165</td><td>Magic Combustion</td><td>MagicCombustion</td><td>Active</td><td>5-5</td><td>10</td><td>10000</td><td>70/72/76</td></tr>
+<tr><td>166</td><td>Vitality</td><td>Vitality</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>70/74/80</td></tr>
+<tr><td>145</td><td>Art of Shadows</td><td>ArtOfShadows</td><td>Passive</td><td>2-3</td><td>0</td><td>0</td><td>75/79/82</td></tr>
+<tr><td>167</td><td>Chain</td><td>Chain</td><td>Active</td><td>20-20</td><td>15</td><td>15000</td><td>75/80/84</td></tr>
+<tr><td>168</td><td>Concentration</td><td>Concentration</td><td>Active</td><td>60-60</td><td>30</td><td>0</td><td>80/82/84</td></tr>
+<tr><td>169</td><td>Dual Weapon Skills</td><td>DualWeaponSkills</td><td>Passive</td><td>5-5</td><td>0</td><td>0</td><td>82/83/84</td></tr>
+<tr><td>170</td><td>Containment</td><td>Containment</td><td>Active</td><td>0-0</td><td>0</td><td>5000</td><td>83/85/87</td></tr>
+<tr><td>171</td><td>Dragon Wave</td><td>DragonWave</td><td>Augmentation</td><td>0-0</td><td>1</td><td>0</td><td>85/90/95</td></tr>
+<tr><td>172</td><td>Hemorrhage</td><td>Hemorrhage</td><td>Active</td><td>5-5</td><td>25</td><td>5000</td><td>86/88/91</td></tr>
+<tr><td>173</td><td>Burning Fire</td><td>BurningFire</td><td>Active</td><td>15-15</td><td>30</td><td>5000</td><td>90/90/90</td></tr>
+<tr><td>174</td><td>Chain Of Fire</td><td>ChainOfFire</td><td>Augmentation</td><td>100-100</td><td>0</td><td>0</td><td>95/96/97</td></tr>
+</tbody></table></div>
+<h4>136 · _Blank_</h4>
+<ul><li>类型：Unused · 派系：None · 属性：None · 图标：0</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：0 / 0 / 0 级 · 熟练度：0 / 0 / 0</li><li>说明：UNUSED</li></ul>
+<h4>87 · Willow Dance</h4>
+<ul><li>类型：WillowDance · 派系：Atrocity · 属性：Passive · 图标：308</li><li>威力：0-0，每级 +6-6 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：7 / 9 / 11 级 · 熟练度：100 / 200 / 300</li><li>说明：Increases your Agility. Your Agility bonus increases with training.</li></ul>
+<h4>88 · Vine Tree Dance</h4>
+<ul><li>类型：VineTreeDance · 派系：Atrocity · 属性：Passive · 图标：310</li><li>威力：0-0，每级 +9-9 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：10 / 12 / 14 级 · 熟练度：250 / 350 / 450</li><li>说明：Increases your Accuracy. Your accuracy bonus increases with training.</li></ul>
+<h4>89 · Discipline</h4>
+<ul><li>类型：Discipline · 派系：Atrocity · 属性：Passive · 图标：314</li><li>威力：0-0，每级 +12-12 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：12 / 14 / 16 级 · 熟练度：300 / 400 / 500</li><li>说明：Increases your accuracy and minimum damage. Accuracy and minimum damage bonus increases with training.</li></ul>
+<h4>112 · Bloody Flower</h4>
+<ul><li>类型：BloodyFlower · 派系：Kill · 属性：Charge · 图标：374</li><li>威力：5-5，每级 +10-10 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：12 / 22 / 33 级 · 熟练度：2800 / 3200 / 3600</li><li>说明：Increases your Life Stealing. Its effects increases with training.</li></ul>
+<h4>90 · Poisonous Cloud</h4>
+<ul><li>类型：PoisonousCloud · 派系：Atrocity · 属性：Active · 图标：312</li><li>威力：5-5，每级 +10-10 · 耗蓝：5，每级 +20 · 延迟：20000ms</li><li>等级门槛：14 / 16 / 18 级 · 熟练度：300 / 400 / 500</li><li>说明：Creates a cloud of poison around you, increasing your dodge rate while standing in the clouds.</li></ul>
+<h4>91 · Full Bloom</h4>
+<ul><li>类型：FullBloom · 派系：Kill · 属性：Charge · 图标：328</li><li>威力：85-85，每级 +85-85 · 耗蓝：2，每级 +4 · 延迟：3000ms</li><li>等级门槛：19 / 21 / 23 级 · 熟练度：400 / 500 / 600</li><li>说明：Converts a percentage of your max mana into additional physical damage.</li></ul>
+<h4>92 · Cloak</h4>
+<ul><li>类型：Cloak · 派系：Assassination · 属性：Active · 图标：324</li><li>威力：0-0，每级 +0-0 · 耗蓝：50，每级 +20 · 延迟：0ms</li><li>等级门槛：20 / 22 / 24 级 · 熟练度：200 / 300 / 400</li><li>说明：You become invisible. While in this state, you can move, attack, and use items at the expense of your HP.  You become visible when you attack or use an item. The amount of HP used decreases with training.</li></ul>
+<h4>93 · White Lotus</h4>
+<ul><li>类型：WhiteLotus · 派系：Kill · 属性：Charge · 图标：330</li><li>威力：65-65，每级 +45-45 · 耗蓝：3，每级 +5 · 延迟：3000ms</li><li>等级门槛：22 / 24 / 26 级 · 熟练度：500 / 600 / 700</li><li>说明：Converts a percentage of your max mana into additional physical damage. Enemies damaged by Full Bloom receives additional damage.</li></ul>
+<h4>94 · Calamity Of Full Moon</h4>
+<ul><li>类型：CalamityOfFullMoon · 派系：Kill · 属性：Passive · 图标：340</li><li>威力：15-15，每级 +15-15 · 耗蓝：4，每级 +6 · 延迟：0ms</li><li>等级门槛：22 / 24 / 26 级 · 熟练度：500 / 600 / 700</li><li>说明：You have chance to deal additional damage when attacking monsters out of cloak. Its chance and damage bonus increases with training.</li></ul>
+<h4>95 · Wraith Grip</h4>
+<ul><li>类型：WraithGrip · 派系：Atrocity · 属性：Active · 图标：316</li><li>威力：4-4，每级 +3-3 · 耗蓝：10，每级 +24 · 延迟：60000ms</li><li>等级门槛：24 / 26 / 28 级 · 熟练度：300 / 400 / 500</li><li>说明：Summons a creature of darkness that prevents the enemies from moving and steals mana for a set period of time. Its duration increases with training.</li></ul>
+<h4>96 · Red Lotus</h4>
+<ul><li>类型：RedLotus · 派系：Kill · 属性：Charge · 图标：332</li><li>威力：70-70，每级 +50-50 · 耗蓝：4，每级 +6 · 延迟：3000ms</li><li>等级门槛：24 / 26 / 28 级 · 熟练度：600 / 700 / 800</li><li>说明：Converts a percentage of your max mana into additional physical damage. Enemies damaged by White Lotus receives additional damage.</li></ul>
+<h4>97 · Hell Fire</h4>
+<ul><li>类型：HellFire · 派系：Kill · 属性：Active · 图标：318</li><li>威力：5-5，每级 +5-5 · 耗蓝：10，每级 +10 · 延迟：20000ms</li><li>等级门槛：26 / 28 / 30 级 · 熟练度：400 / 500 / 600</li><li>说明：Summons a demon from the Flames of Fire and Brimstone to inflict fire damage to an opponent and additional fire damage over time. Its damage increases with time.</li></ul>
+<h4>98 · Pledge Of Blood</h4>
+<ul><li>类型：PledgeOfBlood · 派系：Assassination · 属性：Passive · 图标：352</li><li>威力：0-0，每级 +7-7 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：26 / 28 / 30 级 · 熟练度：150 / 300 / 450</li><li>说明：When cloaking, your HP consumption is reduced by a fixed percentage depending on the level of your training.</li></ul>
+<h4>99 · Rake</h4>
+<ul><li>类型：Rake · 派系：Assassination · 属性：Active · 图标：376</li><li>威力：50-50，每级 +50-50 · 耗蓝：5，每级 +10 · 延迟：5000ms</li><li>等级门槛：26 / 28 / 30 级 · 熟练度：2000 / 2200 / 2400</li><li>说明：Your attacks made while in a cloaking state reduces your enemy&#x27;s movement speed by 50%. This ability brings you out of the cloaking state. Its effect and duration increases with training.</li></ul>
+<h4>100 · Sweetbrier</h4>
+<ul><li>类型：SweetBrier · 派系：Kill · 属性：Charge · 图标：334</li><li>威力：75-75，每级 +65-65 · 耗蓝：5，每级 +7 · 延迟：3000ms</li><li>等级门槛：27 / 29 / 31 级 · 熟练度：700 / 800 / 900</li><li>说明：Converts a percentage of your max mana into additional physical damage. Enemies damaged by Red Lotus receives additional damage.</li></ul>
+<h4>101 · Summon Puppet</h4>
+<ul><li>类型：SummonPuppet · 派系：Assassination · 属性：Active · 图标：326</li><li>威力：60-60，每级 +40-40 · 耗蓝：10，每级 +30 · 延迟：30000ms</li><li>等级门槛：30 / 32 / 34 级 · 熟练度：400 / 500 / 600</li><li>说明：Trick your enemies to believe you&#x27;re dead while you summon a puppet and become invisible. The summoned puppet deals fire damage when attacked. This can be used while in combat and number of puppets summoned increases with training.</li></ul>
+<h4>102 · Karma</h4>
+<ul><li>类型：Karma · 派系：Assassination · 属性：Charge · 图标：342</li><li>威力：10-10，每级 +15-20 · 耗蓝：0，每级 +0 · 延迟：15000ms</li><li>等级门槛：30 / 35 / 40 级 · 熟练度：200 / 400 / 800</li><li>说明：While in an invisible state, you deal massive damage to your enemy by spending a percentage of your total HP. You cannot use a recovery item for 10 seconds after the attack.</li></ul>
+<h4>103 · Touch Of The Departed</h4>
+<ul><li>类型：TouchOfTheDeparted · 派系：Atrocity · 属性：Augmentation · 图标：354</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +10 · 延迟：0ms</li><li>等级门槛：30 / 32 / 34 级 · 熟练度：150 / 300 / 450</li><li>说明：Your opponent becomes dominated by the Wraith Grip spell effect and is unable to use any Mu-Gong. You also receive a percentage of your target&#x27;s Mana. The amount of Mana received increases with training.</li></ul>
+<h4>104 · Waning Moon</h4>
+<ul><li>类型：WaningMoon · 派系：Assassination · 属性：Passive · 图标：350</li><li>威力：20-20，每级 +20-20 · 耗蓝：4，每级 +12 · 延迟：0ms</li><li>等级门槛：32 / 34 / 36 级 · 熟练度：500 / 600 / 700</li><li>说明：You have chance to deal additional damage when attacking monsters cloaked. Its chance and damage bonus increases with training.</li></ul>
+<h4>105 · Ghost Walk</h4>
+<ul><li>类型：GhostWalk · 派系：Assassination · 属性：Augmentation · 图标：356</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +16 · 延迟：0ms</li><li>等级门槛：32 / 34 / 36 级 · 熟练度：150 / 300 / 450</li><li>说明：When Cloaking, you have a chance to increase your movement speed by 100%. This chance increases with training.</li></ul>
+<h4>106 · Elemental Puppet</h4>
+<ul><li>类型：ElementalPuppet · 派系：Assassination · 属性：Augmentation · 图标：358</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：34 / 36 / 38 级 · 熟练度：1000 / 2000 / 3000</li><li>说明：The effect of your puppet summoned by the Summon Puppet spell changes depending on your equipped dark stone. The charges of the dark stone decreases when you use the Summon Puppet spell with the dark stone equipped.  The effect of your puppet increases with training.</li></ul>
+<h4>107 · Rejuvenation</h4>
+<ul><li>类型：Rejuvenation · 派系：Atrocity · 属性：Passive · 图标：336</li><li>威力：0-0，每级 +0-0 · 耗蓝：6，每级 +2 · 延迟：0ms</li><li>等级门槛：35 / 37 / 39 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：Your HP and Mana regeneration rate increases while not in combat. The regeneration rate bonus increases with training.</li></ul>
+<h4>108 · Resolution</h4>
+<ul><li>类型：Resolution · 派系：Assassination · 属性：Augmentation · 图标：344</li><li>威力：5-5，每级 +5-5 · 耗蓝：2，每级 +4 · 延迟：0ms</li><li>等级门槛：35 / 37 / 39 级 · 熟练度：200 / 250 / 300</li><li>说明：Increases the accuracy of Karma and allows it to ignore your opponent&#x27;s defense by a set amount. Accuracy and defense ignored increases with training.</li></ul>
+<h4>109 · Change Of Seasons</h4>
+<ul><li>类型：ChangeOfSeasons · 派系：None · 属性：None · 图标：360</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：36 / 0 / 0 级 · 熟练度：0 / 0 / 0</li><li>说明：Removed from game</li></ul>
+<h4>110 · Release</h4>
+<ul><li>类型：Release · 派系：Assassination · 属性：Passive · 图标：378</li><li>威力：0-0，每级 +40-80 · 耗蓝：1，每级 +4 · 延迟：0ms</li><li>等级门槛：36 / 38 / 40 级 · 熟练度：1200 / 1500 / 1800</li><li>说明：When performing Karma, your HP consumption is reduced by a set percentage, depending on your level of training.</li></ul>
+<h4>111 · Flame Splash</h4>
+<ul><li>类型：FlameSplash · 派系：Kill · 属性：Toggle · 图标：320</li><li>威力：30-30，每级 +100-100 · 耗蓝：0，每级 +6 · 延迟：0ms</li><li>等级门槛：38 / 40 / 42 级 · 熟练度：1000 / 1100 / 1200</li><li>说明：Deals physical damage as fire damage to 4 enemies around you. The effect is triggered by chance when you deal damage to an enemy. Amount of damage dealt increases with training.</li></ul>
+<h4>113 · The New Beginning</h4>
+<ul><li>类型：TheNewBeginning · 派系：Atrocity · 属性：Active · 图标：346</li><li>威力：20-20，每级 +30-30 · 耗蓝：0，每级 +80 · 延迟：1000ms</li><li>等级门槛：40 / 43 / 46 级 · 熟练度：200 / 250 / 300</li><li>说明：When activated, your next Flash of Light used within 60 seconds deals multiple attacks as additional magic damage. Its damage increases with training.</li></ul>
+<h4>114 · Dance Of Swallow</h4>
+<ul><li>类型：DanceOfSwallow · 派系：Kill · 属性：Active · 图标：362</li><li>威力：1-1，每级 +3-3 · 耗蓝：0，每级 +10 · 延迟：5000ms</li><li>等级门槛：40 / 42 / 44 级 · 熟练度：750 / 1050 / 1350</li><li>说明：Damage your opponent after you teleport and also has a chance to stun your opponent. Its chance to stun increases with training.</li></ul>
+<h4>115 · Dark Conversion</h4>
+<ul><li>类型：DarkConversion · 派系：Atrocity · 属性：Active · 图标：364</li><li>威力：2-2，每级 +8-8 · 耗蓝：0，每级 +2 · 延迟：0ms</li><li>等级门槛：42 / 44 / 46 级 · 熟练度：1100 / 2200 / 3300</li><li>说明：While active, a set percentage of your maximum Mana is converted to your HP, providing HP equal to 2 times the Mana used.  Its effect increases with training.</li></ul>
+<h4>116 · Dragon Repulse</h4>
+<ul><li>类型：DragonRepulse · 派系：Atrocity · 属性：Active · 图标：322</li><li>威力：50-50，每级 +50-50 · 耗蓝：100，每级 +100 · 延迟：30000ms</li><li>等级门槛：45 / 47 / 49 级 · 熟练度：6000 / 9000 / 18000</li><li>说明：Inflicts physical damage and pushes nearby enemies back. The push back effect does not work on enemies 8 levels higher than you. Damage dealt increases with training.</li></ul>
+<h4>117 · Advent Of Demon</h4>
+<ul><li>类型：AdventOfDemon · 派系：Kill · 属性：Passive · 图标：338</li><li>威力：3-3，每级 +7-7 · 耗蓝：4，每级 +2 · 延迟：0ms</li><li>等级门槛：45 / 47 / 49 级 · 熟练度：6000 / 9000 / 18000</li><li>说明：Increases your Max AC. Its effects increases with training.</li></ul>
+<h4>118 · Advent Of Devil</h4>
+<ul><li>类型：AdventOfDevil · 派系：Assassination · 属性：Passive · 图标：348</li><li>威力：3-3，每级 +7-7 · 耗蓝：3，每级 +2 · 延迟：0ms</li><li>等级门槛：45 / 47 / 49 级 · 熟练度：6000 / 9000 / 18000</li><li>说明：Increases your Max MR. Its effects increases with training.</li></ul>
+<h4>119 · Abyss</h4>
+<ul><li>类型：Abyss · 派系：Atrocity · 属性：Active · 图标：366</li><li>威力：0-0，每级 +0-0 · 耗蓝：1，每级 +20 · 延迟：10000ms</li><li>等级门槛：45 / 47 / 49 级 · 熟练度：2500 / 3000 / 3500</li><li>说明：You shroud your opponent in darkness, reducing their sight and accuracy by a set percentage. The duration increases with training.</li></ul>
+<h4>120 · Flash Of Light</h4>
+<ul><li>类型：FlashOfLight · 派系：Kill · 属性：Active · 图标：368</li><li>威力：180-180，每级 +180-180 · 耗蓝：22，每级 +72 · 延迟：5000ms</li><li>等级门槛：45 / 47 / 50 级 · 熟练度：3000 / 3300 / 3600</li><li>说明：You deal massive damage to all enemies within 2 tiles.</li></ul>
+<h4>121 · Stealth</h4>
+<ul><li>类型：Stealth · 派系：Assassination · 属性：Augmentation · 图标：380</li><li>威力：10-10，每级 +15-15 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：45 / 47 / 49 级 · 熟练度：1600 / 2000 / 2400</li><li>说明：When you perform an action that causes you to break cloak, you&#x27;re able prevent it by spending the charged “The New Beginning”. Cannot be used without the The New Beginning effect. The chance of remaining in the cloaking state increases with training.</li></ul>
+<h4>122 · Evasion</h4>
+<ul><li>类型：Evasion · 派系：Atrocity · 属性：Active · 图标：370</li><li>威力：45-45，每级 +45-45 · 耗蓝：20，每级 +20 · 延迟：0ms</li><li>等级门槛：47 / 49 / 51 级 · 熟练度：1400 / 2100 / 2800</li><li>说明：You have a chance to dodge your opponent&#x27;s Elemental attack. Its chance increases with training.</li></ul>
+<h4>123 · Raging Wind</h4>
+<ul><li>类型：RagingWind · 派系：Atrocity · 属性：Active · 图标：372</li><li>威力：45-45，每级 +45-45 · 耗蓝：20，每级 +20 · 延迟：0ms</li><li>等级门槛：47 / 49 / 51 级 · 熟练度：2400 / 2800 / 3200</li><li>说明：Your Minimum defense increases by a percentage of your Maximum defense , and your Maximum defense is decreased by a set percentage. Its effects increases with training.</li></ul>
+<h4>162 · Dragon Blood</h4>
+<ul><li>类型：DragonBlood · 派系：Kill · 属性：Passive · 图标：382</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：60 / 62 / 64 级 · 熟练度：3000 / 3200 / 3400</li><li>说明：Poisons targets hit by your swing, dealing a percentage of damage every 2 seconds for 10 seconds. Stacks up to 4 times. Chance to poison and damage dealt increases with training. Requires Poison Bottle.</li></ul>
+<h4>163 · Fatal Blow</h4>
+<ul><li>类型：FatalBlow · 派系：Kill · 属性：Passive · 图标：474</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：60 / 70 / 80 级 · 熟练度：3000 / 6000 / 8000</li><li>说明：Gain increased attack power when your targets health falls below 30%. Damage dealt increases with training.</li></ul>
+<h4>141 · Massacre</h4>
+<ul><li>类型：Massacre · 派系：None · 属性：Passive · 图标：382</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：65 / 70 / 75 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：Upon killing an enemy a percentage of the remaining damage dealt is passed to all nearby targets. Damage dealt increases with training.</li></ul>
+<h4>164 · Last Stand</h4>
+<ul><li>类型：LastStand · 派系：Atrocity · 属性：Passive · 图标：448</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：65 / 75 / 85 级 · 熟练度：500 / 600 / 800</li><li>说明：Increases your physical resistance when your health falls below 30%. Resistance amount and probability to activate increases with training.</li></ul>
+<h4>165 · Magic Combustion</h4>
+<ul><li>类型：MagicCombustion · 派系：Atrocity · 属性：Active · 图标：478</li><li>威力：5-5，每级 +5-5 · 耗蓝：10，每级 +10 · 延迟：10000ms</li><li>等级门槛：70 / 72 / 76 级 · 熟练度：15000 / 25000 / 33000</li><li>说明：Throw a spear which burns away your targets mana. Applies only in PvP. Mana removed increases with training.</li></ul>
+<h4>166 · Vitality</h4>
+<ul><li>类型：Vitality · 派系：Atrocity · 属性：Passive · 图标：472</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：70 / 74 / 80 级 · 熟练度：2000 / 3000 / 6000</li><li>说明：Increases your recovery rate when your health falls below 30%. Applies to all forms of recovery. Rate of recovery increases with training.</li></ul>
+<h4>145 · Art of Shadows</h4>
+<ul><li>类型：ArtOfShadows · 派系：None · 属性：Passive · 图标：396</li><li>威力：2-3，每级 +4-6 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：75 / 79 / 82 级 · 熟练度：10000 / 20000 / 40000</li><li>说明：Increases the amount of puppets summoned, and the area in which they appear. Amount summed increases with training.</li></ul>
+<h4>167 · Chain</h4>
+<ul><li>类型：Chain · 派系：Atrocity · 属性：Active · 图标：476</li><li>威力：20-20，每级 +20-20 · 耗蓝：15，每级 +15 · 延迟：15000ms</li><li>等级门槛：75 / 80 / 84 级 · 熟练度：20000 / 35000 / 40000</li><li>说明：Chains your target to all nearby targets, preventing them from moving far apart from each other. Amount of targets which can be chained together and duration of chain increases with training.</li></ul>
+<h4>168 · Concentration</h4>
+<ul><li>类型：Concentration · 派系：Atrocity · 属性：Active · 图标：384</li><li>威力：60-60，每级 +60-60 · 耗蓝：30，每级 +30 · 延迟：0ms</li><li>等级门槛：80 / 82 / 84 级 · 熟练度：5000 / 5500 / 6000</li><li>说明：Increases your crit chance for a period of time. Rate and duration increases with training.</li></ul>
+<h4>169 · Dual Weapon Skills</h4>
+<ul><li>类型：DualWeaponSkills · 派系：Atrocity · 属性：Passive · 图标：464</li><li>威力：5-5，每级 +5-5 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：82 / 83 / 84 级 · 熟练度：35000 / 38000 / 41000</li><li>说明：Permanently increases the attack power of all dual weapon attacks. Power increases with training.</li></ul>
+<h4>170 · Containment</h4>
+<ul><li>类型：Containment · 派系：Atrocity · 属性：Active · 图标：440</li><li>威力：0-0，每级 +0-0 · 耗蓝：0，每级 +0 · 延迟：5000ms</li><li>等级门槛：83 / 85 / 87 级 · 熟练度：12000 / 18000 / 36000</li><li>说明：Prevents targets in a large radius of the caster from moving for 3 seconds whilst dealing continuous damage. Number of targets affected increases with training.</li></ul>
+<h4>171 · Dragon Wave</h4>
+<ul><li>类型：DragonWave · 派系：Kill · 属性：Augmentation · 图标：542</li><li>威力：0-0，每级 +0-0 · 耗蓝：1，每级 +1 · 延迟：0ms</li><li>等级门槛：85 / 90 / 95 级 · 熟练度：50000 / 55000 / 60000</li><li>说明：Reduces the cost of Flame Splash. At level 3 or above it increases the amount of targets hit. Cost reduces further with training.</li></ul>
+<h4>172 · Hemorrhage</h4>
+<ul><li>类型：Hemorrhage · 派系：Kill · 属性：Active · 图标：494</li><li>威力：5-5，每级 +5-5 · 耗蓝：25，每级 +25 · 延迟：5000ms</li><li>等级门槛：86 / 88 / 91 级 · 熟练度：40000 / 42000 / 46000</li><li>说明：Continuously damages the enemy and prevents any health recovery. Damage and duration increases with training.</li></ul>
+<h4>173 · Burning Fire</h4>
+<ul><li>类型：BurningFire · 派系：Kill · 属性：Active · 图标：456</li><li>威力：15-15，每级 +15-15 · 耗蓝：30，每级 +30 · 延迟：5000ms</li><li>等级门槛：90 / 90 / 90 级 · 熟练度：10000 / 20000 / 30000</li><li>说明：Create a trap on the floor from the fires of Hell. Lasts for 15 seconds and when stepped on deals damage in a 3x3 area. Damage dealt and amount of traps which can be placed increases with training.</li></ul>
+<h4>174 · Chain Of Fire</h4>
+<ul><li>类型：ChainOfFire · 派系：Atrocity · 属性：Augmentation · 图标：520</li><li>威力：100-100，每级 +100-100 · 耗蓝：0，每级 +0 · 延迟：0ms</li><li>等级门槛：95 / 96 / 97 级 · 熟练度：20000 / 35000 / 40000</li><li>说明：All chained targets are slowed. At level 1 or above damage done to the leader will be dealt to all targets they&#x27;re chained to. At level 2 or above continuous fire damage will be dealt to all targets. At level 3 or above will inflict damage in a 3x3 radius when the leader dies.</li></ul></section></main><script>const f=document.getElementById('catalogFilter');if(f){f.addEventListener('input',()=>{const q=f.value.toLowerCase();document.querySelectorAll('.catalog-table tbody tr, .catalog-section').forEach(e=>{e.hidden=q&&!e.textContent.toLowerCase().includes(q)})})}</script></body></html>

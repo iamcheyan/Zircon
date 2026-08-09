@@ -15,6 +15,7 @@ Mapinfo.txt (GBK) 含两类行:
 import json
 import os
 import re
+from datetime import datetime, timezone
 
 MAPINFO = "/home/tetsuya/NAS/TMP/Mud3/Envir/Mapinfo.txt"
 OUT = "/tmp/map_links.json"
@@ -44,6 +45,8 @@ def main():
     data = {
         "names": names,
         "links": sorted(links),
+        "_meta": {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                  "script": "map_routes.py"},
     }
     json.dump(data, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"地图定义 {len(names)} 张 / 连接对 {len(links)} 条 (原始行 {pairs}) -> {OUT}")

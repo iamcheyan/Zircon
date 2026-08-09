@@ -30,5 +30,8 @@
   "ChatPrefix": "大家好",
   "ClientHashPath": "",
   "DatabasePath": "Debug/Server/Database",
-  "MapPath": "Debug/Client/Map"
+  "MapPath": "Debug/Client/Map",
+  "HomeMapIndex": 1,
+  "HomeMapX": 159,
+  "HomeMapY": 233
 }

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Mir3 EI UI layout evidence record",
+  "type": "object",
+  "required": ["version", "viewport", "layers", "records"],
+  "properties": {
+    "version": {"type": "string"},
+    "viewport": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {"width": {"const": 800}, "height": {"const": 600}}
+    },
+    "layers": {"type": "array", "items": {"type": "string"}},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "evidence", "resource", "position"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"enum": ["window", "sprite", "button", "text", "hit-area", "draw-call"]},
+          "layer": {"type": "string"},
+          "resource": {"type": ["object", "null"]},
+          "position": {"type": "object"},
+          "size": {"type": ["object", "null"]},
+          "hit_rect": {"type": ["object", "null"]},
+          "vtable": {"type": ["object", "null"]},
+          "special_paint": {"type": ["object", "null"]},
+          "visual_semantics": {"type": "object"},
+          "evidence": {
+            "type": "object",
+            "required": ["level"],
+            "properties": {
+              "level": {"enum": ["primary-static", "runtime-confirmed", "verified-cross-source", "secondary-source-hypothesis", "speculation"]},
+              "source": {"type": "string"},
+              "addresses": {"type": "array", "items": {"type": "string"}},
+              "notes": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "control_constructors": {
+      "type": "array",
+      "description": "Window-internal control constructors whose exact position or resource handle may still be unresolved.",
+      "items": {
+        "type": "object",
+        "properties": {"semantic_candidate": {"type": "object"}}
+      }
+    },
+    "secondary_control_constructors": {
+      "type": "array",
+      "description": "Controls closed from secondary WIL/resource clusters outside the main-window catalog.",
+      "items": {"type": "object"}
+    },
+    "draw_evidence": {
+      "type": "object",
+      "description": "Pointers to machine-readable draw/vtable evidence artifacts.",
+      "additionalProperties": {"type": "string"}
+    },
+    "resource_evidence": {
+      "type": "object",
+      "description": "Pointers to the recovered resource path and WIL/WIX family catalogs.",
+      "properties": {
+        "path_table": {"type": "object"},
+        "family_catalog": {"type": "object"},
+        "evidence_level": {"type": "string"},
+        "warning": {"type": "string"}
+      }
+    },
+    "secondary_screen_candidates": {
+      "type": "array",
+      "description": "Candidate full-screen states recovered from secondary resource/window initializers.",
+      "items": {"type": "object"}
+    },
+    "specialized_window_evidence": {
+      "type": "array",
+      "description": "Detailed static text/resource correlations for specialized windows.",
+      "items": {"type": "object"}
+    }
+  }
+}

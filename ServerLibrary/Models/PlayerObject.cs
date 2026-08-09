@@ -1,4 +1,4 @@
-﻿using Library;
+using Library;
 using Library.Network;
 using Library.Network.ClientPackets;
 using Library.SystemModels;
@@ -938,7 +938,7 @@ namespace Server.Models
             }
             else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
-                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, curMap={Character.CurrentMap?.Index} loc=({CurrentLocation.X},{CurrentLocation.Y}) bindRegion={Character.BindPoint?.BindRegion?.ServerDescription} bindPts={Character.BindPoint?.ValidBindPoints?.Count}");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -1325,14 +1325,27 @@ namespace Server.Models
         }
         private bool SetBindPoint()
         {
-            if (Character.BindPoint != null && SEnvir.EnsureSafeZoneBindPoints(Character.BindPoint))
+            // 已有有效绑定且不是"通用出生点"(StartClass=None 的安全区, 如竞技场安全区,
+            // 站立时会被 UpdateBindPoint 错误改写)时保持; 否则重选, 避免回城卷困在竞技场。
+            if (Character.BindPoint != null && SEnvir.EnsureSafeZoneBindPoints(Character.BindPoint) &&
+                Character.BindPoint.StartClass != RequiredClass.None)
                 return true;
+
+            // 重选: 优先主城 (map 1) 出生区, 所有职业共用, 保证 Town Teleport 回到主城。
+            SafeZoneInfo home = SEnvir.SafeZoneInfoList.Binding
+                .FirstOrDefault(x => x.BindRegion?.Map?.Index == 1 && SEnvir.EnsureSafeZoneBindPoints(x));
+            if (home != null)
+            {
+                Character.BindPoint = home;
+                return true;
+            }
 
             List<SafeZoneInfo> spawnPoints = new List<SafeZoneInfo>();
 
             foreach (SafeZoneInfo info in SEnvir.SafeZoneInfoList.Binding)
             {
                 if (info.ValidBindPoints.Count == 0) continue;
+                if (info.StartClass == RequiredClass.None) continue;
 
                 switch (Class)
                 {
@@ -6384,10 +6397,16 @@ namespace Server.Models
                             }
 
                             var bindMap = SEnvir.GetMap(Character.BindPoint.BindRegion.Map);
-                            if (bindMap == null) return;
-
-                            if (!Teleport(bindMap, Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)]))
+                            if (bindMap == null)
+                            {
+                                SEnvir.Log($"[TownTP] {Character.CharacterName} bindMap null (map={Character.BindPoint.BindRegion.Map?.Index})");
                                 return;
+                            }
+
+                            var tpPoint = Character.BindPoint.ValidBindPoints[SEnvir.Random.Next(Character.BindPoint.ValidBindPoints.Count)];
+                            bool tpRes = Teleport(bindMap, tpPoint);
+                            SEnvir.Log($"[TownTP] {Character.CharacterName} map={Character.BindPoint.BindRegion.Map.Index} valid={Character.BindPoint.ValidBindPoints.Count} dst=({tpPoint.X},{tpPoint.Y}) res={tpRes}");
+                            if (!tpRes) return;
                             break;
                         case 3: //Random Teleport
 
@@ -14612,7 +14631,8 @@ namespace Server.Models
         {
             return safeZone != null &&
                    safeZone.ValidBindPoints.Count > 0 &&
-                   Stats[Stat.PKPoint] < Config.RedPoint;
+                   Stats[Stat.PKPoint] < Config.RedPoint &&
+                   safeZone.StartClass != RequiredClass.None;
         }
 
         private void UpdateBindPoint(SafeZoneInfo safeZone)

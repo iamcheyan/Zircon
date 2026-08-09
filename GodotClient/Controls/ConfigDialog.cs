@@ -168,7 +168,12 @@ public partial class ConfigDialog : DXWindow
             ClientSettings.Save();
             ClientSettings.ApplyDisplaySettings();
         }));
-        usability.AddOption("调试标签", Check("调试标签", ClientSettings.DebugLabel, value => { ClientSettings.DebugLabel = value; ClientSettings.Save(); }));
+        usability.AddOption("调试标签", Check("调试标签", ClientSettings.DebugLabel, value =>
+        {
+            ClientSettings.DebugLabel = value;
+            ClientSettings.Save();
+            // GameScene 每帧会同步 _debugLabel/_statusLabel 可见性
+        }));
         var language = new ConfigSelect();
         language.AddItem("中文");
         language.AddItem("English");
