@@ -16059,13 +16059,58 @@
           "fact": "The secondary text path reads 0x007DA11D and 0x007DA11F, selects among four state branches from byte this+0x54, and uses format literal candidates at 0x0047BDFC, 0x0047BE10 and 0x0047BE18; exact business labels remain unresolved."
         }
       ],
+      "paint_order": [
+        {
+          "order": 1,
+          "va": "0x0042EB8C-0x0042EB90",
+          "role": "window base/background",
+          "evidence": "The paint entry calls the window vtable +0x0C before any inventory-specific geometry or item processing."
+        },
+        {
+          "order": 2,
+          "va": "0x0042EB9B-0x0042EBB0",
+          "role": "top/detail composition candidate",
+          "evidence": "The first inventory-specific draw call uses GameInter frame 94 and coordinates derived from window origin x+0xF8, y-0xA5."
+        },
+        {
+          "order": 3,
+          "va": "0x0042EBBB-0x0042EE2A",
+          "role": "selected-item hit/index and source-destination composition",
+          "evidence": "The branch tests selection globals, resolves a 6x6 slot through 0x42F150/0x42F2A0, then builds source/destination rectangles and calls the shared float/compositor pipeline."
+        },
+        {
+          "order": 4,
+          "va": "0x0042EE2F-0x0042EE3A",
+          "role": "inventory item-list/update path",
+          "evidence": "Both selected and non-selected branches converge here and call 0x42F790 before the numeric text path."
+        },
+        {
+          "order": 5,
+          "va": "0x0042EE42-0x0042EEBE",
+          "role": "primary quantity/value text",
+          "evidence": "The runtime value at 0x7DA100 is formatted through 0x46811C using 0x47A214, with target positions based on window.x+0x41 and window.y+0x11A/0x12B."
+        },
+        {
+          "order": 6,
+          "va": "0x0042EECD-0x0042EF1E",
+          "role": "child-control reposition/update",
+          "evidence": "Three original child-control objects receive their fixed positions through 0x417830; these calls occur after the item/value path."
+        },
+        {
+          "order": 7,
+          "va": "0x0042EF2F-0x0042F003",
+          "role": "state-dependent secondary text",
+          "evidence": "The byte this+0x54 state dispatch selects the secondary text branch, which reads 0x7DA11D/0x7DA11F and emits text through 0x46811C/0x45DE50."
+        }
+      ],
       "confirmed": [
         "Frame 250 is the inventory window background candidate with primary constructor evidence.",
         "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
         "The item draw path contains a 36-pixel spacing constant.",
         "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
         "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count.",
-        "Selected-item rendering is a source/destination rectangle composition through 0x00466800 and 0x004542F0, with static text formatting call sites separately recovered."
+        "Selected-item rendering is a source/destination rectangle composition through 0x00466800 and 0x004542F0, with static text formatting call sites separately recovered.",
+        "The local inventory paint sequence is statically ordered from the base vtable call through item selection, value text, child-control positioning and state-dependent text."
       ],
       "pending": [
         "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
