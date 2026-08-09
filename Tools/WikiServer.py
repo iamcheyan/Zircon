@@ -492,6 +492,18 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .sgood .sprice {{ color:var(--dim); font-size:11px; }}
 .more {{ color:var(--dim); font-size:12.5px; padding-left:4px; }}
 .store-head {{ display:flex; align-items:baseline; gap:8px; }}
+.store-npc {{ display:flex; gap:12px; align-items:center; margin-top:10px; padding:10px 12px; background:#0d0f12; border:1px solid var(--line); border-radius:10px; }}
+.store-npc .npc-avatar {{ flex:0 0 auto; }}
+.store-npc .npc-avatar .avatar {{ width:56px; height:56px; object-fit:contain; background:#0d0f12; border-radius:8px; border:1px solid var(--line); }}
+.store-npc .npc-avatar .avatar.noimg {{ width:56px; height:56px; display:block; }}
+.store-npc .npc-avatar:hover .avatar {{ border-color:var(--acc); }}
+.store-npc .npc-info {{ min-width:0; }}
+.store-npc .npc-name {{ font-weight:600; color:var(--fg); text-decoration:none; }}
+.store-npc .npc-name:hover {{ color:var(--acc); text-decoration:underline; }}
+.store-npc .npc-pos {{ color:var(--dim); font-size:12px; margin:2px 0 6px; }}
+.store-npc .npc-btns {{ display:flex; gap:6px; }}
+.store-npc .btn {{ display:inline-block; font-size:12px; padding:2px 10px; border:1px solid var(--line); border-radius:6px; color:var(--ac2); text-decoration:none; background:var(--panel); }}
+.store-npc .btn:hover {{ border-color:var(--acc); color:var(--acc); }}
 .crumbs {{ color:var(--dim); font-size:13px; margin-bottom:6px; }}
 .crumbs a {{ color:var(--ac2); }}
 .panel-npc {{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:12px 0 20px; }}
@@ -1258,7 +1270,10 @@ class Handler(BaseHTTPRequestHandler):
                 anim_html = f"<h2>施法动画</h2><p class='dim'>素材 {esc(anim['lib'])} 帧 {anim['start']} 暂无渲染图</p>"
         else:
             prop = (s.get("prop") or "").strip()
-            if prop in ("Active", "Charge"):
+            if s.get("type") == "ElementalHurricane":
+                anim_html = ("<h2>施法动画</h2><p class='dim'>服务端为 buff 切换型（持续型状态，1s tick），"
+                             "客户端以 buff 表现，无投射物动画（属正常）</p>")
+            elif prop in ("Active", "Charge"):
                 anim_html = ("<h2>施法动画</h2><p class='dim'>主动技能但 MagicEffectTable "
                              "未收录施法特效（无动画记录，诚实标注）</p>")
             else:
@@ -1451,9 +1466,24 @@ class Handler(BaseHTTPRequestHandler):
             # 店主坐标
             p = n.get("pos") or {}
             pos_s = f"({p['x']}, {p['y']})" if p.get("x") is not None else ""
+            # 店主区块 (头像 + 名字 + 坐标 + 查看详情)
+            store_link = f'/store/{si}'
+            npc_link = f'/npc/{n["id"]}'
+            shop_npc = f"""<div class="store-npc">
+  <a class="npc-avatar" href="{npc_link}">{npc_img(n, 'avatar')}</a>
+  <div class="npc-info">
+    <a class="npc-name" href="{npc_link}">{esc(n['zh'])}</a>
+    <span class="mono">{esc(n['name'])}</span>
+    <div class="npc-pos">坐标 {pos_s}</div>
+    <div class="npc-btns">
+      <a class="btn" href="{npc_link}">NPC 详情</a>
+      <a class="btn" href="{store_link}">商店详情</a>
+    </div>
+  </div>
+</div>"""
             cards += f"""<div class="card"><div class="store-body">
   <div class="store-head"><a class="name" href="/store/{si}">{esc(sh['name_zh'])}</a> {gn}</div>
-  <div class="sub">{npc_img(n, 'avatar')} <a href="/npc/{n['id']}">{esc(n['zh'])}</a> <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])} {pos_s}</div>
+  {shop_npc}
   {gicons}
 </div></div>"""
         # 类型 chips
