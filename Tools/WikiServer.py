@@ -426,6 +426,16 @@ class Data:
         for si, sh in enumerate(cls.stores["stores"]):
             for nn in sh["npcs"]:
                 cls.store_by_npc[nn["id"]] = (si, sh)
+        # 商店: 货品名 (英文/中文) -> [(店 idx, 店)] (反查: 物品详情页显示在售商店)
+        cls.good_by_item = {}
+        if "stores" in cls.stores:
+            for si, sh in enumerate(cls.stores["stores"]):
+                for gd in sh.get("goods", []):
+                    if gd.get("name"):
+                        cls.good_by_item.setdefault(gd["name"], []).append((si, sh))
+                    zh = gd.get("zh")
+                    if zh and zh != gd.get("name"):
+                        cls.good_by_item.setdefault(zh, []).append((si, sh))
         # 任务
         cls.quests = w["quests"]
         # 宠物
@@ -1329,6 +1339,8 @@ class Handler(BaseHTTPRequestHandler):
             sp = parse_spawns(m.get("spawns"))
             if sp:
                 sub += f" · {sum(c for _, c in sp)} 只 / {len(sp)} 图"
+            elif m.get("legacy"):
+                sub += " · <span class='dim'>无老版刷怪记录</span>"
             # 分布地图中文名 (取前 3 张)
             maps_zh = []
             for c, _ in sp:
@@ -1743,6 +1755,21 @@ class Handler(BaseHTTPRequestHandler):
             scripts_html = f"""<h2>对话脚本（入口 {esc(entry)}）</h2>
 <p class="lead">来自 NPCPage / NPCButton / NPCAction / NPCCheck 表 · 按钮递归展开</p>
 {tree}"""
+        # 在售货品 (商店店主)
+        goods_html = ""
+        if store_info and store_info[1].get("goods"):
+            si, sh = store_info
+            grows = ""
+            for gd in sh["goods"]:
+                price_s = f"{gd['price']:,}" if gd["price"] else "—"
+                grows += (f"<tr><td>{icon_img('items', gd['item_id'], 'icon', gd['zh'])} "
+                          f"<a href='/item/{gd['item_id']}'>{esc(gd['zh'])}</a> "
+                          f"<span class='mono'>{esc(gd['name'])}</span></td>"
+                          f"<td>{esc(gd.get('type_zh',''))}</td>"
+                          f"<td>{price_s}</td></tr>")
+            goods_html = f"""<h2>在售货品 · {len(sh['goods'])} 件</h2>
+<table><tr><th>货品</th><th>类型</th><th>价格</th></tr>{grows}</table>
+<p class="lead"><a href="/store/{si}">查看商店详情</a></p>"""
         body = f"""<p class="crumbs"><a href="/npcs">NPC</a> › {esc(n.get('zh') or n['name'])}</p>
 <h1>{esc(n.get('zh') or n['name'])} <span class="mono">{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</h1>
 <div class="detail">{face}<div class="meta">
@@ -1757,7 +1784,7 @@ class Handler(BaseHTTPRequestHandler):
 <h2>全身像</h2>
 <div class="panel-npc">{full}<div><div class="name">{esc(n.get('zh') or n['name'])}</div>
 <div class="sub">{esc(n['name'])} · {esc(n.get('map',''))}</div></div></div>
-{scripts_html}"""
+{goods_html}{scripts_html}"""
         self._send(page(n.get("zh") or n["name"], body, "npcs"))
 
     # ---------------- NPC 脚本树渲染

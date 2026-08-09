@@ -389,7 +389,7 @@ def render_anim(board, item_id, anim):
 
 
 # 怪物默认动作帧段 (FrameSet.DefaultMonster, 方向 Down=4 → +40):
-#   Standing 0/4 帧, Walking 80/6, Combat 160/6, Struck 240/2, Die 320/10
+# 怪物动作帧段 (DefaultMonster): Standing 0/4, Walking 80/6, Combat 160/6, Struck 240/2, Die 320/10
 MON_ACTIONS = [
     ("standing", 0, 4, 500),   # 站立 (慢)
     ("walking", 80, 6, 100),   # 行走
@@ -397,11 +397,14 @@ MON_ACTIONS = [
     ("struck", 240, 2, 100),   # 受击
     ("die", 320, 10, 100),     # 死亡
 ]
+# 8 方向 (MirDirection): 帧偏移 = dir*10
+MON_DIRS = [(0, "Up"), (1, "UpRight"), (2, "Right"), (3, "DownRight"),
+            (4, "Down"), (5, "DownLeft"), (6, "Left"), (7, "UpLeft")]
 
 def render_mon_anim(board, item_id, img_spec):
-    """渲染怪物动画: 每动作逐帧 trim, 统一缩放比例 + 脚底基线对齐(保留踏步/位移感),
-    空帧跳过, 存 {board}/{id}/{action}/{n:03d}.png, 横条 {board}/{id}/{action}.png。
-    返回 (ok, reason, {action: n_frames})。"""
+    """渲染怪物动画: 8 方向 x 动作 逐帧 trim, 统一缩放 + 脚底基线对齐,
+    空帧跳过, 存 {board}/{id}/{action}/{dir}/{n:03d}.png。
+    返回 (ok, reason, {action: {dir: n_frames}})。"""
     lib_name = img_spec.get("lib")
     lib = get_lib(lib_name)
     if lib is None:
@@ -409,54 +412,62 @@ def render_mon_anim(board, item_id, img_spec):
     if lib is None:
         return False, f"库缺失 {lib_name}", {}
     shape = img_spec.get("shape", 0)
-    base = shape * 1000 + 40  # Down 方向站立帧
-    if base >= lib.count:
-        return False, f"帧越界 {base}/{lib.count}", {}
+    if shape * 1000 >= lib.count:
+        return False, f"帧越界 {shape*1000}/{lib.count}", {}
 
     counts = {}
     ok_any = False
     H = 160
     for act, off, n, delay in MON_ACTIONS:
-        frames = []
-        for i in range(n):
-            idx = base + off + i * 10
-            if idx >= lib.count:
-                break
-            im = lib.decode(idx)
-            if im is None:
-                continue
-            bbox = im.getbbox()
-            if not bbox:
-                continue
-            frames.append(im.crop(bbox))
-        if not frames:
-            counts[act] = 0
+        per_dir = {}
+        all_frames = []
+        for dirn, dirname in MON_DIRS:
+            base = shape * 1000 + dirn * 10
+            frames = []
+            for i in range(n):
+                idx = base + off + i * 10
+                if idx >= lib.count:
+                    break
+                im = lib.decode(idx)
+                if im is None:
+                    continue
+                bbox = im.getbbox()
+                if not bbox:
+                    continue
+                frames.append(im.crop(bbox))
+            if frames:
+                all_frames.extend(frames)
+            per_dir[dirname] = frames
+        if not all_frames:
+            counts[act] = {}
             continue
         ok_any = True
-        # 统一缩放比例: 以该动作最高帧 -> H, 所有帧同一 scale (避免逐帧缩放抖动)
-        fmax = max(f.height for f in frames)
+        # 统一缩放比例: 以该动作所有方向最高帧 -> H (避免逐帧/方向间缩放抖动)
+        fmax = max(f.height for f in all_frames)
         scale = H / fmax if fmax > 0 else 1
         if scale != 1:
-            frames = [f.resize((max(1, int(f.width * scale)), max(1, int(f.height * scale))), 1)
-                      for f in frames]
-        cell_w = max(f.width for f in frames)
+            all_frames = [f.resize((max(1, int(f.width * scale)), max(1, int(f.height * scale))), 1)
+                          for f in all_frames]
+        cell_w = max(f.width for f in all_frames)
         d = os.path.join(OUT, board, str(item_id), act)
         os.makedirs(d, exist_ok=True)
-        for nf, f in enumerate(frames):
-            canvas = Image.new("RGBA", (cell_w, H), (16, 16, 20, 170))
-            # 水平居中, 垂直脚底对齐 (脚底同一基线, 不再上下跳)
-            canvas.paste(f, ((cell_w - f.width) // 2, H - f.height), f)
-            canvas.save(os.path.join(d, f"{nf:03d}.png"))
-        # 横条
-        gap = 2
-        strip = Image.new("RGBA", (cell_w * len(frames) + gap * (len(frames) - 1), H),
-                          (16, 16, 20, 170))
-        x = 0
-        for f in frames:
-            strip.paste(f, (x + (cell_w - f.width) // 2, H - f.height), f)
-            x += cell_w + gap
-        strip.save(os.path.join(OUT, board, str(item_id), f"{act}.png"))
-        counts[act] = len(frames)
+        counts[act] = {}
+        for dirn, dirname in MON_DIRS:
+            fr = per_dir[dirname]
+            if not fr:
+                counts[act][dirname] = 0
+                continue
+            if scale != 1:
+                fr = [f.resize((max(1, int(f.width * scale)), max(1, int(f.height * scale))), 1)
+                      for f in fr]
+            sub = os.path.join(d, dirname)
+            os.makedirs(sub, exist_ok=True)
+            for nf, f in enumerate(fr):
+                canvas = Image.new("RGBA", (cell_w, H), (16, 16, 20, 170))
+                # 水平居中, 垂直脚底对齐 (脚底同一基线, 保留踏步/位移感)
+                canvas.paste(f, ((cell_w - f.width) // 2, H - f.height), f)
+                canvas.save(os.path.join(sub, f"{nf:03d}.png"))
+            counts[act][dirname] = len(fr)
     if not ok_any:
         return False, f"全空 shape={shape}", {}
     return True, "", counts
