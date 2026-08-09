@@ -688,8 +688,12 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
         #   drawX = cell left  = cx - 24,  drawY = cell bottom = cy + 16
         # Some libs (e.g. SmTilesc) carry garbage offsets (-1132, -19694) that
         # would fling sprites off-map, so offsets are intentionally dropped.
+        #
+        # Frame index semantics: the .map file stores the raw WIL frame index
+        # (Mir3.exe 0x43b3c7 pushes cell+5 verbatim; the 2017 ZL client reads
+        # +1 and draws -1, netting to the raw value).  No -1 here.
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
-            frame_idx = cell.mid_img - 1
+            frame_idx = cell.mid_img
             got = pool.decode(cell.mid_file, frame_idx, scale)
             if got is not None:
                 img = got[0]
@@ -701,7 +705,7 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
 
         # 3. Front Layer (Houses, Walls, Cliffs, Objects, etc)
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
-            frame_idx = cell.front_img - 1
+            frame_idx = cell.front_img
             got = pool.decode(cell.front_file, frame_idx, scale)
             if got is not None:
                 img = got[0]
@@ -737,9 +741,9 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
         if draw_ground and cell.back_file != 255 and cell.back_img >= 0:
             needs.setdefault(cell.back_file, set()).add(cell.back_img)
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
-            needs.setdefault(cell.mid_file, set()).add(cell.mid_img - 1)
+            needs.setdefault(cell.mid_file, set()).add(cell.mid_img)
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
-            needs.setdefault(cell.front_file, set()).add(cell.front_img - 1)
+            needs.setdefault(cell.front_file, set()).add(cell.front_img)
 
     tasks: list[tuple] = []
     for lib_id, frames in needs.items():
@@ -777,13 +781,13 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                 _blit(canvas, img, cx - 24 + off_x, cy - 16 + off_y, scale, opaque)
         # 2. Middle Layer
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
-            got = sprites.get((cell.mid_file, cell.mid_img - 1))
+            got = sprites.get((cell.mid_file, cell.mid_img))
             if got is not None:
                 img = got[0]
                 _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
         # 3. Front Layer
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
-            got = sprites.get((cell.front_file, cell.front_img - 1))
+            got = sprites.get((cell.front_file, cell.front_img))
             if got is not None:
                 img = got[0]
                 _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
@@ -1159,13 +1163,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         });
         // ---- Hash & State Memory ----
         function updateUrlHash() {
-            if (!curMap) return;
+            if (!curMap()) return;
             const s = curScale();
             const ax = Math.round(anchorX || (vp.scrollLeft + vp.clientWidth / 2) * s);
             const ay = Math.round(anchorY || (vp.scrollTop + vp.clientHeight / 2) * s);
             const g = document.getElementById("chk-ground").checked ? 1 : 0;
             const o = document.getElementById("chk-objects").checked ? 1 : 0;
-            const hash = `#map=${encodeURIComponent(curMap.name)}&cur=${cur}&x=${ax}&y=${ay}&g=${g}&o=${o}`;
+            const hash = `#map=${encodeURIComponent(curMap().name)}&cur=${cur}&x=${ax}&y=${ay}&g=${g}&o=${o}`;
             history.replaceState(null, '', hash);
         }
 
@@ -1318,6 +1322,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 anchorY = targetY;
             }
             render(true);
+            updateUrlHash();   // 立即用实际加载的地图/坐标回写 URL(自愈坏 hash)
         }
         init();
 
@@ -1348,7 +1353,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const matchMap = location.hash.match(/map=([^&]+)/);
             if (matchMap) {
                 const parsed = decodeURIComponent(matchMap[1]);
-                if (curMap && curMap.name.toLowerCase() !== parsed.toLowerCase()) {
+                const mi = curMap();
+                if (mi && mi.name.toLowerCase() !== parsed.toLowerCase()) {
                     init();
                 }
             }
