@@ -1,0 +1,51 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "function_va": "0x0043A440",
+    "called_from": "0x00439520",
+    "evidence_level": "primary-static-render-loop"
+  },
+  "observations": [
+    {
+      "va": "0x0043A463",
+      "fact": "The first text/list drawing origin is window-relative this+0x18+0x0f, this+0x1c+0xeb."
+    },
+    {
+      "va": "0x0043A491",
+      "fact": "Each record is obtained from the stream at this+0x968+8 through 0x00468BF0 with length argument 0x0d; a line is accepted when its second byte is LF."
+    },
+    {
+      "va": "0x0043A4DF",
+      "fact": "Lines beginning with ';' are treated as separators/comments; lines beginning with '#' are parsed as an integer marker and compared with the requested section/id."
+    },
+    {
+      "va": "0x0043A531",
+      "fact": "A selected non-marker line is parsed by 0x0045E200 into a large local record area; exact field meanings remain pending."
+    },
+    {
+      "va": "0x0043A64D",
+      "fact": "Rows are rendered at 15-pixel vertical increments. The stream record pointer advances by 0x104 bytes per rendered row."
+    },
+    {
+      "va": "0x0043A7D7",
+      "fact": "The loop continues until the requested row count is reached, then resumes reading the next stream line."
+    }
+  ],
+  "render_calls": [
+    {"va": "0x0043A681", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
+    {"va": "0x0043A69E", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"},
+    {"va": "0x0043A6BC", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
+    {"va": "0x0043A6DD", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"},
+    {"va": "0x0043A6FB", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
+    {"va": "0x0043A717", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"},
+    {"va": "0x0043A735", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
+    {"va": "0x0043A758", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"},
+    {"va": "0x0043A776", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
+    {"va": "0x0043A79A", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"}
+  ],
+  "unresolved": [
+    "The semantic names of the parsed fields and the exact field-to-screen-column mapping.",
+    "The runtime meaning of the requested row count and the 0x104-byte record stride.",
+    "The final screen origin after window movement and the exact clipping rectangle."
+  ]
+}
