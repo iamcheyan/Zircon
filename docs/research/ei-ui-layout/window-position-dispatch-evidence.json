@@ -47,11 +47,10 @@
     {"window_id": 12, "layout_id": "window.option", "object": "main+0x518E0", "target": "0x0042B5F4", "position_update": true},
     {"window_id": 13, "layout_id": "window.horse", "object": "main+0x52118", "target": "0x0042B612", "position_update": true},
     {"window_id": 14, "layout_id": "window.other-14-candidate", "object": "main+0x524F0", "target": "0x0042B630", "position_update": true},
-    {"window_id": 15, "layout_id": null, "object": "main+0x52E5C", "target": "0x0042B63F", "position_update": true, "notes": "Extra registered component; business window identity remains pending."}
+    {"window_id": 15, "layout_id": "window.notice-prompt-candidate", "object": "main+0x52E5C", "target": "0x0042B63F", "position_update": true, "notes": "Frame 602 announcement/guild-notice object; business opening path remains pending."}
   ],
   "interpretation": "The original client does not require every movable window to have a hard-coded final screen origin. It maintains a runtime window list and dispatches position updates by window ID; initial origins and later drag/state updates are separate evidence layers.",
   "pending": [
-    "Recover the runtime list insertion order and initial position values for each window ID.",
-    "Identify window ID 15 / main+0x52E5C and distinguish it from the Frame 602 notice wrapper."
+    "Recover the runtime list insertion order and initial position values for each window ID."
   ]
 }

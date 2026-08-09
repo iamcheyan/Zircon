@@ -19058,12 +19058,12 @@
         "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
         "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
         "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
-        "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths."
+        "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
+        "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field."
       ],
       "pending": [
         "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
-        "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
-        "Whether this Frame 602 state is a standalone notice dialog or a guild-information substate."
+        "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine."
       ]
     },
     {
@@ -21959,12 +21959,12 @@
       "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
       "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
       "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
-      "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths."
+      "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
+      "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field."
     ],
     "pending": [
       "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
-      "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
-      "Whether this Frame 602 state is a standalone notice dialog or a guild-information substate."
+      "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine."
     ]
   },
   "confirmation_prompt_evidence": {
@@ -22722,17 +22722,16 @@
       },
       {
         "window_id": 15,
-        "layout_id": null,
+        "layout_id": "window.notice-prompt-candidate",
         "object": "main+0x52E5C",
         "target": "0x0042B63F",
         "position_update": true,
-        "notes": "Extra registered component; business window identity remains pending."
+        "notes": "Frame 602 announcement/guild-notice object; business opening path remains pending."
       }
     ],
     "interpretation": "The original client does not require every movable window to have a hard-coded final screen origin. It maintains a runtime window list and dispatches position updates by window ID; initial origins and later drag/state updates are separate evidence layers.",
     "pending": [
-      "Recover the runtime list insertion order and initial position values for each window ID.",
-      "Identify window ID 15 / main+0x52E5C and distinguish it from the Frame 602 notice wrapper."
+      "Recover the runtime list insertion order and initial position values for each window ID."
     ]
   },
   "window_visibility_dispatch_evidence": {
@@ -23144,7 +23143,7 @@
       },
       {
         "window_id": 15,
-        "layout_id": null,
+        "layout_id": "window.notice-prompt-candidate",
         "main_init_call": "0x0042797E",
         "wrapper": "0x0043E260",
         "frame": 602,
@@ -23158,7 +23157,7 @@
         ],
         "registered": true,
         "default_visibility": "not promoted; visibility gate is handled separately by 0x0042B2AD",
-        "identity": "secondary prompt/notice component candidate"
+        "identity": "announcement/guild-notice window; paint entry 0x0043E3C0"
       }
     ],
     "initial_visibility_proof": {
@@ -23173,7 +23172,7 @@
     },
     "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; the shared constructor proves the default visibility gate is zero before any explicit show command.",
     "pending": [
-      "Resolve whether ID15's 0x0043E260 wrapper is the same runtime object as the Frame 602 notice/prompt family."
+      "Determine whether the Frame 602 notice is opened by the guild page or by an independent command/state path."
     ]
   },
   "window_traversal_evidence": {

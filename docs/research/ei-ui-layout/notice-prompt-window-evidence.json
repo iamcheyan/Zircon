@@ -93,11 +93,11 @@
     "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
     "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
     "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
-    "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths."
+    "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
+    "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field."
   ],
   "pending": [
     "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
-    "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
-    "Whether this Frame 602 state is a standalone notice dialog or a guild-information substate."
+    "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine."
   ]
 }
