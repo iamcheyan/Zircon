@@ -11,17 +11,25 @@
     "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"},
     "constructor_window_size": [284, 324]
   },
+  "resource_visual_inspection": {
+    "source": "Direct pixel inspection of original Data/GameInter.wil and Data/Interface1c.wil",
+    "records": [
+      {"frame_pair": [264, 265], "library": "Data/GameInter.wil", "visual_description": "small horizontal metallic action control with a green/gold state symbol and short embedded glyph", "confidence": "medium", "business_name": null},
+      {"frame_pair": [267, 268], "library": "Data/Interface1c.wil", "visual_description": "character/action sprite resource; Frame 267 contains a full armored character with weapon, not a generic button", "confidence": "high", "note": "Frame 268 is empty in the current export. Preserve the library distinction and do not render this as a GameInter button."}
+    ],
+    "evidence_level": "primary-resource-visual-plus-static-library-crosscheck"
+  },
   "child_controls": [
     {"object_offset": "this+0x5c", "call_va": "0x0042EADB", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xF9", "y": "arg_base+0x120"}},
     {"object_offset": "this+0x110", "call_va": "0x0042EB07", "frame_pair": [264, 265], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x106"}},
-    {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x11E"}}
+    {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "Interface1c.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x11E"}, "role": "character-sprite/appearance resource candidate, not a generic button"}
   ],
   "hit_rects": {
     "basis": "The shared 0x00417550 constructor creates a SetRect from the selected WIL frame dimensions; positions below are window-relative and therefore remain valid when the window is moved.",
     "records": [
       {"frame_pair": [161, 162], "resource_library": "GameInter.wil", "relative_rect": [249, 288, 28, 26], "role": "close/confirm candidate"},
       {"frame_pair": [264, 265], "resource_library": "GameInter.wil", "relative_rect": [176, 262, 64, 20], "role": "inventory action candidate"},
-      {"frame_pair": [267, 268], "resource_library": "Interface1c.wil", "relative_rect": [176, 286, 76, 88], "role": "inventory action candidate; resource differs from GameInter"}
+      {"frame_pair": [267, 268], "resource_library": "Interface1c.wil", "relative_rect": [176, 286, 76, 88], "role": "character-sprite/appearance candidate; resource differs from GameInter"}
     ],
     "evidence_level": "primary-static-plus-primary-resource"
   },
@@ -89,7 +97,7 @@
     "Frame 250 is the inventory window background candidate with primary constructor evidence.",
     "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
     "The item draw path contains a 36-pixel spacing constant.",
-    "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
+    "The close and 264/265 controls are tied to the GameInter path; the 267/268 child must remain associated with the Interface1c character-sprite resource path in the current export, despite nearby constructor clustering.",
     "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count.",
     "Selected-item rendering is a source/destination rectangle composition through 0x00466800 and 0x004542F0, with static text formatting call sites separately recovered.",
     "The local inventory paint sequence is statically ordered from the base vtable call through item selection, value text, child-control positioning and state-dependent text."
