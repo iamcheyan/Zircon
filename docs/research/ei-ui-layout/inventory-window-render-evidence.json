@@ -13,23 +13,26 @@
   },
   "child_controls": [
     {"object_offset": "this+0x5c", "call_va": "0x0042EADB", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xF9", "y": "arg_base+0x120"}},
-    {"object_offset": "this+0x110", "call_va": "0x0042EB07", "frame_pair": [264, 265], "resource_library_candidates": ["GameInter.wil", "Interface1c.wil"], "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x120"}},
-    {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "Interface1c.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x120"}}
+    {"object_offset": "this+0x110", "call_va": "0x0042EB07", "frame_pair": [264, 265], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x106"}},
+    {"object_offset": "this+0x1C4", "call_va": "0x0042EB2D", "frame_pair": [267, 268], "resource_library_candidate": "GameInter.wil", "position_expression": {"x": "arg_base+0xB0+0xF9", "y": "arg_base+0xB0+0x11E"}}
   ],
   "paint_geometry": [
-    {"va": "0x0042EB9B", "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5; exact resource/state semantics remain pending."},
+    {"va": "0x0042EB9B", "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5, with GameInter frame 0x5E selected by this paint path; the call is the inventory top/detail composition candidate."},
     {"va": "0x0042EC54", "fact": "A later item/record draw path computes a horizontal coordinate x+0x19 plus an index multiplied by 36 pixels."},
     {"va": "0x0042EC64", "fact": "The corresponding vertical coordinate is y+0x29 plus a row/record difference multiplied by 36 pixels."},
+    {"va": "0x0042F150", "fact": "The inventory hit-test/search loop scans both axes in 36-pixel steps from 0 through 180, proving a 6-column by 6-row, 36-slot grid."},
+    {"va": "0x0042F2A0", "fact": "The item index is divided by 6; remainder selects the column and quotient selects the row. Slot rectangles are (window.x+0x19+36*column, window.y+0x29+36*row) with 36x36 size."},
     {"va": "0x0042EECD", "fact": "The three child controls are repositioned from the window origin with fixed offsets (0xF9,0x120), (0xB0,0x106), and (0xB0,0x11E) as shown by 0x00417830 calls."}
   ],
   "confirmed": [
     "Frame 250 is the inventory window background candidate with primary constructor evidence.",
     "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
-    "The item draw path contains a 36-pixel spacing constant."
+    "The item draw path contains a 36-pixel spacing constant.",
+    "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
+    "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count."
   ],
   "pending": [
-    "Exact number of inventory columns and rows.",
-    "Whether Frame 264/265 resolves to GameInter or Interface1c at runtime for this client build.",
-    "The meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields."
+    "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
+    "The runtime item resource handle and quantity/name text field order."
   ]
 }

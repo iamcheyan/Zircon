@@ -13,7 +13,7 @@
 | HP/MP/经验 | `GameInter.wil` F60/F61/F63 | 主 HUD 资源、固定 Rect、`0x00429740` 比例链、`0x00466800/0x004542F0` 合成调用 | 候选（比例链已恢复） | 运行时确认全局字段的 HP/MP/EXP 命名、精确纹理裁剪方向和最终 z-order |
 | 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–459 | `skill-window-context.json`、技能渲染循环 | 已恢复 | 运行时技能列表、文字字段与图标 |
 | 人物状态/装备槽 | GameInter F200，装备槽 38×38 | `status-window-render-evidence.json` | 已恢复 | 装备图层、属性文字实际调用 |
-| 背包 | GameInter F250，36 px 网格 | `inventory-window-render-evidence.json` | 已恢复 | 行列数量、物品图标/数量文本顺序 |
+| 背包 | GameInter F250，6×6、36 px 网格 | `inventory-window-render-evidence.json`、`0x0042F150/0x0042F2A0` | 已恢复 | 物品图标/数量文本顺序、运行时选中态 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 任务详情页/分页状态 |
 | 商店/购买 | GameInter F1000、F1001–F1003 | `store-window-render-evidence.json`、`0x0044E9B0` 状态机 | 候选 | 通过协议/开启调用区分 NPC 商店、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `system-window-render-evidence.json` | 候选 | 交换双方格子、确认按钮和状态机 |
