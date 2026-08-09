@@ -46,6 +46,16 @@
       "interpretation": "A second prompt/action constructor cluster uses the same YES/NO resource family; frame selection is statically clear but indirect state choice remains unresolved."
     }
   ],
+  "child_hit_rects": {
+    "parent_coordinate_space": "window-relative",
+    "records": [
+      {"object_offset": "this+0x238", "frame_pair": [151, 152], "relative_rect": [51, 125, 44, 20], "screen_rect_if_centered": [271, 276, 44, 20]},
+      {"object_offset": "this+0x2F0", "frame_pair": [157, 158], "relative_rect": [147, 125, 64, 20], "screen_rect_if_centered": [367, 276, 64, 20]},
+      {"object_offset": "this+0x3A8", "frame_pair": [154, 155], "relative_rect": [244, 125, 44, 20], "screen_rect_if_centered": [464, 276, 44, 20]}
+    ],
+    "basis": "0x0041815F–0x004181E0 register expressions plus GameInter frame header dimensions; parent screen origin uses the -1/-1 center rule.",
+    "evidence_level": "primary-static-exact-relative-and-derived-screen"
+  },
   "message_geometry": {
     "routine": "0x00418030",
     "branch_condition": "constructor argument at stack expression [esp+0x24] tested at 0x004181E5",
