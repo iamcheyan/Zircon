@@ -9,6 +9,32 @@
     {"field": "owner+0x148", "file": "Data/MMap.wil", "literal_va": "0x0047C428", "frame_count": 255, "nonblank_frames": 154, "role": "map-thumbnail-or-mini-map-candidate"},
     {"field": "owner+0x2D0", "file": "Data/FMMap.wil", "literal_va": "0x0047C414", "frame_count": 31, "nonblank_frames": 29, "role": "full-map-or-large-map-candidate"}
   ],
+  "frame_geometry_inventory": {
+    "source": "Data/MMap.wil and Data/FMMap.wil 17-byte WIL headers",
+    "mmap": {
+      "observed_dimension_groups": [
+        {"size": [600, 400], "frames_observed": [0, 1, 2, 3, 4, 22, 23, 30, 31, 32, 33]},
+        {"size": [300, 200], "frames_observed": [10, 11, 12, 13, 14, 15, 34]},
+        {"size": [152, 100], "frames_observed": [16, 17, 18, 19, 20, 21, 36, 37, 38]},
+        {"size": [76, 50], "frames_observed": [35]}
+      ],
+      "common_offsets": "Most observed frames carry WIL offsetX=-24, offsetY=-16; the small frames 35–38 use offsetX=7, offsetY=-44.",
+      "interpretation": "MMap is a multi-resolution map image family; the selected frame is later clipped/scaled into the 128×128 destination rather than being a 128×128 source itself."
+    },
+    "fmmap": {
+      "observed_dimension_groups": [
+        {"size": [1200, 800], "frames_observed": [0, 6, 8, 18]},
+        {"size": [900, 600], "frames_observed": [1, 2, 3, 12]},
+        {"size": [600, 500], "frames_observed": [4]},
+        {"size": [600, 400], "frames_observed": [5, 7, 13, 20, 21, 22, 23, 24, 25, 26, 27, 28]},
+        {"size": [600, 200], "frames_observed": [9, 10, 11, 14, 15, 16]},
+        {"size": [600, 600], "frames_observed": [17]},
+        {"size": [452, 300], "frames_observed": [30]}
+      ],
+      "common_offsets": "Frames 0–28 generally carry WIL offsetX=-24, offsetY=-16; Frame 30 is offsetX=0, offsetY=0.",
+      "interpretation": "FMMap is the full-map/large-map resource family candidate; its dimensions are materially larger than the fixed minimap destination and must be displayed through a scroll/zoom viewport."
+    }
+  },
   "selection": {
     "va": "0x0043D780",
     "condition": "map_id >= 1000",
