@@ -41,8 +41,23 @@
       ],
       "shared_dispatch": "0x004520F0 with this=0x008AB828; string pointers are runtime data addresses and are not decoded as Chinese labels yet."
     },
+    "message_literal_decoding": {
+      "source": "Direct GB18030 decoding of Mir3.exe data addresses referenced by 0x00426A80-0x00426B45.",
+      "records": [
+        {"va": "0x0047B058", "text": "@收马", "encoding": "GB18030", "confidence": "high"},
+        {"va": "0x0047B060", "text": "@上马", "encoding": "GB18030", "confidence": "high"},
+        {"va": "0x0047B068", "text": "@遛马", "encoding": "GB18030", "confidence": "high"}
+      ],
+      "branch_binding": [
+        {"object": "this+0x108", "state_condition": "byte [0x007DA060] == 0", "message_va": "0x0047B060", "message": "@上马"},
+        {"object": "this+0x1BC", "state_condition": "byte [0x007DA060] != 0", "message_va": "0x0047B068", "message": "@遛马"},
+        {"object": "this+0x270", "state_condition": "child handler handled", "message_va": "0x0047B058", "message": "@收马"},
+        {"object": "this+0x324", "state_condition": "child handler handled", "message_va": "0x0047B068", "message": "@遛马"}
+      ],
+      "interpretation": "The click path now has exact original command strings; these are stronger business evidence than pixel transcription, while the UI artwork labels for Frames 864-867 remain separate candidates."
+    },
     "evidence_level": "primary-static-plus-primary-resource"
   },
-  "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The control business labels remain candidates because the string pointers are runtime-populated data addresses.",
-  "pending": ["Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map the four artwork labels to the runtime state byte/horse action branches; determine whether state-dependent overlays are painted outside Frame 850."]
+  "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The click commands are now exact original strings; only the mapping between those commands, state transitions and the low-resolution artwork labels remains partially unresolved.",
+  "pending": ["Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map them to the now-decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."]
 }
