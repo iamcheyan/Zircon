@@ -55,6 +55,7 @@ def main() -> None:
     parser.add_argument("--draw-order-evidence", type=Path, default=Path("docs/research/ei-ui-layout/draw-order-evidence.json"))
     parser.add_argument("--window-position-dispatch", type=Path, default=Path("docs/research/ei-ui-layout/window-position-dispatch-evidence.json"))
     parser.add_argument("--window-visibility-dispatch", type=Path, default=Path("docs/research/ei-ui-layout/window-visibility-dispatch-evidence.json"))
+    parser.add_argument("--window-initialization", type=Path, default=Path("docs/research/ei-ui-layout/window-initialization-evidence.json"))
     parser.add_argument("--hud-label-evidence", type=Path, default=Path("docs/research/ei-ui-layout/hud-label-evidence.json"))
     parser.add_argument("--notice-prompt-evidence", type=Path, default=Path("docs/research/ei-ui-layout/notice-prompt-window-evidence.json"))
     parser.add_argument("--confirmation-prompt-evidence", type=Path, default=Path("docs/research/ei-ui-layout/confirmation-prompt-evidence.json"))
@@ -119,6 +120,7 @@ def main() -> None:
     draw_order_evidence = json.loads(args.draw_order_evidence.read_text(encoding="utf-8")) if args.draw_order_evidence.exists() else {}
     window_position_dispatch = json.loads(args.window_position_dispatch.read_text(encoding="utf-8")) if args.window_position_dispatch.exists() else {}
     window_visibility_dispatch = json.loads(args.window_visibility_dispatch.read_text(encoding="utf-8")) if args.window_visibility_dispatch.exists() else {}
+    window_initialization = json.loads(args.window_initialization.read_text(encoding="utf-8")) if args.window_initialization.exists() else {}
     hud_label_evidence = json.loads(args.hud_label_evidence.read_text(encoding="utf-8")) if args.hud_label_evidence.exists() else {}
     notice_prompt_evidence = json.loads(args.notice_prompt_evidence.read_text(encoding="utf-8")) if args.notice_prompt_evidence.exists() else {}
     confirmation_prompt_evidence = json.loads(args.confirmation_prompt_evidence.read_text(encoding="utf-8")) if args.confirmation_prompt_evidence.exists() else {}
@@ -279,6 +281,7 @@ def main() -> None:
     layout["draw_order_evidence"] = draw_order_evidence
     layout["window_position_dispatch_evidence"] = window_position_dispatch
     layout["window_visibility_dispatch_evidence"] = window_visibility_dispatch
+    layout["window_initialization_evidence"] = window_initialization
     layout["hud_label_evidence"] = hud_label_evidence
     layout["notice_prompt_evidence"] = notice_prompt_evidence
     layout["confirmation_prompt_evidence"] = confirmation_prompt_evidence
@@ -292,6 +295,7 @@ def main() -> None:
         "hud_label_controls": "docs/research/ei-ui-layout/hud-label-evidence.json",
         "window_position_dispatch": "docs/research/ei-ui-layout/window-position-dispatch-evidence.json",
         "window_visibility_dispatch": "docs/research/ei-ui-layout/window-visibility-dispatch-evidence.json",
+        "window_initialization": "docs/research/ei-ui-layout/window-initialization-evidence.json",
     }
     layout["secondary_control_constructors"] = secondary_controls
     layout["secondary_window_candidates"] = secondary_window_candidates
