@@ -13039,7 +13039,8 @@
     "hud_label_controls": "docs/research/ei-ui-layout/hud-label-evidence.json",
     "window_position_dispatch": "docs/research/ei-ui-layout/window-position-dispatch-evidence.json",
     "window_visibility_dispatch": "docs/research/ei-ui-layout/window-visibility-dispatch-evidence.json",
-    "window_initialization": "docs/research/ei-ui-layout/window-initialization-evidence.json"
+    "window_initialization": "docs/research/ei-ui-layout/window-initialization-evidence.json",
+    "window_traversal": "docs/research/ei-ui-layout/window-traversal-evidence.json"
   },
   "secondary_control_constructors": [
     {
@@ -22515,6 +22516,98 @@
     "pending": [
       "Recover the exact initial values of the per-object visibility gates before any user command.",
       "Resolve whether ID15's 0x0043E260 wrapper is the same runtime object as the Frame 602 notice/prompt family."
+    ]
+  },
+  "window_traversal_evidence": {
+    "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "routine": "0x0042B820",
+    "evidence_level": "primary-static-visible-window-traversal",
+    "purpose": "Traverse the current visible-window list in runtime-list order and reset each object's secondary state field before continuing the window update path.",
+    "list_manager": {
+      "container": "main+0xD24",
+      "head": "main+0xD28",
+      "current": "main+0xD2C",
+      "count": "main+0xD38",
+      "node_id": "node+0x00",
+      "next": "node+0x04"
+    },
+    "loop": {
+      "start": "0x0042B858",
+      "count_guard": "main+0xD38",
+      "advance": "node+0x04",
+      "reset_setter": "0x00423F90",
+      "setter_effect": "window_object+0x34 = 0"
+    },
+    "id_dispatch": [
+      {
+        "window_id": 0,
+        "object": "main+0x6554",
+        "target": "0x0042B870"
+      },
+      {
+        "window_id": 1,
+        "object": "main+0x29CE4",
+        "target": "0x0042B87A"
+      },
+      {
+        "window_id": 2,
+        "object": "main+0x33188",
+        "target": "0x0042B884"
+      },
+      {
+        "window_id": 3,
+        "object": "main+0x3399C",
+        "target": "0x0042B88E"
+      },
+      {
+        "window_id": 4,
+        "object": "main+0x4707C",
+        "target": "0x0042B898"
+      },
+      {
+        "window_id": 6,
+        "object": "main+0x47834",
+        "target": "0x0042B8A2"
+      },
+      {
+        "window_id": 7,
+        "object": "main+0x47C28",
+        "target": "0x0042B8AC"
+      },
+      {
+        "window_id": 8,
+        "object": "main+0x507EC",
+        "target": "0x0042B8B6"
+      },
+      {
+        "window_id": 9,
+        "object": "main+0x51150",
+        "target": "0x0042B8C0"
+      },
+      {
+        "window_id": 11,
+        "object": "main+0x516E8",
+        "target": "0x0042B8CA"
+      },
+      {
+        "window_id": 12,
+        "object": "main+0x518E0",
+        "target": "0x0042B8D4"
+      },
+      {
+        "window_id": 13,
+        "object": "main+0x52118",
+        "target": "0x0042B8DE"
+      },
+      {
+        "window_id": 14,
+        "object": "main+0x524F0",
+        "target": "0x0042B8E8"
+      }
+    ],
+    "interpretation": "This is strong evidence for the runtime traversal order of visible window records, but 0x0042B820 calls the +0x34 setter rather than a paint slot. It must not be promoted to final cross-window z-order until a draw call is shown to consume this order.",
+    "pending": [
+      "Find the frame-render entry that consumes the visible list and invokes each object's paint slot."
     ]
   }
 }
