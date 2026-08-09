@@ -1,8 +1,8 @@
 {
-  "version": "0.1-primary-windows",
+  "version": "0.2-primary-windows-raw-position-inputs",
   "viewport": {"width": 800, "height": 600},
   "records": [
-    {"id":"window.inventory","kind":"window","resource":{"file":"GameInter.wil","frame":250},"window":{"id":0,"x":518,"y":0,"width":284,"height":324,"can_move":true},"object":{"base":"esi","offset":"0x6554"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x00427750"],"notes":"Frame and dimensions come from the call argument sequence."}},
+    {"id":"window.inventory","kind":"window","resource":{"file":"GameInter.wil","frame":250},"window":{"id":0,"x":518,"y":0,"width":284,"height":324,"can_move":true,"position_semantics":"raw wrapper input; final Rect computed by 0x00423B30"},"object":{"base":"esi","offset":"0x6554"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x00427750"],"notes":"Frame and dimensions come from the call argument sequence; x/y are preserved raw inputs, not universally guaranteed final screen origin."}},
     {"id":"window.status","kind":"window","resource":{"file":"GameInter.wil","frame":200},"window":{"id":1,"x":0,"y":0,"width":244,"height":328,"can_move":true},"object":{"base":"esi","offset":"0x29ce4"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x00427776"]}},
     {"id":"window.store-candidate","kind":"window","resource":{"file":"GameInter.wil","frame":1000},"window":{"id":2,"x":0,"y":0,"width":300,"height":304,"can_move":false},"object":{"base":"esi","offset":"0x33188"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x0042779c"],"notes":"Business name and WIL semantic are pending; do not rename to Store frame 253 yet."}},
     {"id":"window.exchange-candidate","kind":"window","resource":{"file":"GameInter.wil","frame":1050},"window":{"id":3,"x":0,"y":0,"width":484,"height":330,"can_move":true},"object":{"base":"esi","offset":"0x3399c"},"evidence":{"level":"primary-static","addresses":["0x00423B30","0x004277c2"]}},

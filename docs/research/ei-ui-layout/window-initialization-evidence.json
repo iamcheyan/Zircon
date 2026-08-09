@@ -3,6 +3,15 @@
   "main_init_va": "0x00427600",
   "evidence_level": "primary-static-main-window-initialization",
   "method": "The main UI initializer constructs the registered window wrappers after assigning the GameInter resource owner at main+0x1C. The frame/position/size values below are taken from each wrapper call sequence; they are not hand-calibrated preview values.",
+  "position_semantics": {
+    "record_position_meaning": "wrapper call-site x/y inputs",
+    "final_rect_owner": "0x00423B30",
+    "final_rect_fields": "window_object+0x08 and window_object+0x18",
+    "anchor_fields": ["window_object+0x40", "window_object+0x44"],
+    "algorithm": "0x00423B30 selects the WIL header dimensions, derives anchor offsets, and calls SetRect before returning; when its centering/anchor flag is active, the call-site x/y are not themselves final screen origin.",
+    "evidence_level": "primary-static-constructor-algorithm",
+    "warning": "Do not treat every [x,y] in records as a final 800x600 screen coordinate. The final origin must use the constructor branch and anchor mode; records preserve raw inputs so the calculation is reproducible."
+  },
   "records": [
     {"window_id": 0, "layout_id": "window.inventory", "main_init_call": "0x00427750", "wrapper": "0x0042EA80", "frame": 250, "position": [518, 0], "size": [284, 324], "registered": true, "default_visibility": "not promoted; visibility gate is handled separately by 0x0042ADCF"},
     {"window_id": 1, "layout_id": "window.status", "main_init_call": "0x00427776", "wrapper": "0x0044B130", "frame": 200, "position": [0, 0], "size": [244, 328], "registered": true, "default_visibility": "not promoted; visibility gate is handled separately by 0x0042AE42"},

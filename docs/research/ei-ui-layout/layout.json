@@ -29205,6 +29205,14 @@
     "main_init_va": "0x00427600",
     "evidence_level": "primary-static-main-window-initialization",
     "method": "The main UI initializer constructs the registered window wrappers after assigning the GameInter resource owner at main+0x1C. The frame/position/size values below are taken from each wrapper call sequence; they are not hand-calibrated preview values.",
+    "position_semantics": {
+      "record_position_meaning": "wrapper call-site x/y inputs",
+      "final_rect_owner": "0x00423B30",
+      "final_rect_fields": ["window_object+0x08", "window_object+0x18"],
+      "anchor_fields": ["window_object+0x40", "window_object+0x44"],
+      "warning": "The constructor selects WIL header dimensions and applies centering/anchor arithmetic; raw record x/y are not universally final screen origins.",
+      "evidence_level": "primary-static-constructor-algorithm"
+    },
     "records": [
       {
         "window_id": 0,
