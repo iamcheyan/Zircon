@@ -22062,6 +22062,24 @@
         "meaning": "mouse position is converted from the fixed minimap destination into map/view-relative coordinates"
       }
     },
+    "widget_composition_audit": {
+      "map_paint_va": "0x0043DA80",
+      "destination_owner_field": "owner+0x2C0",
+      "destination_rect": [
+        672,
+        0,
+        800,
+        128
+      ],
+      "map_composite": "0x0043DB0B-0x0043DB2B passes the map surface/object context and viewport into 0x004542F0",
+      "separate_gameinter_border_search": {
+        "result": "No GameInter frame lookup or generic child-control paint call is present in the map-specific Paint chain between the base map preparation and the 0x004542F0 composite.",
+        "interpretation": "For this EI build, the primary static evidence supports direct map-surface composition into the fixed minimap destination, not a separately proven GameInter minimap border/overlay control.",
+        "confidence": "medium-high",
+        "scope_warning": "This is a negative result for the map-specific Paint routine; a border baked into another global HUD surface or added by an external window layer is not ruled out without a runtime frame capture."
+      },
+      "evidence_level": "primary-static-paint-chain-negative-search"
+    },
     "call_chain_evidence": [
       {
         "va": "0x00420C3C",
@@ -22108,7 +22126,7 @@
       }
     ],
     "pending": [
-      "Bind the selected MMap/FMMap output to the GameInter minimap border/overlay control.",
+      "Runtime-check whether a border is baked into another global HUD surface or added by a window layer; the map-specific Paint chain has no separate GameInter border call.",
       "Recover the remaining full-map input/paint state and determine whether this EI build has a separate map dialog or only a world/minimap surface path; do not use notice ID 15 as map UI.",
       "Name the user-facing command/key path that invokes the 0x0043DE40 map display-mode switch.",
       "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
