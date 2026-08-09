@@ -53,11 +53,19 @@
     },
     "evidence_level": "primary-static-detail-render"
   },
+  "paint_order": [
+    {"order": 1, "va": "0x0044747E-0x0044748C", "role": "window base/background", "evidence": "The paint entry calls the window vtable +0x0C before quest-specific controls or text processing."},
+    {"order": 2, "va": "0x004474B3-0x004474E2", "role": "two operation-control reposition", "evidence": "The two child controls are positioned at window-relative (290,59) and (290,89), then their vtable +0x04 paint slots are called."},
+    {"order": 3, "va": "0x004474FC-0x00447D90", "role": "quest-list decode and row text", "evidence": "The list cursor is refreshed, records are decoded through 0x45E0C0, long/short entries are selected, and visible rows are emitted at the 15-pixel cadence."},
+    {"order": 4, "va": "0x00447DE4-0x00447E43", "role": "selected quest detail frame", "evidence": "When the detail field exists, Frame 705 is looked up and drawn at window-relative origin (65,294), after the list update path."},
+    {"order": 5, "va": "0x00447E48-0x00447F1D", "role": "selected quest body text", "evidence": "The detail field is decoded and only three lines in the this+0x60 window are emitted through 0x45DD70 at window-relative (80,310), 15 pixels apart."}
+  ],
   "confirmed": [
     "Frame 700 and the two control frame pairs are statically tied to the quest window constructor.",
     "The quest list is read through 0x0045E0C0 and rendered with a 15-pixel row cadence.",
     "Both operation controls are repositioned by 0x00447470 using the same relative coordinates.",
-    "Frame 705 is selected by the task refresh path for the detail/body text region."
+    "Frame 705 is selected by the task refresh path for the detail/body text region.",
+    "The quest window's local paint sequence is statically ordered from base, controls, list rows, selected detail frame and body text."
   ],
   "pending": [
     "Exact quest field separators and wrapping width.",
