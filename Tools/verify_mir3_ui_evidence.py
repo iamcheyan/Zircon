@@ -67,6 +67,24 @@ def main() -> int:
         if not level or not level.startswith(ALLOWED_LEVEL_PREFIXES):
             errors.append(f"record lacks evidence level: {record.get('id')}")
 
+    # Regression guard for a known cross-library control.  Frame numbers are
+    # not globally unique across WIL files: inventory Frame 267 is an
+    # Interface1c character sprite, not a GameInter button.
+    inventory_sprite = next(
+        (r for r in layout.get("control_constructors", [])
+         if r.get("id") == "window.inventory.control.0x0042eb2d"),
+        None,
+    )
+    if inventory_sprite:
+        library = inventory_sprite.get("resource_handle", {}).get("library")
+        size = inventory_sprite.get("size", {})
+        if library != "Data/Interface1c.wil":
+            errors.append(f"inventory Frame 267 library regression: {library}")
+        if size.get("width") != 76 or size.get("height") != 88:
+            errors.append(f"inventory Frame 267 size regression: {size}")
+    else:
+        errors.append("missing inventory Frame 267 cross-library control record")
+
     pending_total = 0
     parsed = 0
     for path in sorted(args.evidence.glob("*.json")):
