@@ -18035,6 +18035,52 @@
           "evidence_level": "primary-static-resource-path"
         }
       },
+      "resource_visual_inspection": {
+        "source": "Data/GameInter.wil direct pixel inspection at native dimensions; transparent pixels preserved",
+        "frames": [
+          {
+            "frame": 1100,
+            "visual_description": "dark stone/metal dialogue panel border with a large empty center for runtime NPC content",
+            "confidence": "high"
+          },
+          {
+            "frame": 1101,
+            "visual_description": "thin horizontal inner-panel strip used repeatedly by the menu-entry compositor",
+            "confidence": "high"
+          },
+          {
+            "frame": 1102,
+            "visual_description": "empty in the current client export; constructor/paint code still selects it for the final entry state",
+            "confidence": "medium"
+          },
+          {
+            "frame_pair": [
+              161,
+              162
+            ],
+            "visual_description": "circular crossed-swords/X control, green highlighted versus normal state",
+            "confidence": "high"
+          },
+          {
+            "frame_pair": [
+              52,
+              53
+            ],
+            "visual_description": "small upward triangular/arrow-like control, normal versus highlighted state",
+            "confidence": "medium"
+          },
+          {
+            "frame_pair": [
+              54,
+              55
+            ],
+            "visual_description": "small downward/funnel-like triangular control, normal versus highlighted state",
+            "confidence": "medium"
+          }
+        ],
+        "warning": "Icon geometry proves visual state only; it does not establish close, previous/next, or dialogue-choice business semantics.",
+        "evidence_level": "primary-resource-visual"
+      },
       "child_controls": [
         {
           "object_offset": "this+0x58",
@@ -18321,7 +18367,7 @@
         "The NPC paint entry statically orders the primary Frame 1100 composition, repeated Frame 1101 entries, final Frame 1102 entry and fallback composition branch."
       ],
       "pending": [
-        "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles are now recorded.",
+        "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
         "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
         "The exact text/font/color draw order around the composited NPC dialogue content."
       ]
@@ -25507,6 +25553,52 @@
         "evidence_level": "primary-static-resource-path"
       }
     },
+    "resource_visual_inspection": {
+      "source": "Data/GameInter.wil direct pixel inspection at native dimensions; transparent pixels preserved",
+      "frames": [
+        {
+          "frame": 1100,
+          "visual_description": "dark stone/metal dialogue panel border with a large empty center for runtime NPC content",
+          "confidence": "high"
+        },
+        {
+          "frame": 1101,
+          "visual_description": "thin horizontal inner-panel strip used repeatedly by the menu-entry compositor",
+          "confidence": "high"
+        },
+        {
+          "frame": 1102,
+          "visual_description": "empty in the current client export; constructor/paint code still selects it for the final entry state",
+          "confidence": "medium"
+        },
+        {
+          "frame_pair": [
+            161,
+            162
+          ],
+          "visual_description": "circular crossed-swords/X control, green highlighted versus normal state",
+          "confidence": "high"
+        },
+        {
+          "frame_pair": [
+            52,
+            53
+          ],
+          "visual_description": "small upward triangular/arrow-like control, normal versus highlighted state",
+          "confidence": "medium"
+        },
+        {
+          "frame_pair": [
+            54,
+            55
+          ],
+          "visual_description": "small downward/funnel-like triangular control, normal versus highlighted state",
+          "confidence": "medium"
+        }
+      ],
+      "warning": "Icon geometry proves visual state only; it does not establish close, previous/next, or dialogue-choice business semantics.",
+      "evidence_level": "primary-resource-visual"
+    },
     "child_controls": [
       {
         "object_offset": "this+0x58",
@@ -25793,7 +25885,7 @@
       "The NPC paint entry statically orders the primary Frame 1100 composition, repeated Frame 1101 entries, final Frame 1102 entry and fallback composition branch."
     ],
     "pending": [
-      "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles are now recorded.",
+      "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
       "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
       "The exact text/font/color draw order around the composited NPC dialogue content."
     ]
