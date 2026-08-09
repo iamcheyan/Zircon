@@ -18133,6 +18133,32 @@
             "note": "These are paint-time SetPosition arguments and are stronger for the visible state than the earlier constructor register-flow expressions; frame-pair business names remain separate.",
             "evidence_level": "primary-static-paint-position"
           },
+          "paint_order": [
+            {
+              "order": 1,
+              "va": "0x00425047-0x004250A7",
+              "role": "window base/background and header text",
+              "evidence": "The guild paint wrapper calls window vtable +0x0C, writes the main clipping rectangle and emits the fixed header/status text before state dispatch."
+            },
+            {
+              "order": 2,
+              "va": "0x004250AC-0x0042557D",
+              "role": "state-specific guild list/page text",
+              "evidence": "The state byte this+0x98 dispatches to 0x00425280, 0x00425440 or 0x00425590; each path traverses its linked list, applies scroll_start this+0x9C and draws visible rows through 0x45DD70."
+            },
+            {
+              "order": 3,
+              "va": "0x0042514D-0x00425258",
+              "role": "guild control reposition",
+              "evidence": "After the state-specific path returns, the wrapper assigns the nine paint-time control positions recorded in the evidence."
+            },
+            {
+              "order": 4,
+              "va": "0x0042525D-0x00425270",
+              "role": "child control paint sequence",
+              "evidence": "Nine child controls are painted through vtable +0x04 in construction order after positioning."
+            }
+          ],
           "pending": [
             "Map paint-time control objects to exact tab/button business names",
             "reconcile constructor-time register expressions with paint-time SetPosition values",
@@ -20784,6 +20810,32 @@
           "note": "These are paint-time SetPosition arguments and are stronger for the visible state than the earlier constructor register-flow expressions; frame-pair business names remain separate.",
           "evidence_level": "primary-static-paint-position"
         },
+        "paint_order": [
+          {
+            "order": 1,
+            "va": "0x00425047-0x004250A7",
+            "role": "window base/background and header text",
+            "evidence": "The guild paint wrapper calls window vtable +0x0C, writes the main clipping rectangle and emits the fixed header/status text before state dispatch."
+          },
+          {
+            "order": 2,
+            "va": "0x004250AC-0x0042557D",
+            "role": "state-specific guild list/page text",
+            "evidence": "The state byte this+0x98 dispatches to 0x00425280, 0x00425440 or 0x00425590; each path traverses its linked list, applies scroll_start this+0x9C and draws visible rows through 0x45DD70."
+          },
+          {
+            "order": 3,
+            "va": "0x0042514D-0x00425258",
+            "role": "guild control reposition",
+            "evidence": "After the state-specific path returns, the wrapper assigns the nine paint-time control positions recorded in the evidence."
+          },
+          {
+            "order": 4,
+            "va": "0x0042525D-0x00425270",
+            "role": "child control paint sequence",
+            "evidence": "Nine child controls are painted through vtable +0x04 in construction order after positioning."
+          }
+        ],
         "pending": [
           "Map paint-time control objects to exact tab/button business names",
           "reconcile constructor-time register expressions with paint-time SetPosition values",
