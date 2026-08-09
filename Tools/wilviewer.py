@@ -2122,10 +2122,12 @@ function addFocusedWindow(r,analysis){
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
   }else if(r.id==='window.npc-candidate'){
     const ne=evidenceWindow(r.id),pg=ne.paint_geometry||{},loop=pg.dynamic_entry_loop||{};
-    const count=ne.window?.dynamic_entry_count_default||13,visible=Math.min(count,6);
-    addFocusedGeometry(ox+12,oy+20,528,visible*18,`F1101 / 最多${count}项 / 18px stride candidate`);
-    for(let i=0;i<visible;i++)addFocusedGeometry(ox+12,oy+20+18*i,528,18,i===0?'运行时目标字段决定实际屏幕位置':'' );
-    addFocusedGeometry(ox+12,oy+20+visible*18,528,16,'F1102 最终项：index=max(count-1,0)，位置字段待解析');
+    const ts=pg.dynamic_text_layout_state||{},count=Math.min(ts.max_paint_entries||16,ne.window?.dynamic_entry_count_default||13),visible=Math.min(count,6),spacing=(ts.default_line_spacing_px||21);
+    addFocusedGeometry(ox+12,oy+20,528,visible*spacing,`F1101 / 最多16项 / 动态行距14或21px`);
+    for(let i=0;i<visible;i++)addFocusedGeometry(ox+12,oy+20+spacing*i,528,spacing,i===0?'运行时目标字段决定实际屏幕位置':'' );
+    addFocusedGeometry(ox+12,oy+20+visible*spacing,528,16,'F1102 最终项：index=max(count-1,0)，位置字段待解析');
+    const rpc=ne.paint_repositioned_controls?.records||[];
+    for(const q of rpc){const px=q.object_offset==='this+0x58'?347:(q.object_offset==='this+0x1C0'?184:200),py=q.object_offset==='this+0x58'?140:158;addFocusedGeometry(ox+px,oy+py,28,20,`动态重绘 ${q.object_offset}`);}
   }else if(r.id==='window.store-candidate'){
     const se=evidenceWindow(r.id),cr=se.constructor_rect_initializers||{};
     const ll=cr.left_list_rects||{count:5,left:28,top_start:26,row_step:49,width:36,height:36};

@@ -94,6 +94,32 @@
       "surface_helper_va": "0x00466800",
       "meaning": "normalized/alpha fallback composition candidate; not identified as business text",
       "evidence_level": "primary-static-candidate"
+    },
+    "dynamic_text_layout_state": {
+      "setup_routine": "0x00440750–0x00440AA0",
+      "input_argument": "dialogue/menu source string pointer",
+      "entry_separator_byte": "0x5C (backslash)",
+      "mode_field": "this+0x582",
+      "source_offset_field": "this+0x584",
+      "raw_entry_count_field": "this+0x588",
+      "paint_entry_count_field": "this+0x51C",
+      "entry_count_formula": "max(raw_count-6, 0), then clamp to 16",
+      "max_paint_entries": 16,
+      "overflow_flag": "this+0x58C",
+      "line_spacing_field": "this+0x594",
+      "default_line_spacing_px": 21,
+      "line_spacing_branches": [{"when": "this+0x582==1 and this+0x58C==1", "pixels": 14}, {"when": "otherwise", "pixels": 21}],
+      "evidence_level": "primary-static-dialogue-parser-and-layout-state"
+    },
+    "paint_repositioned_controls": {
+      "routine": "0x00440A43–0x00440A8B",
+      "records": [
+        {"object_offset": "this+0x58", "position_expression": ["window.x+0x15B", "window.bottom-0x24"], "source_va": "0x00440A52", "role": "close-or-dialog-action-candidate"},
+        {"object_offset": "this+0x1C0", "position_expression": ["window.x+0x0B8", "window.bottom-0x1E"], "source_va": "0x00440A6A", "role": "NPC-side-control-candidate"},
+        {"object_offset": "this+0x10C", "position_expression": ["window.x+0x0C8", "window.bottom-0x1E"], "source_va": "0x00440A85", "role": "NPC-side-control-candidate"}
+      ],
+      "evidence_level": "primary-static-dynamic-redraw-position",
+      "warning": "These bottom-relative positions supersede constructor-only positions when the dialogue content changes height; they are expressions, not invented absolute screen coordinates."
     }
   },
   "confirmed": [
