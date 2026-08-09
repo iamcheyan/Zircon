@@ -133,6 +133,15 @@
         ],
         "text_and_status": {"shared_text_compositor": "0x0045DE50", "shared_formatter": "0x0046811C", "state_globals": ["0x007DA1C0", "0x007DA1C4"], "evidence_level": "primary-static-call-chain"}
       },
+      "hit_rects": {
+        "basis": "Shared control constructor 0x00417550 plus GameInter WIL frame headers; blank Frame 1064/1065 is intentionally not assigned a size.",
+        "records": [
+          {"frame_pair": [161, 162], "raw_rect": [532, 350, 28, 26], "coordinate_status": "outside-parent-unresolved"},
+          {"frame_pair": [1061, 1062], "raw_rect": [185, 332, 48, 20], "coordinate_status": "outside-parent-unresolved"},
+          {"frame_pair": [1064, 1065], "raw_position": [225, 332], "size": null, "coordinate_status": "resource-frame-blank"}
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "paint_order": [
         {"order": 1, "va": "0x00415B1C-0x00415B65", "role": "window base and left/right trade split", "evidence": "The exchange paint entry calls window vtable +0x0C, then writes the center split rectangles for the two trade sides."},
         {"order": 2, "va": "0x00415B6B-0x00415E44", "role": "state-dependent item-grid selection and composition", "evidence": "The selection globals and state byte choose the left or right grid origin; item hit/index resolution and source/destination rectangles are passed through 0x466800 and 0x4542F0."},

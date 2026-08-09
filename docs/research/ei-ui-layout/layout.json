@@ -19050,6 +19050,50 @@
               "evidence_level": "primary-static-call-chain"
             }
           },
+          "hit_rects": {
+            "basis": "Shared control constructor 0x00417550 plus GameInter WIL frame headers; blank Frame 1064/1065 is intentionally not assigned a size.",
+            "records": [
+              {
+                "frame_pair": [
+                  161,
+                  162
+                ],
+                "raw_rect": [
+                  532,
+                  350,
+                  28,
+                  26
+                ],
+                "coordinate_status": "outside-parent-unresolved"
+              },
+              {
+                "frame_pair": [
+                  1061,
+                  1062
+                ],
+                "raw_rect": [
+                  185,
+                  332,
+                  48,
+                  20
+                ],
+                "coordinate_status": "outside-parent-unresolved"
+              },
+              {
+                "frame_pair": [
+                  1064,
+                  1065
+                ],
+                "raw_position": [
+                  225,
+                  332
+                ],
+                "size": null,
+                "coordinate_status": "resource-frame-blank"
+              }
+            ],
+            "evidence_level": "primary-static-plus-primary-resource"
+          },
           "paint_order": [
             {
               "order": 1,
@@ -22055,6 +22099,50 @@
             ],
             "evidence_level": "primary-static-call-chain"
           }
+        },
+        "hit_rects": {
+          "basis": "Shared control constructor 0x00417550 plus GameInter WIL frame headers; blank Frame 1064/1065 is intentionally not assigned a size.",
+          "records": [
+            {
+              "frame_pair": [
+                161,
+                162
+              ],
+              "raw_rect": [
+                532,
+                350,
+                28,
+                26
+              ],
+              "coordinate_status": "outside-parent-unresolved"
+            },
+            {
+              "frame_pair": [
+                1061,
+                1062
+              ],
+              "raw_rect": [
+                185,
+                332,
+                48,
+                20
+              ],
+              "coordinate_status": "outside-parent-unresolved"
+            },
+            {
+              "frame_pair": [
+                1064,
+                1065
+              ],
+              "raw_position": [
+                225,
+                332
+              ],
+              "size": null,
+              "coordinate_status": "resource-frame-blank"
+            }
+          ],
+          "evidence_level": "primary-static-plus-primary-resource"
         },
         "paint_order": [
           {
