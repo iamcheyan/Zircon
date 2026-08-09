@@ -72,6 +72,59 @@
       }
     }
   },
+  "attribute_text_draw_chain": {
+    "routine": "0x0044BC80-0x0044CCCC",
+    "evidence_level": "primary-static-string-reference-and-coordinate-expression",
+    "shared_formatter": "0x0046811C",
+    "shared_text_compositor": "0x0045DD70",
+    "coordinate_bases": {
+      "first_column": {
+        "x": "window.x+0xFF",
+        "y_start": "window.y+0x43",
+        "line_step": 15,
+        "note": "The constructor/helper initializes edi=window.x+0xFF and esi=window.y+0x43; each subsequent row adds 0x0F before drawing."
+      },
+      "second_column": {
+        "x": "window.x+0x27E",
+        "y_start": "window.y+0x127",
+        "line_step": 15,
+        "note": "After the first column, the code adds edi+=0x17F and esi+=0x1E before the second column."
+      }
+    },
+    "first_column_labels": [
+      {"text": "LEVEL", "string_va": "0x0047C74C", "draw_va": "0x0044BCE6", "y_offset": 67},
+      {"text": "HP", "string_va": "0x0047C748", "draw_va": "0x0044BD63", "y_offset": 82},
+      {"text": "%d / %d", "string_va": "0x0047C740", "format_va": "0x0044BD94", "y_offset": 82},
+      {"text": "MP", "string_va": "0x0047C73C", "draw_va": "0x0044BDE5", "y_offset": 97},
+      {"text": "%d / %d", "string_va": "0x0047C740", "format_va": "0x0044BE17", "y_offset": 97},
+      {"text": "经验", "string_va": "0x0047C734", "draw_va": "0x0044BE91", "y_offset": 112},
+      {"text": "%.2f%s", "string_va": "0x0047C72C", "format_va": "0x0044BEC4", "y_offset": 112},
+      {"text": "包袱负重", "string_va": "0x0047C720", "draw_va": "0x0044BF18", "y_offset": 127},
+      {"text": "%d / %d", "string_va": "0x0047C740", "format_va": "0x0044BF4A", "y_offset": 127},
+      {"text": "装备负重", "string_va": "0x0047C714", "draw_va": "0x0044BF9B", "y_offset": 142},
+      {"text": "腕力    ", "string_va": "0x0047C708", "draw_va": "0x0044C01B", "y_offset": 157},
+      {"text": "准确", "string_va": "0x0047C700", "draw_va": "0x0044C09E", "y_offset": 172},
+      {"text": "敏捷", "string_va": "0x0047C6F0", "draw_va": "0x0044C116", "y_offset": 187},
+      {"text": "毒物躲避", "string_va": "0x0047C6D8", "draw_va": "0x0044C20F", "y_offset": 202},
+      {"text": "中毒恢复", "string_va": "0x0047C6CC", "draw_va": "0x0044C28B", "y_offset": 217},
+      {"text": "生命恢复", "string_va": "0x0047C6C0", "draw_va": "0x0044C307", "y_offset": 232},
+      {"text": "魔法恢复", "string_va": "0x0047C6B0", "draw_va": "0x0044C37F", "y_offset": 247}
+    ],
+    "second_column_labels": [
+      {"text": "防御", "string_va": "0x0047C6A8", "draw_va": "0x0044C407", "y_offset": 295},
+      {"text": "攻击", "string_va": "0x0047C6A0", "draw_va": "0x0044C491", "y_offset": 310},
+      {"text": "魔法", "string_va": "0x0047C698", "draw_va": "0x0044C516", "y_offset": 325},
+      {"text": "火(火焰)", "string_va": "0x0047C68C", "draw_va": "0x0044C557", "y_offset": 340},
+      {"text": "冰(冰冻)", "string_va": "0x0047C680", "draw_va": "0x0044C5DC", "y_offset": 355},
+      {"text": "电(雷电)", "string_va": "0x0047C674", "draw_va": "0x0044C661", "y_offset": 370},
+      {"text": "风(狂风)", "string_va": "0x0047C668", "draw_va": "0x0044C6E6", "y_offset": 385},
+      {"text": "治疗(神圣)", "string_va": "0x0047C65C", "draw_va": "0x0044C76B", "y_offset": 400},
+      {"text": "攻击(黑暗)", "string_va": "0x0047C650", "draw_va": "0x0044C7F0", "y_offset": 415},
+      {"text": "召唤(幻影)", "string_va": "0x0047C644", "draw_va": "0x0044C875", "y_offset": 430},
+      {"text": "魔法防御力", "string_va": "0x0047C638", "draw_va": "0x0044C8FA", "y_offset": 445}
+    ],
+    "interpretation": "These are original GBK strings passed through the status attribute helper. They prove the semantic labels and two-column relative text baselines; the associated global fields and color semantics remain separate pending items."
+  },
   "item_record_and_draw_chain": {
     "hit_test_va": "0x0044B6B0",
     "index_scan_va": "0x0044B720",

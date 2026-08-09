@@ -2091,6 +2091,11 @@ function addFocusedWindow(r,analysis){
   }else if(r.id==='window.status'){
     const e=DATA.layout.status_window_evidence?.equipment_and_attribute_rects||[];
     for(const q of e)addFocusedGeometry(ox+q.left,oy+q.top,q.width,q.height,q.role.replace('-candidate',''));
+    const textEvidence=DATA.layout.status_window_evidence?.attribute_text_draw_chain;
+    if(textEvidence){
+      for(const q of (textEvidence.first_column_labels||[]))addFocusedGeometry(ox+255,oy+q.y_offset,145,14,q.text);
+      for(const q of (textEvidence.second_column_labels||[]))addFocusedGeometry(ox+638,oy+q.y_offset,150,14,q.text);
+    }
   }else if(r.id==='window.group'){
     for(let i=0;i<12;i++)addFocusedGeometry(ox+45+100*(i%2),oy+90+20*Math.floor(i/2),92,18,i===0?'成员两列 / 20px':'' );
   }else if(r.id==='window.guild-candidate'){
