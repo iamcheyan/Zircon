@@ -16238,15 +16238,33 @@
         "line_count_guard": 19,
         "evidence": "0x0044760B/0x004477EF compute window.x+0x41 and window.y+(row*15)+0x5A"
       },
+      "detail_text": {
+        "frame_select_va": "0x00447E07",
+        "frame": 705,
+        "draw_va": "0x00447E43",
+        "draw_helper": "0x0045FD50",
+        "origin": {
+          "x": 65,
+          "y": 294,
+          "coordinate_space": "window-relative"
+        },
+        "position_expression": {
+          "x": "window.x+0x41",
+          "y": "window.y+0x126"
+        },
+        "evidence_level": "primary-static-detail-render"
+      },
       "confirmed": [
         "Frame 700 and the two control frame pairs are statically tied to the quest window constructor.",
         "The quest list is read through 0x0045E0C0 and rendered with a 15-pixel row cadence.",
-        "Both operation controls are repositioned by 0x00447470 using the same relative coordinates."
+        "Both operation controls are repositioned by 0x00447470 using the same relative coordinates.",
+        "Frame 705 is selected by the task refresh path for the detail/body text region."
       ],
       "pending": [
         "Exact quest field separators and wrapping width.",
         "The runtime meaning of the 19-line guard and list scroll state.",
-        "Final labels/business names for frames 721–724."
+        "Final labels/business names for frames 721–724.",
+        "Whether Frame 705 is a complete text background or only a decorative detail panel at runtime."
       ]
     },
     {
