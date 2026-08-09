@@ -32,7 +32,7 @@
       "resource_families": ["GameInter.wil", "Interface1c.wil"],
       "draw_chain": ["derived window vtable paint", "0x00423D00 shared/base paint candidate", "0x00460240 composition candidate"],
       "confidence": "primary-static-window-paint-candidate",
-      "warning": "Window visibility and stacking depend on state; the shared base routine does not prove every derived child draw order."
+    "warning": "Window visibility and stacking depend on state; 0x004280F0 now proves that the current visible-list order is consumed for painting, while insertion/promote policy remains state-dependent."
     },
     {
       "order": 50,
@@ -77,7 +77,7 @@
     "evidence_level": "primary-static-base-window-paint"
   },
   "pending": [
-    "Runtime z-order when multiple movable windows overlap.",
+    "The insertion/promote policy that produces visible-list order for each open/raise interaction; 0x004280F0 now proves that the current list order is consumed for cross-window painting.",
     "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
     "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
   ]

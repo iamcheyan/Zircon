@@ -22688,7 +22688,7 @@
           "0x00460240 composition candidate"
         ],
         "confidence": "primary-static-window-paint-candidate",
-        "warning": "Window visibility and stacking depend on state; the shared base routine does not prove every derived child draw order."
+        "warning": "Window visibility and stacking depend on state; 0x004280F0 now proves that the current visible-list order is consumed for painting, while insertion/promote policy remains state-dependent."
       },
       {
         "order": 50,
@@ -22767,7 +22767,7 @@
       "evidence_level": "primary-static-base-window-paint"
     },
     "pending": [
-      "Runtime z-order when multiple movable windows overlap.",
+      "The insertion/promote policy that produces visible-list order for each open/raise interaction; 0x004280F0 now proves that the current list order is consumed for cross-window painting.",
       "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
       "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
     ]
@@ -24358,9 +24358,102 @@
         "target": "0x0042B8E8"
       }
     ],
-    "interpretation": "This is strong evidence for the runtime traversal order of visible window records, but 0x0042B820 calls the +0x34 setter rather than a paint slot. It must not be promoted to final cross-window z-order until a draw call is shown to consume this order.",
+    "render_dispatch": {
+      "routine": "0x004280F0–0x00428357",
+      "purpose": "Traverse the visible-window list and dispatch each window-specific paint entry before advancing to node+0x04.",
+      "list_order_fields": {
+        "head": "main+0xD28",
+        "current": "main+0xD2C",
+        "count": "main+0xD38",
+        "node_id": "node+0x00",
+        "next": "node+0x04"
+      },
+      "dispatch_table": [
+        {
+          "window_id": 0,
+          "paint_va": "0x0042EB80",
+          "object": "main+0x6554",
+          "role": "inventory"
+        },
+        {
+          "window_id": 1,
+          "paint_va": "0x0044B2D0",
+          "object": "main+0x29CE4",
+          "role": "status"
+        },
+        {
+          "window_id": 2,
+          "paint_va": "0x0044E260",
+          "object": "main+0x33188",
+          "role": "store/state machine"
+        },
+        {
+          "window_id": 3,
+          "paint_va": "0x00415B10",
+          "object": "main+0x3399C",
+          "role": "exchange"
+        },
+        {
+          "window_id": 4,
+          "paint_va": "0x00425040",
+          "object": "main+0x4707C",
+          "role": "guild"
+        },
+        {
+          "window_id": 6,
+          "paint_va": "0x004243D0",
+          "object": "main+0x47834",
+          "role": "group"
+        },
+        {
+          "window_id": 7,
+          "paint_va": "0x00450530",
+          "object": "main+0x47C28",
+          "role": "group-pop candidate"
+        },
+        {
+          "window_id": 8,
+          "paint_va": "0x00414700",
+          "object": "main+0x507EC",
+          "role": "chat"
+        },
+        {
+          "window_id": 9,
+          "paint_va": "0x0043F460",
+          "object": "main+0x51150",
+          "role": "NPC/dialogue wrapper"
+        },
+        {
+          "window_id": 11,
+          "paint_va": "0x00447470",
+          "object": "main+0x516E8",
+          "role": "quest"
+        },
+        {
+          "window_id": 12,
+          "paint_va": "0x00441380",
+          "object": "main+0x518E0",
+          "role": "option"
+        },
+        {
+          "window_id": 13,
+          "paint_va": "0x004269C0",
+          "object": "main+0x52118",
+          "role": "horse"
+        },
+        {
+          "window_id": 14,
+          "paint_va": "0x0043E3C0",
+          "object": "main+0x524F0",
+          "role": "notice/prompt"
+        }
+      ],
+      "evidence": "At 0x0042814B the routine reads node->id, dispatches through the ID jump table, calls the specialized entry, then advances node+0x04 at 0x004282A9–0x004282D8.",
+      "caveat": "The list order is runtime state: show/hide/promote operations determine the concrete stacking order."
+    },
+    "interpretation": "0x0042B820 is the visible-list state-reset traversal, while 0x004280F0 is the specialized paint dispatch consuming the same list. Cross-window painting follows the current visible-list order; a universal startup order is not implied.",
     "pending": [
-      "Find the frame-render entry that consumes the visible list and invokes each object's paint slot."
+      "Recover the exact insertion/promote policy for each show/raise path so a given interaction can predict the list order without runtime capture."
     ]
   },
   "horse_window_evidence": {
