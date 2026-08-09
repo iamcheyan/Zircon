@@ -2177,6 +2177,16 @@ addPromptEvidence = function(mode){
   });
 };
 const renderEvidenceLayout = render;
+const baseRenderEvidenceLayout = renderEvidenceLayout;
+function addHudLabelEvidence(l){
+  if(SCREEN_MODE!=='hud') return;
+  for(const r of (l.hud_label_evidence?.records||[])){
+    const x=resolve(r.position.x,{'hud.left':0,'hud.top':465}),y=resolve(r.position.y,{'hud.left':0,'hud.top':465}),w=r.size?.width||20,h=r.size?.height||14;
+    const box=document.createElement('div');box.style.cssText=`position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;border:1px dashed #f2c14e;background:rgba(242,193,78,.12);z-index:46;pointer-events:none`;
+    const label=document.createElement('span');label.textContent=`${r.text} · F${r.resource?.frame} · (${x},${y},${w},${h})`;label.style.cssText='position:absolute;left:0;top:100%;color:#ffe29a;background:rgba(8,12,16,.9);font:10px monospace;white-space:nowrap';box.appendChild(label);screen.appendChild(box);
+  }
+}
+renderEvidenceLayout=function(){baseRenderEvidenceLayout();addHudLabelEvidence(DATA?.layout||{});};
 render = function(){
   if(SCREEN_MODE==='map-candidate'){
     const wanted=SCREEN_MODE;
