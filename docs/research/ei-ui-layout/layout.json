@@ -16301,7 +16301,35 @@
             "note": "The binary confirms a selected/secondary overlay path and a table-driven resource/header lookup. The global fields and business label are not named by symbols.",
             "evidence_level": "primary-static-candidate"
           }
-        }
+        },
+        "paint_order": [
+          {
+            "order": 1,
+            "call_va": "0x0044B566",
+            "target": "window_object.vtable+0x0C",
+            "resolved_candidate": "0x00423D00",
+            "role": "status window base/background paint"
+          },
+          {
+            "order": 2,
+            "call_va": "0x0044B560-0x0044B5C3",
+            "target": "0x0045FD50",
+            "role": "selected equipment/character overlay when selector globals resolve"
+          },
+          {
+            "order": 3,
+            "call_va": "0x0044B5D9-0x0044B629",
+            "target": "0x00430A40",
+            "role": "11-slot equipment/item loop; ordinary slots use stored position records"
+          },
+          {
+            "order": 4,
+            "call_va": "0x0044BC80-0x0044CCCC",
+            "target": "0x0045DD70",
+            "role": "attribute labels and formatted values"
+          }
+        ],
+        "paint_order_evidence_level": "primary-static-exact-local-order"
       },
       "attribute_text_draw_chain": {
         "routine": "0x0044BC80-0x0044CCCC",
