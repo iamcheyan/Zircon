@@ -31,6 +31,15 @@
     "owner_function_region": "0x0044E9B0-0x0044FCxx",
     "state_field": "this+0x5F8",
     "state_values_observed": [0, 1, 2, 3, 4],
+    "state_dispatch_geometry": {
+      "routine": "0x0044E910–0x0044EA07",
+      "hit_test_rect_raw": ["this+0x18", "this+0x1C", "this+0x20", "this+0x24"],
+      "state_1": {"first_rect_offset": [300, 208], "second_rect_offset": [300, 100], "branches": ["0x0044E910", "0x0044E9B0"]},
+      "state_2": {"second_rect_offset": [300, 100], "branches": ["0x0044E9B0"], "note": "the second control path can return immediately after activation"},
+      "state_3": {"first_rect_offset": [300, 208], "branches": ["0x0044E9B0"]},
+      "state_4": {"first_rect_offset": [300, 100], "second_rect_offset": [300, 100], "branches": ["0x0044E910", "0x0044E9B0"]},
+      "evidence_level": "primary-static-state-branch-and-raw-rect"
+    },
     "window_factory": {
       "va": "0x00423E80",
       "signature_candidate": "this, frame, x, y, width, height",
