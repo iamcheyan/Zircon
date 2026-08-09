@@ -16771,6 +16771,139 @@
           "role": "equipment-slot-candidate"
         }
       ],
+      "equipment_slot_rect_constructor_calls": {
+        "routine": "0x0044B1BC-0x0044B2C6",
+        "rect_builder": "imported SetRect at 0x004762B0",
+        "evidence_level": "primary-static-constructor-order",
+        "interpretation": "These calls establish the 11 geometry records in the same object order consumed by the 0x0044B5D9 paint loop. The binary exposes geometry and loop index directly, but does not expose human-readable equipment names at this call site.",
+        "records": [
+          {
+            "loop_index": 0,
+            "object_field": "this+0x1F0",
+            "call_va": "0x0044B1D7",
+            "rect_window_relative": [
+              177,
+              70,
+              215,
+              108
+            ]
+          },
+          {
+            "loop_index": 1,
+            "object_field": "this+0x1E0",
+            "call_va": "0x0044B1EE",
+            "rect_window_relative": [
+              27,
+              264,
+              65,
+              302
+            ]
+          },
+          {
+            "loop_index": 2,
+            "object_field": "this+0x250",
+            "call_va": "0x0044B204",
+            "rect_window_relative": [
+              64,
+              264,
+              102,
+              302
+            ]
+          },
+          {
+            "loop_index": 3,
+            "object_field": "this+0x210",
+            "call_va": "0x0044B21C",
+            "rect_window_relative": [
+              27,
+              186,
+              65,
+              224
+            ]
+          },
+          {
+            "loop_index": 4,
+            "object_field": "this+0x220",
+            "call_va": "0x0044B239",
+            "rect_window_relative": [
+              175,
+              186,
+              213,
+              224
+            ]
+          },
+          {
+            "loop_index": 5,
+            "object_field": "this+0x230",
+            "call_va": "0x0044B250",
+            "rect_window_relative": [
+              27,
+              227,
+              65,
+              265
+            ]
+          },
+          {
+            "loop_index": 6,
+            "object_field": "this+0x240",
+            "call_va": "0x0044B26D",
+            "rect_window_relative": [
+              175,
+              227,
+              213,
+              265
+            ]
+          },
+          {
+            "loop_index": 7,
+            "object_field": "this+0x200",
+            "call_va": "0x0044B281",
+            "rect_window_relative": [
+              94,
+              71,
+              143,
+              104
+            ],
+            "role_candidate": "name/portrait-adjacent region; not an item slot by size"
+          },
+          {
+            "loop_index": 8,
+            "object_field": "this+0x1C0",
+            "call_va": "0x0044B298",
+            "rect_window_relative": [
+              86,
+              114,
+              146,
+              204
+            ],
+            "role_candidate": "character-image region; not an item slot by size"
+          },
+          {
+            "loop_index": 9,
+            "object_field": "this+0x1D0",
+            "call_va": "0x0044B2AC",
+            "rect_window_relative": [
+              38,
+              70,
+              91,
+              154
+            ],
+            "role_candidate": "attribute-panel region; not an item slot by size"
+          },
+          {
+            "loop_index": 10,
+            "object_field": "this+0x260",
+            "call_va": "0x0044B2C6",
+            "rect_window_relative": [
+              103,
+              264,
+              141,
+              302
+            ]
+          }
+        ],
+        "caution": "The 11 records are geometry objects, while the 0x0044B5D9 loop tests an item record for every index. Only the eight 38px-ish rectangles are equipment-sized candidates; indices 7–9 are larger supporting regions. Do not label all 11 as equipment until caller-side data population is closed."
+      },
       "paint_state": {
         "state_field": "this+0x54",
         "state_dispatch_va": "0x0044B2D0",
