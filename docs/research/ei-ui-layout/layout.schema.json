@@ -81,6 +81,10 @@
     "map_ui_evidence": {
       "type": "object",
       "description": "Primary static evidence for MMap/FMMap loading and map selection; widget binding may remain pending."
+    },
+    "chat_window_evidence": {
+      "type": "object",
+      "description": "Primary static evidence for chat window controls and text/input rectangles."
     }
   }
 }

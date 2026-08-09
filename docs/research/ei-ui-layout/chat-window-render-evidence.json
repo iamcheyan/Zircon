@@ -1,0 +1,35 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "constructor_va": "0x00414080",
+    "paint_or_refresh_va": "0x004142C0",
+    "evidence_level": "primary-static"
+  },
+  "window": {
+    "id": "window.chat-pop",
+    "background": {"file": "Data/GameInter.wil", "frame": 350, "visible_size": [572, 388]},
+    "constructor_window_size": [572, 388],
+    "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"}
+  },
+  "controls": [
+    {"object_offset": "this+0x6C", "call_va": "0x00414144", "frame_pair": [161, 162], "position": {"x": 532, "y": 350, "coordinate_space": "window-relative"}, "role": "close-or-control-candidate"},
+    {"object_offset": "this+0x120", "call_va": "0x00414170", "frame_pair": [360, 361], "position": {"x": 25, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x1D4", "call_va": "0x00414196", "frame_pair": [362, 363], "position": {"x": 65, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x288", "call_va": "0x004141BC", "frame_pair": [364, 365], "position": {"x": 105, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x33C", "call_va": "0x004141E5", "frame_pair": [366, 367], "position": {"x": 145, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x3F0", "call_va": "0x0041420E", "frame_pair": [368, 369], "position": {"x": 185, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x4A4", "call_va": "0x00414237", "frame_pair": [370, 371], "position": {"x": 225, "y": 332, "coordinate_space": "window-relative"}, "role": "chat-channel-candidate"},
+    {"object_offset": "this+0x558", "call_va": "0x00414264", "frame_pair": [380, 381], "position": {"x": 539, "y": 25, "coordinate_space": "window-relative"}, "role": "scroll-control-candidate"},
+    {"object_offset": "this+0x60C", "call_va": "0x0041428A", "frame_pair": [382, 383], "position": {"x": 539, "y": 311, "coordinate_space": "window-relative"}, "role": "scroll-control-candidate"}
+  ],
+  "rects": [
+    {"object_offset": "this+0x6C0", "left": 40, "top": 29, "right": 531, "bottom": 308, "width": 491, "height": 279, "role": "chat-history-area-candidate", "source_va": "0x004140A6"},
+    {"object_offset": "this+0x954", "left": 25, "top": 311, "right": 524, "bottom": 326, "width": 499, "height": 15, "role": "chat-input-area-candidate", "source_va": "0x004140BF"}
+  ],
+  "refresh": {"line_buffer": "this+0x720", "line_stride": 16, "line_count_candidate": 19, "notes": "The refresh path walks chat-linked data and updates the visible line list; exact text renderer and channel label semantics remain pending."},
+  "pending": [
+    "Map frames 360–383 to exact channel/scroll labels.",
+    "Confirm the first control's exact close/submit role and runtime hit rectangles.",
+    "Recover chat line font/color and clipping parameters from the shared text renderer."
+  ]
+}
