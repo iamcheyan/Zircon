@@ -71,7 +71,31 @@
         ],
         "evidence_level": "primary-resource-visual"
       },
-      "pending": ["map each Korean option label to its backing state field", "business meaning of the two Frame 751 entries at y=96 and y=170"]
+      "config_state_mapping": {
+        "routine": "0x00441B30-0x00441CAE",
+        "config_file": {"address": "0x0047A2CC", "text": "Config.ini", "evidence_level": "primary-static-string"},
+        "section": {"address": "0x0047A2B8", "text": "Options", "evidence_level": "primary-static-string"},
+        "fields": [
+          {"control_pair": "this+0x130 / this+0x1E4", "relative_y": 43, "visual_label": "배경음", "setting_key": "BGM", "setting_key_va": "0x0047C594", "state_field": "this+0x54", "state_values": {"on": 1, "off": 0}, "load_or_parse_va": "0x00441BFB-0x00441C03", "evidence_level": "primary-static-config-read-and-click-write"},
+          {"control_pair": "this+0x298 / this+0x34C", "relative_y": 116, "visual_label": "효과음", "setting_key": "EffectSound", "setting_key_va": "0x0047C5AC", "state_field": "this+0x58", "state_values": {"on": 1, "off": 0}, "load_or_parse_va": "0x00441B9D-0x00441BA2", "evidence_level": "primary-static-config-read-and-click-write"},
+          {"control_pair": "this+0x400 / this+0x4B4", "relative_y": 190, "visual_label": "주변 효과음", "setting_key": "Ambience", "setting_key_va": "0x0047C57C", "state_field": "this+0x5C", "state_values": {"on": 1, "off": 0}, "load_or_parse_va": "0x00441C53-0x00441C5E", "evidence_level": "primary-static-config-read-and-click-write"},
+          {"control_pair": "this+0x568 / this+0x61C", "relative_y": 217, "visual_label": "그림자 유무효과", "setting_key": "ShadowBlend", "setting_key_va": "0x0047C570", "state_field": "this+0x60", "state_values": {"on": 1, "off": 0}, "load_or_parse_va": "0x00441C7F-0x00441C8A", "evidence_level": "primary-static-config-read-and-click-write"}
+        ],
+        "interpretation": "The Korean labels are not being translated into invented modern names: each is paired with the exact original Config.ini key and the object field changed by the click branch. BGM/EffectSound are the two binary toggles; Ambience and ShadowBlend are the lower two toggles."
+      },
+      "slider_state_mapping": {
+        "routine": "0x00441A20-0x00441AD3 and 0x00441F40-0x00441F9D",
+        "slider_resources": [
+          {"object": "this+0x6D0", "frame": 751, "relative_position": [34,96], "setting_key": "BGMLevel", "setting_key_va": "0x0047C588", "value_global": "0x008AB150", "drag_branch": "0x004415C2 calls 0x00441F40(1)", "write_formula": "BGMLevel = clamp(round((this+0x6C * double 0x00476978) - double 0x00476970), 0..160)", "evidence_level": "primary-static-slider-write-and-config-key"},
+          {"object": "this+0x784", "frame": 751, "relative_position": [34,170], "setting_key": "EffectSoundLevel", "setting_key_va": "0x0047C598", "value_global": "0x008AB14C", "drag_branch": "0x00441667 calls 0x00441F40(0)", "write_formula": "EffectSoundLevel = clamp(round((this+0x74 * double 0x00476978) - double 0x00476970), 0..160)", "evidence_level": "primary-static-slider-write-and-config-key"}
+        ],
+        "configuration_read_chain": [
+          {"key": "EffectSoundLevel", "address": "0x0047C598", "destination": "global 0x008AB14C", "call_va": "0x00441BEA-0x00441BF6"},
+          {"key": "BGMLevel", "address": "0x0047C588", "destination": "global 0x008AB150", "call_va": "0x00441C18-0x00441C22"}
+        ],
+        "interpretation": "Frame 751 is not an unnamed decorative knob. The first and second instances are the BGM and EffectSound level sliders. The original client stores the two levels in globals 0x008AB150/0x008AB14C, converts the 0..160 pixel-domain position using the original floating constants, writes Config.ini through the shared audio/config helper, and reloads the settings through 0x00441B30."
+      },
+      "pending": ["confirm whether the audio engine consumes BGMLevel/EffectSoundLevel through the same globals in every playback path; resolve any runtime overlay not baked into Frame 750"]
     },
     {
       "id": "window.horse",
