@@ -1924,6 +1924,20 @@
       }
     }
   ],
+  "category_hit_rects": {
+    "basis": "Shared control constructor 0x00417550 reads each GameInter frame header and writes the control SetRect; coordinates are the redraw positions relative to Frame 400.",
+    "records": [
+      {"text": "火", "frame_pair": [450, 451], "relative_rect": [5, 21, 44, 36]},
+      {"text": "冰", "frame_pair": [452, 453], "relative_rect": [3, 56, 44, 36]},
+      {"text": "电", "frame_pair": [454, 455], "relative_rect": [4, 91, 44, 36]},
+      {"text": "风", "frame_pair": [456, 457], "relative_rect": [2, 126, 48, 36]},
+      {"text": "神圣", "frame_pair": [458, 459], "relative_rect": [2, 161, 48, 36]},
+      {"text": "黑暗", "frame_pair": [450, 451], "relative_rect": [2, 196, 44, 36]},
+      {"text": "幻影", "frame_pair": [452, 453], "relative_rect": [1, 231, 44, 36]},
+      {"text": "剑", "frame_pair": [454, 455], "relative_rect": [2, 266, 44, 36]}
+    ],
+    "evidence_level": "primary-static-plus-primary-resource"
+  },
   "paint_order": [
     {
       "order": 1,
