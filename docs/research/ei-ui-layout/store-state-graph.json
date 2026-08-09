@@ -58,6 +58,20 @@
   ],
   "factory_argument_order": ["x", "y", "width", "height", "frame"],
   "factory_argument_warning": "Call-site arguments are inputs to 0x00423E80; that factory centers/derives parent-relative rectangles before storing final object fields. They must not be copied directly as 800×600 screen coordinates.",
+  "factory_centering_evidence": {
+    "routine": "0x00423E80",
+    "viewport_candidate": [800, 600],
+    "formula": "candidate_x=(800-width)/2; candidate_y=(600-height)/2",
+    "candidate_origins": {
+      "state_0": [250, 148],
+      "state_1": [151, 148],
+      "state_2": [298, 198],
+      "state_3": [250, 148],
+      "state_4": [130, 147]
+    },
+    "evidence_level": "primary-static-center-formula-plus-candidate-viewport",
+    "warning": "The arithmetic is proven, but the caller-supplied parent origin/bounds are not yet runtime-captured; origins above remain preview candidates."
+  },
   "server_cross_reference": {
     "artifact": "store-server-crossref.json",
     "categories": {"storage": 19, "buy": 108, "sell": 108},

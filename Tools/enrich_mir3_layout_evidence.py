@@ -46,6 +46,7 @@ def main() -> None:
     parser.add_argument("--status-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/status-window-render-evidence.json"))
     parser.add_argument("--quest-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/quest-window-render-evidence.json"))
     parser.add_argument("--store-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/store-window-render-evidence.json"))
+    parser.add_argument("--store-state-graph", type=Path, default=Path("docs/research/ei-ui-layout/store-state-graph.json"))
     parser.add_argument("--map-ui-evidence", type=Path, default=Path("docs/research/ei-ui-layout/map-ui-resource-evidence.json"))
     parser.add_argument("--chat-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/chat-window-render-evidence.json"))
     parser.add_argument("--npc-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/npc-window-render-evidence.json"))
@@ -107,6 +108,7 @@ def main() -> None:
     status_window_evidence = json.loads(args.status_window_evidence.read_text(encoding="utf-8")) if args.status_window_evidence.exists() else {}
     quest_window_evidence = json.loads(args.quest_window_evidence.read_text(encoding="utf-8")) if args.quest_window_evidence.exists() else {}
     store_window_evidence = json.loads(args.store_window_evidence.read_text(encoding="utf-8")) if args.store_window_evidence.exists() else {}
+    store_state_graph = json.loads(args.store_state_graph.read_text(encoding="utf-8")) if args.store_state_graph.exists() else {}
     map_ui_evidence = json.loads(args.map_ui_evidence.read_text(encoding="utf-8")) if args.map_ui_evidence.exists() else {}
     chat_window_evidence = json.loads(args.chat_window_evidence.read_text(encoding="utf-8")) if args.chat_window_evidence.exists() else {}
     npc_window_evidence = json.loads(args.npc_window_evidence.read_text(encoding="utf-8")) if args.npc_window_evidence.exists() else {}
@@ -269,6 +271,7 @@ def main() -> None:
     layout["npc_window_evidence"] = npc_window_evidence
     layout["social_window_evidence"] = social_window_evidence
     layout["system_window_evidence"] = system_window_evidence
+    layout["store_state_graph"] = store_state_graph
     layout["draw_order_evidence"] = draw_order_evidence
     layout["hud_label_evidence"] = hud_label_evidence
     layout["notice_prompt_evidence"] = notice_prompt_evidence
