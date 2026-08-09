@@ -20742,6 +20742,21 @@
           "y": "this+0x6C4 + window.y + row_offset",
           "row_offset_step_px": 14
         },
+        "text_call_argument_flow": {
+          "call_va": "0x004147F3",
+          "renderer_this": "0x008AB7A8",
+          "push_order_bottom_to_top": [
+            "0",
+            "node+0x08 (text pointer)",
+            "node+0x04",
+            "this+0x6C0 + window.x",
+            "node+0x00",
+            "this+0x6C4 + window.y + row_offset",
+            "0x008AB7C4"
+          ],
+          "interpretation": "The binary directly proves the chat paint call's text pointer, two node metadata values, screen coordinates, and shared renderer context. It does not prove the business meaning of node+0x00/node+0x04 or the renderer context's font/color table.",
+          "evidence_level": "primary-static-call-argument-flow"
+        },
         "scroll_state_candidate": "this+0x64",
         "evidence_level": "primary-static-exact-draw-loop"
       }
