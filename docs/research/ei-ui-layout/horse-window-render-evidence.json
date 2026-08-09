@@ -20,12 +20,12 @@
   "resource_visual_text": {
     "source": "GameInter.wil frames decoded directly from the original WIL pixel data; text is embedded in the button artwork, not supplied by a modern layout.",
     "records": [
-      {"frame_pair": [860, 861], "normal_visual_text": "马上骑", "pressed_visual_text": "马上骑", "transcription_confidence": "high"},
-      {"frame_pair": [862, 863], "normal_visual_text": "马儿跑", "pressed_visual_text": "马儿跑", "transcription_confidence": "high"},
-      {"frame_pair": [864, 865], "normal_visual_text_candidate": "马鞍骑", "transcription_confidence": "medium; second glyph requires font-level confirmation"},
-      {"frame_pair": [866, 867], "normal_visual_text_candidate": "马鞍跑", "transcription_confidence": "medium; second glyph requires font-level confirmation"}
+      {"frame_pair": [860, 861], "normal_visual_text": "말타기", "pressed_visual_text": "말타기", "translation_candidate": "骑马/上马", "transcription_confidence": "high"},
+      {"frame_pair": [862, 863], "normal_visual_text": "말내리기", "pressed_visual_text": "말내리기", "translation_candidate": "下马", "transcription_confidence": "high"},
+      {"frame_pair": [864, 865], "normal_visual_text": "말숨기기", "pressed_visual_text": "말숨기기", "translation_candidate": "收马/隐藏马", "transcription_confidence": "high"},
+      {"frame_pair": [866, 867], "normal_visual_text": "말꺼내기", "pressed_visual_text": "말꺼내기", "translation_candidate": "取马/召出马", "transcription_confidence": "high"}
     ],
-    "warning": "The pixel transcription identifies the visible artwork labels but does not by itself prove which runtime horse state enables each action."
+    "warning": "The Korean pixel transcription and translation candidates identify the visible artwork labels; the exact runtime state binding still comes from the click branches and decoded command strings."
   },
   "interaction": {
     "hit_rect_proof": "Shared control constructor 0x00417550-0x004175B0 selects the resource frame and writes SetRect(this+0x04, x, y, x+selected_frame.width, y+selected_frame.height); the widths/heights above are the GameInter.wil frame-header dimensions.",
@@ -59,5 +59,5 @@
     "evidence_level": "primary-static-plus-primary-resource"
   },
   "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The click commands are now exact original strings; only the mapping between those commands, state transitions and the low-resolution artwork labels remains partially unresolved.",
-  "pending": ["Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map them to the now-decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."]
+  "pending": ["Map the now-confirmed Korean artwork labels to the decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."]
 }
