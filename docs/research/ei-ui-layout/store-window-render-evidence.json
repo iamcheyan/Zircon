@@ -133,6 +133,20 @@
     {"call_va": "0x0044D46D", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x1FA", "y": "arg5+0x043"}},
     {"call_va": "0x0044D496", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x188", "y": "arg5+0x03D"}}
   ],
+  "control_hit_rects": {
+    "basis": "The store constructor passes each control through 0x00417550; the rectangle size is read from the selected GameInter frame header and the position is the constructor's arg4/arg5-relative expression.",
+    "records": [
+      {"call_va": "0x0044D36B", "frame_pair": [1010, 1011], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x10A", "arg5+0x10E", 28, 26], "role": "store action candidate"},
+      {"call_va": "0x0044D394", "frame_pair": [1012, 1013], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x07F", "arg5+0x10B", 48, 20], "role": "store action candidate"},
+      {"call_va": "0x0044D3C0", "frame_pair": [1010, 1011], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x1D2", "arg5+0x0A9", 28, 26], "role": "store action candidate"},
+      {"call_va": "0x0044D3EC", "frame_pair": [1012, 1013], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x172", "arg5+0x0A2", 48, 20], "role": "store action candidate"},
+      {"call_va": "0x0044D418", "frame_pair": [1014, 1015], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x144", "arg5+0x09F", 28, 26], "role": "store action candidate"},
+      {"call_va": "0x0044D444", "frame_pair": [1016, 1017], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x1B2", "arg5+0x09F", 28, 26], "role": "store action candidate"},
+      {"call_va": "0x0044D46D", "frame_pair": [1010, 1011], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x1FA", "arg5+0x043", 28, 26], "role": "store action candidate"},
+      {"call_va": "0x0044D496", "frame_pair": [1012, 1013], "resource_library": "GameInter.wil", "relative_rect_expression": ["arg4+0x188", "arg5+0x03D", 48, 20], "role": "store action candidate"}
+    ],
+    "evidence_level": "primary-static-plus-primary-resource"
+  },
   "constructor_rect_initializers": {
     "routine": "0x0044D4C4-0x0044D53B",
     "left_list_rects": {"count": 5, "rect_base": "this+0x660", "stride_bytes": 16, "left": 28, "right": 64, "top_start": 26, "row_step": 49, "height": 36, "evidence_level": "primary-static-setrect-loop"},
