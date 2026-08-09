@@ -56,6 +56,28 @@
     "warning": "The selected frame proves the resource/index relation, not yet the visible UI widget or final screen destination.",
     "field_binding": {"fmmap_resource_field": "owner+0x148", "mmap_resource_field": "owner+0x04", "runtime_state_rect_field": "owner+0x2D0"}
   },
+  "static_initializer_trace": {
+    "routine": "0x0043D4D0",
+    "resource_load_calls": [
+      {"call_va": "0x0043D4E7", "object_field": "owner+0x04", "literal_va": "0x0047C428", "resource": "Data/MMap.wil"},
+      {"call_va": "0x0043D502", "object_field": "owner+0x148", "literal_va": "0x0047C414", "resource": "Data/FMMap.wil"}
+    ],
+    "initial_state": {
+      "selected_map_id": "owner+0x28C = -1",
+      "view_position": ["owner+0x2B8 = 128", "owner+0x2BC = 128"],
+      "mode_flag": "owner+0x294 = 0",
+      "animation": "owner+0x300 = 0",
+      "surface_call": {"call_va": "0x0043D5DE", "arguments": [128, 128], "target": "owner+0x00"}
+    },
+    "map_id_update_trace": {
+      "routine": "0x0043D780",
+      "map_id_field": "owner+0x28C",
+      "overland_branch": {"condition": "map_id >= 1000", "normalization": "map_id - 1000", "resource_object": "owner+0x148", "frame_header": "owner+0x180"},
+      "field_branch": {"condition": "map_id < 1000", "resource_object": "owner+0x04", "frame_header": "owner+0x3C"},
+      "destination_reset": "The selected frame width/height are written into owner+0x2E0 and the current view position is passed to 0x0043D5F0."
+    },
+    "interpretation": "The executable initializes both map libraries and a 128×128 surface before any map ID is selected. This is stronger than inferring the map source from a screenshot: the two library fields and the branch-specific frame-header path are statically explicit."
+  },
   "viewport": {
     "surface_init_va": "0x0043D5F0",
     "surface_size_candidate": [128, 128],
