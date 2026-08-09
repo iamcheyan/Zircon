@@ -17760,6 +17760,51 @@
         "meaning": "mouse position is converted from the fixed minimap destination into map/view-relative coordinates"
       }
     },
+    "call_chain_evidence": [
+      {
+        "va": "0x00420C3C",
+        "calls": "0x0043D780",
+        "arguments": "(word input & 0xFFFF) - 1",
+        "role": "map-id update/resource frame selection",
+        "side_effect": "owner/global map state update flag at caller+0x2AB9A4"
+      },
+      {
+        "va": "0x004295B4",
+        "calls": "0x0043DA80",
+        "object_expression": "esi+0x6214",
+        "role": "main world/map paint path"
+      },
+      {
+        "va": "0x0042BDC0",
+        "calls": "0x0043DDB0",
+        "object_expression": "esi+0x6214",
+        "role": "minimap destination hit test and coordinate conversion"
+      },
+      {
+        "va": "0x0042C75C",
+        "calls": "0x0043DEB0",
+        "object_expression": "esi+0x6214",
+        "role": "minimap interaction/drag or view-state handling candidate"
+      },
+      {
+        "va": "0x0042CED2",
+        "calls": "0x0043D5F0",
+        "surface_args": [
+          256,
+          256
+        ],
+        "role": "large map-surface mode candidate"
+      },
+      {
+        "va": "0x0042CEF0",
+        "calls": "0x0043D5F0",
+        "surface_args": [
+          128,
+          128
+        ],
+        "role": "fixed minimap-surface mode candidate"
+      }
+    ],
     "pending": [
       "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
       "Recover map window frame, screen coordinates and zoom/scroll state from input and paint callers.",
