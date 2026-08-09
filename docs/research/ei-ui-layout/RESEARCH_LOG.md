@@ -1461,3 +1461,21 @@ GameInter 帧。
 
 该链路仍不能单凭子码数值命名为“NPC 商店”或“仓库”，所以状态 0–4 的业务标签继续
 保持候选；但现在已经有真实的协议入口地址，可以继续沿参数字段和服务端处理寻找名称。
+
+### Finding 79：服务端脚本确认仓库、购买、出售 NPC 入口（2026-08-10）
+
+新增 `Tools/extract_mir3_store_server_crossref.py`，只读解析 `Mud3/Envir/Merchant.txt`
+以及 `Market_Def`、`Convert_Def/Market_Def` 脚本，并把商店类服务端资料写入
+`store-server-crossref.json`。共发现 318 条商人记录，全部能匹配到脚本；其中 19 条包含
+`NPC_Storage`/`NPC_GetBack` 仓库存取入口，108 条包含购买入口，108 条包含出售入口。
+
+三个可复核示例：
+
+- `19GM_INN-Z014` 的 `[NPC_Main]` 暴露“寄存/取回”，并有 `[NPC_Storage]`、
+  `[NPC_GetBack]` 段落及对应提示文本；
+- `06Inn_Oasis` 的服务端名称为“绿洲仓库保管员”，归入仓库入口；
+- `04Potion_Bichon1` 的“药店老板”同时存在 `[@NPC_Buy]` 与 `[@NPC_Sell]`。
+
+这些资料确认原版时期的服务端业务入口确实存在，并可作为客户端 F1000 商店/仓库窗口
+继续追踪的第二证据源；但服务端 NPC 名称和脚本分类不能证明客户端状态 0–4 的具体数值
+含义，也不能替代 Mir3.exe 的绘制与命中证据，因此相关业务标签仍保持 candidate/pending。

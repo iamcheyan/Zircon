@@ -16420,6 +16420,42 @@
         "paint_va": "0x0044D590",
         "evidence_level": "primary-static-with-parent-basis-pending"
       },
+      "server_cross_reference": {
+        "artifact": "store-server-crossref.json",
+        "source": "/home/tetsuya/NAS/TMP/Mud3/Envir/Merchant.txt + Market_Def + Convert_Def/Market_Def",
+        "evidence_level": "secondary-server-script-cross-reference",
+        "counts": {
+          "merchant_records": 318,
+          "matched_script_records": 318,
+          "storage_category": 19,
+          "buy_category": 108,
+          "sell_category": 108
+        },
+        "confirmed_examples": [
+          {
+            "merchant_stem": "19GM_INN-Z014",
+            "script_section": "NPC_Storage",
+            "script_text_summary": "NPC menu exposes 寄存 (storage) and 取回 (get back), then asks what to store/retrieve.",
+            "client_binding": "not yet bound to a distinct state value"
+          },
+          {
+            "merchant_stem": "06Inn_Oasis",
+            "server_name": "绿洲仓库保管员",
+            "script_category": "storage",
+            "client_binding": "not yet bound to a distinct state value"
+          },
+          {
+            "merchant_stem": "04Potion_Bichon1",
+            "server_name": "药店老板",
+            "script_sections": [
+              "buy",
+              "sell"
+            ],
+            "client_binding": "item-list state candidate; client state value remains unresolved"
+          }
+        ],
+        "warning": "These server names/categories corroborate the existence of warehouse and buy/sell NPC behaviors, but do not by themselves prove which client Frame 1000–1003 state is displayed."
+      },
       "window_candidate": {
         "id": "window.store-candidate",
         "background": {
