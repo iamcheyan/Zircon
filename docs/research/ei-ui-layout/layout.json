@@ -18477,7 +18477,7 @@
           ],
           "warning": "These tokens identify server-side NPC action branches. No byte-level mapping from these strings to state 0–4 has been proven in Mir3.exe yet."
         },
-        "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
+        "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, state-gated child controls, selected-record lookup and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
       },
       "controls": [
         {
@@ -19215,6 +19215,62 @@
           ],
           "evidence_level": "primary-static-dialogue-parser-and-layout-state"
         },
+        "dialogue_text_layout_contract": {
+          "setup_va": "0x00440750",
+          "scanner_va": "0x00440AA0",
+          "state_reset": {
+            "this+0x582": "mode=0",
+            "this+0x584": "source cursor/offset=0",
+            "this+0x588": "raw segment counter=0",
+            "this+0x51C": "paint entry count=0",
+            "this+0x58C": "overflow=0"
+          },
+          "scanner_output": {
+            "source_cursor": "this+0x584",
+            "raw_segment_count": "this+0x588",
+            "mode": "this+0x582; a successful brace-token comparison through 0x00469400 against literal 0x0047C568 sets mode=1",
+            "paint_count": "this+0x51C=max(raw_segment_count-6,0), clamped to 16",
+            "overflow": "this+0x58C=1 when the unclamped count exceeds 16",
+            "line_spacing": "this+0x594=14 only when mode=1 and overflow=1; otherwise 21"
+          },
+          "layout_output_fields": [
+            {
+              "call_site": "0x004409F4",
+              "consumed_fields": [
+                "this+0x55C",
+                "this+0x560",
+                "this+0x568"
+              ],
+              "interpretation": "first shared text/layout structure; exact glyph semantics not named"
+            },
+            {
+              "call_site": "0x00440A1F",
+              "consumed_fields": [
+                "this+0x56C",
+                "this+0x570",
+                "this+0x578"
+              ],
+              "interpretation": "second shared text/layout structure; exact glyph semantics not named"
+            },
+            {
+              "call_site": "0x00440A41",
+              "consumed_fields": [
+                "this+0x550",
+                "this+0x554",
+                "this+0x57C"
+              ],
+              "interpretation": "third shared text/layout structure; exact glyph semantics not named"
+            }
+          ],
+          "text_render_boundary": {
+            "npc_paint_va": "0x0043F040",
+            "direct_glyph_helper_seen_in_npc_paint": false,
+            "confirmed_responsibility": "NPC Paint composes Frame 1100/1101/1102 and the fallback image path.",
+            "next_trace_boundary": "The exact font, color, glyph baseline and final text draw call must be traced from the shared layout structures/callers; Frame 1101 geometry alone must not be converted into text coordinates.",
+            "evidence_level": "primary-static-boundary"
+          },
+          "interpretation": "This closes the original parser-to-layout state contract without claiming that raw segment count equals visible line count or that the image-strip compositor renders glyphs."
+        },
         "dialogue_parser_tokens": {
           "scanner_va": "0x00440AA0",
           "source_cursor_field": "this+0x584",
@@ -19344,7 +19400,7 @@
       "pending": [
         "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
         "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
-        "The exact text/font/color draw order around the composited NPC dialogue content."
+        "The exact font/color/baseline draw call outside NPC Paint, including how the shared layout structures at this+0x550 through this+0x57C are consumed."
       ]
     },
     {
@@ -27270,6 +27326,62 @@
         ],
         "evidence_level": "primary-static-dialogue-parser-and-layout-state"
       },
+      "dialogue_text_layout_contract": {
+        "setup_va": "0x00440750",
+        "scanner_va": "0x00440AA0",
+        "state_reset": {
+          "this+0x582": "mode=0",
+          "this+0x584": "source cursor/offset=0",
+          "this+0x588": "raw segment counter=0",
+          "this+0x51C": "paint entry count=0",
+          "this+0x58C": "overflow=0"
+        },
+        "scanner_output": {
+          "source_cursor": "this+0x584",
+          "raw_segment_count": "this+0x588",
+          "mode": "this+0x582; a successful brace-token comparison through 0x00469400 against literal 0x0047C568 sets mode=1",
+          "paint_count": "this+0x51C=max(raw_segment_count-6,0), clamped to 16",
+          "overflow": "this+0x58C=1 when the unclamped count exceeds 16",
+          "line_spacing": "this+0x594=14 only when mode=1 and overflow=1; otherwise 21"
+        },
+        "layout_output_fields": [
+          {
+            "call_site": "0x004409F4",
+            "consumed_fields": [
+              "this+0x55C",
+              "this+0x560",
+              "this+0x568"
+            ],
+            "interpretation": "first shared text/layout structure; exact glyph semantics not named"
+          },
+          {
+            "call_site": "0x00440A1F",
+            "consumed_fields": [
+              "this+0x56C",
+              "this+0x570",
+              "this+0x578"
+            ],
+            "interpretation": "second shared text/layout structure; exact glyph semantics not named"
+          },
+          {
+            "call_site": "0x00440A41",
+            "consumed_fields": [
+              "this+0x550",
+              "this+0x554",
+              "this+0x57C"
+            ],
+            "interpretation": "third shared text/layout structure; exact glyph semantics not named"
+          }
+        ],
+        "text_render_boundary": {
+          "npc_paint_va": "0x0043F040",
+          "direct_glyph_helper_seen_in_npc_paint": false,
+          "confirmed_responsibility": "NPC Paint composes Frame 1100/1101/1102 and the fallback image path.",
+          "next_trace_boundary": "The exact font, color, glyph baseline and final text draw call must be traced from the shared layout structures/callers; Frame 1101 geometry alone must not be converted into text coordinates.",
+          "evidence_level": "primary-static-boundary"
+        },
+        "interpretation": "This closes the original parser-to-layout state contract without claiming that raw segment count equals visible line count or that the image-strip compositor renders glyphs."
+      },
       "dialogue_parser_tokens": {
         "scanner_va": "0x00440AA0",
         "source_cursor_field": "this+0x584",
@@ -27399,7 +27511,7 @@
     "pending": [
       "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
       "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
-      "The exact text/font/color draw order around the composited NPC dialogue content."
+      "The exact font/color/baseline draw call outside NPC Paint, including how the shared layout structures at this+0x550 through this+0x57C are consumed."
     ]
   },
   "social_window_evidence": {
@@ -30136,6 +30248,94 @@
       "frame"
     ],
     "factory_argument_warning": "Call-site arguments are inputs to 0x00423E80; that factory centers/derives parent-relative rectangles before storing final object fields. They must not be copied directly as 800×600 screen coordinates.",
+    "state_control_dispatch": {
+      "routine": "0x0044E9B0",
+      "state_field": "this+0x5F8",
+      "control_activation_paths": [
+        {
+          "states": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "control": "this+0x54",
+          "child_vtable_slot": "+0x10",
+          "arguments": "the two stack arguments received by 0x0044E9B0",
+          "result": "if child reports handled, returns handled without entering the later page/detail branch"
+        },
+        {
+          "states": [
+            1,
+            2,
+            4
+          ],
+          "control": "this+0x1BC",
+          "child_vtable_slot": "+0x10",
+          "result": "if child reports handled, state 2 returns immediately; states 1/4 continue into selected-record logic"
+        },
+        {
+          "states": [
+            1,
+            2
+          ],
+          "control": "this+0x270",
+          "child_vtable_slot": "+0x10",
+          "result": "second paging/action control path; exact caption and business action unresolved"
+        },
+        {
+          "states": [
+            1
+          ],
+          "control": "this+0x324",
+          "child_vtable_slot": "+0x10",
+          "result": "expanded-state-only control path; exact caption and business action unresolved"
+        },
+        {
+          "states": [
+            4
+          ],
+          "control": "this+0x48C",
+          "child_vtable_slot": "+0x10",
+          "result": "wide-panel action path; exact caption and business action unresolved"
+        },
+        {
+          "states": [
+            2
+          ],
+          "control": "this+0x3D8",
+          "child_vtable_slot": "page-control path in the state-2 branch",
+          "result": "state-2 page/selection control candidate; page count derives from this+0x71C / 12"
+        }
+      ],
+      "state_4_selected_record_gate": {
+        "selected_index_field": "this+0x704",
+        "lookup_va": "0x0044E6D0",
+        "record_pointer_field": "this+0x7F0",
+        "record_guard": "selected_record+0x20 must be zero before Frame 1002 factory call",
+        "factory_call_vas": [
+          "0x0044EBCB",
+          "0x0044F263"
+        ],
+        "frame": 1002,
+        "evidence_level": "primary-static-selected-record-to-state-4"
+      },
+      "reset_paths": [
+        {
+          "state_before": "any active state",
+          "factory_frame": 1000,
+          "factory_call_va": "0x0044EAA4",
+          "writes": {
+            "this+0x5F8": 0,
+            "this+0x7E0": 0,
+            "this+0x70C": 0,
+            "this+0x71C": 0
+          },
+          "interpretation": "shared panel reset/rebuild path; business name intentionally unresolved"
+        }
+      ],
+      "evidence_level": "primary-static-state-to-control-dispatch"
+    },
     "factory_centering_evidence": {
       "routine": "0x00423E80",
       "viewport_candidate": [

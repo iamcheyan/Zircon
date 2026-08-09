@@ -18,7 +18,7 @@
 | 商店/购买 | GameInter F1000、F1001–F1003；F1000 五行列表、F1001 紧凑网格、F1002 宽组合、F1003 当前副本空帧 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态、控件门控、选中记录和资源形态已恢复） | 通过客户端状态/协议参数区分 NPC 商店、仓库、买卖、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `exchange-window-render-evidence.json`、`0x004159D0/0x00415B10` | 候选（左右分区与 6×5 格已恢复） | 确认按钮、协议状态和窗口最终原点 |
 | 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口、状态控件门控和选中记录链已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
-| NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040`；Interface1c NPCFace.WIL | `npc-window-render-evidence.json`；`0x00440750–0x00440AA0` 已恢复 `\\`、`{}`、`@...>` token 解析、16 项上限、14/21 px 行距和三个动态控件位置；1102 当前副本为空 | 候选（绘制链与脚本解析已恢复） | 动态条目字段、文字调用、按钮业务名 |
+| NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040`；Interface1c NPCFace.WIL | `npc-window-render-evidence.json`；`0x00440750–0x00440AA0` 已恢复 `\\`、`{}`、`@...>` token 解析、16 项上限、14/21 px 行距、共享布局字段和三个动态控件位置；1102 当前副本为空 | 候选（图像绘制链与脚本解析/布局状态已恢复） | 动态条目字段最终语义、共享文字绘制调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
 | 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |
 | 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置、GBK 字符串、文字起点 `(40,29)`、实际 `14px` 视觉行距，以及通用控件 `control+0x34` 字符串字段绑定已从绘制/构造链恢复 | 已恢复 | 共享控件究竟把频道字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |

@@ -149,6 +149,38 @@
       "line_spacing_branches": [{"when": "this+0x582==1 and this+0x58C==1", "pixels": 14}, {"when": "otherwise", "pixels": 21}],
       "evidence_level": "primary-static-dialogue-parser-and-layout-state"
     },
+    "dialogue_text_layout_contract": {
+      "setup_va": "0x00440750",
+      "scanner_va": "0x00440AA0",
+      "state_reset": {
+        "this+0x582": "mode=0",
+        "this+0x584": "source cursor/offset=0",
+        "this+0x588": "raw segment counter=0",
+        "this+0x51C": "paint entry count=0",
+        "this+0x58C": "overflow=0"
+      },
+      "scanner_output": {
+        "source_cursor": "this+0x584",
+        "raw_segment_count": "this+0x588",
+        "mode": "this+0x582; a successful brace-token comparison through 0x00469400 against literal 0x0047C568 sets mode=1",
+        "paint_count": "this+0x51C=max(raw_segment_count-6,0), clamped to 16",
+        "overflow": "this+0x58C=1 when the unclamped count exceeds 16",
+        "line_spacing": "this+0x594=14 only when mode=1 and overflow=1; otherwise 21"
+      },
+      "layout_output_fields": [
+        {"call_site": "0x004409F4", "consumed_fields": ["this+0x55C", "this+0x560", "this+0x568"], "interpretation": "first shared text/layout structure; exact glyph semantics not named"},
+        {"call_site": "0x00440A1F", "consumed_fields": ["this+0x56C", "this+0x570", "this+0x578"], "interpretation": "second shared text/layout structure; exact glyph semantics not named"},
+        {"call_site": "0x00440A41", "consumed_fields": ["this+0x550", "this+0x554", "this+0x57C"], "interpretation": "third shared text/layout structure; exact glyph semantics not named"}
+      ],
+      "text_render_boundary": {
+        "npc_paint_va": "0x0043F040",
+        "direct_glyph_helper_seen_in_npc_paint": false,
+        "confirmed_responsibility": "NPC Paint composes Frame 1100/1101/1102 and the fallback image path.",
+        "next_trace_boundary": "The exact font, color, glyph baseline and final text draw call must be traced from the shared layout structures/callers; Frame 1101 geometry alone must not be converted into text coordinates.",
+        "evidence_level": "primary-static-boundary"
+      },
+      "interpretation": "This closes the original parser-to-layout state contract without claiming that raw segment count equals visible line count or that the image-strip compositor renders glyphs."
+    },
     "dialogue_parser_tokens": {
       "scanner_va": "0x00440AA0",
       "source_cursor_field": "this+0x584",
@@ -202,6 +234,6 @@
   "pending": [
     "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
     "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
-    "The exact text/font/color draw order around the composited NPC dialogue content."
+    "The exact font/color/baseline draw call outside NPC Paint, including how the shared layout structures at this+0x550 through this+0x57C are consumed."
   ]
 }
