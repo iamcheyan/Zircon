@@ -11,6 +11,16 @@
     {"frame_pair": [157, 158], "size": [64, 20], "visual": "checkmark/confirm button state pair"},
     {"frame_pair": [150, 153], "size": [44, 20], "visual": "additional YES/NO normal state candidates"}
   ],
+  "resource_visual_inspection": {
+    "source": "Data/GameInter.wil direct pixel inspection of Frames 151–158",
+    "observations": [
+      "Frame 151 visibly reads YES in the normal/gold state; Frame 152 is the green highlighted YES state.",
+      "Frame 154 visibly reads NO in the normal/gold state; Frame 155 is the green highlighted NO state.",
+      "Frame 157 is a white checkmark state; Frame 158 is the green highlighted checkmark state.",
+      "Frame 150 and Frame 153 are additional YES/NO candidates in the same 44×20 family and must not be collapsed into 151/152 or 154/155 without constructor-state evidence."
+    ],
+    "evidence_level": "primary-resource-visual"
+  },
   "parent_window": {
     "id": "window.confirmation-prompt-950",
     "wrapper_va": "0x00418030",
