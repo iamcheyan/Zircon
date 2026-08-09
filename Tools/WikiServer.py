@@ -642,15 +642,53 @@ function monPlayBtn(btn) {{
     return;
   }}
   btn.dataset.on = '1'; btn.textContent = '⏸ 暂停';
-  var delay = (act === 'standing' || act === 'die') ? 180 : 120;
+  // 速度: 正常1x / 慢2x / 极慢4x
+  var speed = parseInt(document.getElementById('monSpeed').value, 10) || 1;
+  var delay = ((act === 'standing' || act === 'die') ? 180 : 120) * speed;
+  var loop = (act !== 'die');  // 死亡播完停在尸体帧
   var step = function () {{
     img.src = '/img/mon_anim/' + mid + '/' + act + '/' + String(_monIdx).padStart(3, '0') + '.png';
     document.getElementById('monIdx').textContent = _monIdx + 1;
-    _monIdx = (_monIdx + 1) % n;
+    _monIdx = _monIdx + 1;
+    if (_monIdx >= n) {{
+      if (!loop) {{
+        // 死亡: 停在最后一帧 (尸体), 不循环
+        btn.dataset.on = '0'; btn.textContent = '▶ 播放';
+        clearInterval(_monTimer); _monTimer = null;
+        return;
+      }}
+      _monIdx = 0;
+    }}
   }};
   step();
   clearInterval(_monTimer);
   _monTimer = setInterval(step, delay);
+}}
+// 速度切换: 若正在播放, 用新速度继续
+function monSpeedChange() {{
+  var pb = document.getElementById('monPlay');
+  if (pb && pb.dataset.on === '1') {{
+    clearInterval(_monTimer);
+    var act = document.getElementById('monFrame').dataset.act;
+    var n = parseInt(document.getElementById('monCnt').textContent, 10) || 1;
+    var speed = parseInt(document.getElementById('monSpeed').value, 10) || 1;
+    var delay = ((act === 'standing' || act === 'die') ? 180 : 120) * speed;
+    _monTimer = setInterval(function () {{
+      var img = document.getElementById('monFrame');
+      var mid = img.dataset.mid;
+      img.src = '/img/mon_anim/' + mid + '/' + act + '/' + String(_monIdx).padStart(3, '0') + '.png';
+      document.getElementById('monIdx').textContent = _monIdx + 1;
+      _monIdx = _monIdx + 1;
+      if (_monIdx >= n) {{
+        if (act !== 'die') _monIdx = 0;
+        else {{
+          clearInterval(_monTimer); _monTimer = null;
+          pb.dataset.on = '0'; pb.textContent = '▶ 播放';
+          return;
+        }}
+      }}
+    }}, delay);
+  }}
 }}
 // 页面加载后自动播放默认动作 (行走)
 window.addEventListener('load', function () {{
@@ -1083,6 +1121,11 @@ class Handler(BaseHTTPRequestHandler):
   <div class="anim-ctrl">
     <span class="mon-btns">{btns}</span>
     <button type="button" id="monPlay" onclick="monPlayBtn(this)" disabled>▶ 播放</button>
+    <select id="monSpeed" class="pg-go" aria-label="播放速度" title="播放速度" onchange="monSpeedChange()">
+      <option value="1" selected>正常</option>
+      <option value="2">慢</option>
+      <option value="4">极慢</option>
+    </select>
     <span class="dim">第 <b id="monIdx">1</b>/<b id="monCnt">{first_n}</b> 帧 · <span id="monActZh">行走</span></span>
   </div>
 </div>"""

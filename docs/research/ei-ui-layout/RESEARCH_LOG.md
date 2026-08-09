@@ -866,6 +866,17 @@ docs/research/ei-ui-layout/control-semantic-catalog.json
 把它直接解释成技能名称或等级表。完整调用链和待验证项见
 `docs/research/ei-ui-layout/skill-window-static-evidence.md`。
 
+### Finding 37：`Magic.exp` 已恢复为 50 条客户端技能记录（2026-08-09）
+
+使用已复现的 `0x004525F0` 解码器后，`Magic.exp` 可按 GB18030 文本解析出 50 条
+记录：文件顺序形成战士候选 8 条、法师候选 23 条、道士候选 19 条。三段起点技能
+ID 分别为 3、1、2；这些数字是技能 ID，不是独立的区段头。每条记录含
+原版 ID、中文名、属性、元素、1–4 级门槛、修炼值和说明；第 4 级的“未知”保持原样。
+
+逐条 JSON 和转 UTF-8 的原文已落在 `magic-exp-records.json`、`Magic.exp.decoded.txt`，
+内容目录见 `exp-content-catalog.md`。这使技能百科首次有客户端文件一级证据，
+但仍不能把文件区段直接当成八个 UI 页签，页签映射要继续追踪控件回调。
+
 新增：
 
 ```text

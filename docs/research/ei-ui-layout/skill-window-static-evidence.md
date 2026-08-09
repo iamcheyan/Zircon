@@ -114,6 +114,8 @@
 - `skill-window-context.json`：机器可读的窗口、控件和文字关联。
 - `magic-exp-loader-evidence.json`：`Magic.exp` 加载链的机器可读记录。
 - `exp-decoder-evidence.md`：已从原版 `0x004525F0` 复现的 `*.exp` 解码算法。
+- `exp-content-catalog.md`：`Magic.exp` 解码后的 61 条技能内容目录。
+- `magic-exp-records.json`：逐条技能记录及原始区块。
 - `layout.json`：总布局证据库。
 - `RESEARCH_LOG.md`：按时间追加的研究日志。
 - `docs/research/mud3-dat-decoded/comparison.md`：服务端老版技能数据对照。

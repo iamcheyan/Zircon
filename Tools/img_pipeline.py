@@ -399,8 +399,8 @@ MON_ACTIONS = [
 ]
 
 def render_mon_anim(board, item_id, img_spec):
-    """渲染怪物动画: 每动作逐帧 trim 后统一高 160, 空帧跳过,
-    存 {board}/{id}/{action}/{n:03d}.png, 横条 {board}/{id}/{action}.png。
+    """渲染怪物动画: 每动作逐帧 trim, 统一缩放比例 + 脚底基线对齐(保留踏步/位移感),
+    空帧跳过, 存 {board}/{id}/{action}/{n:03d}.png, 横条 {board}/{id}/{action}.png。
     返回 (ok, reason, {action: n_frames})。"""
     lib_name = img_spec.get("lib")
     lib = get_lib(lib_name)
@@ -415,6 +415,7 @@ def render_mon_anim(board, item_id, img_spec):
 
     counts = {}
     ok_any = False
+    H = 160
     for act, off, n, delay in MON_ACTIONS:
         frames = []
         for i in range(n):
@@ -432,17 +433,19 @@ def render_mon_anim(board, item_id, img_spec):
             counts[act] = 0
             continue
         ok_any = True
-        # 统一高度 160
-        H = 160
-        scale = H / max(f.height for f in frames)
-        if scale < 1:
-            frames = [f.resize((max(1, int(f.width * scale)), H), 1) for f in frames]
+        # 统一缩放比例: 以该动作最高帧 -> H, 所有帧同一 scale (避免逐帧缩放抖动)
+        fmax = max(f.height for f in frames)
+        scale = H / fmax if fmax > 0 else 1
+        if scale != 1:
+            frames = [f.resize((max(1, int(f.width * scale)), max(1, int(f.height * scale))), 1)
+                      for f in frames]
         cell_w = max(f.width for f in frames)
         d = os.path.join(OUT, board, str(item_id), act)
         os.makedirs(d, exist_ok=True)
         for nf, f in enumerate(frames):
             canvas = Image.new("RGBA", (cell_w, H), (16, 16, 20, 170))
-            canvas.paste(f, ((cell_w - f.width) // 2, (H - f.height) // 2), f)
+            # 水平居中, 垂直脚底对齐 (脚底同一基线, 不再上下跳)
+            canvas.paste(f, ((cell_w - f.width) // 2, H - f.height), f)
             canvas.save(os.path.join(d, f"{nf:03d}.png"))
         # 横条
         gap = 2
@@ -450,7 +453,7 @@ def render_mon_anim(board, item_id, img_spec):
                           (16, 16, 20, 170))
         x = 0
         for f in frames:
-            strip.paste(f, (x + (cell_w - f.width) // 2, (H - f.height) // 2), f)
+            strip.paste(f, (x + (cell_w - f.width) // 2, H - f.height), f)
             x += cell_w + gap
         strip.save(os.path.join(OUT, board, str(item_id), f"{act}.png"))
         counts[act] = len(frames)
