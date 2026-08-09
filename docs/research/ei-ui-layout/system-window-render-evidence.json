@@ -48,7 +48,21 @@
         {"order": 2, "va": "0x0044138C-0x004414C7", "role": "nine option/close control reposition", "evidence": "The routine writes fixed window-relative positions for the close control and eight option controls, then positions two additional state-dependent controls."},
         {"order": 3, "va": "0x004414CC-0x004414DF", "role": "child control paint sequence", "evidence": "The first nine child objects are painted by vtable +0x04 in construction order after all fixed positions are written."}
       ],
-      "pending": ["labels and option state fields", "business meaning of the two Frame 751 entries at y=96 and y=170"]
+      "resource_visual_text": {
+        "source": "Direct pixel inspection of original Data/GameInter.wil Frame 750; the labels are baked into the Korean resource artwork.",
+        "language": "Korean",
+        "records": [
+          {"visual_text": "환경설정", "chinese_translation_candidate": "环境设置", "confidence": "high"},
+          {"visual_text": "배경음", "chinese_translation_candidate": "背景音", "confidence": "high"},
+          {"visual_text": "배경음 크기조절", "chinese_translation_candidate": "背景音音量调节", "confidence": "high"},
+          {"visual_text": "효과음", "chinese_translation_candidate": "效果音", "confidence": "high"},
+          {"visual_text": "효과음 크기조절", "chinese_translation_candidate": "效果音音量调节", "confidence": "high"},
+          {"visual_text": "주변 효과음", "chinese_translation_candidate": "周边效果音", "confidence": "high"},
+          {"visual_text": "그림자 유무효과", "chinese_translation_candidate": "阴影有无/效果", "confidence": "medium", "note": "The last two syllable blocks blend with the dark texture; preserve the original Korean transcription as a candidate."}
+        ],
+        "warning": "These are artwork labels. The ON/OFF control state fields and the two slider/decorative Frame 751 entries still require code-path correlation."
+      },
+      "pending": ["map each Korean option label to its backing state field", "business meaning of the two Frame 751 entries at y=96 and y=170"]
     },
     {
       "id": "window.horse",
