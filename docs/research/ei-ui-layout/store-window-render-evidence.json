@@ -163,6 +163,21 @@
         "note": "These offsets are proven by vtable+0x0C/+0x10 hit/activation calls. They identify control objects, not their human captions."
       }
     },
+    "server_script_semantics": {
+      "evidence_level": "secondary-server-script",
+      "action_tokens": {
+        "deposit": "@storage",
+        "retrieve": ["@getback", "@PreGetback"],
+        "buy": "@buy",
+        "sell": "@sell"
+      },
+      "examples": [
+        {"file": "06Inn_Bichon-0.txt", "sections": ["NPC_Storage", "NPC_Getback"], "semantic_result": "warehouse deposit/retrieve dialogue branches"},
+        {"file": "04Potion_Bichon1-0.txt", "sections": ["NPC_Buy", "NPC_Sell"], "semantic_result": "potion buy/sell dialogue branches"},
+        {"file": "01Meet_Bichon1-0.txt", "sections": ["NPC_Buy", "NPC_Sell"], "semantic_result": "meat buy/sell dialogue branches"}
+      ],
+      "warning": "These tokens identify server-side NPC action branches. No byte-level mapping from these strings to state 0–4 has been proven in Mir3.exe yet."
+    },
     "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
   },
   "controls": [

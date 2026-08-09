@@ -2625,3 +2625,9 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 同一输入处理函数还暴露了状态到控件对象的静态关系：`this+0x54` 在状态 0/1/3/4 中参与处理，`this+0x1BC` 在状态 1/2/4 中参与处理，`this+0x270` 在状态 1/2 中参与处理，`this+0x324` 是状态 1 的附加控制，`this+0x540` 是状态 0 的控制，`this+0x48C` 是状态 4 的控制，`this+0x3D8` 是状态 2 的分页控制。这些是对象偏移和命中/激活调用的 primary-static 事实，不等于按钮的中文业务标题。
 
 本次结果已同步到 `store-state-graph.json` 与 `store-window-render-evidence.json`。仓库 NPC、买卖 NPC 的 Mud3 脚本交叉引用仍只作为 secondary corroboration；state 0–4 的最终业务命名继续保留 pending，避免把视觉形态误写成协议语义。
+
+### Finding 173：Mud3 商店/仓库动作词与客户端状态机的边界确认（2026-08-10）
+
+从 Mud3 原始脚本以 GBK 解码核对了三类代表性 NPC。`06Inn_Bichon-0.txt` 的 `NPC_Storage` / `NPC_Getback` 分支使用 `@storage` 与 `@PreGetback`，语义明确是仓库存入/取回；`04Potion_Bichon1-0.txt` 的 `NPC_Buy` / `NPC_Sell` 使用 `@buy` / `@sell`，语义明确是药品买卖；`01Meet_Bichon1-0.txt` 同样使用 `@buy` / `@sell`，但商品语义是肉类买卖。
+
+这一步确认了服务器资料中“仓库、购买、出售”不是凭文件名推测，而是由脚本动作词和 NPC 分支共同支持的 secondary evidence。但在 `Mir3.exe` 中没有找到这些 ASCII 动作词或 `NPC_*` 标签，也没有找到能直接把 `@buy/@sell/@storage` 映射到 state 0–4 的明文枚举。因此当前正确的数据模型是：服务器动作语义独立记录，客户端 state/Frame 独立记录，两者之间保留未闭合映射；不能因为某个 NPC 脚本调用了 `@buy` 就把客户端 Frame 1000 强行命名为购买窗口。

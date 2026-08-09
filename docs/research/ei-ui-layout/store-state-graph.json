@@ -87,7 +87,19 @@
   "server_cross_reference": {
     "artifact": "store-server-crossref.json",
     "categories": {"storage": 19, "buy": 108, "sell": 108},
-    "status": "secondary corroboration only; no state-to-business promotion"
+    "status": "secondary corroboration only; no state-to-business promotion",
+    "script_action_tokens": {
+      "storage": ["@storage"],
+      "getback": ["@getback", "@PreGetback"],
+      "buy": ["@buy"],
+      "sell": ["@sell"],
+      "evidence": "Mud3 Convert_Def/Market_Def scripts; these are NPC dialogue actions, not Mir3.exe protocol enums"
+    },
+    "semantic_examples": [
+      {"script": "06Inn_Bichon-0.txt", "sections": ["NPC_Storage", "NPC_Getback"], "actions": ["@storage", "@PreGetback"], "meaning": "warehouse deposit/retrieval dialogue path"},
+      {"script": "04Potion_Bichon1-0.txt", "sections": ["NPC_Buy", "NPC_Sell"], "actions": ["@buy", "@sell"], "meaning": "potion shop buy/sell dialogue path"},
+      {"script": "01Meet_Bichon1-0.txt", "sections": ["NPC_Buy", "NPC_Sell"], "actions": ["@buy", "@sell"], "meaning": "meat shop buy/sell dialogue path"}
+    ]
   },
   "pending": [
     "Runtime or stronger call-site evidence mapping states 0–4 to warehouse, buy, sell, selected item and extended action names.",
