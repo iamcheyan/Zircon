@@ -30,6 +30,33 @@
     {"va": "0x0042EE42-0x0042EEBE", "fact": "The primary numeric text uses runtime value 0x007DA100 and format VA 0x0047A214; the surrounding target rectangle is (window.x+0x41, window.y+0x11A) to (window.x+0x41, window.y+0x12B) in the original call setup."},
     {"va": "0x0042EF97-0x0042F003", "fact": "The secondary text path reads 0x007DA11D and 0x007DA11F, selects among four state branches from byte this+0x54, and uses format literal candidates at 0x0047BDFC, 0x0047BE10 and 0x0047BE18; exact business labels remain unresolved."}
   ],
+  "resource_and_item_record_proof": {
+    "window_handle": {
+      "field": "main_owner+0xE11E4+0x5898",
+      "load_loop": "0x00452AE6, 70 handles",
+      "GameInter_path_literal": "0x0047CE0C",
+      "wrapper_pass_register": "EDI into all three 0x00417550 control constructors",
+      "evidence_level": "primary-static-handle-flow"
+    },
+    "item_record_base": "this+0x774+4*record_index",
+    "item_record_fields_consumed_by_paint": {
+      "+0x00": "signed WORD item/resource identity; zero/less than 1000 branches skip or use alternate path",
+      "+0x04": "column coordinate consumed at 0x0042F829",
+      "+0x08": "row coordinate consumed at 0x0042F83B",
+      "+0x34": "WORD frame/resource selector consumed at 0x0042F84B via context 0x005668C4",
+      "+0x2E8": "type/state byte consumed at 0x0042F902; values 0x0A/0x0B enter the secondary status/icon path",
+      "+0x351/+0x352/+0x353": "packed bytes consumed at 0x0042F925-0x0042F937 to form the secondary path argument; business meaning remains unresolved"
+    },
+    "grid_item_draw": {
+      "routine": "0x0042F790-0x0042FA68",
+      "destination_origin": "window.x+0x19, window.y+0x29",
+      "destination_step": [36, 36],
+      "selector_context": "0x005668C4",
+      "selected_header": "0x005668FC",
+      "compositor": "0x004542F0 via float/rect preparation 0x00466800"
+    },
+    "evidence_level": "primary-static-plus-primary-resource"
+  },
   "paint_order": [
     {"order": 1, "va": "0x0042EB8C-0x0042EB90", "role": "window base/background", "evidence": "The paint entry calls the window vtable +0x0C before any inventory-specific geometry or item processing."},
     {"order": 2, "va": "0x0042EB9B-0x0042EBB0", "role": "top/detail composition candidate", "evidence": "The first inventory-specific draw call uses GameInter frame 94 and coordinates derived from window origin x+0xF8, y-0xA5."},
@@ -50,6 +77,6 @@
   ],
   "pending": [
     "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
-    "The runtime item resource handle and quantity/name text field order."
+    "The final quantity/name text field order and the complete packed item-record stride; the GameInter handle and icon selector context are now statically bound."
   ]
 }
