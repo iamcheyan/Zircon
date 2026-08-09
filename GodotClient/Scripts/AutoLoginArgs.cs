@@ -33,6 +33,31 @@ public static class AutoLoginArgs
     public static bool OperationAuditExt => Has("--operation-audit-ext");
     public static bool ScreenshotAfterEnter => Has("--screenshot-after-enter");
 
+    /// <summary>
+    /// --window [=WxH]：强制窗口模式（覆盖 Zircon.ini 的全屏设置，直接开窗口）。
+    /// 可选分辨率：--window=1600x900 或 --window 1600x900；缺省按主屏幕 75%
+    /// 计算（ClientSettings.ApplyDisplaySettings 执行）。缩放由 GameScene.UiScale
+    /// 按窗口高度自动适配，无需手工设置。
+    /// </summary>
+    public static bool Window => Has("--window");
+
+    public static Vector2I WindowSize
+    {
+        get
+        {
+            string raw = GetValue("--window");
+            // 裸 --window 时 GetValue 会吞掉下一个参数（如 --user），且等号写法
+            // 缺省无值返回 null；以 "--" 开头一律视为无分辨率。
+            if (string.IsNullOrWhiteSpace(raw) || raw.StartsWith("--")) return Vector2I.Zero;
+            string[] parts = raw.Split('x', 'X');
+            if (parts.Length == 2
+                && int.TryParse(parts[0].Trim(), out int w)
+                && int.TryParse(parts[1].Trim(), out int h))
+                return new Vector2I(Mathf.Max(320, w), Mathf.Max(240, h));
+            return Vector2I.Zero;
+        }
+    }
+
     private static bool Has(string name)
     {
         foreach (var a in Args)
