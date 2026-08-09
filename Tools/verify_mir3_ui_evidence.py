@@ -54,6 +54,23 @@ def main() -> int:
         errors.append(str(exc))
         layout = {}
 
+    matrix_path = args.evidence / "ui-coverage-matrix.json"
+    try:
+        matrix = load_json(matrix_path)
+    except RuntimeError as exc:
+        errors.append(str(exc))
+        matrix = {}
+    matrix_records = matrix.get("records", [])
+    if len(matrix_records) < 17:
+        errors.append(f"coverage matrix has too few categories: {len(matrix_records)}")
+    for item in matrix_records:
+        for field in ("id", "category", "artifacts", "layout_ids", "preview_mode", "status", "pending"):
+            if field not in item:
+                errors.append(f"coverage matrix record lacks {field}: {item.get('id')}")
+        for artifact in item.get("artifacts", []):
+            if not (args.evidence / artifact).is_file():
+                errors.append(f"coverage matrix missing artifact: {item.get('id')} -> {artifact}")
+
     viewport = layout.get("viewport", {})
     if viewport.get("width") != 800 or viewport.get("height") != 600:
         errors.append(f"layout viewport is not 800x600: {viewport}")
@@ -124,6 +141,7 @@ def main() -> int:
     print(f"layout_records={len(records)} viewport={viewport.get('width')}x{viewport.get('height')}")
     print(f"normalized_draw_calls={len(normalized)}")
     print(f"specialized_control_rects={len(specialized_rects)}")
+    print(f"coverage_categories={len(matrix_records)}")
     print(f"json_artifacts={parsed} pending_items={pending_total}")
     for warning in warnings:
         print(f"PENDING {warning}")

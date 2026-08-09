@@ -22,6 +22,7 @@
 | 坐标差异叠加 | `/ui` 本地截图上传、透明度调节、状态保存 | 已有验证入口 |
 | UI 状态记忆 | `localStorage` 与 HUD modal hash 状态 | 已有 |
 | 专项控件统一目录 | `layout.json.specialized_control_rects`，当前 22 条，包含资源库、Frame 对、相对 Rect、证据等级和来源 | 已闭合到数值 Rect 范围 |
+| 机器可读覆盖矩阵 | `ui-coverage-matrix.json`，17 个目标类别，每项映射原版证据、布局 ID、预览模式和 pending | 已建立；pending 不等于完成 |
 
 ## 界面覆盖矩阵
 
