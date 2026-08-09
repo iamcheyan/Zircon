@@ -41,6 +41,14 @@
       "notes": "This is the original keyboard semantic for the F102/F103 HUD chat-history control; it must not be confused with the separate F350 chat window."
     }
   ],
+  "resource_visual_inspection": {
+    "source": "Data/GameInter.wil direct pixel inspection",
+    "observations": [
+      "Frames 100/101 and 102/103 are icon-only triangular/metal HUD controls with green/gold state art; their Chinese keyboard descriptions are supplied by Mir3.exe strings, not visibly baked into the icons.",
+      "Frame 159 has no exportable pixel content in the current client copy; the belt text string is therefore a constructor-associated runtime label/control semantic, not proof of a visible Frame 159 bitmap."
+    ],
+    "evidence_level": "primary-resource-visual-plus-primary-static"
+  },
   "pending": [
     "Whether Frame 159 is a visible belt label, a tooltip-only control, or an auxiliary text glyph in every runtime state.",
     "The exact draw-time font/color path for these constructor-associated strings."
