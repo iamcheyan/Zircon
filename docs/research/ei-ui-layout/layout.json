@@ -17879,6 +17879,78 @@
           "evidence": "The detail field is decoded and only three lines in the this+0x60 window are emitted through 0x45DD70 at window-relative (80,310), 15 pixels apart."
         }
       ],
+      "interaction_event_paths": {
+        "event_dispatch": [
+          {
+            "caller_va": "0x0042C0E1",
+            "handler_va": "0x00447FA0",
+            "ui_slot": 11,
+            "role": "pointer/input selection path",
+            "evidence": "The global UI dispatcher calls the quest input handler and dispatches the handled result through the quest window slot."
+          },
+          {
+            "caller_va": "0x0042BCDC",
+            "handler_va": "0x00448230",
+            "ui_slot": 11,
+            "role": "state/update/navigation path",
+            "evidence": "The update dispatcher calls the quest navigation handler, which refreshes both child controls and list state."
+          }
+        ],
+        "control_paths": [
+          {
+            "control": "this+0x128",
+            "frame_pair": [
+              721,
+              722
+            ],
+            "handler_va": "0x00447FA0",
+            "child_vtable_slot": "+0x10",
+            "downstream_va": "0x00448580",
+            "effects": [
+              "selects/marks the current record through record+0x208",
+              "sets this+0x68 to 1",
+              "when record+0x20C is zero, sends original event/message type 0x418 through 0x00451A10"
+            ],
+            "business_name": null,
+            "evidence_level": "primary-static-control-to-event-chain"
+          },
+          {
+            "control": "this+0x74",
+            "frame_pair": [
+              723,
+              724
+            ],
+            "handler_va": "0x00448230",
+            "child_vtable_slot": "+0x0C",
+            "downstream_va": "0x00448580",
+            "effects": [
+              "when the child update reports handled, enters the same record-mark/message path as the 721/722 control"
+            ],
+            "business_name": null,
+            "evidence_level": "primary-static-control-to-event-chain"
+          }
+        ],
+        "record_state_fields": {
+          "this+0x60": "visible list start row / scroll offset candidate used by the 19-row paint guard and detail line window",
+          "this+0x68": "refresh/action state set to 1 by 0x00448580",
+          "this+0x6C": "selected detail/body pointer consumed by Paint",
+          "this+0x1DC": "selected record pointer consumed by 0x00448580",
+          "this+0x1E8": "current list cursor / record chain head used by Paint and input",
+          "this+0x1F0": "current/selected list index reset during selection processing",
+          "this+0x1F4": "record count used by the input traversal",
+          "record+0x208": "selection/processed flag written by 0x00448580",
+          "record+0x20C": "server/handled gate tested before event dispatch",
+          "record+0x210": "hit/selection transient flag candidate",
+          "record+0x218..+0x224": "record hit rectangle consumed by the input handler"
+        },
+        "event_message": {
+          "va": "0x00451A10",
+          "type": "0x418",
+          "meaning": "original client event/message; business semantics unresolved",
+          "evidence": "0x00448580 conditionally calls 0x00451A10, which passes 0x418 into the original message/event builder before dispatching the selected record context."
+        },
+        "evidence_level": "primary-static-dispatch-and-state-chain"
+      },
       "confirmed": [
         "Frame 700 and the two control frame pairs are statically tied to the quest window constructor.",
         "The quest list is read through 0x0045E0C0 and rendered with a 15-pixel row cadence.",
@@ -17888,8 +17960,8 @@
       ],
       "pending": [
         "Exact quest field separators and wrapping width.",
-        "The runtime meaning of the 19-line guard and list scroll state.",
-        "Final labels/business names and event handlers for frames 721–724; pixels establish icon shape/state, not business semantics.",
+        "The runtime meaning of the 19-line guard and list scroll state beyond the statically observed this+0x60 window fields.",
+        "Final labels/business names for frames 721–724 and the business meaning of original event/message 0x418; the control-to-event chain is now closed but pixels and message IDs do not prove user-facing names.",
         "Whether Frame 705 is a complete text background or only a decorative detail panel at runtime."
       ]
     },

@@ -14,7 +14,7 @@
 | 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–459 | `skill-window-context.json`、技能渲染循环 | 已恢复 | 运行时技能列表、文字字段与图标 |
 | 人物状态/装备槽 | GameInter F200，11 条连续几何记录，8 个装备候选槽 38×38 | `status-window-render-evidence.json`、`0x0044B6B0/0x0044B720/0x004341F0` | 已恢复 | 装备索引业务命名、属性文字实际调用 |
 | 背包 | GameInter F250，6×6、36 px 网格；Interface1c F267/268 角色图候选 | `inventory-window-render-evidence.json`、`layout.json`、`0x0042F150/0x0042F2A0` | 候选（几何已恢复） | 物品图标/数量文本顺序、运行时选中态；第三资源不是普通按钮 |
-| 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 任务详情页/分页状态 |
+| 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 文字分隔/换行、19 行滚动运行时语义、721–724/事件 0x418 的最终业务名称 |
 | 商店/购买 | GameInter F1000、F1001–F1003；F1000 五行列表、F1001 紧凑网格、F1002 宽组合、F1003 当前副本空帧 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态图与资源形态已恢复） | 通过客户端状态/协议参数区分 NPC 商店、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `exchange-window-render-evidence.json`、`0x004159D0/0x00415B10` | 候选（左右分区与 6×5 格已恢复） | 确认按钮、协议状态和窗口最终原点 |
 | 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
