@@ -119,23 +119,30 @@ def sort_select(sel, page_kind):
     return f'<select name="sort">{opts}</select>'
 
 def pager(params, page, pages, base="/monsters"):
-    """分页导航; 保留全部筛选参数, 仅换 p。窗口 ±2。"""
+    """分页导航; 保留全部筛选参数, 仅换 p。当前页居中, 含首/末页与省略号。"""
     if pages <= 1:
         return ""
     def href(p):
         ps = dict(params)
         ps["p"] = p
         return base + "?" + urllib.parse.urlencode(ps, doseq=True)
+    # 可见页码: 首 1, 末 pages, 当前页 ±2, 缺口用省略号
+    shown = sorted({1, pages, page - 2, page - 1, page, page + 1, page + 2})
+    shown = [p for p in shown if 1 <= p <= pages]
     parts = []
     if page > 1:
+        parts.append(f'<a class="pg" href="{href(1)}" title="第一页">«</a>')
         parts.append(f'<a class="pg" href="{href(page - 1)}">‹</a>')
-    for p in range(1, pages + 1):
-        if p < page - 2 or p > page + 2:
-            continue
+    prev = None
+    for p in shown:
+        if prev is not None and p - prev > 1:
+            parts.append('<span class="pg dots">…</span>')
         cls = ' class="pg on"' if p == page else ' class="pg"'
         parts.append(f'<a{cls} href="{href(p)}">{p}</a>')
+        prev = p
     if page < pages:
         parts.append(f'<a class="pg" href="{href(page + 1)}">›</a>')
+        parts.append(f'<a class="pg" href="{href(pages)}" title="最后一页">»</a>')
     return f'<div class="pager">{"".join(parts)} <span class="dim">第 {page}/{pages} 页</span></div>'
 
 def item_price(i):
@@ -397,13 +404,21 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:16px; padding:3px 11px 3px 8px; cursor:pointer; font-size:13.5px; user-select:none; }}
 .chip input {{ accent-color:var(--acc); cursor:pointer; }}
 .chip:has(input:checked) {{ border-color:var(--acc); background:#2b2a1f; color:var(--acc); }}
-.pager {{ display:flex; align-items:center; gap:6px; margin:18px 0; flex-wrap:wrap; }}
+.pager {{ display:flex; align-items:center; justify-content:center; gap:6px; margin:18px 0; flex-wrap:wrap; }}
 .pager .pg {{ display:inline-block; min-width:30px; text-align:center; padding:4px 8px; border:1px solid var(--line);
   border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; }}
 .pager .pg:hover {{ border-color:var(--acc); text-decoration:none; }}
 .pager .pg.on {{ background:var(--acc); color:#1a1408; border-color:var(--acc); font-weight:700; }}
+.pager .pg.dots {{ border:none; background:none; min-width:auto; }}
 .anim {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px; }}
-.anim img {{ display:block; max-width:100%; height:auto; }}
+.anim-stage {{ display:flex; align-items:center; justify-content:center; min-height:150px; background:#0d0f12;
+  border:1px solid var(--line); border-radius:8px; margin-bottom:8px; overflow:hidden; }}
+.anim-stage img {{ display:block; max-width:100%; height:auto; image-rendering:pixelated; }}
+.anim-ctrl {{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }}
+.anim-ctrl button {{ padding:5px 16px; border:1px solid var(--acc); background:var(--acc); color:#1a1408;
+  border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; }}
+.anim-ctrl button:hover {{ filter:brightness(1.1); }}
+.anim-ctrl button:disabled {{ opacity:.5; cursor:default; }}
 .mapnet {{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }}
 .mapnet a {{ background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 12px;
   font-size:13.5px; color:var(--fg); }}
@@ -445,6 +460,31 @@ document.addEventListener('DOMContentLoaded', function () {{
     }}
   }});
 }});
+// 施法动画播放: 点击 ▶ 后逐帧切换, 循环; 再点暂停。
+var _animTimer = null;
+function animPlay(btn) {{
+  var box = btn.closest('.anim');
+  var img = box.querySelector('#animFrame');
+  var n = parseInt(box.dataset.frames, 10) || 1;
+  var delay = parseInt(box.dataset.delay, 10) || 100;
+  var idx = parseInt(box.dataset.i || '0', 10);
+  if (btn.dataset.on === '1') {{
+    btn.dataset.on = '0'; btn.textContent = '▶ 播放';
+    clearInterval(_animTimer); _animTimer = null;
+    return;
+  }}
+  btn.dataset.on = '1'; btn.textContent = '⏸ 暂停';
+  var step = function () {{
+    img.src = '/img/skills_anim/' + box.dataset.sid + '/' + String(idx).padStart(3, '0') + '.png';
+    box.dataset.i = idx;
+    var l = box.querySelector('#animIdx');
+    if (l) l.textContent = idx + 1;
+    idx = (idx + 1) % n;
+  }};
+  step();
+  clearInterval(_animTimer);
+  _animTimer = setInterval(step, delay);
+}}
 </script>
 </head>
 <body>
@@ -937,10 +977,21 @@ class Handler(BaseHTTPRequestHandler):
         if anim:
             ap = os.path.join(IMGS_DIR, "skills_anim", f"{s['id']}.png")
             if os.path.exists(ap):
+                nf = len(os.listdir(os.path.join(IMGS_DIR, "skills_anim", str(s["id"])))) \
+                    if os.path.isdir(os.path.join(IMGS_DIR, "skills_anim", str(s["id"]))) else 0
+                if nf < 1:
+                    nf = anim["count"]
+                src_note = "施法特效" if anim.get("src") != "attack" else "近战挥击特效"
                 anim_html = f"""
-<h2>施法动画</h2>
-<div class="anim"><img src="/img/skills_anim/{s['id']}.png" alt="施法动画">
-<p class="dim">素材: {esc(anim['lib'])} 帧 {anim['start']}+{anim['count']} · 每帧 {anim['delay']}ms（来自客户端 MagicEffectTable 渲染表）</p></div>"""
+<h2>{src_note}</h2>
+<div class="anim" data-frames="{nf}" data-delay="{anim['delay']}" data-sid="{s['id']}">
+  <div class="anim-stage"><img id="animFrame" src="/img/skills_anim/{s['id']}/000.png" alt="{src_note}"></div>
+  <div class="anim-ctrl">
+    <button type="button" id="animPlay" onclick="animPlay(this)">▶ 播放</button>
+    <span class="dim">第 <b id="animIdx">1</b>/{nf} 帧</span>
+    <span class="dim">· {esc(anim['lib'])} 帧 {anim['start']}+{anim['count']} · 每帧 {anim['delay']}ms（来自客户端 MagicEffectTable 渲染表）</span>
+  </div>
+</div>"""
             else:
                 anim_html = f"<h2>施法动画</h2><p class='dim'>素材 {esc(anim['lib'])} 帧 {anim['start']} 暂无渲染图</p>"
         else:
@@ -1197,18 +1248,27 @@ class Handler(BaseHTTPRequestHandler):
 """
         self._send(page("差异裁剪", body, "diff"))
 
-    # ---------------- 条目图片（/img/<board>/<id>.png, 磁盘缓存）
+    # ---------------- 条目图片（/img/<board>/<id>.png 或 /img/<board>/<id>/<frame>.png, 磁盘缓存）
     def img(self, path):
         parts = path.split("/")
-        if len(parts) != 2 or parts[0] not in IMG_BOARDS:
+        if len(parts) == 3 and parts[0] in IMG_BOARDS:
+            board, sid, fname = parts
+            iid = sid
+        elif len(parts) == 2 and parts[0] in IMG_BOARDS:
+            board, fname = parts
+            iid = fname.removesuffix(".png")
+        else:
             self._send(page("404", f"<p class='lead'>图片不存在: {esc(path)}</p>"), code=404)
             return
-        board, fname = parts
-        iid = fname.removesuffix(".png")
-        if not iid.isdigit():
+        if iid.isdigit():
+            if len(parts) == 3:
+                # /img/<board>/<id>/<frame>.png → <board>/<id>/<frame>.png
+                png = os.path.join(IMGS_DIR, board, str(int(iid)), fname)
+            else:
+                png = os.path.join(IMGS_DIR, board, f"{int(iid)}.png")
+        else:
             self._send(page("404", f"<p class='lead'>图片不存在: {esc(path)}</p>"), code=404)
             return
-        png = os.path.join(IMGS_DIR, board, f"{int(iid)}.png")
         if not os.path.exists(png):
             self._send(page("404", f"<p class='lead'>图片未生成: {esc(path)}</p>"), code=404)
             return

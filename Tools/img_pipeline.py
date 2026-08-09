@@ -332,20 +332,20 @@ def render(board, item_id, img_spec):
 
 
 def render_anim(board, item_id, anim):
-    """渲染施法动画条: 从 (lib, start) 连续取 count 帧, 跳过空帧,
-    逐帧 trim 后横向拼接成一条 (半透明深色底), 存 {board}/{id}.png。
+    """渲染施法动画: 逐帧 trim 后统一高 128, 每帧存 {board}/{id}/{n:03d}.png,
+    另拼一条横条 {board}/{id}.png 供无 JS 展示。
 
-    返回 (ok, reason)。
+    返回 (ok, reason, n_frames)。
     """
     lib_name = anim.get("lib")
     lib = get_zir_lib(lib_name)
     if lib is None:
         lib = get_lib(lib_name)
     if lib is None:
-        return False, f"库缺失 {lib_name}"
+        return False, f"库缺失 {lib_name}", 0
     start, count = anim["start"], anim["count"]
     if start < 0 or start >= lib.count:
-        return False, f"帧越界 {start}/{lib.count}"
+        return False, f"帧越界 {start}/{lib.count}", 0
 
     frames = []
     for i in range(count):
@@ -360,7 +360,7 @@ def render_anim(board, item_id, anim):
             continue
         frames.append(im.crop(bbox))
     if not frames:
-        return False, f"全空 {start}+{count}"
+        return False, f"全空 {start}+{count}", 0
 
     # 统一高度 128, 每帧按比例缩放
     H = 128
@@ -368,17 +368,24 @@ def render_anim(board, item_id, anim):
     if scale < 1:
         frames = [f.resize((max(1, int(f.width * scale)), H), 1) for f in frames]
     cell_w = max(f.width for f in frames)
+
+    d = os.path.join(OUT, board, str(item_id))
+    os.makedirs(d, exist_ok=True)
+    for n, f in enumerate(frames):
+        canvas = Image.new("RGBA", (cell_w, H), (16, 16, 20, 170))
+        canvas.paste(f, ((cell_w - f.width) // 2, (H - f.height) // 2), f)
+        canvas.save(os.path.join(d, f"{n:03d}.png"))
+
+    # 合并横条 (预览)
     gap = 2
-    canvas = Image.new("RGBA", (cell_w * len(frames) + gap * (len(frames) - 1), H),
-                       (16, 16, 20, 170))
+    strip = Image.new("RGBA", (cell_w * len(frames) + gap * (len(frames) - 1), H),
+                      (16, 16, 20, 170))
     x = 0
     for f in frames:
-        canvas.paste(f, (x + (cell_w - f.width) // 2, (H - f.height) // 2), f)
+        strip.paste(f, (x + (cell_w - f.width) // 2, (H - f.height) // 2), f)
         x += cell_w + gap
-    d = os.path.join(OUT, board)
-    os.makedirs(d, exist_ok=True)
-    canvas.save(os.path.join(d, f"{item_id}.png"))
-    return True, ""
+    strip.save(os.path.join(OUT, board, f"{item_id}.png"))
+    return True, "", len(frames)
 
 
 def main():
@@ -405,7 +412,7 @@ def main():
         a = anim.get(s["type"])
         if not a:
             continue
-        good, reason = render_anim("skills_anim", s["id"], a)
+        good, reason, nf = render_anim("skills_anim", s["id"], a)
         if good:
             anim_ok += 1
         else:
