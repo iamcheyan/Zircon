@@ -11,6 +11,14 @@
     {"frame_pair": [157, 158], "size": [64, 20], "visual": "checkmark/confirm button state pair"},
     {"frame_pair": [150, 153], "size": [44, 20], "visual": "additional YES/NO normal state candidates"}
   ],
+  "parent_window": {
+    "id": "window.confirmation-prompt-950",
+    "wrapper_va": "0x00418030",
+    "frame_select_va": "0x0041804E",
+    "background": {"file": "Data/GameInter.wil", "frame": 950, "header_size": [360, 190], "visual": "wide framed prompt panel with text area, lower action strip and close control"},
+    "resource_handle": "this+0x45C",
+    "evidence_level": "primary-static-parent-and-resource"
+  },
   "constructor_clusters": [
     {
       "cluster": "0x00418176-0x004181E0",

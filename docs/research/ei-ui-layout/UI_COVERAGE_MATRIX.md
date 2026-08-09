@@ -27,7 +27,7 @@
 | 坐骑 | GameInter F850 | `system-window-render-evidence.json` | 候选 | 坐骑数据字段和按钮语义 |
 | 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780` | `map-ui-resource-evidence.json` | 候选 | 小地图控件位置、地图窗口绘制与切换 |
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
-| 公告/提示/确认框 | GameInter F602/F603/F604/F605–607，`0x0043E260` | `notice-prompt-window-evidence.json` | 候选 | 父窗口运行时原点、状态机和文字绘制 |
+| 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json` | 候选 | 父窗口运行时原点、状态机和文字绘制 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |
 | 绘制层级 | `0x00423D00`、`0x004179B0`、`0x0043F040` | `draw-order-evidence.json` | 候选 | 重叠窗口运行时调用序列 |
 
