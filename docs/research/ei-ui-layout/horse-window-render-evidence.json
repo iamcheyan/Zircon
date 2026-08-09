@@ -68,6 +68,32 @@
     },
     "evidence_level": "primary-static-plus-primary-resource"
   },
+  "state_field_xref": {
+    "direct_branch_field": {
+      "address": "0x007DA060",
+      "width": "byte-tested, also loaded as dword by the state update path",
+      "uses": [
+        {"va": "0x00426ABC", "condition": "== 0", "role": "allows Frame 860/861 control to send @上马"},
+        {"va": "0x00426AE1", "condition": "!= 0", "role": "allows Frame 862/863 control to send @遛马"}
+      ],
+      "semantic_status": "mount-state candidate; exact enum/bit meaning remains unproven"
+    },
+    "adjacent_state_update": {
+      "writer_va": "0x0041F5BA-0x0041F5CD",
+      "fields": [
+        {"address": "0x007DA061-0x007DA062", "write": "word from packet/input stack"},
+        {"address": "0x007DA063-0x007DA064", "write": "word/byte from packet/input stack"}
+      ],
+      "role": "original client state-update path copies the mount-related state block before refreshing the UI",
+      "evidence_level": "primary-static-xref",
+      "caution": "The writer's higher-level packet/event meaning is not named here; do not map these bytes to horse IDs or animation states without a protocol cross-reference."
+    },
+    "overlay_search": {
+      "result": "No additional direct reference to 0x007DA060/0x007DA064 occurs inside the horse Paint routine 0x004269C0-0x00426A74; the routine draws Frame 850 base and five child controls in fixed order.",
+      "interpretation": "Static evidence currently supports a state-dependent command branch, not a separately proven overlay layer outside Frame 850."
+    },
+    "evidence_level": "primary-static-xref-with-runtime-semantic-caveat"
+  },
   "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. Four visible mount controls now have direct command-literal bindings; state-dependent overlays outside Frame 850 remain separate.",
-  "pending": ["Determine whether state-dependent overlays are painted outside Frame 850 and identify any additional runtime state fields governing visibility of the four mount controls."]
+  "pending": ["Determine the runtime enum/bit semantics of 0x007DA060 and whether an external window manager adds state-dependent overlays outside the horse Paint routine."]
 }
