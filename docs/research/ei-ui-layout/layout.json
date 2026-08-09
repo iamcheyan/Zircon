@@ -21959,6 +21959,15 @@
       ],
       "default_target": "0x0042B64E"
     },
+    "callers": [
+      {
+        "va": "0x0042C745",
+        "caller_range": "0x0042C511-0x0042C78F",
+        "role": "window input/update dispatcher",
+        "argument_flow": "caller receives arg1 at [esp+0x04] and arg2 at [esp+0x08]; preserves them as edi/ebx, then pushes edi followed by ebx before calling 0x0042B430",
+        "certainty": "primary-static"
+      }
+    ],
     "records": [
       {
         "window_id": 0,
