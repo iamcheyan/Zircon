@@ -22767,7 +22767,7 @@
       "evidence_level": "primary-static-base-window-paint"
     },
     "pending": [
-      "The insertion/promote policy that produces visible-list order for each open/raise interaction; 0x004280F0 now proves that the current list order is consumed for cross-window painting.",
+      "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
       "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
       "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
     ]
@@ -23867,6 +23867,15 @@
       "remove_and_free_va": "0x0042AC50 / 0x004680F8",
       "evidence_level": "primary-static-linked-list-flow"
     },
+    "insertion_policy": {
+      "routine": "0x00449870",
+      "show_helper_input": "window ID pushed by 0x0042AC30",
+      "empty_list": "The new node initializes the circular head/tail links and becomes both manager+0x04 and manager+0x0C.",
+      "nonempty_list": "The new node is linked after the current manager+0x0C tail; manager+0x0C is advanced to the new node and count manager+0x14 is incremented.",
+      "paint_order_implication": "0x004280F0 starts from manager+0x04 and follows node+0x04, so a newly shown window is appended to the visible paint sequence and is later in the sequence than already-visible windows.",
+      "hide_behavior": "0x0042AC50 unlinks the matching node, decrements manager+0xD38 and releases it through 0x004680F8; showing it again appends a fresh node.",
+      "evidence_level": "primary-static-linked-list-insertion"
+    },
     "records": [
       {
         "window_id": 0,
@@ -24453,7 +24462,7 @@
     },
     "interpretation": "0x0042B820 is the visible-list state-reset traversal, while 0x004280F0 is the specialized paint dispatch consuming the same list. Cross-window painting follows the current visible-list order; a universal startup order is not implied.",
     "pending": [
-      "Recover the exact insertion/promote policy for each show/raise path so a given interaction can predict the list order without runtime capture."
+      "Correlate every UI command path that invokes show on an already-hidden window and determine whether any caller performs an explicit hide-then-show promotion sequence."
     ]
   },
   "horse_window_evidence": {

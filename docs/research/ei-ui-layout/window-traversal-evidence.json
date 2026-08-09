@@ -43,5 +43,5 @@
     "caveat": "The list order is runtime state: show/hide/promote operations determine the concrete stacking order."
   },
   "interpretation": "0x0042B820 is the visible-list state-reset traversal, while 0x004280F0 is the specialized paint dispatch consuming the same list. Cross-window painting follows the current visible-list order; a universal startup order is not implied.",
-  "pending": ["Recover the exact insertion/promote policy for each show/raise path so a given interaction can predict the list order without runtime capture."]
+  "pending": ["Correlate every UI command path that invokes show on an already-hidden window and determine whether any caller performs an explicit hide-then-show promotion sequence."]
 }

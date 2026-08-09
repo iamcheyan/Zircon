@@ -28,6 +28,15 @@
     "remove_and_free_va": "0x0042AC50 / 0x004680F8",
     "evidence_level": "primary-static-linked-list-flow"
   },
+  "insertion_policy": {
+    "routine": "0x00449870",
+    "show_helper_input": "window ID pushed by 0x0042AC30",
+    "empty_list": "The new node initializes the circular head/tail links and becomes both manager+0x04 and manager+0x0C.",
+    "nonempty_list": "The new node is linked after the current manager+0x0C tail; manager+0x0C is advanced to the new node and count manager+0x14 is incremented.",
+    "paint_order_implication": "0x004280F0 starts from manager+0x04 and follows node+0x04, so a newly shown window is appended to the visible paint sequence and is later in the sequence than already-visible windows.",
+    "hide_behavior": "0x0042AC50 unlinks the matching node, decrements manager+0xD38 and releases it through 0x004680F8; showing it again appends a fresh node.",
+    "evidence_level": "primary-static-linked-list-insertion"
+  },
   "records": [
     {"window_id": 0, "layout_id": "window.inventory", "object": "main+0x6554", "target": "0x0042ADCF", "state_gate": "main+0x6584", "show_hide": "gate != 0: hide; gate == 0: show then virtual +0x10(1) and initialize child list"},
     {"window_id": 1, "layout_id": "window.status", "object": "main+0x29CE4", "target": "0x0042AE42", "state_gate": "main+0x29D14", "show_hide": "gate-controlled show/hide"},

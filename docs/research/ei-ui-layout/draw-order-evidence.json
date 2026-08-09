@@ -77,7 +77,7 @@
     "evidence_level": "primary-static-base-window-paint"
   },
   "pending": [
-    "The insertion/promote policy that produces visible-list order for each open/raise interaction; 0x004280F0 now proves that the current list order is consumed for cross-window painting.",
+    "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
     "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
     "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
   ]
