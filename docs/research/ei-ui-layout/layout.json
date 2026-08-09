@@ -18045,6 +18045,45 @@
           "evidence_level": "primary-static-expression-plus-primary-resource"
         }
       ],
+      "paint_geometry": {
+        "paint_va": "0x0043E3C0",
+        "text_compositor": "0x0045DD70",
+        "state_field": "this+0x1D0",
+        "conditional_text": [
+          {
+            "string_va": "0x0047C460",
+            "text_gbk_decoded": "[行会修改 请自行修改行会等级、成员排行信息]",
+            "relative_origin": [
+              23,
+              94
+            ],
+            "color_arg": "0x00323232",
+            "branch": "this+0x1D0 == 0",
+            "evidence_level": "primary-static-string-and-coordinate"
+          },
+          {
+            "string_va": "0x0047C440",
+            "text_gbk_decoded": "[行会公告，请自行修改公告内容.]",
+            "relative_origin": [
+              23,
+              94
+            ],
+            "color_arg": "0x00323232",
+            "branch": "this+0x1D0 != 0",
+            "evidence_level": "primary-static-string-and-coordinate"
+          }
+        ],
+        "secondary_text": {
+          "string_va": "0x0047C440",
+          "relative_origin": [
+            24,
+            95
+          ],
+          "color_arg": "0x0096C8FF",
+          "evidence_level": "primary-static-string-and-coordinate"
+        },
+        "note": "The code directly draws original GBK guild/announcement placeholder strings through the shared text compositor. Resource Frame 602 and constructor id 15 alone do not prove whether this is a standalone notice dialog or a guild-information state."
+      },
       "confirmed": [
         "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
         "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
@@ -18053,7 +18092,7 @@
       "pending": [
         "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
         "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
-        "Exact text rendering rectangle and announcement open/close state transition."
+        "Whether this Frame 602 state is a standalone notice dialog or a guild-information substate."
       ]
     },
     {
@@ -20015,6 +20054,45 @@
         "evidence_level": "primary-static-expression-plus-primary-resource"
       }
     ],
+    "paint_geometry": {
+      "paint_va": "0x0043E3C0",
+      "text_compositor": "0x0045DD70",
+      "state_field": "this+0x1D0",
+      "conditional_text": [
+        {
+          "string_va": "0x0047C460",
+          "text_gbk_decoded": "[行会修改 请自行修改行会等级、成员排行信息]",
+          "relative_origin": [
+            23,
+            94
+          ],
+          "color_arg": "0x00323232",
+          "branch": "this+0x1D0 == 0",
+          "evidence_level": "primary-static-string-and-coordinate"
+        },
+        {
+          "string_va": "0x0047C440",
+          "text_gbk_decoded": "[行会公告，请自行修改公告内容.]",
+          "relative_origin": [
+            23,
+            94
+          ],
+          "color_arg": "0x00323232",
+          "branch": "this+0x1D0 != 0",
+          "evidence_level": "primary-static-string-and-coordinate"
+        }
+      ],
+      "secondary_text": {
+        "string_va": "0x0047C440",
+        "relative_origin": [
+          24,
+          95
+        ],
+        "color_arg": "0x0096C8FF",
+        "evidence_level": "primary-static-string-and-coordinate"
+      },
+      "note": "The code directly draws original GBK guild/announcement placeholder strings through the shared text compositor. Resource Frame 602 and constructor id 15 alone do not prove whether this is a standalone notice dialog or a guild-information state."
+    },
     "confirmed": [
       "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
       "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
@@ -20023,7 +20101,7 @@
     "pending": [
       "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
       "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
-      "Exact text rendering rectangle and announcement open/close state transition."
+      "Whether this Frame 602 state is a standalone notice dialog or a guild-information substate."
     ]
   },
   "confirmation_prompt_evidence": {
