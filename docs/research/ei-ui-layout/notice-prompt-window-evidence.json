@@ -1,0 +1,62 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "resource_file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil",
+    "constructor_va": "0x0043E260",
+    "main_init_va": "0x0042797E",
+    "method": "static constructor argument and WIL visual correlation",
+    "evidence_level": "primary-static-candidate"
+  },
+  "window": {
+    "id": "window.notice-prompt-candidate",
+    "background": {
+      "file": "Data/GameInter.wil",
+      "frame": 602,
+      "header_size": [1024, 256],
+      "visible_content_candidate": [584, 252],
+      "visual_observation": "Decorative announcement/notice board with title bar, large dark text area, close mark and confirm mark."
+    },
+    "constructor_raw_argument_note": "main initializer pushes 15, resource, 602, 107, 110, 584, 252, 0, 3; argument naming and parent origin remain unresolved.",
+    "movable": "candidate",
+    "screen_coordinate_candidate": [252, 110]
+  },
+  "related_resources": [
+    {"frame": 603, "header_size": [224, 58], "visual_observation": "Chinese YES/NO confirmation prompt."},
+    {"frame": 604, "header_size": [296, 58], "visual_observation": "Narrow message/input panel with checkmark state."},
+    {"frame": 605, "header_size": [40, 20], "visual_observation": "Small button/state resource."},
+    {"frame": 606, "header_size": [40, 20], "visual_observation": "Small button/state resource used by the 0x43E260 control cluster."},
+    {"frame": 607, "header_size": [40, 20], "visual_observation": "State pair for Frame 606."}
+  ],
+  "child_controls": [
+    {
+      "call_va": "0x0043E2BB",
+      "object_offset": "this+0x54",
+      "frame_pair": [161, 162],
+      "position_expression": {"x": "window_arg4+0x224", "y": "window_arg8+0x10"},
+      "position_candidate": [655, 16],
+      "size": [28, 26],
+      "semantic_candidate": "close/confirm control",
+      "evidence_level": "primary-static-expression-plus-primary-resource"
+    },
+    {
+      "call_va": "0x0043E2E4",
+      "object_offset": "this+0x108",
+      "frame_pair": [606, 607],
+      "position_expression": {"x": "window_arg4+0x224+0x1F0", "y": "window_arg8+0x10+0x1B"},
+      "position_candidate": [603, 27],
+      "size": [40, 20],
+      "semantic_candidate": "notice action/state button",
+      "evidence_level": "primary-static-expression-plus-primary-resource"
+    }
+  ],
+  "confirmed": [
+    "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
+    "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
+    "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family."
+  ],
+  "pending": [
+    "Exact runtime parent origin and whether the 1024-wide header includes an offscreen shadow/atlas region.",
+    "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine.",
+    "Exact text rendering rectangle and announcement open/close state transition."
+  ]
+}

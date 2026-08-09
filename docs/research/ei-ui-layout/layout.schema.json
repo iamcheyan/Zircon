@@ -101,6 +101,10 @@
     "draw_order_evidence": {
       "type": "object",
       "description": "Unified primary-static candidate layer order and known ordering constraints for the 800x600 UI."
+    },
+    "notice_prompt_evidence": {
+      "type": "object",
+      "description": "Primary static candidate evidence for announcement and confirmation prompt resources around the 0x0043E260 cluster."
     }
   }
 }
