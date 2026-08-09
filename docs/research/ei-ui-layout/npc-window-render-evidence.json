@@ -136,6 +136,20 @@
       "line_spacing_branches": [{"when": "this+0x582==1 and this+0x58C==1", "pixels": 14}, {"when": "otherwise", "pixels": 21}],
       "evidence_level": "primary-static-dialogue-parser-and-layout-state"
     },
+    "dialogue_parser_tokens": {
+      "scanner_va": "0x00440AA0",
+      "source_cursor_field": "this+0x584",
+      "raw_entry_counter_field": "this+0x588",
+      "recognized_delimiters": [
+        {"byte": "0x5C", "character": "\\\\", "effect": "terminates the current menu/dialogue segment and advances the parser cursor"},
+        {"byte": "0x7B", "character": "{", "effect": "scans a brace-delimited token; the token is compared through formatter/helper 0x00469400 against literal 0x0047C568"},
+        {"byte": "0x40", "character": "@", "effect": "enters a special token scan; the parser searches for the following 0x3E terminator and adjusts the source cursor"},
+        {"byte": "0x7D", "character": "}", "effect": "terminates the current scan path"}
+      ],
+      "mode_effect": "A successful brace-token comparison sets this+0x582=1; this mode changes the entry-count arithmetic and can produce 14-pixel line spacing when overflow is also set.",
+      "entry_count_proof": "The parser computes paint_count=max(raw_count-6,0), then clamps paint_count to 16; raw_count is incremented by segment separators and token handling, so it is not simply the number of visible text lines.",
+      "evidence_level": "primary-static-token-scanner"
+    },
     "paint_repositioned_controls": {
       "routine": "0x00440A43–0x00440A8B",
       "records": [
