@@ -2112,7 +2112,11 @@ function addFocusedWindow(r,analysis){
   }else if(r.id==='window.other-14-candidate'){
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
   }else if(r.id==='window.npc-candidate'){
-    addFocusedGeometry(ox+12,oy+20,528,110,'NPC动态内容候选 / 最多13条');
+    const ne=evidenceWindow(r.id),pg=ne.paint_geometry||{},loop=pg.dynamic_entry_loop||{};
+    const count=ne.window?.dynamic_entry_count_default||13,visible=Math.min(count,6);
+    addFocusedGeometry(ox+12,oy+20,528,visible*18,`F1101 / 最多${count}项 / 18px stride candidate`);
+    for(let i=0;i<visible;i++)addFocusedGeometry(ox+12,oy+20+18*i,528,18,i===0?'运行时目标字段决定实际屏幕位置':'' );
+    addFocusedGeometry(ox+12,oy+20+visible*18,528,16,'F1102 最终项：index=max(count-1,0)，位置字段待解析');
   }else if(r.id==='window.store-candidate'){
     for(let i=0;i<8;i++)addFocusedGeometry(ox+28,oy+26+49*i,36,36,i===0?'商品列表 / 8项 / 49px':'' );
     addFocusedGeometry(ox+210,oy+20,75,270,'状态0/3列表面板');

@@ -17197,6 +17197,24 @@
           "constructor_default_count": 13,
           "entry_stride_bytes": 18
         },
+        "dynamic_entry_loop": {
+          "routine": "0x0043F0B2-0x0043F10B",
+          "select_va": "0x0043F0BC",
+          "frame": 1101,
+          "count_field": "this+0x51C",
+          "index_register": "edi",
+          "entry_offset_register": "ebx",
+          "entry_offset_start": 0,
+          "entry_stride_bytes": 18,
+          "target_x_expression": "this+0x530 + entry_index (the draw path increments the loaded x once at 0x0043F0FA)",
+          "target_y_expression": "this+0x534 + entry_index*18",
+          "compositor_va": "0x00460240",
+          "source_viewport_literals": [
+            800,
+            600
+          ],
+          "evidence_level": "primary-static-loop"
+        },
         "dynamic_entry_blit": {
           "va": "0x0043F102",
           "target_x": "this+0x530 + entry_index",
@@ -17205,6 +17223,15 @@
         "final_state_select": {
           "va": "0x0043F120",
           "frame": 1102
+        },
+        "final_entry": {
+          "select_va": "0x0043F120",
+          "blit_va": "0x0043F16D",
+          "frame": 1102,
+          "index_expression": "max(this+0x51C - 1, 0)",
+          "target_x_expression": "this+0x540",
+          "target_y_expression": "this+0x544 + final_index*18",
+          "evidence_level": "primary-static-final-entry"
         },
         "secondary_blit": {
           "va": "0x0043F16D",
@@ -17248,7 +17275,21 @@
         "fallback_alpha_fields": [
           "this+0x580",
           "this+0x581"
-        ]
+        ],
+        "fallback_geometry": {
+          "entry_va": "0x0043F179",
+          "guard": "global 0x008B1874 == 0",
+          "coordinate_inputs": [
+            "this+0x520",
+            "this+0x524",
+            "this+0x528",
+            "this+0x52C"
+          ],
+          "normalizer_va": "0x004542A0",
+          "surface_helper_va": "0x00466800",
+          "meaning": "normalized/alpha fallback composition candidate; not identified as business text",
+          "evidence_level": "primary-static-candidate"
+        }
       },
       "confirmed": [
         "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
@@ -18975,6 +19016,24 @@
         "constructor_default_count": 13,
         "entry_stride_bytes": 18
       },
+      "dynamic_entry_loop": {
+        "routine": "0x0043F0B2-0x0043F10B",
+        "select_va": "0x0043F0BC",
+        "frame": 1101,
+        "count_field": "this+0x51C",
+        "index_register": "edi",
+        "entry_offset_register": "ebx",
+        "entry_offset_start": 0,
+        "entry_stride_bytes": 18,
+        "target_x_expression": "this+0x530 + entry_index (the draw path increments the loaded x once at 0x0043F0FA)",
+        "target_y_expression": "this+0x534 + entry_index*18",
+        "compositor_va": "0x00460240",
+        "source_viewport_literals": [
+          800,
+          600
+        ],
+        "evidence_level": "primary-static-loop"
+      },
       "dynamic_entry_blit": {
         "va": "0x0043F102",
         "target_x": "this+0x530 + entry_index",
@@ -18983,6 +19042,15 @@
       "final_state_select": {
         "va": "0x0043F120",
         "frame": 1102
+      },
+      "final_entry": {
+        "select_va": "0x0043F120",
+        "blit_va": "0x0043F16D",
+        "frame": 1102,
+        "index_expression": "max(this+0x51C - 1, 0)",
+        "target_x_expression": "this+0x540",
+        "target_y_expression": "this+0x544 + final_index*18",
+        "evidence_level": "primary-static-final-entry"
       },
       "secondary_blit": {
         "va": "0x0043F16D",
@@ -19026,7 +19094,21 @@
       "fallback_alpha_fields": [
         "this+0x580",
         "this+0x581"
-      ]
+      ],
+      "fallback_geometry": {
+        "entry_va": "0x0043F179",
+        "guard": "global 0x008B1874 == 0",
+        "coordinate_inputs": [
+          "this+0x520",
+          "this+0x524",
+          "this+0x528",
+          "this+0x52C"
+        ],
+        "normalizer_va": "0x004542A0",
+        "surface_helper_va": "0x00466800",
+        "meaning": "normalized/alpha fallback composition candidate; not identified as business text",
+        "evidence_level": "primary-static-candidate"
+      }
     },
     "confirmed": [
       "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
