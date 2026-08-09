@@ -1447,10 +1447,14 @@ class Handler(BaseHTTPRequestHandler):
             m = mon.get(c["monster_id"])
             mlink = f'<a href="/monster/{urllib.parse.quote(m["name"])}">{esc(m.get("zh") or m["name"])}</a>' if m else "—"
             avail = '<span class="good">可购买</span>' if c.get("available") else '<span class="bad">未开放</span>'
-            has_img = os.path.exists(os.path.join(IMGS_DIR, "companion", f"{c['id']}.png"))
-            img_note = " · 缺图（无客户端素材，诚实占位）" if not has_img else ""
+            if c.get("img"):
+                pic = icon_img('companion', c['id'], 'pic', c['name'])
+                img_note = ""
+            else:
+                pic = '<div class="noimg pic"></div>'
+                img_note = " · 缺图（无客户端素材，诚实占位）"
             cards += f"""<div class="card"><a href="/companions">
-  {icon_img('companion', c['id'], 'pic', c['name'])}
+  {pic}
   <div><span class="name">{esc(c['name'])}</span> {ver_badges(c.get('ver'))}</div>
   <div class="sub">宠物 #{c['monster_id']} · 对应怪物 {mlink}</div>
   <div class="sub">价格 {c.get('price') or '—'} 金币 · {avail}{img_note}</div>
