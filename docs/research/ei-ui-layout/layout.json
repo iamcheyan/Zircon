@@ -17709,7 +17709,29 @@
           "visual": "wide framed prompt panel with text area, lower action strip and close control"
         },
         "resource_handle": "this+0x45C",
-        "evidence_level": "primary-static-parent-and-resource"
+        "center_rule": {
+          "routine": "0x00418030",
+          "condition": "the two position arguments are -1",
+          "center": [
+            400,
+            246
+          ],
+          "frame_size": [
+            360,
+            190
+          ],
+          "screen_origin": [
+            220,
+            151
+          ],
+          "screen_rect": [
+            220,
+            151,
+            580,
+            341
+          ]
+        },
+        "evidence_level": "primary-static-parent-resource-and-centering-rule"
       },
       "constructor_clusters": [
         {
@@ -17797,7 +17819,7 @@
         "The frame family visually supports confirmation/prompt UI semantics."
       ],
       "pending": [
-        "Parent function names, dialog text source and exact 800x600 screen coordinates.",
+        "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
         "Whether the two clusters are two states of one prompt class or separate dialog classes.",
         "Runtime hover/click state transitions for the green-highlighted variants."
       ]
@@ -19544,7 +19566,29 @@
         "visual": "wide framed prompt panel with text area, lower action strip and close control"
       },
       "resource_handle": "this+0x45C",
-      "evidence_level": "primary-static-parent-and-resource"
+      "center_rule": {
+        "routine": "0x00418030",
+        "condition": "the two position arguments are -1",
+        "center": [
+          400,
+          246
+        ],
+        "frame_size": [
+          360,
+          190
+        ],
+        "screen_origin": [
+          220,
+          151
+        ],
+        "screen_rect": [
+          220,
+          151,
+          580,
+          341
+        ]
+      },
+      "evidence_level": "primary-static-parent-resource-and-centering-rule"
     },
     "constructor_clusters": [
       {
@@ -19632,7 +19676,7 @@
       "The frame family visually supports confirmation/prompt UI semantics."
     ],
     "pending": [
-      "Parent function names, dialog text source and exact 800x600 screen coordinates.",
+      "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
       "Whether the two clusters are two states of one prompt class or separate dialog classes.",
       "Runtime hover/click state transitions for the green-highlighted variants."
     ]
