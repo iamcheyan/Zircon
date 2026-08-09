@@ -3,9 +3,14 @@
   "window_candidate": {
     "constructor_va": "0x0043e260",
     "main_call_va": "0x0042797e",
+    "window_id": 15,
     "frame": 602,
     "resource": "main_ui_this+0x1c",
-    "call_argument_note": "Main initializer pushes 15, resource, 602, 107, 110, 584, 252, 0, 3; semantic slot names remain under review."
+    "screen_rect_candidate": {"left": 107, "top": 110, "right": 691, "bottom": 362, "width": 584, "height": 252},
+    "call_arguments": [15, "GameInter", 602, 107, 110, 584, 252, 0, 3],
+    "call_argument_note": "Main initializer pushes ID 15, GameInter resource, Frame 602, x=107, y=110, width=584, height=252, then 0 and 3. The first seven slots align with the common window constructor shape; the trailing flags remain implementation-specific.",
+    "evidence_level": "primary-static-exact-container-candidate",
+    "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments."
   },
   "records": [
     {

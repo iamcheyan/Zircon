@@ -25,7 +25,7 @@
 | 好友/社交列表 | `Interface1c.wil` 及未归属控件调用 | 全局控件目录 | 待追踪 | 通过字符串/xref/状态入口确认窗口 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850 | `system-window-render-evidence.json` | 候选 | 坐骑数据字段和按钮语义 |
-| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780` | `map-ui-resource-evidence.json`，固定 Rect `(672,0)-(800,128)` | 候选 | 地图边框/标记、完整地图窗口绘制与切换 |
+| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；完整地图 ID 15 / Frame 602 | `map-ui-resource-evidence.json`、`gameinter-cluster-43e260.json`；小地图 `(672,0)-(800,128)`，完整地图候选 `(107,110)-(691,362)` | 候选（容器坐标已恢复） | 地图边框/标记、完整地图图像裁剪、缩放/滚动和显示切换 |
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json` | 候选 | 父窗口运行时原点、状态机和文字绘制 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |

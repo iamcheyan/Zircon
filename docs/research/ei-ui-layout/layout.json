@@ -13652,9 +13652,31 @@
     {
       "constructor_va": "0x0043e260",
       "main_call_va": "0x0042797e",
+      "window_id": 15,
       "frame": 602,
       "resource": "main_ui_this+0x1c",
-      "call_argument_note": "Main initializer pushes 15, resource, 602, 107, 110, 584, 252, 0, 3; semantic slot names remain under review."
+      "screen_rect_candidate": {
+        "left": 107,
+        "top": 110,
+        "right": 691,
+        "bottom": 362,
+        "width": 584,
+        "height": 252
+      },
+      "call_arguments": [
+        15,
+        "GameInter",
+        602,
+        107,
+        110,
+        584,
+        252,
+        0,
+        3
+      ],
+      "call_argument_note": "Main initializer pushes ID 15, GameInter resource, Frame 602, x=107, y=110, width=584, height=252, then 0 and 3. The first seven slots align with the common window constructor shape; the trailing flags remain implementation-specific.",
+      "evidence_level": "primary-static-exact-container-candidate",
+      "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments."
     }
   ],
   "resource_evidence": {
@@ -17706,6 +17728,67 @@
       ],
       "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata. The destination widget rectangle is now statically recovered as 128x128 at screen (672,0)."
     },
+    "full_map_window": {
+      "constructor_va": "0x0043E260",
+      "main_call_va": "0x0042797E",
+      "window_id": 15,
+      "background": {
+        "file": "Data/GameInter.wil",
+        "frame": 602
+      },
+      "screen_rect_candidate": {
+        "left": 107,
+        "top": 110,
+        "right": 691,
+        "bottom": 362,
+        "width": 584,
+        "height": 252
+      },
+      "raw_call_arguments": [
+        15,
+        "GameInter",
+        602,
+        107,
+        110,
+        584,
+        252,
+        0,
+        3
+      ],
+      "child_controls": [
+        {
+          "frames": [
+            161,
+            162
+          ],
+          "rect": [
+            655,
+            16,
+            28,
+            26
+          ],
+          "relative_to": "wrapper argument origin",
+          "call_va": "0x0043E2BB"
+        },
+        {
+          "frames": [
+            606,
+            607
+          ],
+          "rect": [
+            603,
+            27,
+            40,
+            20
+          ],
+          "relative_to": "wrapper argument origin",
+          "call_va": "0x0043E2E4"
+        }
+      ],
+      "evidence_level": "primary-static-exact-container-candidate",
+      "interpretation": "The fixed minimap and full-map window are separate paths: the former is owner+0x2C0 at screen (672,0)-(800,128), while this ID-15 container is created at (107,110) with Frame 602. The final map image is still supplied by the MMap/FMMap surface path and must be clipped or composited into this container.",
+      "source_artifact": "gameinter-cluster-43e260.json"
+    },
     "render_evidence": {
       "paint_va": "0x0043DA80",
       "map_blit_or_composite": {
@@ -17807,7 +17890,7 @@
     ],
     "pending": [
       "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
-      "Recover map window frame, screen coordinates and zoom/scroll state from input and paint callers.",
+      "Recover the remaining full-map input/paint state and prove whether the ID-15 wrapper origin is already screen-absolute or translated by its parent.",
       "Confirm whether map_id >= 1000 corresponds to all MMap frames or only a subset of map states.",
       "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
     ]
