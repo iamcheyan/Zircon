@@ -92,8 +92,16 @@
     "promotion_result": "The recovered command paths show ordinary open actions call the dispatcher once with the target ID; the corresponding cleanup paths are separate. No direct hide-then-show pair was found in the same basic block. A later open can still append a window after a prior cleanup, but an unconditional top-level promotion policy is not proven.",
     "evidence_level": "primary-static-caller-scan"
   },
+  "notice_id15_caller_resolution": {
+    "caller_range": "0x0042BE21-0x0042BEA7",
+    "preparation_call": "0x0043E4B0",
+    "success_branch": "0x0042BE95-0x0042BE99",
+    "show_argument": 15,
+    "result": "ID15 is shown after the independent notice/result preparation call succeeds; this evidence does not bind it exclusively to the guild page.",
+    "evidence_level": "primary-static"
+  },
   "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
   "pending": [
-    "Correlate the already-identified ID15 notice object with its external caller/message routine and any secondary Interface1c prompt resources."
+    "Resolve the message payload fields passed into 0x0043E4B0 and determine whether any Interface1c prompt is displayed before the Frame 602 window."
   ]
 }

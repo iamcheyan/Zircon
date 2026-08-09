@@ -48,8 +48,15 @@
     "interpretation": "The shared constructor writes zero to +0x30. The main initializer constructs/registers the windows but has no 0x0042AC30 show-helper call in the registration sequence; normal windows therefore begin hidden and are promoted by the visibility dispatcher only after an explicit command/state path.",
     "evidence_level": "primary-static-constructor-and-init-call-scan"
   },
+  "notice_id15_open_path": {
+    "caller_va": "0x0042BE21-0x0042BEA7",
+    "preparation_call": "0x0043E4B0",
+    "condition": "preparation call returns non-zero",
+    "show_dispatch": "0x0042BE95 pushes window ID 15; 0x0042BE99 calls 0x0042ADB0",
+    "window_object": "main+0x52E5C",
+    "interpretation": "The registered Frame 602 object is opened by the notice/result path after 0x0043E4B0 succeeds; the static caller is not a guild-page-only path.",
+    "evidence_level": "primary-static-caller-and-return-gate"
+  },
   "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; the shared constructor proves the default visibility gate is zero before any explicit show command.",
-  "pending": [
-    "Determine whether the Frame 602 notice is opened by the guild page or by an independent command/state path."
-  ]
+  "pending": []
 }

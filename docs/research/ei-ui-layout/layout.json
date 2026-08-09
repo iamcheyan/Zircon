@@ -31121,9 +31121,17 @@
       "promotion_result": "The recovered command paths show ordinary open actions call the dispatcher once with the target ID; the corresponding cleanup paths are separate. No direct hide-then-show pair was found in the same basic block. A later open can still append a window after a prior cleanup, but an unconditional top-level promotion policy is not proven.",
       "evidence_level": "primary-static-caller-scan"
     },
+    "notice_id15_caller_resolution": {
+      "caller_range": "0x0042BE21-0x0042BEA7",
+      "preparation_call": "0x0043E4B0",
+      "success_branch": "0x0042BE95-0x0042BE99",
+      "show_argument": 15,
+      "result": "ID15 is shown after the independent notice/result preparation call succeeds; this evidence does not bind it exclusively to the guild page.",
+      "evidence_level": "primary-static"
+    },
     "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
     "pending": [
-      "Correlate the already-identified ID15 notice object with its external caller/message routine and any secondary Interface1c prompt resources."
+      "Resolve the message payload fields passed into 0x0043E4B0 and determine whether any Interface1c prompt is displayed before the Frame 602 window."
     ]
   },
   "window_initialization_evidence": {
@@ -31410,10 +31418,17 @@
       "interpretation": "The shared constructor writes zero to +0x30. The main initializer constructs/registers the windows but has no 0x0042AC30 show-helper call in the registration sequence; normal windows therefore begin hidden and are promoted by the visibility dispatcher only after an explicit command/state path.",
       "evidence_level": "primary-static-constructor-and-init-call-scan"
     },
+    "notice_id15_open_path": {
+      "caller_va": "0x0042BE21-0x0042BEA7",
+      "preparation_call": "0x0043E4B0",
+      "condition": "preparation call returns non-zero",
+      "show_dispatch": "0x0042BE95 pushes window ID 15; 0x0042BE99 calls 0x0042ADB0",
+      "window_object": "main+0x52E5C",
+      "interpretation": "The registered Frame 602 object is opened by the notice/result path after 0x0043E4B0 succeeds; the static caller is not a guild-page-only path.",
+      "evidence_level": "primary-static-caller-and-return-gate"
+    },
     "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; the shared constructor proves the default visibility gate is zero before any explicit show command.",
-    "pending": [
-      "Determine whether the Frame 602 notice is opened by the guild page or by an independent command/state path."
-    ]
+    "pending": []
   },
   "window_traversal_evidence": {
     "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
