@@ -178,9 +178,12 @@
       "source": "primary-static color arguments at 0x0043DBBF/0x0043DBD9/0x0043DC42/0x0043DD79",
       "records": [
         {"color": "0x64C864", "rgb": [100,200,100], "used_by": ["computed view/object rectangle marker", "global list marker family"], "confidence": "high", "business_name": null},
-        {"color": "0xFFFF00", "rgb": [255,255,0], "used_by": ["global list entries where entry+0x88 == 0x32"], "confidence": "high", "business_name": null}
+        {"color": "0xFFFF00", "rgb": [255,255,0], "used_by": ["global list entries where entry+0x88 == 0x32"], "confidence": "high", "business_name": null},
+        {"color": "0x646464", "rgb": [100,100,100], "used_by": ["fixed map auxiliary rectangle branch at 0x0043DBD7"], "confidence": "high", "business_name": null},
+        {"color": "0xC8C8C8", "rgb": [200,200,200], "used_by": ["fixed map auxiliary rectangle branch at 0x0043DC0D"], "confidence": "high", "business_name": null},
+        {"color": "0x96C8FF", "rgb": [150,200,255], "used_by": ["fixed map auxiliary rectangle branch at 0x0043DC40"], "confidence": "high", "business_name": null}
       ],
-      "note": "The original client distinguishes at least green and yellow map overlays; color evidence is stronger than a semantic label, so player/NPC/item names remain unresolved."
+      "note": "The original client distinguishes green, yellow, gray, light-gray and pale-blue map drawing branches. Color evidence is stronger than a semantic label, so player/NPC/item names remain unresolved."
     },
     "timing_or_animation": {
       "field": "owner+0x300",
