@@ -24,7 +24,7 @@
 | 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置、GBK 字符串、文字起点 `(40,29)`、实际 `14px` 视觉行距，以及通用控件 `control+0x34` 字符串字段绑定已从绘制/构造链恢复 | 已恢复 | 共享控件究竟把频道字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |
 | 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
-| 坐骑 | GameInter F850、860–867 | `horse-window-render-evidence.json`、`0x004269C0/0x00426A80` | 候选（坐标与命令已恢复） | 状态字段与韩文美术标签到命令的运行时绑定；标签为 `말타기/말내리기/말숨기기/말꺼내기` |
+| 坐骑 | GameInter F850、860–867 | `horse-window-render-evidence.json`、`0x004269C0/0x00426A80` | 候选（坐标、韩文标签与命令绑定已恢复） | Frame 850 之外是否存在状态覆盖层；`@遛马` 在不同按钮上的最终服务端语义 |
 | 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；服务器 `MiniMap.txt` 映射 | `map-ui-resource-evidence.json`、`minimap-server-crossref.json`；小地图 `(672,0)-(800,128)`；`0x0043DE40` 明确切换 `256×256/128×128` 表面模式；绿色/黄色标记分支已确认 | 候选（资源、固定小地图 Rect、模式切换、颜色层已恢复） | 完整地图专用 UI 容器、地图窗口打开入口、缩放/滚动和切换命令语义；标记对象类型 |
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0`；已直接读出 `选择角色/创建账号/修改密码/创建角色/删除角色/开始游戏` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选（按钮文字已由原版像素确认） | 运行时状态转换、Frame 17/57 空资源差异和剩余按钮语义 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json`；公告父窗口 `(107,110)-(691,362)` 与 `[行会公告]/[行会修改]` 原版 GBK 文字已由静态绘制调用闭合；`0x00418030` 直接调用者已关联交易、丢金币、仓库、组队和网络提示文本 | 候选 | 区分独立公告框与行会子状态、状态机和确认框 F950 的运行时原点 |

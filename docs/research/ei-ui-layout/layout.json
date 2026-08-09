@@ -31046,11 +31046,66 @@
         ],
         "interpretation": "The click path now has exact original command strings; these are stronger business evidence than pixel transcription, while the UI artwork labels for Frames 864-867 remain separate candidates."
       },
+      "artwork_to_command_binding": {
+        "evidence_level": "primary-static-control-order-plus-primary-resource-text",
+        "records": [
+          {
+            "control": "this+0x108",
+            "frame_pair": [
+              860,
+              861
+            ],
+            "artwork_text": "말타기",
+            "state_condition": "byte [0x007DA060] == 0",
+            "command": "@上马",
+            "command_va": "0x0047B060",
+            "binding_confidence": "high"
+          },
+          {
+            "control": "this+0x1BC",
+            "frame_pair": [
+              862,
+              863
+            ],
+            "artwork_text": "말내리기",
+            "state_condition": "byte [0x007DA060] != 0",
+            "command": "@遛马",
+            "command_va": "0x0047B068",
+            "binding_confidence": "high"
+          },
+          {
+            "control": "this+0x270",
+            "frame_pair": [
+              864,
+              865
+            ],
+            "artwork_text": "말숨기기",
+            "state_condition": "child handler handled",
+            "command": "@收马",
+            "command_va": "0x0047B058",
+            "binding_confidence": "high"
+          },
+          {
+            "control": "this+0x324",
+            "frame_pair": [
+              866,
+              867
+            ],
+            "artwork_text": "말꺼내기",
+            "state_condition": "child handler handled",
+            "command": "@遛马",
+            "command_va": "0x0047B068",
+            "binding_confidence": "high",
+            "note": "The same original command literal is used by two distinct controls; do not collapse the controls merely because their dispatch string matches."
+          }
+        ],
+        "interpretation": "The binary's control order and the WIL pixel text are sufficient to bind each control to the command literal passed to 0x004520F0. The Chinese command text is the original client literal; Korean artwork is visual resource text. Their language mismatch is expected and is not a translation guess."
+      },
       "evidence_level": "primary-static-plus-primary-resource"
     },
-    "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The click commands are now exact original strings; only the mapping between those commands, state transitions and the low-resolution artwork labels remains partially unresolved.",
+    "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. Four visible mount controls now have direct command-literal bindings; state-dependent overlays outside Frame 850 remain separate.",
     "pending": [
-      "Map the now-confirmed Korean artwork labels to the decoded command strings without assuming artwork text equals command text; determine whether state-dependent overlays are painted outside Frame 850."
+      "Determine whether state-dependent overlays are painted outside Frame 850 and identify any additional runtime state fields governing visibility of the four mount controls."
     ]
   },
   "hud_bars_render_evidence": {
