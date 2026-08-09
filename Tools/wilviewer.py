@@ -2099,6 +2099,9 @@ function addFocusedWindow(r,analysis){
     }
   }else if(r.id==='window.group'){
     for(let i=0;i<12;i++)addFocusedGeometry(ox+45+100*(i%2),oy+90+20*Math.floor(i/2),92,18,i===0?'成员两列 / 20px':'' );
+    const ge=evidenceWindow(r.id),sc=ge.state_text_and_controls?.paint_repositioned_controls?.records||[];
+    for(const q of sc)addFocusedGeometry(ox+q.relative_position[0],oy+q.relative_position[1],40,20,`组队控件 ${q.object_offset}`);
+    addFocusedGeometry(ox+110,oy+58,70,18,'[允许]/[拒绝] · permission field candidate');
   }else if(r.id==='window.guild-candidate'){
     for(let i=0;i<18;i++)addFocusedGeometry(ox+35,oy+60+20*i,500,18,i===0?'最多18行 / 动态字体行距':'' );
     const ge=evidenceWindow(r.id),pc=ge.paint_repositioned_controls?.records||[];

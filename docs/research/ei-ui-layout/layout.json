@@ -17517,8 +17517,77 @@
             "evidence": "0x00424445-0x0042448E",
             "confidence": "primary-static"
           },
+          "state_text_and_controls": {
+            "permission_field": "this+0x3F0",
+            "permission_branch_va": "0x00424532-0x00424570",
+            "strings": [
+              {
+                "string_va": "0x0047BA00",
+                "text_gbk_decoded": "[拒绝]",
+                "condition": "this+0x3F0 == 0"
+              },
+              {
+                "string_va": "0x0047BA08",
+                "text_gbk_decoded": "[允许]",
+                "condition": "this+0x3F0 != 0"
+              }
+            ],
+            "text_compositor_va": "0x0045DD70",
+            "text_origin_expression": {
+              "x": "window.x+0x6E candidate from register-flow base",
+              "y": "window.y+0x3A candidate from register-flow base"
+            },
+            "paint_repositioned_controls": {
+              "routine": "0x004244A6-0x0042452D",
+              "records": [
+                {
+                  "object_offset": "this+0x6C",
+                  "relative_position": [
+                    226,
+                    214
+                  ],
+                  "call_va": "0x004244BE"
+                },
+                {
+                  "object_offset": "this+0x120",
+                  "relative_position": [
+                    17,
+                    197
+                  ],
+                  "call_va": "0x004244DA"
+                },
+                {
+                  "object_offset": "this+0x1D4",
+                  "relative_position": [
+                    80,
+                    197
+                  ],
+                  "call_va": "0x004244F6"
+                },
+                {
+                  "object_offset": "this+0x288",
+                  "relative_position": [
+                    159,
+                    197
+                  ],
+                  "call_va": "0x00424514"
+                },
+                {
+                  "object_offset": "this+0x33C",
+                  "relative_position": [
+                    9,
+                    52
+                  ],
+                  "call_va": "0x0042452D"
+                }
+              ],
+              "evidence_level": "primary-static-paint-position"
+            },
+            "evidence_level": "primary-static-string-and-position"
+          },
           "pending": [
             "member field text/icon ordering",
+            "confirm exact screen origin of the permission text register-flow expression",
             "whether the visible linked-list count is capped by clipping",
             "runtime open-state transitions"
           ]
@@ -19533,8 +19602,77 @@
           "evidence": "0x00424445-0x0042448E",
           "confidence": "primary-static"
         },
+        "state_text_and_controls": {
+          "permission_field": "this+0x3F0",
+          "permission_branch_va": "0x00424532-0x00424570",
+          "strings": [
+            {
+              "string_va": "0x0047BA00",
+              "text_gbk_decoded": "[拒绝]",
+              "condition": "this+0x3F0 == 0"
+            },
+            {
+              "string_va": "0x0047BA08",
+              "text_gbk_decoded": "[允许]",
+              "condition": "this+0x3F0 != 0"
+            }
+          ],
+          "text_compositor_va": "0x0045DD70",
+          "text_origin_expression": {
+            "x": "window.x+0x6E candidate from register-flow base",
+            "y": "window.y+0x3A candidate from register-flow base"
+          },
+          "paint_repositioned_controls": {
+            "routine": "0x004244A6-0x0042452D",
+            "records": [
+              {
+                "object_offset": "this+0x6C",
+                "relative_position": [
+                  226,
+                  214
+                ],
+                "call_va": "0x004244BE"
+              },
+              {
+                "object_offset": "this+0x120",
+                "relative_position": [
+                  17,
+                  197
+                ],
+                "call_va": "0x004244DA"
+              },
+              {
+                "object_offset": "this+0x1D4",
+                "relative_position": [
+                  80,
+                  197
+                ],
+                "call_va": "0x004244F6"
+              },
+              {
+                "object_offset": "this+0x288",
+                "relative_position": [
+                  159,
+                  197
+                ],
+                "call_va": "0x00424514"
+              },
+              {
+                "object_offset": "this+0x33C",
+                "relative_position": [
+                  9,
+                  52
+                ],
+                "call_va": "0x0042452D"
+              }
+            ],
+            "evidence_level": "primary-static-paint-position"
+          },
+          "evidence_level": "primary-static-string-and-position"
+        },
         "pending": [
           "member field text/icon ordering",
+          "confirm exact screen origin of the permission text register-flow expression",
           "whether the visible linked-list count is capped by clipping",
           "runtime open-state transitions"
         ]
