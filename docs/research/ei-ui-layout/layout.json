@@ -18266,6 +18266,52 @@
           "interpretation": "A second prompt/action constructor cluster uses the same YES/NO resource family; frame selection is statically clear but indirect state choice remains unresolved."
         }
       ],
+      "message_geometry": {
+        "routine": "0x00418030",
+        "branch_condition": "constructor argument at stack expression [esp+0x24] tested at 0x004181E5",
+        "setrect_va": "0x004762B0",
+        "nonzero_argument_rect": {
+          "rect_object": "this+0x18",
+          "left_expression": "[esi]+0x18",
+          "top_expression": "argument_y+0x17",
+          "right_expression": "[esi]+0x14D",
+          "bottom_expression": "argument_y+0x64",
+          "branch_va": "0x00418209"
+        },
+        "zero_argument_rect": {
+          "rect_object": "this+0x18",
+          "left_expression": "[esi]+0x18",
+          "top_expression": "argument_y+0x17",
+          "right_expression": "[esi]+0x14D",
+          "bottom_expression": "argument_y+0x78",
+          "branch_va": "0x00418262"
+        },
+        "text_or_font_calls": [
+          {
+            "va": "0x004762BC",
+            "arguments_include": [
+              "resource/context 0x008AA48C",
+              "0x135",
+              "global_view_x + argument_y + 0x1A",
+              "global_view_y + argument_y + 0x95"
+            ],
+            "meaning": "message rendering/resource call candidate"
+          },
+          {
+            "va": "0x004762B8",
+            "meaning": "paired text/resource operation candidate"
+          },
+          {
+            "va": "0x004762AC",
+            "arguments_include": [
+              "0x5"
+            ],
+            "meaning": "paired text/resource state operation candidate"
+          }
+        ],
+        "evidence_level": "primary-static-message-rect-candidate",
+        "note": "The raw RECT expressions and branch heights are exact; IAT calls after the RECT setup are retained as candidates until runtime/API naming confirms their text role."
+      },
       "confirmed": [
         "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
         "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
@@ -20275,6 +20321,52 @@
         "interpretation": "A second prompt/action constructor cluster uses the same YES/NO resource family; frame selection is statically clear but indirect state choice remains unresolved."
       }
     ],
+    "message_geometry": {
+      "routine": "0x00418030",
+      "branch_condition": "constructor argument at stack expression [esp+0x24] tested at 0x004181E5",
+      "setrect_va": "0x004762B0",
+      "nonzero_argument_rect": {
+        "rect_object": "this+0x18",
+        "left_expression": "[esi]+0x18",
+        "top_expression": "argument_y+0x17",
+        "right_expression": "[esi]+0x14D",
+        "bottom_expression": "argument_y+0x64",
+        "branch_va": "0x00418209"
+      },
+      "zero_argument_rect": {
+        "rect_object": "this+0x18",
+        "left_expression": "[esi]+0x18",
+        "top_expression": "argument_y+0x17",
+        "right_expression": "[esi]+0x14D",
+        "bottom_expression": "argument_y+0x78",
+        "branch_va": "0x00418262"
+      },
+      "text_or_font_calls": [
+        {
+          "va": "0x004762BC",
+          "arguments_include": [
+            "resource/context 0x008AA48C",
+            "0x135",
+            "global_view_x + argument_y + 0x1A",
+            "global_view_y + argument_y + 0x95"
+          ],
+          "meaning": "message rendering/resource call candidate"
+        },
+        {
+          "va": "0x004762B8",
+          "meaning": "paired text/resource operation candidate"
+        },
+        {
+          "va": "0x004762AC",
+          "arguments_include": [
+            "0x5"
+          ],
+          "meaning": "paired text/resource state operation candidate"
+        }
+      ],
+      "evidence_level": "primary-static-message-rect-candidate",
+      "note": "The raw RECT expressions and branch heights are exact; IAT calls after the RECT setup are retained as candidates until runtime/API naming confirms their text role."
+    },
     "confirmed": [
       "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
       "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
