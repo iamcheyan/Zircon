@@ -131,7 +131,21 @@
         {"order": 3, "va": "0x0042514D-0x00425258", "role": "guild control reposition", "evidence": "After the state-specific path returns, the wrapper assigns the nine paint-time control positions recorded in the evidence."},
         {"order": 4, "va": "0x0042525D-0x00425270", "role": "child control paint sequence", "evidence": "Nine child controls are painted through vtable +0x04 in construction order after positioning."}
       ],
-      "pending": ["Map paint-time control objects to exact tab/button business names", "reconcile constructor-time register expressions with paint-time SetPosition values", "special marker color/field styling"]
+      "resource_visual_text": {
+        "source": "Direct pixel inspection of original Data/GameInter.wil frames 610-625; each normal frame is paired with the following pressed frame.",
+        "warning": "These are artwork labels, not by themselves proof of the click handler or current guild state.",
+        "guild_control_records": [
+          {"frame_pair": [610, 611], "normal_visual_text": "会员升职", "pressed_visual_text": "会员升职", "confidence": "high"},
+          {"frame_pair": [612, 613], "normal_visual_text": "成员踢出", "pressed_visual_text": "成员踢出", "confidence": "high"},
+          {"frame_pair": [614, 615], "normal_visual_text": "盟主转让", "pressed_visual_text": "盟主转让", "confidence": "medium", "note": "The first glyph is low-resolution but is consistent with 盟主 in the original artwork."},
+          {"frame_pair": [616, 617], "normal_visual_text": "邀请入会", "pressed_visual_text": "邀请入会", "confidence": "medium", "note": "Pixel glyph reading; retain as a candidate until the string/click branch is correlated."},
+          {"frame_pair": [618, 619], "normal_visual_text": "行会公告", "pressed_visual_text": "行会公告", "confidence": "high"},
+          {"frame_pair": [620, 621], "normal_visual_text": "退出行会", "pressed_visual_text": "退出行会", "confidence": "medium", "note": "The second glyph is partially blended with the metal texture."},
+          {"frame_pair": [622, 623], "normal_visual_text": "行会解散", "pressed_visual_text": "行会解散", "confidence": "high"},
+          {"frame_pair": [624, 625], "normal_visual_text": "关闭窗口", "pressed_visual_text": "关闭窗口", "confidence": "high"}
+        ]
+      },
+      "pending": ["Correlate each artwork label with its exact control object and click/business branch", "reconcile constructor-time register expressions with paint-time SetPosition values", "special marker color/field styling"]
     }
   ],
   "confirmed": [
