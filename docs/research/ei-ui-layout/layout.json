@@ -18712,6 +18712,32 @@
               "evidence_level": "primary-static-call-chain"
             }
           },
+          "paint_order": [
+            {
+              "order": 1,
+              "va": "0x00415B1C-0x00415B65",
+              "role": "window base and left/right trade split",
+              "evidence": "The exchange paint entry calls window vtable +0x0C, then writes the center split rectangles for the two trade sides."
+            },
+            {
+              "order": 2,
+              "va": "0x00415B6B-0x00415E44",
+              "role": "state-dependent item-grid selection and composition",
+              "evidence": "The selection globals and state byte choose the left or right grid origin; item hit/index resolution and source/destination rectangles are passed through 0x466800 and 0x4542F0."
+            },
+            {
+              "order": 3,
+              "va": "0x00415E44-0x00415FFF",
+              "role": "trade labels, item text and numeric status",
+              "evidence": "After item composition, the routine invokes 0x4169B0 and emits multiple formatted text records through 0x45DE50/0x46811C using the recovered exchange state fields."
+            },
+            {
+              "order": 4,
+              "va": "0x00416000-0x0041603D",
+              "role": "two Frame 94 side panels",
+              "evidence": "GameInter Frame 94 is drawn at window-relative x+0xD1 and x+0x1B9, both with y-0x73, after the trade text path."
+            }
+          ],
           "pending": [
             "parent-origin/register-flow mismatch must be resolved before using these as screen coordinates",
             "trade grid and text draw loop"
@@ -21389,6 +21415,32 @@
             "evidence_level": "primary-static-call-chain"
           }
         },
+        "paint_order": [
+          {
+            "order": 1,
+            "va": "0x00415B1C-0x00415B65",
+            "role": "window base and left/right trade split",
+            "evidence": "The exchange paint entry calls window vtable +0x0C, then writes the center split rectangles for the two trade sides."
+          },
+          {
+            "order": 2,
+            "va": "0x00415B6B-0x00415E44",
+            "role": "state-dependent item-grid selection and composition",
+            "evidence": "The selection globals and state byte choose the left or right grid origin; item hit/index resolution and source/destination rectangles are passed through 0x466800 and 0x4542F0."
+          },
+          {
+            "order": 3,
+            "va": "0x00415E44-0x00415FFF",
+            "role": "trade labels, item text and numeric status",
+            "evidence": "After item composition, the routine invokes 0x4169B0 and emits multiple formatted text records through 0x45DE50/0x46811C using the recovered exchange state fields."
+          },
+          {
+            "order": 4,
+            "va": "0x00416000-0x0041603D",
+            "role": "two Frame 94 side panels",
+            "evidence": "GameInter Frame 94 is drawn at window-relative x+0xD1 and x+0x1B9, both with y-0x73, after the trade text path."
+          }
+        ],
         "pending": [
           "parent-origin/register-flow mismatch must be resolved before using these as screen coordinates",
           "trade grid and text draw loop"
