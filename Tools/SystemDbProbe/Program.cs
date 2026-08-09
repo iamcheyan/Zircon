@@ -19,6 +19,7 @@ string root = "Debug/Server/Database/";
 string dumpDir = null;
 string viewDir = null;
 string imagesOut = null;
+string storesOut = null;
 string bc7Lib = null, bc7Frame = null, bc7Out = null;
 
 for (int i = 0; i < args.Length; i++)
@@ -45,6 +46,11 @@ for (int i = 0; i < args.Length; i++)
         bc7Out = args[++i];
         continue;
     }
+    if (args[i] == "--stores")
+    {
+        storesOut = args[++i];
+        continue;
+    }
     root = args[i];
 }
 if (!Path.IsPathRooted(root)) root = Path.GetFullPath(root);
@@ -64,7 +70,7 @@ session.Initialize(
 Console.WriteLine($"数据库: {session.SystemPath}");
 Console.WriteLine($"版本:   {session.SystemDatabaseVersion}");
 
-if (dumpDir == null && viewDir == null && imagesOut == null)
+if (dumpDir == null && viewDir == null && imagesOut == null && storesOut == null)
 {
     void Dump(string label, int count)
         => Console.WriteLine($"{label,-12} {count,6}");
@@ -77,6 +83,13 @@ if (dumpDir == null && viewDir == null && imagesOut == null)
     Dump("刷新点", session.GetCollection<RespawnInfo>().Count);
     Dump("任务", session.GetCollection<QuestInfo>().Count);
     Dump("沙巴克", session.GetCollection<CastleInfo>().Count);
+    return;
+}
+
+if (storesOut != null)
+{
+    GenerateStores(session, storesOut);
+    Console.WriteLine($"商店数据 -> {storesOut}");
     return;
 }
 
@@ -983,4 +996,52 @@ static void GenerateImages(Session session, string outPath)
     });
     File.WriteAllText(outPath, json);
     Console.WriteLine($"怪物 {monsters.Count} / 物品 {items.Count} / 技能 {skills.Count} / NPC {npcs.Count} / 宠物 {companions.Count}");
+}
+
+// ---------- 商店数据导出（--stores） ----------
+// NPC 商店 = NPCGood 按 GoodsIndex 分组，NPCInfo.GoodsIndex 指向同组。
+// 输出 NPC（含地图/商店页）与货品（含物品名/倍率），供百科「商店」板块渲染。
+static void GenerateStores(Session session, string outPath)
+{
+    IList Coll(Type t) => (IList)session.GetCollection(t).GetType().GetField("Binding").GetValue(session.GetCollection(t));
+
+    var npcs = Coll(typeof(NPCInfo)).Cast<NPCInfo>()
+        .Select(n => new
+        {
+            index = n.Index,
+            name = n.NPCName,
+            map = n.Region?.ServerDescription ?? "",
+            mapFile = n.Region?.Map?.FileName ?? "",
+            goodsIndex = n.GoodsIndex,
+            image = n.Image,
+            face = n.FaceImage,
+        })
+        .OrderBy(x => x.goodsIndex).ThenBy(x => x.index)
+        .ToList();
+
+    var goods = Coll(typeof(NPCGood)).Cast<NPCGood>()
+        .Select(g => new
+        {
+            index = g.Index,
+            item = g.Item?.ItemName ?? "",
+            itemIndex = g.Item?.Index ?? 0,
+            rate = g.Rate,
+            goodsIndex = g.GoodsIndex,
+        })
+        .OrderBy(x => x.goodsIndex).ThenBy(x => x.index)
+        .ToList();
+
+    var obj = new
+    {
+        npcs,
+        goods,
+        storeCount = goods.Select(g => g.goodsIndex).DefaultIfEmpty(0).Max(),
+    };
+    string json = System.Text.Json.JsonSerializer.Serialize(obj, new System.Text.Json.JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    });
+    File.WriteAllText(outPath, json);
+    Console.WriteLine($"NPC {npcs.Count} / 货品 {goods.Count} / 商店页 {obj.storeCount}");
 }

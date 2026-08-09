@@ -26,6 +26,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON = "/tmp/wiki_data_v2.json"
 REPORT_JSON = "/tmp/report_full.json"
+STORES_JSON = "/tmp/wiki_stores.json"
 MAP_LINKS_JSON = "/tmp/map_links.json"
 THUMBS_DIR = "/tmp/wiki_thumbs"
 IMGS_DIR = "/tmp/wiki_imgs"
@@ -35,20 +36,41 @@ EI_MAPS = os.path.join(EI_CLIENT, "Map")
 EI_DATA = os.path.join(EI_CLIENT, "Data")
 PORT = 8777
 
+# 商店类型英文 -> 中文 (与 stores_build.py 一致)
+KIND_ZH = {
+    "Weapon Store": "武器店", "Armour Store": "防具店", "Accessory Store": "首饰店",
+    "Book Store": "书店", "Butcher Store": "肉店", "Potion Store": "药店",
+    "Essential Store": "杂货店", "Collector Store": "回收店", "Refine Smith": "铁匠铺",
+    "Accessory Refiner": "首饰加工", "Rusty Accessory NPC": "旧首饰商",
+    "Weapon Craft NPC": "武器打造", "Emblem NPC": "徽章商人", "Item Fragment": "碎片商人",
+    "Stables Store": "马厩", "Stables": "马厩", "Companion Manager": "宠物管理员",
+    "Companoin Manager": "宠物管理员", "Well": "水井", "Notice Board": "公告板",
+    "Teleport Stone": "传送石", "Teleport Stone Castle": "传送石(城堡)",
+    "Teleport Stone Left": "传送石(左)", "Warrior Trainer": "战士训练师",
+    "Taoist Mentor": "道士导师", "Wizard Teacher": "法师导师", "Village Elder": "村长",
+    "Dock Manager": "码头管理员", "Administrator": "管理员", "Sailor NPC": "水手",
+    "Chief Yonghyeon": "村长",
+}
+
 # ---------------------------------------------------------------- ver 筛选
-VER_OPTS = [("", "全部版本"), ("ei", "仅 EI 独有"), ("mei", "仅 mir3ei 独有"), ("zir", "仅 Zircon 独有")]
+# ei/mei = 客户端 WIL 素材存在性（wil_probe 真打）; mud3/zircon = 服务端数据存在性
+VER_OPTS = [("", "全部版本"), ("ei", "含 EI 素材"), ("mei", "含 mir3ei 素材"),
+            ("mud3", "仅 MUD3 独有"), ("zir", "仅 Zircon 独有")]
 
 def ver_matches(ver, sel):
-    """条目 ver 集合是否命中筛选。仅 X 独有 = 含 X 且不含另外两个客户端版。"""
+    """条目 ver 集合是否命中筛选。
+    含X = X in ver（ei/mei 为素材存在性, 老版条目普遍同时含 zircon/mud3）
+    仅X = ver 恰为 {X}（MUD3 独有 = 老版 DAT 条目; Zircon 独有 = 仅 Zircon 服务端+素材）"""
     if not sel:
         return True
-    s = set(ver or [])
     if sel == "ei":
-        return "ei" in s and "mei" not in s and "zircon" not in s
+        return "ei" in (ver or [])
     if sel == "mei":
-        return "mei" in s and "ei" not in s and "zircon" not in s
+        return "mei" in (ver or [])
+    if sel == "mud3":
+        return sorted(set(ver or [])) == ["mud3"]
     if sel == "zir":
-        return "zircon" in s and "ei" not in s and "mei" not in s and "mud3" not in s
+        return sorted(set(ver or [])) == ["zircon"]
     return True
 
 def ver_select(sel):
@@ -119,7 +141,7 @@ def sort_select(sel, page_kind):
     return f'<select name="sort">{opts}</select>'
 
 def pager(params, page, pages, base="/monsters"):
-    """分页导航; 保留全部筛选参数, 仅换 p。当前页居中, 含首/末页与省略号。"""
+    """分页导航; 保留全部筛选参数, 仅换 p。居中, 上下留白, 含首/末页与省略号, 附下拉跳页。"""
     if pages <= 1:
         return ""
     def href(p):
@@ -132,7 +154,7 @@ def pager(params, page, pages, base="/monsters"):
     parts = []
     if page > 1:
         parts.append(f'<a class="pg" href="{href(1)}" title="第一页">«</a>')
-        parts.append(f'<a class="pg" href="{href(page - 1)}">‹</a>')
+        parts.append(f'<a class="pg" href="{href(page - 1)}" title="上一页">‹</a>')
     prev = None
     for p in shown:
         if prev is not None and p - prev > 1:
@@ -141,9 +163,15 @@ def pager(params, page, pages, base="/monsters"):
         parts.append(f'<a{cls} href="{href(p)}">{p}</a>')
         prev = p
     if page < pages:
-        parts.append(f'<a class="pg" href="{href(page + 1)}">›</a>')
+        parts.append(f'<a class="pg" href="{href(page + 1)}" title="下一页">›</a>')
         parts.append(f'<a class="pg" href="{href(pages)}" title="最后一页">»</a>')
-    return f'<div class="pager">{"".join(parts)} <span class="dim">第 {page}/{pages} 页</span></div>'
+    # 下拉跳页: 列出全部页码, 选即跳转 (保留筛选参数)
+    opts = ['<option value="" disabled selected>跳转到…</option>']
+    opts += [f'<option value="{href(p)}">{p}</option>' for p in range(1, pages + 1)]
+    jump = (f'<select class="pg-go" onchange="if(this.value) location.href=this.value" '
+            f'aria-label="跳转到指定页">{"".join(opts)}</select>')
+    return (f'<div class="pager">{"".join(parts)} '
+            f'<span class="pager-info">第 <b>{page}</b> / {pages} 页</span>{jump}</div>')
 
 def item_price(i):
     """从 meta '价格 80000' 提取整数价格; 无则 None。"""
@@ -151,24 +179,26 @@ def item_price(i):
     return int(m.group(1).replace(",", "")) if m else None
 
 def item_sort_key(i, sort):
+    leg = 1 if i.get("legacy") else 0
     if sort == "price_desc":
-        return (-(item_price(i) if item_price(i) is not None else -1), i["name"].lower())
+        return (leg, -(item_price(i) if item_price(i) is not None else -1), i["name"].lower())
     if sort == "price_asc":
-        return (item_price(i) if item_price(i) is not None else 1 << 62, i["name"].lower())
+        return (leg, item_price(i) if item_price(i) is not None else 1 << 62, i["name"].lower())
     if sort == "name":
-        return (i["name"].lower(),)
-    return ((i.get("type_zh") or ""), i["name"])
+        return (leg, i["name"].lower())
+    return (leg, (i.get("type_zh") or ""), i["name"])
 
 def mon_sort_key(m, sort):
+    leg = 1 if m.get("legacy") else 0
     if sort == "lv_desc":
-        return (-(m.get("level") or 0), m["name"].lower())
+        return (leg, -(m.get("level") or 0), m["name"].lower())
     if sort == "lv_asc":
-        return ((m.get("level") or 0), m["name"].lower())
+        return (leg, (m.get("level") or 0), m["name"].lower())
     if sort == "name":
-        return (m["name"].lower(),)
+        return (leg, m["name"].lower())
     if sort == "spawn":
-        return (-sum(c for _, c in parse_spawns(m.get("spawns"))), m["name"].lower())
-    return ((m.get("level") or 0), m["name"].lower())
+        return (leg, -sum(c for _, c in parse_spawns(m.get("spawns"))), m["name"].lower())
+    return (leg, (m.get("level") or 0), m["name"].lower())
 
 def mon_map_zh(code):
     """怪物出现地图码 → 中文名; 无则 None。优先 report srv_name, 回退 Mapinfo 定义名。"""
@@ -233,9 +263,13 @@ def item_group_chips(sel):
                   f'<span>{esc(short)}</span></label>')
     return chips
 
-def ver_badges(ver):
+def ver_badges(ver, legacy=False):
     s = set(ver or [])
     out = ""
+    if legacy:
+        out += '<span class="tag tag-legacy">老版 DAT</span>'
+    else:
+        if "mud3" in s: out += '<span class="tag tag-mud3">MUD3</span>'
     if "ei" in s: out += '<span class="tag tag-ei">EI</span>'
     if "mei" in s: out += '<span class="tag tag-mei">mir3ei</span>'
     if "zircon" in s: out += '<span class="tag tag-zir">Zircon</span>'
@@ -250,6 +284,21 @@ def icon_img(board, iid, cls="icon", alt=""):
     if os.path.exists(p):
         return f'<img class="{cls}" src="{img_url(board, iid)}" alt="{esc(alt)}">'
     return f'<div class="noimg {cls}"></div>'
+
+def dash(v):
+    """空值统一 '—'。"""
+    if v is None:
+        return "—"
+    s = str(v).strip()
+    return s if s else "—"
+
+def old_block(rec):
+    """both/changed 挂靠: 老版 DAT 属性对照区块。"""
+    f = rec.get("fields") or {}
+    kv = "".join(f"<dt>{esc(k)}</dt><dd>{esc(v)}</dd>" for k, v in f.items())
+    return f"""<h2>老版 DAT 对照（{esc(rec.get('source',''))}）</h2>
+<p class="lead">判定: <span class="badge">{esc(rec.get('tag',''))}</span> {esc(rec.get('tag_note',''))}</p>
+<dl class="kv">{kv}</dl>"""
 
 def parse_spawns(s):
     """spawns 字符串 'D1505 ×2、D1501 ×1' → [(map, count), …]"""
@@ -270,16 +319,19 @@ class Data:
     @classmethod
     def get(cls):
         # 30s 缓存 + 文件变更检测
-        mtime = max(os.path.getmtime(DATA_JSON), os.path.getmtime(REPORT_JSON))
+        mtime = max(os.path.getmtime(DATA_JSON), os.path.getmtime(REPORT_JSON),
+                    os.path.getmtime(STORES_JSON))
         with cls._lock:
             if mtime != cls._t:
                 with open(DATA_JSON, encoding="utf-8") as f:
                     cls.wiki = json.load(f)
                 with open(REPORT_JSON, encoding="utf-8") as f:
                     cls.report = json.load(f)
+                with open(STORES_JSON, encoding="utf-8") as f:
+                    cls.stores = json.load(f)
                 cls._t = mtime
                 cls._build()
-            return cls.wiki, cls.report
+            return cls.wiki, cls.report, cls.stores
 
     @classmethod
     def _build(cls):
@@ -356,8 +408,8 @@ BASE = """<!DOCTYPE html>
 <title>{title} · EI 传奇3.0 百科</title>
 <style>
 :root {{
-  --bg:#121417; --panel:#1a1e24; --line:#2a303a; --fg:#e8e6e3;
-  --dim:#8b919c; --acc:#d9a441; --ac2:#6fb3e0; --good:#7ec97e; --bad:#e07a7a;
+  --bg:#0d1117; --panel:#151e28; --line:#2a3a49; --fg:#e7eef5;
+  --dim:#9eafbf; --acc:#e7b76c; --ac2:#78d5cc; --good:#8bd3a6; --bad:#f18b82;
 }}
 * {{ box-sizing:border-box; margin:0; padding:0; }}
 body {{ background:var(--bg); color:var(--fg); font:15px/1.6 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; }}
@@ -382,6 +434,8 @@ h2 {{ font-size:19px; margin:24px 0 10px; border-bottom:1px solid var(--line); p
 .tag-ei {{ background:#5a2d2d; color:#ff9d9d; }}
 .tag-mei {{ background:#2d3a5a; color:#9db8ff; }}
 .tag-zir {{ background:#3a2d5a; color:#d0b3ff; }}
+.tag-mud3 {{ background:#2d5a3a; color:#a8f0c0; }}
+.tag-legacy {{ background:#5a4a2d; color:#ffd98d; }}
 .icon {{ width:64px; height:64px; object-fit:contain; background:#0d0f12; border-radius:8px; }}
 .noimg {{ background:#0d0f12; border-radius:8px; }}
 .card .pic {{ width:100%; height:118px; object-fit:contain; background:#0d0f12; padding:8px; display:block; }}
@@ -404,6 +458,25 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:16px; padding:3px 11px 3px 8px; cursor:pointer; font-size:13.5px; user-select:none; }}
 .chip input {{ accent-color:var(--acc); cursor:pointer; }}
 .chip:has(input:checked) {{ border-color:var(--acc); background:#2b2a1f; color:var(--acc); }}
+.chip a {{ color:var(--fg); text-decoration:none; }}
+.chip a:hover {{ color:var(--acc); }}
+.chip.on {{ border-color:var(--acc); background:#2b2a1f; color:var(--acc); }}
+.chips {{ margin:10px 0 18px; display:flex; flex-wrap:wrap; gap:7px; }}
+.store-sec {{ margin:22px 0; padding:14px 16px; background:var(--panel); border:1px solid var(--line); border-radius:12px; }}
+.store-sec h2 {{ margin:0 0 6px; font-size:17px; }}
+.store-sec .sub {{ color:var(--dim); font-size:13px; margin-bottom:10px; }}
+.store-goods {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center; }}
+.sgood {{ display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; }}
+.sgood .thumb {{ width:52px; height:52px; object-fit:contain; background:#0d0f12; border:1px solid var(--line); border-radius:6px; padding:2px; }}
+.sgood:hover .thumb {{ border-color:var(--acc); }}
+.sgood .sprice {{ color:var(--dim); font-size:11px; }}
+.more {{ color:var(--dim); font-size:12.5px; padding-left:4px; }}
+.store-head {{ display:flex; align-items:baseline; gap:8px; }}
+.crumbs {{ color:var(--dim); font-size:13px; margin-bottom:6px; }}
+.crumbs a {{ color:var(--ac2); }}
+.panel-npc {{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:12px 0 20px; }}
+.panel-npc .pic {{ width:64px; height:64px; object-fit:contain; background:#0d0f12; border-radius:8px; }}
+.panel-npc .noimg.pic {{ width:64px; height:64px; }}<
 .pager {{ display:flex; align-items:center; justify-content:center; gap:6px; margin:18px 0; flex-wrap:wrap; }}
 .pager .pg {{ display:inline-block; min-width:30px; text-align:center; padding:4px 8px; border:1px solid var(--line);
   border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; }}
@@ -497,20 +570,26 @@ function animPlay(btn) {{
 <a href="/npcs" {npcs}>NPC</a>
 <a href="/quests" {quests}>任务</a>
 <a href="/companions" {companions}>宠物与坐骑</a>
+<a href="/stores" {stores}>商店</a>
 <a href="/library" {library}>资源库</a>
 <a href="/diff" {diff}>差异裁剪</a>
 </nav></header>
 <main>
 {body}
 </main>
-<footer>EI 传奇3.0 客户端百科 · 数据源: Mud3 服务端 Envir / Zircon System.db / EI 客户端资源 · 本地服务</footer>
+<footer>EI 传奇3.0 客户端百科 · 数据源: Mud3 服务端 Envir / Zircon System.db / EI 客户端资源 · 本地服务{footer_note}</footer>
 </body></html>
 """
 
 def page(title, body, active=""):
-    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","library","diff"]}
+    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","stores","library","diff"]}
     nav[active] = 'class="active"'
-    return BASE.format(title=html.escape(title), body=body, **nav)
+    try:
+        meta = Data.get()[0].get("_meta", {})
+        fnote = f" · 构建 {esc(meta.get('generated_at',''))}" if meta.get("generated_at") else ""
+    except Exception:
+        fnote = ""
+    return BASE.format(title=html.escape(title), body=body, footer_note=fnote, **nav)
 
 def esc(s):
     return html.escape(str(s), quote=False)
@@ -522,6 +601,23 @@ def mon_zh(name):
     if mon:
         return mon.get("zh") or mon["name"]
     return Data.report["mon_zh"].get(name, name)
+
+def mon_lookup(name):
+    """刷怪名 → 条目: 精确匹配; 失败则去尾数字后缀（老版变体 '血金刚0'→'血金刚'）。"""
+    m = Data.mon_by_zh.get(name)
+    if not m:
+        m = Data.mon_by_zh.get(re.sub(r"\s*\d+\s*$", "", name))
+    return m
+
+def mon_link(name):
+    """刷怪名 → 详情链接（老版卡用负 id 路由, 避开中文名抢占; 未收录 → 纯文本）。"""
+    m = mon_lookup(name)
+    if not m:
+        return esc(name)
+    disp = m.get("zh") or m["name"]
+    href = f"/monster/{m['id']}" if m.get("legacy") else f"/monster/{urllib.parse.quote(m['name'])}"
+    mono = f' <span class="mono">{esc(m["name"])}</span>' if (disp != m["name"] and not m.get("legacy")) else ""
+    return f'<a href="{href}">{esc(disp)}{mono}</a>'
 
 def file_link(f):
     return f'<a href="/map/{urllib.parse.quote(f)}">{esc(f)}</a>'
@@ -570,6 +666,10 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/npcs": return self.npcs(u.query)
         if p == "/quests": return self.quests(u.query)
         if p == "/companions": return self.companions(u.query)
+        if p == "/stores": return self.stores(u.query)
+        if p.startswith("/store/"):
+            try: return self.store_detail(int(p[7:]))
+            except ValueError: pass
         if p == "/diff": return self.diff()
         if p == "/library": return self.library(u.query)
         if p.startswith("/thumb/"): return self.thumb(urllib.parse.unquote(p[7:]))
@@ -580,13 +680,16 @@ class Handler(BaseHTTPRequestHandler):
 
     # ---------------- 首页
     def home(self):
-        w, r = Data.get()
+        w, r, s = Data.get()
         st = r["stats"]
         c = len(Data.companions)
         nm = len(Data.monsters)
+        n_legmon = sum(1 for x in Data.monsters if x.get("legacy"))
+        n_legitem = sum(1 for x in Data.items if x.get("legacy"))
+        n_legskill = sum(1 for x in Data.skills if x.get("legacy"))
         body = f"""
 <h1>EI 传奇3.0 客户端 游戏百科</h1>
-<p class="lead">以 EI 传奇3.0 客户端为底板（Mud3 服务端数据为权威来源），对照 Zircon / mir3ei 整理的完整资料库。</p>
+<p class="lead">以 EI 传奇3.0 客户端为底板（Mud3 服务端数据为权威来源），对照 Zircon / mir3ei 整理的完整资料库；老版 EI2.0 服务端三 DAT（monster/stditem/magic）解码条目已并入，判定为 both/changed 的挂靠 Zircon 条目显示「老版 DAT 对照」，old-only 独立建卡。</p>
 <div>
   <div class="stat"><b>{st['ei_maps']}</b><span>EI 地图</span></div>
   <div class="stat"><b>{nm}</b><span>怪物种类</span></div>
@@ -595,7 +698,13 @@ class Handler(BaseHTTPRequestHandler):
   <div class="stat"><b>{len(w['npcs'])}</b><span>NPC</span></div>
   <div class="stat"><b>{len(w['quests'])}</b><span>任务</span></div>
   <div class="stat"><b>{c}</b><span>宠物坐骑</span></div>
+  <div class="stat"><b>{len(s['stores'])}</b><span>商店</span></div>
+  <div class="stat"><b>{s['stats']['npcs']}</b><span>在售 NPC</span></div>
+  <div class="stat"><b>{s['stats']['goods']}</b><span>在售货品</span></div>
   <div class="stat"><b>{st['spawn_records']}</b><span>刷怪记录</span></div>
+  <div class="stat"><b>{n_legmon}</b><span>老版怪物（DAT）</span></div>
+  <div class="stat"><b>{n_legitem}</b><span>老版装备（DAT）</span></div>
+  <div class="stat"><b>{n_legskill}</b><span>老版技能（DAT）</span></div>
 </div>
 <h2>板块</h2>
 <div class="grid3">
@@ -613,10 +722,12 @@ class Handler(BaseHTTPRequestHandler):
     任务接取、目标与奖励。</div>
   <div class="panel"><h3><a href="/companions">宠物与坐骑 · {c} 种</a></h3>
     宠物商店宠物与坐骑一览。</div>
+  <div class="panel"><h3><a href="/stores">商店 · {s['stats']['kinds']} 类</a></h3>
+    武器店 / 防具店 / 药店 / 首饰店等 {s['stats']['kinds']} 类商店，NPC 与在售货品（图文）。</div>
   <div class="panel"><h3><a href="/library">资源库</a></h3>
     EI 客户端 WIL 图库浏览（怪物 / 装备 / 地图贴图 / 图标）。</div>
   <div class="panel"><h3><a href="/diff">差异裁剪</a></h3>
-    EI 客户端 vs mir3ei vs Zircon 差异对照，为裁剪 mir3ei 新内容提供依据。</div>
+    EI 客户端 vs mir3ei vs Zircon 差异对照 + 老版 DAT vs Zircon 逐条对照表，为裁剪 mir3ei 新内容提供依据。</div>
 </div>
 """
         self._send(page("首页", body, "home"))
@@ -650,7 +761,7 @@ class Handler(BaseHTTPRequestHandler):
             nmon = len(m["spawns"]); nnpc = len(m["merchants"])
             sub = f"{m['w']}×{m['h']} · {nmon} 种怪物 · {nnpc} 个NPC"
             if m.get("srv_name"): sub = f"{esc(m['srv_name'])} · {sub}"
-            thumb = "" if m.get("no_thumb") else ('<img class="thumb" src="/thumb/' + urllib.parse.quote(m['file']) + '" alt="' + esc(m['file']) + '">')
+            thumb = "" if m.get("no_thumb") else ('<img class="thumb" loading="lazy" decoding="async" src="/thumb/' + urllib.parse.quote(m['file']) + '" alt="' + esc(m['file']) + '">')
             cards.append(f"""<div class="card">
   <a href="/map/{urllib.parse.quote(m['file'])}">
     {thumb}
@@ -690,11 +801,7 @@ class Handler(BaseHTTPRequestHandler):
         # 怪物表
         mon_rows = ""
         for name, count in sorted(m["spawns"], key=lambda x: -x[1]):
-            zh = Data.mon_by_zh.get(name)
-            link = f'<a href="/monster/{urllib.parse.quote(name)}">{esc(name)}</a>'
-            if zh and zh["name"] != name:
-                link = f'<a href="/monster/{urllib.parse.quote(name)}">{esc(zh.get("zh") or zh["name"])} <span class="mono">{esc(name)}</span></a>'
-            mon_rows += f"<tr><td>{link}</td><td>{count}</td></tr>"
+            mon_rows += f"<tr><td>{mon_link(name)}</td><td>{count}</td></tr>"
         # NPC/商人
         npc_rows = ""
         for me in Data.merch_by_map.get(m["file"].lower().removesuffix(".map"), []) + Data.merch_by_map.get(m["file"], []):
@@ -790,9 +897,10 @@ class Handler(BaseHTTPRequestHandler):
                         break
             if maps_zh:
                 sub += f" · <span class='dim'>{'、'.join(esc(z) for z in maps_zh)}</span>"
-            items.append(f"""<div class="card"><a href="/monster/{urllib.parse.quote(m['name'])}">
+            href = f"/monster/{m['id']}" if m.get("legacy") else f"/monster/{urllib.parse.quote(m['name'])}"
+            items.append(f"""<div class="card"><a href="{href}">
   {icon_img('monsters', m['id'], 'pic', disp)}
-  <div><span class="name">{esc(disp)}</span>{en} {ver_badges(m.get('ver'))}</div>
+  <div><span class="name">{esc(disp)}</span>{en} {ver_badges(m.get('ver'), m.get('legacy'))}</div>
   <div class="sub">{sub}</div>
 </a></div>""")
         map_opts = ""
@@ -803,7 +911,7 @@ class Handler(BaseHTTPRequestHandler):
             map_opts += f'<option value="{esc(c)}" {"selected" if mapf == c else ""}>{esc(label)}</option>'
         body = f"""
 <h1>怪物图鉴 · {len(Data.monsters)} 种</h1>
-<p class="lead">Zircon System.db 全量 {len(Data.monsters)} 种怪物（Boss {sum(1 for x in Data.monsters if x.get('boss'))} / 不死系 {sum(1 for x in Data.monsters if x.get('undead'))} / 可捕捉 {sum(1 for x in Data.monsters if x.get('tame'))}）。</p>
+<p class="lead">Zircon System.db {sum(1 for x in Data.monsters if not x.get('legacy'))} 种 + 老版 monster.dat 独有 {sum(1 for x in Data.monsters if x.get('legacy'))} 种（Boss {sum(1 for x in Data.monsters if x.get('boss'))} / 不死系 {sum(1 for x in Data.monsters if x.get('undead'))} / 可捕捉 {sum(1 for x in Data.monsters if x.get('tame'))}）。ei/mei 徽章 = 客户端素材存在性（WIL 可解帧），非服务端内容声明。</p>
 <form class="filters" method="get" action="/monsters" id="filters">
   <input name="q" placeholder="搜索怪物名…" value="{esc(kw)}" class="q">
   {mon_cat_chips(cats)}
@@ -820,12 +928,19 @@ class Handler(BaseHTTPRequestHandler):
         self._send(page("怪物图鉴", body, "monsters"))
 
     def monster_detail(self, name):
-        m = Data.mon_by_zh.get(name)
+        try:
+            m = Data.mon_by_id.get(int(name))
+        except ValueError:
+            m = Data.mon_by_zh.get(name)
+            if not m:
+                m = Data.mon_by_zh.get(re.sub(r"\s*\d+\s*$", "", name))
         if not m:
             self._send(page("怪物", f"<h1>未找到</h1><p class='lead'>{esc(name)}</p>"), code=404)
             return
+        legacy = m.get("legacy")
         disp = m.get("zh") or m["name"]
-        flags = ver_badges(m.get("ver"))
+        name_html = f' <span class="mono">{esc(m["name"])}</span>' if (disp != m["name"] and not legacy) else ""
+        flags = ver_badges(m.get("ver"), legacy)
         attrs = " · ".join(esc(a) for a in m.get("attrs", []))
         sp = parse_spawns(m.get("spawns"))
         map_rows = ""
@@ -837,9 +952,14 @@ class Handler(BaseHTTPRequestHandler):
             map_rows = '<tr><td colspan="2" class="none">无刷怪记录</td></tr>'
         boss = '<span class="tag tag-ei">Boss</span>' if m.get("boss") else ''
         undead = '<span class="bad">亡灵</span>' if m.get("undead") else ''
+        src_row = (f'<dt>来源</dt><dd>{esc(m.get("source",""))} · 判定 {esc(m.get("tag",""))}</dd>'
+                   if legacy else "")
+        note = esc(m.get("tag_note") or "") if legacy else esc(m.get("traits", ""))
+        img_note = '<p class="dim">无客户端素材图（诚实占位）</p>' if legacy and not m.get("img") else ""
+        old = old_block(m.get("old")) if m.get("old") else ""
         body = f"""
 <a href="/monsters">← 返回图鉴</a>
-<h1>{esc(disp)} <span class="mono">{esc(m['name'])}</span> {flags}</h1>
+<h1>{esc(disp)}{name_html} {flags}</h1>
 <div class="detail">
   {icon_img('monsters', m['id'], 'bigpic', disp)}
   <div class="meta">
@@ -848,12 +968,15 @@ class Handler(BaseHTTPRequestHandler):
       <dt>属性</dt><dd>{attrs or '—'}</dd>
       <dt>刷新量</dt><dd>{sum(c for _, c in sp) if sp else '—'} 只 / {len(sp)} 图</dd>
       <dt>掉落</dt><dd>{esc(m.get('drops','—'))}</dd>
+      {src_row}
     </dl>
-    <p class="lead">{esc(m.get('traits',''))}</p>
+    <p class="lead">{note}</p>
+    {img_note}
   </div>
 </div>
 <h2>分布地图（{len(sp)} 张）</h2>
 <table><tr><th>地图</th><th>数量</th></tr>{map_rows}</table>
+{old}
 """
         self._send(page(f"怪物 {disp}", body, "monsters"))
 
@@ -889,12 +1012,12 @@ class Handler(BaseHTTPRequestHandler):
                 sub += f' · <span class="good">{price:,} 金</span>'
             items.append(f"""<div class="card"><a href="/item/{i['id']}">
   {icon_img('items', i['id'], 'pic', i.get('zh') or i['name'])}
-  <div><span class="name">{esc(i.get('zh') or i['name'])}</span>{en} {ver_badges(i.get('ver'))}</div>
+  <div><span class="name">{esc(i.get('zh') or i['name'])}</span>{en} {ver_badges(i.get('ver'), i.get('legacy'))}</div>
   <div class="sub">{sub}</div>
 </a></div>""")
         body = f"""
 <h1>装备 · {len(Data.items)} 件</h1>
-<p class="lead">Zircon System.db 全量 {len(Data.items)} 件（武器 / 护甲 / 首饰 / 药水 / 材料等 {len([g for g in ITEM_GROUPS if g[0]])} 类）。</p>
+<p class="lead">Zircon System.db {sum(1 for x in Data.items if not x.get('legacy'))} 件 + 老版 stditem.dat / MonItems 独有 {sum(1 for x in Data.items if x.get('legacy'))} 件（{len([g for g in ITEM_GROUPS if g[0]])} 类）。</p>
 <form class="filters" method="get" action="/items" id="filters">
   <input name="q" placeholder="搜索装备名…" value="{esc(kw)}" class="q">
   {item_group_chips(groups)}
@@ -917,20 +1040,31 @@ class Handler(BaseHTTPRequestHandler):
         if not i:
             self._send(page("装备", f"<h1>未找到</h1><p class='lead'>#{esc(sid)}</p>"), code=404)
             return
+        legacy = i.get("legacy")
         attrs = " · ".join(esc(a) for a in i.get("attrs", []))
+        src_row = (f'<dt>来源</dt><dd>{esc(i.get("source",""))} · 判定 {esc(i.get("tag",""))}</dd>'
+                   if legacy else "")
+        note = esc(i.get("tag_note") or "") if legacy else ""
+        img_note = '<p class="dim">无客户端素材图（诚实占位）</p>' if legacy and not i.get("img") else ""
+        old = old_block(i.get("old")) if i.get("old") else ""
         body = f"""
 <a href="/items">← 返回装备列表</a>
-<h1>{esc(i.get('zh') or i['name'])} <span class="mono">{esc(i['name'])}</span> {ver_badges(i.get('ver'))}</h1>
+<h1>{esc(i.get('zh') or i['name'])} <span class="mono">{esc(i['name'])}</span> {ver_badges(i.get('ver'), legacy)}</h1>
 <div class="detail">{icon_img('items', i['id'], 'bigpic', i.get('zh') or i['name'])}<div class="meta">
 <dl class="kv">
   <dt>分类</dt><dd>{esc(i.get('type_zh') or i['category'])}</dd>
-  <dt>职业</dt><dd>{esc(i.get('class',''))}</dd>
+  <dt>职业</dt><dd>{dash(i.get('class'))}</dd>
   <dt>属性</dt><dd>{attrs or '—'}</dd>
-  <dt>其他</dt><dd>{esc(i.get('meta',''))}</dd>
-  <dt>掉落</dt><dd>{esc(i.get('drops','—'))}</dd>
-  <dt>套装</dt><dd>{esc(i.get('set','—'))}</dd>
-  <dt>说明</dt><dd>{esc(i.get('desc','—'))}</dd>
-</dl></div></div>
+  <dt>其他</dt><dd>{dash(i.get('meta'))}</dd>
+  <dt>掉落</dt><dd>{dash(i.get('drops'))}</dd>
+  <dt>套装</dt><dd>{dash(i.get('set'))}</dd>
+  <dt>说明</dt><dd>{dash(i.get('desc'))}</dd>
+  {src_row}
+</dl>
+<p class="lead">{note}</p>
+{img_note}
+</div></div>
+{old}
 """
         self._send(page(f"装备 {i.get('zh') or i['name']}", body, "items"))
 
@@ -938,9 +1072,12 @@ class Handler(BaseHTTPRequestHandler):
     def skills(self, qs):
         q = urllib.parse.parse_qs(qs)
         ver = q.get("ver", [""])[0]
+        kw = (q.get("q", [""])[0]).strip().lower()
         by = {}
         for s in Data.skills:
             if not ver_matches(s.get("ver"), ver):
+                continue
+            if kw and not (kw in s["name"].lower() or kw in (s.get("zh") or "").lower()):
                 continue
             by.setdefault(s.get("klass") or "通用", []).append(s)
         secs = ""
@@ -951,13 +1088,16 @@ class Handler(BaseHTTPRequestHandler):
             for s in arr:
                 rows += (f"<tr><td>{icon_img('skills', s['id'], 'icon', s.get('zh') or s['name'])} "
                          f"<a href='/skill/{s['id']}'>{esc(s.get('zh') or s['name'])}</a> "
-                         f"<span class='mono'>{esc(s['name'])}</span> {ver_badges(s.get('ver'))}</td>"
-                         f"<td>{esc(s.get('type',''))} {esc(s.get('school',''))}</td>"
-                         f"<td>{esc(s.get('power',''))}</td><td>{esc(s.get('cost',''))}</td>"
-                         f"<td>{esc(s.get('levels',''))}</td><td>{esc(s.get('desc',''))[:60]}</td></tr>")
+                         f"<span class='mono'>{esc(s['name'])}</span> {ver_badges(s.get('ver'), s.get('legacy'))}</td>"
+                         f"<td>{dash(s.get('type'))} {esc(s.get('school') or '')}</td>"
+                         f"<td>{dash(s.get('power'))}</td><td>{dash(s.get('cost'))}</td>"
+                         f"<td>{dash(s.get('levels'))}</td><td>{esc(s.get('desc',''))[:60]}</td></tr>")
             secs += f"<h2>{esc(k)}（{len(arr)}）</h2><table><tr><th>技能</th><th>类型</th><th>威力</th><th>耗蓝</th><th>等级门槛</th><th>说明</th></tr>{rows}</table>"
+        n_leg = sum(1 for s in Data.skills if s.get("legacy"))
         body = f"""<h1>技能 · {len(Data.skills)} 个</h1>
-<form class="filters" method="get" action="/skills">
+<p class="lead">Zircon System.db {len(Data.skills) - n_leg} 个 + 老版 magic.dat 独有 {n_leg} 个（老版系别标注为「老版·系别」）。</p>
+<form class="filters" method="get" action="/skills" id="filters">
+  <input name="q" placeholder="搜索技能名…" value="{esc(kw)}" class="q">
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
@@ -973,8 +1113,12 @@ class Handler(BaseHTTPRequestHandler):
             self._send(page("技能", f"<h1>未找到</h1><p class='lead'>#{esc(sid)}</p>"), code=404)
             return
         anim = s.get("anim")
+        legacy = s.get("legacy")
         anim_html = ""
-        if anim:
+        if legacy:
+            anim_html = ("<h2>施法动画</h2><p class='dim'>老版魔法（magic.dat）无特效表定义，"
+                         "Zircon 亦无对应实现 → 无施法动画数据（诚实标注）</p>")
+        elif anim:
             ap = os.path.join(IMGS_DIR, "skills_anim", f"{s['id']}.png")
             if os.path.exists(ap):
                 nf = len(os.listdir(os.path.join(IMGS_DIR, "skills_anim", str(s["id"])))) \
@@ -995,22 +1139,32 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 anim_html = f"<h2>施法动画</h2><p class='dim'>素材 {esc(anim['lib'])} 帧 {anim['start']} 暂无渲染图</p>"
         else:
-            anim_html = "<h2>施法动画</h2><p class='dim'>被动 / 无独立施法特效</p>"
+            prop = (s.get("prop") or "").strip()
+            if prop in ("Active", "Charge"):
+                anim_html = ("<h2>施法动画</h2><p class='dim'>主动技能但 MagicEffectTable "
+                             "未收录施法特效（无动画记录，诚实标注）</p>")
+            else:
+                anim_html = "<h2>施法动画</h2><p class='dim'>被动 / 无独立施法特效</p>"
+        src_row = (f'<dt>来源</dt><dd>{esc(s.get("source",""))} · 判定 {esc(s.get("tag",""))}</dd>'
+                   if legacy else "")
+        old = old_block(s.get("old")) if s.get("old") else ""
         body = f"""
 <a href="/skills">← 返回技能列表</a>
-<h1>{esc(s.get('zh') or s['name'])} <span class="mono">{esc(s['name'])}</span> {ver_badges(s.get('ver'))}</h1>
+<h1>{esc(s.get('zh') or s['name'])} <span class="mono">{esc(s['name'])}</span> {ver_badges(s.get('ver'), legacy)}</h1>
 <div class="detail">{icon_img('skills', s['id'], 'bigpic', s.get('zh') or s['name'])}<div class="meta">
 <dl class="kv">
-  <dt>职业</dt><dd>{esc(s.get('klass',''))}</dd>
-  <dt>类型</dt><dd>{esc(s.get('type',''))} · {esc(s.get('school',''))}</dd>
-  <dt>威力</dt><dd>{esc(s.get('power',''))}</dd>
-  <dt>耗蓝</dt><dd>{esc(s.get('cost',''))}</dd>
-  <dt>冷却</dt><dd>{esc(s.get('delay',''))}</dd>
-  <dt>等级门槛</dt><dd>{esc(s.get('levels',''))}</dd>
-  <dt>升级经验</dt><dd>{esc(s.get('exp',''))}</dd>
-  <dt>说明</dt><dd>{esc(s.get('desc','—'))}</dd>
+  <dt>职业</dt><dd>{dash(s.get('klass'))}</dd>
+  <dt>类型</dt><dd>{dash(s.get('type'))} · {dash(s.get('school'))}</dd>
+  <dt>威力</dt><dd>{dash(s.get('power'))}</dd>
+  <dt>耗蓝</dt><dd>{dash(s.get('cost'))}</dd>
+  <dt>冷却</dt><dd>{dash(s.get('delay'))}</dd>
+  <dt>等级门槛</dt><dd>{dash(s.get('levels'))}</dd>
+  <dt>升级经验</dt><dd>{dash(s.get('exp'))}</dd>
+  <dt>说明</dt><dd>{dash(s.get('desc'))}</dd>
+  {src_row}
 </dl></div></div>
 {anim_html}
+{old}
 """
         self._send(page(f"技能 {s.get('zh') or s['name']}", body, "skills"))
 
@@ -1025,7 +1179,7 @@ class Handler(BaseHTTPRequestHandler):
             rows += (f"<tr><td>{icon_img('npcs', n['id'], 'icon', n.get('zh') or n['name'])} "
                      f"{esc(n.get('zh') or n['name'])} <span class='mono'>{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</td>"
                      f"<td>{file_link(n['map'] + '.map') if n.get('map') else '—'}</td>"
-                     f"<td>{esc(n.get('desc',''))}</td>"
+                     f"<td>{dash(n.get('desc'))}</td>"
                      f"<td>{n.get('quests_in',0)} / {n.get('quests_out',0)}</td></tr>")
         body = f"""<h1>NPC · {len(Data.npcs)} 位</h1>
 <p class="lead">地图为 Zircon 视图编号；Mud3 商人见地图详情页。</p>
@@ -1067,11 +1221,13 @@ class Handler(BaseHTTPRequestHandler):
             m = mon.get(c["monster_id"])
             mlink = f'<a href="/monster/{urllib.parse.quote(m["name"])}">{esc(m.get("zh") or m["name"])}</a>' if m else "—"
             avail = '<span class="good">可购买</span>' if c.get("available") else '<span class="bad">未开放</span>'
+            has_img = os.path.exists(os.path.join(IMGS_DIR, "companion", f"{c['id']}.png"))
+            img_note = " · 缺图（无客户端素材，诚实占位）" if not has_img else ""
             cards += f"""<div class="card"><a href="/companions">
   {icon_img('companion', c['id'], 'pic', c['name'])}
   <div><span class="name">{esc(c['name'])}</span> {ver_badges(c.get('ver'))}</div>
   <div class="sub">宠物 #{c['monster_id']} · 对应怪物 {mlink}</div>
-  <div class="sub">价格 {c.get('price') or '—'} 金币 · {avail}</div>
+  <div class="sub">价格 {c.get('price') or '—'} 金币 · {avail}{img_note}</div>
 </a></div>"""
         body = f"""<h1>宠物与坐骑 · {len(Data.companions)} 种</h1>
 <p class="lead">来自 CompanionInfo 表。对应怪物条目见怪物图鉴。</p>
@@ -1081,6 +1237,101 @@ class Handler(BaseHTTPRequestHandler):
 </form>
 <div class="cards">{cards or '<p class="none">无匹配条目</p>'}</div>"""
         self._send(page("宠物与坐骑", body, "companions"))
+
+    # ---------------- 商店
+    def stores(self, qs):
+        q = urllib.parse.parse_qs(qs)
+        kw = (q.get("q", [""])[0]).strip().lower()
+        kind = q.get("kind", [""])[0]
+        w, r, s = Data.get()
+        st = s["stats"]
+        # 类型列表 (保序)
+        kinds = []
+        seen = set()
+        for sh in s["stores"]:
+            if sh["kind"] not in seen:
+                seen.add(sh["kind"])
+                kinds.append(sh["kind"])
+        # 筛选
+        shops = []
+        for sh in s["stores"]:
+            if kind and sh["kind"] != kind:
+                continue
+            if kw:
+                n = sh["npcs"][0]
+                if not (kw in sh["name"].lower() or kw in n["name"].lower()
+                        or kw in n["zh"].lower() or kw in sh["kind_zh"].lower()):
+                    continue
+            shops.append(sh)
+        # 商店卡片 (店名 + NPC + 货品图标行)
+        cards = ""
+        for si, sh in enumerate(shops):
+            n = sh["npcs"][0]
+            goods_n = len(sh["goods"])
+            gn = f"· {goods_n} 件货品" if goods_n else "· 服务型"
+            gicons = ""
+            if sh["goods"]:
+                gicons = '<div class="store-goods">'
+                for gd in sh["goods"][:8]:
+                    price_s = f"{gd['price']:,}" if gd["price"] else "—"
+                    gicons += (f'<a class="sgood" href="/item/{gd["item_id"]}" '
+                               f'title="{esc(gd["zh"])} · {price_s} 金币">'
+                               f'{icon_img("items", gd["item_id"], "thumb", gd["zh"])}'
+                               f'<span class="sprice">{price_s}</span></a>')
+                gicons += f'<span class="more"><a href="/store/{si}">…共 {goods_n} 件</a></span>' if goods_n > 8 else ""
+                gicons += "</div>"
+            cards += f"""<div class="card"><div class="store-body">
+  <div class="store-head"><a class="name" href="/store/{si}">{esc(sh['name_zh'])}</a> {gn}</div>
+  <div class="sub">{esc(n['zh'])} <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])}</div>
+  {gicons}
+</div></div>"""
+        # 类型 chips
+        chips = ('<a class="chip on" href="/stores">全部 · %d</a>' % st["shops"]
+                 if not kind else '<a class="chip" href="/stores">全部 · %d</a>' % st["shops"])
+        for k in kinds:
+            on = ' class="chip on"' if kind == k else ' class="chip"'
+            cnt = sum(1 for sh in s["stores"] if sh["kind"] == k)
+            chips += f'<a{on} href="/stores?kind={urllib.parse.quote(k)}">{esc(KIND_ZH.get(k, k))} · {cnt}</a>'
+        body = f"""<h1>商店 · {st['shops']} 家</h1>
+<p class="lead">按 NPC 所在位置分组（武器店 / 药店 / 防具店…），货品按商店类别匹配（武器店卖武器、书店卖技能书…），价格来自物品表。</p>
+<form class="filters" method="get" action="/stores">
+  <input name="q" value="{esc(kw)}" placeholder="搜索商店 / NPC">
+  <button type="submit">搜索</button>
+</form>
+<div class="chips">{chips}</div>
+<div class="cards">{cards or '<p class="none">无匹配商店</p>'}</div>"""
+        self._send(page("商店", body, "stores"))
+
+    # ---------------- 商店详情
+    def store_detail(self, idx):
+        w, r, s = Data.get()
+        if idx < 0 or idx >= len(s["stores"]):
+            self._send(page("404", f"<h1>404</h1><p class='lead'>商店不存在: {esc(idx)}</p>"), code=404)
+            return
+        sh = s["stores"][idx]
+        n = sh["npcs"][0]
+        # NPC 图 (npcs board)
+        npc_img = icon_img("npcs", n["id"], "pic", n["zh"])
+        # 地图链接
+        mlink = file_link(sh["map"] + ".map")
+        # 货品表格: 图 + 名 + 类型 + 价格 (+ 物品详情链接)
+        rows = ""
+        for gd in sh["goods"]:
+            price_s = f"{gd['price']:,}" if gd["price"] else "—"
+            rows += (f"<tr><td>{icon_img('items', gd['item_id'], 'icon', gd['zh'])} "
+                     f"<a href='/item/{gd['item_id']}'>{esc(gd['zh'])}</a> "
+                     f"<span class='mono'>{esc(gd['name'])}</span></td>"
+                     f"<td>{esc(gd.get('type_zh',''))}</td>"
+                     f"<td>{price_s}</td></tr>")
+        body = f"""<p class="crumbs"><a href="/stores">商店</a> › {esc(sh['name_zh'])}</p>
+<h1>{esc(sh['name_zh'])} <span class="dim">· {esc(sh['kind'])}</span></h1>
+<p class="lead">地图 {mlink} · 店主 {esc(n['zh'])} <span class="mono">{esc(n['name'])}</span></p>
+<div class="panel-npc">{npc_img}<div><div class="name">{esc(n['zh'])}</div>
+<div class="sub">{esc(n['name'])} · {esc(n['map'])}</div></div></div>
+<h2>在售货品 · {len(sh['goods'])} 件</h2>
+<table><tr><th>货品</th><th>类型</th><th>价格</th></tr>{rows or '<tr><td colspan="3" class="none">服务型商店, 无在售货品</td></tr>'}</table>
+<p class="sub">货品按商店类别匹配（同类型店共享货架）; 价格 = 物品基础价 × 商店倍率。</p>"""
+        self._send(page(sh["name_zh"], body, "stores"))
 
     # ---------------- 资源库（WIL 浏览）
     def library(self, qs):
@@ -1192,23 +1443,49 @@ class Handler(BaseHTTPRequestHandler):
                          f"<td>{len(x['maps'])}</td><td>{esc('、'.join(x['variants'][:3]))}</td></tr>")
         mon_more = ""
         if mo["mud3_only_count"] > 40:
-            mon_more = f"<p class='lead'>…另有 {mo['mud3_only_count'] - 40} 种。</p>"
+            mon_more = (f"<p class='lead'>…另有 {mo['mud3_only_count'] - 40} 种。"
+                        f"<a href='/monsters?ver=mud3'>查看 MUD3 独有怪物完整名单（含老版 DAT 属性与刷怪） →</a></p>")
+        else:
+            mon_more = f"<p class='lead'><a href='/monsters?ver=mud3'>查看 MUD3 独有怪物完整名单 →</a></p>"
 
         # 装备表
         it_rows = ""
         for n in it["mud3_only"][:60]:
             it_rows += f"<tr><td>{esc(n)}</td></tr>"
-        it_more = f"<p class='lead'>…另有 {max(0, it['mud3_only_count'] - 60)} 件，共 {it['mud3_only_count']} 件。</p>" if it["mud3_only_count"] > 60 else ""
+        it_more = (f"<p class='lead'>…另有 {max(0, it['mud3_only_count'] - 60)} 件，共 {it['mud3_only_count']} 件。"
+                   f"<a href='/items?ver=mud3'>查看 MUD3 独有装备完整名单（含老版 DAT 属性与掉落） →</a></p>") if it["mud3_only_count"] > 60 else f"<p class='lead'><a href='/items?ver=mud3'>查看 MUD3 独有装备完整名单 →</a></p>"
 
         # 刺客技能
         as_rows = ""
         for n in sk["assassin_skills"][:40]:
             as_rows += f"<tr><td>{esc(n)}</td></tr>"
 
+        # 老版 DAT vs Zircon 对照（both/changed 挂靠, 来自 wiki_data_v2.json 的 old 子对象）
+        oldsecs = ""
+        for label, board, pfx, keyf in (("怪物", "monsters", "/monster/", "name"),
+                                        ("装备", "items", "/item/", "id"),
+                                        ("技能", "skills", "/skill/", "id")):
+            rows = ""
+            cnt = 0
+            for x in Data.wiki.get(board, []):
+                rec = x.get("old")
+                if not rec:
+                    continue
+                cnt += 1
+                href = pfx + (urllib.parse.quote(x["name"]) if keyf == "name" else str(x["id"]))
+                f = rec.get("fields") or {}
+                kv = " · ".join(f"{esc(k)} {esc(v)}" for k, v in list(f.items())[:4])
+                rows += (f"<tr><td><a href='{href}'>{esc(x.get('zh') or x['name'])}</a></td>"
+                         f"<td>{esc(rec.get('source',''))}</td><td>{kv}</td>"
+                         f"<td><span class='badge'>{esc(rec.get('tag',''))}</span> {esc(rec.get('tag_note',''))}</td></tr>")
+            oldsecs += (f"<h2>老版 DAT vs Zircon 对照 · {label}（{cnt}）</h2>"
+                        f"<table><tr><th>条目</th><th>来源</th><th>老版关键属性</th><th>判定 / 备注</th></tr>"
+                        f"{rows or '<tr><td colspan=\"4\" class=\"none\">无挂靠条目</td></tr>'}</table>")
+
         body = f"""
 <h1>差异裁剪 · 三版本比对</h1>
 <p class="lead">以 MUD3 服务端（最早）为基线，对照 mir3ei（中间）与 Zircon（20 年后实现）。
-数据源: MUD3 Envir/Mapinfo.txt + Mon_Def + MonItems · EI 客户端 544 图 · mir3ei 566 图 · Zircon System.db。
+数据源: MUD3 Envir/Mapinfo.txt + Mon_Def + MonItems + 老版 EI2.0 服务端三 DAT 解码 · EI 客户端 544 图 · mir3ei 566 图 · Zircon System.db。
 完整分析见 <a href="docs/EI_CLIENT_DIFF_2026-08-09.md">EI_CLIENT_DIFF_2026-08-09.md</a>。</p>
 {stat_cards}
 
@@ -1245,6 +1522,8 @@ class Handler(BaseHTTPRequestHandler):
 <p class="lead">Zircon 共 {sk['zir_total']} 技能：三职业（战法道）{sk['three_class_count']} + <strong>刺客 {sk['assassin_count']} = Zircon 独有</strong>（MUD3/mir3ei 无刺客职业）。
 职业分布: {'、'.join(f'{k} {v}' for k, v in sk['klass_dist'].items())}。</p>
 <table><tr><th>Zircon 独有刺客技能</th></tr>{as_rows}</table>
+
+{oldsecs}
 """
         self._send(page("差异裁剪", body, "diff"))
 
@@ -1260,7 +1539,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self._send(page("404", f"<p class='lead'>图片不存在: {esc(path)}</p>"), code=404)
             return
-        if iid.isdigit():
+        if iid.lstrip("-").isdigit():
             if len(parts) == 3:
                 # /img/<board>/<id>/<frame>.png → <board>/<id>/<frame>.png
                 png = os.path.join(IMGS_DIR, board, str(int(iid)), fname)
