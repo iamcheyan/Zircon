@@ -170,6 +170,9 @@ def main():
                 "zh": term_zh.get(n["index"]) or n["name"],
                 "icon": n["image"],
                 "map": m,
+                # 实际坐标 = Region.PointRegion (SystemDbProbe --stores 导出); 单点为主
+                "pos": (n.get("points") or [{}])[0],
+                "points": n.get("points") or [],
             }],
             "goods": goods,
         })

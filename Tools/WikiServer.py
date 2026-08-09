@@ -1294,19 +1294,69 @@ class Handler(BaseHTTPRequestHandler):
         for n in sorted(Data.npcs, key=lambda x: x["name"]):
             if not ver_matches(n.get("ver"), ver):
                 continue
+            # 坐标 (来自 Region.PointRegion; 商店 NPC 经 stores 合并)
+            st = Data.store_by_npc.get(n["id"])
+            pos = "—"
+            if st:
+                p = st[1]["npcs"][0].get("pos") or {}
+                if p.get("x") is not None:
+                    pos = f"({p['x']}, {p['y']})"
+            # 所属商店
+            shop = f'<a class="chip" href="/store/{st[0]}">{esc(st[1]["name_zh"])}</a>' if st else ""
             rows += (f"<tr><td>{icon_img('npcs', n['id'], 'icon', n.get('zh') or n['name'])} "
-                     f"{esc(n.get('zh') or n['name'])} <span class='mono'>{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</td>"
+                     f"<a href='/npc/{n['id']}'>{esc(n.get('zh') or n['name'])}</a> <span class='mono'>{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</td>"
                      f"<td>{file_link(n['map'] + '.map') if n.get('map') else '—'}</td>"
+                     f"<td class='mono'>{pos}</td>"
+                     f"<td>{shop}</td>"
                      f"<td>{dash(n.get('desc'))}</td>"
                      f"<td>{n.get('quests_in',0)} / {n.get('quests_out',0)}</td></tr>")
         body = f"""<h1>NPC · {len(Data.npcs)} 位</h1>
-<p class="lead">地图为 Zircon 视图编号；Mud3 商人见地图详情页。</p>
+<p class="lead">地图为 Zircon 视图编号；坐标来自地图区域点（Region.PointRegion）。点击 NPC 名查看详情。</p>
 <form class="filters" method="get" action="/npcs">
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
-<table><tr><th>NPC</th><th>地图</th><th>介绍</th><th>可接/可交任务</th></tr>{rows or '<tr><td colspan="4" class="none">无匹配条目</td></tr>'}</table>"""
+<table><tr><th>NPC</th><th>地图</th><th>坐标</th><th>所属商店</th><th>介绍</th><th>可接/可交任务</th></tr>{rows or '<tr><td colspan="6" class="none">无匹配条目</td></tr>'}</table>"""
         self._send(page("NPC", body, "npcs"))
+
+    # ---------------- NPC 详情
+    def npc_detail(self, nid):
+        w, r, s = Data.get()
+        n = Data.npc_by_id.get(nid)
+        if n is None:
+            self._send(page("404", f"<h1>404</h1><p class='lead'>NPC 不存在: {esc(nid)}</p>"), code=404)
+            return
+        # 坐标: 商店侧 pos (Region.PointRegion); 非商店 NPC 无
+        store_info = Data.store_by_npc.get(nid)
+        pos = None
+        if store_info:
+            pos = (store_info[1]["npcs"][0].get("pos") or {}).get("x"), (store_info[1]["npcs"][0].get("pos") or {}).get("y")
+        # 所属商店链接
+        store_link = ""
+        if store_info:
+            si, sh = store_info
+            store_link = f'<a class="chip" href="/store/{si}">{esc(sh["name_zh"])}</a>'
+        # 头像 (face 优先) + 全身像备用
+        face = npc_img(n, "pic")
+        full = icon_img("npcs", nid, "pic", n.get("zh") or n["name"])
+        # 地图: 视图编号 -> 地图详情
+        mlink = file_link(n["map"] + ".map") if n.get("map") else "—"
+        pos_html = f"({pos[0]}, {pos[1]})" if pos and pos[0] is not None else "—"
+        body = f"""<p class="crumbs"><a href="/npcs">NPC</a> › {esc(n.get('zh') or n['name'])}</p>
+<h1>{esc(n.get('zh') or n['name'])} <span class="mono">{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</h1>
+<div class="detail">{face}<div class="meta">
+<div class="sub">头像来源 NPCface.Zl · <a href="/npcs">返回列表</a></div>
+{store_link}
+</div></div>
+<p class="lead">地图 {mlink} · 坐标 {pos_html}</p>
+<div class="grid2">
+<div class="panel"><h3>介绍</h3><p>{esc(n.get('desc') or '—')}</p></div>
+<div class="panel"><h3>任务</h3><p>可接 {n.get('quests_in',0)} · 可交 {n.get('quests_out',0)}</p></div>
+</div>
+<h2>全身像</h2>
+<div class="panel-npc">{full}<div><div class="name">{esc(n.get('zh') or n['name'])}</div>
+<div class="sub">{esc(n['name'])} · {esc(n.get('map',''))}</div></div></div>"""
+        self._send(page(n.get("zh") or n["name"], body, "npcs"))
 
     # ---------------- 任务
     def quests(self, qs):
@@ -1398,9 +1448,12 @@ class Handler(BaseHTTPRequestHandler):
                                f'<span class="sprice">{price_s}</span></a>')
                 gicons += f'<span class="more"><a href="/store/{si}">…共 {goods_n} 件</a></span>' if goods_n > 8 else ""
                 gicons += "</div>"
+            # 店主坐标
+            p = n.get("pos") or {}
+            pos_s = f"({p['x']}, {p['y']})" if p.get("x") is not None else ""
             cards += f"""<div class="card"><div class="store-body">
   <div class="store-head"><a class="name" href="/store/{si}">{esc(sh['name_zh'])}</a> {gn}</div>
-  <div class="sub">{npc_img(n, 'avatar')} {esc(n['zh'])} <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])}</div>
+  <div class="sub">{npc_img(n, 'avatar')} <a href="/npc/{n['id']}">{esc(n['zh'])}</a> <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])} {pos_s}</div>
   {gicons}
 </div></div>"""
         # 类型 chips
