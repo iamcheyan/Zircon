@@ -17094,6 +17094,45 @@
           "y_field": "this+0x1c"
         }
       },
+      "resource_visual_inspection": {
+        "source": "Data/GameInter.wil direct pixel inspection; exported at native size and enlarged with nearest-neighbor for review",
+        "frames": [
+          {
+            "frame": 700,
+            "visual_text": [
+              "QUESTS",
+              "DONE QUESTS"
+            ],
+            "visual_description": "scroll/parchment quest panel with the two baked English section labels and right-side operation-icon area",
+            "confidence": "high",
+            "note": "These are artwork labels; they do not by themselves prove the runtime field names or click behavior."
+          },
+          {
+            "frame": 705,
+            "visual_description": "blank parchment/detail panel intended to receive runtime-selected quest body text",
+            "confidence": "high"
+          },
+          {
+            "frame_pair": [
+              721,
+              722
+            ],
+            "visual_description": "X/cross operation icon with a green highlighted state and a muted/unhighlighted state",
+            "confidence": "high",
+            "note": "Frame 721 is visibly highlighted; Frame 722 is the corresponding normal-state artwork."
+          },
+          {
+            "frame_pair": [
+              723,
+              724
+            ],
+            "visual_description": "right-pointing arrow operation icon with a green highlighted state; the exported Frame 724 is empty in this client copy",
+            "confidence": "medium",
+            "note": "The constructor still binds the pair [723,724]. Treat the missing/empty 724 resource as an asset-copy or alternate-state discrepancy until the original archive is checked."
+          }
+        ],
+        "evidence_level": "primary-resource-visual"
+      },
       "controls": [
         {
           "object_offset": "this+0x74",
@@ -17260,7 +17299,7 @@
       "pending": [
         "Exact quest field separators and wrapping width.",
         "The runtime meaning of the 19-line guard and list scroll state.",
-        "Final labels/business names for frames 721–724.",
+        "Final labels/business names and event handlers for frames 721–724; pixels establish icon shape/state, not business semantics.",
         "Whether Frame 705 is a complete text background or only a decorative detail panel at runtime."
       ]
     },
