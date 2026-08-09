@@ -13040,7 +13040,8 @@
     "window_position_dispatch": "docs/research/ei-ui-layout/window-position-dispatch-evidence.json",
     "window_visibility_dispatch": "docs/research/ei-ui-layout/window-visibility-dispatch-evidence.json",
     "window_initialization": "docs/research/ei-ui-layout/window-initialization-evidence.json",
-    "window_traversal": "docs/research/ei-ui-layout/window-traversal-evidence.json"
+    "window_traversal": "docs/research/ei-ui-layout/window-traversal-evidence.json",
+    "horse_window": "docs/research/ei-ui-layout/horse-window-render-evidence.json"
   },
   "secondary_control_constructors": [
     {
@@ -22608,6 +22609,119 @@
     "interpretation": "This is strong evidence for the runtime traversal order of visible window records, but 0x0042B820 calls the +0x34 setter rather than a paint slot. It must not be promoted to final cross-window z-order until a draw call is shown to consume this order.",
     "pending": [
       "Find the frame-render entry that consumes the visible list and invokes each object's paint slot."
+    ]
+  },
+  "horse_window_evidence": {
+    "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "window": {
+      "id": "window.horse",
+      "frame": 850,
+      "constructor": "0x004268C0",
+      "paint": "0x004269C0",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        296,
+        332
+      ]
+    },
+    "evidence_level": "primary-static-derived-paint-order",
+    "paint_order": [
+      {
+        "order": 1,
+        "call": "window_object.vtable+0x0C",
+        "resolved_candidate": "0x00423D00",
+        "role": "window background/base paint"
+      },
+      {
+        "order": 2,
+        "call": "0x00417830",
+        "object": "this+0x54",
+        "frames": [
+          161,
+          162
+        ],
+        "relative_position": [
+          252,
+          293
+        ],
+        "role": "top/right control candidate"
+      },
+      {
+        "order": 3,
+        "call": "0x00417830",
+        "object": "this+0x108",
+        "frames": [
+          860,
+          861
+        ],
+        "relative_position": [
+          28,
+          244
+        ],
+        "role": "mount control candidate"
+      },
+      {
+        "order": 4,
+        "call": "0x00417830",
+        "object": "this+0x1BC",
+        "frames": [
+          862,
+          863
+        ],
+        "relative_position": [
+          74,
+          244
+        ],
+        "role": "mount control candidate"
+      },
+      {
+        "order": 5,
+        "call": "0x00417830",
+        "object": "this+0x270",
+        "frames": [
+          864,
+          865
+        ],
+        "relative_position": [
+          133,
+          244
+        ],
+        "role": "mount control candidate"
+      },
+      {
+        "order": 6,
+        "call": "0x00417830",
+        "object": "this+0x324",
+        "frames": [
+          866,
+          867
+        ],
+        "relative_position": [
+          192,
+          244
+        ],
+        "role": "mount control candidate"
+      }
+    ],
+    "proof": {
+      "routine": "0x004269C0-0x00426A56",
+      "base_call_va": "0x004269C6",
+      "child_reposition_calls": [
+        "0x004269E2",
+        "0x004269FD",
+        "0x00426A19",
+        "0x00426A38",
+        "0x00426A56"
+      ],
+      "coordinate_expression": "each child receives window.x/window.y plus the listed fixed relative coordinates",
+      "evidence_level": "primary-static-exact-call-order"
+    },
+    "interpretation": "For this original window, the base background is proven to draw before all five child controls. The control business labels and whether the first control is close/command remain candidates; the paint order itself is not a guess.",
+    "pending": [
+      "Resolve the semantic labels and runtime hit rectangles of the five horse-window controls."
     ]
   }
 }
