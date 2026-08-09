@@ -25,6 +25,12 @@ public sealed class BotAgent
     private Point _patrolTarget;
     private DateTime _arrivedPauseUntil;
     private Point _fieldAnchor;
+    private Point _homeAnchor;
+    private DateTime _nextFieldTrip;
+    private DateTime _fieldTripEnd;
+    private bool _fieldPathToField;
+    private bool _fieldPathHome;
+    private DateTime _nextTownCast;
     private uint _targetMonsterId;
     private DateTime _nextTargetScan;
     private DateTime _nextGroupAction;
@@ -77,6 +83,7 @@ public sealed class BotAgent
     private const int ResourceMapIndex = 136;
     private uint _npcObjectId;
     private bool _autoPathActive;
+    private DateTime _pullbackStuckSince = DateTime.MinValue;
     private readonly int _index;
     private BotMap _map;
     private string _mapFile = string.Empty;
@@ -272,6 +279,10 @@ public sealed class BotAgent
                     _tradeAutoPathAllowed = false;
                     _tradeRequestSent = false;
                     _tradeFacingPrimed = false;
+                    _fieldPathToField = false;
+                    _fieldPathHome = false;
+                    _fieldTripEnd = DateTime.MinValue;
+                    _nextFieldTrip = DateTime.UtcNow.AddSeconds(300);
                     _nextTradeAction = DateTime.UtcNow.AddSeconds(20);
                     _nextResourceAction = DateTime.UtcNow.AddMinutes(2 + _random.NextDouble() * 3);
                 }
@@ -309,6 +320,8 @@ public sealed class BotAgent
 
         if (TryFishingBehavior(now)) goto AfterMovement;
 
+        if (TryFieldTripBehavior(now)) goto AfterMovement;
+
         if (TryInstanceBehavior(now)) goto AfterMovement;
 
         if (!_starterGuildAttempted && now >= _nextGuildAction)
@@ -341,10 +354,39 @@ public sealed class BotAgent
         // 防止无路径寻路时被障碍物或错误方向带离陪玩区域。
         // 仅在同一张地图内做回拉(跨图坐标不可比);阈值比巡逻半径上限
         // 宽裕, 避免"走向目标途中被拽回锚点"的边界拉锯。
-        if (World.MapIndex == World.SpawnMapIndex &&
+        // 练级角色外出(去程/打怪中/回程)是计划移动, 豁免回拉。
+        bool fieldTripActive = _fieldPathToField || _fieldPathHome ||
+            (_fieldTripEnd != DateTime.MinValue && now < _fieldTripEnd);
+        if (World.MapIndex == World.SpawnMapIndex && !fieldTripActive &&
             Distance(World.Location, ActivityAnchor()) > _config.PatrolRadius + 8)
         {
-            if (now >= _nextMove) MoveToward(ActivityAnchor(), 1, now);
+            if (now >= _nextMove)
+            {
+                double distBefore = Distance(World.Location, ActivityAnchor());
+                MoveToward(ActivityAnchor(), 1, now);
+                // 贪心逐格回拉可能被建筑/墙带卡住原地振荡, 连续几秒走
+                // 不近就改用服务端 AutoPath 绕行回锚点(与外出回程同一机制)。
+                if (Distance(World.Location, ActivityAnchor()) > distBefore - 1.5)
+                {
+                    _pullbackStuckSince = _pullbackStuckSince == DateTime.MinValue ? now : _pullbackStuckSince;
+                    if ((now - _pullbackStuckSince).TotalSeconds > 6)
+                    {
+                        _pullbackStuckSince = DateTime.MinValue;
+                        _nextMove = now.AddSeconds(8);
+                        _connection.Enqueue(new C.AutoPathWaypoint
+                        {
+                            MapIndex = World.SpawnMapIndex,
+                            Location = ActivityAnchor()
+                        });
+                        Console.WriteLine($"[{Name}] pullback stuck, autopath home");
+                        return;
+                    }
+                }
+                else
+                {
+                    _pullbackStuckSince = DateTime.MinValue;
+                }
+            }
             return;
         }
 
@@ -546,6 +588,7 @@ public sealed class BotAgent
             }
             else
             {
+                if (TryTownCastingBehavior(now)) goto AfterMovement;
                 Patrol(now);
             }
         }
@@ -821,14 +864,24 @@ public sealed class BotAgent
         return "social";
     }
 
-    // 当前地图内的活动锚点: 巡逻远足、回拉都以它为准, 替代统一出生点。
-    private Point ActivityAnchor()
+    // 当前地图内的活动锚点: 巡逻远足、回拉都以它为准。
+    // 所有角色(含 PvP)都锚在城中心自己的"家"角落, 让出生点长期有人;
+    // PvP 回合中由 TryPvPBehavior 直接接管, 不经过这里的锚点。
+    private Point ActivityAnchor() => _homeAnchor;
+
+    // 每个 bot 在城中心出生点周围选一个可走点作为自己的"家",
+    // 带抖动让 20 人散在城中心不同角落而不是叠在同一点。
+    private Point ChooseHomeAnchor()
     {
-        if (IsPvpBot(_index))
-            return new Point(_config.PvPStagingX, _config.PvPStagingY);
-        if (IsFieldBot(_index))
-            return _fieldAnchor;
-        return World.SpawnLocation; // 矿工回城休整/社交 bot 都锚在城中心
+        var map = CurrentMap();
+        for (int i = 0; i < 30; i++)
+        {
+            var point = new Point(
+                Math.Clamp(World.SpawnLocation.X + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349),
+                Math.Clamp(World.SpawnLocation.Y + _random.Next(-_config.HomeAnchorRadius, _config.HomeAnchorRadius + 1), 0, 349));
+            if (map == null || map.CanWalk(point)) return point;
+        }
+        return World.SpawnLocation;
     }
 
     // 练级 bot 各自在野外怪区选一个可走锚点, 带抖动避免扎堆。
@@ -887,8 +940,12 @@ public sealed class BotAgent
     {
         var map = CurrentMap();
         // 锚点随当前位置漂移, 让闲逛轨迹自然蔓延, 而不是绕出生点钟摆折返。
-        // 大部分时候小范围漫步(2~6 格), 偶发以活动锚点为锚做一次远足(8~12 格)。
-        Point anchor = _random.NextDouble() < 0.8 ? World.Location : ActivityAnchor();
+        // 大部分时候小范围漫步(2~6 格), 偶发以锚点为锚做一次远足(8~12 格)。
+        // 练级角色外出打怪中, 远足锚用怪区点而不是城中心, 避免往城漂。
+        bool tripActive = _fieldPathToField || _fieldPathHome || _fieldTripEnd != DateTime.MinValue;
+        Point anchor = _random.NextDouble() < 0.8
+            ? World.Location
+            : (tripActive ? _fieldAnchor : ActivityAnchor());
         int radius = _random.NextDouble() < 0.8
             ? 2 + _random.Next(0, 5)
             : 8 + _random.Next(0, Math.Max(1, _config.PatrolRadius - 7));
@@ -986,6 +1043,12 @@ public sealed class BotAgent
         _patrolTarget = Point.Empty;
         _arrivedPauseUntil = DateTime.MinValue;
         _fieldAnchor = ChooseFieldAnchor();
+        _homeAnchor = ChooseHomeAnchor();
+        _nextFieldTrip = now.AddSeconds(120 + _random.NextDouble() * 120);
+        _fieldTripEnd = DateTime.MinValue;
+        _fieldPathToField = false;
+        _fieldPathHome = false;
+        _nextTownCast = now.AddSeconds(15 + _random.NextDouble() * 25);
         _targetMonsterId = 0;
         _nextGroupAction = now.AddSeconds(8);
         _nextTorchAction = now.AddSeconds(4);
@@ -1252,6 +1315,96 @@ public sealed class BotAgent
         return true;
     }
 
+    // 练级角色(1/2)的外出循环: 大部分时间在城中心驻留/闲逛/练技,
+    // 每隔 FieldTripInterval 秒去北部怪区打 FieldTripDuration 秒怪再回城。
+    // 去程/回程由服务端 AutoPath 驱动(_autoPathActive 短路主链), 到达后
+    // 由战斗逻辑接管。返回 true 表示本 tick 已发出计划移动。
+    private bool TryFieldTripBehavior(DateTime now)
+    {
+        if (!IsFieldBot(_index)) return false;
+        if (World.MapIndex != World.SpawnMapIndex) return false; // 已在其他图, 由对应行为接管
+
+        // 回程中: 到家附近即驻留(距离判到达, 同图无 MapChanged 事件)。
+        if (_fieldPathHome)
+        {
+            if (Distance(World.Location, _homeAnchor) < 12)
+            {
+                _fieldPathHome = false;
+                _fieldTripEnd = DateTime.MinValue;
+                _nextFieldTrip = now.AddSeconds(_config.HomeDwellSecondsMin +
+                    _random.NextDouble() * (_config.HomeDwellSecondsMax - _config.HomeDwellSecondsMin));
+                Console.WriteLine($"[{Name}] field: back in town");
+            }
+            return false; // AutoPath 仍在走, 主链已短路
+        }
+
+        // 去程中: 到怪区锚点附近即开始打怪。
+        if (_fieldPathToField)
+        {
+            if (Distance(World.Location, _fieldAnchor) < 10)
+            {
+                _fieldPathToField = false;
+                _fieldTripEnd = now.AddSeconds(_config.FieldTripDurationSeconds + _random.NextDouble() * 60);
+                Console.WriteLine($"[{Name}] field: trip reached, hunting");
+            }
+            return false;
+        }
+
+        // 打怪中: 到点回城; 若已被怪引回城附近则直接驻留。
+        if (_fieldTripEnd != DateTime.MinValue)
+        {
+            if (now >= _fieldTripEnd)
+            {
+                if (Distance(World.Location, _homeAnchor) < 12)
+                {
+                    _fieldTripEnd = DateTime.MinValue;
+                    _nextFieldTrip = now.AddSeconds(_config.HomeDwellSecondsMin +
+                        _random.NextDouble() * (_config.HomeDwellSecondsMax - _config.HomeDwellSecondsMin));
+                }
+                else
+                {
+                    Console.WriteLine($"[{Name}] field: trip over, head home");
+                    _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = _homeAnchor });
+                    _fieldPathHome = true;
+                    _nextMove = now.AddSeconds(8);
+                }
+            }
+            return false; // 打怪/寻路中, 战斗逻辑接管
+        }
+
+        // 在城驻留结束 → 出发去怪区。
+        if (now >= _nextFieldTrip)
+        {
+            Console.WriteLine($"[{Name}] field: trip to {_fieldAnchor}");
+            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = World.SpawnMapIndex, Location = _fieldAnchor });
+            _fieldPathToField = true;
+            _nextMove = now.AddSeconds(8);
+            return true;
+        }
+        return false;
+    }
+
+    // 城内"练技"表演: 在城中心随机挥刀/放技能, 制造真实玩家在城里
+    // 试招的热闹观感。法师/道士的护盾/召唤/治疗由职业准备与治疗逻辑覆盖,
+    // 这里统一做物理挥砍动作(C.Attack 无目标, 服务端按方向挥空, 安全)。
+    private bool TryTownCastingBehavior(DateTime now)
+    {
+        if (now < _nextTownCast) return false;
+        bool inTown = World.InSafeZone || Distance(World.Location, _homeAnchor) < 25;
+        if (!inTown) return false;
+
+        _connection.Enqueue(new C.Attack
+        {
+            Direction = (MirDirection)_random.Next(8),
+            Action = MirAction.Attack,
+            AttackMagic = World.Class is MirClass.Warrior or MirClass.Assassin ? SelectAttackSkill() : MagicType.None
+        });
+        _attackActions++;
+        _nextTownCast = now.AddSeconds(_config.TownCastMinSeconds +
+            _random.NextDouble() * (_config.TownCastMaxSeconds - _config.TownCastMinSeconds));
+        return true;
+    }
+
     private bool TrySupportAlly(DateTime now)
     {
         MagicType heal = World.Magics
@@ -1411,7 +1564,8 @@ public sealed class BotAgent
         {
             _resourcePathHome = false;
             _resourceTripEnd = DateTime.MinValue;
-            _nextResourceAction = now.AddSeconds(60 + _random.NextDouble() * 60);
+            // 回城后驻留 4~8 分钟(卖矿/补给/闲逛/练技), 让城中心长期有人。
+            _nextResourceAction = now.AddSeconds(240 + _random.NextDouble() * 240);
             return true;
         }
 

@@ -17,6 +17,16 @@ public sealed class BotConfig
     public int FieldAnchorX { get; set; } = 175;
     public int FieldAnchorY { get; set; } = 60;
     public int FieldRadius { get; set; } = 40;
+    // 所有角色以城中心出生点为活动主场: 各自在出生点周围选一个"家"角落。
+    public int HomeAnchorRadius { get; set; } = 15;
+    // 练级角色外出节奏: 在城驻留 HomeDwell 秒后去野外打 FieldTrip 秒再回城。
+    public int HomeDwellSecondsMin { get; set; } = 240;
+    public int HomeDwellSecondsMax { get; set; } = 480;
+    public int FieldTripIntervalSeconds { get; set; } = 420;
+    public int FieldTripDurationSeconds { get; set; } = 120;
+    // 城内"练技"表演间隔(全员, 挥刀/放技能制造热闹)。
+    public int TownCastMinSeconds { get; set; } = 30;
+    public int TownCastMaxSeconds { get; set; } = 70;
     public bool VerboseNetworkLogging { get; set; } = false;
     public bool EnableBotPvP { get; set; } = true;
     public int PvPStartDelaySeconds { get; set; } = 35;
