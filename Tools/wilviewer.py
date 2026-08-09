@@ -2078,7 +2078,17 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function resolve(v,base){return typeof v==='number'?v:(v&&v.offset+(base[v.base]||0));}
 function evidenceWindow(id){return (DATA?.layout?.specialized_window_evidence||[]).find(x=>x.window?.id===id||x.id===id||x.window_id===id)||((DATA?.layout?.system_window_evidence?.windows||[]).find(x=>x.id===id)||{});}
 function addLabel(el,text,klass){const l=document.createElement('span');l.className=klass;l.textContent=text;el.appendChild(l);}
-function addMain(){const img=document.createElement('img');img.className='hud-base';img.src='/api/image?f=GameInter.wil&i=50&scale=1';img.title='GameInter.wil Frame 50 · primary-static';screen.appendChild(img);}
+function addMain(){const img=document.createElement('img');img.className='hud-base';img.src='/api/image?f=GameInter.wil&i=50&scale=1';img.title='GameInter.wil Frame 50 · primary-static';screen.appendChild(img);
+  const bars=[
+    {frame:60,x:61,y:496,w:43,h:70,role:'primary/HP bar candidate'},
+    {frame:61,x:105,y:496,w:42,h:70,role:'secondary/MP bar candidate'},
+    {frame:63,x:238,y:590,w:164,h:6,role:'experience bar candidate'}
+  ];
+  for(const b of bars){const box=document.createElement('div');box.className='hud-bar-evidence';box.style.cssText=`position:absolute;left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;overflow:hidden;z-index:18;outline:1px dashed rgba(242,193,78,.85);pointer-events:none`;
+    const bi=document.createElement('img');bi.src=`/api/image?f=GameInter.wil&i=${b.frame}&scale=1`;bi.alt=`GameInter.wil Frame ${b.frame}`;bi.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;image-rendering:pixelated;opacity:.72';box.appendChild(bi);
+    const lab=document.createElement('span');lab.textContent=`F${b.frame} · ${b.role} · (${b.x},${b.y},${b.w},${b.h})`;lab.style.cssText='position:absolute;left:0;top:100%;color:#ffe29a;background:rgba(8,12,16,.92);font:10px monospace;white-space:nowrap';box.appendChild(lab);screen.appendChild(box);
+  }
+}
 function addButton(r,base){const x=resolve(r.position.x,base),y=resolve(r.position.y,base),w=r.size.width,h=r.size.height;const b=document.createElement('div');b.className='evidence-button';b.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frames.normal}&scale=1`;b.appendChild(im);addLabel(b,`${r.id} · F${r.resource.frames.normal} · (${x},${y},${w},${h})`,'button-label');b.onclick=()=>focusRecord(r.id);screen.appendChild(b);}
 function addWindow(r,analysis){const w=r.size.width,h=r.size.height,x=r.position.x,y=r.position.y;const box=document.createElement('div');box.className='evidence-window';box.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const a=analysis.find(q=>q.id===r.id);const bb=a&&a.resource&&a.resource.visible_bbox;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frame}&scale=1`;if(bb)im.style.cssText=`left:${-bb.left}px;top:${-bb.top}px`;box.appendChild(im);const lib=r.resource_handle?.library?.file||'resource unresolved';addLabel(box,`${r.id} · ${lib} · F${r.resource.frame} · (${x},${y},${w},${h})`,'window-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
 function addFocusedGeometry(x,y,w,h,text){const d=document.createElement('div');d.className='focus-geometry';d.style.cssText+=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;if(text){const s=document.createElement('span');s.textContent=text;d.appendChild(s);}screen.appendChild(d);}
