@@ -183,6 +183,13 @@
     "item_grid_rect_loop": {"va": "0x0044D51E", "columns": 4, "rows": 3, "x_start": 323, "y_start": 43, "step": 38, "right_offset": 37, "bottom_offset": 37},
     "item_grid_note": "These are raw SetRect constants from the binary. The right-side 4×3 grid is exact at constructor level; parent origin/meaning remains unresolved because it does not fit the currently bound 300-pixel visible background."
   },
+  "paint_order": [
+    {"order": 1, "va": "0x0044D5A0-0x0044D60F", "role": "state-dependent clip rectangle", "evidence": "The paint entry first derives the clipping RECT from state byte this+0x5F8: state 1, state 4, or the stored window rectangle for other states."},
+    {"order": 2, "va": "0x0044D631-0x0044DB15", "role": "visible item rows and item icon composition", "evidence": "The linked item list is traversed, resource IDs are selected through 0x466130, source/destination rectangles are normalized and composited through 0x4542F0, and up to five visible rows are processed."},
+    {"order": 3, "va": "0x0044D6D7-0x0044D8AF", "role": "selected-row/item marker and item description region", "evidence": "The selected-row branch performs the float/compositor pipeline, invokes selection marker 0x45E570 and emits the item description area through the recovered text/auxiliary calls."},
+    {"order": 4, "va": "0x0044D8B9-0x0044D9A3", "role": "price or quantity and row text", "evidence": "The item record is decoded, runtime value this+0x24 is formatted with 0x47C784 (%d两), and row text is emitted through 0x45DD70."},
+    {"order": 5, "va": "0x0044D9A8-0x0044DAC0", "role": "state-dependent auxiliary/action text", "evidence": "The alternate item branch repeats the record/value text path and then calls the auxiliary item-action routine when its state flags are set."}
+  ],
   "pending": [
     "Resolve the factory's parent-relative centering behavior and the actual screen origin at runtime.",
     "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
