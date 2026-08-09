@@ -99,11 +99,21 @@
     {"order": 2, "va": "0x00418300-0x00418332", "role": "prompt message text", "evidence": "The dialog message buffer at this+0x2C is passed through the shared text/resource compositor after the background composition."},
     {"order": 3, "va": "0x00418339-0x004183CA", "role": "three prompt action controls", "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."}
   ],
+  "direct_callers_with_original_messages": [
+    {"call_va": "0x00416F9C", "message_va": "0x0047AD98", "message_encoding": "GBK", "message": "您要付给对方多少金币?", "business_context": "payment/transfer amount confirmation", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x0041D633", "message_va": "0x0047B028", "message_encoding": "GBK", "message": "您准备扔下多少金币?", "business_context": "drop-gold amount confirmation", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x00420B9F", "message_va": "0x0047B5A0", "message_encoding": "CP949/Korean", "message": "개인 보관 창고가 다 찼습니다. 더 이상 보관할 수 없습니다.", "business_context": "personal storage full notice", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x00420BD3", "message_va": "0x0047B588", "message_encoding": "CP949/Korean", "message": "보관 할 수 없습니다.", "business_context": "storage operation rejected", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x004246BA", "message_va": "0x0047BA10", "message_encoding": "GBK", "message": "请在这里添加您要删除的小组成员名字.", "business_context": "group-member removal prompt", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x00403E12", "message_va": "0x0047AB78", "message_encoding": "CP949/Korean", "message": "서버와의 접속이 끊겼습니다.", "business_context": "server connection lost notice", "evidence_level": "primary-static-callsite-and-string"},
+    {"call_va": "0x0041C196", "message_va": "0x0047AF80", "message_encoding": "CP949/Korean", "message": "서버와의 접속이 불안합니다. 게임을 종료하겠습니다.", "business_context": "unstable server connection notice", "evidence_level": "primary-static-callsite-and-string"}
+  ],
   "confirmed": [
     "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
     "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
     "The frame family visually supports confirmation/prompt UI semantics.",
-    "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
+    "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths.",
+    "Multiple independent client call sites pass original payment, drop-gold, storage, group and connection messages into the shared prompt constructor path."
   ],
   "pending": [
     "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
