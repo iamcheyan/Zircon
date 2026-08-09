@@ -22,6 +22,14 @@ NetworkManager="*res://Network/NetworkManager.cs"
 
 project/assembly_name="ZirconClient"
 
+[display]
+
+window/size/viewport_width=1024
+window/size/viewport_height=768
+window/size/mode=0
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

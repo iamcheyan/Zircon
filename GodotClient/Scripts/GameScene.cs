@@ -4382,9 +4382,13 @@ public partial class GameScene : Control
     private void RefreshUiScale()
     {
         Vector2 viewport = GetViewport().GetVisibleRect().Size;
-        UiScale = viewport.Y > 0
-            ? Mathf.Max(1f, viewport.Y / UiScaleBaseHeight)
-            : 2f;
+        // canvas_items stretch 已经负责把 1024x768 逻辑画布放大到窗口；
+        // 再叠加运行时 UiScale 会变成 4x。只有未启用全局 stretch 时，
+        // 才由 GameScene 自己按窗口高度缩放 HUD。
+        string stretchMode = ProjectSettings.GetSetting("display/window/stretch/mode", "").ToString();
+        UiScale = stretchMode == "canvas_items"
+            ? 1f
+            : viewport.Y > 0 ? Mathf.Max(1f, viewport.Y / UiScaleBaseHeight) : 2f;
         if (_uiLayer != null && IsInstanceValid(_uiLayer))
             _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
     }

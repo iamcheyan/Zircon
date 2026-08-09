@@ -111,8 +111,8 @@ public partial class LoginScene : Control
     private void ShowVersionOK(string version)
     {
         SetStatus($"已连接服务端 (版本: {version})\n请登录或注册");
-        _loginBtn.Disabled = false;
-        _registerBtn.Disabled = false;
+        if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = false;
+        if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = false;
         if (_skinLogin != null) _skinLogin.Enabled = true;
         if (_skinRegister != null) _skinRegister.Enabled = true;
     }
@@ -143,7 +143,7 @@ public partial class LoginScene : Control
         else
         {
             SetStatus($"登录失败: {_pendingLoginResult}\n{_pendingLoginMessage}");
-            _loginBtn.Disabled = false;
+            if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = false;
         }
     }
 
@@ -158,7 +158,7 @@ public partial class LoginScene : Control
             SetStatus($"注册成功 ({result}), 请登录");
         else
             SetStatus($"注册失败: {result}");
-        _registerBtn.Disabled = false;
+        if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = false;
     }
 
     private void OnDisconnected()
@@ -168,13 +168,13 @@ public partial class LoginScene : Control
     private void ShowDisconnected()
     {
         SetStatus("连接已断开");
-        _loginBtn.Disabled = true;
-        _registerBtn.Disabled = true;
+        if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = true;
+        if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = true;
     }
 
     private void OnLoginPressed()
     {
-        _loginBtn.Disabled = true;
+        if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = true;
         SetStatus("登录中...");
         string email = _skinEmail?.Text ?? _emailEdit.Text;
         string password = _skinPassword?.Text ?? _passwordEdit.Text;
@@ -298,7 +298,7 @@ public partial class LoginScene : Control
 
     private void BuildLegacyLoginUi()
     {
-        var viewport = GetViewport().GetVisibleRect().Size;
+        Vector2 viewport = new Vector2(1024, 768);
         var background = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface1c,
@@ -306,7 +306,7 @@ public partial class LoginScene : Control
             FixedSize = true,
             Size = new Vector2I(1024, 768),
             MouseFilter = Control.MouseFilterEnum.Ignore,
-            Position = (viewport - new Vector2(1024, 768)) / 2f,
+            Position = Vector2.Zero,
         };
         AddChild(background);
 
@@ -330,17 +330,25 @@ public partial class LoginScene : Control
             FixedSize = true,
             Size = new Vector2I(564, 300),
             Position = new Vector2(-35, -35),
+            Blend = true,
             MouseFilter = Control.MouseFilterEnum.Ignore,
         };
         logoBackground.AddControl(logo);
 
+        // 主登录框容器 (使用 Interface[151] 贴图)
         var dialog = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface,
             Index = 151,
-            Position = new Vector2((viewport.X - 780) / 2f, viewport.Y - 135),
         };
         AddChild(dialog);
+
+        // 原版 LoginDialog 的底框位置 (居中偏下)
+        Vector2I dialogSize = MirSkin.GetSize(LibraryFile.Interface, 151);
+        if (dialogSize.X <= 0 || dialogSize.Y <= 0) dialogSize = new Vector2I(780, 115);
+        dialog.Position = new Vector2((viewport.X - dialogSize.X) / 2f, viewport.Y - dialogSize.Y - 20f);
+
+        // 标题提示文字
         dialog.AddControl(new DXLabel
         {
             Text = "请输入邮箱和密码",
@@ -349,47 +357,89 @@ public partial class LoginScene : Control
             Size = new Vector2I(220, 18),
             IsControl = false,
         });
-        _skinEmail = new DXTextInput { Location = new Vector2I(70, 65), Size = new Vector2I(170, 14), Text = ClientSettings.RememberDetails ? ClientSettings.RememberedEMail : _emailEdit.Text, Border = false, FontSize = 8 };
-        _skinPassword = new DXTextInput { Location = new Vector2I(357, 65), Size = new Vector2I(170, 14), Text = ClientSettings.RememberDetails ? ClientSettings.RememberedPassword : _passwordEdit.Text, Border = false, Secret = true, FontSize = 8 };
-        dialog.AddControl(_skinEmail); dialog.AddControl(_skinPassword);
+
+        // 邮箱和密码输入框 (精准放置在金属框插槽内)
+        _skinEmail = new DXTextInput
+        {
+            Location = new Vector2I(70, 65),
+            Size = new Vector2I(170, 14),
+            Text = ClientSettings.RememberDetails ? ClientSettings.RememberedEMail : _emailEdit.Text,
+            Border = false,
+            FontSize = 8
+        };
+        _skinPassword = new DXTextInput
+        {
+            Location = new Vector2I(357, 65),
+            Size = new Vector2I(170, 14),
+            Text = ClientSettings.RememberDetails ? ClientSettings.RememberedPassword : _passwordEdit.Text,
+            Border = false,
+            Secret = true,
+            FontSize = 8
+        };
+        dialog.AddControl(_skinEmail);
+        dialog.AddControl(_skinPassword);
         _skinEmail.TextChanged += value => _emailEdit.Text = value;
         _skinPassword.TextChanged += value => _passwordEdit.Text = value;
 
         int defaultButtonHeight = MirSkin.GetSize(LibraryFile.Interface, 16).Y;
         if (defaultButtonHeight <= 0) defaultButtonHeight = 21;
+
+        // 登录/退出 主按钮
         _skinLogin = new DXButton { Text = "登录", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(550, 60), Size = new Vector2I(100, defaultButtonHeight), Enabled = false };
-        _skinRegister = new DXButton { Text = "注册新账号", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(485, 0), Size = new Vector2I(136, 32), Enabled = false };
-        _skinChange = new DXButton { Text = "修改密码", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(625, 0), Size = new Vector2I(136, 32) };
+        _skinExit = new DXButton { Text = "退出", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(660, 60), Size = new Vector2I(100, defaultButtonHeight) };
+
+        // 顶部功能页签按钮 (排行榜、选项、注册账号、修改密码)
         _skinRanking = new DXButton { Text = "排行榜", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(20, 0), Size = new Vector2I(68, 32) };
         _skinOptions = new DXButton { Text = "选项", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(93, 0), Size = new Vector2I(68, 32) };
+        _skinRegister = new DXButton { Text = "注册新账号", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(485, 0), Size = new Vector2I(136, 32), Enabled = false };
+        _skinChange = new DXButton { Text = "修改密码", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(625, 0), Size = new Vector2I(136, 32) };
+
         _skinLogin.MouseClick += (o, e) => OnLoginPressed();
         _skinRegister.MouseClick += (o, e) => OpenAccountDialog();
         _skinChange.MouseClick += (o, e) => OpenChangeDialog();
         _skinRanking.MouseClick += (o, e) => ToggleLoginRanking();
         _skinOptions.MouseClick += (o, e) => ToggleLoginConfig();
-        dialog.AddControl(_skinLogin); dialog.AddControl(_skinRegister); dialog.AddControl(_skinChange); dialog.AddControl(_skinRanking); dialog.AddControl(_skinOptions);
-        _skinExit = new DXButton { Text = "退出", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(660, 60), Size = new Vector2I(100, defaultButtonHeight) };
         _skinExit.MouseClick += (o, e) => GetTree().Quit();
+
+        dialog.AddControl(_skinLogin);
+        dialog.AddControl(_skinRegister);
+        dialog.AddControl(_skinChange);
+        dialog.AddControl(_skinRanking);
+        dialog.AddControl(_skinOptions);
         dialog.AddControl(_skinExit);
+
+        // 忘记密码 链接
         _skinForgot = new DXLabel { Text = "忘记密码", FontSize = 9, TextColour = new Color(1f, .75f, .25f), Location = new Vector2I(640, 38), Size = new Vector2I(100, 16), IsControl = true };
         _skinForgot.MouseEnter += (o, e) => _skinForgot.TextColour = Colors.White;
         _skinForgot.MouseLeave += (o, e) => _skinForgot.TextColour = new Color(1f, .75f, .25f);
         _skinForgot.MouseClick += (o, e) => OpenRequestResetDialog();
         dialog.AddControl(_skinForgot);
+
+        // 记住账号 复选框
         _skinRemember = new DXCheckBox { Location = new Vector2I(490, 38), LabelBoxPadding = 4, Checked = ClientSettings.RememberDetails };
         _skinRemember.Label.Text = "记住账号";
         _skinRemember.Label.FontSize = 9;
         _skinRemember.Label.TextColour = new Color(1f, .75f, .25f);
         dialog.AddControl(_skinRemember);
+
+        // 激活账号 按钮
         _skinActivation = new DXButton { Text = "激活账号", FontSize = 9, TextColour = new Color(1f, .75f, .25f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(20, 36), Size = new Vector2I(72, 20) };
         _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, this); };
         dialog.AddControl(_skinActivation);
+
+        // 状态提示 Label
         _skinStatus = new DXLabel { Text = "正在连接服务端...", FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 100) };
         dialog.AddControl(_skinStatus);
-        _loginRanking = new RankingDialog(false) { Position = new Vector2((viewport.X - 330) / 2f, (viewport.Y - 456) / 2f) };
-        _loginConfig = new ConfigDialog { Position = new Vector2((viewport.X - 380) / 2f, (viewport.Y - 430) / 2f) };
-        GetNode<Control>("VBox").Visible = false;
-        // 原版 LoginBox 的位置基于 Interface[151] 实际尺寸，而不是固定高度。
+
+        // 初始隐藏弹出的对话框（排行榜和选项配置）
+        _loginRanking = new RankingDialog(false) { Position = new Vector2((viewport.X - 330) / 2f, (viewport.Y - 456) / 2f), Visible = false };
+        _loginConfig = new ConfigDialog { Position = new Vector2((viewport.X - 380) / 2f, (viewport.Y - 430) / 2f), Visible = false };
+
+        // 保留原生控件树但隐藏它。不能 QueueFree：DXTextInput 的 TextChanged
+        // 仍会同步到这些字段，销毁后输入会触发 ObjectDisposedException。
+        var vbox = GetNodeOrNull<VBoxContainer>("VBox");
+        if (vbox != null)
+            vbox.Visible = false;
         dialog.Position = new Vector2((viewport.X - dialog.Size.X) / 2f, viewport.Y - dialog.Size.Y - 20f);
     }
 
