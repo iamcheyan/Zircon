@@ -31,11 +31,21 @@
       ],
       "position": {
         "x": 5,
+        "y": 21,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": {
+        "x": 5,
         "y": 21
       },
+      "redraw_position": {
+        "x": 5,
+        "y": 21,
+        "offset": "0x2f4"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -49,11 +59,21 @@
       ],
       "position": {
         "x": 3,
+        "y": 56,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": {
+        "x": 3,
         "y": 56
       },
+      "redraw_position": {
+        "x": 3,
+        "y": 56,
+        "offset": "0x3a8"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -67,11 +87,21 @@
       ],
       "position": {
         "x": 4,
+        "y": 91,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": {
+        "x": 4,
         "y": 91
       },
+      "redraw_position": {
+        "x": 4,
+        "y": 91,
+        "offset": "0x45c"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -85,11 +115,21 @@
       ],
       "position": {
         "x": 2,
+        "y": 126,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": {
+        "x": 2,
         "y": 126
       },
+      "redraw_position": {
+        "x": 2,
+        "y": 126,
+        "offset": "0x510"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -101,10 +141,20 @@
         458,
         459
       ],
-      "position": null,
+      "position": {
+        "x": 2,
+        "y": 161,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": null,
+      "redraw_position": {
+        "x": 2,
+        "y": 161,
+        "offset": "0x5c4"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -116,10 +166,20 @@
         450,
         451
       ],
-      "position": null,
+      "position": {
+        "x": 2,
+        "y": 196,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": null,
+      "redraw_position": {
+        "x": 2,
+        "y": 196,
+        "offset": "0x678"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -132,12 +192,22 @@
         453
       ],
       "position": {
+        "x": 1,
+        "y": 231,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": {
         "x": 0,
         "y": 231
       },
+      "redraw_position": {
+        "x": 1,
+        "y": 231,
+        "offset": "0x72c"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     },
     {
@@ -149,10 +219,20 @@
         454,
         455
       ],
-      "position": null,
+      "position": {
+        "x": 2,
+        "y": 266,
+        "coordinate_space": "window-relative"
+      },
+      "constructor_position": null,
+      "redraw_position": {
+        "x": 2,
+        "y": 266,
+        "offset": "0x7e0"
+      },
       "evidence": {
-        "level": "primary-static-text-control-correlation",
-        "source": "Mir3.exe GB18030 literal + constructor call"
+        "level": "primary-static-redraw-position",
+        "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
       }
     }
   ],

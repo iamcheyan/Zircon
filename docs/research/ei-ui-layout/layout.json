@@ -11374,10 +11374,11 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "inside-window",
+      "coordinate_status": "resolved-primary-redraw",
       "position": {
         "x": 5,
-        "y": 21
+        "y": 21,
+        "coordinate_space": "window-relative"
       },
       "size": {
         "width": 44,
@@ -11389,14 +11390,21 @@
         "y": 21,
         "width": 44,
         "height": 36,
-        "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
-        "evidence_level": "primary-static-expression-plus-primary-resource"
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
       },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 5,
+        "y": 21,
+        "offset": "0x2f4",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -11530,10 +11538,11 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "inside-window",
+      "coordinate_status": "resolved-primary-redraw",
       "position": {
         "x": 3,
-        "y": 56
+        "y": 56,
+        "coordinate_space": "window-relative"
       },
       "size": {
         "width": 44,
@@ -11545,14 +11554,21 @@
         "y": 56,
         "width": 44,
         "height": 36,
-        "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
-        "evidence_level": "primary-static-expression-plus-primary-resource"
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
       },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 3,
+        "y": 56,
+        "offset": "0x3a8",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -11686,10 +11702,11 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "inside-window",
+      "coordinate_status": "resolved-primary-redraw",
       "position": {
         "x": 4,
-        "y": 91
+        "y": 91,
+        "coordinate_space": "window-relative"
       },
       "size": {
         "width": 44,
@@ -11701,14 +11718,21 @@
         "y": 91,
         "width": 44,
         "height": 36,
-        "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
-        "evidence_level": "primary-static-expression-plus-primary-resource"
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
       },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 4,
+        "y": 91,
+        "offset": "0x45c",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -11842,10 +11866,11 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "inside-window",
+      "coordinate_status": "resolved-primary-redraw",
       "position": {
         "x": 2,
-        "y": 126
+        "y": 126,
+        "coordinate_space": "window-relative"
       },
       "size": {
         "width": 48,
@@ -11857,14 +11882,21 @@
         "y": 126,
         "width": 48,
         "height": 36,
-        "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
-        "evidence_level": "primary-static-expression-plus-primary-resource"
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
       },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 2,
+        "y": 126,
+        "offset": "0x510",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -11998,19 +12030,37 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "unresolved",
-      "position": null,
+      "coordinate_status": "resolved-primary-redraw",
+      "position": {
+        "x": 2,
+        "y": 161,
+        "coordinate_space": "window-relative"
+      },
       "size": {
         "width": 48,
         "height": 36,
         "source": "Data/GameInter.wil frame 458"
       },
-      "hit_rect": null,
+      "hit_rect": {
+        "x": 2,
+        "y": 161,
+        "width": 48,
+        "height": 36,
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 2,
+        "y": 161,
+        "offset": "0x5c4",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -12144,19 +12194,37 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "unresolved",
-      "position": null,
+      "coordinate_status": "resolved-primary-redraw",
+      "position": {
+        "x": 2,
+        "y": 196,
+        "coordinate_space": "window-relative"
+      },
       "size": {
         "width": 44,
         "height": 36,
         "source": "Data/GameInter.wil frame 450"
       },
-      "hit_rect": null,
+      "hit_rect": {
+        "x": 2,
+        "y": 196,
+        "width": 44,
+        "height": 36,
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 2,
+        "y": 196,
+        "offset": "0x678",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -12290,10 +12358,11 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "inside-window",
+      "coordinate_status": "resolved-primary-redraw",
       "position": {
-        "x": 0,
-        "y": 231
+        "x": 1,
+        "y": 231,
+        "coordinate_space": "window-relative"
       },
       "size": {
         "width": 44,
@@ -12301,18 +12370,25 @@
         "source": "Data/GameInter.wil frame 452"
       },
       "hit_rect": {
-        "x": 0,
+        "x": 1,
         "y": 231,
         "width": 44,
         "height": 36,
-        "basis": "0x00417550 SetRect; GameInter.wil Frame dimensions",
-        "evidence_level": "primary-static-expression-plus-primary-resource"
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
       },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 1,
+        "y": 231,
+        "offset": "0x72c",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -12446,19 +12522,37 @@
           "notes": "Absolute candidates are emitted only for simple expressions; inspect raw neighborhood before upgrading."
         }
       },
-      "coordinate_status": "unresolved",
-      "position": null,
+      "coordinate_status": "resolved-primary-redraw",
+      "position": {
+        "x": 2,
+        "y": 266,
+        "coordinate_space": "window-relative"
+      },
       "size": {
         "width": 44,
         "height": 36,
         "source": "Data/GameInter.wil frame 454"
       },
-      "hit_rect": null,
+      "hit_rect": {
+        "x": 2,
+        "y": 266,
+        "width": 44,
+        "height": 36,
+        "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+        "evidence_level": "primary-static-redraw-plus-primary-resource"
+      },
       "evidence": {
         "level": "primary-static",
         "source": "Mir3.exe"
       },
       "notes": "Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; geometric status is retained as a separate validation field.",
+      "redraw_position": {
+        "x": 2,
+        "y": 266,
+        "offset": "0x7e0",
+        "source_va": "0x00439500",
+        "evidence_level": "primary-static-redraw-position"
+      },
       "resource_handle": {
         "expression": "wrapper_entry_resource_arg1 (observed in edi)",
         "library": "Data/GameInter.wil",
@@ -13909,11 +14003,21 @@
           ],
           "position": {
             "x": 5,
+            "y": 21,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": {
+            "x": 5,
             "y": 21
           },
+          "redraw_position": {
+            "x": 5,
+            "y": 21,
+            "offset": "0x2f4"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -13927,11 +14031,21 @@
           ],
           "position": {
             "x": 3,
+            "y": 56,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": {
+            "x": 3,
             "y": 56
           },
+          "redraw_position": {
+            "x": 3,
+            "y": 56,
+            "offset": "0x3a8"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -13945,11 +14059,21 @@
           ],
           "position": {
             "x": 4,
+            "y": 91,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": {
+            "x": 4,
             "y": 91
           },
+          "redraw_position": {
+            "x": 4,
+            "y": 91,
+            "offset": "0x45c"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -13963,11 +14087,21 @@
           ],
           "position": {
             "x": 2,
+            "y": 126,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": {
+            "x": 2,
             "y": 126
           },
+          "redraw_position": {
+            "x": 2,
+            "y": 126,
+            "offset": "0x510"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -13979,10 +14113,20 @@
             458,
             459
           ],
-          "position": null,
+          "position": {
+            "x": 2,
+            "y": 161,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": null,
+          "redraw_position": {
+            "x": 2,
+            "y": 161,
+            "offset": "0x5c4"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -13994,10 +14138,20 @@
             450,
             451
           ],
-          "position": null,
+          "position": {
+            "x": 2,
+            "y": 196,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": null,
+          "redraw_position": {
+            "x": 2,
+            "y": 196,
+            "offset": "0x678"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -14010,12 +14164,22 @@
             453
           ],
           "position": {
+            "x": 1,
+            "y": 231,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": {
             "x": 0,
             "y": 231
           },
+          "redraw_position": {
+            "x": 1,
+            "y": 231,
+            "offset": "0x72c"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         },
         {
@@ -14027,10 +14191,20 @@
             454,
             455
           ],
-          "position": null,
+          "position": {
+            "x": 2,
+            "y": 266,
+            "coordinate_space": "window-relative"
+          },
+          "constructor_position": null,
+          "redraw_position": {
+            "x": 2,
+            "y": 266,
+            "offset": "0x7e0"
+          },
           "evidence": {
-            "level": "primary-static-text-control-correlation",
-            "source": "Mir3.exe GB18030 literal + constructor call"
+            "level": "primary-static-redraw-position",
+            "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"
           }
         }
       ],

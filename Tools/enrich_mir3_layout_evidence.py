@@ -12,6 +12,18 @@ import json
 from pathlib import Path
 
 
+SKILL_REDRAW_POSITIONS = {
+    "0x00439334": {"x": 5, "y": 21, "offset": "0x2f4"},
+    "0x0043935d": {"x": 3, "y": 56, "offset": "0x3a8"},
+    "0x00439386": {"x": 4, "y": 91, "offset": "0x45c"},
+    "0x004393b3": {"x": 2, "y": 126, "offset": "0x510"},
+    "0x004393e0": {"x": 2, "y": 161, "offset": "0x5c4"},
+    "0x0043940d": {"x": 2, "y": 196, "offset": "0x678"},
+    "0x00439437": {"x": 1, "y": 231, "offset": "0x72c"},
+    "0x00439464": {"x": 2, "y": 266, "offset": "0x7e0"},
+}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--layout", type=Path, default=Path("docs/research/ei-ui-layout/layout.json"))
@@ -189,6 +201,22 @@ def main() -> None:
             "notes": ("Frame pair, GameInter resource handle, and push-time x/y expression are primary static evidence; "
                        "geometric status is retained as a separate validation field."),
         }
+        redraw = SKILL_REDRAW_POSITIONS.get(control["call_va"].lower())
+        if redraw:
+            item["position"] = {"x": redraw["x"], "y": redraw["y"], "coordinate_space": "window-relative"}
+            item["redraw_position"] = {
+                **redraw,
+                "source_va": "0x00439500",
+                "evidence_level": "primary-static-redraw-position",
+            }
+            item["coordinate_status"] = "resolved-primary-redraw"
+            if dimensions and dimensions.get("width") and dimensions.get("height"):
+                item["hit_rect"] = {
+                    "x": redraw["x"], "y": redraw["y"],
+                    "width": dimensions["width"], "height": dimensions["height"],
+                    "basis": "0x00439500 redraw SetPos + 0x00417550 SetRect; window-relative",
+                    "evidence_level": "primary-static-redraw-plus-primary-resource",
+                }
         if resource_handles.get(control["window_id"]):
             item["resource_handle"] = {
                 "expression": "wrapper_entry_resource_arg1 (observed in edi)",

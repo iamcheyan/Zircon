@@ -886,6 +886,33 @@ docs/research/ei-ui-layout/skill-window-context.json
 
 该记录已进入 `layout.json.specialized_window_evidence`。
 
+### Finding 38：技能分类控件的八组相对坐标由窗口重绘函数完整恢复（2026-08-09）
+
+继续反汇编 `Mir3.exe` 的技能窗口刷新路径后，确认 `0x00439500` 会在每次重绘时
+调用通用定位逻辑，把八个分类控件按窗口对象 `this+0x18/this+0x1c` 的原点重新放置。
+这条路径直接给出了最终的窗口相对坐标，修正了早先只依据构造器寄存器表达式时对后四项
+坐标的“未解析”标记：
+
+| 分类 | 控件对象偏移 | X | Y |
+|---|---:|---:|---:|
+| 火 | `this+0x2f4` | 5 | 21 |
+| 冰 | `this+0x3a8` | 3 | 56 |
+| 电 | `this+0x45c` | 4 | 91 |
+| 风 | `this+0x510` | 2 | 126 |
+| 神圣 | `this+0x5c4` | 2 | 161 |
+| 黑暗 | `this+0x678` | 2 | 196 |
+| 幻影 | `this+0x72c` | 1 | 231 |
+| 剑 | `this+0x7e0` | 2 | 266 |
+
+证据等级为 `primary-static-redraw-position`。这些值是窗口内部坐标；仍需继续恢复
+窗口基类的屏幕原点、移动状态和控件最终 RECT，才能得到屏幕绝对坐标。机器可读结果同步
+写入 `skill-window-context.json` 与 `layout.json` 的 `control_constructors`。
+
+本次方法：以 `llvm-objdump` 反汇编 `0x00439500`，核对八个 `0x00417830` 定位调用
+使用的 X/Y 常量与 `this` 内对象偏移；再由 `analyze_mir3_skill_window.py` 和
+`enrich_mir3_layout_evidence.py` 写入结构化证据。分类控件也可能是带图标的复合控件，
+但坐标本身不依赖业务命名，因此可直接用于 800×600 预览器。
+
 ### 当前产物
 
 ```text

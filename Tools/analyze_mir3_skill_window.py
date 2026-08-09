@@ -31,6 +31,20 @@ LABEL_CALLS = {
     "0x0047c308": "0x00439464",
 }
 
+# 0x00439500 (the window redraw helper) repositions these controls every
+# refresh.  This is stronger evidence than the constructor's register-only
+# arguments because the final x/y pair is explicit at the SetPos call site.
+REDRAW_POSITIONS = {
+    "fire": {"x": 5, "y": 21, "offset": "0x2f4"},
+    "ice": {"x": 3, "y": 56, "offset": "0x3a8"},
+    "lightning": {"x": 4, "y": 91, "offset": "0x45c"},
+    "wind": {"x": 2, "y": 126, "offset": "0x510"},
+    "holy": {"x": 2, "y": 161, "offset": "0x5c4"},
+    "dark": {"x": 2, "y": 196, "offset": "0x678"},
+    "illusion": {"x": 1, "y": 231, "offset": "0x72c"},
+    "sword": {"x": 2, "y": 266, "offset": "0x7e0"},
+}
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -45,14 +59,17 @@ def main() -> None:
     for va, (text, key) in TEXTS.items():
         call_va = LABEL_CALLS[va]
         control = by_call.get(call_va.lower())
+        redraw = REDRAW_POSITIONS[key]
         labels.append({
             "literal_va": va,
             "text": text,
             "category_key": key,
             "control_call_va": call_va,
             "frame_pair": control.get("resource", {}).get("frame_pair") if control else None,
-            "position": control.get("position") if control else None,
-            "evidence": {"level": "primary-static-text-control-correlation", "source": "Mir3.exe GB18030 literal + constructor call"},
+            "position": {"x": redraw["x"], "y": redraw["y"], "coordinate_space": "window-relative"},
+            "constructor_position": control.get("position") if control else None,
+            "redraw_position": redraw,
+            "evidence": {"level": "primary-static-redraw-position", "source": "Mir3.exe 0x00439500 redraw helper + GB18030 literal/control correlation"},
         })
     result = {
         "window_id": "window.other-14-candidate",
