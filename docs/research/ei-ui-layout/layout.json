@@ -19936,6 +19936,12 @@
           "y": 350,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          532,
+          350,
+          28,
+          26
+        ],
         "role": "close-or-control-candidate"
       },
       {
@@ -19950,6 +19956,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          25,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -19964,6 +19976,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          65,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -19978,6 +19996,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          105,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -19992,6 +20016,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          145,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -20006,6 +20036,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          185,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -20020,6 +20056,12 @@
           "y": 332,
           "coordinate_space": "window-relative"
         },
+        "hit_rect": [
+          225,
+          332,
+          36,
+          34
+        ],
         "role": "chat-channel-candidate"
       },
       {
@@ -20271,6 +20313,17 @@
       ],
       "evidence_level": "primary-static-command-state"
     },
+    "hit_dispatch": {
+      "routine": "0x004149A0-0x00414C56",
+      "first_control": {
+        "object": "this+0x6C",
+        "call": "child vtable+0x10",
+        "effect": "handled result returns immediately; this path is the generic close/control route, not a channel command"
+      },
+      "channel_controls": "After the first control returns unhandled, objects this+0x120 through this+0x4A4 are tested in constructor order; each handled branch updates the corresponding chat command state.",
+      "scroll_controls": "this+0x558 and this+0x60C are tested after channel controls; their child hit rectangles use state-selected resources and remain resource-context dependent.",
+      "evidence_level": "primary-static-plus-primary-resource"
+    },
     "original_command_strings": {
       "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
       "encoding": "GBK",
@@ -20354,9 +20407,8 @@
     ],
     "pending": [
       "Confirm whether the six command strings are rendered as visible captions, tooltips, or both by the shared control implementation.",
-      "Confirm the first control's exact close/submit role and runtime hit rectangles.",
       "Recover chat line font/color and clipping parameters from the shared text renderer.",
-      "Resolve the exact node+0x08 record text/color field order and whether the six controls expose captions or only tooltips."
+      "Resolve the exact node+0x08 record text/color field order and whether the six controls expose captions or only tooltips; the first seven control hit rectangles and their input dispatch order are now statically recovered."
     ]
   },
   "npc_window_evidence": {
