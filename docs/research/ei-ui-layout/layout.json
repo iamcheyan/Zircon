@@ -19613,6 +19613,27 @@
             ],
             "evidence_level": "primary-static-plus-primary-resource"
           },
+          "resource_visual_text": {
+            "source": "Direct pixel inspection of original Data/GameInter.wil frames 1060-1062.",
+            "records": [
+              {
+                "frame": 1060,
+                "visual_text_candidate": "交易",
+                "confidence": "high"
+              },
+              {
+                "frame": 1061,
+                "visual_text_candidate": "交易",
+                "confidence": "high"
+              },
+              {
+                "frame": 1062,
+                "visual_text_candidate": "交易",
+                "confidence": "high"
+              }
+            ],
+            "warning": "The original library contains a visible 交易 label family at 1060-1062, while the constructor evidence also references blank 1064/1065 entries. Do not silently renumber the constructor pairs; preserve both facts until resource-index handling is reconciled."
+          },
           "paint_order": [
             {
               "order": 1,
@@ -22875,6 +22896,27 @@
             }
           ],
           "evidence_level": "primary-static-plus-primary-resource"
+        },
+        "resource_visual_text": {
+          "source": "Direct pixel inspection of original Data/GameInter.wil frames 1060-1062.",
+          "records": [
+            {
+              "frame": 1060,
+              "visual_text_candidate": "交易",
+              "confidence": "high"
+            },
+            {
+              "frame": 1061,
+              "visual_text_candidate": "交易",
+              "confidence": "high"
+            },
+            {
+              "frame": 1062,
+              "visual_text_candidate": "交易",
+              "confidence": "high"
+            }
+          ],
+          "warning": "The original library contains a visible 交易 label family at 1060-1062, while the constructor evidence also references blank 1064/1065 entries. Do not silently renumber the constructor pairs; preserve both facts until resource-index handling is reconciled."
         },
         "paint_order": [
           {

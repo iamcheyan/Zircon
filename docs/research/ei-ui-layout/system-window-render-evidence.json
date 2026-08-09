@@ -156,6 +156,15 @@
         ],
         "evidence_level": "primary-static-plus-primary-resource"
       },
+      "resource_visual_text": {
+        "source": "Direct pixel inspection of original Data/GameInter.wil frames 1060-1062.",
+        "records": [
+          {"frame": 1060, "visual_text_candidate": "交易", "confidence": "high"},
+          {"frame": 1061, "visual_text_candidate": "交易", "confidence": "high"},
+          {"frame": 1062, "visual_text_candidate": "交易", "confidence": "high"}
+        ],
+        "warning": "The original library contains a visible 交易 label family at 1060-1062, while the constructor evidence also references blank 1064/1065 entries. Do not silently renumber the constructor pairs; preserve both facts until resource-index handling is reconciled."
+      },
       "paint_order": [
         {"order": 1, "va": "0x00415B1C-0x00415B65", "role": "window base and left/right trade split", "evidence": "The exchange paint entry calls window vtable +0x0C, then writes the center split rectangles for the two trade sides."},
         {"order": 2, "va": "0x00415B6B-0x00415E44", "role": "state-dependent item-grid selection and composition", "evidence": "The selection globals and state byte choose the left or right grid origin; item hit/index resolution and source/destination rectangles are passed through 0x466800 and 0x4542F0."},
