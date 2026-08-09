@@ -2076,7 +2076,7 @@ function state(){ try{return JSON.parse(localStorage.getItem(key)||'{}')}catch(e
 function save(){localStorage.setItem(key,JSON.stringify({debug:$('#debug').checked,frames:$('#frames').checked,mode:SCREEN_MODE,diffShow:$('#diff-show').checked,diffOpacity:$('#diff-opacity').value,mapRect:$('#map-rect').checked,layers:$('#layers').checked,mapFile:MAP_FILE,mapFrame:MAP_FRAME}));}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function resolve(v,base){return typeof v==='number'?v:(v&&v.offset+(base[v.base]||0));}
-function evidenceWindow(id){return (DATA?.layout?.specialized_window_evidence||[]).find(x=>x.window?.id===id||x.id===id||x.window_id===id)||{};}
+function evidenceWindow(id){return (DATA?.layout?.specialized_window_evidence||[]).find(x=>x.window?.id===id||x.id===id||x.window_id===id)||((DATA?.layout?.system_window_evidence?.windows||[]).find(x=>x.id===id)||{});}
 function addLabel(el,text,klass){const l=document.createElement('span');l.className=klass;l.textContent=text;el.appendChild(l);}
 function addMain(){const img=document.createElement('img');img.className='hud-base';img.src='/api/image?f=GameInter.wil&i=50&scale=1';img.title='GameInter.wil Frame 50 · primary-static';screen.appendChild(img);}
 function addButton(r,base){const x=resolve(r.position.x,base),y=resolve(r.position.y,base),w=r.size.width,h=r.size.height;const b=document.createElement('div');b.className='evidence-button';b.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frames.normal}&scale=1`;b.appendChild(im);addLabel(b,`${r.id} · F${r.resource.frames.normal} · (${x},${y},${w},${h})`,'button-label');b.onclick=()=>focusRecord(r.id);screen.appendChild(b);}
@@ -2135,6 +2135,9 @@ function addFocusedWindow(r,analysis){
     const rg=cr.right_item_grid_rects||{columns:4,rows:3,x_start:323,y_start:43,x_step:38,y_step:38,width:37,height:37};
     for(let row=0;row<rg.rows;row++)for(let col=0;col<rg.columns;col++)addFocusedGeometry(ox+rg.x_start+rg.x_step*col,oy+rg.y_start+rg.y_step*row,(rg.width||37),(rg.height||37),(row===0&&col===0)?'原始 SetRect 右侧 4×3 / 参数坐标':'' );
     addFocusedGeometry(ox+210,oy+20,75,270,'状态0/3列表面板');
+  }else if(r.id==='window.option'){
+    const se=evidenceWindow(r.id),pc=se.paint_repositioned_controls?.records||[];
+    for(const q of pc)addFocusedGeometry(ox+q.position[0],oy+q.position[1],20,20,q.role);
   }
   const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);
 }

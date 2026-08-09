@@ -18,6 +18,21 @@
         {"call_va": "0x0044116A", "frame_pair": [760, 761], "position": [148, 217], "semantic_candidate": "option toggle"},
         {"call_va": "0x0044119A", "frame_pair": [762, 763], "position": [185, 217], "semantic_candidate": "option toggle"}
       ],
+      "paint_repositioned_controls": {
+        "routine": "0x00441380–0x0044148A",
+        "records": [
+          {"object_offset": "this+0x7C", "position": [218,238], "source_va": "0x0044139E", "role": "close/confirm-candidate"},
+          {"object_offset": "this+0x130", "position": [148,43], "source_va": "0x004413B7", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x1E4", "position": [185,43], "source_va": "0x004413D1", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x298", "position": [148,116], "source_va": "0x004413F6", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x34C", "position": [185,116], "source_va": "0x0044140F", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x400", "position": [148,190], "source_va": "0x00441429", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x4B4", "position": [185,190], "source_va": "0x00441448", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x568", "position": [148,217], "source_va": "0x00441466", "role": "option-toggle-candidate"},
+          {"object_offset": "this+0x61C", "position": [185,217], "source_va": "0x0044148A", "role": "option-toggle-candidate"}
+        ],
+        "evidence_level": "primary-static-redraw-position"
+      },
       "pending": ["labels and option state fields", "two non-frame text/control entries at y=96 and y=170"]
     },
     {
