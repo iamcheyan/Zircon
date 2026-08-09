@@ -2186,7 +2186,17 @@ function addHudLabelEvidence(l){
     const label=document.createElement('span');label.textContent=`${r.text} · F${r.resource?.frame} · (${x},${y},${w},${h})`;label.style.cssText='position:absolute;left:0;top:100%;color:#ffe29a;background:rgba(8,12,16,.9);font:10px monospace;white-space:nowrap';box.appendChild(label);screen.appendChild(box);
   }
 }
-renderEvidenceLayout=function(){baseRenderEvidenceLayout();addHudLabelEvidence(DATA?.layout||{});};
+function addWindowRegistryEvidence(l){
+  const init=l.window_initialization_evidence?.records||[];
+  if(!init.length)return;
+  const title=document.createElement('div');title.className='row';title.innerHTML='<div class="name">原版窗口注册表 <span class="tag primary">0x00427600</span></div><div class="meta">构造存在 ≠ 启动可见；位置来自原版调用参数</div>';$('#records').prepend(title);
+  for(const r of init){
+    const p=r.position||[],s=r.size||[];const row=document.createElement('div');row.className='row';row.dataset.id=`init-${r.window_id}`;
+    row.innerHTML=`<div class="name">ID${esc(String(r.window_id))} · ${esc(r.layout_id||'附属组件')} <span class="tag primary">registered</span></div><div class="meta">${esc(r.wrapper)} · F${esc(String(r.frame))} · (${p[0]},${p[1]},${s[0]}×${s[1]}) · 可见性另由原版状态机决定</div>`;
+    row.onclick=()=>focusRecord(r.layout_id||`init-${r.window_id}`);$('#records').append(row);
+  }
+}
+renderEvidenceLayout=function(){baseRenderEvidenceLayout();addHudLabelEvidence(DATA?.layout||{});addWindowRegistryEvidence(DATA?.layout||{});};
 render = function(){
   if(SCREEN_MODE==='map-candidate'){
     const wanted=SCREEN_MODE;
