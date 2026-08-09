@@ -321,6 +321,13 @@ http://127.0.0.1:8765/ui
 
 它从 `layout.json` 动态读取当前已确认/候选记录，固定 800×600 显示主 HUD、按钮和窗口候选，并提供坐标框、Frame 编号、证据等级和本地状态记忆。现在还可在顶部切换两个 `Interface1c.wil` 次级界面候选，以原始 640×480 Frame 50 居中显示并叠加其静态控件；还可导入本地原版截图作为半透明差异层，透明度和开关状态会记忆。差异层只用于视觉比对，不作为原版坐标证据。原来的 `/` 页面保留为 WIL 资源浏览器和旧版 HUD 拆解页；旧页中的手写热区只作历史参考，不作为原版坐标证据。
 
+公告提示模式还会叠加 `0x0043E260` 直接构造的 F161/F606 子控件；主 HUD 的键盘语义字符串
+（腰带、技能书、聊天记录）见 `hud-label-evidence.json`，不会被误当作现代 UI 文案。
+
+全局控件目录 `global-control-constructor-catalog.json` 会把已由 Interface1c、公告包装器和
+确认框专用证据闭合的 20 条调用标记为 `secondary-window-control`；只有剩余 2 条真正未归属
+调用保留在 `unassigned-control-clusters.json` 中。
+
 ## 证据等级
 
 ```text

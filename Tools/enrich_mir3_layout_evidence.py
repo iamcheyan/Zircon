@@ -52,6 +52,7 @@ def main() -> None:
     parser.add_argument("--social-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/social-window-render-evidence.json"))
     parser.add_argument("--system-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/system-window-render-evidence.json"))
     parser.add_argument("--draw-order-evidence", type=Path, default=Path("docs/research/ei-ui-layout/draw-order-evidence.json"))
+    parser.add_argument("--hud-label-evidence", type=Path, default=Path("docs/research/ei-ui-layout/hud-label-evidence.json"))
     parser.add_argument("--notice-prompt-evidence", type=Path, default=Path("docs/research/ei-ui-layout/notice-prompt-window-evidence.json"))
     parser.add_argument("--confirmation-prompt-evidence", type=Path, default=Path("docs/research/ei-ui-layout/confirmation-prompt-evidence.json"))
     parser.add_argument("--control-resources", type=Path, default=Path("docs/research/ei-ui-layout/window-control-resource-analysis.json"))
@@ -112,6 +113,7 @@ def main() -> None:
     social_window_evidence = json.loads(args.social_window_evidence.read_text(encoding="utf-8")) if args.social_window_evidence.exists() else {}
     system_window_evidence = json.loads(args.system_window_evidence.read_text(encoding="utf-8")) if args.system_window_evidence.exists() else {}
     draw_order_evidence = json.loads(args.draw_order_evidence.read_text(encoding="utf-8")) if args.draw_order_evidence.exists() else {}
+    hud_label_evidence = json.loads(args.hud_label_evidence.read_text(encoding="utf-8")) if args.hud_label_evidence.exists() else {}
     notice_prompt_evidence = json.loads(args.notice_prompt_evidence.read_text(encoding="utf-8")) if args.notice_prompt_evidence.exists() else {}
     confirmation_prompt_evidence = json.loads(args.confirmation_prompt_evidence.read_text(encoding="utf-8")) if args.confirmation_prompt_evidence.exists() else {}
 
@@ -268,6 +270,7 @@ def main() -> None:
     layout["social_window_evidence"] = social_window_evidence
     layout["system_window_evidence"] = system_window_evidence
     layout["draw_order_evidence"] = draw_order_evidence
+    layout["hud_label_evidence"] = hud_label_evidence
     layout["notice_prompt_evidence"] = notice_prompt_evidence
     layout["confirmation_prompt_evidence"] = confirmation_prompt_evidence
     layout["draw_evidence"] = {
@@ -277,6 +280,7 @@ def main() -> None:
         "vtable_bindings": "docs/research/ei-ui-layout/window-vtable-bindings.json",
         "npc_special_paint": "docs/research/ei-ui-layout/npc-paint-evidence.json",
         "resource_handle_flow": "docs/research/ei-ui-layout/window-resource-handle-bindings.json",
+        "hud_label_controls": "docs/research/ei-ui-layout/hud-label-evidence.json",
     }
     layout["secondary_control_constructors"] = secondary_controls
     layout["secondary_window_candidates"] = secondary_window_candidates
