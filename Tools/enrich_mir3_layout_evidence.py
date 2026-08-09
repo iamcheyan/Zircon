@@ -50,6 +50,7 @@ def main() -> None:
     parser.add_argument("--chat-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/chat-window-render-evidence.json"))
     parser.add_argument("--npc-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/npc-window-render-evidence.json"))
     parser.add_argument("--social-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/social-window-render-evidence.json"))
+    parser.add_argument("--system-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/system-window-render-evidence.json"))
     parser.add_argument("--control-resources", type=Path, default=Path("docs/research/ei-ui-layout/window-control-resource-analysis.json"))
     parser.add_argument("--secondary-controls", type=Path, default=Path("docs/research/ei-ui-layout/interface1c-cluster-4027.json"))
     parser.add_argument("--secondary-controls-extra", type=Path, default=Path("docs/research/ei-ui-layout/interface1c-cluster-456d.json"))
@@ -106,6 +107,7 @@ def main() -> None:
     chat_window_evidence = json.loads(args.chat_window_evidence.read_text(encoding="utf-8")) if args.chat_window_evidence.exists() else {}
     npc_window_evidence = json.loads(args.npc_window_evidence.read_text(encoding="utf-8")) if args.npc_window_evidence.exists() else {}
     social_window_evidence = json.loads(args.social_window_evidence.read_text(encoding="utf-8")) if args.social_window_evidence.exists() else {}
+    system_window_evidence = json.loads(args.system_window_evidence.read_text(encoding="utf-8")) if args.system_window_evidence.exists() else {}
 
     for record in layout["records"]:
         if record.get("kind") != "button" or "frames" not in record.get("resource", {}):
@@ -253,11 +255,12 @@ def main() -> None:
         "warning": "Resource family labels do not prove a window's business name or draw order.",
     }
     layout["secondary_screen_candidates"] = [x for x in (interface1c_parent, interface1c_select) if x]
-    layout["specialized_window_evidence"] = [x for x in (skill_window_context, inventory_window_evidence, status_window_evidence, quest_window_evidence, store_window_evidence, npc_window_evidence, social_window_evidence) if x]
+    layout["specialized_window_evidence"] = [x for x in (skill_window_context, inventory_window_evidence, status_window_evidence, quest_window_evidence, store_window_evidence, npc_window_evidence, social_window_evidence, system_window_evidence) if x]
     layout["map_ui_evidence"] = map_ui_evidence
     layout["chat_window_evidence"] = chat_window_evidence
     layout["npc_window_evidence"] = npc_window_evidence
     layout["social_window_evidence"] = social_window_evidence
+    layout["system_window_evidence"] = system_window_evidence
     layout["draw_evidence"] = {
         "window_base_paint": "docs/research/ei-ui-layout/window-base-draw-evidence.json",
         "button_draw_chain": "docs/research/ei-ui-layout/button-draw-calls.json",

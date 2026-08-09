@@ -16750,6 +16750,288 @@
         "Group controls have five usable window-relative coordinate candidates.",
         "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
       ]
+    },
+    {
+      "source": {
+        "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+        "method": "static x86 constructor/control-call analysis",
+        "evidence_level": "primary-static"
+      },
+      "windows": [
+        {
+          "id": "window.option",
+          "constructor_va": "0x0044103E",
+          "main_init": "0x0042788D",
+          "background": {
+            "file": "Data/GameInter.wil",
+            "frame": 750,
+            "constructor_size": [
+              248,
+              264
+            ]
+          },
+          "window_origin": [
+            276,
+            113
+          ],
+          "controls": [
+            {
+              "call_va": "0x0044103E",
+              "frame_pair": [
+                161,
+                162
+              ],
+              "position": [
+                218,
+                238
+              ],
+              "semantic_candidate": "close/confirm"
+            },
+            {
+              "call_va": "0x00441067",
+              "frame_pair": [
+                760,
+                761
+              ],
+              "position": [
+                148,
+                43
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x00441090",
+              "frame_pair": [
+                762,
+                763
+              ],
+              "position": [
+                185,
+                43
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x004410B9",
+              "frame_pair": [
+                760,
+                761
+              ],
+              "position": [
+                148,
+                116
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x004410E2",
+              "frame_pair": [
+                762,
+                763
+              ],
+              "position": [
+                185,
+                116
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x0044110E",
+              "frame_pair": [
+                760,
+                761
+              ],
+              "position": [
+                148,
+                190
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x0044113A",
+              "frame_pair": [
+                762,
+                763
+              ],
+              "position": [
+                185,
+                190
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x0044116A",
+              "frame_pair": [
+                760,
+                761
+              ],
+              "position": [
+                148,
+                217
+              ],
+              "semantic_candidate": "option toggle"
+            },
+            {
+              "call_va": "0x0044119A",
+              "frame_pair": [
+                762,
+                763
+              ],
+              "position": [
+                185,
+                217
+              ],
+              "semantic_candidate": "option toggle"
+            }
+          ],
+          "pending": [
+            "labels and option state fields",
+            "two non-frame text/control entries at y=96 and y=170"
+          ]
+        },
+        {
+          "id": "window.horse",
+          "constructor_va": "0x0042691B",
+          "main_init": "0x004278D9",
+          "background": {
+            "file": "Data/GameInter.wil",
+            "frame": 850,
+            "constructor_size": [
+              296,
+              332
+            ]
+          },
+          "window_origin": [
+            0,
+            0
+          ],
+          "controls": [
+            {
+              "call_va": "0x0042691B",
+              "frame_pair": [
+                161,
+                162
+              ],
+              "position": [
+                252,
+                293
+              ],
+              "semantic_candidate": "close/confirm"
+            },
+            {
+              "call_va": "0x00426944",
+              "frame_pair": [
+                860,
+                861
+              ],
+              "position": [
+                28,
+                244
+              ],
+              "semantic_candidate": "mount action"
+            },
+            {
+              "call_va": "0x00426967",
+              "frame_pair": [
+                862,
+                863
+              ],
+              "position": [
+                74,
+                244
+              ],
+              "semantic_candidate": "mount action"
+            },
+            {
+              "call_va": "0x0042698D",
+              "frame_pair": [
+                864,
+                865
+              ],
+              "position": [
+                133,
+                244
+              ],
+              "semantic_candidate": "mount action"
+            },
+            {
+              "call_va": "0x004269B3",
+              "frame_pair": [
+                866,
+                867
+              ],
+              "position": [
+                192,
+                244
+              ],
+              "semantic_candidate": "mount action"
+            }
+          ],
+          "pending": [
+            "mount labels and horse data fields",
+            "whether Frame 850 is the complete visible background"
+          ]
+        },
+        {
+          "id": "window.exchange-candidate",
+          "constructor_va": "0x00415A71",
+          "main_init": "0x004277C2",
+          "background": {
+            "file": "Data/GameInter.wil",
+            "frame": 1050,
+            "constructor_size": [
+              484,
+              330
+            ]
+          },
+          "window_origin": [
+            0,
+            0
+          ],
+          "controls": [
+            {
+              "call_va": "0x00415A71",
+              "frame_pair": [
+                161,
+                162
+              ],
+              "position": [
+                532,
+                350
+              ],
+              "evidence_level": "primary-static-outside-parent-pending"
+            },
+            {
+              "call_va": "0x00415A9D",
+              "frame_pair": [
+                1061,
+                1062
+              ],
+              "position": [
+                185,
+                332
+              ],
+              "evidence_level": "primary-static-outside-parent-pending"
+            },
+            {
+              "call_va": "0x00415AC3",
+              "frame_pair": [
+                1064,
+                1065
+              ],
+              "position": [
+                225,
+                332
+              ],
+              "evidence_level": "primary-static-outside-parent-pending"
+            }
+          ],
+          "pending": [
+            "parent-origin/register-flow mismatch must be resolved before using these as screen coordinates",
+            "trade grid and text draw loop"
+          ]
+        }
+      ]
     }
   ],
   "map_ui_evidence": {
@@ -17367,6 +17649,288 @@
       "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
       "Group controls have five usable window-relative coordinate candidates.",
       "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
+    ]
+  },
+  "system_window_evidence": {
+    "source": {
+      "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+      "method": "static x86 constructor/control-call analysis",
+      "evidence_level": "primary-static"
+    },
+    "windows": [
+      {
+        "id": "window.option",
+        "constructor_va": "0x0044103E",
+        "main_init": "0x0042788D",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 750,
+          "constructor_size": [
+            248,
+            264
+          ]
+        },
+        "window_origin": [
+          276,
+          113
+        ],
+        "controls": [
+          {
+            "call_va": "0x0044103E",
+            "frame_pair": [
+              161,
+              162
+            ],
+            "position": [
+              218,
+              238
+            ],
+            "semantic_candidate": "close/confirm"
+          },
+          {
+            "call_va": "0x00441067",
+            "frame_pair": [
+              760,
+              761
+            ],
+            "position": [
+              148,
+              43
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x00441090",
+            "frame_pair": [
+              762,
+              763
+            ],
+            "position": [
+              185,
+              43
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x004410B9",
+            "frame_pair": [
+              760,
+              761
+            ],
+            "position": [
+              148,
+              116
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x004410E2",
+            "frame_pair": [
+              762,
+              763
+            ],
+            "position": [
+              185,
+              116
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x0044110E",
+            "frame_pair": [
+              760,
+              761
+            ],
+            "position": [
+              148,
+              190
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x0044113A",
+            "frame_pair": [
+              762,
+              763
+            ],
+            "position": [
+              185,
+              190
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x0044116A",
+            "frame_pair": [
+              760,
+              761
+            ],
+            "position": [
+              148,
+              217
+            ],
+            "semantic_candidate": "option toggle"
+          },
+          {
+            "call_va": "0x0044119A",
+            "frame_pair": [
+              762,
+              763
+            ],
+            "position": [
+              185,
+              217
+            ],
+            "semantic_candidate": "option toggle"
+          }
+        ],
+        "pending": [
+          "labels and option state fields",
+          "two non-frame text/control entries at y=96 and y=170"
+        ]
+      },
+      {
+        "id": "window.horse",
+        "constructor_va": "0x0042691B",
+        "main_init": "0x004278D9",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 850,
+          "constructor_size": [
+            296,
+            332
+          ]
+        },
+        "window_origin": [
+          0,
+          0
+        ],
+        "controls": [
+          {
+            "call_va": "0x0042691B",
+            "frame_pair": [
+              161,
+              162
+            ],
+            "position": [
+              252,
+              293
+            ],
+            "semantic_candidate": "close/confirm"
+          },
+          {
+            "call_va": "0x00426944",
+            "frame_pair": [
+              860,
+              861
+            ],
+            "position": [
+              28,
+              244
+            ],
+            "semantic_candidate": "mount action"
+          },
+          {
+            "call_va": "0x00426967",
+            "frame_pair": [
+              862,
+              863
+            ],
+            "position": [
+              74,
+              244
+            ],
+            "semantic_candidate": "mount action"
+          },
+          {
+            "call_va": "0x0042698D",
+            "frame_pair": [
+              864,
+              865
+            ],
+            "position": [
+              133,
+              244
+            ],
+            "semantic_candidate": "mount action"
+          },
+          {
+            "call_va": "0x004269B3",
+            "frame_pair": [
+              866,
+              867
+            ],
+            "position": [
+              192,
+              244
+            ],
+            "semantic_candidate": "mount action"
+          }
+        ],
+        "pending": [
+          "mount labels and horse data fields",
+          "whether Frame 850 is the complete visible background"
+        ]
+      },
+      {
+        "id": "window.exchange-candidate",
+        "constructor_va": "0x00415A71",
+        "main_init": "0x004277C2",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 1050,
+          "constructor_size": [
+            484,
+            330
+          ]
+        },
+        "window_origin": [
+          0,
+          0
+        ],
+        "controls": [
+          {
+            "call_va": "0x00415A71",
+            "frame_pair": [
+              161,
+              162
+            ],
+            "position": [
+              532,
+              350
+            ],
+            "evidence_level": "primary-static-outside-parent-pending"
+          },
+          {
+            "call_va": "0x00415A9D",
+            "frame_pair": [
+              1061,
+              1062
+            ],
+            "position": [
+              185,
+              332
+            ],
+            "evidence_level": "primary-static-outside-parent-pending"
+          },
+          {
+            "call_va": "0x00415AC3",
+            "frame_pair": [
+              1064,
+              1065
+            ],
+            "position": [
+              225,
+              332
+            ],
+            "evidence_level": "primary-static-outside-parent-pending"
+          }
+        ],
+        "pending": [
+          "parent-origin/register-flow mismatch must be resolved before using these as screen coordinates",
+          "trade grid and text draw loop"
+        ]
+      }
     ]
   }
 }

@@ -93,6 +93,10 @@
     "social_window_evidence": {
       "type": "object",
       "description": "Primary static evidence for group and guild window construction and control geometry."
+    },
+    "system_window_evidence": {
+      "type": "object",
+      "description": "Primary static evidence for option, horse and exchange window construction and control geometry."
     }
   }
 }
