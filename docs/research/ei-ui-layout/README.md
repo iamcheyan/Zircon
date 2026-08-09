@@ -47,6 +47,27 @@ JSON 的 `pending` 字段中，尤其是运行时窗口打开入口、好友是�
 在“固定小地图 128×128 候选”模式中修改资源库或 Frame 也会立即刷新目标框，避免把旧资源
 误认为当前选择；该刷新只改变候选预览，不改变原版静态证据。
 
+## 当前验证命令与交付检查
+
+在项目根目录执行：
+
+```bash
+python3 -m py_compile Tools/wilviewer.py Tools/enrich_mir3_layout_evidence.py Tools/verify_mir3_ui_evidence.py
+python3 Tools/enrich_mir3_layout_evidence.py
+python3 Tools/verify_mir3_ui_evidence.py
+git diff --check
+```
+
+验证器会检查原版文件 6/6、统一视口 800×600、布局记录 ID/证据等级、JSON 可解析性，以及背包 Frame 267 的 `Interface1c.wil` 交叉库回归不变量。输出中的 `PENDING` 是尚未有足够一级证据的研究项，不是被脚本隐藏的失败。
+
+预览服务：
+
+```bash
+python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+```
+
+打开 [`/ui`](http://127.0.0.1:8765/ui)。根路径 `/` 仍是 WIL 素材浏览器；`/compare` 是资源差异工具；`/api/ui-layout` 返回统一布局及专题证据。
+
 持续研究日志（记录反汇编地址、推理过程、失败尝试和待验证事项）：
 
 ```text
@@ -55,7 +76,7 @@ docs/research/ei-ui-layout/RESEARCH_LOG.md
 
 ## 当前结论
 
-`Mir3.exe` 中存在一组静态 UI 初始化代码。当前提取器已定位到 93 次调用固定 helper `0x00449C50` 的记录。该 helper 将三个 `WORD` 参数写入一个对象结构，调用点集中在几个连续的构造函数中。专题研究日志目前已记录到 Finding 94；93 是提取器历史记录数，不是 Finding 编号。
+`Mir3.exe` 中存在一组静态 UI 初始化代码。当前提取器仍保留 93 次调用固定 helper `0x00449C50` 的历史记录；该 helper 将三个 `WORD` 参数写入一个对象结构，调用点集中在几个连续的构造函数中。专题研究日志已推进到 Finding 179；Finding 编号是研究记录序号，不等于某个单一提取器的记录数。
 
 提取脚本：
 
@@ -155,11 +176,11 @@ docs/research/ei-ui-layout/primary-window-init-evidence.md
 docs/research/ei-ui-layout/window_layout.json
 ```
 
-统一目录为 `layout.json`。当前版本 `0.3-primary-evidence-vtable-enriched` 已合并 15 个底部 HUD 按钮、13 个窗口和 72 个窗口控件构造；窗口记录还包含 vtable/绘制槽候选，技能、背包和人物状态窗口另有专门的机器可读绘制证据，尚未确认的窗口业务名称仍保留“候选”表述。
+统一目录为 `layout.json`。当前版本 `0.3-primary-evidence-vtable-enriched` 已合并 15 个底部 HUD 按钮、13 个窗口和 72 个窗口控件构造；控件资源会依据实际可解码的 WIL 库选择，背包 Frame 267/268 已明确为 `Interface1c.wil` 角色图而非 GameInter 按钮。窗口记录还包含 vtable/绘制槽候选，技能、背包、人物状态、任务、NPC、商店和地图另有专门的机器可读绘制证据，尚未确认的窗口业务名称仍保留“候选”表述。
 
 完整的范围盘点和剩余工作清单见 [`UI_COVERAGE_MATRIX.md`](UI_COVERAGE_MATRIX.md)。
 
-`layout.json.control_constructors` 还收录窗口内部的 72 个控件构造调用。它们暂不伪造屏幕坐标，直到资源句柄和位置参数追踪完成。
+`layout.json.control_constructors` 还收录窗口内部的 72 个控件构造调用。每条记录分别保存原始调用点、坐标解析状态、WIL 库/Frame/尺寸和命中矩形；无法安全解析的位置或业务语义继续保持 unresolved/candidate，不用人工拖动补齐。
 
 原版资源初始化的完整路径表另存为 `resource-path-table.json`。它由
 `Tools/extract_mir3_resource_path_table.py` 从 `Mir3.exe` 的静态字符串复制序列恢复，
@@ -250,7 +271,7 @@ Tools/build_mir3_global_control_catalog.py
 docs/research/ei-ui-layout/global-control-constructor-catalog.json
 ```
 
-当前共保留 109 条直接调用：72 条已绑定主窗口、15 条属于主 HUD、22 条仍待归属。
+当前共保留 109 条直接调用：72 条已绑定主窗口、15 条属于主 HUD、22 条仍待归属；统一布局中的 72 条窗口控件是其中已经进入主窗口目录的部分。
 未归属项仍保留原始反汇编邻域和 Frame 候选，不会因为暂时无法命名而从证据集中删除。
 
 每条记录还保留了 `0x00417550` 的参数槽位：资源对象、普通/状态 Frame、`x_arg4`、`y_arg5` 以及其余标志参数。
