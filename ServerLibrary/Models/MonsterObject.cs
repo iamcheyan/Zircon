@@ -1703,7 +1703,12 @@ namespace Server.Models
 
         public virtual int Attack(MapObject ob, int power, Element element)
         {
-            if (ob?.Node == null || ob.Dead) return 0;
+            // Normal attacks are queued for 400ms. The attacker can die or the
+            // target can move/change allegiance during that window; a queued
+            // hit must not survive the attacker that created it.
+            if (Dead || ob?.Node == null || ob.Dead || ob.CurrentMap != CurrentMap ||
+                !Functions.InRange(CurrentLocation, ob.CurrentLocation, Config.MaxViewRange) ||
+                !CanAttackTarget(ob)) return 0;
 
             int damage;
 
