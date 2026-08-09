@@ -16816,7 +16816,35 @@
           "va": "0x00423E80",
           "signature_candidate": "this, frame, x, y, width, height",
           "argument_order_basis": "ret 0x14; call sites push height, width, y, x, frame",
-          "note": "The factory selects the WIL frame and computes the centered/parent-relative Rect; the call-site arguments below are primary static geometry, not a guessed screen origin."
+          "note": "The factory selects the WIL frame and computes the centered/parent-relative Rect; the call-site arguments below are primary static geometry, not a guessed screen origin.",
+          "primary_algorithm": {
+            "frame_select": "0x00466130 using the frame argument and parent resource handle at this+0x2C",
+            "header_dimensions": "selected resource header at handle+0x38; width/height words feed the first SetRect",
+            "computed_fields": [
+              "this+0x40",
+              "this+0x44"
+            ],
+            "setrect_calls": [
+              {
+                "va": "0x00423EC9",
+                "target": "stack-local RECT at [esp+0x1c]",
+                "role": "resource/header clipping rectangle"
+              },
+              {
+                "va": "0x00423F55",
+                "target": "this+0x08",
+                "role": "final parent-relative outer rectangle"
+              },
+              {
+                "va": "0x00423F6D",
+                "target": "this+0x18",
+                "role": "content rectangle using computed offsets"
+              }
+            ],
+            "return_cleanup": "ret 0x14",
+            "interpretation": "The constructor consumes five stack arguments and performs centering/parent-relative arithmetic before storing object rectangles. Therefore raw state-transition x/y values are factory inputs, not final 800x600 screen coordinates.",
+            "evidence_level": "primary-static-factory-algorithm"
+          }
         },
         "state_transitions": [
           {
