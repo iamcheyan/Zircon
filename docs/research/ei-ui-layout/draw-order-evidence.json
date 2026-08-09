@@ -81,7 +81,16 @@
     "consequence": "The final overlapping-window order is runtime list order, not a universal hard-coded category order. A later node paints over an earlier node when their rectangles overlap.",
     "known_list_mutations": ["0x00449870 insertion/append path", "0x0042AC50 hide/remove path"],
     "evidence_level": "primary-static-visible-list-dispatch",
-    "implementation_note": "The restoration preview should expose list order as a debug layer and keep explicit z-order data separate from each window's local paint order."
+    "implementation_note": "The restoration preview should expose list order as a debug layer and keep explicit z-order data separate from each window's local paint order.",
+    "normalized_draw_call_contract": {
+      "list_manager": {"head": "main+0xD28", "count": "main+0xD38", "node_id": "node+0x00", "next": "node+0x04"},
+      "dispatch_step": ["read node id", "select specialized Paint VA from ID jump table", "paint current window object", "advance to node+0x04"],
+      "show_mutation": "0x0042AC30 -> 0x00449870 appends a new node after manager+0x0C",
+      "hide_mutation": "0x0042AC50 unlinks matching node and releases it",
+      "local_vs_global_order": "window-local paint_order arrays describe inside-window order; this linked-list contract describes cross-window order",
+      "evidence_level": "primary-static"
+    },
+    "source_artifacts": ["window-traversal-evidence.json", "window-visibility-dispatch-evidence.json", "window-position-dispatch-evidence.json"]
   },
   "pending": [
     "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
