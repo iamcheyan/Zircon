@@ -77,6 +77,68 @@
   ],
   "factory_argument_order": ["x", "y", "width", "height", "frame"],
   "factory_argument_warning": "Call-site arguments are inputs to 0x00423E80; that factory centers/derives parent-relative rectangles before storing final object fields. They must not be copied directly as 800×600 screen coordinates.",
+  "state_control_dispatch": {
+    "routine": "0x0044E9B0",
+    "state_field": "this+0x5F8",
+    "control_activation_paths": [
+      {
+        "states": [0, 1, 3, 4],
+        "control": "this+0x54",
+        "child_vtable_slot": "+0x10",
+        "arguments": "the two stack arguments received by 0x0044E9B0",
+        "result": "if child reports handled, returns handled without entering the later page/detail branch"
+      },
+      {
+        "states": [1, 2, 4],
+        "control": "this+0x1BC",
+        "child_vtable_slot": "+0x10",
+        "result": "if child reports handled, state 2 returns immediately; states 1/4 continue into selected-record logic"
+      },
+      {
+        "states": [1, 2],
+        "control": "this+0x270",
+        "child_vtable_slot": "+0x10",
+        "result": "second paging/action control path; exact caption and business action unresolved"
+      },
+      {
+        "states": [1],
+        "control": "this+0x324",
+        "child_vtable_slot": "+0x10",
+        "result": "expanded-state-only control path; exact caption and business action unresolved"
+      },
+      {
+        "states": [4],
+        "control": "this+0x48C",
+        "child_vtable_slot": "+0x10",
+        "result": "wide-panel action path; exact caption and business action unresolved"
+      },
+      {
+        "states": [2],
+        "control": "this+0x3D8",
+        "child_vtable_slot": "page-control path in the state-2 branch",
+        "result": "state-2 page/selection control candidate; page count derives from this+0x71C / 12"
+      }
+    ],
+    "state_4_selected_record_gate": {
+      "selected_index_field": "this+0x704",
+      "lookup_va": "0x0044E6D0",
+      "record_pointer_field": "this+0x7F0",
+      "record_guard": "selected_record+0x20 must be zero before Frame 1002 factory call",
+      "factory_call_vas": ["0x0044EBCB", "0x0044F263"],
+      "frame": 1002,
+      "evidence_level": "primary-static-selected-record-to-state-4"
+    },
+    "reset_paths": [
+      {
+        "state_before": "any active state",
+        "factory_frame": 1000,
+        "factory_call_va": "0x0044EAA4",
+        "writes": {"this+0x5F8": 0, "this+0x7E0": 0, "this+0x70C": 0, "this+0x71C": 0},
+        "interpretation": "shared panel reset/rebuild path; business name intentionally unresolved"
+      }
+    ],
+    "evidence_level": "primary-static-state-to-control-dispatch"
+  },
   "factory_centering_evidence": {
     "routine": "0x00423E80",
     "viewport_candidate": [800, 600],

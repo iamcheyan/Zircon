@@ -15,9 +15,9 @@
 | 人物状态/装备槽 | GameInter F200，11 条连续几何记录，8 个装备候选槽 38×38 | `status-window-render-evidence.json`、`0x0044B6B0/0x0044B720/0x004341F0` | 已恢复 | 装备索引业务命名、属性文字实际调用 |
 | 背包 | GameInter F250，6×6、36 px 网格；Interface1c F267/268 角色图候选 | `inventory-window-render-evidence.json`、`layout.json`、`0x0042F150/0x0042F2A0` | 候选（几何、动态字段和选中合成链已恢复） | Frame 94 顶部/详情素材的最终业务用途；主数值和打包字段的服务端语义；第三资源不是普通按钮 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 文字分隔/换行、19 行滚动运行时语义、721–724/事件 0x418 的最终业务名称 |
-| 商店/购买 | GameInter F1000、F1001–F1003；F1000 五行列表、F1001 紧凑网格、F1002 宽组合、F1003 当前副本空帧 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态图与资源形态已恢复） | 通过客户端状态/协议参数区分 NPC 商店、选中物品和扩展面板 |
+| 商店/购买 | GameInter F1000、F1001–F1003；F1000 五行列表、F1001 紧凑网格、F1002 宽组合、F1003 当前副本空帧 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态、控件门控、选中记录和资源形态已恢复） | 通过客户端状态/协议参数区分 NPC 商店、仓库、买卖、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `exchange-window-render-evidence.json`、`0x004159D0/0x00415B10` | 候选（左右分区与 6×5 格已恢复） | 确认按钮、协议状态和窗口最终原点 |
-| 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
+| 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口、状态控件门控和选中记录链已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
 | NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040`；Interface1c NPCFace.WIL | `npc-window-render-evidence.json`；`0x00440750–0x00440AA0` 已恢复 `\\`、`{}`、`@...>` token 解析、16 项上限、14/21 px 行距和三个动态控件位置；1102 当前副本为空 | 候选（绘制链与脚本解析已恢复） | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
 | 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |

@@ -188,7 +188,7 @@
       ],
       "warning": "These tokens identify server-side NPC action branches. No byte-level mapping from these strings to state 0–4 has been proven in Mir3.exe yet."
     },
-    "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
+    "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, state-gated child controls, selected-record lookup and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
   },
   "controls": [
     {"call_va": "0x0044D36B", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x10A", "y": "arg5+0x10E"}},
