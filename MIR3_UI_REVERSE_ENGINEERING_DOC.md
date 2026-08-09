@@ -189,6 +189,13 @@ docs/research/ei-ui-layout/skill-window-context.json
 `/home/tetsuya/NAS/TMP/Mud3/Envir/magic.dat` 是另一套服务端数据，必须在文档和
 工具输出中独立标记来源。
 
+进一步的静态追踪已经确认技能窗口初始化函数 `0x00439150` 会准备 16 字节初始化
+数据，经 `0x00452580` 后调用 `0x0046926D` 加载 `Magic.exp`，最终把数据句柄保存
+到 `this+0x968`；析构函数 `0x00439220` 会释放它。这个结果只证明客户端加载链，
+尚未证明加密算法和字段语义，详见：
+
+`docs/research/ei-ui-layout/skill-window-static-evidence.md`
+
 ### 3.1 控件坐标的恢复方法
 
 窗口内部控件的坐标不是手工拖拽校准得到的。对每个 `0x00417550` 调用，提取器按

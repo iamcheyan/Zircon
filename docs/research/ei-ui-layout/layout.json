@@ -13891,8 +13891,10 @@
           "frame": 400
         },
         {
-          "file": "Data/Magic.exp",
-          "literal_va": "0x0047c2fc"
+          "file": "Magic.exp",
+          "literal_va": "0x0047c2fc",
+          "client_root_candidate": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp",
+          "encrypted_or_encoded": true
         }
       ],
       "category_labels": [
