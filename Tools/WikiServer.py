@@ -6,9 +6,9 @@
   /                        首页
   /maps                    地图列表（544 图网格, 搜索/过滤）
   /map/<file>              地图详情（缩略图 + 怪物/NPC/商人）
-  /monsters                怪物图鉴（263 种）
+  /monsters                怪物图鉴（309 种, 分类/等级/版本筛选）
   /monster/<name>          怪物详情
-  /items                   装备（分类 + 职业过滤）
+  /items                   装备（类型分组 + 职业过滤）
   /item/<id>               装备详情
   /skills                  技能
   /npcs                    NPC
@@ -54,6 +54,84 @@ def ver_select(sel):
     opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
                    for v, l in VER_OPTS)
     return f'<select name="ver">{opts}</select>'
+
+# ---------------------------------------------------------------- 怪物分类/等级
+MON_CATS = [("", "全部类型"), ("boss", "Boss"), ("undead", "不死系"), ("normal", "普通")]
+MON_LVS = [("", "全部等级"), ("0-9", "0-9 级"), ("10-29", "10-29 级"),
+           ("30-59", "30-59 级"), ("60-89", "60-89 级"), ("90", "90 级以上")]
+
+def mon_cat_ok(m, cat):
+    if not cat:
+        return True
+    if cat == "boss": return m.get("boss")
+    if cat == "undead": return m.get("undead")
+    if cat == "tame": return m.get("tame")
+    if cat == "normal": return not m.get("boss") and not m.get("undead")
+    return True
+
+def mon_lv_ok(m, lv):
+    if not lv:
+        return True
+    l = m.get("level") or 0
+    if lv == "0-9": return l <= 9
+    if lv == "10-29": return 10 <= l <= 29
+    if lv == "30-59": return 30 <= l <= 59
+    if lv == "60-89": return 60 <= l <= 89
+    if lv == "90": return l >= 90
+    return True
+
+def mon_cat_select(sel):
+    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
+                   for v, l in MON_CATS)
+    return f'<select name="cat">{opts}</select>'
+
+def mon_lv_select(sel):
+    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
+                   for v, l in MON_LVS)
+    return f'<select name="lv">{opts}</select>'
+
+# ---------------------------------------------------------------- 装备细分分组
+ITEM_GROUPS = [
+    ("", "全部分类"),
+    ("weapon", "武器"),
+    ("armour", "护甲 / 时装 / 马甲"),
+    ("helmet", "头盔"),
+    ("shoes", "鞋子"),
+    ("shield", "盾牌"),
+    ("jewellery", "首饰（项链 / 手镯 / 戒指 / 护身符）"),
+    ("potion", "药水 / 消耗品"),
+    ("book", "技能书 / 卷轴"),
+    ("material", "材料（矿石 / 暗石 / 精炼 / 部件）"),
+    ("gem", "宝石 / 徽章"),
+    ("pet", "宠物用品"),
+    ("fish", "钓鱼用品"),
+    ("money", "货币 / 礼包 / 宝箱"),
+    ("other", "其他"),
+]
+_ITEM_GROUP_TYPES = {
+    "weapon": {"武器"}, "armour": {"护甲", "时装", "马甲"}, "helmet": {"头盔"},
+    "shoes": {"鞋子"}, "shield": {"盾牌"},
+    "jewellery": {"项链", "手镯", "戒指", "护身符"},
+    "potion": {"消耗品", "毒药", "肉类", "花", "火把"},
+    "book": {"技能书", "卷轴"},
+    "material": {"矿石", "暗石", "精炼材料", "部件"},
+    "gem": {"宝石", "徽章"},
+    "pet": {"宠物食物", "宠物背包", "宠物头饰", "宠物背饰"},
+    "fish": {"钓钩", "浮标", "鱼饵", "探测器", "卷线器"},
+    "money": {"货币", "礼包", "宝箱", "系统物品"},
+}
+
+def item_group(i):
+    t = (i.get("type_zh") or "").strip()
+    for gid, types in _ITEM_GROUP_TYPES.items():
+        if t in types:
+            return gid
+    return "other"
+
+def item_group_select(sel):
+    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
+                   for v, l in ITEM_GROUPS)
+    return f'<select name="group">{opts}</select>'
 
 def ver_badges(ver):
     s = set(ver or [])
@@ -226,6 +304,8 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .panel h3 {{ font-size:15px; margin-bottom:6px; }}
 .mono {{ font-family:ui-monospace,Consolas,monospace; font-size:13px; color:var(--dim); }}
 .good {{ color:var(--good); }} .bad {{ color:var(--bad); }}
+.bad-undead {{ display:inline-block; font-size:11px; padding:1px 7px; border-radius:9px; margin-left:4px; background:#3d2f2f; color:#ffb0b0; }}
+.bad-tame {{ display:inline-block; font-size:11px; padding:1px 7px; border-radius:9px; margin-left:4px; background:#2f3d30; color:#b0ffb0; }}
 footer {{ max-width:1280px; margin:0 auto; padding:8px 18px 30px; color:var(--dim); font-size:12.5px; }}
 </style>
 </head>
@@ -469,15 +549,24 @@ class Handler(BaseHTTPRequestHandler):
         q = urllib.parse.parse_qs(qs)
         kw = (q.get("q", [""])[0]).strip().lower()
         ver = q.get("ver", [""])[0]
-        rows = [m for m in Data.monsters if ver_matches(m.get("ver"), ver)
-                and (not kw or kw in m["name"].lower() or kw in (m.get("zh") or "").lower())]
-        rows.sort(key=lambda x: x["name"].lower())
+        cat = q.get("cat", [""])[0]
+        lv = q.get("lv", [""])[0]
+        rows = [m for m in Data.monsters
+                if ver_matches(m.get("ver"), ver)
+                and (not kw or kw in m["name"].lower() or kw in (m.get("zh") or "").lower())
+                and mon_cat_ok(m, cat)
+                and mon_lv_ok(m, lv)]
+        rows.sort(key=lambda x: (x.get("level") or 0, x["name"].lower()))
         items = []
         for m in rows:
             disp = m.get("zh") or m["name"]
             en = f'<span class="mono">{esc(m["name"])}</span>' if disp != m["name"] else ""
             sub = f"Lv {m.get('level') or '?'}"
-            if m.get("boss"): sub += ' · <span class="bad">Boss</span>'
+            tags = []
+            if m.get("boss"): tags.append('<span class="bad">Boss</span>')
+            if m.get("undead"): tags.append('<span class="bad bad-undead">不死</span>')
+            if m.get("tame"): tags.append('<span class="bad bad-tame">可捕捉</span>')
+            if tags: sub += " · " + " ".join(tags)
             sp = parse_spawns(m.get("spawns"))
             if sp:
                 sub += f" · {sum(c for _, c in sp)} 只 / {len(sp)} 图"
@@ -488,9 +577,11 @@ class Handler(BaseHTTPRequestHandler):
 </a></div>""")
         body = f"""
 <h1>怪物图鉴 · {len(Data.monsters)} 种</h1>
-<p class="lead">按 Mud3 服务端刷怪聚合 + Zircon System.db 三版合并。</p>
+<p class="lead">Zircon System.db 全量 {len(Data.monsters)} 种怪物（Boss {sum(1 for x in Data.monsters if x.get('boss'))} / 不死系 {sum(1 for x in Data.monsters if x.get('undead'))} / 可捕捉 {sum(1 for x in Data.monsters if x.get('tame'))}）。</p>
 <form class="filters" method="get" action="/monsters">
   <input name="q" placeholder="搜索怪物名…" value="{esc(kw)}">
+  {mon_cat_select(cat)}
+  {mon_lv_select(lv)}
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
@@ -538,32 +629,33 @@ class Handler(BaseHTTPRequestHandler):
     # ---------------- 装备
     def items(self, qs):
         q = urllib.parse.parse_qs(qs)
-        cat = q.get("cat", [""])[0]
+        group = q.get("group", [""])[0]
         klass = q.get("class", [""])[0]
         kw = (q.get("q", [""])[0]).strip().lower()
         ver = q.get("ver", [""])[0]
         rows = [i for i in Data.items
-                if (not cat or i["category"] == cat)
+                if (not group or item_group(i) == group)
                 and (not klass or klass in i.get("class", ""))
                 and (not kw or kw in i["name"].lower() or kw in (i.get("zh") or "").lower())
                 and ver_matches(i.get("ver"), ver)]
-        rows.sort(key=lambda i: (i["category"], i["name"]))
-        cat_opts = "".join(f'<option value="{c}" {"selected" if c==cat else ""}>{c}</option>' for c in Data.item_cats)
+        rows.sort(key=lambda i: ((i.get("type_zh") or ""), i["name"]))
         klass_opts = "".join(f'<option value="{c}" {"selected" if c==klass else ""}>{c}</option>'
                              for c in ["战士","法师","道士","战法道","战道","战法","法道","全职业"])
         items = []
         for i in rows:
             en = f'<span class="mono">{esc(i["name"])}</span>' if i.get("zh") and i["zh"] != i["name"] else ""
+            sub = esc(i.get("type_zh") or i['category']) + " · " + esc(i.get('class',''))
             items.append(f"""<div class="card"><a href="/item/{i['id']}">
   {icon_img('items', i['id'], 'pic', i.get('zh') or i['name'])}
   <div><span class="name">{esc(i.get('zh') or i['name'])}</span>{en} {ver_badges(i.get('ver'))}</div>
-  <div class="sub">{esc(i['category'])} · {esc(i.get('class',''))}</div>
+  <div class="sub">{sub}</div>
 </a></div>""")
         body = f"""
 <h1>装备 · {len(Data.items)} 件</h1>
+<p class="lead">Zircon System.db 全量 {len(Data.items)} 件（武器 / 护甲 / 首饰 / 药水 / 材料等 {len([g for g in ITEM_GROUPS if g[0]])} 类）。</p>
 <form class="filters" method="get" action="/items">
   <input name="q" placeholder="搜索装备名…" value="{esc(kw)}">
-  <select name="cat"><option value="">全部分类</option>{cat_opts}</select>
+  {item_group_select(group)}
   <select name="class"><option value="">全部职业</option>{klass_opts}</select>
   {ver_select(ver)}
   <button type="submit">筛选</button>
@@ -587,7 +679,7 @@ class Handler(BaseHTTPRequestHandler):
 <h1>{esc(i.get('zh') or i['name'])} <span class="mono">{esc(i['name'])}</span> {ver_badges(i.get('ver'))}</h1>
 <div class="detail">{icon_img('items', i['id'], 'bigpic', i.get('zh') or i['name'])}<div class="meta">
 <dl class="kv">
-  <dt>分类</dt><dd>{esc(i['category'])}</dd>
+  <dt>分类</dt><dd>{esc(i.get('type_zh') or i['category'])}</dd>
   <dt>职业</dt><dd>{esc(i.get('class',''))}</dd>
   <dt>属性</dt><dd>{attrs or '—'}</dd>
   <dt>其他</dt><dd>{esc(i.get('meta',''))}</dd>

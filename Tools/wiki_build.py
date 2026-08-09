@@ -43,6 +43,7 @@ def parse_monsters(text):
         t = v["traits"]
         v["boss"] = "Boss" in t
         v["undead"] = "亡灵" in t
+        v["tame"] = "可捕捉" in t
     return out
 
 # ---------------------------------------------------------------- views: items
@@ -56,13 +57,16 @@ def parse_items(text, category):
         if m:
             cur = {"id": int(m.group(1)), "name": m.group(2),
                    "class": m.group(3) or "全职业", "category": category,
-                   "attrs": [], "meta": "", "drops": "", "set": "", "desc": "",
+                   "type_zh": "", "attrs": [], "meta": "", "drops": "", "set": "", "desc": "",
                    "zh": ""}
             out[cur["id"]] = cur
             continue
         if cur is None: continue
         if line.startswith("- 属性："): cur["attrs"] = line[4:].split(" · ")
-        elif line.startswith("- 类型"): cur["meta"] = line[2:]
+        elif line.startswith("- 类型"):
+            cur["meta"] = line[2:]
+            tm = re.match(r"类型\s*(\S+)", line[2:])
+            if tm: cur["type_zh"] = tm.group(1)
         elif line.startswith("- 掉落："): cur["drops"] = line[4:]
         elif line.startswith("- 套装："): cur["set"] = line[4:]
         elif line.startswith("- 说明："): cur["desc"] = line[4:]
