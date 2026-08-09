@@ -44,6 +44,15 @@ THUMBS_DIR = "/tmp/wiki_thumbs"  # pre-rendered full-map thumbnails (shared with
 MAX_FULL_DIM = 16384   # full-map single image: longest side cap (px)
 FIT_FULL_DIM = 2048    # full-map "fit" level: longest side target (px)
 
+# Layout modes.  Mir3.exe (EI 2002) renders the map grid axis-aligned:
+# every draw call projects cell (x,y) with a single-axis term (x*48, y*32)
+# and the viewport is a plain 36x36 square; the 8-way scroll table moves
+# N/E/S/W by a single pixel axis.  The apparent "isometric" look of the
+# game comes from perspective baked into the sprites, not the projection.
+# "iso" is kept only as a legacy/debug view.
+LAYOUT_RECT = "rect"
+LAYOUT_ISO = "iso"
+
 # ---- Game minimap assets (MiniMap.Zl / mmap.wil) ----
 # MapInfo.MiniMap (System.db, via Tools/SystemDbProbe --minimap) maps a map
 # file stem -> frame index in the MiniMap library.  The library lives next to
@@ -340,12 +349,12 @@ def parse_map(path: str) -> tuple[int, int, list[list[MapCell]]]:
 
 
 class MapCache:
-    """LRU of parsed maps + diagonal-bucket cell index.
+    """LRU of parsed maps + two cell indexes.
 
-    Index layout: for each map, cells are bucketed by s = x + y (isometric
-    screen row), and within a bucket sorted by x (monotonic in screen x).
-    A tile's cell window is then two bisects away instead of a linear scan
-    of every cell whose row intersects the tile.
+    Index A (iso): cells bucketed by s = x + y (isometric screen row),
+    within a bucket sorted by x.  Index B (rect): cells bucketed by x,
+    within a bucket sorted by y — used for the axis-aligned (original)
+    projection where a tile window is a plain x/y rectangle.
     """
 
     def __init__(self, maps_dir: str, max_keep: int = CACHE_MAPS_MAX):
@@ -354,6 +363,8 @@ class MapCache:
         self._store: dict[str, tuple[int, int, list[list[MapCell]]]] = {}
         self._buckets: dict[str, list[list[tuple[int, MapCell]]]] = {}
         self._bxs: dict[str, list[list[int]]] = {}
+        self._rows: dict[str, list[list[tuple[int, MapCell]]]] = {}
+        self._rys: dict[str, list[list[int]]] = {}
         self._lock = threading.Lock()
         self._build_locks: dict[str, threading.Lock] = {}
 
@@ -383,6 +394,8 @@ class MapCache:
                             self._store.pop(k)
                             self._buckets.pop(k, None)
                             self._bxs.pop(k, None)
+                            self._rows.pop(k, None)
+                            self._rys.pop(k, None)
         return self._store[name]
 
     def sparse(self, name: str) -> tuple[list, list]:
@@ -413,32 +426,77 @@ class MapCache:
                         self._bxs[name] = bxs
         return self._buckets[name], self._bxs[name]
 
+    def sparse_rows(self, name: str) -> tuple[list, list]:
+        """(rows, rys): rows[x] = [(y, cell), ...] sorted by y, with parallel
+        y-only lists for bisect.  Used by the axis-aligned (rect) layout."""
+        with self._lock:
+            rows = self._rows.get(name)
+            rys = self._rys.get(name)
+        if rows is None:
+            entry = self.get(name)
+            with self._build_lock(name):
+                with self._lock:
+                    rows = self._rows.get(name)
+                if rows is None:
+                    w, h, cells = entry
+                    rows = [[] for _ in range(w)]
+                    for x in range(w):
+                        for y in range(h):
+                            c = cells[x][y]
+                            if c.back_file != 255 or c.mid_file != 255 or c.front_file != 255:
+                                rows[x].append((y, c))
+                    rys = []
+                    for r in rows:
+                        r.sort(key=lambda t: t[0])
+                        rys.append([t[0] for t in r])
+                    with self._lock:
+                        self._rows[name] = rows
+                        self._rys[name] = rys
+        return self._rows[name], self._rys[name]
+
     def sparse_slice(self, name: str, wx0: int, wx1: int, wy0: int, wy1: int,
-                     margin: int = 512):
+                     margin: int = 512, layout: str = LAYOUT_RECT):
         """Yield (x, y, cell) for every non-empty cell whose anchor lies inside
         [wx0-margin, wx1+margin] x [wy0-margin, wy1+margin] (world px)."""
         import bisect
         w, h, _ = self.get(name)
-        buckets, bxs = self.sparse(name)
+        if layout == LAYOUT_ISO:
+            buckets, bxs = self.sparse(name)
+            # screen rows: cy = s*16 + 16 must intersect [wy0-margin, wy1+margin]
+            s0 = max(0, (wy0 - margin - 16 + 15) // 16)
+            s1 = min(len(buckets) - 1, (wy1 + margin - 16) // 16)
+            # per-row screen x: cx = (2x - s)*24 + h*24 + 24
+            cx_lo = wx0 - margin - h * 24 - 24
+            cx_hi = wx1 + margin - h * 24 - 24
+            for s in range(s0, s1 + 1):
+                xs = bxs[s]
+                x0 = (cx_lo + s * 24 + 47) // 48  # ceil
+                x1 = (cx_hi + s * 24) // 48       # floor
+                i0 = bisect.bisect_left(xs, x0)
+                i1 = bisect.bisect_right(xs, x1)
+                if i0 >= i1:
+                    continue
+                bucket = buckets[s]
+                for k in range(i0, i1):
+                    x, c = bucket[k]
+                    yield x, s - x, c
+            return
 
-        # screen rows: cy = s*16 + 16 must intersect [wy0-margin, wy1+margin]
-        s0 = max(0, (wy0 - margin - 16 + 15) // 16)
-        s1 = min(len(buckets) - 1, (wy1 + margin - 16) // 16)
-        # per-row screen x: cx = (2x - s)*24 + h*24 + 24
-        cx_lo = wx0 - margin - h * 24 - 24
-        cx_hi = wx1 + margin - h * 24 - 24
-        for s in range(s0, s1 + 1):
-            xs = bxs[s]
-            x0 = (cx_lo + s * 24 + 47) // 48  # ceil
-            x1 = (cx_hi + s * 24) // 48       # floor
-            i0 = bisect.bisect_left(xs, x0)
-            i1 = bisect.bisect_right(xs, x1)
+        rows, rys = self.sparse_rows(name)
+        x0 = max(0, (wx0 - margin) // 48)
+        x1 = min(w - 1, (wx1 + margin - 1) // 48)
+        y0 = max(0, (wy0 - margin) // 32)
+        y1 = min(h - 1, (wy1 + margin - 1) // 32)
+        for x in range(x0, x1 + 1):
+            ys = rys[x]
+            i0 = bisect.bisect_left(ys, y0)
+            i1 = bisect.bisect_right(ys, y1)
             if i0 >= i1:
                 continue
-            bucket = buckets[s]
+            row = rows[x]
             for k in range(i0, i1):
-                x, c = bucket[k]
-                yield x, s - x, c
+                y, c = row[k]
+                yield x, y, c
 
 
 # ------------------------------------------------------------------ WIL pool
@@ -606,23 +664,28 @@ def _get_pool(data_dir: str) -> ProcessPoolExecutor:
 
 # ------------------------------------------------------------------ geometry
 
-def world_bounds(w: int, h: int) -> tuple[int, int]:
+def world_bounds(w: int, h: int, layout: str = LAYOUT_RECT) -> tuple[int, int]:
     """Full assembled map size in world pixels."""
-    return (w + h + 3) * 24, (w + h + 2) * 16
+    if layout == LAYOUT_ISO:
+        return (w + h + 3) * 24, (w + h + 2) * 16
+    return w * 48, h * 32
 
 
-def cell_anchor(x: int, y: int, h: int) -> tuple[int, int]:
-    """World-pixel position of cell (x,y) centre."""
-    return (x - y) * 24 + h * 24 + 24, (x + y) * 16 + 16
+def cell_anchor(x: int, y: int, h: int, layout: str = LAYOUT_RECT) -> tuple[int, int]:
+    """World-pixel position of cell (x,y): its top-left corner (rect,
+    matching Mir3.exe's (x-view.x)*48 / (y-view.y)*32) or its centre (iso)."""
+    if layout == LAYOUT_ISO:
+        return (x - y) * 24 + h * 24 + 24, (x + y) * 16 + 16
+    return x * 48, y * 32
 
 
-def map_ladder(w: int, h: int) -> list[int]:
+def map_ladder(w: int, h: int, layout: str = LAYOUT_RECT) -> list[int]:
     """Full-map static zoom ladder: [deepest, ..., fit] as zoom levels
     (0 = 1:1).  Deepest keeps the whole map within MAX_FULL_DIM px on its
     longest side (a single image is feasible); fit is the default overview
     (~FIT_FULL_DIM px).  A full 1:1 image of e.g. 00.map (1360x1500 cells,
     68k x 46k world px) is physically impossible, hence the cap."""
-    max_dim = max(world_bounds(w, h))
+    max_dim = max(world_bounds(w, h, layout))
     deep_z = 0
     while (max_dim >> deep_z) > MAX_FULL_DIM:
         deep_z += 1
@@ -652,7 +715,8 @@ def is_object_library(lib_id: int) -> bool:
 
 def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                 tx: int, ty: int, zoom: int,
-                draw_ground: bool = True, draw_objects: bool = True) -> bytes:
+                draw_ground: bool = True, draw_objects: bool = True,
+                layout: str = LAYOUT_RECT) -> bytes:
     """Render a single tile at zoom level `zoom` (0 is 1:1, 1 is 1:2, etc)."""
     scale = 1 << zoom
     tile_world_sz = TILE_SZ * scale
@@ -663,21 +727,29 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
 
     canvas = Image.new("RGBA", (TILE_SZ, TILE_SZ), (16, 16, 20, 255))
 
-    cells = map_cache.sparse_slice(map_name, wx0, wx1, wy0, wy1)
+    cells = map_cache.sparse_slice(map_name, wx0, wx1, wy0, wy1, layout=layout)
 
     for x, y, cell in cells:
-        cx, cy = cell_anchor(x, y, h)
+        cx, cy = cell_anchor(x, y, h, layout)
 
         if cx + 512 < wx0 or cx - 512 > wx1 or cy + 512 < wy0 or cy - 512 > wy1:
             continue
 
-        # 1. Back Ground Layer
+        # 1. Back Ground Layer.  Mir3.exe 0x43b9a0 anchors ground blocks at
+        # the cell top-left (rect: x*48, y*32) and never reads WIL offsets.
+        # .map ground storage only fills even cells (2x2 blocks), so in the
+        # rect layout one 96x64 block exactly covers cells (x..x+1, y..y+1).
+        # (The iso view keeps the legacy centre-anchor + offset behaviour.)
         if draw_ground and cell.back_file != 255 and cell.back_img >= 0:
             got = pool.decode(cell.back_file, cell.back_img, scale)
             if got is not None:
-                img, off_x, off_y = got
-                px = cx - 24 + off_x
-                py = cy - 16 + off_y
+                if layout == LAYOUT_ISO:
+                    img, off_x, off_y = got
+                    px = cx - 24 + off_x
+                    py = cy - 16 + off_y
+                else:
+                    img, _, _ = got
+                    px, py = cx, cy
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -697,8 +769,12 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
             got = pool.decode(cell.mid_file, frame_idx, scale)
             if got is not None:
                 img = got[0]
-                px = cx - 24
-                py = cy + 16 - img.height * scale
+                if layout == LAYOUT_ISO:
+                    px = cx - 24
+                    py = cy + 16 - img.height * scale
+                else:
+                    px = cx
+                    py = cy - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -709,8 +785,12 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
             got = pool.decode(cell.front_file, frame_idx, scale)
             if got is not None:
                 img = got[0]
-                px = cx - 24
-                py = cy + 16 - img.height * scale
+                if layout == LAYOUT_ISO:
+                    px = cx - 24
+                    py = cy + 16 - img.height * scale
+                else:
+                    px = cx
+                    py = cy - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -729,14 +809,14 @@ PARALLEL_MIN_FRAMES = 200  # unique frames above which full-map decode uses the 
 
 def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                     draw_ground: bool = True, draw_objects: bool = True,
-                    fmt: str = "JPEG") -> bytes:
+                    fmt: str = "JPEG", layout: str = LAYOUT_RECT) -> bytes:
     scale = 1 << z
     w, h, _ = map_cache.get(map_name)
-    world_w, world_h = world_bounds(w, h)
+    world_w, world_h = world_bounds(w, h, layout)
     W, H = math.ceil(world_w / scale), math.ceil(world_h / scale)
 
     needs: dict[int, set[int]] = {}
-    cells = list(map_cache.sparse_slice(map_name, 0, world_w, 0, world_h))
+    cells = list(map_cache.sparse_slice(map_name, 0, world_w, 0, world_h, layout=layout))
     for _, _, cell in cells:
         if draw_ground and cell.back_file != 255 and cell.back_img >= 0:
             needs.setdefault(cell.back_file, set()).add(cell.back_img)
@@ -772,25 +852,34 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
 
     canvas = Image.new("RGBA", (W, H), (16, 16, 20, 255))
     for x, y, cell in cells:
-        cx, cy = cell_anchor(x, y, h)
+        cx, cy = cell_anchor(x, y, h, layout)
         # 1. Back Ground Layer
         if draw_ground and cell.back_file != 255 and cell.back_img >= 0:
             got = sprites.get((cell.back_file, cell.back_img))
             if got is not None:
                 img, off_x, off_y, opaque = got
-                _blit(canvas, img, cx - 24 + off_x, cy - 16 + off_y, scale, opaque)
+                if layout == LAYOUT_ISO:
+                    _blit(canvas, img, cx - 24 + off_x, cy - 16 + off_y, scale, opaque)
+                else:
+                    _blit(canvas, img, cx, cy, scale, opaque)
         # 2. Middle Layer
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             got = sprites.get((cell.mid_file, cell.mid_img))
             if got is not None:
                 img = got[0]
-                _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                if layout == LAYOUT_ISO:
+                    _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                else:
+                    _blit(canvas, img, cx, cy - img.height * scale, scale, False)
         # 3. Front Layer
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             got = sprites.get((cell.front_file, cell.front_img))
             if got is not None:
                 img = got[0]
-                _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                if layout == LAYOUT_ISO:
+                    _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                else:
+                    _blit(canvas, img, cx, cy - img.height * scale, scale, False)
 
     buf = io.BytesIO()
     if fmt == "PNG":
@@ -1063,8 +1152,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             if (!mi) return;
             ladder = mi.ladder;
             cur = ladder.length - 1;          // default: whole map visible
-            worldW = (mi.w + mi.h + 3) * 24;
-            worldH = (mi.w + mi.h + 2) * 16;
+            worldW = mi.world_w || (mi.w + mi.h + 3) * 24;
+            worldH = mi.world_h || (mi.w + mi.h + 2) * 16;
             anchorX = worldW / 2; anchorY = worldH / 2;
             version++;
             imgEl.src = "";
@@ -1491,6 +1580,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
     render_locks: dict = {}       # per-fullmap-key render locks (dedupe work)
     render_locks_mu = threading.Lock()
     current_root_path: str = ""
+    layout: str = LAYOUT_RECT   # axis-aligned (original Mir3.exe projection); "iso" legacy
 
     @classmethod
     def _render_lock(cls, key: tuple):
@@ -1558,13 +1648,14 @@ class ViewerHandler(BaseHTTPRequestHandler):
                         BATCH_PROGRESS["percent"] = int(((idx + 1) / len(maps)) * 100)
                         try:
                             w, h, _ = self.map_cache.get(mname)
-                            ladder = map_ladder(w, h)
+                            ladder = map_ladder(w, h, self.layout)
                             if ladder:
                                 z = ladder[-1]
                                 key = (mname, z, True, True)
                                 dp = self._fullmap_path(key)
                                 if not os.path.exists(dp):
-                                    data = render_full_map(self.map_cache, self.pool, mname, z, True, True)
+                                    data = render_full_map(self.map_cache, self.pool, mname, z, True, True,
+                                                           layout=self.layout)
                                     os.makedirs(os.path.dirname(dp), exist_ok=True)
                                     with open(dp, "wb") as f:
                                         f.write(data)
@@ -1600,7 +1691,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.wfile.write(body)
 
         elif self.path == "/api/maps":
-            maps = scan_maps(self.map_cache.maps_dir)
+            maps = scan_maps(self.map_cache.maps_dir, self.layout)
             for m in maps:
                 fid = m["name"][:-4] if m["name"].endswith(".map") else m["name"]
                 m["cn"] = map_cn(fid)
@@ -1696,7 +1787,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
             o = qs.get("o", ["1"])[0] == "1"
             try:
                 w, h, _ = self.map_cache.get(map_name)
-                ladder = map_ladder(w, h)
+                ladder = map_ladder(w, h, self.layout)
                 if ladder:
                     z = min(max(z, ladder[0]), ladder[-1])
                 key = (map_name, z, g, o)
@@ -1718,7 +1809,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                             # disk-cached, so the browser's next open is a
                             # static file read instead of a re-render.
                             data = render_full_map(self.map_cache, self.pool,
-                                                   map_name, z, g, o)
+                                                   map_name, z, g, o,
+                                                   layout=self.layout)
                             os.makedirs(os.path.dirname(dp), exist_ok=True)
                             tmp = dp + ".tmp"
                             with open(tmp, "wb") as f:
@@ -1758,7 +1850,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                     except FileNotFoundError:
                         data = None
                 if data is None:
-                    data = render_tile(self.map_cache, self.pool, map_name, tx, ty, z, g, o)
+                    data = render_tile(self.map_cache, self.pool, map_name, tx, ty, z, g, o,
+                                       layout=self.layout)
                     with self.tile_cache_lock:
                         self.tile_cache[key] = data
                         while len(self.tile_cache) > CACHE_TILES_MAX:
@@ -1785,26 +1878,31 @@ class ViewerHandler(BaseHTTPRequestHandler):
         map_name, tx, ty, z, g, o = key
         safe = map_name.replace("/", "_").replace("\\", "_")
         ext = "png" if z == 0 else "jpg"
-        return os.path.join(self.cache_dir, safe, f"{tx}_{ty}_{z}_{int(g)}{int(o)}.{ext}")
+        tag = "r" if self.layout == LAYOUT_RECT else "i"
+        return os.path.join(self.cache_dir, safe, f"{tag}_{tx}_{ty}_{z}_{int(g)}{int(o)}.{ext}")
 
     def _fullmap_path(self, key: tuple) -> str:
         map_name, z, g, o = key
         safe = map_name.replace("/", "_").replace("\\", "_")
-        return os.path.join(self.cache_dir, safe, f"full_{z}_{int(g)}{int(o)}.jpg")
+        tag = "r" if self.layout == LAYOUT_RECT else "i"
+        return os.path.join(self.cache_dir, safe, f"full_{tag}_{z}_{int(g)}{int(o)}.jpg")
 
 
-def scan_maps(maps_dir: str) -> list[dict]:
+def scan_maps(maps_dir: str, layout: str = LAYOUT_RECT) -> list[dict]:
     out = []
     for fn in os.listdir(maps_dir):
         if not fn.lower().endswith(".map"):
             continue
         try:
             w, h = parse_map_header(os.path.join(maps_dir, fn))
+            ww, wh = world_bounds(w, h, layout)
             out.append({
                 "name": fn,
                 "w": w,
                 "h": h,
-                "ladder": map_ladder(w, h),
+                "world_w": ww,
+                "world_h": wh,
+                "ladder": map_ladder(w, h, layout),
             })
         except Exception:
             continue
@@ -1821,6 +1919,8 @@ def main():
                         help="Disk tile cache dir (default: <maps_dir>/.tilecache; empty disables)")
     parser.add_argument("--thumbs-dir", default=THUMBS_DIR,
                         help="Full-map thumbnail dir (shared with WikiServer/thumb_gen)")
+    parser.add_argument("--layout", choices=[LAYOUT_RECT, LAYOUT_ISO], default=LAYOUT_RECT,
+                        help="Map projection: rect (axis-aligned, original Mir3.exe) or iso (legacy diamond)")
     args = parser.parse_args()
 
     data_dir = args.data
@@ -1845,6 +1945,7 @@ def main():
     cache_dir = args.cache_dir if args.cache_dir is not None else os.path.join(args.maps_dir, ".tilecache")
     ViewerHandler.cache_dir = cache_dir
     ViewerHandler.thumbs_dir = args.thumbs_dir
+    ViewerHandler.layout = args.layout
     os.makedirs(args.thumbs_dir, exist_ok=True)
     print(f"[*] Thumbnails: {args.thumbs_dir}")
     print(f"[*] Tile cache: {cache_dir}")
