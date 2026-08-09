@@ -122,12 +122,19 @@
       "warning": "These bottom-relative positions supersede constructor-only positions when the dialogue content changes height; they are expressions, not invented absolute screen coordinates."
     }
   },
+  "paint_order": [
+    {"order": 1, "va": "0x0043F055-0x0043F0B0", "role": "Frame 1100 dialogue/background composition", "evidence": "When the primary resource path is active, Frame 1100 is selected and passed through the original 800x600 compositor using this+0x520/0x524 placement fields."},
+    {"order": 2, "va": "0x0043F0B2-0x0043F10B", "role": "repeated dialogue/menu entries", "evidence": "Frame 1101 is selected inside the count-controlled loop, with per-entry 18-byte source stride and per-entry target Y progression."},
+    {"order": 3, "va": "0x0043F113-0x0043F172", "role": "final dialogue/menu entry", "evidence": "After the repeated-entry loop, the last entry index is clamped and Frame 1102 is selected and composited at this+0x540/this+0x544 plus the final 18-pixel offset."},
+    {"order": 4, "va": "0x0043F179-0x0043F240", "role": "fallback alpha/normalized composition", "evidence": "When the primary resource path is unavailable, the function enters a separate normalized/alpha composition branch using 0x4542A0; it is not proven to be business text rendering."}
+  ],
   "confirmed": [
     "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
     "The NPC object separately loads Data/NPCFace.WIL into owner+0x278; this is distinct from the GameInter handle used by the window and child controls.",
     "The paint path selects consecutive Frames 1100, 1101 and 1102.",
     "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
-    "All three child controls have statically recovered window-relative positions."
+    "All three child controls have statically recovered window-relative positions.",
+    "The NPC paint entry statically orders the primary Frame 1100 composition, repeated Frame 1101 entries, final Frame 1102 entry and fallback composition branch."
   ],
   "pending": [
     "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55.",
