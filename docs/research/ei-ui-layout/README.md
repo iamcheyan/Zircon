@@ -31,7 +31,8 @@ JSON 的 `pending` 字段中，尤其是运行时窗口打开入口、好友是�
 - [`status-window-render-evidence.json`](status-window-render-evidence.json)：人物状态/装备位置记录与绘制链。
 - [`store-server-crossref.json`](store-server-crossref.json)：Mud3 仓库、购买、出售 NPC 的第二证据交叉表。
 
-预览器运行后访问 `http://127.0.0.1:8765/ui`。模式选择包含主 HUD、地图候选、技能、
+预览器运行后访问 `http://127.0.0.1:8765/ui`。模式选择包含主 HUD、完整地图资源候选、固定
+小地图 128×128 候选、技能、
 状态、背包、组队、行会、聊天、任务、商店、交换、系统设置、坐骑、NPC 等固定视口模式；
 调试框、Frame 编号、图层、地图 Rect、截图差异叠加和 localStorage 状态记忆均属于预览
 辅助，不会取代原版静态证据。
