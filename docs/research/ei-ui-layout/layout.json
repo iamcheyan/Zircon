@@ -15936,6 +15936,68 @@
           }
         }
       ],
+      "paint_order": [
+        {
+          "order": 1,
+          "range": "0x0043950B-0x00439510",
+          "operation": "window vtable +0x0C",
+          "description": "绘制 GameInter Frame 400 技能书基础面板",
+          "evidence_level": "primary-static-call-order"
+        },
+        {
+          "order": 2,
+          "range": "0x00439512-0x00439520",
+          "operation": "call 0x004397A0",
+          "description": "根据当前页/类别组合技能图标、名称和列表内容",
+          "evidence_level": "primary-static-call-order"
+        },
+        {
+          "order": 3,
+          "range": "0x00439520-0x00439525",
+          "operation": "call 0x0043A440",
+          "description": "从 Magic.exp 流解析并绘制技能说明/列表文字",
+          "evidence_level": "primary-static-call-order"
+        },
+        {
+          "order": 4,
+          "range": "0x00439525-0x00439594",
+          "operation": "reposition then paint 0xD8/0x18C/0x240",
+          "description": "定位并绘制三个页签/翻页列表控件",
+          "relative_positions": [
+            {
+              "x": 399,
+              "y": 340,
+              "source": "window-relative offset (0x18F,0x154)"
+            },
+            {
+              "x": 61,
+              "y": 303,
+              "source": "window-relative offset (0x3D,0x12F)"
+            },
+            {
+              "x": 366,
+              "y": 303,
+              "source": "window-relative offset (0x16E,0x12F)"
+            }
+          ],
+          "evidence_level": "primary-static-call-order"
+        },
+        {
+          "order": 5,
+          "range": "0x00439594-0x0043967A",
+          "operation": "reposition then paint category controls 0x2F4..0x7E0",
+          "description": "定位并绘制八个元素/流派类别按钮；静态顺序为火、冰、电、风、神圣、黑暗、幻影、剑",
+          "evidence_level": "primary-static-call-order"
+        },
+        {
+          "order": 6,
+          "range": "0x0043967C-0x00439785",
+          "operation": "call 0x0046811C and 0x0045DD70",
+          "description": "绘制当前类别/页码等数值与状态标签",
+          "evidence_level": "primary-static-call-order",
+          "warning": "文字字段的最终业务语义仍需结合 Magic.exp 解码和输入路径确认"
+        }
+      ],
       "interpretation": {
         "candidate": "skill-book-with-element-or-school-tabs",
         "confidence": "primary-static-plus-visual-candidate",
