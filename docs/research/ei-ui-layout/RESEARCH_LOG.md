@@ -1042,3 +1042,18 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 刷新路径 `0x004142C0` 维护 `this+0x720` 的文本行缓存，步长 16，行数 19 为当前
 静态候选；频道业务名称和共享文本渲染参数仍待确认。机器记录见
 `chat-window-render-evidence.json`。
+
+### Finding 46：NPC 对话窗口的三层资源与动态条目步长已恢复（2026-08-09）
+
+在原版 `Mir3.exe` 的 NPC 窗口构造函数 `0x0043ED00` 和绘制函数 `0x0043F040` 中，确认
+主底图为 `Data/GameInter.wil` Frame 1100，构造尺寸为 `552×176`；绘制路径随后选择
+连续的 Frame 1101 与 Frame 1102 作为动态/状态层。三个控件构造调用分别位于
+`0x0043ED65`、`0x0043ED8B`、`0x0043EDB1`，窗口相对坐标为 `(7,141)`、`(290,145)`、
+`(306,136)`，帧对分别是 `161/162`、`52/53`、`54/55`。
+
+绘制循环从 `this+0x51C` 读取条目数量，每个条目使源数据偏移增加 `0x12`（18 字节）；
+动态合成坐标使用 `this+0x530/+0x534`，末层使用 `this+0x540/+0x544`，调用中还固定
+传入 `800×600` 视口参数。上述内容属于 `primary-static`，但控件的业务名称、条目字段
+语义及文字绘制顺序仍未提升到 runtime-confirmed。机器记录见
+`npc-window-render-evidence.json`，并已接入 `layout.json` 的 `specialized_window_evidence`
+和顶层 `npc_window_evidence`。

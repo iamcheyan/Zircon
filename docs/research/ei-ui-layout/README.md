@@ -213,7 +213,9 @@ Tools/extract_mir3_npc_paint.py
 docs/research/ei-ui-layout/npc-paint-evidence.json
 ```
 
-NPC 路径已确认读取 Frame 1100/1101/1102，并存在独立绘制函数 `0x0043F040`；其动态条目坐标与文本内容仍需继续追踪。
+NPC 路径已确认读取 Frame 1100/1101/1102，并存在独立绘制函数 `0x0043F040`；构造函数
+`0x0043ED00` 的三个子控件窗口相对坐标也已恢复，动态条目数量与 18 字节步长已记录。
+业务语义、条目字段和文字绘制顺序仍需继续追踪，详见 `npc-window-render-evidence.json`。
 
 寄存器表达式解析结果见：
 

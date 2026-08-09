@@ -85,6 +85,10 @@
     "chat_window_evidence": {
       "type": "object",
       "description": "Primary static evidence for chat window controls and text/input rectangles."
+    },
+    "npc_window_evidence": {
+      "type": "object",
+      "description": "Primary static evidence for NPC dialogue window construction, frame compositing and dynamic entry stride."
     }
   }
 }

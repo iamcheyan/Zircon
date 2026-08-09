@@ -16386,6 +16386,138 @@
         "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
         "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots."
       ]
+    },
+    {
+      "source": {
+        "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+        "constructor_va": "0x0043ED00",
+        "paint_va": "0x0043F040",
+        "evidence_level": "primary-static"
+      },
+      "window": {
+        "id": "window.npc-candidate",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 1100,
+          "constructor_size": [
+            552,
+            176
+          ]
+        },
+        "state_frames": [
+          1101,
+          1102
+        ],
+        "window_object_origin": {
+          "x_field": "this+0x18",
+          "y_field": "this+0x1c"
+        },
+        "main_init": "0x0042792A"
+      },
+      "child_controls": [
+        {
+          "object_offset": "this+0x58",
+          "call_va": "0x0043ED65",
+          "frame_pair": [
+            161,
+            162
+          ],
+          "resource_library_candidate": "GameInter.wil",
+          "window_relative_position": [
+            7,
+            141
+          ],
+          "position_expression": {
+            "x": "window.x+7",
+            "y": "window.y+0x8D"
+          },
+          "semantic_candidate": "close/confirm or generic NPC dialogue control",
+          "evidence_level": "primary-static-expression"
+        },
+        {
+          "object_offset": "this+0x1C0",
+          "call_va": "0x0043ED8B",
+          "frame_pair": [
+            52,
+            53
+          ],
+          "resource_library_candidate": "GameInter.wil",
+          "window_relative_position": [
+            290,
+            145
+          ],
+          "position_expression": {
+            "x": "window.x+0x122",
+            "y": "window.y+0x91"
+          },
+          "semantic_candidate": "NPC face/portrait or dialogue-side control",
+          "evidence_level": "primary-static-expression"
+        },
+        {
+          "object_offset": "this+0x10C",
+          "call_va": "0x0043EDB1",
+          "frame_pair": [
+            54,
+            55
+          ],
+          "resource_library_candidate": "GameInter.wil",
+          "window_relative_position": [
+            306,
+            136
+          ],
+          "position_expression": {
+            "x": "window.x+0x132",
+            "y": "window.y+0x88"
+          },
+          "semantic_candidate": "NPC dialogue-side state/control",
+          "evidence_level": "primary-static-expression"
+        }
+      ],
+      "paint_geometry": {
+        "background_select": {
+          "va": "0x0043F06A",
+          "frame": 1100
+        },
+        "dynamic_entry_frame": {
+          "va": "0x0043F0BC",
+          "frame": 1101,
+          "count_field": "this+0x51C",
+          "entry_stride_bytes": 18
+        },
+        "dynamic_entry_blit": {
+          "va": "0x0043F102",
+          "target_x": "this+0x530 + entry_index",
+          "target_y": "this+0x534 + entry_index*18"
+        },
+        "final_state_select": {
+          "va": "0x0043F120",
+          "frame": 1102
+        },
+        "secondary_blit": {
+          "va": "0x0043F16D",
+          "target_x": "this+0x540",
+          "target_y": "this+0x544 + entry_index*18"
+        },
+        "viewport_literals": [
+          800,
+          600
+        ],
+        "fallback_alpha_fields": [
+          "this+0x580",
+          "this+0x581"
+        ]
+      },
+      "confirmed": [
+        "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
+        "The paint path selects consecutive Frames 1100, 1101 and 1102.",
+        "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
+        "All three child controls have statically recovered window-relative positions."
+      ],
+      "pending": [
+        "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55.",
+        "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
+        "The exact text/font/color draw order around the composited NPC dialogue content."
+      ]
     }
   ],
   "map_ui_evidence": {
@@ -16639,6 +16771,138 @@
       "Map frames 360–383 to exact channel/scroll labels.",
       "Confirm the first control's exact close/submit role and runtime hit rectangles.",
       "Recover chat line font/color and clipping parameters from the shared text renderer."
+    ]
+  },
+  "npc_window_evidence": {
+    "source": {
+      "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+      "constructor_va": "0x0043ED00",
+      "paint_va": "0x0043F040",
+      "evidence_level": "primary-static"
+    },
+    "window": {
+      "id": "window.npc-candidate",
+      "background": {
+        "file": "Data/GameInter.wil",
+        "frame": 1100,
+        "constructor_size": [
+          552,
+          176
+        ]
+      },
+      "state_frames": [
+        1101,
+        1102
+      ],
+      "window_object_origin": {
+        "x_field": "this+0x18",
+        "y_field": "this+0x1c"
+      },
+      "main_init": "0x0042792A"
+    },
+    "child_controls": [
+      {
+        "object_offset": "this+0x58",
+        "call_va": "0x0043ED65",
+        "frame_pair": [
+          161,
+          162
+        ],
+        "resource_library_candidate": "GameInter.wil",
+        "window_relative_position": [
+          7,
+          141
+        ],
+        "position_expression": {
+          "x": "window.x+7",
+          "y": "window.y+0x8D"
+        },
+        "semantic_candidate": "close/confirm or generic NPC dialogue control",
+        "evidence_level": "primary-static-expression"
+      },
+      {
+        "object_offset": "this+0x1C0",
+        "call_va": "0x0043ED8B",
+        "frame_pair": [
+          52,
+          53
+        ],
+        "resource_library_candidate": "GameInter.wil",
+        "window_relative_position": [
+          290,
+          145
+        ],
+        "position_expression": {
+          "x": "window.x+0x122",
+          "y": "window.y+0x91"
+        },
+        "semantic_candidate": "NPC face/portrait or dialogue-side control",
+        "evidence_level": "primary-static-expression"
+      },
+      {
+        "object_offset": "this+0x10C",
+        "call_va": "0x0043EDB1",
+        "frame_pair": [
+          54,
+          55
+        ],
+        "resource_library_candidate": "GameInter.wil",
+        "window_relative_position": [
+          306,
+          136
+        ],
+        "position_expression": {
+          "x": "window.x+0x132",
+          "y": "window.y+0x88"
+        },
+        "semantic_candidate": "NPC dialogue-side state/control",
+        "evidence_level": "primary-static-expression"
+      }
+    ],
+    "paint_geometry": {
+      "background_select": {
+        "va": "0x0043F06A",
+        "frame": 1100
+      },
+      "dynamic_entry_frame": {
+        "va": "0x0043F0BC",
+        "frame": 1101,
+        "count_field": "this+0x51C",
+        "entry_stride_bytes": 18
+      },
+      "dynamic_entry_blit": {
+        "va": "0x0043F102",
+        "target_x": "this+0x530 + entry_index",
+        "target_y": "this+0x534 + entry_index*18"
+      },
+      "final_state_select": {
+        "va": "0x0043F120",
+        "frame": 1102
+      },
+      "secondary_blit": {
+        "va": "0x0043F16D",
+        "target_x": "this+0x540",
+        "target_y": "this+0x544 + entry_index*18"
+      },
+      "viewport_literals": [
+        800,
+        600
+      ],
+      "fallback_alpha_fields": [
+        "this+0x580",
+        "this+0x581"
+      ]
+    },
+    "confirmed": [
+      "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
+      "The paint path selects consecutive Frames 1100, 1101 and 1102.",
+      "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
+      "All three child controls have statically recovered window-relative positions."
+    ],
+    "pending": [
+      "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55.",
+      "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
+      "The exact text/font/color draw order around the composited NPC dialogue content."
     ]
   }
 }
