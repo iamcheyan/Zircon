@@ -81,12 +81,27 @@
     "caller": "0x0042C75C -> 0x0043DEB0 -> this routine",
     "keyboard_dispatch_evidence": {
       "routine": "0x0042CC76–0x0042CF1F",
+      "input_state_reader": "IAT call through 0x00476278; key code is pushed as an immediate before the call",
       "key_code": "0x54",
       "ascii_candidate": "T",
+      "open_state_guard": "main+0x6518 == 1",
       "state_field": "main+0x64A8",
-      "behavior": "When key 0x54 is pressed, main+0x64A8 is toggled; the true/false branches directly rebuild 0x0043D5F0 with 256×256 or 128×128.",
+      "toggle_sites": ["0x0042CEA5–0x0042CEBA"],
+      "surface_calls": [
+        {"call_va": "0x0042CED2", "arguments": [256, 256], "branch": "new main+0x64A8 value is nonzero"},
+        {"call_va": "0x0042CEF0", "arguments": [128, 128], "branch": "new main+0x64A8 value is zero"}
+      ],
+      "behavior": "When key 0x54 is pressed while the map/world subsystem guard main+0x6518 is active, main+0x64A8 is toggled; the two branches directly rebuild 0x0043D5F0 with 256×256 or 128×128.",
       "evidence_level": "primary-static-key-dispatch",
       "caveat": "The numeric key code is exact; the user-facing label and whether this is called full-map/minimap are not named in the binary."
+    },
+    "adjacent_key_evidence": {
+      "key_code": "0x59",
+      "state_field": "main+0x64A4",
+      "dispatch_range": "0x0042CEF7–0x0042CF19",
+      "behavior": "The same input reader tests key 0x59 and toggles main+0x64A4 when the map/world guard is active; no direct map-surface rebuild occurs in this branch.",
+      "semantic_status": "unresolved-adjacent-client-state",
+      "evidence_level": "primary-static-key-dispatch"
     },
     "interpretation": "The original client has an explicit map display mode switch. The two surface sizes and the keyboard dispatch relation are directly observed; only the user-facing mode label remains semantic."
   },
