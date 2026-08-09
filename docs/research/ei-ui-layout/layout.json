@@ -15983,13 +15983,10 @@
             264,
             265
           ],
-          "resource_library_candidates": [
-            "GameInter.wil",
-            "Interface1c.wil"
-          ],
+          "resource_library_candidate": "GameInter.wil",
           "position_expression": {
             "x": "arg_base+0xB0+0xF9",
-            "y": "arg_base+0xB0+0x120"
+            "y": "arg_base+0xB0+0x106"
           }
         },
         {
@@ -15999,17 +15996,17 @@
             267,
             268
           ],
-          "resource_library_candidate": "Interface1c.wil",
+          "resource_library_candidate": "GameInter.wil",
           "position_expression": {
             "x": "arg_base+0xB0+0xF9",
-            "y": "arg_base+0xB0+0x120"
+            "y": "arg_base+0xB0+0x11E"
           }
         }
       ],
       "paint_geometry": [
         {
           "va": "0x0042EB9B",
-          "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5; exact resource/state semantics remain pending."
+          "fact": "A shared draw call receives window-relative coordinates derived from x+0xF8 and y-0xA5, with GameInter frame 0x5E selected by this paint path; the call is the inventory top/detail composition candidate."
         },
         {
           "va": "0x0042EC54",
@@ -16020,6 +16017,14 @@
           "fact": "The corresponding vertical coordinate is y+0x29 plus a row/record difference multiplied by 36 pixels."
         },
         {
+          "va": "0x0042F150",
+          "fact": "The inventory hit-test/search loop scans both axes in 36-pixel steps from 0 through 180, proving a 6-column by 6-row, 36-slot grid."
+        },
+        {
+          "va": "0x0042F2A0",
+          "fact": "The item index is divided by 6; remainder selects the column and quotient selects the row. Slot rectangles are (window.x+0x19+36*column, window.y+0x29+36*row) with 36x36 size."
+        },
+        {
           "va": "0x0042EECD",
           "fact": "The three child controls are repositioned from the window origin with fixed offsets (0xF9,0x120), (0xB0,0x106), and (0xB0,0x11E) as shown by 0x00417830 calls."
         }
@@ -16027,12 +16032,13 @@
       "confirmed": [
         "Frame 250 is the inventory window background candidate with primary constructor evidence.",
         "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
-        "The item draw path contains a 36-pixel spacing constant."
+        "The item draw path contains a 36-pixel spacing constant.",
+        "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
+        "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count."
       ],
       "pending": [
-        "Exact number of inventory columns and rows.",
-        "Whether Frame 264/265 resolves to GameInter or Interface1c at runtime for this client build.",
-        "The meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields."
+        "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
+        "The runtime item resource handle and quantity/name text field order."
       ]
     },
     {
@@ -16198,9 +16204,115 @@
         "state_dispatch_va": "0x0044B2D0",
         "notes": "The paint path branches by state and calls shared text/image composition helpers. Equipment slot business names and exact resource families remain pending."
       },
+      "item_record_and_draw_chain": {
+        "hit_test_va": "0x0044B6B0",
+        "index_scan_va": "0x0044B720",
+        "record_stride": "0xC24",
+        "record_base": "this+0x2F4",
+        "position_record_base": "this+0x1C0",
+        "position_stride": "0x10",
+        "draw_va": "0x004341F0",
+        "fact": "The returned slot index selects item record this+0x2F4+index*0xC24 and position record this+0x1C0+index*0x10. The first two dwords of the position record become window-relative x/y after +0x0F; the item draw helper then receives the selected record.",
+        "special_indices": [
+          {
+            "index": 0,
+            "position_record": "this+0x1C0",
+            "rect": [
+              86,
+              114,
+              146,
+              204
+            ],
+            "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"
+          },
+          {
+            "index": 1,
+            "position_record": "this+0x1D0",
+            "rect": [
+              38,
+              70,
+              91,
+              154
+            ],
+            "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"
+          },
+          {
+            "index": 4,
+            "position_record": "this+0x200",
+            "rect": [
+              94,
+              71,
+              143,
+              104
+            ],
+            "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"
+          }
+        ],
+        "equipment_candidate_indices": [
+          2,
+          3,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "equipment_candidate_rects_by_index": {
+          "2": [
+            27,
+            264,
+            65,
+            302
+          ],
+          "3": [
+            177,
+            70,
+            215,
+            108
+          ],
+          "5": [
+            27,
+            186,
+            65,
+            224
+          ],
+          "6": [
+            175,
+            186,
+            213,
+            224
+          ],
+          "7": [
+            27,
+            227,
+            65,
+            265
+          ],
+          "8": [
+            175,
+            227,
+            213,
+            265
+          ],
+          "9": [
+            64,
+            264,
+            102,
+            302
+          ],
+          "10": [
+            103,
+            264,
+            141,
+            302
+          ]
+        },
+        "confidence": "primary-static; business item names remain unresolved"
+      },
       "pending": [
-        "Mapping each object offset to the exact equipment item (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
         "The exact status/attribute text field coordinates and source data structures.",
+        "Mapping the eight equipment candidate indices to exact item names (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
         "The runtime resource handle used for equipment item icons."
       ]
     },
@@ -16597,6 +16709,23 @@
         },
         "main_init": "0x0042792A"
       },
+      "resource_bindings": {
+        "ui_resource_argument": {
+          "source": "main init 0x0042792A",
+          "role": "GameInter UI handle passed into the NPC constructor and its three child controls",
+          "evidence_level": "primary-static-argument-flow"
+        },
+        "npc_face_resource": {
+          "owner_field": "this+0x278",
+          "file": "Data/NPCFace.WIL",
+          "path_literal_va": "0x0047C4EC",
+          "load_va": "0x0043EDC5",
+          "frame_count": 440,
+          "nonblank_frames": 46,
+          "role": "NPC portrait/face resource used by the NPC object",
+          "evidence_level": "primary-static-resource-path"
+        }
+      },
       "child_controls": [
         {
           "object_offset": "this+0x58",
@@ -16665,6 +16794,7 @@
           "va": "0x0043F0BC",
           "frame": 1101,
           "count_field": "this+0x51C",
+          "constructor_default_count": 13,
           "entry_stride_bytes": 18
         },
         "dynamic_entry_blit": {
@@ -16681,6 +16811,36 @@
           "target_x": "this+0x540",
           "target_y": "this+0x544 + entry_index*18"
         },
+        "entry_resource_loads": [
+          {
+            "resource_id": "0x44C",
+            "load_va": "0x0043F06A",
+            "role": "dialog/background or entry source candidate"
+          },
+          {
+            "resource_id": "0x44D",
+            "load_va": "0x0043F0BC",
+            "role": "repeated dynamic entry source candidate"
+          },
+          {
+            "resource_id": "0x44E",
+            "load_va": "0x0043F120",
+            "role": "final/selected dynamic entry source candidate"
+          }
+        ],
+        "composite_destination": {
+          "helper_va": "0x00460240",
+          "source_dimensions": [
+            800,
+            600
+          ],
+          "source_rect_literals": [
+            800,
+            600
+          ],
+          "evidence_level": "primary-static-draw-call",
+          "note": "The paint routine passes the window state and per-entry positions into the shared compositor; this confirms the dynamic list is drawn through the original image pipeline, while text-field semantics remain unresolved."
+        },
         "viewport_literals": [
           800,
           600
@@ -16692,6 +16852,7 @@
       },
       "confirmed": [
         "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
+        "The NPC object separately loads Data/NPCFace.WIL into owner+0x278; this is distinct from the GameInter handle used by the window and child controls.",
         "The paint path selects consecutive Frames 1100, 1101 and 1102.",
         "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
         "All three child controls have statically recovered window-relative positions."
@@ -16788,9 +16949,27 @@
               "semantic_candidate": "group operation/tab"
             }
           ],
+          "member_list_render": {
+            "paint_va": "0x004243D0",
+            "linked_list_head": "this+0x58",
+            "visibility_guard": "this+0x68",
+            "row_index": "local counter starting at 0",
+            "column_rule": "index & 1",
+            "row_rule": "floor(index / 2)",
+            "screen_relative_origin": [
+              45,
+              90
+            ],
+            "column_step": 100,
+            "row_step": 20,
+            "formula": "x = window.x + 45 + 100*(index mod 2); y = window.y + 90 + 20*floor(index/2)",
+            "draw_helper": "0x0045DD70",
+            "evidence": "0x00424445-0x0042448E",
+            "confidence": "primary-static"
+          },
           "pending": [
-            "member text/icon draw order",
-            "whether all 3 action slots are always visible",
+            "member field text/icon ordering",
+            "whether the visible linked-list count is capped by clipping",
             "runtime open-state transitions"
           ]
         },
@@ -16921,10 +17100,40 @@
               "semantic_candidate": "guild tab/action"
             }
           ],
+          "member_list_render": {
+            "paint_va": "0x00425280",
+            "linked_list_head": "this+0xD4",
+            "scroll_start_field": "this+0x9C",
+            "visible_count_source": "this+0xE4 - scroll_start, capped at 0x12 (18)",
+            "screen_relative_origin": [
+              35,
+              60
+            ],
+            "row_formula": "x = window.x + 35; y = window.y + 60 + (index - scroll_start) * (font_metric_height + 5)",
+            "row_step_source": "0x00425297-0x004252C8 obtains text metric height and adds 5",
+            "entry_text_field": "linked_entry+0x04",
+            "recognized_original_markers": [
+              {
+                "va": "0x0047BA60",
+                "text": "[联盟行会]"
+              },
+              {
+                "va": "0x0047BA6C",
+                "text": "[敌对行会]"
+              },
+              {
+                "va": "0x0047BA78",
+                "text": "[行会公告]"
+              }
+            ],
+            "draw_helper": "0x0045DD70",
+            "evidence": "0x004252F1-0x0042541A",
+            "confidence": "primary-static"
+          },
           "pending": [
-            "four ambiguous register-flow positions",
-            "guild member list row geometry",
-            "exact tab labels and business semantics"
+            "four ambiguous register-flow control positions",
+            "exact tab labels and business semantics",
+            "special marker color/field styling"
           ]
         }
       ],
@@ -17794,6 +18003,36 @@
       ],
       "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata. The destination widget rectangle is now statically recovered as 128x128 at screen (672,0)."
     },
+    "mode_switch": {
+      "va": "0x0043DE40",
+      "flag_field": "owner+0x294",
+      "behavior": "On a successful toggle, the routine negates owner+0x294 and rebuilds the map surface through 0x0043D5F0.",
+      "true_branch": {
+        "surface_args": [
+          256,
+          256
+        ],
+        "evidence_level": "primary-static-exact-call"
+      },
+      "false_branch": {
+        "surface_args": [
+          128,
+          128
+        ],
+        "evidence_level": "primary-static-exact-call"
+      },
+      "caller": "0x0042C75C -> 0x0043DEB0 -> this routine",
+      "keyboard_dispatch_evidence": {
+        "routine": "0x0042CC76–0x0042CF1F",
+        "key_code": "0x54",
+        "ascii_candidate": "T",
+        "state_field": "main+0x64A8",
+        "behavior": "When key 0x54 is pressed, main+0x64A8 is toggled; the true/false branches directly rebuild 0x0043D5F0 with 256×256 or 128×128.",
+        "evidence_level": "primary-static-key-dispatch",
+        "caveat": "The numeric key code is exact; the user-facing label and whether this is called full-map/minimap are not named in the binary."
+      },
+      "interpretation": "The original client has an explicit map display mode switch. The two surface sizes and the keyboard dispatch relation are directly observed; only the user-facing mode label remains semantic."
+    },
     "render_evidence": {
       "paint_va": "0x0043DA80",
       "map_blit_or_composite": {
@@ -17896,6 +18135,7 @@
     "pending": [
       "Bind the selected MMap/FMMap output to the GameInter minimap border/overlay control.",
       "Recover the remaining full-map input/paint state and determine whether this EI build has a separate map dialog or only a world/minimap surface path; do not use notice ID 15 as map UI.",
+      "Name the user-facing command/key path that invokes the 0x0043DE40 map display-mode switch.",
       "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
     ]
   },
@@ -18083,8 +18323,57 @@
       "line_count_candidate": 19,
       "notes": "The refresh path walks chat-linked data and updates the visible line list; exact text renderer and channel label semantics remain pending."
     },
+    "original_command_strings": {
+      "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
+      "encoding": "GBK",
+      "controls": [
+        {
+          "object_offset": "this+0x120",
+          "x": 25,
+          "string_va": "0x0047AD08",
+          "text": "拒绝和 某人 私聊(@拒绝 某人名)",
+          "interpretation": "private-chat rejection command format"
+        },
+        {
+          "object_offset": "this+0x1D4",
+          "x": 65,
+          "string_va": "0x0047ACF8",
+          "text": "大喊话(!喊话)",
+          "interpretation": "shout command format"
+        },
+        {
+          "object_offset": "this+0x288",
+          "x": 105,
+          "string_va": "0x0047ACE4",
+          "text": "编组 喊话(!!喊话)",
+          "interpretation": "party/group shout command format"
+        },
+        {
+          "object_offset": "this+0x33C",
+          "x": 145,
+          "string_va": "0x0047ACD0",
+          "text": "行会 喊话(!~喊话)",
+          "interpretation": "guild shout command format"
+        },
+        {
+          "object_offset": "this+0x3F0",
+          "x": 185,
+          "string_va": "0x0047ACB8",
+          "text": "拒绝 私聊(@拒绝私聊)",
+          "interpretation": "private-chat rejection toggle/command format"
+        },
+        {
+          "object_offset": "this+0x4A4",
+          "x": 225,
+          "string_va": "0x0047AC98",
+          "text": "拒绝 行会 聊天(@拒绝行会聊天)",
+          "interpretation": "guild-chat rejection toggle/command format"
+        }
+      ],
+      "caveat": "These are original command/tooltip strings supplied to the control constructors. They establish the six channel/command concepts and their fixed x positions, but the exact visible caption versus tooltip rendering still belongs to the shared control implementation."
+    },
     "pending": [
-      "Map frames 360–383 to exact channel/scroll labels.",
+      "Confirm whether the six command strings are rendered as visible captions, tooltips, or both by the shared control implementation.",
       "Confirm the first control's exact close/submit role and runtime hit rectangles.",
       "Recover chat line font/color and clipping parameters from the shared text renderer."
     ]
@@ -18115,6 +18404,23 @@
         "y_field": "this+0x1c"
       },
       "main_init": "0x0042792A"
+    },
+    "resource_bindings": {
+      "ui_resource_argument": {
+        "source": "main init 0x0042792A",
+        "role": "GameInter UI handle passed into the NPC constructor and its three child controls",
+        "evidence_level": "primary-static-argument-flow"
+      },
+      "npc_face_resource": {
+        "owner_field": "this+0x278",
+        "file": "Data/NPCFace.WIL",
+        "path_literal_va": "0x0047C4EC",
+        "load_va": "0x0043EDC5",
+        "frame_count": 440,
+        "nonblank_frames": 46,
+        "role": "NPC portrait/face resource used by the NPC object",
+        "evidence_level": "primary-static-resource-path"
+      }
     },
     "child_controls": [
       {
@@ -18184,6 +18490,7 @@
         "va": "0x0043F0BC",
         "frame": 1101,
         "count_field": "this+0x51C",
+        "constructor_default_count": 13,
         "entry_stride_bytes": 18
       },
       "dynamic_entry_blit": {
@@ -18200,6 +18507,36 @@
         "target_x": "this+0x540",
         "target_y": "this+0x544 + entry_index*18"
       },
+      "entry_resource_loads": [
+        {
+          "resource_id": "0x44C",
+          "load_va": "0x0043F06A",
+          "role": "dialog/background or entry source candidate"
+        },
+        {
+          "resource_id": "0x44D",
+          "load_va": "0x0043F0BC",
+          "role": "repeated dynamic entry source candidate"
+        },
+        {
+          "resource_id": "0x44E",
+          "load_va": "0x0043F120",
+          "role": "final/selected dynamic entry source candidate"
+        }
+      ],
+      "composite_destination": {
+        "helper_va": "0x00460240",
+        "source_dimensions": [
+          800,
+          600
+        ],
+        "source_rect_literals": [
+          800,
+          600
+        ],
+        "evidence_level": "primary-static-draw-call",
+        "note": "The paint routine passes the window state and per-entry positions into the shared compositor; this confirms the dynamic list is drawn through the original image pipeline, while text-field semantics remain unresolved."
+      },
       "viewport_literals": [
         800,
         600
@@ -18211,6 +18548,7 @@
     },
     "confirmed": [
       "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
+      "The NPC object separately loads Data/NPCFace.WIL into owner+0x278; this is distinct from the GameInter handle used by the window and child controls.",
       "The paint path selects consecutive Frames 1100, 1101 and 1102.",
       "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
       "All three child controls have statically recovered window-relative positions."
@@ -18307,9 +18645,27 @@
             "semantic_candidate": "group operation/tab"
           }
         ],
+        "member_list_render": {
+          "paint_va": "0x004243D0",
+          "linked_list_head": "this+0x58",
+          "visibility_guard": "this+0x68",
+          "row_index": "local counter starting at 0",
+          "column_rule": "index & 1",
+          "row_rule": "floor(index / 2)",
+          "screen_relative_origin": [
+            45,
+            90
+          ],
+          "column_step": 100,
+          "row_step": 20,
+          "formula": "x = window.x + 45 + 100*(index mod 2); y = window.y + 90 + 20*floor(index/2)",
+          "draw_helper": "0x0045DD70",
+          "evidence": "0x00424445-0x0042448E",
+          "confidence": "primary-static"
+        },
         "pending": [
-          "member text/icon draw order",
-          "whether all 3 action slots are always visible",
+          "member field text/icon ordering",
+          "whether the visible linked-list count is capped by clipping",
           "runtime open-state transitions"
         ]
       },
@@ -18440,10 +18796,40 @@
             "semantic_candidate": "guild tab/action"
           }
         ],
+        "member_list_render": {
+          "paint_va": "0x00425280",
+          "linked_list_head": "this+0xD4",
+          "scroll_start_field": "this+0x9C",
+          "visible_count_source": "this+0xE4 - scroll_start, capped at 0x12 (18)",
+          "screen_relative_origin": [
+            35,
+            60
+          ],
+          "row_formula": "x = window.x + 35; y = window.y + 60 + (index - scroll_start) * (font_metric_height + 5)",
+          "row_step_source": "0x00425297-0x004252C8 obtains text metric height and adds 5",
+          "entry_text_field": "linked_entry+0x04",
+          "recognized_original_markers": [
+            {
+              "va": "0x0047BA60",
+              "text": "[联盟行会]"
+            },
+            {
+              "va": "0x0047BA6C",
+              "text": "[敌对行会]"
+            },
+            {
+              "va": "0x0047BA78",
+              "text": "[行会公告]"
+            }
+          ],
+          "draw_helper": "0x0045DD70",
+          "evidence": "0x004252F1-0x0042541A",
+          "confidence": "primary-static"
+        },
         "pending": [
-          "four ambiguous register-flow positions",
-          "guild member list row geometry",
-          "exact tab labels and business semantics"
+          "four ambiguous register-flow control positions",
+          "exact tab labels and business semantics",
+          "special marker color/field styling"
         ]
       }
     ],
