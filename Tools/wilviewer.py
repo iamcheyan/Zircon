@@ -2137,16 +2137,23 @@ function addFocusedWindow(r,analysis){
     const cmds=ce.channel_command_state?.records||[];
     for(const q of cmds){const control=pc.find(x=>x.object_offset===q.object_offset);if(control)addFocusedGeometry(ox+control.relative_position[0],oy+control.relative_position[1],40,20,q.text);}
   }else if(r.id==='window.quest'){
+    addFocusedResourceControl(ox+290,oy+59,28,28,723,724,'任务操作');
+    addFocusedResourceControl(ox+290,oy+89,28,28,721,722,'任务选择');
+    addFocusedResourceControl(ox+65,oy+294,204,76,705,null,'任务详情面板');
     for(let i=0;i<19;i++)addFocusedGeometry(ox+65,oy+90+15*i,210,15,i===0?'任务列表 / 15px':'' );
     addFocusedGeometry(ox+65,oy+294,250,16,'任务详情 Frame 705 / 背景候选');
     const qe=evidenceWindow(r.id).detail_text?.body_text_draw;
     if(qe)for(let i=0;i<qe.visible_line_count;i++)addFocusedGeometry(ox+qe.origin.x,oy+qe.origin.y+qe.line_spacing*i,220,15,i===0?'详情正文 / 3行':'' );
   }else if(r.id==='window.other-14-candidate'){
+    [[440,20,12,0x154,0x18F],[410,32,14,0x12F,0x3D],[412,32,14,0x12F,0x16E],[450,44,36,0x15,5],[452,44,36,0x38,3],[454,44,36,0x5B,4],[456,48,36,0x7E,2],[458,48,36,0xA1,0],[460,48,36,0xC4,0],[462,48,36,0xE7,1],[464,48,36,0x10A,0]].forEach(([frame,w,h,x,y])=>addFocusedResourceControl(ox+x,oy+y,w,h,frame,frame+1,'技能控件'));
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
     const se=evidenceWindow(r.id),sl=se.status_label_draws||[];
     for(const q of sl){for(const p of (q.relative_positions||[q.relative_position||{}])){if(p.x==null||p.y==null)continue;addFocusedGeometry(ox+p.x,oy+p.y,150,14,q.description||'分页状态文字');}}
     addSkillCatalogPanel(DATA.layout);
   }else if(r.id==='window.npc-candidate'){
+    addFocusedResourceControl(ox+7,oy+141,28,26,161,162,'NPC对话控件');
+    addFocusedResourceControl(ox+290,oy+145,12,8,52,53,'NPC侧控件');
+    addFocusedResourceControl(ox+306,oy+136,12,8,54,55,'NPC侧状态');
     const ne=evidenceWindow(r.id),pg=ne.paint_geometry||{},loop=pg.dynamic_entry_loop||{};
     const ts=pg.dynamic_text_layout_state||{},count=Math.min(ts.max_paint_entries||16,ne.window?.dynamic_entry_count_default||13),visible=Math.min(count,6),spacing=(ts.default_line_spacing_px||21);
     addFocusedGeometry(ox+12,oy+20,528,visible*spacing,`F1101 / 最多16项 / 动态行距14或21px`);
