@@ -44,12 +44,31 @@ def parse_rows(path: Path) -> list[dict]:
     return rows
 
 
+def parse_map_names(path: Path | None) -> dict[str, list[str]]:
+    """Read the EI server's display names without treating them as exe proof."""
+    if path is None or not path.exists():
+        return {}
+    result: dict[str, list[str]] = {}
+    pattern = re.compile(r"^\[([^\s\]]+)\s+(.+?)\s+\d+\]")
+    for raw in path.read_text(encoding="gb18030", errors="replace").splitlines():
+        line = raw.strip()
+        if not line or line.startswith(";"):
+            continue
+        match = pattern.match(line)
+        if not match:
+            continue
+        stem, name = match.groups()
+        result.setdefault(stem, []).append(name.strip())
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("minimap_txt", type=Path)
     parser.add_argument("map_dir", type=Path)
     parser.add_argument("data_dir", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--mapinfo", type=Path, help="Optional EI Envir/Mapinfo.txt for secondary display names")
     args = parser.parse_args()
 
     libraries = {}
@@ -59,8 +78,12 @@ def main() -> None:
             libraries[name] = WilLibrary(str(path))
 
     map_stems = {p.stem for p in args.map_dir.glob("*.map")}
+    map_names = parse_map_names(args.mapinfo)
     rows = parse_rows(args.minimap_txt)
     for row in rows:
+        names = map_names.get(row["map_stem"], [])
+        if names:
+            row["server_map_names"] = names
         library = libraries.get(row["library"])
         frame = row["frame"]
         row["client_map_exists"] = row["map_stem"] in map_stems
@@ -79,6 +102,8 @@ def main() -> None:
             "client_map_dir": str(args.map_dir),
             "evidence_level": "secondary-server-cross-reference",
             "warning": "The numeric mapping comes from the original EI server configuration; Mir3.exe remains the primary source for rendering and resource-selection behavior.",
+            "optional_name_source": str(args.mapinfo) if args.mapinfo else None,
+            "optional_name_warning": "Names are decoded from the server Mapinfo.txt as secondary content labels; they do not establish client rendering semantics.",
         },
         "rules": [
             {"condition": "server_value >= 1001", "library": "FMMap.wil", "frame": "server_value - 1001"},

@@ -48,6 +48,7 @@ def main() -> None:
     parser.add_argument("--store-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/store-window-render-evidence.json"))
     parser.add_argument("--store-state-graph", type=Path, default=Path("docs/research/ei-ui-layout/store-state-graph.json"))
     parser.add_argument("--map-ui-evidence", type=Path, default=Path("docs/research/ei-ui-layout/map-ui-resource-evidence.json"))
+    parser.add_argument("--map-crossref", type=Path, default=Path("docs/research/ei-ui-layout/minimap-server-crossref.json"))
     parser.add_argument("--chat-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/chat-window-render-evidence.json"))
     parser.add_argument("--npc-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/npc-window-render-evidence.json"))
     parser.add_argument("--social-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/social-window-render-evidence.json"))
@@ -115,6 +116,7 @@ def main() -> None:
     store_window_evidence = json.loads(args.store_window_evidence.read_text(encoding="utf-8")) if args.store_window_evidence.exists() else {}
     store_state_graph = json.loads(args.store_state_graph.read_text(encoding="utf-8")) if args.store_state_graph.exists() else {}
     map_ui_evidence = json.loads(args.map_ui_evidence.read_text(encoding="utf-8")) if args.map_ui_evidence.exists() else {}
+    map_crossref = json.loads(args.map_crossref.read_text(encoding="utf-8")) if args.map_crossref.exists() else {}
     chat_window_evidence = json.loads(args.chat_window_evidence.read_text(encoding="utf-8")) if args.chat_window_evidence.exists() else {}
     npc_window_evidence = json.loads(args.npc_window_evidence.read_text(encoding="utf-8")) if args.npc_window_evidence.exists() else {}
     social_window_evidence = json.loads(args.social_window_evidence.read_text(encoding="utf-8")) if args.social_window_evidence.exists() else {}
@@ -276,6 +278,10 @@ def main() -> None:
     }
     layout["secondary_screen_candidates"] = [x for x in (interface1c_parent, interface1c_select) if x]
     layout["specialized_window_evidence"] = [x for x in (skill_window_context, inventory_window_evidence, status_window_evidence, quest_window_evidence, store_window_evidence, npc_window_evidence, social_window_evidence, system_window_evidence, notice_prompt_evidence, confirmation_prompt_evidence) if x]
+    if map_crossref:
+        map_ui_evidence = dict(map_ui_evidence)
+        map_ui_evidence["server_cross_reference_rows"] = map_crossref.get("rows", [])
+        map_ui_evidence["server_cross_reference_stats"] = map_crossref.get("stats", {})
     layout["map_ui_evidence"] = map_ui_evidence
     layout["chat_window_evidence"] = chat_window_evidence
     layout["npc_window_evidence"] = npc_window_evidence

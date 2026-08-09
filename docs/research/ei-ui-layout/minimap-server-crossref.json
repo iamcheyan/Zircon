@@ -4,7 +4,9 @@
     "client_data_dir": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data",
     "client_map_dir": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map",
     "evidence_level": "secondary-server-cross-reference",
-    "warning": "The numeric mapping comes from the original EI server configuration; Mir3.exe remains the primary source for rendering and resource-selection behavior."
+    "warning": "The numeric mapping comes from the original EI server configuration; Mir3.exe remains the primary source for rendering and resource-selection behavior.",
+    "optional_name_source": "/home/tetsuya/NAS/TMP/Mud3/Envir/Mapinfo.txt",
+    "optional_name_warning": "Names are decoded from the server Mapinfo.txt as secondary content labels; they do not establish client rendering semantics."
   },
   "rules": [
     {
@@ -30,6 +32,9 @@
       "library": "FMMap.wil",
       "frame": 0,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "比奇县"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -41,6 +46,9 @@
       "library": "FMMap.wil",
       "frame": 1,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "边境城市"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -52,6 +60,9 @@
       "library": "FMMap.wil",
       "frame": 2,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "银杏山谷"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -63,6 +74,9 @@
       "library": "FMMap.wil",
       "frame": 3,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "道馆"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -74,6 +88,9 @@
       "library": "FMMap.wil",
       "frame": 4,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "灌木林"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -85,6 +102,9 @@
       "library": "FMMap.wil",
       "frame": 5,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "毒蛇山谷"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -96,6 +116,9 @@
       "library": "FMMap.wil",
       "frame": 6,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "绿洲"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -107,6 +130,9 @@
       "library": "FMMap.wil",
       "frame": 7,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠土城"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -118,6 +144,9 @@
       "library": "FMMap.wil",
       "frame": 8,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -129,6 +158,9 @@
       "library": "FMMap.wil",
       "frame": 9,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -140,6 +172,9 @@
       "library": "FMMap.wil",
       "frame": 10,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -151,6 +186,9 @@
       "library": "FMMap.wil",
       "frame": 11,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -162,6 +200,9 @@
       "library": "FMMap.wil",
       "frame": 12,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "盟重县"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -173,6 +214,9 @@
       "library": "FMMap.wil",
       "frame": 13,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "石阁庙"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -184,6 +228,9 @@
       "library": "FMMap.wil",
       "frame": 14,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -195,6 +242,9 @@
       "library": "FMMap.wil",
       "frame": 15,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -206,6 +256,9 @@
       "library": "FMMap.wil",
       "frame": 16,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -217,6 +270,9 @@
       "library": "FMMap.wil",
       "frame": 17,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙巴克城"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -228,6 +284,9 @@
       "library": "FMMap.wil",
       "frame": 18,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "潘夜岛"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -239,6 +298,9 @@
       "library": "FMMap.wil",
       "frame": 19,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "流放岛"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -250,6 +312,9 @@
       "library": "FMMap.wil",
       "frame": 20,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "诺玛村庄"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -261,6 +326,9 @@
       "library": "FMMap.wil",
       "frame": 21,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -272,6 +340,9 @@
       "library": "FMMap.wil",
       "frame": 22,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -283,6 +354,9 @@
       "library": "FMMap.wil",
       "frame": 23,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "沙漠"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -305,6 +379,9 @@
       "library": "FMMap.wil",
       "frame": 25,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "灌木林"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -338,6 +415,9 @@
       "library": "FMMap.wil",
       "frame": 28,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "灌木林"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -349,6 +429,9 @@
       "library": "FMMap.wil",
       "frame": 29,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "失乐园"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -360,6 +443,9 @@
       "library": "FMMap.wil",
       "frame": 30,
       "family_candidate": "overland-or-city",
+      "server_map_names": [
+        "祖玛神殿"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -437,6 +523,9 @@
       "library": "MMap.wil",
       "frame": 1,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "半兽洞穴1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -448,6 +537,9 @@
       "library": "MMap.wil",
       "frame": 2,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "半兽洞穴2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -459,6 +551,9 @@
       "library": "MMap.wil",
       "frame": 3,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "半兽洞穴3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -470,6 +565,9 @@
       "library": "MMap.wil",
       "frame": 4,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "天然洞穴1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -481,6 +579,9 @@
       "library": "MMap.wil",
       "frame": 5,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "天然洞穴2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -492,6 +593,9 @@
       "library": "MMap.wil",
       "frame": 11,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿矿山入口"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -503,6 +607,9 @@
       "library": "MMap.wil",
       "frame": 12,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿东部洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -514,6 +621,9 @@
       "library": "MMap.wil",
       "frame": 13,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下1层采矿所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -525,6 +635,9 @@
       "library": "MMap.wil",
       "frame": 14,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下2层采矿所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -536,6 +649,9 @@
       "library": "MMap.wil",
       "frame": 15,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "矿石储藏所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -547,6 +663,9 @@
       "library": "MMap.wil",
       "frame": 16,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿南部洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -558,6 +677,9 @@
       "library": "MMap.wil",
       "frame": 17,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下1层第一间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -569,6 +691,9 @@
       "library": "MMap.wil",
       "frame": 18,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "天桥2"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -580,6 +705,9 @@
       "library": "MMap.wil",
       "frame": 19,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下1层第二间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -591,6 +719,9 @@
       "library": "MMap.wil",
       "frame": 20,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下1层第三间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -602,6 +733,9 @@
       "library": "MMap.wil",
       "frame": 21,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "天桥1"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -613,6 +747,9 @@
       "library": "MMap.wil",
       "frame": 22,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "天桥3"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -624,6 +761,9 @@
       "library": "MMap.wil",
       "frame": 23,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "矿山1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -635,6 +775,9 @@
       "library": "MMap.wil",
       "frame": 24,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "矿山2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -646,6 +789,10 @@
       "library": "MMap.wil",
       "frame": 11,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部矿山",
+        "北部矿山入口"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -657,6 +804,10 @@
       "library": "MMap.wil",
       "frame": 12,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部矿山",
+        "北部矿山东面洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -668,6 +819,9 @@
       "library": "MMap.wil",
       "frame": 13,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部地下1层采矿所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -679,6 +833,9 @@
       "library": "MMap.wil",
       "frame": 14,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部地下2层采矿所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -690,6 +847,9 @@
       "library": "MMap.wil",
       "frame": 15,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部矿石储藏所"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -701,6 +861,9 @@
       "library": "MMap.wil",
       "frame": 16,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部废矿南面洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -712,6 +875,9 @@
       "library": "MMap.wil",
       "frame": 17,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部地下1层第一间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -723,6 +889,9 @@
       "library": "MMap.wil",
       "frame": 18,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部天桥2"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -734,6 +903,9 @@
       "library": "MMap.wil",
       "frame": 19,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部地下1层第二间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -745,6 +917,9 @@
       "library": "MMap.wil",
       "frame": 20,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部地下1层第三间房"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -756,6 +931,9 @@
       "library": "MMap.wil",
       "frame": 21,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部天桥1"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -767,6 +945,9 @@
       "library": "MMap.wil",
       "frame": 22,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部天桥3"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -778,6 +959,9 @@
       "library": "MMap.wil",
       "frame": 23,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部矿山1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -789,6 +973,9 @@
       "library": "MMap.wil",
       "frame": 25,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部矿山2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -800,6 +987,9 @@
       "library": "MMap.wil",
       "frame": 31,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -811,6 +1001,9 @@
       "library": "MMap.wil",
       "frame": 32,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -822,6 +1015,9 @@
       "library": "MMap.wil",
       "frame": 33,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -833,6 +1029,9 @@
       "library": "MMap.wil",
       "frame": 34,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -844,6 +1043,9 @@
       "library": "MMap.wil",
       "frame": 35,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -855,6 +1057,9 @@
       "library": "MMap.wil",
       "frame": 36,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿6层大厅"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -866,6 +1071,9 @@
       "library": "MMap.wil",
       "frame": 37,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿6层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -877,6 +1085,9 @@
       "library": "MMap.wil",
       "frame": 38,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿6层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -888,6 +1099,9 @@
       "library": "MMap.wil",
       "frame": 39,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "祖玛神殿6层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -899,6 +1113,9 @@
       "library": "MMap.wil",
       "frame": 41,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷1层南部"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -910,6 +1127,9 @@
       "library": "MMap.wil",
       "frame": 42,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷1层西部"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -921,6 +1141,9 @@
       "library": "MMap.wil",
       "frame": 43,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷1层北部"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -932,6 +1155,9 @@
       "library": "MMap.wil",
       "frame": 44,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷2层西部"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -943,6 +1169,9 @@
       "library": "MMap.wil",
       "frame": 45,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷2层北部"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -954,6 +1183,9 @@
       "library": "MMap.wil",
       "frame": 46,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "绝命谷3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -965,6 +1197,9 @@
       "library": "MMap.wil",
       "frame": 51,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -976,6 +1211,9 @@
       "library": "MMap.wil",
       "frame": 52,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年原谷"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -987,6 +1225,9 @@
       "library": "MMap.wil",
       "frame": 53,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷中部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -998,6 +1239,9 @@
       "library": "MMap.wil",
       "frame": 54,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷南部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1009,6 +1253,9 @@
       "library": "MMap.wil",
       "frame": 55,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷西部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1020,6 +1267,9 @@
       "library": "MMap.wil",
       "frame": 56,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷北部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1031,6 +1281,9 @@
       "library": "MMap.wil",
       "frame": 57,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年谷东部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1042,6 +1295,9 @@
       "library": "MMap.wil",
       "frame": 58,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "万年独孤关"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1053,6 +1309,9 @@
       "library": "MMap.wil",
       "frame": 59,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "生死关"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1064,6 +1323,9 @@
       "library": "MMap.wil",
       "frame": 61,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "虫峡谷1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1075,6 +1337,9 @@
       "library": "MMap.wil",
       "frame": 62,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "虫峡谷2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1086,6 +1351,9 @@
       "library": "MMap.wil",
       "frame": 63,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "虫峡谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1097,6 +1365,9 @@
       "library": "MMap.wil",
       "frame": 64,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "虫峡谷4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1108,6 +1379,9 @@
       "library": "MMap.wil",
       "frame": 65,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "虫峡谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1119,6 +1393,10 @@
       "library": "MMap.wil",
       "frame": 71,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "行会大战",
+        "半兽天然洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1130,6 +1408,10 @@
       "library": "MMap.wil",
       "frame": 72,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "行会大战",
+        "半兽天然洞穴"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1152,6 +1434,9 @@
       "library": "MMap.wil",
       "frame": 74,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "连接通路"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1185,6 +1470,9 @@
       "library": "MMap.wil",
       "frame": 77,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "竞技场"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1196,6 +1484,9 @@
       "library": "MMap.wil",
       "frame": 78,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "竞技场"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1207,6 +1498,9 @@
       "library": "MMap.wil",
       "frame": 79,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿秘密通路"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1218,6 +1512,9 @@
       "library": "MMap.wil",
       "frame": 80,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿秘密通路"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1229,6 +1526,9 @@
       "library": "MMap.wil",
       "frame": 81,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "废矿秘密通路"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1273,6 +1573,9 @@
       "library": "MMap.wil",
       "frame": 91,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1284,6 +1587,9 @@
       "library": "MMap.wil",
       "frame": 92,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1295,6 +1601,9 @@
       "library": "MMap.wil",
       "frame": 93,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1306,6 +1615,9 @@
       "library": "MMap.wil",
       "frame": 94,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1317,6 +1629,9 @@
       "library": "MMap.wil",
       "frame": 95,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1328,6 +1643,9 @@
       "library": "MMap.wil",
       "frame": 96,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁6层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1339,6 +1657,9 @@
       "library": "MMap.wil",
       "frame": 97,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "石阁7层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1350,6 +1671,9 @@
       "library": "MMap.wil",
       "frame": 101,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1361,6 +1685,9 @@
       "library": "MMap.wil",
       "frame": 102,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1372,6 +1699,9 @@
       "library": "MMap.wil",
       "frame": 103,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1383,6 +1713,9 @@
       "library": "MMap.wil",
       "frame": 104,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1394,6 +1727,9 @@
       "library": "MMap.wil",
       "frame": 105,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1405,6 +1741,9 @@
       "library": "MMap.wil",
       "frame": 106,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1416,6 +1755,9 @@
       "library": "MMap.wil",
       "frame": 107,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1449,6 +1791,9 @@
       "library": "MMap.wil",
       "frame": 111,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1460,6 +1805,9 @@
       "library": "MMap.wil",
       "frame": 112,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1471,6 +1819,9 @@
       "library": "MMap.wil",
       "frame": 113,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1482,6 +1833,9 @@
       "library": "MMap.wil",
       "frame": 114,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1493,6 +1847,9 @@
       "library": "MMap.wil",
       "frame": 115,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1504,6 +1861,9 @@
       "library": "MMap.wil",
       "frame": 116,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1515,6 +1875,9 @@
       "library": "MMap.wil",
       "frame": 117,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1526,6 +1889,9 @@
       "library": "MMap.wil",
       "frame": 121,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1537,6 +1903,9 @@
       "library": "MMap.wil",
       "frame": 122,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1548,6 +1917,9 @@
       "library": "MMap.wil",
       "frame": 123,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1559,6 +1931,9 @@
       "library": "MMap.wil",
       "frame": 124,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1570,6 +1945,9 @@
       "library": "MMap.wil",
       "frame": 125,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1581,6 +1959,9 @@
       "library": "MMap.wil",
       "frame": 126,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1592,6 +1973,9 @@
       "library": "MMap.wil",
       "frame": 127,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "赤月山谷5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1768,6 +2152,9 @@
       "library": "MMap.wil",
       "frame": 161,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部蚂蚁洞穴1层4"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1779,6 +2166,9 @@
       "library": "MMap.wil",
       "frame": 162,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部蚂蚁洞穴1层1"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1790,6 +2180,9 @@
       "library": "MMap.wil",
       "frame": 163,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部蚂蚁洞穴1层2"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1801,6 +2194,9 @@
       "library": "MMap.wil",
       "frame": 164,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "南部蚂蚁洞穴1层3"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1900,6 +2296,9 @@
       "library": "MMap.wil",
       "frame": 161,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部蚂蚁洞穴1层4"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1911,6 +2310,9 @@
       "library": "MMap.wil",
       "frame": 173,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部蚂蚁洞穴1层1"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -1922,6 +2324,9 @@
       "library": "MMap.wil",
       "frame": 163,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部蚂蚁洞穴1层2"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -1933,6 +2338,9 @@
       "library": "MMap.wil",
       "frame": 164,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部蚂蚁洞穴1层3"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2032,6 +2440,9 @@
       "library": "MMap.wil",
       "frame": 161,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部蚂蚁洞穴1层4"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2043,6 +2454,9 @@
       "library": "MMap.wil",
       "frame": 173,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部蚂蚁洞穴1层1"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2054,6 +2468,9 @@
       "library": "MMap.wil",
       "frame": 163,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部蚂蚁洞穴1层2"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2065,6 +2482,9 @@
       "library": "MMap.wil",
       "frame": 164,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部蚂蚁洞穴1层3"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2164,6 +2584,9 @@
       "library": "MMap.wil",
       "frame": 191,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿入口"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2175,6 +2598,9 @@
       "library": "MMap.wil",
       "frame": 192,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2186,6 +2612,9 @@
       "library": "MMap.wil",
       "frame": 193,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2197,6 +2626,9 @@
       "library": "MMap.wil",
       "frame": 194,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2208,6 +2640,9 @@
       "library": "MMap.wil",
       "frame": 195,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2219,6 +2654,9 @@
       "library": "MMap.wil",
       "frame": 196,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2230,6 +2668,9 @@
       "library": "MMap.wil",
       "frame": 197,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2241,6 +2682,9 @@
       "library": "MMap.wil",
       "frame": 198,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2252,6 +2696,9 @@
       "library": "MMap.wil",
       "frame": 199,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2263,6 +2710,9 @@
       "library": "MMap.wil",
       "frame": 200,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沃玛神殿"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2274,6 +2724,9 @@
       "library": "MMap.wil",
       "frame": 201,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2285,6 +2738,9 @@
       "library": "MMap.wil",
       "frame": 202,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2296,6 +2752,9 @@
       "library": "MMap.wil",
       "frame": 203,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿3层西部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2307,6 +2766,9 @@
       "library": "MMap.wil",
       "frame": 204,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿3层东部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2318,6 +2780,9 @@
       "library": "MMap.wil",
       "frame": 205,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2329,6 +2794,9 @@
       "library": "MMap.wil",
       "frame": 206,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2340,6 +2808,9 @@
       "library": "MMap.wil",
       "frame": 211,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2351,6 +2822,9 @@
       "library": "MMap.wil",
       "frame": 212,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2362,6 +2836,9 @@
       "library": "MMap.wil",
       "frame": 213,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿6层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2373,6 +2850,9 @@
       "library": "MMap.wil",
       "frame": 214,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿7层西部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2384,6 +2864,9 @@
       "library": "MMap.wil",
       "frame": 215,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿7层东部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2395,6 +2878,9 @@
       "library": "MMap.wil",
       "frame": 216,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿8层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2406,6 +2892,9 @@
       "library": "MMap.wil",
       "frame": 217,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜神殿"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2417,6 +2906,9 @@
       "library": "MMap.wil",
       "frame": 221,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2428,6 +2920,9 @@
       "library": "MMap.wil",
       "frame": 222,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2439,6 +2934,9 @@
       "library": "MMap.wil",
       "frame": 223,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴3层西部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2450,6 +2948,9 @@
       "library": "MMap.wil",
       "frame": 224,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴3层东部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2461,6 +2962,9 @@
       "library": "MMap.wil",
       "frame": 225,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2472,6 +2976,9 @@
       "library": "MMap.wil",
       "frame": 226,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "罪孽洞穴5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2483,6 +2990,9 @@
       "library": "MMap.wil",
       "frame": 231,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜石窟1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2494,6 +3004,9 @@
       "library": "MMap.wil",
       "frame": 232,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜石窟2层西部"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2516,6 +3029,9 @@
       "library": "MMap.wil",
       "frame": 234,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜石窟3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2527,6 +3043,9 @@
       "library": "MMap.wil",
       "frame": 235,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜石窟4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2538,6 +3057,9 @@
       "library": "MMap.wil",
       "frame": 236,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "潘夜石窟5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2549,6 +3071,9 @@
       "library": "MMap.wil",
       "frame": 241,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部银杏废矿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2560,6 +3085,9 @@
       "library": "MMap.wil",
       "frame": 242,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部银杏废矿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2571,6 +3099,9 @@
       "library": "MMap.wil",
       "frame": 243,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部银杏废矿3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2582,6 +3113,9 @@
       "library": "MMap.wil",
       "frame": 244,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部银杏废矿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2593,6 +3127,9 @@
       "library": "MMap.wil",
       "frame": 245,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部银杏废矿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2604,6 +3141,9 @@
       "library": "MMap.wil",
       "frame": 241,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部银杏废矿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2615,6 +3155,9 @@
       "library": "MMap.wil",
       "frame": 242,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部银杏废矿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2626,6 +3169,9 @@
       "library": "MMap.wil",
       "frame": 243,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部银杏废矿3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2637,6 +3183,9 @@
       "library": "MMap.wil",
       "frame": 244,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部银杏废矿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2648,6 +3197,9 @@
       "library": "MMap.wil",
       "frame": 245,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部银杏废矿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2659,6 +3211,9 @@
       "library": "MMap.wil",
       "frame": 241,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部银杏废矿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2670,6 +3225,9 @@
       "library": "MMap.wil",
       "frame": 242,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部银杏废矿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2681,6 +3239,9 @@
       "library": "MMap.wil",
       "frame": 243,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部银杏废矿3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2692,6 +3253,9 @@
       "library": "MMap.wil",
       "frame": 244,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部银杏废矿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2703,6 +3267,9 @@
       "library": "MMap.wil",
       "frame": 245,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部银杏废矿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -2758,6 +3325,9 @@
       "library": "MMap.wil",
       "frame": 255,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "东部石矿"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2769,6 +3339,9 @@
       "library": "MMap.wil",
       "frame": 251,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部石矿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2780,6 +3353,9 @@
       "library": "MMap.wil",
       "frame": 252,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部石矿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2791,6 +3367,9 @@
       "library": "MMap.wil",
       "frame": 253,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部石矿3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2802,6 +3381,9 @@
       "library": "MMap.wil",
       "frame": 254,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部石矿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2813,6 +3395,9 @@
       "library": "MMap.wil",
       "frame": 255,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "北部石矿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2824,6 +3409,9 @@
       "library": "MMap.wil",
       "frame": 251,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部石矿1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2835,6 +3423,9 @@
       "library": "MMap.wil",
       "frame": 252,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部石矿2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2846,6 +3437,9 @@
       "library": "MMap.wil",
       "frame": 253,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部石矿3层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2857,6 +3451,9 @@
       "library": "MMap.wil",
       "frame": 254,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部石矿4层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": true
@@ -2868,6 +3465,9 @@
       "library": "MMap.wil",
       "frame": 255,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西部石矿5层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2879,6 +3479,9 @@
       "library": "MMap.wil",
       "frame": 281,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "黑度宫1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2890,6 +3493,9 @@
       "library": "MMap.wil",
       "frame": 282,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "黑度宫2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2901,6 +3507,9 @@
       "library": "MMap.wil",
       "frame": 283,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "黑度宫2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2912,6 +3521,9 @@
       "library": "MMap.wil",
       "frame": 284,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "黑度宫3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2923,6 +3535,9 @@
       "library": "MMap.wil",
       "frame": 285,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "黑度宫4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2934,6 +3549,9 @@
       "library": "MMap.wil",
       "frame": 261,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫地下1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2945,6 +3563,9 @@
       "library": "MMap.wil",
       "frame": 262,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫西馆1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2956,6 +3577,9 @@
       "library": "MMap.wil",
       "frame": 263,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫南馆1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2967,6 +3591,9 @@
       "library": "MMap.wil",
       "frame": 264,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫东馆1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2978,6 +3605,9 @@
       "library": "MMap.wil",
       "frame": 265,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -2989,6 +3619,9 @@
       "library": "MMap.wil",
       "frame": 266,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫西馆2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3000,6 +3633,9 @@
       "library": "MMap.wil",
       "frame": 267,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫南馆2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3011,6 +3647,9 @@
       "library": "MMap.wil",
       "frame": 268,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫东馆2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3022,6 +3661,9 @@
       "library": "MMap.wil",
       "frame": 269,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3033,6 +3675,9 @@
       "library": "MMap.wil",
       "frame": 270,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫南馆3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3044,6 +3689,9 @@
       "library": "MMap.wil",
       "frame": 271,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫东馆3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3055,6 +3703,9 @@
       "library": "MMap.wil",
       "frame": 272,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3066,6 +3717,9 @@
       "library": "MMap.wil",
       "frame": 273,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3077,6 +3731,9 @@
       "library": "MMap.wil",
       "frame": 274,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3088,6 +3745,9 @@
       "library": "MMap.wil",
       "frame": 275,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "真天宫北馆5层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3099,6 +3759,9 @@
       "library": "MMap.wil",
       "frame": 146,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "神舰地下1层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3110,6 +3773,9 @@
       "library": "MMap.wil",
       "frame": 147,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "神舰地下2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3121,6 +3787,9 @@
       "library": "MMap.wil",
       "frame": 148,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "神舰地下2层"
+      ],
       "client_map_exists": true,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3132,6 +3801,9 @@
       "library": "MMap.wil",
       "frame": 149,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "神舰地下3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3143,6 +3815,9 @@
       "library": "MMap.wil",
       "frame": 150,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "调控室"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3154,6 +3829,9 @@
       "library": "MMap.wil",
       "frame": 301,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3165,6 +3843,9 @@
       "library": "MMap.wil",
       "frame": 302,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3176,6 +3857,9 @@
       "library": "MMap.wil",
       "frame": 303,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3187,6 +3871,9 @@
       "library": "MMap.wil",
       "frame": 304,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3198,6 +3885,9 @@
       "library": "MMap.wil",
       "frame": 305,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3209,6 +3899,9 @@
       "library": "MMap.wil",
       "frame": 306,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3220,6 +3913,9 @@
       "library": "MMap.wil",
       "frame": 307,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址4层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3231,6 +3927,9 @@
       "library": "MMap.wil",
       "frame": 308,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "诺玛遗址5层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3242,6 +3941,9 @@
       "library": "MMap.wil",
       "frame": 135,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "西沙漠地洞"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3253,6 +3955,9 @@
       "library": "MMap.wil",
       "frame": 136,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠地洞1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3264,6 +3969,9 @@
       "library": "MMap.wil",
       "frame": 137,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠地洞2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3275,6 +3983,9 @@
       "library": "MMap.wil",
       "frame": 138,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠城市"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3286,6 +3997,9 @@
       "library": "MMap.wil",
       "frame": 139,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠地下1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3297,6 +4011,9 @@
       "library": "MMap.wil",
       "frame": 140,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠地下2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3308,6 +4025,9 @@
       "library": "MMap.wil",
       "frame": 141,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "沙漠地下3层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3319,6 +4039,9 @@
       "library": "MMap.wil",
       "frame": 142,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下矿山"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3330,6 +4053,9 @@
       "library": "MMap.wil",
       "frame": 143,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下矿山1层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3341,6 +4067,9 @@
       "library": "MMap.wil",
       "frame": 144,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "地下矿山2层"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": true,
       "frame_nonblank_decodes": false
@@ -3352,6 +4081,9 @@
       "library": "MMap.wil",
       "frame": 291,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "试练屋"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3363,6 +4095,9 @@
       "library": "MMap.wil",
       "frame": 292,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "生存游戏场"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false
@@ -3374,6 +4109,9 @@
       "library": "MMap.wil",
       "frame": 293,
       "family_candidate": "dungeon-or-field",
+      "server_map_names": [
+        "生存游戏场"
+      ],
       "client_map_exists": false,
       "frame_in_library_range": false,
       "frame_nonblank_decodes": false

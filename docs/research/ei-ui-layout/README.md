@@ -201,6 +201,14 @@ docs/research/ei-ui-layout/minimap-server-crossref.json
 `1001 -> MMap.wil(value)` 生成映射，并用客户端 `Map/*.map` 与 WIL 解码结果做存在性校验。
 这是服务器配置的第二证据源，不能替代 `Mir3.exe` 内部的资源选择和绘制调用证据。
 
+如需同时生成地图显示名，可追加：
+
+```text
+--mapinfo /home/tetsuya/NAS/TMP/Mud3/Envir/Mapinfo.txt
+```
+
+显示名会作为 `server_map_names` 写入交叉表，并由 `layout.json` 与 `/ui` 地图候选预览显示；它仍明确属于服务器配置的二级内容证据。
+
 按钮实际绘制链的初步证据见：
 
 ```text
