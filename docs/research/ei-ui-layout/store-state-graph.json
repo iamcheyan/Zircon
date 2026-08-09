@@ -75,6 +75,55 @@
       "business_name": {"value": null, "status": "pending"}
     }
   ],
+  "state_constructor_sites": [
+    {
+      "state": 0,
+      "routine_or_callsite": "0x0044EA82–0x0044EAB1 and reset path 0x0044F54A–0x0044F57F",
+      "factory_frame": 1000,
+      "factory_args": [0, 186, 300, 304],
+      "state_write": "this+0x5F8=0",
+      "reset_fields_seen": ["this+0x70C", "this+0x710", "this+0x71C", "this+0x7E0"],
+      "evidence_level": "primary-static-state-write-and-factory"
+    },
+    {
+      "state": 1,
+      "routine_or_callsite": "0x0044F7D7–0x0044F7F4",
+      "factory_frame": 1003,
+      "factory_args": [1, 186, 498, 304],
+      "state_write": "this+0x5F8=1",
+      "packet_derived_fields_before_factory": ["this+0x7E8", "this+0x7E4"],
+      "evidence_level": "primary-static-state-write-and-factory"
+    },
+    {
+      "state": 2,
+      "routine_or_callsite": "0x0044F9D3–0x0044F9F0",
+      "factory_frame": 1001,
+      "factory_args": [-4, 182, 205, 205],
+      "state_write": "this+0x5F8=2",
+      "packet_derived_fields_before_factory": ["this+0x71C", "this+0x7E0", "this+0x7E4"],
+      "evidence_level": "primary-static-state-write-and-factory"
+    },
+    {
+      "state": 3,
+      "routine_or_callsite": "0x0044FBAC–0x0044FBE0",
+      "factory_frame": 1000,
+      "factory_args": [0, 186, 300, 304],
+      "state_write": "this+0x5F8=3",
+      "reset_fields_seen": ["this+0x70C", "this+0x710", "this+0x71C", "this+0x7E0"],
+      "evidence_level": "primary-static-state-write-and-factory"
+    },
+    {
+      "state": 4,
+      "routine_or_callsite": "0x0044EB77–0x0044EBD8 and 0x0044F1E1–0x0044F270",
+      "factory_frame": 1002,
+      "factory_args": [0, 184, 540, 307],
+      "state_register_proof": "both paths load bl=4 before writing this+0x5F8",
+      "state_write": "this+0x5F8=4",
+      "preconditions": ["selected index is not -1", "0x0044E6D0 resolves selected record", "selected record +0x20 == 0"],
+      "selected_record_refresh": "this+0x7F0 is refreshed after the Frame 1002 factory call",
+      "evidence_level": "primary-static-state-register-selected-record-and-factory"
+    }
+  ],
   "factory_argument_order": ["x", "y", "width", "height", "frame"],
   "factory_argument_warning": "Call-site arguments are inputs to 0x00423E80; that factory centers/derives parent-relative rectangles before storing final object fields. They must not be copied directly as 800×600 screen coordinates.",
   "state_control_dispatch": {
