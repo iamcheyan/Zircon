@@ -285,6 +285,13 @@ def icon_img(board, iid, cls="icon", alt=""):
         return f'<img class="{cls}" src="{img_url(board, iid)}" alt="{esc(alt)}">'
     return f'<div class="noimg {cls}"></div>'
 
+def npc_img(n, cls="icon"):
+    """NPC 图: NPCface.Zl 头像优先, 回退 NPC.Zl 全身像, 再回退占位。"""
+    p_face = os.path.join(IMGS_DIR, "npcs_face", f"{n['id']}.png")
+    if os.path.exists(p_face):
+        return f'<img class="{cls}" src="{img_url("npcs_face", n["id"])}" alt="{esc(n.get("zh") or n.get("name") or "")}">'
+    return icon_img("npcs", n["id"], cls, n.get("zh") or n.get("name") or "")
+
 def dash(v):
     """空值统一 '—'。"""
     if v is None:
@@ -332,7 +339,6 @@ class Data:
                 cls._t = mtime
                 cls._build()
             return cls.wiki, cls.report, cls.stores
-
     @classmethod
     def _build(cls):
         """预建索引。"""
@@ -347,6 +353,12 @@ class Data:
             zh = m.get("zh") or m["name"]
             cls.mon_by_zh.setdefault(zh, m)
             cls.mon_by_zh.setdefault(m["name"], m)
+        # 怪物动画帧数 (img_pipeline 渲染后回填)
+        try:
+            with open("/tmp/mon_anim.json", encoding="utf-8") as f:
+                cls.mon_anim = json.load(f)
+        except (FileNotFoundError, ValueError):
+            cls.mon_anim = {}
         # 装备
         cls.items = w["items"]
         cls.item_by_id = {i["id"]: i for i in w["items"]}
@@ -430,6 +442,8 @@ h2 {{ font-size:19px; margin:24px 0 10px; border-bottom:1px solid var(--line); p
 .card .thumb {{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#0d0f12; display:block; }}
 .card .name {{ font-weight:600; }}
 .card .sub {{ color:var(--dim); font-size:12.5px; margin-top:2px; }}
+.card .sub .avatar {{ width:34px; height:34px; object-fit:contain; vertical-align:-10px; margin-right:8px; background:#0d0f12; border-radius:6px; }}
+.card .sub .avatar.noimg {{ width:34px; height:34px; display:inline-block; vertical-align:-10px; margin-right:8px; }}
 .tag {{ display:inline-block; font-size:11px; padding:1px 7px; border-radius:9px; margin-left:6px; vertical-align:1px; }}
 .tag-ei {{ background:#5a2d2d; color:#ff9d9d; }}
 .tag-mei {{ background:#2d3a5a; color:#9db8ff; }}
@@ -477,12 +491,17 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .panel-npc {{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:12px 0 20px; }}
 .panel-npc .pic {{ width:64px; height:64px; object-fit:contain; background:#0d0f12; border-radius:8px; }}
 .panel-npc .noimg.pic {{ width:64px; height:64px; }}<
-.pager {{ display:flex; align-items:center; justify-content:center; gap:6px; margin:18px 0; flex-wrap:wrap; }}
-.pager .pg {{ display:inline-block; min-width:30px; text-align:center; padding:4px 8px; border:1px solid var(--line);
-  border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; }}
-.pager .pg:hover {{ border-color:var(--acc); text-decoration:none; }}
+.pager {{ display:flex; align-items:center; justify-content:center; gap:8px; margin:34px 0; flex-wrap:wrap; }}
+.pager .pg {{ display:inline-block; min-width:32px; text-align:center; padding:5px 9px; border:1px solid var(--line);
+  border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; transition:border-color .15s, background .15s; }}
+.pager .pg:hover {{ border-color:var(--acc); background:#1b2631; text-decoration:none; }}
 .pager .pg.on {{ background:var(--acc); color:#1a1408; border-color:var(--acc); font-weight:700; }}
-.pager .pg.dots {{ border:none; background:none; min-width:auto; }}
+.pager .pg.dots {{ border:none; background:none; min-width:auto; color:var(--dim); }}
+.pager-info {{ font-size:13.5px; color:var(--dim); margin:0 4px; }}
+.pager-info b {{ color:var(--acc); font-size:14.5px; }}
+.pager .pg-go {{ padding:5px 10px; border:1px solid var(--line); border-radius:7px; background:var(--panel);
+  color:var(--fg); font-size:13.5px; cursor:pointer; max-width:120px; }}
+.pager .pg-go:hover {{ border-color:var(--acc); }}
 .anim {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px; }}
 .anim-stage {{ display:flex; align-items:center; justify-content:center; min-height:150px; background:#0d0f12;
   border:1px solid var(--line); border-radius:8px; margin-bottom:8px; overflow:hidden; }}
@@ -492,6 +511,14 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; }}
 .anim-ctrl button:hover {{ filter:brightness(1.1); }}
 .anim-ctrl button:disabled {{ opacity:.5; cursor:default; }}
+.mon-anim {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px; margin:14px 0; }}
+.mon-anim .anim-stage {{ min-height:180px; }}
+.mon-btns {{ display:flex; gap:6px; flex-wrap:wrap; }}
+.mon-btns button {{ padding:5px 14px; border:1px solid var(--line); background:transparent; color:var(--fg);
+  border-radius:7px; cursor:pointer; font-size:13.5px; }}
+.mon-btns button:hover {{ border-color:var(--acc); }}
+.mon-btns button.on {{ background:var(--acc); color:#1a1408; border-color:var(--acc); font-weight:700; }}
+#monPlay:disabled {{ opacity:.45; cursor:not-allowed; }}
 .mapnet {{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }}
 .mapnet a {{ background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 12px;
   font-size:13.5px; color:var(--fg); }}
@@ -558,6 +585,60 @@ function animPlay(btn) {{
   clearInterval(_animTimer);
   _animTimer = setInterval(step, delay);
 }}
+// 怪物动画: 动作按钮切换 + 播放/暂停
+var _monTimer = null, _monIdx = 0;
+var MON_ACT_ZH = {{ standing: '站立', walking: '行走', combat: '攻击', struck: '受击', die: '死亡' }};
+function monStop() {{
+  if (_monTimer) {{ clearInterval(_monTimer); _monTimer = null; }}
+  var b = document.getElementById('monPlay');
+  if (b) {{ b.dataset.on = '0'; b.textContent = '▶ 播放'; }}
+}}
+function monPlay(btn, mid) {{
+  monStop();
+  var img = document.getElementById('monFrame');
+  var act = btn.dataset.act;
+  var n = parseInt(btn.dataset.n, 10) || 1;
+  img.dataset.act = act; img.dataset.mid = mid;
+  img.src = '/img/mon_anim/' + mid + '/' + act + '/000.png';
+  _monIdx = 0;
+  document.getElementById('monIdx').textContent = '1';
+  document.getElementById('monCnt').textContent = n;
+  document.getElementById('monActZh').textContent = MON_ACT_ZH[act] || act;
+  Array.prototype.forEach.call(document.querySelectorAll('.mon-act'), function (b) {{
+    b.classList.remove('on');
+  }});
+  btn.classList.add('on');
+  var pb = document.getElementById('monPlay');
+  pb.disabled = false; pb.dataset.on = '0'; pb.textContent = '▶ 播放';
+  // 点动作按钮即自动播放该动作
+  pb.click();
+}}
+function monPlayBtn(btn) {{
+  var img = document.getElementById('monFrame');
+  var mid = img.dataset.mid, act = img.dataset.act;
+  var n = parseInt(document.getElementById('monCnt').textContent, 10) || 1;
+  if (!mid) return;
+  if (btn.dataset.on === '1') {{
+    btn.dataset.on = '0'; btn.textContent = '▶ 播放';
+    clearInterval(_monTimer); _monTimer = null;
+    return;
+  }}
+  btn.dataset.on = '1'; btn.textContent = '⏸ 暂停';
+  var delay = (act === 'standing' || act === 'die') ? 180 : 120;
+  var step = function () {{
+    img.src = '/img/mon_anim/' + mid + '/' + act + '/' + String(_monIdx).padStart(3, '0') + '.png';
+    document.getElementById('monIdx').textContent = _monIdx + 1;
+    _monIdx = (_monIdx + 1) % n;
+  }};
+  step();
+  clearInterval(_monTimer);
+  _monTimer = setInterval(step, delay);
+}}
+// 页面加载后自动播放默认动作 (行走)
+window.addEventListener('load', function () {{
+  var pb = document.getElementById('monPlay');
+  if (pb) {{ pb.disabled = false; pb.click(); }}
+}});
 </script>
 </head>
 <body>
@@ -957,6 +1038,33 @@ class Handler(BaseHTTPRequestHandler):
         note = esc(m.get("tag_note") or "") if legacy else esc(m.get("traits", ""))
         img_note = '<p class="dim">无客户端素材图（诚实占位）</p>' if legacy and not m.get("img") else ""
         old = old_block(m.get("old")) if m.get("old") else ""
+        # 怪物动画播放器 (img_pipeline 渲染逐帧 PNG)
+        mon_anim_html = ""
+        anim_cnt = m.get("anim") or {}
+        ma = Data.mon_anim.get(str(m["id"])) or {}
+        if m.get("img") and ma:
+            ACT_ZH = [("standing", "站立"), ("walking", "行走"), ("combat", "攻击"),
+                      ("struck", "受击"), ("die", "死亡")]
+            btns = ""
+            for act, zh in ACT_ZH:
+                n = ma.get(act, 0)
+                if n <= 0:
+                    continue
+                on = ' class="mon-act on"' if act == "walking" else ' class="mon-act"'
+                btns += (f'<button type="button"{on} data-act="{act}" data-n="{n}" '
+                         f'onclick="monPlay(this, {m["id"]})">{zh}</button>')
+            first_act = "walking" if ma.get("walking", 0) > 0 else "standing"
+            first_n = ma.get(first_act, 0)
+            mon_anim_html = f"""
+<div class="mon-anim">
+  <div class="anim-stage"><img id="monFrame" src="/img/mon_anim/{m['id']}/{first_act}/000.png"
+       alt="怪物动画" data-mid="{m['id']}" data-act="{first_act}"></div>
+  <div class="anim-ctrl">
+    <span class="mon-btns">{btns}</span>
+    <button type="button" id="monPlay" onclick="monPlayBtn(this)" disabled>▶ 播放</button>
+    <span class="dim">第 <b id="monIdx">1</b>/<b id="monCnt">{first_n}</b> 帧 · <span id="monActZh">行走</span></span>
+  </div>
+</div>"""
         body = f"""
 <a href="/monsters">← 返回图鉴</a>
 <h1>{esc(disp)}{name_html} {flags}</h1>
@@ -974,6 +1082,7 @@ class Handler(BaseHTTPRequestHandler):
     {img_note}
   </div>
 </div>
+{mon_anim_html}
 <h2>分布地图（{len(sp)} 张）</h2>
 <table><tr><th>地图</th><th>数量</th></tr>{map_rows}</table>
 {old}
@@ -1282,7 +1391,7 @@ class Handler(BaseHTTPRequestHandler):
                 gicons += "</div>"
             cards += f"""<div class="card"><div class="store-body">
   <div class="store-head"><a class="name" href="/store/{si}">{esc(sh['name_zh'])}</a> {gn}</div>
-  <div class="sub">{esc(n['zh'])} <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])}</div>
+  <div class="sub">{npc_img(n, 'avatar')} {esc(n['zh'])} <span class="mono">{esc(n['name'])}</span> · 地图 {esc(sh['map'])}</div>
   {gicons}
 </div></div>"""
         # 类型 chips
@@ -1310,8 +1419,8 @@ class Handler(BaseHTTPRequestHandler):
             return
         sh = s["stores"][idx]
         n = sh["npcs"][0]
-        # NPC 图 (npcs board)
-        npc_img = icon_img("npcs", n["id"], "pic", n["zh"])
+        # NPC 图 (头像优先, 回退全身)
+        npc_pic = npc_img(n, "pic")
         # 地图链接
         mlink = file_link(sh["map"] + ".map")
         # 货品表格: 图 + 名 + 类型 + 价格 (+ 物品详情链接)
@@ -1326,7 +1435,7 @@ class Handler(BaseHTTPRequestHandler):
         body = f"""<p class="crumbs"><a href="/stores">商店</a> › {esc(sh['name_zh'])}</p>
 <h1>{esc(sh['name_zh'])} <span class="dim">· {esc(sh['kind'])}</span></h1>
 <p class="lead">地图 {mlink} · 店主 {esc(n['zh'])} <span class="mono">{esc(n['name'])}</span></p>
-<div class="panel-npc">{npc_img}<div><div class="name">{esc(n['zh'])}</div>
+<div class="panel-npc">{npc_pic}<div><div class="name">{esc(n['zh'])}</div>
 <div class="sub">{esc(n['name'])} · {esc(n['map'])}</div></div></div>
 <h2>在售货品 · {len(sh['goods'])} 件</h2>
 <table><tr><th>货品</th><th>类型</th><th>价格</th></tr>{rows or '<tr><td colspan="3" class="none">服务型商店, 无在售货品</td></tr>'}</table>
@@ -1530,7 +1639,10 @@ class Handler(BaseHTTPRequestHandler):
     # ---------------- 条目图片（/img/<board>/<id>.png 或 /img/<board>/<id>/<frame>.png, 磁盘缓存）
     def img(self, path):
         parts = path.split("/")
-        if len(parts) == 3 and parts[0] in IMG_BOARDS:
+        if len(parts) == 4 and parts[0] == "mon_anim":
+            board, sid, act, fname = parts
+            iid = sid
+        elif len(parts) == 3 and parts[0] in IMG_BOARDS:
             board, sid, fname = parts
             iid = sid
         elif len(parts) == 2 and parts[0] in IMG_BOARDS:
@@ -1540,7 +1652,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(page("404", f"<p class='lead'>图片不存在: {esc(path)}</p>"), code=404)
             return
         if iid.lstrip("-").isdigit():
-            if len(parts) == 3:
+            if len(parts) == 4:
+                png = os.path.join(IMGS_DIR, board, str(int(iid)), act, fname)
+            elif len(parts) == 3:
                 # /img/<board>/<id>/<frame>.png → <board>/<id>/<frame>.png
                 png = os.path.join(IMGS_DIR, board, str(int(iid)), fname)
             else:

@@ -289,8 +289,8 @@ def trim_scale(img, size):
     canvas.paste(img, ((size - img.size[0]) // 2, (size - img.size[1]) // 2), img)
     return canvas
 
-def render(board, item_id, img_spec):
-    """返回 (ok, reason)。"""
+def render(board, item_id, img_spec, strict=False):
+    """返回 (ok, reason)。strict=True 时不回退邻近帧 (头像等逐帧对应场景)。"""
     frame = img_spec.get("frame", 0)
     lib = get_lib(img_spec["lib"])
     if lib is None:
@@ -311,7 +311,7 @@ def render(board, item_id, img_spec):
             im = zir.decode(frame)
             if im is not None:
                 lib = zir
-    if im is None:
+    if im is None and not strict:
         # 回退: 该 shape 块内的站立帧 (方向 0..9 的站立帧 0..90), 再到块首帧
         base = frame // 1000 * 1000
         for alt in [base, base + 10, base + 20, base + 30, base + 40, base + 50, base + 60, base + 70, base + 80, base + 90]:
@@ -388,6 +388,77 @@ def render_anim(board, item_id, anim):
     return True, "", len(frames)
 
 
+# 怪物默认动作帧段 (FrameSet.DefaultMonster, 方向 Down=4 → +40):
+#   Standing 0/4 帧, Walking 80/6, Combat 160/6, Struck 240/2, Die 320/10
+MON_ACTIONS = [
+    ("standing", 0, 4, 500),   # 站立 (慢)
+    ("walking", 80, 6, 100),   # 行走
+    ("combat", 160, 6, 100),   # 攻击
+    ("struck", 240, 2, 100),   # 受击
+    ("die", 320, 10, 100),     # 死亡
+]
+
+def render_mon_anim(board, item_id, img_spec):
+    """渲染怪物动画: 每动作逐帧 trim 后统一高 160, 空帧跳过,
+    存 {board}/{id}/{action}/{n:03d}.png, 横条 {board}/{id}/{action}.png。
+    返回 (ok, reason, {action: n_frames})。"""
+    lib_name = img_spec.get("lib")
+    lib = get_lib(lib_name)
+    if lib is None:
+        lib = get_zir_lib(lib_name)
+    if lib is None:
+        return False, f"库缺失 {lib_name}", {}
+    shape = img_spec.get("shape", 0)
+    base = shape * 1000 + 40  # Down 方向站立帧
+    if base >= lib.count:
+        return False, f"帧越界 {base}/{lib.count}", {}
+
+    counts = {}
+    ok_any = False
+    for act, off, n, delay in MON_ACTIONS:
+        frames = []
+        for i in range(n):
+            idx = base + off + i * 10
+            if idx >= lib.count:
+                break
+            im = lib.decode(idx)
+            if im is None:
+                continue
+            bbox = im.getbbox()
+            if not bbox:
+                continue
+            frames.append(im.crop(bbox))
+        if not frames:
+            counts[act] = 0
+            continue
+        ok_any = True
+        # 统一高度 160
+        H = 160
+        scale = H / max(f.height for f in frames)
+        if scale < 1:
+            frames = [f.resize((max(1, int(f.width * scale)), H), 1) for f in frames]
+        cell_w = max(f.width for f in frames)
+        d = os.path.join(OUT, board, str(item_id), act)
+        os.makedirs(d, exist_ok=True)
+        for nf, f in enumerate(frames):
+            canvas = Image.new("RGBA", (cell_w, H), (16, 16, 20, 170))
+            canvas.paste(f, ((cell_w - f.width) // 2, (H - f.height) // 2), f)
+            canvas.save(os.path.join(d, f"{nf:03d}.png"))
+        # 横条
+        gap = 2
+        strip = Image.new("RGBA", (cell_w * len(frames) + gap * (len(frames) - 1), H),
+                          (16, 16, 20, 170))
+        x = 0
+        for f in frames:
+            strip.paste(f, (x + (cell_w - f.width) // 2, (H - f.height) // 2), f)
+            x += cell_w + gap
+        strip.save(os.path.join(OUT, board, str(item_id), f"{act}.png"))
+        counts[act] = len(frames)
+    if not ok_any:
+        return False, f"全空 shape={shape}", {}
+    return True, "", counts
+
+
 def main():
     w = json.load(open("/tmp/wiki_data_v2.json"))
     total = ok = 0
@@ -403,6 +474,17 @@ def main():
                 ok += 1
             else:
                 fails.append((board, x["id"], x["name"], reason))
+    # NPC 头像 (NPCface.Zl; 无头像 NPC 的 face_img 渲染失败, 页面回退全身像)
+    for x in w["npcs"]:
+        spec = x.get("face_img")
+        if not spec:
+            continue
+        total += 1
+        good, reason = render("npcs_face", x["id"], spec, strict=True)
+        if good:
+            ok += 1
+        else:
+            fails.append(("npcs_face", x["id"], x["name"], reason))
     print(f"图片管线: {ok}/{total} 成功")
     # 技能施法动画条 (Magic.Zl 帧段)
     anim_ok = anim_fail = 0
@@ -419,6 +501,24 @@ def main():
             anim_fail += 1
             print(f"  anim #{s['id']} {s['name']}: {reason}")
     print(f"施法动画: {anim_ok}/{anim_ok + anim_fail} 条渲染成功")
+    # 怪物动画 (每动作逐帧)
+    mon_ok = mon_fail = 0
+    mon_anim = {}
+    for m in w["monsters"]:
+        spec = m.get("img")
+        if not spec or "shape" not in spec:
+            continue
+        good, reason, counts = render_mon_anim("mon_anim", m["id"], spec)
+        if good:
+            mon_ok += 1
+            mon_anim[str(m["id"])] = counts
+        else:
+            mon_fail += 1
+            if mon_fail <= 10:
+                print(f"  mon_anim #{m['id']} {m['name']}: {reason}")
+    print(f"怪物动画: {mon_ok}/{mon_ok + mon_fail} 条渲染成功")
+    with open("/tmp/mon_anim.json", "w", encoding="utf-8") as f:
+        json.dump(mon_anim, f)
     if fails:
         print(f"失败 {len(fails)} 条:")
         for b, i, n, r in fails[:25]:
