@@ -19903,6 +19903,38 @@
       ],
       "caveat": "These are original command/tooltip strings supplied to the control constructors. They establish the six channel/command concepts and their fixed x positions, but the exact visible caption versus tooltip rendering still belongs to the shared control implementation."
     },
+    "paint_order": [
+      {
+        "order": 1,
+        "va": "0x00414705-0x00414708",
+        "role": "window base/background",
+        "evidence": "The chat paint entry first calls the window vtable +0x0C before text, controls or input geometry."
+      },
+      {
+        "order": 2,
+        "va": "0x00414711-0x00414729",
+        "role": "chat-input clipping rectangle",
+        "evidence": "A fixed RECT is written at window-relative (25,311)-(524,326) before the visible history loop."
+      },
+      {
+        "order": 3,
+        "va": "0x00414738-0x00414822",
+        "role": "chat history text",
+        "evidence": "The visible linked records are traversed and emitted through 0x45DD70 at the recovered origin, with 19-row maximum and 14-pixel screen-line advance."
+      },
+      {
+        "order": 4,
+        "va": "0x0041482B-0x00414964",
+        "role": "scroll/channel control reposition and child paint",
+        "evidence": "The routine writes fixed relative positions for the close, six channel and two scroll controls, then calls nine child vtable +0x04 paint slots in sequence."
+      },
+      {
+        "order": 5,
+        "va": "0x00414965-0x00414999",
+        "role": "input-line character rectangles",
+        "evidence": "The final loop builds successive input-character rectangles from the input buffer with a 14-pixel horizontal progression."
+      }
+    ],
     "pending": [
       "Confirm whether the six command strings are rendered as visible captions, tooltips, or both by the shared control implementation.",
       "Confirm the first control's exact close/submit role and runtime hit rectangles.",
