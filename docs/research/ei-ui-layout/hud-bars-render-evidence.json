@@ -1,0 +1,49 @@
+{
+  "version": "EI-3.0-static-reverse-engineering",
+  "source": "Mir3.exe",
+  "function": "0x00429740",
+  "purpose": "Main HUD dynamic scalar preparation and bar draw dispatch",
+  "rects": {
+    "hp_or_primary_bar": {"field": "this+0xC68", "rect": [61, 496, 104, 566], "width": 43, "height": 70},
+    "mp_or_secondary_bar": {"field": "this+0xC78", "rect": [105, 496, 147, 566], "width": 42, "height": 70}
+  },
+  "ratios": [
+    {
+      "candidate": "primary_resource",
+      "numerator_global": "0x007D9264 (low 16 bits)",
+      "denominator_global": "0x007D9262 (low 16 bits)",
+      "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+      "confidence": "high"
+    },
+    {
+      "candidate": "secondary_resource",
+      "numerator_global": "0x007D9266 (low 16 bits)",
+      "denominator_global": "0x007DA113 (low 16 bits)",
+      "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+      "confidence": "medium"
+    },
+    {
+      "candidate": "experience",
+      "numerator_global": "0x007DA115",
+      "denominator_global": "0x007DA119",
+      "assembly": "fild numerator (qword); fidiv denominator; clamp to [0,1]",
+      "confidence": "high"
+    },
+    {
+      "candidate": "additional_progress_or_status",
+      "numerator_global": "0x007DA109 (low 16 bits)",
+      "denominator_global": "0x007DA11F (low 16 bits)",
+      "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+      "confidence": "medium"
+    }
+  ],
+  "draw_dispatch": {
+    "resource_hit_tests": ["0x004299CB -> GameInter frame 0x3E", "0x00429BDB -> GameInter frame 0x3C/0x3D"],
+    "bar_geometry_helper": "0x00466800",
+    "composite_helper": "0x004542F0",
+    "draw_order_observation": "Each bar computes a normalized scalar before the texture/composite helper; exact frame-to-resource semantic names remain pending.",
+    "static_coordinate_rule": "The resource frame is drawn relative to main HUD origin this+0xC58; primary and secondary clipping/hit rectangles are fixed by SetRect at 0x004276D6 and 0x004276F0."
+  },
+  "evidence_addresses": ["0x00429876-0x004298B1", "0x004298CC-0x00429904", "0x00429920-0x0042994F", "0x0042996C-0x004299A4", "0x00429A4D", "0x00429CCB", "0x00429E4D"],
+  "caveat": "Global variable semantic names are deliberately not guessed from modern source; live memory or protocol tracing is still required to label HP/MP/EXP definitively."
+}

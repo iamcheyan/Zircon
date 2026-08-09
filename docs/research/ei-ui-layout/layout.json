@@ -17894,9 +17894,8 @@
       }
     ],
     "pending": [
-      "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
-      "Recover the remaining full-map input/paint state and prove whether the ID-15 wrapper origin is already screen-absolute or translated by its parent.",
-      "Reconcile the executable's map_id >= 1000 branch with the server MiniMap value convention (the server value is >=1001 for FMMap; the runtime caller may normalize it before 0x0043D780).",
+      "Bind the selected MMap/FMMap output to the GameInter minimap border/overlay control.",
+      "Recover the remaining full-map input/paint state and determine whether this EI build has a separate map dialog or only a world/minimap surface path; do not use notice ID 15 as map UI.",
       "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
     ]
   },

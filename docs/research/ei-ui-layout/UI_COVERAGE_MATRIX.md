@@ -10,7 +10,7 @@
 | UI 类别 | 原版资源/入口 | 当前证据 | 状态 | 仍需完成 |
 |---|---|---|---|---|
 | 800×600 主 HUD | `GameInter.wil` F50，`0x00427600` | `layout.json`、主 HUD 15 个按钮 | 已恢复 | 运行时截图与最终 z-order |
-| HP/MP/经验 | `GameInter.wil` F60/F61/F63 | 主 HUD 资源和坐标分析 | 候选 | 追踪填充比例和绘制调用参数 |
+| HP/MP/经验 | `GameInter.wil` F60/F61/F63 | 主 HUD 资源、固定 Rect、`0x00429740` 比例链、`0x00466800/0x004542F0` 合成调用 | 候选（比例链已恢复） | 运行时确认全局字段的 HP/MP/EXP 命名、精确纹理裁剪方向和最终 z-order |
 | 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–459 | `skill-window-context.json`、技能渲染循环 | 已恢复 | 运行时技能列表、文字字段与图标 |
 | 人物状态/装备槽 | GameInter F200，装备槽 38×38 | `status-window-render-evidence.json` | 已恢复 | 装备图层、属性文字实际调用 |
 | 背包 | GameInter F250，36 px 网格 | `inventory-window-render-evidence.json` | 已恢复 | 行列数量、物品图标/数量文本顺序 |
