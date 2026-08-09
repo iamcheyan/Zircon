@@ -25,7 +25,7 @@
 | 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850 | `system-window-render-evidence.json` | 候选 | 坐骑数据字段和按钮语义 |
-| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；完整地图 ID 15 / Frame 602 | `map-ui-resource-evidence.json`、`gameinter-cluster-43e260.json`；小地图 `(672,0)-(800,128)`，完整地图候选 `(107,110)-(691,362)` | 候选（容器坐标已恢复） | 地图边框/标记、完整地图图像裁剪、缩放/滚动和显示切换 |
+| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；服务器 `MiniMap.txt` 映射 | `map-ui-resource-evidence.json`、`minimap-server-crossref.json`；小地图 `(672,0)-(800,128)` | 候选（小地图与资源绑定已恢复） | 完整地图专用 UI 容器、地图窗口打开入口、缩放/滚动和显示切换 |
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json` | 候选 | 父窗口运行时原点、状态机和文字绘制 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |
