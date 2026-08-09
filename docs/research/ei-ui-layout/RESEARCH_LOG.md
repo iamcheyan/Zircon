@@ -1094,3 +1094,9 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 HUD 控件/血球/经验条 → 普通窗口底图 → 窗口子控件与文字 → NPC 专用合成 → 次级全屏界面。
 其中明确标记了已由机器码确认的约束，以及尚未有运行时重叠窗口截图支持的候选顺序；该表
 已接入 `layout.json.draw_order_evidence`，不会把推测的 z-order 当成最终事实。
+
+### Finding 51：预览器增加绘制层级可视图例（2026-08-09）
+
+`/ui` 增加“显示绘制层级”开关，读取 `layout.json.draw_order_evidence.layers`，在固定
+视口内显示层序号、层名称和证据等级。图例与差异截图叠加层分离，便于同时检查“资源边界
+偏差”和“层级顺序候选”；开关状态写入同一份本地预览状态。
