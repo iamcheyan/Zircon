@@ -22106,8 +22106,11 @@
         15
       ],
       "default_target": "0x0042B3DD",
-      "show_helper": "0x0042AC50",
-      "hide_helper": "0x0042AC30",
+      "show_helper": "0x0042AC30",
+      "hide_helper": "0x0042AC50",
+      "state_gate_expression": "window_object+0x30 (the main+ offsets in the records are the corresponding object addresses)",
+      "show_helper_proof": "0x0042AC30 adds main+0xD24 to the list manager and calls 0x00449870, which allocates/inserts a node containing the requested window ID.",
+      "hide_helper_proof": "0x0042AC50 walks the main+0xD28 linked list, unlinks the matching ID node, decrements the count and releases it through 0x004680F8.",
       "virtual_visibility_slot": "+0x10",
       "virtual_argument": "1 = show, 0 = hide"
     },
@@ -22239,7 +22242,7 @@
         "show_hide": "gate-controlled show/hide; business identity pending"
       }
     ],
-    "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window can exist in the runtime registry, be hidden through the helper, and later be shown through the virtual visibility method; constructor presence is not proof of on-screen visibility.",
+    "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Constructor presence is not proof of on-screen visibility.",
     "pending": [
       "Confirm exact target addresses for IDs 2-15 from the complete 0x42ADB0 disassembly rather than inferred branch spacing.",
       "Recover the full initial registry insertion list and default visibility bits.",
