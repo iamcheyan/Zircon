@@ -2105,6 +2105,9 @@ function addFocusedWindow(r,analysis){
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
   }else if(r.id==='window.npc-candidate'){
     addFocusedGeometry(ox+12,oy+20,528,110,'NPC动态内容候选 / 最多13条');
+  }else if(r.id==='window.store-candidate'){
+    for(let i=0;i<8;i++)addFocusedGeometry(ox+28,oy+26+49*i,36,36,i===0?'商品列表 / 8项 / 49px':'' );
+    addFocusedGeometry(ox+210,oy+20,75,270,'状态0/3列表面板');
   }
   const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);
 }
