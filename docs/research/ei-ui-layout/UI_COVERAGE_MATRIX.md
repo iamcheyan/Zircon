@@ -21,7 +21,7 @@
 | NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040`；Interface1c NPCFace.WIL | `npc-window-render-evidence.json`；`0x00440750–0x00440AA0` 已恢复分隔符、16 项上限、14/21 px 行距和三个动态控件位置；1102 当前副本为空 | 候选（绘制链已恢复） | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
 | 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |
-| 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置、GBK 字符串、文字起点 `(40,29)` 和实际 `14px` 视觉行距已从绘制循环恢复 | 已恢复 | 共享控件究竟把频道字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |
+| 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置、GBK 字符串、文字起点 `(40,29)`、实际 `14px` 视觉行距，以及通用控件 `control+0x34` 字符串字段绑定已从绘制/构造链恢复 | 已恢复 | 共享控件究竟把频道字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |
 | 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850、860–867 | `horse-window-render-evidence.json`、`0x004269C0/0x00426A80` | 候选（坐标与命令已恢复） | 状态字段与韩文美术标签到命令的运行时绑定；标签为 `말타기/말내리기/말숨기기/말꺼내기` |
