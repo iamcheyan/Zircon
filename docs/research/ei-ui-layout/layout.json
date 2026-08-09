@@ -16560,7 +16560,21 @@
             "meaning": "same wide panel recreated from the alternate state-4 path"
           }
         ],
-        "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls and fixed call-site rectangles. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
+        "protocol_dispatch": {
+          "handler_region": "0x0042BE20–0x0042C359",
+          "subcode_reader": "0x0042AAB0",
+          "store_subcode": 2,
+          "jump_table_va": "0x0042C4D4",
+          "subcode_2_handler_va": "0x0042BFE1",
+          "entry_sequence": [
+            "0x0042BFE1 -> 0x0044E910",
+            "0x0042BFE1 -> 0x0044E9B0",
+            "0x0044E9B0 -> state-specific factory/resource path"
+          ],
+          "evidence_level": "primary-static-message-dispatch",
+          "interpretation": "A decoded client message subcode value 2 enters the store-item handler and then the shared state machine. This proves a non-visual protocol/opening entry exists, but the packet's human business name is not present in the recovered symbols."
+        },
+        "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
       },
       "controls": [
         {
