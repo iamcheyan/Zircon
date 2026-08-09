@@ -17523,12 +17523,17 @@
           ],
           "visual_observation": "Decorative announcement/notice board with title bar, large dark text area, close mark and confirm mark."
         },
-        "constructor_raw_argument_note": "main initializer pushes 15, resource, 602, 107, 110, 584, 252, 0, 3; argument naming and parent origin remain unresolved.",
+        "constructor_raw_argument_note": "main initializer at 0x00427960 pushes id=15, resource, frame=602, x=107, y=110, width=584, height=252, flags=0; the 800x600 parent origin is therefore primary-static exact.",
         "movable": "candidate",
-        "screen_coordinate_candidate": [
-          252,
+        "screen_coordinate": [
+          107,
           110
-        ]
+        ],
+        "screen_size": [
+          584,
+          252
+        ],
+        "evidence_level": "primary-static-exact-call-arguments"
       },
       "related_resources": [
         {
@@ -17584,9 +17589,13 @@
             "x": "window_arg4+0x224",
             "y": "window_arg8+0x10"
           },
-          "position_candidate": [
-            655,
+          "position_relative_to_parent": [
+            548,
             16
+          ],
+          "screen_position_if_parent_origin": [
+            655,
+            126
           ],
           "size": [
             28,
@@ -17606,9 +17615,13 @@
             "x": "window_arg4+0x224+0x1F0",
             "y": "window_arg8+0x10+0x1B"
           },
-          "position_candidate": [
+          "position_relative_to_parent": [
+            496,
+            43
+          ],
+          "screen_position_if_parent_origin": [
             603,
-            27
+            153
           ],
           "size": [
             40,
@@ -19345,12 +19358,17 @@
         ],
         "visual_observation": "Decorative announcement/notice board with title bar, large dark text area, close mark and confirm mark."
       },
-      "constructor_raw_argument_note": "main initializer pushes 15, resource, 602, 107, 110, 584, 252, 0, 3; argument naming and parent origin remain unresolved.",
+      "constructor_raw_argument_note": "main initializer at 0x00427960 pushes id=15, resource, frame=602, x=107, y=110, width=584, height=252, flags=0; the 800x600 parent origin is therefore primary-static exact.",
       "movable": "candidate",
-      "screen_coordinate_candidate": [
-        252,
+      "screen_coordinate": [
+        107,
         110
-      ]
+      ],
+      "screen_size": [
+        584,
+        252
+      ],
+      "evidence_level": "primary-static-exact-call-arguments"
     },
     "related_resources": [
       {
@@ -19406,9 +19424,13 @@
           "x": "window_arg4+0x224",
           "y": "window_arg8+0x10"
         },
-        "position_candidate": [
-          655,
+        "position_relative_to_parent": [
+          548,
           16
+        ],
+        "screen_position_if_parent_origin": [
+          655,
+          126
         ],
         "size": [
           28,
@@ -19428,9 +19450,13 @@
           "x": "window_arg4+0x224+0x1F0",
           "y": "window_arg8+0x10+0x1B"
         },
-        "position_candidate": [
+        "position_relative_to_parent": [
+          496,
+          43
+        ],
+        "screen_position_if_parent_origin": [
           603,
-          27
+          153
         ],
         "size": [
           40,
