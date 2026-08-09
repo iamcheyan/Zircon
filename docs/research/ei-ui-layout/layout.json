@@ -16202,7 +16202,65 @@
       "paint_state": {
         "state_field": "this+0x54",
         "state_dispatch_va": "0x0044B2D0",
-        "notes": "The paint path branches by state and calls shared text/image composition helpers. Equipment slot business names and exact resource families remain pending."
+        "notes": "The paint path branches by state and calls shared text/image composition helpers. Equipment slot business names and exact resource families remain pending.",
+        "primary_disassembly_details": {
+          "state_zero_branch": {
+            "entry": "0x0044B2D0",
+            "branch_target": "0x0044B3DD",
+            "preparation_call": "0x0044B560",
+            "clip_rect_expression": "SetRect(window.x-0x0A, window.y+0x1E, window.x+0xFF, window.y+0x32)",
+            "resource_or_text_calls": [
+              "0x0045DBA0",
+              "0x0045DE50",
+              "0x0044BC80",
+              "0x00466130",
+              "0x0045FD50"
+            ],
+            "evidence_level": "primary-static-call-and-rect-expression"
+          },
+          "state_one_branch": {
+            "entry": "0x0044B2E6",
+            "preparation_call": "0x0044B560",
+            "clip_rect_expression": "SetRect(window.x-0x0A, window.y+0x1E, window.x+0xFF, window.y+0x32)",
+            "resource_or_text_calls": [
+              "0x0045DBA0",
+              "0x0045DE50",
+              "0x0044BC80",
+              "0x00466130",
+              "0x0045FD50"
+            ],
+            "evidence_level": "primary-static-call-and-rect-expression"
+          },
+          "equipment_loop": {
+            "routine": "0x0044B5D9-0x0044B629",
+            "iteration_count": 11,
+            "item_pointer_start": "this+0x2F4",
+            "item_stride": "0xC24",
+            "position_pointer_start": "this+0x1C0",
+            "position_stride": "0x10",
+            "empty_slot_test": "item_record_dword_at_current_base != 0",
+            "special_indices": [
+              0,
+              1,
+              4
+            ],
+            "special_draw_target": "window origin + (0x61,0xC8), compositor flag 1",
+            "ordinary_draw_target": "position_record first dword + window.x + 0x0F, second dword + window.y + 0x0F, compositor flag 0",
+            "draw_helper": "0x00430A40",
+            "evidence_level": "primary-static-loop-and-argument-flow"
+          },
+          "selected_overlay": {
+            "guard_fields": [
+              "0x00777720 low byte",
+              "0x00777723"
+            ],
+            "frame_selector": "0x00466130",
+            "composition_helper": "0x0045FD50",
+            "target_expression": "window origin + (0x61,0xC8) plus item geometry offsets",
+            "note": "The binary confirms a selected/secondary overlay path, but the global fields and business label are not named by symbols.",
+            "evidence_level": "primary-static-candidate"
+          }
+        }
       },
       "item_record_and_draw_chain": {
         "hit_test_va": "0x0044B6B0",
