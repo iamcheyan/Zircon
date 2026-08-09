@@ -55,6 +55,7 @@ INDEX_LOCK = threading.Lock()
 # compare libraries across two client roots without re-scanning.
 ROOTS: dict[str, "AssetIndex"] = {}
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SIM_DIR = PROJECT_ROOT / "Tools/mir3_client_simulator"
 UI_LAYOUT_PATH = PROJECT_ROOT / "docs/research/ei-ui-layout/layout.json"
 UI_RESOURCE_ANALYSIS_PATH = PROJECT_ROOT / "docs/research/ei-ui-layout/window-resource-analysis.json"
 UI_CONTROL_RESOURCE_ANALYSIS_PATH = PROJECT_ROOT / "docs/research/ei-ui-layout/window-control-resource-analysis.json"
@@ -399,6 +400,47 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/ui":
             self._send(UI_LAYOUT_HTML, "text/html; charset=utf-8")
+            return
+        if path == "/sim":
+            # Redirect to trailing slash so relative URLs (style.css, app.js)
+            # resolve under /sim/ instead of the site root.
+            try:
+                self.send_response(301)
+                self.send_header("Location", "/sim/")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            return
+        if path == "/sim/":
+            sim_index = SIM_DIR / "index.html"
+            if sim_index.is_file():
+                self._send(sim_index.read_text(encoding="utf-8"), "text/html; charset=utf-8")
+            else:
+                self._err(404, f"simulator index missing: {sim_index}")
+            return
+        if path.startswith("/sim/"):
+            rel = path[len("/sim/"):]
+            safe = rel.replace("\\", "/").lstrip("/")
+            if ".." in safe.split("/"):
+                self._err(403, "forbidden")
+                return
+            f = (SIM_DIR / safe).resolve()
+            if not str(f).startswith(str(SIM_DIR.resolve())) or not f.is_file():
+                self._err(404, "not found")
+                return
+            ctype = "application/octet-stream"
+            if f.suffix == ".html":
+                ctype = "text/html; charset=utf-8"
+            elif f.suffix == ".js":
+                ctype = "application/javascript; charset=utf-8"
+            elif f.suffix == ".css":
+                ctype = "text/css; charset=utf-8"
+            elif f.suffix == ".json":
+                ctype = "application/json; charset=utf-8"
+            elif f.suffix == ".png":
+                ctype = "image/png"
+            self._send(f.read_bytes(), ctype)
             return
         if path == "/api/ui-layout":
             self._send(json_bytes(load_ui_evidence()), "application/json; charset=utf-8")
@@ -2325,7 +2367,9 @@ def main():
 
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     url = f"http://127.0.0.1:{args.port}/"
+    sim_url = f"http://127.0.0.1:{args.port}/sim"
     print(f"serving on {url}  (Ctrl-C to stop)")
+    print(f"client simulator: {sim_url}")
     if args.open:
         webbrowser.open(url)
     try:

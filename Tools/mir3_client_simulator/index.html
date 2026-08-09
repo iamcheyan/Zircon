@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mir3 EI 3.0 原版客户端 UI 模拟器 (800×600)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <h1>Mir3 EI 3.0 原版客户端模拟器</h1>
+    <span id="scale-label"></span>
+    <nav id="nav">
+      <button data-act="evidence">证据模式</button>
+      <button data-act="testnav">测试导航</button>
+      <button data-act="reset">重置场景</button>
+    </nav>
+  </header>
+  <main id="stage-wrap">
+    <div id="stage">
+      <!-- scene layer -->
+      <div id="scene" class="layer"></div>
+      <!-- HUD layer -->
+      <div id="hud" class="layer"></div>
+      <!-- windows layer -->
+      <div id="windows" class="layer"></div>
+      <!-- prompt layer (confirm/notice) -->
+      <div id="prompts" class="layer"></div>
+      <!-- evidence overlay -->
+      <div id="evidence-overlay" class="layer hidden"></div>
+      <!-- cursor target box -->
+      <div id="targetbox" class="layer hidden"></div>
+    </div>
+  </main>
+  <footer id="statusbar">
+    <span id="status">加载中…</span>
+    <span id="evidence-summary"></span>
+  </footer>
+</div>
+<div id="testnav" class="hidden">
+  <h2>窗口导航</h2>
+  <div id="testnav-grid"></div>
+  <button data-act="close-testnav">关闭</button>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

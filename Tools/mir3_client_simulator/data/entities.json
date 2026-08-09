@@ -1,0 +1,68 @@
+[
+  {
+    "id": "player",
+    "name": "玩家",
+    "kind": "player",
+    "x": 320,
+    "y": 300,
+    "library": "M-Hum.wil",
+    "frame": 0,
+    "evidence_level": "candidate",
+    "note": "player sprite demo; real M-Hum.wil frame"
+  },
+  {
+    "id": "npc.guild",
+    "name": "行会管理员",
+    "kind": "npc",
+    "x": 380,
+    "y": 340,
+    "library": "NPC.wil",
+    "frame": 0,
+    "evidence_level": "candidate",
+    "note": "NPC dialogue opens on click"
+  },
+  {
+    "id": "npc.store",
+    "name": "商店老板",
+    "kind": "npc",
+    "x": 440,
+    "y": 360,
+    "library": "NPC.wil",
+    "frame": 1,
+    "evidence_level": "candidate",
+    "note": "store window opens on click"
+  },
+  {
+    "id": "mon.1",
+    "name": "稻草人",
+    "kind": "monster",
+    "x": 260,
+    "y": 320,
+    "library": "DMon-1.wil",
+    "frame": 0,
+    "evidence_level": "candidate",
+    "note": "targetable monster"
+  },
+  {
+    "id": "mon.2",
+    "name": "鸡",
+    "kind": "monster",
+    "x": 480,
+    "y": 280,
+    "library": "DMon-1.wil",
+    "frame": 2,
+    "evidence_level": "candidate",
+    "note": "targetable monster"
+  },
+  {
+    "id": "drop.1",
+    "name": "金创药",
+    "kind": "drop",
+    "x": 300,
+    "y": 350,
+    "library": "Ground.wil",
+    "frame": 0,
+    "evidence_level": "candidate",
+    "note": "ground drop item"
+  }
+]

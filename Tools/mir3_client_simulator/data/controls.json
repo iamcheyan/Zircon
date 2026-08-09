@@ -1,0 +1,1112 @@
+[
+  {
+    "id": "window.inventory.specialized-control.0",
+    "window_id": "window.inventory",
+    "rect": [
+      507,
+      426,
+      28,
+      26
+    ],
+    "relative_rect": [
+      249,
+      288,
+      28,
+      26
+    ],
+    "frame_pair": [
+      161,
+      162
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "inventory-window-render-evidence.json"
+  },
+  {
+    "id": "window.inventory.specialized-control.1",
+    "window_id": "window.inventory",
+    "rect": [
+      434,
+      400,
+      64,
+      20
+    ],
+    "relative_rect": [
+      176,
+      262,
+      64,
+      20
+    ],
+    "frame_pair": [
+      264,
+      265
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "inventory-window-render-evidence.json"
+  },
+  {
+    "id": "window.inventory.specialized-control.2",
+    "window_id": "window.inventory",
+    "rect": [
+      434,
+      424,
+      76,
+      88
+    ],
+    "relative_rect": [
+      176,
+      286,
+      76,
+      88
+    ],
+    "frame_pair": [
+      267,
+      268
+    ],
+    "resource_library": "Interface1c.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "inventory-window-render-evidence.json"
+  },
+  {
+    "id": "window.status.specialized-control.0",
+    "window_id": "window.status",
+    "rect": [
+      490,
+      434,
+      28,
+      26
+    ],
+    "relative_rect": [
+      212,
+      298,
+      28,
+      26
+    ],
+    "frame_pair": [
+      161,
+      162
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "status-window-render-evidence.json"
+  },
+  {
+    "id": "window.status.specialized-control.1",
+    "window_id": "window.status",
+    "rect": [
+      454,
+      422,
+      36,
+      36
+    ],
+    "relative_rect": [
+      176,
+      286,
+      36,
+      36
+    ],
+    "frame_pair": [
+      171,
+      172
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "status-window-render-evidence.json"
+  },
+  {
+    "id": "window.quest.specialized-control.0",
+    "window_id": "window.quest",
+    "rect": [
+      520,
+      139,
+      28,
+      28
+    ],
+    "relative_rect": [
+      290,
+      59,
+      28,
+      28
+    ],
+    "frame_pair": [
+      723,
+      724
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "quest-window-render-evidence.json"
+  },
+  {
+    "id": "window.quest.specialized-control.1",
+    "window_id": "window.quest",
+    "rect": [
+      520,
+      169,
+      28,
+      28
+    ],
+    "relative_rect": [
+      290,
+      89,
+      28,
+      28
+    ],
+    "frame_pair": [
+      721,
+      722
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "quest-window-render-evidence.json"
+  },
+  {
+    "id": "window.npc-candidate.specialized-control.0",
+    "window_id": "window.npc-candidate",
+    "rect": [
+      131,
+      353,
+      28,
+      26
+    ],
+    "relative_rect": [
+      7,
+      141,
+      28,
+      26
+    ],
+    "frame_pair": [
+      161,
+      162
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-expression",
+    "source": "npc-window-render-evidence.json"
+  },
+  {
+    "id": "window.npc-candidate.specialized-control.1",
+    "window_id": "window.npc-candidate",
+    "rect": [
+      414,
+      357,
+      12,
+      8
+    ],
+    "relative_rect": [
+      290,
+      145,
+      12,
+      8
+    ],
+    "frame_pair": [
+      52,
+      53
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-expression",
+    "source": "npc-window-render-evidence.json"
+  },
+  {
+    "id": "window.npc-candidate.specialized-control.2",
+    "window_id": "window.npc-candidate",
+    "rect": [
+      430,
+      348,
+      12,
+      8
+    ],
+    "relative_rect": [
+      306,
+      136,
+      12,
+      8
+    ],
+    "frame_pair": [
+      54,
+      55
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-expression",
+    "source": "npc-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.0",
+    "window_id": "window.chat-pop",
+    "rect": [
+      646,
+      426,
+      28,
+      26
+    ],
+    "relative_rect": [
+      532,
+      350,
+      28,
+      26
+    ],
+    "frame_pair": [
+      161,
+      162
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.1",
+    "window_id": "window.chat-pop",
+    "rect": [
+      139,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      25,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      360,
+      361
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.2",
+    "window_id": "window.chat-pop",
+    "rect": [
+      179,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      65,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      362,
+      363
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.3",
+    "window_id": "window.chat-pop",
+    "rect": [
+      219,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      105,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      364,
+      365
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.4",
+    "window_id": "window.chat-pop",
+    "rect": [
+      259,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      145,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      366,
+      367
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.5",
+    "window_id": "window.chat-pop",
+    "rect": [
+      299,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      185,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      368,
+      369
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.chat-pop.specialized-control.6",
+    "window_id": "window.chat-pop",
+    "rect": [
+      339,
+      408,
+      36,
+      34
+    ],
+    "relative_rect": [
+      225,
+      332,
+      36,
+      34
+    ],
+    "frame_pair": [
+      370,
+      371
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "candidate",
+    "source": "chat-window-render-evidence.json"
+  },
+  {
+    "id": "window.horse.specialized-control.0",
+    "window_id": "window.horse",
+    "rect": [
+      504,
+      427,
+      28,
+      26
+    ],
+    "relative_rect": [
+      252,
+      293,
+      28,
+      26
+    ],
+    "frame_pair": [
+      161,
+      162
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-derived-paint-order",
+    "source": "horse-window-render-evidence.json"
+  },
+  {
+    "id": "window.horse.specialized-control.1",
+    "window_id": "window.horse",
+    "rect": [
+      280,
+      378,
+      44,
+      20
+    ],
+    "relative_rect": [
+      28,
+      244,
+      44,
+      20
+    ],
+    "frame_pair": [
+      860,
+      861
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-derived-paint-order",
+    "source": "horse-window-render-evidence.json"
+  },
+  {
+    "id": "window.horse.specialized-control.2",
+    "window_id": "window.horse",
+    "rect": [
+      326,
+      378,
+      60,
+      20
+    ],
+    "relative_rect": [
+      74,
+      244,
+      60,
+      20
+    ],
+    "frame_pair": [
+      862,
+      863
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-derived-paint-order",
+    "source": "horse-window-render-evidence.json"
+  },
+  {
+    "id": "window.horse.specialized-control.3",
+    "window_id": "window.horse",
+    "rect": [
+      385,
+      378,
+      60,
+      20
+    ],
+    "relative_rect": [
+      133,
+      244,
+      60,
+      20
+    ],
+    "frame_pair": [
+      864,
+      865
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-derived-paint-order",
+    "source": "horse-window-render-evidence.json"
+  },
+  {
+    "id": "window.horse.specialized-control.4",
+    "window_id": "window.horse",
+    "rect": [
+      444,
+      378,
+      56,
+      20
+    ],
+    "relative_rect": [
+      192,
+      244,
+      56,
+      20
+    ],
+    "frame_pair": [
+      866,
+      867
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 40,
+    "hitTest": true,
+    "evidence_level": "primary-static-derived-paint-order",
+    "source": "horse-window-render-evidence.json"
+  },
+  {
+    "id": "hud.exchange",
+    "window_id": "hud",
+    "rect": [
+      204,
+      467,
+      24,
+      16
+    ],
+    "relative_rect": [
+      204,
+      2,
+      24,
+      16
+    ],
+    "frame_pair": [
+      80,
+      81
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x004279B2"
+  },
+  {
+    "id": "hud.minimap",
+    "window_id": "hud",
+    "rect": [
+      228,
+      467,
+      24,
+      16
+    ],
+    "relative_rect": [
+      228,
+      2,
+      24,
+      16
+    ],
+    "frame_pair": [
+      82,
+      83
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x004279E6"
+  },
+  {
+    "id": "hud.skill-entry",
+    "window_id": "hud",
+    "rect": [
+      252,
+      467,
+      24,
+      16
+    ],
+    "relative_rect": [
+      252,
+      2,
+      24,
+      16
+    ],
+    "frame_pair": [
+      84,
+      85
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427A1A"
+  },
+  {
+    "id": "hud.exit",
+    "window_id": "hud",
+    "rect": [
+      161,
+      511,
+      28,
+      26
+    ],
+    "relative_rect": [
+      161,
+      46,
+      28,
+      26
+    ],
+    "frame_pair": [
+      90,
+      91
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427A4E"
+  },
+  {
+    "id": "hud.logout",
+    "window_id": "hud",
+    "rect": [
+      161,
+      547,
+      28,
+      26
+    ],
+    "relative_rect": [
+      161,
+      82,
+      28,
+      26
+    ],
+    "frame_pair": [
+      92,
+      93
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427A82"
+  },
+  {
+    "id": "hud.party",
+    "window_id": "hud",
+    "rect": [
+      616,
+      512,
+      28,
+      26
+    ],
+    "relative_rect": [
+      616,
+      47,
+      28,
+      26
+    ],
+    "frame_pair": [
+      94,
+      95
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427AB6"
+  },
+  {
+    "id": "hud.guild",
+    "window_id": "hud",
+    "rect": [
+      616,
+      547,
+      28,
+      26
+    ],
+    "relative_rect": [
+      616,
+      82,
+      28,
+      26
+    ],
+    "frame_pair": [
+      96,
+      97
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427AEA"
+  },
+  {
+    "id": "hud.skill",
+    "window_id": "hud",
+    "rect": [
+      703,
+      481,
+      40,
+      38
+    ],
+    "relative_rect": [
+      703,
+      16,
+      40,
+      38
+    ],
+    "frame_pair": [
+      100,
+      101
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427B58"
+  },
+  {
+    "id": "hud.chat",
+    "window_id": "hud",
+    "rect": [
+      718,
+      497,
+      40,
+      38
+    ],
+    "relative_rect": [
+      718,
+      32,
+      40,
+      38
+    ],
+    "frame_pair": [
+      102,
+      103
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427BAA"
+  },
+  {
+    "id": "hud.quest",
+    "window_id": "hud",
+    "rect": [
+      718,
+      535,
+      40,
+      38
+    ],
+    "relative_rect": [
+      718,
+      70,
+      40,
+      38
+    ],
+    "frame_pair": [
+      104,
+      105
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427BFC"
+  },
+  {
+    "id": "hud.option",
+    "window_id": "hud",
+    "rect": [
+      703,
+      550,
+      40,
+      38
+    ],
+    "relative_rect": [
+      703,
+      85,
+      40,
+      38
+    ],
+    "frame_pair": [
+      106,
+      107
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427C4D"
+  },
+  {
+    "id": "hud.group",
+    "window_id": "hud",
+    "rect": [
+      664,
+      551,
+      40,
+      38
+    ],
+    "relative_rect": [
+      664,
+      86,
+      40,
+      38
+    ],
+    "frame_pair": [
+      108,
+      109
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427C9F"
+  },
+  {
+    "id": "hud.status",
+    "window_id": "hud",
+    "rect": [
+      648,
+      535,
+      40,
+      38
+    ],
+    "relative_rect": [
+      648,
+      70,
+      40,
+      38
+    ],
+    "frame_pair": [
+      110,
+      111
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427CF1"
+  },
+  {
+    "id": "hud.inventory",
+    "window_id": "hud",
+    "rect": [
+      648,
+      497,
+      40,
+      38
+    ],
+    "relative_rect": [
+      648,
+      32,
+      40,
+      38
+    ],
+    "frame_pair": [
+      112,
+      113
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427D42"
+  },
+  {
+    "id": "hud.store",
+    "window_id": "hud",
+    "rect": [
+      665,
+      481,
+      40,
+      38
+    ],
+    "relative_rect": [
+      665,
+      16,
+      40,
+      38
+    ],
+    "frame_pair": [
+      114,
+      115
+    ],
+    "resource_library": "GameInter.wil",
+    "state": [
+      "normal",
+      "hover",
+      "pressed"
+    ],
+    "zIndex": 60,
+    "hitTest": true,
+    "evidence_level": "primary-static",
+    "source": "0x00417550;0x00427D94"
+  }
+]
