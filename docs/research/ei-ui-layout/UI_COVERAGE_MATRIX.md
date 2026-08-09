@@ -26,7 +26,7 @@
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850、860–867 | `horse-window-render-evidence.json`、`0x004269C0/0x00426A80` | 候选（坐标与命令已恢复） | 状态字段与韩文美术标签到命令的运行时绑定；标签为 `말타기/말내리기/말숨기기/말꺼내기` |
 | 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；服务器 `MiniMap.txt` 映射 | `map-ui-resource-evidence.json`、`minimap-server-crossref.json`；小地图 `(672,0)-(800,128)`；`0x0043DE40` 明确切换 `256×256/128×128` 表面模式；绿色/黄色标记分支已确认 | 候选（资源、固定小地图 Rect、模式切换、颜色层已恢复） | 完整地图专用 UI 容器、地图窗口打开入口、缩放/滚动和切换命令语义；标记对象类型 |
-| 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
+| 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0`；已直接读出 `选择角色/创建账号/修改密码/创建角色/删除角色/开始游戏` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选（按钮文字已由原版像素确认） | 运行时状态转换、Frame 17/57 空资源差异和剩余按钮语义 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json`；公告父窗口 `(107,110)-(691,362)` 与 `[行会公告]/[行会修改]` 原版 GBK 文字已由静态绘制调用闭合 | 候选 | 区分独立公告框与行会子状态、状态机和确认框 F950 的运行时原点 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |
 | 绘制层级 | `0x00423D00`、`0x004179B0`、`0x0043F040` | `draw-order-evidence.json`；已确认窗口基类背景先于本窗口派生绘制/子控件 | 候选 | 重叠窗口运行时调用序列 |

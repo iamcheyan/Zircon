@@ -144,6 +144,16 @@
       "offsetY": -16
     }
   },
+  "resource_visual_inspection": {
+    "source": "Data/Interface1c.wil direct pixel inspection with nearest-neighbor enlargement",
+    "records": [
+      {"frame": 51, "visual_text": "创建角色", "translation": "创建角色", "confidence": "high"},
+      {"frame": 53, "visual_text": "删除角色", "translation": "删除角色", "confidence": "high"},
+      {"frame": 55, "visual_text": "开始游戏", "translation": "开始游戏", "confidence": "high"},
+      {"frame": 57, "visual_text": null, "visual_description": "no pixel export in current client copy despite static frame header", "confidence": "medium"}
+    ],
+    "evidence_level": "primary-resource-visual-plus-static"
+  },
   "static_interpretation": {
     "candidate": "character-selection-or-character-creation-screen",
     "basis": [

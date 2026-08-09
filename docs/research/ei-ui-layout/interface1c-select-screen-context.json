@@ -67,6 +67,16 @@
       "offsetY": -16
     }
   },
+  "resource_visual_inspection": {
+    "source": "Data/Interface1c.wil direct pixel inspection with nearest-neighbor enlargement",
+    "records": [
+      {"frame": 11, "visual_text": "选择角色", "translation": "选择角色", "confidence": "high"},
+      {"frame": 13, "visual_text": "创建账号", "translation": "创建账号", "confidence": "high"},
+      {"frame": 15, "visual_text": "修改密码", "translation": "修改密码", "confidence": "high"},
+      {"frame": 17, "visual_text": null, "visual_description": "no pixel export in current client copy despite static frame header", "confidence": "medium"}
+    ],
+    "evidence_level": "primary-resource-visual-plus-static"
+  },
   "controls": [
     {
       "frame": 11,
