@@ -17075,6 +17075,45 @@
           }
         }
       ],
+      "constructor_rect_initializers": {
+        "routine": "0x0044D4C4-0x0044D53B",
+        "left_list_rects": {
+          "count": 5,
+          "rect_base": "this+0x660",
+          "stride_bytes": 16,
+          "left": 28,
+          "right": 64,
+          "top_start": 26,
+          "row_step": 49,
+          "height": 36,
+          "evidence_level": "primary-static-setrect-loop"
+        },
+        "left_text_rects": {
+          "count": 5,
+          "rect_base": "this+0x6B0",
+          "stride_bytes": 16,
+          "left": 69,
+          "right": 256,
+          "top_start": 21,
+          "row_step": 49,
+          "height": 45,
+          "evidence_level": "primary-static-setrect-loop"
+        },
+        "right_item_grid_rects": {
+          "rect_base": "this+0x720",
+          "stride_bytes": 16,
+          "columns": 4,
+          "rows": 3,
+          "x_start": 323,
+          "y_start": 43,
+          "x_step": 38,
+          "y_step": 38,
+          "width": 37,
+          "height": 37,
+          "evidence_level": "primary-static-nested-setrect-loop",
+          "correction": "The loop bounds are x=323,361,399,437 and y=43,81,119; previous 5×4 wording was a candidate error."
+        }
+      },
       "paint_geometry": {
         "linked_item_source": "this+0x64C",
         "item_list_rect_loop": {
@@ -17088,15 +17127,15 @@
         },
         "item_grid_rect_loop": {
           "va": "0x0044D51E",
-          "columns_candidate": 5,
-          "rows_candidate": 4,
+          "columns": 4,
+          "rows": 3,
           "x_start": 323,
           "y_start": 43,
           "step": 38,
           "right_offset": 37,
           "bottom_offset": 37
         },
-        "item_grid_note": "These are raw SetRect constants from the binary; parent origin/meaning is unresolved because they do not fit the currently bound 300-pixel visible background."
+        "item_grid_note": "These are raw SetRect constants from the binary. The right-side 4×3 grid is exact at constructor level; parent origin/meaning remains unresolved because it does not fit the currently bound 300-pixel visible background."
       },
       "pending": [
         "Resolve the factory's parent-relative centering behavior and the actual screen origin at runtime.",
