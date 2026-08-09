@@ -2553,3 +2553,9 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 使用 Chromium 对 `/ui` 做真实 DOM/截图验证时，页面最初停留在“读取中…”。DevTools 异常明确指出：脚本把 `const renderEvidenceLayout = render` 再次赋值，触发 `Assignment to constant variable`，因此 API 虽然可访问，`load()` 却没有完成。
 
 已将该别名改为可重新绑定的 `let renderEvidenceLayout`，并同时修正公告/确认框包装器不能覆盖顶层函数声明的问题。修复后无头浏览器验证得到：摘要显示 `15 个按钮 · 13 个窗口 · 72 个窗口控件构造`，`DATA.layout.records.length=28`；打开候选层后 `localStorage.mapCandidate=true`，刷新仍恢复候选层，随后已恢复测试浏览器为默认关闭状态。
+
+### Finding 181：将 EI 地图/小地图交叉引用生成为可检索目录（2026-08-10）
+
+为了让后续 UI 还原和内容百科都能直接查地图，而不是只读一份难以浏览的 JSON，新增 `Tools/build_ei_map_catalog.py`，从 `minimap-server-crossref.json` 生成 `EI_MAP_RESOURCE_CATALOG.md`。当前目录明确记录 313 条服务器地图值、地图文件名、`FMMap.wil`/`MMap.wil` 资源库、Frame、服务器名称、客户端 `.map` 是否存在以及 WIL 帧是否能解码。
+
+这次整理同时固定了证据边界：地图名称和数值属于 Mud3 服务器配置的二级交叉引用；资源库选择、Frame 范围、固定小地图目标 `(672,0)-(800,128)` 和 `128×128/256×256` 表面模式属于原版 `Mir3.exe` 与 WIL 的一级证据。目录中的名称不能反过来证明客户端标记一定是玩家、NPC 或物品，未解析的标记业务语义继续保留为待验证。

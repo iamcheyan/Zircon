@@ -30,6 +30,7 @@ JSON 的 `pending` 字段中，尤其是运行时窗口打开入口、好友是�
 - [`inventory-window-render-evidence.json`](inventory-window-render-evidence.json)：背包 6×6 槽位证据。
 - [`status-window-render-evidence.json`](status-window-render-evidence.json)：人物状态/装备位置记录与绘制链。
 - [`store-server-crossref.json`](store-server-crossref.json)：Mud3 仓库、购买、出售 NPC 的第二证据交叉表。
+- [`EI_MAP_RESOURCE_CATALOG.md`](EI_MAP_RESOURCE_CATALOG.md)：由地图交叉引用生成的 313 条可检索地图/Frame 目录。
 
 预览器运行后访问 `http://127.0.0.1:8765/ui`。模式选择包含主 HUD、完整地图资源候选、固定
 小地图 128×128 候选、技能、
@@ -76,7 +77,7 @@ docs/research/ei-ui-layout/RESEARCH_LOG.md
 
 ## 当前结论
 
-`Mir3.exe` 中存在一组静态 UI 初始化代码。当前提取器仍保留 93 次调用固定 helper `0x00449C50` 的历史记录；该 helper 将三个 `WORD` 参数写入一个对象结构，调用点集中在几个连续的构造函数中。专题研究日志已推进到 Finding 179；Finding 编号是研究记录序号，不等于某个单一提取器的记录数。
+`Mir3.exe` 中存在一组静态 UI 初始化代码。当前提取器仍保留 93 次调用固定 helper `0x00449C50` 的历史记录；该 helper 将三个 `WORD` 参数写入一个对象结构，调用点集中在几个连续的构造函数中。专题研究日志已推进到 Finding 181；Finding 编号是研究记录序号，不等于某个单一提取器的记录数。
 
 提取脚本：
 
