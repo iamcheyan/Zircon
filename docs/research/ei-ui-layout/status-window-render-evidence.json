@@ -152,7 +152,38 @@
       {"text": "召唤(幻影)", "string_va": "0x0047C644", "draw_va": "0x0044C875", "y_offset": 430},
       {"text": "魔法防御力", "string_va": "0x0047C638", "draw_va": "0x0044C8FA", "y_offset": 445}
     ],
-    "interpretation": "These are original GBK strings passed through the status attribute helper. They prove the semantic labels and two-column relative text baselines; the associated global fields and color semantics remain separate pending items."
+    "value_field_sources": {
+      "evidence_level": "primary-static-global-loads-at-format-call-sites",
+      "note": "The following entries identify the exact global memory operands loaded immediately before 0x0046811C. They are raw client fields, not yet server/database semantic names. Word/byte width and formatter argument order are preserved so a reimplementation can reproduce the original ABI without guessing.",
+      "first_column": [
+        {"label": "LEVEL", "format_va": "0x0044BD14", "sources": [{"address": "0x007DA108", "width": "byte", "load_va": "0x0044BD00"}]},
+        {"label": "HP", "format_va": "0x0044BD94", "sources": [{"address": "0x007DA10D", "width": "word", "load_va": "0x0044BD8C"}, {"address": "0x007DA111", "width": "word", "load_va": "0x0044BD7F"}], "argument_order": "push 0x007DA111, then 0x007DA10D"},
+        {"label": "MP", "format_va": "0x0044BE17", "sources": [{"address": "0x007DA10F", "width": "word", "load_va": "0x0044BE0A"}, {"address": "0x007DA113", "width": "word", "load_va": "0x0044BE03"}], "argument_order": "push 0x007DA113, then 0x007DA10F"},
+        {"label": "经验", "format_va": "0x0044BEC4", "sources": [{"address": "0x007DA115", "width": "dword", "load_va": "0x0044BE5D"}, {"address": "0x007DA119", "width": "dword", "load_va": "0x0044BE41"}], "derived_value": "double((int32)0x007DA115 / (int32)0x007DA119) * global double 0x00476970; formatted with 0x47C72C=%.2f%s", "guard": "division is skipped when 0x007DA119 <= 0"},
+        {"label": "包袱负重", "format_va": "0x0044BF4A", "sources": [{"address": "0x007DA11D", "width": "word", "load_va": "0x0044BF3D"}, {"address": "0x007DA11F", "width": "word", "load_va": "0x0044BF36"}], "argument_order": "push 0x007DA11F, then 0x007DA11D"},
+        {"label": "腕力", "format_va": null, "sources": [{"address": "0x007DA121", "width": "byte", "load_va": "0x0044BFBF"}, {"address": "0x007DA122", "width": "byte", "load_va": "0x0044BFB9"}], "argument_order": "push 0x007DA122, then 0x007DA121"},
+        {"label": "准确", "format_va": null, "sources": [{"address": "0x007DA123", "width": "byte", "load_va": "0x0044C03C"}, {"address": "0x007DA124", "width": "dword_low8", "load_va": "0x0044C035"}], "argument_order": "push low8(0x007DA124), then low8(0x007DA123)"},
+        {"label": "敏捷", "format_va": null, "sources": [{"address": "0x007DA16B", "width": "byte", "load_va": "0x0044C0BE"}, {"address": "0x007DA16C", "width": "dword_low8", "load_va": "0x0044C130"}], "argument_order": "the two byte-like values are formatted by 0x0046811C"},
+        {"label": "毒物躲避", "format_va": null, "sources": [{"address": "0x007DA169", "width": "word", "load_va": "0x0044C1B2"}]},
+        {"label": "中毒恢复", "format_va": null, "sources": [{"address": "0x007DA16D", "width": "byte", "load_va": "0x0044C22F"}]},
+        {"label": "生命恢复", "format_va": null, "sources": [{"address": "0x007DA16E", "width": "byte", "load_va": "0x0044C2AB"}]},
+        {"label": "魔法恢复", "format_va": null, "sources": [{"address": "0x007DA16F", "width": "byte", "load_va": "0x0044C327"}]}
+      ],
+      "second_column": [
+        {"label": "防御", "format_va": "0x0044C43D", "sources": [{"address": "0x007DA109", "width": "byte", "load_va": "0x0044C42B"}, {"address": "0x007DA10A", "width": "byte", "load_va": "0x0044C425"}], "argument_order": "push low8(0x007DA10A), then low8(0x007DA109)"},
+        {"label": "攻击", "format_va": "0x0044C4C5", "sources": [{"address": "0x007DA10B", "width": "word", "load_va": "0x0044C4AB"}]},
+        {"label": "魔法", "format_va": "0x0044C591", "sources": [{"address": "0x007DA149", "width": "word", "load_va": "0x0044C571"}]},
+        {"label": "火(火焰)", "format_va": "0x0044C60C", "sources": [{"address": "0x007DA14B", "width": "word", "load_va": "0x0044C5F6"}]},
+        {"label": "冰(冰冻)", "format_va": "0x0044C691", "sources": [{"address": "0x007DA14D", "width": "word", "load_va": "0x0044C67B"}]},
+        {"label": "电(雷电)", "format_va": "0x0044C716", "sources": [{"address": "0x007DA14F", "width": "word", "load_va": "0x0044C700"}]},
+        {"label": "风(狂风)", "format_va": "0x0044C79B", "sources": [{"address": "0x007DA151", "width": "word", "load_va": "0x0044C785"}]},
+        {"label": "治疗(神圣)", "format_va": "0x0044C820", "sources": [{"address": "0x007DA153", "width": "word", "load_va": "0x0044C80A"}]},
+        {"label": "攻击(黑暗)", "format_va": "0x0044C8A5", "sources": [{"address": "0x007DA155", "width": "word", "load_va": "0x0044C88F"}]},
+        {"label": "召唤(幻影)", "format_va": "0x0044C97A", "sources": [{"address": "0x007DA159", "width": "word", "load_va": "0x0044C955"}]},
+        {"label": "魔法防御力", "format_va": "0x0044CA5F", "sources": [{"address": "0x007DA15B", "width": "word", "load_va": "0x0044C9DA"}, {"address": "0x007DA15D", "width": "word", "load_va": "0x0044CA61"}, {"address": "0x007DA15F", "width": "word", "load_va": "0x0044CAE4"}, {"address": "0x007DA161", "width": "word", "load_va": "0x0044CB69"}, {"address": "0x007DA163", "width": "word", "load_va": "0x0044CBEE"}, {"address": "0x007DA165", "width": "word", "load_va": "0x0044CC73"}], "note": "The tail of the routine renders six resistance/defense sub-values under this label family; retain each raw field until the formatter/label grouping is verified."}
+      ]
+    },
+    "interpretation": "These are original GBK strings passed through the status attribute helper. They prove the semantic labels, two-column relative text baselines, and the exact raw global operands loaded at each formatter call. The fields are deliberately not renamed to modern server concepts until cross-references establish that mapping."
   },
   "item_record_and_draw_chain": {
     "hit_test_va": "0x0044B6B0",

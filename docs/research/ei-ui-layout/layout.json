@@ -17063,7 +17063,343 @@
             "y_offset": 445
           }
         ],
-        "interpretation": "These are original GBK strings passed through the status attribute helper. They prove the semantic labels and two-column relative text baselines; the associated global fields and color semantics remain separate pending items."
+        "value_field_sources": {
+          "evidence_level": "primary-static-global-loads-at-format-call-sites",
+          "note": "The following entries identify the exact global memory operands loaded immediately before 0x0046811C. They are raw client fields, not yet server/database semantic names. Word/byte width and formatter argument order are preserved so a reimplementation can reproduce the original ABI without guessing.",
+          "first_column": [
+            {
+              "label": "LEVEL",
+              "format_va": "0x0044BD14",
+              "sources": [
+                {
+                  "address": "0x007DA108",
+                  "width": "byte",
+                  "load_va": "0x0044BD00"
+                }
+              ]
+            },
+            {
+              "label": "HP",
+              "format_va": "0x0044BD94",
+              "sources": [
+                {
+                  "address": "0x007DA10D",
+                  "width": "word",
+                  "load_va": "0x0044BD8C"
+                },
+                {
+                  "address": "0x007DA111",
+                  "width": "word",
+                  "load_va": "0x0044BD7F"
+                }
+              ],
+              "argument_order": "push 0x007DA111, then 0x007DA10D"
+            },
+            {
+              "label": "MP",
+              "format_va": "0x0044BE17",
+              "sources": [
+                {
+                  "address": "0x007DA10F",
+                  "width": "word",
+                  "load_va": "0x0044BE0A"
+                },
+                {
+                  "address": "0x007DA113",
+                  "width": "word",
+                  "load_va": "0x0044BE03"
+                }
+              ],
+              "argument_order": "push 0x007DA113, then 0x007DA10F"
+            },
+            {
+              "label": "经验",
+              "format_va": "0x0044BEC4",
+              "sources": [
+                {
+                  "address": "0x007DA115",
+                  "width": "dword",
+                  "load_va": "0x0044BE5D"
+                },
+                {
+                  "address": "0x007DA119",
+                  "width": "dword",
+                  "load_va": "0x0044BE41"
+                }
+              ],
+              "derived_value": "double((int32)0x007DA115 / (int32)0x007DA119) * global double 0x00476970; formatted with 0x47C72C=%.2f%s",
+              "guard": "division is skipped when 0x007DA119 <= 0"
+            },
+            {
+              "label": "包袱负重",
+              "format_va": "0x0044BF4A",
+              "sources": [
+                {
+                  "address": "0x007DA11D",
+                  "width": "word",
+                  "load_va": "0x0044BF3D"
+                },
+                {
+                  "address": "0x007DA11F",
+                  "width": "word",
+                  "load_va": "0x0044BF36"
+                }
+              ],
+              "argument_order": "push 0x007DA11F, then 0x007DA11D"
+            },
+            {
+              "label": "腕力",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA121",
+                  "width": "byte",
+                  "load_va": "0x0044BFBF"
+                },
+                {
+                  "address": "0x007DA122",
+                  "width": "byte",
+                  "load_va": "0x0044BFB9"
+                }
+              ],
+              "argument_order": "push 0x007DA122, then 0x007DA121"
+            },
+            {
+              "label": "准确",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA123",
+                  "width": "byte",
+                  "load_va": "0x0044C03C"
+                },
+                {
+                  "address": "0x007DA124",
+                  "width": "dword_low8",
+                  "load_va": "0x0044C035"
+                }
+              ],
+              "argument_order": "push low8(0x007DA124), then low8(0x007DA123)"
+            },
+            {
+              "label": "敏捷",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA16B",
+                  "width": "byte",
+                  "load_va": "0x0044C0BE"
+                },
+                {
+                  "address": "0x007DA16C",
+                  "width": "dword_low8",
+                  "load_va": "0x0044C130"
+                }
+              ],
+              "argument_order": "the two byte-like values are formatted by 0x0046811C"
+            },
+            {
+              "label": "毒物躲避",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA169",
+                  "width": "word",
+                  "load_va": "0x0044C1B2"
+                }
+              ]
+            },
+            {
+              "label": "中毒恢复",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA16D",
+                  "width": "byte",
+                  "load_va": "0x0044C22F"
+                }
+              ]
+            },
+            {
+              "label": "生命恢复",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA16E",
+                  "width": "byte",
+                  "load_va": "0x0044C2AB"
+                }
+              ]
+            },
+            {
+              "label": "魔法恢复",
+              "format_va": null,
+              "sources": [
+                {
+                  "address": "0x007DA16F",
+                  "width": "byte",
+                  "load_va": "0x0044C327"
+                }
+              ]
+            }
+          ],
+          "second_column": [
+            {
+              "label": "防御",
+              "format_va": "0x0044C43D",
+              "sources": [
+                {
+                  "address": "0x007DA109",
+                  "width": "byte",
+                  "load_va": "0x0044C42B"
+                },
+                {
+                  "address": "0x007DA10A",
+                  "width": "byte",
+                  "load_va": "0x0044C425"
+                }
+              ],
+              "argument_order": "push low8(0x007DA10A), then low8(0x007DA109)"
+            },
+            {
+              "label": "攻击",
+              "format_va": "0x0044C4C5",
+              "sources": [
+                {
+                  "address": "0x007DA10B",
+                  "width": "word",
+                  "load_va": "0x0044C4AB"
+                }
+              ]
+            },
+            {
+              "label": "魔法",
+              "format_va": "0x0044C591",
+              "sources": [
+                {
+                  "address": "0x007DA149",
+                  "width": "word",
+                  "load_va": "0x0044C571"
+                }
+              ]
+            },
+            {
+              "label": "火(火焰)",
+              "format_va": "0x0044C60C",
+              "sources": [
+                {
+                  "address": "0x007DA14B",
+                  "width": "word",
+                  "load_va": "0x0044C5F6"
+                }
+              ]
+            },
+            {
+              "label": "冰(冰冻)",
+              "format_va": "0x0044C691",
+              "sources": [
+                {
+                  "address": "0x007DA14D",
+                  "width": "word",
+                  "load_va": "0x0044C67B"
+                }
+              ]
+            },
+            {
+              "label": "电(雷电)",
+              "format_va": "0x0044C716",
+              "sources": [
+                {
+                  "address": "0x007DA14F",
+                  "width": "word",
+                  "load_va": "0x0044C700"
+                }
+              ]
+            },
+            {
+              "label": "风(狂风)",
+              "format_va": "0x0044C79B",
+              "sources": [
+                {
+                  "address": "0x007DA151",
+                  "width": "word",
+                  "load_va": "0x0044C785"
+                }
+              ]
+            },
+            {
+              "label": "治疗(神圣)",
+              "format_va": "0x0044C820",
+              "sources": [
+                {
+                  "address": "0x007DA153",
+                  "width": "word",
+                  "load_va": "0x0044C80A"
+                }
+              ]
+            },
+            {
+              "label": "攻击(黑暗)",
+              "format_va": "0x0044C8A5",
+              "sources": [
+                {
+                  "address": "0x007DA155",
+                  "width": "word",
+                  "load_va": "0x0044C88F"
+                }
+              ]
+            },
+            {
+              "label": "召唤(幻影)",
+              "format_va": "0x0044C97A",
+              "sources": [
+                {
+                  "address": "0x007DA159",
+                  "width": "word",
+                  "load_va": "0x0044C955"
+                }
+              ]
+            },
+            {
+              "label": "魔法防御力",
+              "format_va": "0x0044CA5F",
+              "sources": [
+                {
+                  "address": "0x007DA15B",
+                  "width": "word",
+                  "load_va": "0x0044C9DA"
+                },
+                {
+                  "address": "0x007DA15D",
+                  "width": "word",
+                  "load_va": "0x0044CA61"
+                },
+                {
+                  "address": "0x007DA15F",
+                  "width": "word",
+                  "load_va": "0x0044CAE4"
+                },
+                {
+                  "address": "0x007DA161",
+                  "width": "word",
+                  "load_va": "0x0044CB69"
+                },
+                {
+                  "address": "0x007DA163",
+                  "width": "word",
+                  "load_va": "0x0044CBEE"
+                },
+                {
+                  "address": "0x007DA165",
+                  "width": "word",
+                  "load_va": "0x0044CC73"
+                }
+              ],
+              "note": "The tail of the routine renders six resistance/defense sub-values under this label family; retain each raw field until the formatter/label grouping is verified."
+            }
+          ]
+        },
+        "interpretation": "These are original GBK strings passed through the status attribute helper. They prove the semantic labels, two-column relative text baselines, and the exact raw global operands loaded at each formatter call. The fields are deliberately not renamed to modern server concepts until cross-references establish that mapping."
       },
       "item_record_and_draw_chain": {
         "hit_test_va": "0x0044B6B0",
@@ -17720,6 +18056,140 @@
           "evidence_level": "primary-static-message-dispatch",
           "interpretation": "A decoded client message subcode value 2 enters the store-item handler and then the shared state machine. This proves a non-visual protocol/opening entry exists, but the packet's human business name is not present in the recovered symbols."
         },
+        "state_input_evidence": {
+          "handler": "0x0042BFE1",
+          "owner": "main+0x33188",
+          "shared_handler_signature_candidate": {
+            "va": "0x0044E9B0",
+            "calling_convention": "this + two stack arguments; ret 0x8",
+            "argument_use": [
+              {
+                "argument": "arg1",
+                "stack_basis": "entry [esp+0x0C] after saving EBX/EBP",
+                "passed_to": "state-dependent control vtable+0x10"
+              },
+              {
+                "argument": "arg2",
+                "stack_basis": "entry [esp+0x18] after saving EBX/EBP/ESI/EDI",
+                "passed_to": "state-dependent control vtable+0x10"
+              }
+            ],
+            "interpretation": "The same routine is structurally an input/activation dispatcher as well as a state transition routine. The exact packet-versus-pointer meaning of its two arguments is not promoted without the surrounding caller ABI capture.",
+            "confidence": "primary-static-signature-candidate"
+          },
+          "state_1_constructor": {
+            "va": "0x0044F7E8",
+            "frame": 1003,
+            "raw_factory_args": [
+              1,
+              186,
+              498,
+              304
+            ],
+            "packet_derived_fields": [
+              {
+                "field": "this+0x7E8",
+                "expression": "packet-derived value / 6",
+                "confidence": "primary-static-arithmetic"
+              },
+              {
+                "field": "this+0x7E4",
+                "expression": "-1 if input count is zero, otherwise 0",
+                "confidence": "primary-static"
+              }
+            ],
+            "interpretation": "The expanded 4×3 item grid is initialized with a packet-derived count/batch value; this is stronger than a purely visual shop-state guess, but the packet schema is unresolved."
+          },
+          "state_2_constructor": {
+            "va": "0x0044F9E4",
+            "frame": 1001,
+            "raw_factory_args": [
+              -4,
+              182,
+              205,
+              205
+            ],
+            "packet_derived_fields": [
+              {
+                "field": "this+0x7E0",
+                "value": 0,
+                "role": "page index reset",
+                "confidence": "primary-static"
+              },
+              {
+                "field": "this+0x7E4",
+                "expression": "-1 if input count is zero, otherwise 0",
+                "role": "selected index",
+                "confidence": "primary-static"
+              }
+            ],
+            "interpretation": "The compact Frame 1001 state is a selected/detail or paging presentation candidate; no business label is promoted."
+          },
+          "state_4_transition": {
+            "vas": [
+              "0x0044EBCB",
+              "0x0044F263"
+            ],
+            "frame": 1002,
+            "raw_factory_args": [
+              0,
+              184,
+              540,
+              307
+            ],
+            "precondition": "selected item index this+0x704 resolves through 0x0044E6D0; resulting pointer is stored at this+0x7F0",
+            "confidence": "primary-static"
+          },
+          "interaction_controls": {
+            "state_0_1_3_4_control_offset": "this+0x54",
+            "state_1_2_4_control_offset": "this+0x1BC",
+            "state_1_2_control_offset": "this+0x270",
+            "state_1_control_offset": "this+0x324",
+            "state_0_control_offset": "this+0x540",
+            "state_4_control_offset": "this+0x48C",
+            "state_2_page_control_offset": "this+0x3D8",
+            "note": "These offsets are proven by vtable+0x0C/+0x10 hit/activation calls. They identify control objects, not their human captions."
+          }
+        },
+        "server_script_semantics": {
+          "evidence_level": "secondary-server-script",
+          "action_tokens": {
+            "deposit": "@storage",
+            "retrieve": [
+              "@getback",
+              "@PreGetback"
+            ],
+            "buy": "@buy",
+            "sell": "@sell"
+          },
+          "examples": [
+            {
+              "file": "06Inn_Bichon-0.txt",
+              "sections": [
+                "NPC_Storage",
+                "NPC_Getback"
+              ],
+              "semantic_result": "warehouse deposit/retrieve dialogue branches"
+            },
+            {
+              "file": "04Potion_Bichon1-0.txt",
+              "sections": [
+                "NPC_Buy",
+                "NPC_Sell"
+              ],
+              "semantic_result": "potion buy/sell dialogue branches"
+            },
+            {
+              "file": "01Meet_Bichon1-0.txt",
+              "sections": [
+                "NPC_Buy",
+                "NPC_Sell"
+              ],
+              "semantic_result": "meat buy/sell dialogue branches"
+            }
+          ],
+          "warning": "These tokens identify server-side NPC action branches. No byte-level mapping from these strings to state 0–4 has been proven in Mir3.exe yet."
+        },
         "interpretation": "The old client does contain a single item/shop/storage-style state machine with multiple GameInter panel variants. Static evidence now binds Frames 1000–1003 to concrete factory calls, fixed call-site rectangles, and a message-dispatch entry. It does not yet prove which state is named warehouse versus NPC shop, so those business labels remain candidates."
       },
       "controls": [
@@ -18293,6 +18763,33 @@
         }
       ],
       "paint_geometry": {
+        "constructor_geometry_fields": {
+          "routine": "0x0043EE00–0x0043EFF6",
+          "background_target_rect_fields": [
+            "this+0x520",
+            "this+0x524"
+          ],
+          "repeated_entry_target_rect_fields": [
+            "this+0x530",
+            "this+0x534"
+          ],
+          "final_entry_target_rect_fields": [
+            "this+0x540",
+            "this+0x544"
+          ],
+          "background_source_frame": 1100,
+          "repeated_source_frame": 1101,
+          "final_source_frame": 1102,
+          "screen_reference_constants": {
+            "width": 384,
+            "height": 384,
+            "background_vertical_reference": 138,
+            "entry_vertical_reference": 24
+          },
+          "interpretation": "The constructor derives three separate destination bases from decoded WIL header dimensions and fixed reference constants before paint. Paint then consumes these fields directly; the fields are not text records.",
+          "evidence_level": "primary-static-constructor-field-flow",
+          "warning": "The constants are preserved as binary inputs, not promoted to a final screen origin; parent/window offsets remain supplied through this+0x18/+0x1C and runtime state."
+        },
         "background_select": {
           "va": "0x0043F06A",
           "frame": 1100
@@ -18430,6 +18927,63 @@
             }
           ],
           "evidence_level": "primary-static-dialogue-parser-and-layout-state"
+        },
+        "dialogue_parser_tokens": {
+          "scanner_va": "0x00440AA0",
+          "source_cursor_field": "this+0x584",
+          "raw_entry_counter_field": "this+0x588",
+          "recognized_delimiters": [
+            {
+              "byte": "0x5C",
+              "character": "\\\\",
+              "effect": "terminates the current menu/dialogue segment and advances the parser cursor"
+            },
+            {
+              "byte": "0x7B",
+              "character": "{",
+              "effect": "scans a brace-delimited token; the token is compared through formatter/helper 0x00469400 against literal 0x0047C568"
+            },
+            {
+              "byte": "0x40",
+              "character": "@",
+              "effect": "enters a special token scan; the parser searches for the following 0x3E terminator and adjusts the source cursor"
+            },
+            {
+              "byte": "0x7D",
+              "character": "}",
+              "effect": "terminates the current scan path"
+            }
+          ],
+          "mode_effect": "A successful brace-token comparison sets this+0x582=1; this mode changes the entry-count arithmetic and can produce 14-pixel line spacing when overflow is also set.",
+          "entry_count_proof": "The parser computes paint_count=max(raw_count-6,0), then clamps paint_count to 16; raw_count is incremented by segment separators and token handling, so it is not simply the number of visible text lines.",
+          "evidence_level": "primary-static-token-scanner"
+        },
+        "server_script_syntax_cross_reference": {
+          "source": "/home/tetsuya/NAS/TMP/Mud3/Envir/Convert_Def/QuestDiary/Repair/TotalRepair.txt",
+          "evidence_level": "secondary-server-script-cross-reference",
+          "observed_forms": [
+            {
+              "form": "{ ... }",
+              "role_candidate": "dialogue block wrapper",
+              "relation_to_client": "matches the client brace-token scanner; exact server preprocessor expansion is not asserted"
+            },
+            {
+              "form": "\\\\",
+              "role_candidate": "dialogue line separator",
+              "relation_to_client": "matches the client 0x5C segment delimiter"
+            },
+            {
+              "form": "<text/@SRepairNow>",
+              "role_candidate": "clickable dialogue/menu entry with server action label",
+              "relation_to_client": "matches the client angle-bracket/special-token scan; the client-side action dispatch remains unresolved"
+            },
+            {
+              "form": "<$OUTPUT(P9)>",
+              "role_candidate": "server-expanded value embedded in dialogue text",
+              "relation_to_client": "shows why the client parser has a special token path; no direct client formatter binding is claimed"
+            }
+          ],
+          "warning": "This server file is not proof of the client's rendering implementation. It is retained only as a secondary syntax cross-reference for future dialogue replay and must not override Mir3.exe evidence."
         },
         "paint_repositioned_controls": {
           "routine": "0x00440A43–0x00440A8B",
@@ -20503,11 +21057,70 @@
           "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."
         }
       ],
+      "direct_callers_with_original_messages": [
+        {
+          "call_va": "0x00416F9C",
+          "message_va": "0x0047AD98",
+          "message_encoding": "GBK",
+          "message": "您要付给对方多少金币?",
+          "business_context": "payment/transfer amount confirmation",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x0041D633",
+          "message_va": "0x0047B028",
+          "message_encoding": "GBK",
+          "message": "您准备扔下多少金币?",
+          "business_context": "drop-gold amount confirmation",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x00420B9F",
+          "message_va": "0x0047B5A0",
+          "message_encoding": "CP949/Korean",
+          "message": "개인 보관 창고가 다 찼습니다. 더 이상 보관할 수 없습니다.",
+          "business_context": "personal storage full notice",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x00420BD3",
+          "message_va": "0x0047B588",
+          "message_encoding": "CP949/Korean",
+          "message": "보관 할 수 없습니다.",
+          "business_context": "storage operation rejected",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x004246BA",
+          "message_va": "0x0047BA10",
+          "message_encoding": "GBK",
+          "message": "请在这里添加您要删除的小组成员名字.",
+          "business_context": "group-member removal prompt",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x00403E12",
+          "message_va": "0x0047AB78",
+          "message_encoding": "CP949/Korean",
+          "message": "서버와의 접속이 끊겼습니다.",
+          "business_context": "server connection lost notice",
+          "evidence_level": "primary-static-callsite-and-string"
+        },
+        {
+          "call_va": "0x0041C196",
+          "message_va": "0x0047AF80",
+          "message_encoding": "CP949/Korean",
+          "message": "서버와의 접속이 불안합니다. 게임을 종료하겠습니다.",
+          "business_context": "unstable server connection notice",
+          "evidence_level": "primary-static-callsite-and-string"
+        }
+      ],
       "confirmed": [
         "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
         "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
         "The frame family visually supports confirmation/prompt UI semantics.",
-        "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
+        "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths.",
+        "Multiple independent client call sites pass original payment, drop-gold, storage, group and connection messages into the shared prompt constructor path."
       ],
       "pending": [
         "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
@@ -20740,6 +21353,57 @@
         "runtime_state_rect_field": "owner+0x2D0"
       }
     },
+    "static_initializer_trace": {
+      "routine": "0x0043D4D0",
+      "resource_load_calls": [
+        {
+          "call_va": "0x0043D4E7",
+          "object_field": "owner+0x04",
+          "literal_va": "0x0047C428",
+          "resource": "Data/MMap.wil"
+        },
+        {
+          "call_va": "0x0043D502",
+          "object_field": "owner+0x148",
+          "literal_va": "0x0047C414",
+          "resource": "Data/FMMap.wil"
+        }
+      ],
+      "initial_state": {
+        "selected_map_id": "owner+0x28C = -1",
+        "view_position": [
+          "owner+0x2B8 = 128",
+          "owner+0x2BC = 128"
+        ],
+        "mode_flag": "owner+0x294 = 0",
+        "animation": "owner+0x300 = 0",
+        "surface_call": {
+          "call_va": "0x0043D5DE",
+          "arguments": [
+            128,
+            128
+          ],
+          "target": "owner+0x00"
+        }
+      },
+      "map_id_update_trace": {
+        "routine": "0x0043D780",
+        "map_id_field": "owner+0x28C",
+        "overland_branch": {
+          "condition": "map_id >= 1000",
+          "normalization": "map_id - 1000",
+          "resource_object": "owner+0x148",
+          "frame_header": "owner+0x180"
+        },
+        "field_branch": {
+          "condition": "map_id < 1000",
+          "resource_object": "owner+0x04",
+          "frame_header": "owner+0x3C"
+        },
+        "destination_reset": "The selected frame width/height are written into owner+0x2E0 and the current view position is passed to 0x0043D5F0."
+      },
+      "interpretation": "The executable initializes both map libraries and a 128×128 surface before any map ID is selected. This is stronger than inferring the map source from a screenshot: the two library fields and the branch-specific frame-header path are statically explicit."
+    },
     "viewport": {
       "surface_init_va": "0x0043D5F0",
       "surface_size_candidate": [
@@ -20933,9 +21597,48 @@
             ],
             "confidence": "high",
             "business_name": null
+          },
+          {
+            "color": "0x646464",
+            "rgb": [
+              100,
+              100,
+              100
+            ],
+            "used_by": [
+              "fixed map auxiliary rectangle branch at 0x0043DBD7"
+            ],
+            "confidence": "high",
+            "business_name": null
+          },
+          {
+            "color": "0xC8C8C8",
+            "rgb": [
+              200,
+              200,
+              200
+            ],
+            "used_by": [
+              "fixed map auxiliary rectangle branch at 0x0043DC0D"
+            ],
+            "confidence": "high",
+            "business_name": null
+          },
+          {
+            "color": "0x96C8FF",
+            "rgb": [
+              150,
+              200,
+              255
+            ],
+            "used_by": [
+              "fixed map auxiliary rectangle branch at 0x0043DC40"
+            ],
+            "confidence": "high",
+            "business_name": null
           }
         ],
-        "note": "The original client distinguishes at least green and yellow map overlays; color evidence is stronger than a semantic label, so player/NPC/item names remain unresolved."
+        "note": "The original client distinguishes green, yellow, gray, light-gray and pale-blue map drawing branches. Color evidence is stronger than a semantic label, so player/NPC/item names remain unresolved."
       },
       "timing_or_animation": {
         "field": "owner+0x300",
@@ -25711,6 +26414,18 @@
       "scroll_controls": "this+0x558 and this+0x60C are tested after channel controls; their child hit rectangles use state-selected resources and remain resource-context dependent.",
       "evidence_level": "primary-static-plus-primary-resource"
     },
+    "shared_control_string_storage": {
+      "constructor_va": "0x00417550",
+      "field": "control_object+0x34",
+      "copy_proof": "The constructor copies the non-null string argument into control_object+0x34 after storing resource, position, state and mode fields.",
+      "chat_constructor_sources": "The six calls at 0x00414155–0x00414219 pass the original GBK command/description string pointers; the corresponding control objects are this+0x120 through this+0x4A4.",
+      "shared_render_references": [
+        "0x00417B55",
+        "0x00417BB3"
+      ],
+      "interpretation": "The six command strings are structurally bound to the six chat controls and are available to the shared control implementation during its draw/geometry path. The available static path does not yet prove whether the user sees them as captions, hover tooltips, or both; that display distinction remains pending.",
+      "evidence_level": "primary-static-field-and-call-flow"
+    },
     "original_command_strings": {
       "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
       "encoding": "GBK",
@@ -25968,12 +26683,30 @@
     "paint_geometry": {
       "constructor_geometry_fields": {
         "routine": "0x0043EE00–0x0043EFF6",
-        "background_target_rect_fields": ["this+0x520", "this+0x524"],
-        "repeated_entry_target_rect_fields": ["this+0x530", "this+0x534"],
-        "final_entry_target_rect_fields": ["this+0x540", "this+0x544"],
-        "screen_reference_constants": {"width": 384, "height": 384, "background_vertical_reference": 138, "entry_vertical_reference": 24},
+        "background_target_rect_fields": [
+          "this+0x520",
+          "this+0x524"
+        ],
+        "repeated_entry_target_rect_fields": [
+          "this+0x530",
+          "this+0x534"
+        ],
+        "final_entry_target_rect_fields": [
+          "this+0x540",
+          "this+0x544"
+        ],
+        "background_source_frame": 1100,
+        "repeated_source_frame": 1101,
+        "final_source_frame": 1102,
+        "screen_reference_constants": {
+          "width": 384,
+          "height": 384,
+          "background_vertical_reference": 138,
+          "entry_vertical_reference": 24
+        },
+        "interpretation": "The constructor derives three separate destination bases from decoded WIL header dimensions and fixed reference constants before paint. Paint then consumes these fields directly; the fields are not text records.",
         "evidence_level": "primary-static-constructor-field-flow",
-        "warning": "These are destination-base field derivations, not independently proven final screen origins."
+        "warning": "The constants are preserved as binary inputs, not promoted to a final screen origin; parent/window offsets remain supplied through this+0x18/+0x1C and runtime state."
       },
       "background_select": {
         "va": "0x0043F06A",
@@ -26112,6 +26845,63 @@
           }
         ],
         "evidence_level": "primary-static-dialogue-parser-and-layout-state"
+      },
+      "dialogue_parser_tokens": {
+        "scanner_va": "0x00440AA0",
+        "source_cursor_field": "this+0x584",
+        "raw_entry_counter_field": "this+0x588",
+        "recognized_delimiters": [
+          {
+            "byte": "0x5C",
+            "character": "\\\\",
+            "effect": "terminates the current menu/dialogue segment and advances the parser cursor"
+          },
+          {
+            "byte": "0x7B",
+            "character": "{",
+            "effect": "scans a brace-delimited token; the token is compared through formatter/helper 0x00469400 against literal 0x0047C568"
+          },
+          {
+            "byte": "0x40",
+            "character": "@",
+            "effect": "enters a special token scan; the parser searches for the following 0x3E terminator and adjusts the source cursor"
+          },
+          {
+            "byte": "0x7D",
+            "character": "}",
+            "effect": "terminates the current scan path"
+          }
+        ],
+        "mode_effect": "A successful brace-token comparison sets this+0x582=1; this mode changes the entry-count arithmetic and can produce 14-pixel line spacing when overflow is also set.",
+        "entry_count_proof": "The parser computes paint_count=max(raw_count-6,0), then clamps paint_count to 16; raw_count is incremented by segment separators and token handling, so it is not simply the number of visible text lines.",
+        "evidence_level": "primary-static-token-scanner"
+      },
+      "server_script_syntax_cross_reference": {
+        "source": "/home/tetsuya/NAS/TMP/Mud3/Envir/Convert_Def/QuestDiary/Repair/TotalRepair.txt",
+        "evidence_level": "secondary-server-script-cross-reference",
+        "observed_forms": [
+          {
+            "form": "{ ... }",
+            "role_candidate": "dialogue block wrapper",
+            "relation_to_client": "matches the client brace-token scanner; exact server preprocessor expansion is not asserted"
+          },
+          {
+            "form": "\\\\",
+            "role_candidate": "dialogue line separator",
+            "relation_to_client": "matches the client 0x5C segment delimiter"
+          },
+          {
+            "form": "<text/@SRepairNow>",
+            "role_candidate": "clickable dialogue/menu entry with server action label",
+            "relation_to_client": "matches the client angle-bracket/special-token scan; the client-side action dispatch remains unresolved"
+          },
+          {
+            "form": "<$OUTPUT(P9)>",
+            "role_candidate": "server-expanded value embedded in dialogue text",
+            "relation_to_client": "shows why the client parser has a special token path; no direct client formatter binding is claimed"
+          }
+        ],
+        "warning": "This server file is not proof of the client's rendering implementation. It is retained only as a secondary syntax cross-reference for future dialogue replay and must not override Mir3.exe evidence."
       },
       "paint_repositioned_controls": {
         "routine": "0x00440A43–0x00440A8B",
@@ -27803,14 +28593,28 @@
       "evidence_level": "primary-static-visible-list-dispatch",
       "implementation_note": "The restoration preview should expose list order as a debug layer and keep explicit z-order data separate from each window's local paint order.",
       "normalized_draw_call_contract": {
-        "list_manager": {"head": "main+0xD28", "count": "main+0xD38", "node_id": "node+0x00", "next": "node+0x04"},
-        "dispatch_step": ["read node id", "select specialized Paint VA from ID jump table", "paint current window object", "advance to node+0x04"],
+        "list_manager": {
+          "head": "main+0xD28",
+          "count": "main+0xD38",
+          "node_id": "node+0x00",
+          "next": "node+0x04"
+        },
+        "dispatch_step": [
+          "read node id",
+          "select specialized Paint VA from ID jump table",
+          "paint current window object",
+          "advance to node+0x04"
+        ],
         "show_mutation": "0x0042AC30 -> 0x00449870 appends a new node after manager+0x0C",
         "hide_mutation": "0x0042AC50 unlinks matching node and releases it",
         "local_vs_global_order": "window-local paint_order arrays describe inside-window order; this linked-list contract describes cross-window order",
         "evidence_level": "primary-static"
       },
-      "source_artifacts": ["window-traversal-evidence.json", "window-visibility-dispatch-evidence.json", "window-position-dispatch-evidence.json"]
+      "source_artifacts": [
+        "window-traversal-evidence.json",
+        "window-visibility-dispatch-evidence.json",
+        "window-position-dispatch-evidence.json"
+      ]
     },
     "pending": [
       "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
@@ -28356,11 +29160,70 @@
         "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."
       }
     ],
+    "direct_callers_with_original_messages": [
+      {
+        "call_va": "0x00416F9C",
+        "message_va": "0x0047AD98",
+        "message_encoding": "GBK",
+        "message": "您要付给对方多少金币?",
+        "business_context": "payment/transfer amount confirmation",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x0041D633",
+        "message_va": "0x0047B028",
+        "message_encoding": "GBK",
+        "message": "您准备扔下多少金币?",
+        "business_context": "drop-gold amount confirmation",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x00420B9F",
+        "message_va": "0x0047B5A0",
+        "message_encoding": "CP949/Korean",
+        "message": "개인 보관 창고가 다 찼습니다. 더 이상 보관할 수 없습니다.",
+        "business_context": "personal storage full notice",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x00420BD3",
+        "message_va": "0x0047B588",
+        "message_encoding": "CP949/Korean",
+        "message": "보관 할 수 없습니다.",
+        "business_context": "storage operation rejected",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x004246BA",
+        "message_va": "0x0047BA10",
+        "message_encoding": "GBK",
+        "message": "请在这里添加您要删除的小组成员名字.",
+        "business_context": "group-member removal prompt",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x00403E12",
+        "message_va": "0x0047AB78",
+        "message_encoding": "CP949/Korean",
+        "message": "서버와의 접속이 끊겼습니다.",
+        "business_context": "server connection lost notice",
+        "evidence_level": "primary-static-callsite-and-string"
+      },
+      {
+        "call_va": "0x0041C196",
+        "message_va": "0x0047AF80",
+        "message_encoding": "CP949/Korean",
+        "message": "서버와의 접속이 불안합니다. 게임을 종료하겠습니다.",
+        "business_context": "unstable server connection notice",
+        "evidence_level": "primary-static-callsite-and-string"
+      }
+    ],
     "confirmed": [
       "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
       "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
       "The frame family visually supports confirmation/prompt UI semantics.",
-      "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
+      "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths.",
+      "Multiple independent client call sites pass original payment, drop-gold, storage, group and connection messages into the shared prompt constructor path."
     ],
     "pending": [
       "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
@@ -28520,7 +29383,32 @@
         "0x0044E9B0",
         "0x00423E80"
       ],
-      "interpretation": "The client receives a decoded item/shop-storage message and enters the shared panel state machine. The packet's human business name is not present in symbols."
+      "interpretation": "The client receives a decoded item/shop-storage message and enters the shared panel state machine. The packet's human business name is not present in symbols.",
+      "confirmed_handler_behavior": {
+        "handler_va": "0x0042BFE1",
+        "owner_field": "main+0x33188",
+        "calls": [
+          {
+            "va": "0x0042BFE9",
+            "target": "0x0044E9B0",
+            "role": "consume/update shared store object"
+          },
+          {
+            "va": "0x0042BFFA",
+            "target": "0x0042ADB0",
+            "argument": 2,
+            "role": "show/retain window id 2 after successful handling"
+          }
+        ],
+        "confidence": "primary-static"
+      },
+      "shared_handler_input_signature": {
+        "routine": "0x0044E9B0",
+        "stack_arguments": 2,
+        "cleanup": "ret 0x8",
+        "observed_use": "arguments are forwarded to state-dependent control vtable+0x10 handlers",
+        "status": "primary-static signature candidate; exact caller ABI and packet schema pending"
+      }
     },
     "states": [
       {
@@ -28590,6 +29478,11 @@
           "step": 38,
           "visual_evidence": "primary-static-plus-resource-discrepancy"
         },
+        "dynamic_fields": {
+          "page_or_batch_value": "packet-derived stack value divided by 6",
+          "page_field": "this+0x7E8",
+          "selected_index_reset": "this+0x7E4=-1 when input count is zero"
+        },
         "business_name": {
           "value": null,
           "status": "pending"
@@ -28620,6 +29513,12 @@
           "record_field": "this+0x71C",
           "divisor": 12,
           "formula": "ceil(count/12)"
+        },
+        "dynamic_fields": {
+          "entry_count_or_page_source": "packet-derived value stored in this+0x71C",
+          "page_index": "this+0x7E0",
+          "selected_index": "this+0x7E4",
+          "page_turn_control": "this+0x3D8"
         },
         "business_name": {
           "value": null,
@@ -28679,6 +29578,7 @@
           "candidate": "wide selected-item/action panel; Frame 1002 visibly combines the list and an attached right detail/action panel",
           "visual_evidence": "primary-resource-visual"
         },
+        "transition_precondition": "selected item lookup through this+0x704 / 0x0044E6D0 succeeds; selected record field at this+0x7F0 is then refreshed",
         "business_name": {
           "value": null,
           "status": "pending"
@@ -28732,11 +29632,68 @@
         "buy": 108,
         "sell": 108
       },
-      "status": "secondary corroboration only; no state-to-business promotion"
+      "status": "secondary corroboration only; no state-to-business promotion",
+      "script_action_tokens": {
+        "storage": [
+          "@storage"
+        ],
+        "getback": [
+          "@getback",
+          "@PreGetback"
+        ],
+        "buy": [
+          "@buy"
+        ],
+        "sell": [
+          "@sell"
+        ],
+        "evidence": "Mud3 Convert_Def/Market_Def scripts; these are NPC dialogue actions, not Mir3.exe protocol enums"
+      },
+      "semantic_examples": [
+        {
+          "script": "06Inn_Bichon-0.txt",
+          "sections": [
+            "NPC_Storage",
+            "NPC_Getback"
+          ],
+          "actions": [
+            "@storage",
+            "@PreGetback"
+          ],
+          "meaning": "warehouse deposit/retrieval dialogue path"
+        },
+        {
+          "script": "04Potion_Bichon1-0.txt",
+          "sections": [
+            "NPC_Buy",
+            "NPC_Sell"
+          ],
+          "actions": [
+            "@buy",
+            "@sell"
+          ],
+          "meaning": "potion shop buy/sell dialogue path"
+        },
+        {
+          "script": "01Meet_Bichon1-0.txt",
+          "sections": [
+            "NPC_Buy",
+            "NPC_Sell"
+          ],
+          "actions": [
+            "@buy",
+            "@sell"
+          ],
+          "meaning": "meat shop buy/sell dialogue path"
+        }
+      ]
     },
     "pending": [
       "Runtime or stronger call-site evidence mapping states 0–4 to warehouse, buy, sell, selected item and extended action names.",
-      "Final parent-relative origin after 0x00423E80 arithmetic in a live window instance."
+      "Final parent-relative origin after 0x00423E80 arithmetic in a live window instance.",
+      "Packet field meanings passed to the state-1/state-2 constructors; the static code proves storage locations and arithmetic but not the server message schema.",
+      "Business labels for state 0/1/2/3/4; do not infer warehouse versus buy/sell solely from Frame 1000–1003 artwork.",
+      "Exact caller ABI for 0x0044E9B0: it receives two stack arguments, but their semantic type is not yet proven at the protocol boundary."
     ]
   },
   "window_position_dispatch_evidence": {
@@ -29217,11 +30174,30 @@
     "position_semantics": {
       "record_position_meaning": "wrapper call-site x/y inputs",
       "final_rect_owner": "0x00423B30",
-      "final_rect_fields": ["window_object+0x08", "window_object+0x18"],
-      "anchor_fields": ["window_object+0x40", "window_object+0x44"],
-      "shared_constructor_abi": {"va": "0x00423B30", "stack_argument_count": 9, "cleanup_bytes": 36, "resource_header_selector": "0x00466130", "confidence": "primary-static"},
-      "warning": "The constructor selects WIL header dimensions and applies centering/anchor arithmetic; raw record x/y are not universally final screen origins.",
-      "evidence_level": "primary-static-constructor-algorithm"
+      "final_rect_fields": "window_object+0x08 and window_object+0x18",
+      "anchor_fields": [
+        "window_object+0x40",
+        "window_object+0x44"
+      ],
+      "algorithm": "0x00423B30 selects the WIL header dimensions, derives anchor offsets, and calls SetRect before returning; when its centering/anchor flag is active, the call-site x/y are not themselves final screen origin.",
+      "evidence_level": "primary-static-constructor-algorithm",
+      "warning": "Do not treat every [x,y] in records as a final 800x600 screen coordinate. The final origin must use the constructor branch and anchor mode; records preserve raw inputs so the calculation is reproducible.",
+      "shared_constructor_abi": {
+        "va": "0x00423B30",
+        "stack_argument_bytes_cleaned": 36,
+        "stack_argument_count": 9,
+        "resource_header_selector": "0x00466130",
+        "setrect_targets": [
+          "window_object+0x08",
+          "window_object+0x18"
+        ],
+        "anchor_storage": [
+          "window_object+0x40",
+          "window_object+0x44"
+        ],
+        "confidence": "primary-static-arity-and-field-flow",
+        "warning": "The nine-argument wrapper-to-base field permutation is preserved as binary evidence; do not assign human parameter names without tracing each derived wrapper."
+      }
     },
     "records": [
       {
