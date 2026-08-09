@@ -19,7 +19,22 @@
         {"call_va": "0x00424329", "frame_pair": [914, 915], "position": [159, 197], "semantic_candidate": "member/action slot 3"},
         {"call_va": "0x0042434F", "frame_pair": [920, 921], "position": [9, 52], "semantic_candidate": "group operation/tab"}
       ],
-      "pending": ["member text/icon draw order", "whether all 3 action slots are always visible", "runtime open-state transitions"]
+      "member_list_render": {
+        "paint_va": "0x004243D0",
+        "linked_list_head": "this+0x58",
+        "visibility_guard": "this+0x68",
+        "row_index": "local counter starting at 0",
+        "column_rule": "index & 1",
+        "row_rule": "floor(index / 2)",
+        "screen_relative_origin": [45, 90],
+        "column_step": 100,
+        "row_step": 20,
+        "formula": "x = window.x + 45 + 100*(index mod 2); y = window.y + 90 + 20*floor(index/2)",
+        "draw_helper": "0x0045DD70",
+        "evidence": "0x00424445-0x0042448E",
+        "confidence": "primary-static"
+      },
+      "pending": ["member field text/icon ordering", "whether the visible linked-list count is capped by clipping", "runtime open-state transitions"]
     },
     {
       "id": "window.guild-candidate",
