@@ -36,6 +36,23 @@ def main() -> None:
                 "evidence_level": "primary-static-resource-handle-flow",
                 "notes": "0x00402735 loads owner+0x5b0 with the Interface1c path; all four constructors push esi=owner+0x5b0.",
             }
+        if cluster["range"] == ["0x00455af5", "0x00455af5"]:
+            cluster["parent_context"] = {
+                "constructor_va": "0x00455A80",
+                "method_va": "0x00455AC0",
+                "vtable": "0x00476B7C",
+                "initializer_call_va": "0x00418CF1",
+                "component_id": "0x13",
+                "object_field": "owner+0x362354",
+                "control": {
+                    "resource_argument": "[esp+0x04]",
+                    "frame_pair": [2, 3],
+                    "position": [135, 400],
+                    "flags": [0, -1, 1, 0]
+                },
+                "evidence_level": "primary-static-component-context",
+                "warning": "The component is not proven to be a visible game UI window; retain as a static control candidate until the resource argument and paint call are traced.",
+            }
         cluster.pop("first_call_va")
         cluster.pop("last_call_va")
     result = {
