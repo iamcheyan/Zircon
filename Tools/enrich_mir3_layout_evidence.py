@@ -24,6 +24,54 @@ SKILL_REDRAW_POSITIONS = {
 }
 
 
+def normalized_draw_calls(draw_order: dict, specialized: list[dict]) -> list[dict]:
+    """Flatten proven/candidate paint-order records without promoting them.
+
+    This is deliberately a lossless index: local ``order`` values are kept
+    local to their scope, and every record carries the source artifact and the
+    original evidence level.  It is not a guessed global z-order.
+    """
+    calls: list[dict] = []
+    for row in draw_order.get("layers", []):
+        calls.append({
+            "scope": "cross-window/global",
+            "order": row.get("order"),
+            "va": row.get("draw_chain", [None])[0] if row.get("draw_chain") else None,
+            "role": row.get("role", row.get("id")),
+            "resource": row.get("resource", row.get("resource_families")),
+            "evidence_level": row.get("confidence", "candidate"),
+            "source": "draw-order-evidence.json",
+            "warning": row.get("warning"),
+        })
+
+    def add_local(scope: str, item: dict, source: str):
+        calls.append({
+            "scope": scope,
+            "order": item.get("order"),
+            "va": item.get("va"),
+            "role": item.get("role") or item.get("target") or item.get("interpretation") or "draw-call",
+            "resource": item.get("resource"),
+            "evidence_level": item.get("evidence", item.get("evidence_level", "candidate")),
+            "source": source,
+            "warning": item.get("warning"),
+        })
+
+    for evidence in specialized:
+        source = evidence.get("_artifact", "specialized evidence")
+        if isinstance(evidence.get("paint_order"), list):
+            scope = evidence.get("window", {}).get("id") or evidence.get("window_id")
+            if not scope and evidence.get("windows"):
+                scope = "social-window-family"
+            scope = scope or source
+            for item in evidence["paint_order"]:
+                add_local(scope, item, source)
+        for window in evidence.get("windows", []):
+            if isinstance(window.get("paint_order"), list):
+                for item in window["paint_order"]:
+                    add_local(window.get("id", source), item, source)
+    return calls
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--layout", type=Path, default=Path("docs/research/ei-ui-layout/layout.json"))
@@ -288,7 +336,25 @@ def main() -> None:
         "warning": "Resource family labels do not prove a window's business name or draw order.",
     }
     layout["secondary_screen_candidates"] = [x for x in (interface1c_parent, interface1c_select) if x]
-    layout["specialized_window_evidence"] = [x for x in (skill_window_context, inventory_window_evidence, status_window_evidence, quest_window_evidence, store_window_evidence, npc_window_evidence, social_window_evidence, system_window_evidence, notice_prompt_evidence, confirmation_prompt_evidence) if x]
+    specialized = []
+    specialized_sources = [
+        (skill_window_context, "skill-window-context.json"),
+        (inventory_window_evidence, "inventory-window-render-evidence.json"),
+        (status_window_evidence, "status-window-render-evidence.json"),
+        (quest_window_evidence, "quest-window-render-evidence.json"),
+        (store_window_evidence, "store-window-render-evidence.json"),
+        (npc_window_evidence, "npc-window-render-evidence.json"),
+        (social_window_evidence, "social-window-render-evidence.json"),
+        (system_window_evidence, "system-window-render-evidence.json"),
+        (notice_prompt_evidence, "notice-prompt-window-evidence.json"),
+        (confirmation_prompt_evidence, "confirmation-prompt-evidence.json"),
+    ]
+    for evidence, artifact in specialized_sources:
+        if evidence:
+            tagged = dict(evidence)
+            tagged["_artifact"] = artifact
+            specialized.append(tagged)
+    layout["specialized_window_evidence"] = specialized
     layout["magic_exp_records"] = magic_exp_records
     if map_crossref:
         map_ui_evidence = dict(map_ui_evidence)
@@ -301,6 +367,7 @@ def main() -> None:
     layout["system_window_evidence"] = system_window_evidence
     layout["store_state_graph"] = store_state_graph
     layout["draw_order_evidence"] = draw_order_evidence
+    layout["normalized_draw_calls"] = normalized_draw_calls(draw_order_evidence, specialized)
     layout["window_position_dispatch_evidence"] = window_position_dispatch
     layout["window_visibility_dispatch_evidence"] = window_visibility_dispatch
     layout["window_initialization_evidence"] = window_initialization

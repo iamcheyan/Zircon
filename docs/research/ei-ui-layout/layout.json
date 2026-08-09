@@ -16255,7 +16255,8 @@
         "candidate": "skill-book-with-element-or-school-tabs",
         "confidence": "primary-static-plus-visual-candidate",
         "warning": "The labels identify category text passed during construction; exact skill-list paging and runtime selection still require input-path tracing."
-      }
+      },
+      "_artifact": "skill-window-context.json"
     },
     {
       "source": {
@@ -16643,7 +16644,8 @@
       "pending": [
         "The semantic meaning of the x+0xF8/y-0xA5 Frame 94 draw call and whether it is a top/detail decoration or a reusable side panel.",
         "The runtime/server semantic names of the primary value and packed +0x351/+0x353 fields; their original draw operands and branches are now recorded, but no symbol/protocol proof has been found."
-      ]
+      ],
+      "_artifact": "inventory-window-render-evidence.json"
     },
     {
       "source": {
@@ -17738,7 +17740,8 @@
         "The exact status/attribute text field coordinates and source data structures.",
         "Mapping the eight equipment candidate indices to exact item names (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
         "Resolve selector context 0x005668C4 to the exact WIL/WIX library filename used for equipment item icons."
-      ]
+      ],
+      "_artifact": "status-window-render-evidence.json"
     },
     {
       "source": {
@@ -18045,7 +18048,8 @@
         "The runtime meaning of the 19-line guard and list scroll state beyond the statically observed this+0x60 window fields.",
         "Final labels/business names for frames 721–724 and the business meaning of original event/message 0x418; the control-to-event chain is now closed but pixels and message IDs do not prove user-facing names.",
         "Whether Frame 705 is a complete text background or only a decorative detail panel at runtime."
-      ]
+      ],
+      "_artifact": "quest-window-render-evidence.json"
     },
     {
       "source": {
@@ -18880,7 +18884,8 @@
         "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
         "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots.",
         "Map state values 0–4 to protocol/opening call sites so warehouse, NPC shop, selected-item and extended-shop names can be separated; visual similarity alone is not a binding."
-      ]
+      ],
+      "_artifact": "store-window-render-evidence.json"
     },
     {
       "source": {
@@ -19401,7 +19406,8 @@
         "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles and visual icon states are now recorded.",
         "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
         "The exact font/color/baseline draw call outside NPC Paint, including how the shared layout structures at this+0x550 through this+0x57C are consumed."
-      ]
+      ],
+      "_artifact": "npc-window-render-evidence.json"
     },
     {
       "source": {
@@ -20000,7 +20006,8 @@
         "result": "No separate static friend-list window constructor or dedicated main-HUD friend control was found in this inventory.",
         "evidence_level": "primary-static-negative-scope",
         "interpretation": "This does not prove that no friend/social functionality exists at runtime. It means the current EI build's friend-like behavior is more likely to be a page/state of the guild/social F600 family, a dynamically allocated dialog, or an unassigned Interface1c control cluster. Do not add a standalone friend panel until an entry point, resource frame or state field is found."
-      }
+      },
+      "_artifact": "social-window-render-evidence.json"
     },
     {
       "source": {
@@ -20979,7 +20986,8 @@
             "trade grid and text draw loop"
           ]
         }
-      ]
+      ],
+      "_artifact": "system-window-render-evidence.json"
     },
     {
       "source": {
@@ -21206,7 +21214,8 @@
       "pending": [
         "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
         "Whether Frames 603/604 are drawn by this window or by a separate prompt state machine."
-      ]
+      ],
+      "_artifact": "notice-prompt-window-evidence.json"
     },
     {
       "source": {
@@ -21588,7 +21597,8 @@
         "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
         "Whether the two clusters are two states of one prompt class or separate dialog classes.",
         "Runtime hover/click state transitions for the green-highlighted variants."
-      ]
+      ],
+      "_artifact": "confirmation-prompt-evidence.json"
     }
   ],
   "map_ui_evidence": {
@@ -33827,5 +33837,607 @@
     ],
     "evidence_level": "primary-decoded-client-file",
     "warning": "This is client Magic.exp content; do not merge it with Mud3 Envir/magic.dat without an explicit comparison key."
-  }
+  },
+  "normalized_draw_calls": [
+    {
+      "scope": "cross-window/global",
+      "order": 10,
+      "va": null,
+      "role": "underlying game scene",
+      "resource": null,
+      "evidence_level": "primary-static-context",
+      "source": "draw-order-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 20,
+      "va": null,
+      "role": "hud-base",
+      "resource": {
+        "file": "Data/GameInter.wil",
+        "frame": 50,
+        "rect": [
+          0,
+          465,
+          800,
+          136
+        ]
+      },
+      "evidence_level": "primary-static-resource-and-geometry",
+      "source": "draw-order-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 30,
+      "va": "0x00417550 control constructor",
+      "role": "hud-buttons-and-bars",
+      "resource": [
+        "GameInter.wil frames 100-115",
+        "GameInter.wil frames 60/61",
+        "GameInter.wil frame 63"
+      ],
+      "evidence_level": "primary-static-call-chain",
+      "source": "draw-order-evidence.json",
+      "warning": "Exact inter-control z-order is not yet runtime-confirmed; frame 50 already contains the inactive metal plate and compass art."
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 40,
+      "va": "derived window vtable paint",
+      "role": "normal-window-backgrounds",
+      "resource": [
+        "GameInter.wil",
+        "Interface1c.wil"
+      ],
+      "evidence_level": "primary-static-window-paint-candidate",
+      "source": "draw-order-evidence.json",
+      "warning": "Window visibility and stacking depend on state; 0x004280F0 now proves that the current visible-list order is consumed for painting, while insertion/promote policy remains state-dependent."
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 50,
+      "va": null,
+      "role": "buttons, item slots, list rows, text and icons inside an open window",
+      "resource": null,
+      "evidence_level": "primary-static-constructor-and-specialized-loop",
+      "source": "draw-order-evidence.json",
+      "warning": "Exact text/icon z-order remains pending for windows without a recovered paint loop."
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 60,
+      "va": "0x0043F040",
+      "role": "npc-dialogue-special-paint",
+      "resource": {
+        "file": "Data/GameInter.wil",
+        "frames": [
+          1100,
+          1101,
+          1102
+        ]
+      },
+      "evidence_level": "primary-static-special-paint",
+      "source": "draw-order-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "cross-window/global",
+      "order": 100,
+      "va": "0x004026E0 or 0x00456CB0 screen initializer",
+      "role": "secondary-interface-screen",
+      "resource": {
+        "file": "Data/Interface1c.wil",
+        "frame": 50,
+        "native_size": [
+          640,
+          480
+        ]
+      },
+      "evidence_level": "primary-static-screen-candidate",
+      "source": "draw-order-evidence.json",
+      "warning": "These startup/state screens are candidates; exact state-machine transition still needs runtime confirmation."
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 1,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": null
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 2,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": null
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 3,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": null
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 4,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": null
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 5,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": null
+    },
+    {
+      "scope": "window.other-14-candidate",
+      "order": 6,
+      "va": null,
+      "role": "draw-call",
+      "resource": null,
+      "evidence_level": "primary-static-call-order",
+      "source": "skill-window-context.json",
+      "warning": "文字字段的最终业务语义仍需结合 Magic.exp 解码和输入路径确认"
+    },
+    {
+      "scope": "window.inventory",
+      "order": 1,
+      "va": "0x0042EB8C-0x0042EB90",
+      "role": "window base/background",
+      "resource": null,
+      "evidence_level": "The paint entry calls the window vtable +0x0C before any inventory-specific geometry or item processing.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 2,
+      "va": "0x0042EB9B-0x0042EBB0",
+      "role": "top/detail composition candidate",
+      "resource": null,
+      "evidence_level": "The first inventory-specific draw call uses GameInter frame 94 and coordinates derived from window origin x+0xF8, y-0xA5.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 3,
+      "va": "0x0042EBBB-0x0042EE2A",
+      "role": "selected-item hit/index and source-destination composition",
+      "resource": null,
+      "evidence_level": "The branch tests selection globals, resolves a 6x6 slot through 0x42F150/0x42F2A0, then builds source/destination rectangles and calls the shared float/compositor pipeline.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 4,
+      "va": "0x0042EE2F-0x0042EE3A",
+      "role": "inventory item-list/update path",
+      "resource": null,
+      "evidence_level": "Both selected and non-selected branches converge here and call 0x42F790 before the numeric text path.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 5,
+      "va": "0x0042EE42-0x0042EEBE",
+      "role": "primary quantity/value text",
+      "resource": null,
+      "evidence_level": "The runtime value at 0x7DA100 is formatted through 0x46811C using 0x47A214, with target positions based on window.x+0x41 and window.y+0x11A/0x12B.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 6,
+      "va": "0x0042EECD-0x0042EF1E",
+      "role": "child-control reposition/update",
+      "resource": null,
+      "evidence_level": "Three original child-control objects receive their fixed positions through 0x417830; these calls occur after the item/value path.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.inventory",
+      "order": 7,
+      "va": "0x0042EF2F-0x0042F003",
+      "role": "state-dependent secondary text",
+      "resource": null,
+      "evidence_level": "The byte this+0x54 state dispatch selects the secondary text branch, which reads 0x7DA11D/0x7DA11F and emits text through 0x46811C/0x45DE50.",
+      "source": "inventory-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.quest",
+      "order": 1,
+      "va": "0x0044747E-0x0044748C",
+      "role": "window base/background",
+      "resource": null,
+      "evidence_level": "The paint entry calls the window vtable +0x0C before quest-specific controls or text processing.",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.quest",
+      "order": 2,
+      "va": "0x004474B3-0x004474E2",
+      "role": "two operation-control reposition",
+      "resource": null,
+      "evidence_level": "The two child controls are positioned at window-relative (290,59) and (290,89), then their vtable +0x04 paint slots are called.",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.quest",
+      "order": 3,
+      "va": "0x004474FC-0x00447D90",
+      "role": "quest-list decode and row text",
+      "resource": null,
+      "evidence_level": "The list cursor is refreshed, records are decoded through 0x45E0C0, long/short entries are selected, and visible rows are emitted at the 15-pixel cadence.",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.quest",
+      "order": 4,
+      "va": "0x00447DE4-0x00447E43",
+      "role": "selected quest detail frame",
+      "resource": null,
+      "evidence_level": "When the detail field exists, Frame 705 is looked up and drawn at window-relative origin (65,294), after the list update path.",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.quest",
+      "order": 5,
+      "va": "0x00447E48-0x00447F1D",
+      "role": "selected quest body text",
+      "resource": null,
+      "evidence_level": "The detail field is decoded and only three lines in the this+0x60 window are emitted through 0x45DD70 at window-relative (80,310), 15 pixels apart.",
+      "source": "quest-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "store-window-render-evidence.json",
+      "order": 1,
+      "va": "0x0044D5A0-0x0044D60F",
+      "role": "state-dependent clip rectangle",
+      "resource": null,
+      "evidence_level": "The paint entry first derives the clipping RECT from state byte this+0x5F8: state 1, state 4, or the stored window rectangle for other states.",
+      "source": "store-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "store-window-render-evidence.json",
+      "order": 2,
+      "va": "0x0044D631-0x0044DB15",
+      "role": "visible item rows and item icon composition",
+      "resource": null,
+      "evidence_level": "The linked item list is traversed, resource IDs are selected through 0x466130, source/destination rectangles are normalized and composited through 0x4542F0, and up to five visible rows are processed.",
+      "source": "store-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "store-window-render-evidence.json",
+      "order": 3,
+      "va": "0x0044D6D7-0x0044D8AF",
+      "role": "selected-row/item marker and item description region",
+      "resource": null,
+      "evidence_level": "The selected-row branch performs the float/compositor pipeline, invokes selection marker 0x45E570 and emits the item description area through the recovered text/auxiliary calls.",
+      "source": "store-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "store-window-render-evidence.json",
+      "order": 4,
+      "va": "0x0044D8B9-0x0044D9A3",
+      "role": "price or quantity and row text",
+      "resource": null,
+      "evidence_level": "The item record is decoded, runtime value this+0x24 is formatted with 0x47C784 (%d两), and row text is emitted through 0x45DD70.",
+      "source": "store-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "store-window-render-evidence.json",
+      "order": 5,
+      "va": "0x0044D9A8-0x0044DAC0",
+      "role": "state-dependent auxiliary/action text",
+      "resource": null,
+      "evidence_level": "The alternate item branch repeats the record/value text path and then calls the auxiliary item-action routine when its state flags are set.",
+      "source": "store-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.npc-candidate",
+      "order": 1,
+      "va": "0x0043F055-0x0043F0B0",
+      "role": "Frame 1100 dialogue/background composition",
+      "resource": null,
+      "evidence_level": "When the primary resource path is active, Frame 1100 is selected and passed through the original 800x600 compositor using this+0x520/0x524 placement fields.",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.npc-candidate",
+      "order": 2,
+      "va": "0x0043F0B2-0x0043F10B",
+      "role": "repeated dialogue/menu entries",
+      "resource": null,
+      "evidence_level": "Frame 1101 is selected inside the count-controlled loop, with per-entry 18-byte source stride and per-entry target Y progression.",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.npc-candidate",
+      "order": 3,
+      "va": "0x0043F113-0x0043F172",
+      "role": "final dialogue/menu entry",
+      "resource": null,
+      "evidence_level": "After the repeated-entry loop, the last entry index is clamped and Frame 1102 is selected and composited at this+0x540/this+0x544 plus the final 18-pixel offset.",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.npc-candidate",
+      "order": 4,
+      "va": "0x0043F179-0x0043F240",
+      "role": "fallback alpha/normalized composition",
+      "resource": null,
+      "evidence_level": "When the primary resource path is unavailable, the function enters a separate normalized/alpha composition branch using 0x4542A0; it is not proven to be business text rendering.",
+      "source": "npc-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.group",
+      "order": 1,
+      "va": "0x004243E4-0x00424426",
+      "role": "window base/background and header text",
+      "resource": null,
+      "evidence_level": "The group paint entry calls window vtable +0x0C, then emits the fixed header text through 0x45DD70 before traversing member records.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.group",
+      "order": 2,
+      "va": "0x0042442D-0x004244A4",
+      "role": "visible member list",
+      "resource": null,
+      "evidence_level": "When this+0x68 and the linked-list head are present, each member text is emitted through 0x45DD70 using the two-column, 20-pixel row formula.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.group",
+      "order": 3,
+      "va": "0x004244A6-0x0042452D",
+      "role": "close/action control reposition",
+      "resource": null,
+      "evidence_level": "The five child controls are assigned their fixed relative positions after member-list rendering.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.group",
+      "order": 4,
+      "va": "0x00424532-0x00424570",
+      "role": "permission state text",
+      "resource": null,
+      "evidence_level": "The [允许]/[拒绝] string is selected from this+0x3F0 and drawn after control positioning.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.group",
+      "order": 5,
+      "va": "0x0042457C-0x00424591",
+      "role": "child control paint sequence",
+      "resource": null,
+      "evidence_level": "The five group child objects are then painted by vtable +0x04 in order.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.guild-candidate",
+      "order": 1,
+      "va": "0x00425047-0x004250A7",
+      "role": "window base/background and header text",
+      "resource": null,
+      "evidence_level": "The guild paint wrapper calls window vtable +0x0C, writes the main clipping rectangle and emits the fixed header/status text before state dispatch.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.guild-candidate",
+      "order": 2,
+      "va": "0x004250AC-0x0042557D",
+      "role": "state-specific guild list/page text",
+      "resource": null,
+      "evidence_level": "The state byte this+0x98 dispatches to 0x00425280, 0x00425440 or 0x00425590; each path traverses its linked list, applies scroll_start this+0x9C and draws visible rows through 0x45DD70.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.guild-candidate",
+      "order": 3,
+      "va": "0x0042514D-0x00425258",
+      "role": "guild control reposition",
+      "resource": null,
+      "evidence_level": "After the state-specific path returns, the wrapper assigns the nine paint-time control positions recorded in the evidence.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.guild-candidate",
+      "order": 4,
+      "va": "0x0042525D-0x00425270",
+      "role": "child control paint sequence",
+      "resource": null,
+      "evidence_level": "Nine child controls are painted through vtable +0x04 in construction order after positioning.",
+      "source": "social-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.option",
+      "order": 1,
+      "va": "0x00441384-0x00441388",
+      "role": "window base/background",
+      "resource": null,
+      "evidence_level": "The option paint entry calls the window vtable +0x0C before repositioning or painting option controls.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.option",
+      "order": 2,
+      "va": "0x0044138C-0x004414C7",
+      "role": "nine option/close control reposition",
+      "resource": null,
+      "evidence_level": "The routine writes fixed window-relative positions for the close control and eight option controls, then positions two additional state-dependent controls.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.option",
+      "order": 3,
+      "va": "0x004414CC-0x004414DF",
+      "role": "child control paint sequence",
+      "resource": null,
+      "evidence_level": "The first nine child objects are painted by vtable +0x04 in construction order after all fixed positions are written.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.exchange-candidate",
+      "order": 1,
+      "va": "0x00415B1C-0x00415B65",
+      "role": "window base and left/right trade split",
+      "resource": null,
+      "evidence_level": "The exchange paint entry calls window vtable +0x0C, then writes the center split rectangles for the two trade sides.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.exchange-candidate",
+      "order": 2,
+      "va": "0x00415B6B-0x00415E44",
+      "role": "state-dependent item-grid selection and composition",
+      "resource": null,
+      "evidence_level": "The selection globals and state byte choose the left or right grid origin; item hit/index resolution and source/destination rectangles are passed through 0x466800 and 0x4542F0.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.exchange-candidate",
+      "order": 3,
+      "va": "0x00415E44-0x00415FFF",
+      "role": "trade labels, item text and numeric status",
+      "resource": null,
+      "evidence_level": "After item composition, the routine invokes 0x4169B0 and emits multiple formatted text records through 0x45DE50/0x46811C using the recovered exchange state fields.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.exchange-candidate",
+      "order": 4,
+      "va": "0x00416000-0x0041603D",
+      "role": "two Frame 94 side panels",
+      "resource": null,
+      "evidence_level": "GameInter Frame 94 is drawn at window-relative x+0xD1 and x+0x1B9, both with y-0x73, after the trade text path.",
+      "source": "system-window-render-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.notice-prompt-candidate",
+      "order": 1,
+      "va": "0x0043E3C4-0x0043E3C8",
+      "role": "Frame 602 window background",
+      "resource": null,
+      "evidence_level": "The notice paint entry calls the window vtable +0x0C before selecting the state-dependent text.",
+      "source": "notice-prompt-window-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.notice-prompt-candidate",
+      "order": 2,
+      "va": "0x0043E3C9-0x0043E432",
+      "role": "state-dependent primary notice text",
+      "resource": null,
+      "evidence_level": "this+0x1D0 selects the original GBK string at 0x47C460 or 0x47C440 and emits it at window-relative (23,94) with color 0x323232.",
+      "source": "notice-prompt-window-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.notice-prompt-candidate",
+      "order": 3,
+      "va": "0x0043E432-0x0043E459",
+      "role": "secondary notice text",
+      "resource": null,
+      "evidence_level": "The second text call emits the state-selected notice string at window-relative (24,95) with the alternate color path.",
+      "source": "notice-prompt-window-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "window.notice-prompt-candidate",
+      "order": 4,
+      "va": "0x0043E45E-0x0043E4AC",
+      "role": "close/action controls",
+      "resource": null,
+      "evidence_level": "The close and notice-side controls are repositioned, then their two child vtable +0x04 paint slots are called.",
+      "source": "notice-prompt-window-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "confirmation-prompt-evidence.json",
+      "order": 1,
+      "va": "0x004182A0-0x00418300",
+      "role": "Frame 950 prompt background",
+      "resource": null,
+      "evidence_level": "The prompt paint entry tests visible state, selects the parent resource and composites the 800x600 source viewport before text and child controls.",
+      "source": "confirmation-prompt-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "confirmation-prompt-evidence.json",
+      "order": 2,
+      "va": "0x00418300-0x00418332",
+      "role": "prompt message text",
+      "resource": null,
+      "evidence_level": "The dialog message buffer at this+0x2C is passed through the shared text/resource compositor after the background composition.",
+      "source": "confirmation-prompt-evidence.json",
+      "warning": null
+    },
+    {
+      "scope": "confirmation-prompt-evidence.json",
+      "order": 3,
+      "va": "0x00418339-0x004183CA",
+      "role": "three prompt action controls",
+      "resource": null,
+      "evidence_level": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline.",
+      "source": "confirmation-prompt-evidence.json",
+      "warning": null
+    }
+  ]
 }

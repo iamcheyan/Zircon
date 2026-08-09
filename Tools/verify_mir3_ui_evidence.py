@@ -101,8 +101,17 @@ def main() -> int:
 
     if not records:
         errors.append("layout has no records")
+    normalized = layout.get("normalized_draw_calls", [])
+    if not normalized:
+        errors.append("layout has no normalized_draw_calls")
+    else:
+        for index, call in enumerate(normalized):
+            for field in ("scope", "role", "evidence_level", "source"):
+                if not call.get(field):
+                    errors.append(f"normalized draw call {index} lacks {field}")
     print(f"original_files={sum(path.is_file() for path in required)}/{len(required)}")
     print(f"layout_records={len(records)} viewport={viewport.get('width')}x{viewport.get('height')}")
+    print(f"normalized_draw_calls={len(normalized)}")
     print(f"json_artifacts={parsed} pending_items={pending_total}")
     for warning in warnings:
         print(f"PENDING {warning}")

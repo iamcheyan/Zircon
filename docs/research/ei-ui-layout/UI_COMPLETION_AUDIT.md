@@ -15,7 +15,7 @@
 |---|---|---|
 | 固定 800×600 视口 | `layout.json.viewport`、`Tools/wilviewer.py /ui` | 已闭合 |
 | 原版资源与 Frame | `resource-family-catalog.json`、各窗口专项 JSON、WIL/WIX 分析 | 已闭合到资源级 |
-| 统一布局/绘制记录 | `docs/research/ei-ui-layout/layout.json`，当前 28 条窗口/按钮记录 | 已闭合到当前覆盖范围 |
+| 统一布局/绘制记录 | `layout.json` 的 28 条窗口/按钮记录与 `normalized_draw_calls`（当前 57 条，保留 scope/order/evidence/source） | 已闭合到当前覆盖范围 |
 | 证据等级与 pending 边界 | 各专项 JSON、`verify_mir3_ui_evidence.py` | 已闭合 |
 | 原版绘制层级 | `draw-order-evidence.json`、`window-traversal-evidence.json` | 候选；运行时可见链仍会变化 |
 | 可视化装配预览 | `Tools/wilviewer.py` | 已有；需继续补专项内容 |
