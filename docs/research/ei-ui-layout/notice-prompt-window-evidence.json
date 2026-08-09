@@ -89,12 +89,22 @@
     {"order": 3, "va": "0x0043E432-0x0043E459", "role": "secondary notice text", "evidence": "The second text call emits the state-selected notice string at window-relative (24,95) with the alternate color path."},
     {"order": 4, "va": "0x0043E45E-0x0043E4AC", "role": "close/action controls", "evidence": "The close and notice-side controls are repositioned, then their two child vtable +0x04 paint slots are called."}
   ],
+  "visibility_dispatch": {
+    "dispatcher_va": "0x0042ADB0",
+    "id15_branch_va": "0x0042B2AD",
+    "state_test": "main+0x52E8C != 0 selects the hide/remove path; zero selects the show/insert path",
+    "show_path": {"list_remove_or_insert_va": "0x0042AC30", "object_visibility_slot": "vtable+0x10", "value": 1},
+    "hide_path": {"list_remove_or_insert_va": "0x0042AC50", "object_visibility_slot": "vtable+0x10", "value": 0},
+    "additional_effects": "The branch also calls an external prompt/message routine with global position values before changing ID15 visibility; the caller-side business command is not named by the binary.",
+    "evidence_level": "primary-static-id-dispatch"
+  },
   "confirmed": [
     "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
     "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
     "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
     "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths.",
-    "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field."
+    "ID15 identity is closed: main initializer 0x0042797E calls wrapper 0x0043E260, whose object is painted by 0x0043E3C0 and owns the same this+0x54/this+0x108 controls and this+0x1D0 state field.",
+    "The ID15 dispatcher branch at 0x0042B2AD is now resolved as a stateful show/hide path; it does not itself prove that the business caller is the guild page."
   ],
   "pending": [
     "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
