@@ -95,6 +95,8 @@ docs/research/ei-ui-layout/window_layout.json
 
 统一目录为 `layout.json`。当前版本 `0.3-primary-evidence-vtable-enriched` 已合并 15 个底部 HUD 按钮、13 个窗口和 72 个窗口控件构造；窗口记录还包含 vtable/绘制槽候选，技能、背包和人物状态窗口另有专门的机器可读绘制证据，尚未确认的窗口业务名称仍保留“候选”表述。
 
+完整的范围盘点和剩余工作清单见 [`UI_COVERAGE_MATRIX.md`](UI_COVERAGE_MATRIX.md)。
+
 `layout.json.control_constructors` 还收录窗口内部的 72 个控件构造调用。它们暂不伪造屏幕坐标，直到资源句柄和位置参数追踪完成。
 
 原版资源初始化的完整路径表另存为 `resource-path-table.json`。它由
