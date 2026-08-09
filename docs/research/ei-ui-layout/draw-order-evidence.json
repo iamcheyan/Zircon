@@ -76,6 +76,13 @@
     "order_implication": "A visible normal window first passes the common background/base paint gate; derived window paint and child controls are separate subsequent call paths. This proves a base-before-child constraint, but not overlap order between two movable windows.",
     "evidence_level": "primary-static-base-window-paint"
   },
+  "cross_window_order_rule": {
+    "paint_dispatch": "0x004280F0–0x00428357 consumes main+0xD28 linked-list order; each node ID is dispatched to one specialized paint VA before node+0x04 is read.",
+    "consequence": "The final overlapping-window order is runtime list order, not a universal hard-coded category order. A later node paints over an earlier node when their rectangles overlap.",
+    "known_list_mutations": ["0x00449870 insertion/append path", "0x0042AC50 hide/remove path"],
+    "evidence_level": "primary-static-visible-list-dispatch",
+    "implementation_note": "The restoration preview should expose list order as a debug layer and keep explicit z-order data separate from each window's local paint order."
+  },
   "pending": [
     "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
     "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
