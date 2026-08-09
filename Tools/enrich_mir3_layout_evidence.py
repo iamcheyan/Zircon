@@ -51,6 +51,7 @@ def main() -> None:
     parser.add_argument("--npc-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/npc-window-render-evidence.json"))
     parser.add_argument("--social-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/social-window-render-evidence.json"))
     parser.add_argument("--system-window-evidence", type=Path, default=Path("docs/research/ei-ui-layout/system-window-render-evidence.json"))
+    parser.add_argument("--draw-order-evidence", type=Path, default=Path("docs/research/ei-ui-layout/draw-order-evidence.json"))
     parser.add_argument("--control-resources", type=Path, default=Path("docs/research/ei-ui-layout/window-control-resource-analysis.json"))
     parser.add_argument("--secondary-controls", type=Path, default=Path("docs/research/ei-ui-layout/interface1c-cluster-4027.json"))
     parser.add_argument("--secondary-controls-extra", type=Path, default=Path("docs/research/ei-ui-layout/interface1c-cluster-456d.json"))
@@ -108,6 +109,7 @@ def main() -> None:
     npc_window_evidence = json.loads(args.npc_window_evidence.read_text(encoding="utf-8")) if args.npc_window_evidence.exists() else {}
     social_window_evidence = json.loads(args.social_window_evidence.read_text(encoding="utf-8")) if args.social_window_evidence.exists() else {}
     system_window_evidence = json.loads(args.system_window_evidence.read_text(encoding="utf-8")) if args.system_window_evidence.exists() else {}
+    draw_order_evidence = json.loads(args.draw_order_evidence.read_text(encoding="utf-8")) if args.draw_order_evidence.exists() else {}
 
     for record in layout["records"]:
         if record.get("kind") != "button" or "frames" not in record.get("resource", {}):
@@ -261,6 +263,7 @@ def main() -> None:
     layout["npc_window_evidence"] = npc_window_evidence
     layout["social_window_evidence"] = social_window_evidence
     layout["system_window_evidence"] = system_window_evidence
+    layout["draw_order_evidence"] = draw_order_evidence
     layout["draw_evidence"] = {
         "window_base_paint": "docs/research/ei-ui-layout/window-base-draw-evidence.json",
         "button_draw_chain": "docs/research/ei-ui-layout/button-draw-calls.json",

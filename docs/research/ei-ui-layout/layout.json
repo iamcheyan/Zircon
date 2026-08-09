@@ -17932,5 +17932,131 @@
         ]
       }
     ]
+  },
+  "draw_order_evidence": {
+    "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "method": "static call-graph and x86 disassembly correlation",
+    "evidence_level": "primary-static-draw-candidate",
+    "coordinate_system": {
+      "viewport": [
+        800,
+        600
+      ],
+      "hud_origin": [
+        0,
+        465
+      ],
+      "warning": "Some window visibility/order is state-dependent and needs runtime capture."
+    },
+    "layers": [
+      {
+        "order": 10,
+        "id": "world-or-scene-backbuffer",
+        "role": "underlying game scene",
+        "evidence": "Common render context tested at 0x008B1874 before shared UI composition.",
+        "confidence": "primary-static-context"
+      },
+      {
+        "order": 20,
+        "id": "hud-base",
+        "resource": {
+          "file": "Data/GameInter.wil",
+          "frame": 50,
+          "rect": [
+            0,
+            465,
+            800,
+            136
+          ]
+        },
+        "draw_owner": "main HUD initializer 0x00427600",
+        "confidence": "primary-static-resource-and-geometry"
+      },
+      {
+        "order": 30,
+        "id": "hud-buttons-and-bars",
+        "resource_families": [
+          "GameInter.wil frames 100-115",
+          "GameInter.wil frames 60/61",
+          "GameInter.wil frame 63"
+        ],
+        "draw_chain": [
+          "0x00417550 control constructor",
+          "0x004179B0 button renderer",
+          "0x0045F2D0 composition candidate"
+        ],
+        "confidence": "primary-static-call-chain",
+        "warning": "Exact inter-control z-order is not yet runtime-confirmed; frame 50 already contains the inactive metal plate and compass art."
+      },
+      {
+        "order": 40,
+        "id": "normal-window-backgrounds",
+        "resource_families": [
+          "GameInter.wil",
+          "Interface1c.wil"
+        ],
+        "draw_chain": [
+          "derived window vtable paint",
+          "0x00423D00 shared/base paint candidate",
+          "0x00460240 composition candidate"
+        ],
+        "confidence": "primary-static-window-paint-candidate",
+        "warning": "Window visibility and stacking depend on state; the shared base routine does not prove every derived child draw order."
+      },
+      {
+        "order": 50,
+        "id": "window-child-controls-and-text",
+        "role": "buttons, item slots, list rows, text and icons inside an open window",
+        "evidence": "Child constructor calls, SetRect records and specialized render-loop evidence in layout.json.",
+        "confidence": "primary-static-constructor-and-specialized-loop",
+        "warning": "Exact text/icon z-order remains pending for windows without a recovered paint loop."
+      },
+      {
+        "order": 60,
+        "id": "npc-dialogue-special-paint",
+        "resource": {
+          "file": "Data/GameInter.wil",
+          "frames": [
+            1100,
+            1101,
+            1102
+          ]
+        },
+        "draw_chain": [
+          "0x0043F040",
+          "0x00460240",
+          "dynamic entry count this+0x51C, stride 0x12"
+        ],
+        "confidence": "primary-static-special-paint"
+      },
+      {
+        "order": 100,
+        "id": "secondary-interface-screen",
+        "resource": {
+          "file": "Data/Interface1c.wil",
+          "frame": 50,
+          "native_size": [
+            640,
+            480
+          ]
+        },
+        "draw_chain": [
+          "0x004026E0 or 0x00456CB0 screen initializer"
+        ],
+        "confidence": "primary-static-screen-candidate",
+        "warning": "These startup/state screens are candidates; exact state-machine transition still needs runtime confirmation."
+      }
+    ],
+    "known_order_constraints": [
+      "GameInter Frame 50 is the fixed 800x136 bottom HUD plate at y=465.",
+      "The button renderer selects the current/state frame before calling the shared composition candidate.",
+      "NPC special paint selects Frame 1100, then dynamic Frame 1101 entries, then Frame 1102.",
+      "Interface1c Frame 50 is a separate 640x480 screen candidate and must not be composited as a normal in-game window."
+    ],
+    "pending": [
+      "Runtime z-order when multiple movable windows overlap.",
+      "Exact order of HP/MP/EXP child bars relative to HUD button overlays.",
+      "Exact text and icon draw calls for guild, group, store, exchange and option windows."
+    ]
   }
 }

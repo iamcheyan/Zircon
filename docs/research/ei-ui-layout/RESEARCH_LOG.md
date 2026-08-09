@@ -1079,3 +1079,11 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 `secondary_control_constructors` 的 Frame 和命中矩形。模式选择与调试/Frame 开关共同写入
 `mir3_evidence_ui_state`，刷新后恢复。此功能只展示候选证据，不把候选屏幕名称升级成已
 运行时确认的业务结论。
+
+### Finding 49：建立统一 UI 绘制层级候选表（2026-08-09）
+
+新增 `draw-order-evidence.json`，把分散在按钮绘制、窗口基类、NPC 专用绘制和
+`Interface1c` 屏幕初始化记录中的顺序约束汇总为统一层：场景底层 → HUD Frame 50 →
+HUD 控件/血球/经验条 → 普通窗口底图 → 窗口子控件与文字 → NPC 专用合成 → 次级全屏界面。
+其中明确标记了已由机器码确认的约束，以及尚未有运行时重叠窗口截图支持的候选顺序；该表
+已接入 `layout.json.draw_order_evidence`，不会把推测的 z-order 当成最终事实。
