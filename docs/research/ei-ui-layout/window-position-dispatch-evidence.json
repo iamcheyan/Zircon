@@ -13,7 +13,9 @@
     "stack_arg_b": "[esp+0x18]",
     "dispatch_helper": "0x00423FA0",
     "helper_call_shape": "push 0; push arg_b; push arg_a; lea ecx, window_object; call 0x00423FA0",
-    "warning": "The two stack arguments are preserved as an ordered pair; their x/y naming is not promoted without the helper ABI proof."
+    "resolved_abi": "arg_a is the X offset and arg_b is the Y offset in the normal (flag=0) branch; the helper adds this+0x40/this+0x44 and writes the resulting left/top plus the stored width/height to the window RECT.",
+    "proof": "At 0x00423FA0, original arg_a is [esp+0x18] after the prologue and is added to this+0x40; original arg_b is [esp+0x1C] and is added to this+0x44. The resulting values are passed to SetRect at 0x004762B0.",
+    "warning": "The runtime list's supplied arg_a/arg_b values and the meaning of this+0x40/this+0x44 still require tracing at each initial-registration call; the ABI itself is resolved."
   },
   "jump_table": {
     "va": "0x0042B658",
@@ -40,7 +42,6 @@
   ],
   "interpretation": "The original client does not require every movable window to have a hard-coded final screen origin. It maintains a runtime window list and dispatches position updates by window ID; initial origins and later drag/state updates are separate evidence layers.",
   "pending": [
-    "Resolve the exact x/y ABI of 0x00423FA0.",
     "Recover the runtime list insertion order and initial position values for each window ID.",
     "Identify window ID 15 / main+0x52E5C and distinguish it from the Frame 602 notice wrapper."
   ]
