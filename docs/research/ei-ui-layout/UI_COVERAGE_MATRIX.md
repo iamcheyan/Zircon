@@ -21,11 +21,11 @@
 | NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040` | `npc-window-render-evidence.json` | 已恢复 | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
 | 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |
-| 聊天 | GameInter F350 | `chat-window-render-evidence.json` | 已恢复 | 频道名称、字体颜色、滚动状态 |
+| 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置及原版 GBK 字符串已从构造器恢复 | 已恢复 | 共享控件究竟把字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |
 | 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850 | `system-window-render-evidence.json` | 候选 | 坐骑数据字段和按钮语义 |
-| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；服务器 `MiniMap.txt` 映射 | `map-ui-resource-evidence.json`、`minimap-server-crossref.json`；小地图 `(672,0)-(800,128)` | 候选（小地图与资源绑定已恢复） | 完整地图专用 UI 容器、地图窗口打开入口、缩放/滚动和显示切换 |
+| 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；服务器 `MiniMap.txt` 映射 | `map-ui-resource-evidence.json`、`minimap-server-crossref.json`；小地图 `(672,0)-(800,128)`；`0x0043DE40` 明确切换 `256×256/128×128` 表面模式 | 候选（资源、固定小地图 Rect、模式切换已恢复） | 完整地图专用 UI 容器、地图窗口打开入口、缩放/滚动和切换命令语义 |
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json` | 候选 | 父窗口运行时原点、状态机和文字绘制 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |

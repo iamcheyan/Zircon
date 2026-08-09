@@ -27,8 +27,21 @@
     {"object_offset": "this+0x954", "left": 25, "top": 311, "right": 524, "bottom": 326, "width": 499, "height": 15, "role": "chat-input-area-candidate", "source_va": "0x004140BF"}
   ],
   "refresh": {"line_buffer": "this+0x720", "line_stride": 16, "line_count_candidate": 19, "notes": "The refresh path walks chat-linked data and updates the visible line list; exact text renderer and channel label semantics remain pending."},
+  "original_command_strings": {
+    "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
+    "encoding": "GBK",
+    "controls": [
+      {"object_offset": "this+0x120", "x": 25, "string_va": "0x0047AD08", "text": "拒绝和 某人 私聊(@拒绝 某人名)", "interpretation": "private-chat rejection command format"},
+      {"object_offset": "this+0x1D4", "x": 65, "string_va": "0x0047ACF8", "text": "大喊话(!喊话)", "interpretation": "shout command format"},
+      {"object_offset": "this+0x288", "x": 105, "string_va": "0x0047ACE4", "text": "编组 喊话(!!喊话)", "interpretation": "party/group shout command format"},
+      {"object_offset": "this+0x33C", "x": 145, "string_va": "0x0047ACD0", "text": "行会 喊话(!~喊话)", "interpretation": "guild shout command format"},
+      {"object_offset": "this+0x3F0", "x": 185, "string_va": "0x0047ACB8", "text": "拒绝 私聊(@拒绝私聊)", "interpretation": "private-chat rejection toggle/command format"},
+      {"object_offset": "this+0x4A4", "x": 225, "string_va": "0x0047AC98", "text": "拒绝 行会 聊天(@拒绝行会聊天)", "interpretation": "guild-chat rejection toggle/command format"}
+    ],
+    "caveat": "These are original command/tooltip strings supplied to the control constructors. They establish the six channel/command concepts and their fixed x positions, but the exact visible caption versus tooltip rendering still belongs to the shared control implementation."
+  },
   "pending": [
-    "Map frames 360–383 to exact channel/scroll labels.",
+    "Confirm whether the six command strings are rendered as visible captions, tooltips, or both by the shared control implementation.",
     "Confirm the first control's exact close/submit role and runtime hit rectangles.",
     "Recover chat line font/color and clipping parameters from the shared text renderer."
   ]

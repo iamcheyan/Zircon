@@ -72,6 +72,15 @@
     "mode_size_candidates": [[4096, 4096], [6144, 6144]],
     "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata. The destination widget rectangle is now statically recovered as 128x128 at screen (672,0)."
   },
+  "mode_switch": {
+    "va": "0x0043DE40",
+    "flag_field": "owner+0x294",
+    "behavior": "On a successful toggle, the routine negates owner+0x294 and rebuilds the map surface through 0x0043D5F0.",
+    "true_branch": {"surface_args": [256, 256], "evidence_level": "primary-static-exact-call"},
+    "false_branch": {"surface_args": [128, 128], "evidence_level": "primary-static-exact-call"},
+    "caller": "0x0042C75C -> 0x0043DEB0 -> this routine",
+    "interpretation": "The original client has an explicit map display mode switch. The two surface sizes are directly observed call arguments; their user-facing labels (full map versus minimap) remain a semantic interpretation until the command/key path is named."
+  },
   "render_evidence": {
     "paint_va": "0x0043DA80",
     "map_blit_or_composite": {
@@ -161,7 +170,7 @@
   "pending": [
     "Bind the selected MMap/FMMap output to the GameInter minimap border/overlay control.",
     "Recover the remaining full-map input/paint state and determine whether this EI build has a separate map dialog or only a world/minimap surface path; do not use notice ID 15 as map UI.",
-    "Reconcile the executable's map_id >= 1000 branch with the server MiniMap value convention (the server value is >=1001 for FMMap; the runtime caller may normalize it before 0x0043D780).",
+    "Name the user-facing command/key path that invokes the 0x0043DE40 map display-mode switch.",
     "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
   ]
 }
