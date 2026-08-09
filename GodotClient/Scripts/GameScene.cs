@@ -4375,20 +4375,15 @@ public partial class GameScene : Control
     }
 
     /// <summary>
-    /// UiScale 跟随窗口高度（基准 768 逻辑高，即原版 1024x768 窗口）：
-    /// UiScale = 窗口高 / 768。窗口拉大时 UI 与字体等比放大，保持与原版
-    /// 相同的屏幕占比；小窗口下最小 1x，不会缩到不可读。
+    /// 原版客户端的 HUD 使用固定两倍逻辑像素。窗口放大时只扩展可视地图，
+    /// 不再让 Godot 的全局 stretch 与 HUD 自身变换叠加。
     /// </summary>
     private void RefreshUiScale()
     {
         Vector2 viewport = GetViewport().GetVisibleRect().Size;
-        // canvas_items stretch 已经负责把 1024x768 逻辑画布放大到窗口；
-        // 再叠加运行时 UiScale 会变成 4x。只有未启用全局 stretch 时，
-        // 才由 GameScene 自己按窗口高度缩放 HUD。
-        string stretchMode = ProjectSettings.GetSetting("display/window/stretch/mode", "").ToString();
-        UiScale = stretchMode == "canvas_items"
-            ? 1f
-            : viewport.Y > 0 ? Mathf.Max(1f, viewport.Y / UiScaleBaseHeight) : 2f;
+        UiScale = viewport.Y > 0
+            ? Mathf.Clamp(viewport.Y / UiScaleBaseHeight, 1f, 2f)
+            : 2f;
         if (_uiLayer != null && IsInstanceValid(_uiLayer))
             _uiLayer.Transform = Transform2D.Identity.Scaled(Vector2.One * UiScale);
     }
