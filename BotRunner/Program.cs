@@ -3,7 +3,6 @@ using Library.Network;
 
 var configPath = args.Length > 0 ? args[0] : "BotRunner.json";
 var config = BotConfig.Load(configPath);
-BaseConnection.NetworkLogging = config.VerboseNetworkLogging;
 if (args.Length > 1 && int.TryParse(args[1], out var requestedCount))
     config.MaxBots = requestedCount;
 BotDatabaseLoader.Load(config.DatabasePath);

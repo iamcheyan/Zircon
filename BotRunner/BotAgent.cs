@@ -23,6 +23,7 @@ public sealed class BotAgent
     private DateTime _nextAttack;
     private DateTime _nextPotion;
     private Point _patrolTarget;
+    private DateTime _arrivedPauseUntil;
     private uint _targetMonsterId;
     private DateTime _nextTargetScan;
     private DateTime _nextGroupAction;
@@ -337,7 +338,8 @@ public sealed class BotAgent
         if (TryTradeBehavior(now)) goto AfterMovement;
 
         // 防止无路径寻路时被障碍物或错误方向带离陪玩区域。
-        if (Distance(World.Location, World.SpawnLocation) > Math.Max(6, _config.PatrolRadius))
+        // 阈值比巡逻半径上限(8~12 格)宽裕, 避免"走向目标途中被拽回出生点"的边界拉锯。
+        if (Distance(World.Location, World.SpawnLocation) > _config.PatrolRadius + 8)
         {
             if (now >= _nextMove) MoveToward(World.SpawnLocation, 1, now);
             return;
@@ -514,9 +516,15 @@ public sealed class BotAgent
             var leader = World.GroupMembers.Contains("Bot01")
                 ? World.Players.Values.FirstOrDefault(x => x.Name.Equals("Bot01", StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (leader != null && Distance(World.Location, leader.Location) > 3)
+            if (leader != null && Distance(World.Location, leader.Location) > 7)
             {
-                MoveToward(leader.Location, 1, now);
+                // 跟队但别挤在同一点: 以队长为锚加随机偏移, 小队自然散开。
+                Point followPoint = new Point(
+                    leader.Location.X + _random.Next(-3, 4),
+                    leader.Location.Y + _random.Next(-3, 4));
+                if (CurrentMap()?.CanWalk(followPoint) != true)
+                    followPoint = leader.Location;
+                MoveToward(followPoint, 1, now);
                 goto AfterMovement;
             }
 
@@ -801,14 +809,23 @@ public sealed class BotAgent
     private void Patrol(DateTime now)
     {
         // 真人闲逛会偶发驻足(看路/犹豫), 让节奏不像精确节拍器。
-        if (_random.NextDouble() < 0.08)
+        if (_random.NextDouble() < 0.12)
         {
-            _nextMove = now.AddSeconds(0.4 + _random.NextDouble() * 0.9);
+            _nextMove = now.AddSeconds(0.5 + _random.NextDouble() * 1.2);
             return;
         }
-        if (_patrolTarget == Point.Empty || Distance(World.Location, _patrolTarget) <= 1)
+        bool arrived = _patrolTarget != Point.Empty && Distance(World.Location, _patrolTarget) <= 1;
+        // 到点后驻留 1.5~4s "看看路" 再挑下一个点, 否则会变成永动钟摆。
+        if (arrived && now < _arrivedPauseUntil)
+        {
+            _nextMove = now.AddSeconds(0.3);
+            return;
+        }
+        if (arrived || _patrolTarget == Point.Empty)
         {
             _patrolTarget = ChoosePatrolPoint();
+            if (arrived)
+                _arrivedPauseUntil = now.AddSeconds(1.5 + _random.NextDouble() * 2.5);
         }
         MoveToward(_patrolTarget, 1, now);
     }
@@ -830,14 +847,21 @@ public sealed class BotAgent
     private Point ChoosePatrolPoint()
     {
         var map = CurrentMap();
+        // 锚点随当前位置漂移, 让闲逛轨迹自然蔓延, 而不是绕出生点钟摆折返。
+        // 大部分时候小范围漫步(2~6 格), 偶发以出生点为锚做一次远足(8~12 格)。
+        Point anchor = _random.NextDouble() < 0.8 ? World.Location : World.SpawnLocation;
+        int radius = _random.NextDouble() < 0.8
+            ? 2 + _random.Next(0, 5)
+            : 8 + _random.Next(0, Math.Max(1, _config.PatrolRadius - 7));
         for (int i = 0; i < 20; i++)
         {
-            int radius = 4 + _random.Next(0, Math.Max(2, _config.PatrolRadius - 3));
-            var point = new Point(World.SpawnLocation.X + _random.Next(-radius, radius + 1),
-                World.SpawnLocation.Y + _random.Next(-radius, radius + 1));
+            var point = new Point(anchor.X + _random.Next(-radius, radius + 1),
+                anchor.Y + _random.Next(-radius, radius + 1));
+            // 防折返: 新目标离刚走到的目标太近(<3 格)时重抽, 避免 A->B->B->A。
+            if (_patrolTarget != Point.Empty && Distance(point, _patrolTarget) <= 3) continue;
             if (map == null || map.CanWalk(point)) return point;
         }
-        return World.SpawnLocation;
+        return World.Location;
     }
 
     private bool TryProfessionPreparation(DateTime now)
@@ -921,6 +945,7 @@ public sealed class BotAgent
         _nextChat = now.AddSeconds(8 + _random.NextDouble() * 12);
         _nextPotion = now.AddSeconds(2 + _random.NextDouble());
         _patrolTarget = Point.Empty;
+        _arrivedPauseUntil = DateTime.MinValue;
         _targetMonsterId = 0;
         _nextGroupAction = now.AddSeconds(8);
         _nextTorchAction = now.AddSeconds(4);
