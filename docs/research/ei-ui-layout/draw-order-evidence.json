@@ -76,7 +76,7 @@
   },
   "pending": [
     "Runtime z-order when multiple movable windows overlap.",
-    "Exact order of HP/MP/EXP child bars relative to HUD button overlays.",
+    "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
     "Exact text and icon draw calls for guild, group, store, exchange and option windows."
   ]
 }
