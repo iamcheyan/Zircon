@@ -393,6 +393,9 @@ class Data:
                 cls.mon_anim = json.load(f)
         except (FileNotFoundError, ValueError):
             cls.mon_anim = {}
+        # 术语表 (EN -> 中文, 老版 DAT / 服务端字段用词) + 阶段调研文档 (markdown)
+        cls.terminology = w.get("terminology", {})
+        cls.stages = w.get("stages", "")
         # 装备
         cls.items = w["items"]
         cls.item_by_id = {i["id"]: i for i in w["items"]}
@@ -937,6 +940,8 @@ window.addEventListener('load', function () {{
 <a href="/moves" {moves}>传送</a>
 <a href="/library" {library}>资源库</a>
 <a href="/diff" {diff}>差异裁剪</a>
+<a href="/terms" {terms}>术语</a>
+<a href="/stages" {stages}>阶段对照</a>
 </nav></header>
 <main>
 {body}
@@ -946,7 +951,7 @@ window.addEventListener('load', function () {{
 """
 
 def page(title, body, active=""):
-    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","stores","classes","sets","moves","library","diff"]}
+    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","stores","classes","sets","moves","library","diff","terms","stages"]}
     nav[active] = 'class="active"'
     try:
         meta = Data.get()[0].get("_meta", {})
@@ -1014,6 +1019,92 @@ def monster_link_by_name(name):
     """怪物名 → 详情链接 (mon_link 别名, 兼容 drop 表)。"""
     return mon_link(name)
 
+def render_md(text):
+    """极简 markdown → HTML 片段（阶段调研文档专用）。
+
+    支持 #/##/### 标题, - 无序列表, 1. 有序列表, > 引用, | 管道表格
+    (|---|---| 分隔 → <th>), **加粗**, `行内代码`, [label](url) 链接,
+    --- 水平线, 空行分段。先转义 HTML 再做变换, 返回合法 HTML 片段。
+    """
+    def inline(s):
+        s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        codes = []
+        # 先摘出行内代码, 避免 **加粗 / [链接] 误伤代码内容
+        s = re.sub(r"`([^`]+)`", lambda m: codes.append(m.group(1)) or f"\x00{len(codes)-1}\x00", s)
+        s = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", s)
+        s = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)",
+                   lambda m: f'<a href="{html.escape(m.group(2), quote=True)}">{m.group(1)}</a>', s)
+        for k, c in enumerate(codes):
+            s = s.replace(f"\x00{k}\x00", f"<code>{c}</code>")
+        return s
+    lines = text.splitlines()
+    out, para = [], []
+
+    def flush():
+        if para:
+            out.append("<p>" + "<br>".join(inline(x) for x in para) + "</p>")
+            del para[:]
+
+    i, n = 0, len(lines)
+    while i < n:
+        line = lines[i]
+        # 管道表格: 当前行以 | 开头且下一行是 |---| 分隔线 (含 :---: 对齐)
+        if line.lstrip().startswith("|") and i + 1 < n and re.fullmatch(r"\s*\|[\s:|-]+\|\s*", lines[i + 1]):
+            flush()
+            header = [c.strip() for c in line.strip().strip("|").split("|")]
+            rows, i = [], i + 2
+            while i < n and lines[i].lstrip().startswith("|"):
+                rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")])
+                i += 1
+            out.append("<table><tr>" + "".join(f"<th>{inline(c)}</th>" for c in header) + "</tr>"
+                       + "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>" for r in rows)
+                       + "</table>")
+            continue
+        m = re.match(r"^(#{1,3})\s+(.*)$", line)
+        if m:
+            flush()
+            lv = len(m.group(1))
+            out.append(f"<h{lv}>{inline(m.group(2))}</h{lv}>")
+            i += 1
+            continue
+        if re.match(r"^\s*[-*]\s+", line):
+            flush()
+            items = []
+            while i < n and re.match(r"^\s*[-*]\s+", lines[i]):
+                items.append("<li>" + inline(re.sub(r"^\s*[-*]\s+", "", lines[i])) + "</li>")
+                i += 1
+            out.append("<ul>" + "".join(items) + "</ul>")
+            continue
+        if re.match(r"^\s*\d+\.\s+", line):
+            flush()
+            items = []
+            while i < n and re.match(r"^\s*\d+\.\s+", lines[i]):
+                items.append("<li>" + inline(re.sub(r"^\s*\d+\.\s+", "", lines[i])) + "</li>")
+                i += 1
+            out.append("<ol>" + "".join(items) + "</ol>")
+            continue
+        if re.match(r"^\s*>\s?", line):
+            flush()
+            quotes = []
+            while i < n and re.match(r"^\s*>\s?", lines[i]):
+                quotes.append(re.sub(r"^\s*>\s?", "", lines[i]))
+                i += 1
+            out.append("<blockquote>" + "<br>".join(inline(x) for x in quotes) + "</blockquote>")
+            continue
+        if re.fullmatch(r"\s*-{3,}\s*", line):
+            flush()
+            out.append("<hr>")
+            i += 1
+            continue
+        if not line.strip():
+            flush()
+            i += 1
+            continue
+        para.append(line)
+        i += 1
+    flush()
+    return "".join(out)
+
 # ---------------------------------------------------------------- handlers
 class Handler(BaseHTTPRequestHandler):
     server_version = "EIWiki/1.0"
@@ -1080,6 +1171,9 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/guards": return self.guards_page(u.query)
         if p == "/search": return self.search(u.query)
         if p == "/diff": return self.diff()
+        if p == "/audit": return self.audit()
+        if p == "/terms": return self.terms(u.query)
+        if p == "/stages": return self.stages()
         if p == "/library": return self.library(u.query)
         if p.startswith("/thumb/"): return self.thumb(urllib.parse.unquote(p[7:]))
         if p.startswith("/img/"): return self.img(urllib.parse.unquote(p[5:]))
@@ -1133,6 +1227,10 @@ class Handler(BaseHTTPRequestHandler):
     宠物商店宠物与坐骑一览。</div>
   <div class="panel"><h3><a href="/stores">商店 · {s['stats']['kinds']} 类</a></h3>
     武器店 / 防具店 / 药店 / 首饰店等 {s['stats']['kinds']} 类商店，NPC 与在售货品（图文）。</div>
+  <div class="panel"><h3><a href="/terms">术语表 · {len(Data.terminology)} 词条</a></h3>
+    中英对照术语表（老版 DAT / 服务端字段用词）。</div>
+  <div class="panel"><h3><a href="/stages">阶段对照</a></h3>
+    EI 2.0 阶段调研结论文档（2026-08-07）。</div>
   <div class="panel"><h3><a href="/library">资源库</a></h3>
     EI 客户端 WIL 图库浏览（怪物 / 装备 / 地图贴图 / 图标）。</div>
   <div class="panel"><h3><a href="/classes">职业成长</a></h3>
@@ -1566,6 +1664,28 @@ class Handler(BaseHTTPRequestHandler):
                 for mn, ch, am in sorted(droppers, key=lambda x: x[1]))
             droppers_html = f"""<h2>掉落来源（{len(droppers)} 种怪物 · DropInfo）</h2>
 <table><tr><th>怪物</th><th>概率</th><th>数量</th></tr>{d_rows}</table>"""
+        # 在售商店 (stores.json 货品反查; 按店 idx 去重)
+        shops_here = {}
+        for si, sh in Data.good_by_item.get(i["name"], []):
+            shops_here.setdefault(si, sh)
+        izh = i.get("zh")
+        if izh and izh != i["name"]:
+            for si, sh in Data.good_by_item.get(izh, []):
+                shops_here.setdefault(si, sh)
+        store_html = ""
+        if shops_here:
+            s_rows = ""
+            for si in sorted(shops_here):
+                sh = shops_here[si]
+                price = "—"
+                for gd in sh.get("goods", []):
+                    if gd.get("name") == i["name"] or (izh and gd.get("zh") == izh):
+                        price = f"{gd['price']:,}" if gd.get("price") else "—"
+                        break
+                s_rows += (f"<tr><td><a href='/store/{si}'>{esc(sh.get('name_zh') or sh.get('name') or '')}</a></td>"
+                           f"<td>{esc(KIND_ZH.get(sh['kind'], sh['kind']))}</td><td>{price} 金</td></tr>")
+            store_html = f"""<h2>在售商店（{len(shops_here)} 家）</h2>
+<table><tr><th>商店</th><th>类型</th><th>价格</th></tr>{s_rows}</table>"""
         body = f"""
 <a href="/items">← 返回装备列表</a>
 <h1>{esc(i.get('zh') or i['name'])} <span class="mono">{esc(i['name'])}</span> {ver_badges(i.get('ver'), legacy)}</h1>
@@ -1584,6 +1704,7 @@ class Handler(BaseHTTPRequestHandler):
 {img_note}
 </div></div>
 {droppers_html}
+{store_html}
 {old}
 """
         self._send(page(f"装备 {i.get('zh') or i['name']}", body, "items"))
@@ -1670,6 +1791,26 @@ class Handler(BaseHTTPRequestHandler):
                 anim_html = "<h2>施法动画</h2><p class='dim'>被动 / 无独立施法特效</p>"
         src_row = (f'<dt>来源</dt><dd>{esc(s.get("source",""))} · 判定 {esc(s.get("tag",""))}</dd>'
                    if legacy else "")
+        # 老版 magic.dat 原始字段表 (三级 Lv1/2/3; 编号字段诚实展示原始值, 不做推测解释)
+        dat_html = ""
+        if legacy and s.get("dat"):
+            d = s["dat"]
+            def dcell(k):
+                v = d.get(k)
+                return f'<td class="mono">{esc(str(v))}</td>' if v is not None else "<td>—</td>"
+            def triple(label, k1, k2, k3):
+                return f"<tr><td>{label}</td>{dcell(k1)}{dcell(k2)}{dcell(k3)}</tr>"
+            trows = ""
+            for k, label in (("Index", "序号"), ("MagicSchool", "魔法学派(老版编号)"),
+                             ("Kind", "种类(老版编号)"), ("SkillPoints", "技能点需求")):
+                trows += f"<tr><td>{label}</td>{dcell(k)}</tr>"
+            trows += triple("等级门槛", "NeedLevel1", "NeedLevel2", "NeedLevel3")
+            trows += triple("伤害系数", "TrioA1", "TrioA2", "TrioA3")
+            trows += triple("附加系数", "TrioB1", "TrioB2", "TrioB3")
+            dat_html = f"""<h2>magic.dat 原始字段</h2>
+<p class="dim">老版魔法 DAT 直接解码值（三级为 Lv1 / Lv2 / Lv3）。魔法学派、种类为老版原始编号，
+语义未收录时诚实显示原值，不做推测解释。</p>
+<table><tr><th>字段</th><th>Lv1</th><th>Lv2</th><th>Lv3</th></tr>{trows}</table>"""
         old = old_block(s.get("old")) if s.get("old") else ""
         body = f"""
 <a href="/skills">← 返回技能列表</a>
@@ -1687,6 +1828,7 @@ class Handler(BaseHTTPRequestHandler):
   {src_row}
 </dl></div></div>
 {anim_html}
+{dat_html}
 {old}
 """
         self._send(page(f"技能 {s.get('zh') or s['name']}", body, "skills"))
@@ -2122,6 +2264,32 @@ class Handler(BaseHTTPRequestHandler):
             add("商店", sh.get("name_zh") or "", f"/store/{si}", f"{sh.get('kind_zh') or ''} {sh.get('name') or ''}")
         for name in Data.sets:
             add("套装", name, f"/set/{urllib.parse.quote(name)}", "")
+        for row in r["report"]:
+            code = row["file"].lower().removesuffix(".map")
+            zh = Data.mapinfo_names.get(code) or ""
+            hay = f"{row['file']} {row.get('srv_name') or ''} {zh}".lower()
+            if kw in hay:
+                add("地图", row["file"], f"/map/{urllib.parse.quote(row['file'])}",
+                    f"{row.get('srv_name') or ''} · {row['w']}×{row['h']} · {len(row.get('spawns') or [])} 种怪物")
+        for c in Data.companions:
+            czh = c.get("zh") or ""
+            if kw in c["name"].lower() or (czh and kw in czh.lower()):
+                mn = Data.mon_by_id.get(c.get("monster_id"))
+                brief = f"对应怪物 {mn.get('zh') or mn['name']}" if mn else "对应怪物 —"
+                if czh:
+                    brief = f"{czh} · {brief}"
+                add("宠物", c["name"], "/companions", brief)
+        for si, sh in enumerate(s["stores"]):
+            for gd in sh.get("goods", []):
+                gzh = gd.get("zh") or ""
+                if kw in (gd.get("name") or "").lower() or (gzh and kw in gzh.lower()):
+                    price = f"{gd['price']:,}" if gd.get("price") else "—"
+                    add("商店货品", gzh or gd.get("name") or "", f"/store/{si}",
+                        f"在售 · {sh.get('name_zh') or sh.get('name') or ''} · {gzh or gd.get('name')} {price}金")
+        term = getattr(Data, "terminology", None) or {}
+        for ten, tzh in term.items():
+            if kw in ten.lower() or (tzh and kw in tzh.lower()):
+                add("术语", ten, f"/terms?q={urllib.parse.quote(kw)}", tzh or ten)
         rows = "".join(
             f"<tr><td><span class='chip'>{esc(k)}</span></td><td><a href='{href}'>{esc(name)}</a></td><td>{esc(brief)}</td></tr>"
             for k, name, href, brief in hits[:200])
@@ -2349,6 +2517,66 @@ class Handler(BaseHTTPRequestHandler):
             import traceback; traceback.print_exc()
             return f'<p class="lead">预览失败: {esc(e)}</p>'
 
+    # ---------------- 数据完整性审计（缺图/缺数据统计, 诚实占位）
+    def audit(self):
+        w, r, s = Data.get()
+        gen = esc(w.get("_meta", {}).get("generated_at", ""))
+        mon, it, sk = Data.monsters, Data.items, Data.skills
+        npcs, comp = Data.npcs, Data.companions
+        stores = Data.stores["stores"]
+
+        def img_count(xs):
+            return sum(1 for x in xs if x.get("img"))
+
+        def zirc_count(xs):
+            return sum(1 for x in xs if "zircon" in x.get("ver", []))
+
+        def gap_row(name, href, total, zirc, legacy, img, extra="—"):
+            miss = (total - img) if isinstance(total, int) and isinstance(img, int) else "—"
+            return (f"<tr><td><a href='{href}'>{name}</a></td><td>{total}</td>"
+                    f"<td>{zirc}</td><td>{legacy}</td><td>{img}</td>"
+                    f"<td>{miss}</td><td>{extra}</td></tr>")
+
+        rows = ""
+        rows += gap_row("怪物", "/monsters", len(mon), zirc_count(mon),
+                        sum(1 for m in mon if m.get("legacy")), img_count(mon),
+                        f"老版无刷怪 {sum(1 for m in mon if m.get('legacy') and not m.get('spawns'))}")
+        rows += gap_row("装备", "/items", len(it), zirc_count(it),
+                        sum(1 for x in it if x.get("legacy")), img_count(it))
+        rows += gap_row("技能", "/skills", len(sk), zirc_count(sk),
+                        sum(1 for x in sk if x.get("legacy")), img_count(sk),
+                        f"老版无动画 {sum(1 for x in sk if x.get('legacy'))}")
+        rows += gap_row("NPC", "/npcs", len(npcs), "—", "—",
+                        sum(1 for n in npcs if n.get("img")),
+                        f"商店 NPC {len(Data.store_by_npc)}")
+        ei = len(Data.map_by_file)
+        mei = len(r.get("mei_only", []))
+        rows += gap_row("地图", "/maps", f"{ei}/{mei} 张", "—", "—", "—")
+        rows += gap_row("宠物", "/companions", len(comp), "—", "—", img_count(comp))
+        rows += gap_row("商店", "/stores", len(stores), "—", "—", "—",
+                        f"货品 {sum(len(sh.get('goods', [])) for sh in stores)}")
+
+        # 挂靠明细（判定 changed 的条目数, 与 /diff 对照页同源）
+        old_mon = sum(1 for m in mon if m.get("old"))
+        old_it = sum(1 for x in it if x.get("old"))
+        old_sk = sum(1 for x in sk if x.get("old"))
+        old_total = old_mon + old_it + old_sk
+
+        body = f"""
+<h1>数据完整性审计</h1>
+<p class="lead">统计基于当前 v2 数据（构建 {gen}），缺图/缺数据条目以诚实占位呈现。</p>
+<table class="table">
+<tr><th>分类</th><th>总数</th><th>Zircon</th><th>老版 DAT</th><th>有图</th><th>缺图</th><th>其他缺口</th></tr>
+{rows}
+</table>
+
+<h2>挂靠明细（{old_total}）</h2>
+<p class="lead">判定 changed 的挂靠条目共 {old_total} 条（怪物 {old_mon} · 装备 {old_it} · 技能 {old_sk}），
+详见 <a href="/diff">对照页</a> 及 <a href="/monsters?ver=mud3">怪物</a> ·
+<a href="/items?ver=mud3">装备</a> · <a href="/skills?ver=mud3">技能</a> 完整名单。</p>
+"""
+        self._send(page("数据完整性审计", body, "diff"))
+
     # ---------------- 差异裁剪（三版本比对）
     def diff(self):
         import json as _json
@@ -2484,8 +2712,51 @@ class Handler(BaseHTTPRequestHandler):
 <table><tr><th>Zircon 独有刺客技能</th></tr>{as_rows}</table>
 
 {oldsecs}
+<p class="lead"><a href="/audit">→ 数据完整性审计（缺图/缺数据统计）</a></p>
 """
         self._send(page("差异裁剪", body, "diff"))
+
+    # ---------------- 术语表（EN -> 中文, 老版 DAT / 服务端字段用词）
+    def terms(self, qs):
+        q = urllib.parse.parse_qs(qs)
+        kw = (q.get("q", [""])[0]).strip().lower()
+        try:
+            pg = max(0, int(q.get("p", ["0"])[0]) - 1)
+        except ValueError:
+            pg = 0
+        all_terms = sorted(Data.terminology.items(), key=lambda kv: kv[0].lower())
+        terms = all_terms
+        if kw:
+            terms = [kv for kv in all_terms if kw in kv[0].lower() or kw in kv[1].lower()]
+        per = 300
+        pages = max(1, (len(terms) + per - 1) // per)
+        pg = min(pg, pages - 1)
+        view = terms[pg * per:(pg + 1) * per]
+        rows = "".join(
+            f"<tr><td class='mono'>{esc(en)}</td><td>{esc(zh)}</td></tr>"
+            for en, zh in view)
+        if not rows:
+            rows = '<tr><td colspan="2" class="none">无匹配词条</td></tr>'
+        kw_note = f"，匹配「{esc(kw)}」" if kw else ""
+        body = f"""<h1>术语表 · {len(Data.terminology)} 词条</h1>
+<p class="lead">老版 DAT / 服务端字段英文术语 → 中文对照 · 共 {len(terms)} 条{kw_note}</p>
+<form class="filters" method="get" action="/terms"><input type="text" name="q" value="{esc(kw)}" placeholder="输入英文或中文关键词…"><button type="submit">搜索</button></form>
+<table><tr><th>英文术语</th><th>中文释义</th></tr>{rows}</table>
+{pager(q, pg + 1, pages, base="/terms")}"""
+        return self._send(page("术语表", body, ""))
+
+    # ---------------- 阶段对照（EI 2.0 阶段调研 markdown 文档）
+    def stages(self):
+        md = Data.stages or ""
+        if not md.strip():
+            body = "<h1>阶段对照</h1><p class='lead'>暂无阶段调研文档。</p>"
+        else:
+            body = f"""<h1>阶段对照</h1>
+<p class="lead">EI 2.0 阶段调研结论（2026-08-07）</p>
+<div class="panel">
+{render_md(md)}
+</div>"""
+        return self._send(page("阶段对照", body, ""))
 
     # ---------------- 条目图片（/img/<board>/<id>.png 或 /img/<board>/<id>/<frame>.png, 磁盘缓存）
     def img(self, path):
