@@ -65,6 +65,15 @@ docs/research/ei-ui-layout/static_rect_initializers.json
 python3 Tools/extract_mir3_ui_layout.py
 ```
 
+只读完整性审计：
+
+```bash
+python3 Tools/verify_mir3_ui_evidence.py
+```
+
+审计只检查原版文件存在性、统一布局的 `800×600` 不变量、记录 ID/证据等级和专题 JSON
+可解析性；`PENDING` 输出是研究范围的一部分，不会被脚本自动降级或隐藏。
+
 ## 证据示例
 
 在 `0x00449C80` 附近可以看到连续初始化：
