@@ -2101,6 +2101,8 @@ function addFocusedWindow(r,analysis){
     for(let i=0;i<12;i++)addFocusedGeometry(ox+45+100*(i%2),oy+90+20*Math.floor(i/2),92,18,i===0?'成员两列 / 20px':'' );
   }else if(r.id==='window.guild-candidate'){
     for(let i=0;i<18;i++)addFocusedGeometry(ox+35,oy+60+20*i,500,18,i===0?'最多18行 / 动态字体行距':'' );
+    const ge=evidenceWindow(r.id),pc=ge.paint_repositioned_controls?.records||[];
+    for(const q of pc)addFocusedGeometry(ox+q.relative_position[0],oy+q.relative_position[1],40,20,`paint控件 ${q.object_offset}`);
   }else if(r.id==='window.chat-pop'){
     addFocusedGeometry(ox+40,oy+29,491,279,'聊天历史区');addFocusedGeometry(ox+25,oy+311,499,15,'输入区');
     for(let i=0;i<19;i++)addFocusedGeometry(ox+40,oy+29+15*i,491,15,i===0?'19行 / 16字节记录':'' );

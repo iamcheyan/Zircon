@@ -72,7 +72,31 @@
         "evidence": "0x004252F1-0x0042541A",
         "confidence": "primary-static"
       },
-      "pending": ["four ambiguous register-flow control positions", "exact tab labels and business semantics", "special marker color/field styling"]
+      "paint_state_dispatch": {
+        "state_field": "this+0x98",
+        "state_zero_paint": "0x00425280",
+        "state_one_paint": "0x00425440",
+        "other_state_paint": "0x00425590",
+        "evidence_level": "primary-static-state-dispatch"
+      },
+      "paint_repositioned_controls": {
+        "routine": "0x00425152-0x00425258",
+        "coordinate_space": "window-relative after adding this+0x18/this+0x1C",
+        "records": [
+          {"object_offset": "this+0x118", "relative_position": [556,409], "call_va": "0x0042516D"},
+          {"object_offset": "this+0x1CC", "relative_position": [34,376], "call_va": "0x00425189"},
+          {"object_offset": "this+0x280", "relative_position": [34,402], "call_va": "0x004251A4"},
+          {"object_offset": "this+0x334", "relative_position": [121,402], "call_va": "0x004251C0"},
+          {"object_offset": "this+0x3E8", "relative_position": [309,376], "call_va": "0x004251DF"},
+          {"object_offset": "this+0x49C", "relative_position": [397,376], "call_va": "0x004251FD"},
+          {"object_offset": "this+0x550", "relative_position": [484,376], "call_va": "0x0042521B"},
+          {"object_offset": "this+0x604", "relative_position": [309,402], "call_va": "0x0042523A"},
+          {"object_offset": "this+0x6B8", "relative_position": [397,402], "call_va": "0x00425258"}
+        ],
+        "note": "These are paint-time SetPosition arguments and are stronger for the visible state than the earlier constructor register-flow expressions; frame-pair business names remain separate.",
+        "evidence_level": "primary-static-paint-position"
+      },
+      "pending": ["Map paint-time control objects to exact tab/button business names", "reconcile constructor-time register expressions with paint-time SetPosition values", "special marker color/field styling"]
     }
   ],
   "confirmed": [
