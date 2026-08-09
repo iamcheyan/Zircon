@@ -17115,10 +17115,57 @@
         }
       },
       "paint_geometry": {
+        "state_clip_rect": {
+          "state_1": {
+            "source_va": "0x0044D5A0",
+            "expression": "RECT(this+0x18, left=x-1, top=y, right=x+width-1, bottom=y+height-1)"
+          },
+          "state_4": {
+            "source_va": "0x0044D5C9",
+            "expression": "RECT(this+0x18, left=x, top=y+2, right=x+width, bottom=y+height+2)"
+          },
+          "other_states": {
+            "source_va": "0x0044D5F0",
+            "expression": "copy this+0x18 into local RECT"
+          },
+          "evidence_level": "primary-static-state-clip"
+        },
+        "visible_item_loop": {
+          "routine": "0x0044D631-0x0044DB15",
+          "list_head": "this+0x64C",
+          "next_pointer": "item_node+0x04",
+          "visible_row_counter": "local index starts 0 and exits when index >= 5",
+          "max_visible_rows": 5,
+          "item_resource_id": "item_node+0x30",
+          "resource_selector_va": "0x00466130",
+          "resource_selector_table": "0x0056B0E8",
+          "resource_header_source": "0x0056B120 words plus 0x0056B124 auxiliary field",
+          "target_geometry": "item geometry record this+0x660 + row*0x10, translated by window origin",
+          "normalizer_va": "0x00466800",
+          "compositor_va": "0x004542F0",
+          "item_text_formatter_va": "0x0046811C",
+          "item_text_compositor_va": "0x0045DD70",
+          "price_or_quantity_format_va": "0x0047C784",
+          "price_or_quantity_format_raw": "(%d两)",
+          "evidence_level": "primary-static-loop-and-resource-flow"
+        },
+        "selected_item_and_paging": {
+          "routine": "0x0044DB50-0x0044E021",
+          "selected_index_field": "this+0x7E4",
+          "entry_count_field": "this+0x70C",
+          "selected_record_field": "this+0x728 + entry_index*0x10",
+          "selected_resource_type": "word item_record+0x28",
+          "selected_compositor_va": "0x004542F0",
+          "selection_marker_va": "0x0045E570",
+          "state_2_page_count_field": "this+0x71C",
+          "state_2_page_divisor": 12,
+          "state_2_page_count_expression": "ceil(this+0x71C / 12)",
+          "evidence_level": "primary-static-selected-item-candidate"
+        },
         "linked_item_source": "this+0x64C",
         "item_list_rect_loop": {
           "va": "0x0044D4C4",
-          "count_candidate": 8,
+          "count": 5,
           "left": 28,
           "top_start": 26,
           "row_step": 49,
