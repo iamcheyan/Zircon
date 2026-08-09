@@ -10,7 +10,14 @@
     "call_arguments": [15, "GameInter", 602, 107, 110, 584, 252, 0, 3],
     "call_argument_note": "Main initializer pushes ID 15, GameInter resource, Frame 602, x=107, y=110, width=584, height=252, then 0 and 3. The first seven slots align with the common window constructor shape; the trailing flags remain implementation-specific.",
     "evidence_level": "primary-static-exact-container-candidate",
-    "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments."
+    "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments.",
+    "lifecycle": {
+      "init_va": "0x0043E0E0",
+      "destroy_va": "0x0043E170",
+      "child_paint_dispatch_va": "0x0043E680",
+      "child_hit_dispatch_va": "0x0043E640",
+      "main_vtable_dispatches": ["0x004271CC -> +0x04", "0x00427513 -> +0x08"]
+    }
   },
   "records": [
     {

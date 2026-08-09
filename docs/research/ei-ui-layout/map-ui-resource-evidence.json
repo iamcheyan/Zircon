@@ -71,6 +71,16 @@
       {"frames": [161, 162], "rect": [655, 16, 28, 26], "relative_to": "wrapper argument origin", "call_va": "0x0043E2BB"},
       {"frames": [606, 607], "rect": [603, 27, 40, 20], "relative_to": "wrapper argument origin", "call_va": "0x0043E2E4"}
     ],
+    "lifecycle_and_dispatch": {
+      "init_va": "0x0043E0E0",
+      "destroy_va": "0x0043E170",
+      "child_paint_dispatch_va": "0x0043E680",
+      "child_hit_dispatch_va": "0x0043E640",
+      "main_update_dispatch": "0x00427513 -> window object vtable slot +0x08",
+      "main_paint_or_layout_dispatch": "0x004271CC -> window object vtable slot +0x04",
+      "child_count": 2,
+      "interpretation": "The ID-15 object is a real initialized window-like object in the main UI lifecycle, not only a resource preview candidate. Its two child controls are iterated through the shared control vtable for paint and hit handling."
+    },
     "evidence_level": "primary-static-exact-container-candidate",
     "interpretation": "The fixed minimap and full-map window are separate paths: the former is owner+0x2C0 at screen (672,0)-(800,128), while this ID-15 container is created at (107,110) with Frame 602. The final map image is still supplied by the MMap/FMMap surface path and must be clipped or composited into this container.",
     "source_artifact": "gameinter-cluster-43e260.json"
