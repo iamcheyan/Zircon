@@ -33,6 +33,11 @@
         ],
         "evidence_level": "primary-static-redraw-position"
       },
+      "paint_order": [
+        {"order": 1, "va": "0x00441384-0x00441388", "role": "window base/background", "evidence": "The option paint entry calls the window vtable +0x0C before repositioning or painting option controls."},
+        {"order": 2, "va": "0x0044138C-0x004414C7", "role": "nine option/close control reposition", "evidence": "The routine writes fixed window-relative positions for the close control and eight option controls, then positions two additional state-dependent controls."},
+        {"order": 3, "va": "0x004414CC-0x004414DF", "role": "child control paint sequence", "evidence": "The first nine child objects are painted by vtable +0x04 in construction order after all fixed positions are written."}
+      ],
       "pending": ["labels and option state fields", "two non-frame text/control entries at y=96 and y=170"]
     },
     {
