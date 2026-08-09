@@ -17850,6 +17850,38 @@
             },
             "evidence_level": "primary-static-string-and-position"
           },
+          "paint_order": [
+            {
+              "order": 1,
+              "va": "0x004243E4-0x00424426",
+              "role": "window base/background and header text",
+              "evidence": "The group paint entry calls window vtable +0x0C, then emits the fixed header text through 0x45DD70 before traversing member records."
+            },
+            {
+              "order": 2,
+              "va": "0x0042442D-0x004244A4",
+              "role": "visible member list",
+              "evidence": "When this+0x68 and the linked-list head are present, each member text is emitted through 0x45DD70 using the two-column, 20-pixel row formula."
+            },
+            {
+              "order": 3,
+              "va": "0x004244A6-0x0042452D",
+              "role": "close/action control reposition",
+              "evidence": "The five child controls are assigned their fixed relative positions after member-list rendering."
+            },
+            {
+              "order": 4,
+              "va": "0x00424532-0x00424570",
+              "role": "permission state text",
+              "evidence": "The [允许]/[拒绝] string is selected from this+0x3F0 and drawn after control positioning."
+            },
+            {
+              "order": 5,
+              "va": "0x0042457C-0x00424591",
+              "role": "child control paint sequence",
+              "evidence": "The five group child objects are then painted by vtable +0x04 in order."
+            }
+          ],
           "pending": [
             "member field text/icon ordering",
             "confirm exact screen origin of the permission text register-flow expression",
@@ -20469,6 +20501,38 @@
           },
           "evidence_level": "primary-static-string-and-position"
         },
+        "paint_order": [
+          {
+            "order": 1,
+            "va": "0x004243E4-0x00424426",
+            "role": "window base/background and header text",
+            "evidence": "The group paint entry calls window vtable +0x0C, then emits the fixed header text through 0x45DD70 before traversing member records."
+          },
+          {
+            "order": 2,
+            "va": "0x0042442D-0x004244A4",
+            "role": "visible member list",
+            "evidence": "When this+0x68 and the linked-list head are present, each member text is emitted through 0x45DD70 using the two-column, 20-pixel row formula."
+          },
+          {
+            "order": 3,
+            "va": "0x004244A6-0x0042452D",
+            "role": "close/action control reposition",
+            "evidence": "The five child controls are assigned their fixed relative positions after member-list rendering."
+          },
+          {
+            "order": 4,
+            "va": "0x00424532-0x00424570",
+            "role": "permission state text",
+            "evidence": "The [允许]/[拒绝] string is selected from this+0x3F0 and drawn after control positioning."
+          },
+          {
+            "order": 5,
+            "va": "0x0042457C-0x00424591",
+            "role": "child control paint sequence",
+            "evidence": "The five group child objects are then painted by vtable +0x04 in order."
+          }
+        ],
         "pending": [
           "member field text/icon ordering",
           "confirm exact screen origin of the permission text register-flow expression",
