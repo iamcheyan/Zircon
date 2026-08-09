@@ -105,6 +105,10 @@
     "notice_prompt_evidence": {
       "type": "object",
       "description": "Primary static candidate evidence for announcement and confirmation prompt resources around the 0x0043E260 cluster."
+    },
+    "confirmation_prompt_evidence": {
+      "type": "object",
+      "description": "Primary static candidate evidence for YES/NO/checkmark prompt controls and their constructor clusters."
     }
   }
 }

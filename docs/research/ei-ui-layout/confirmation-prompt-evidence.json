@@ -1,0 +1,43 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "resource_file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data/GameInter.wil",
+    "method": "static 0x00417550 call clustering plus direct WIL visual inspection",
+    "evidence_level": "primary-static-resource-and-constructor-candidate"
+  },
+  "resource_semantics": [
+    {"frame_pair": [151, 152], "size": [44, 20], "visual": "YES button: normal gold/white text and green highlighted state"},
+    {"frame_pair": [154, 155], "size": [44, 20], "visual": "NO button: normal gold/white text and green highlighted state"},
+    {"frame_pair": [157, 158], "size": [64, 20], "visual": "checkmark/confirm button state pair"},
+    {"frame_pair": [150, 153], "size": [44, 20], "visual": "additional YES/NO normal state candidates"}
+  ],
+  "constructor_clusters": [
+    {
+      "cluster": "0x00418176-0x004181E0",
+      "calls": [
+        {"call_va": "0x00418176", "frame_pair": [151, 152], "position_expression": {"x": "[esi]+0x33", "y": "[ebp+0x0C]+0x7D"}, "object_offset": "this+0x238"},
+        {"call_va": "0x004181AB", "frame_pair": [157, 158], "position_expression": {"x": "[esi]+0x93", "y": "[ebp+0x0C]+0x7D"}, "object_offset": "this+0x2F0"},
+        {"call_va": "0x004181E0", "frame_pair": [154, 155], "position_expression": {"x": "[esi]+0xF4", "y": "[ebp+0x0C]+0x7D"}, "object_offset": "this+0x3A8"}
+      ],
+      "interpretation": "Three horizontal prompt/action controls are constructed from consecutive state resources; exact parent window and dialog type remain unresolved."
+    },
+    {
+      "cluster": "0x00418968-0x0041898E",
+      "calls": [
+        {"call_va": "0x00418968", "frame_pair": [151, 152], "position_expression": {"x": "[edi]+0xA8", "y": "ebp_after_increment"}, "object_offset": "this+0x54"},
+        {"call_va": "0x0041898E", "frame_pairs": [[151, 152], [154, 155]], "position_expression": {"x": "[edi]+0xDB", "y": "ebp_after_increment"}, "object_offset": "this+0x108"}
+      ],
+      "interpretation": "A second prompt/action constructor cluster uses the same YES/NO resource family; frame selection is statically clear but indirect state choice remains unresolved."
+    }
+  ],
+  "confirmed": [
+    "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
+    "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
+    "The frame family visually supports confirmation/prompt UI semantics."
+  ],
+  "pending": [
+    "Parent function names, dialog text source and exact 800x600 screen coordinates.",
+    "Whether the two clusters are two states of one prompt class or separate dialog classes.",
+    "Runtime hover/click state transitions for the green-highlighted variants."
+  ]
+}
