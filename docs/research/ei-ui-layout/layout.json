@@ -13676,7 +13676,17 @@
       ],
       "call_argument_note": "Main initializer pushes ID 15, GameInter resource, Frame 602, x=107, y=110, width=584, height=252, then 0 and 3. The first seven slots align with the common window constructor shape; the trailing flags remain implementation-specific.",
       "evidence_level": "primary-static-exact-container-candidate",
-      "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments."
+      "interpretation": "This is the original full-map window container, distinct from the fixed 128x128 minimap. Frame 602 supplies the map-window background; the two child control pairs are positioned relative to the wrapper arguments.",
+      "lifecycle": {
+        "init_va": "0x0043E0E0",
+        "destroy_va": "0x0043E170",
+        "child_paint_dispatch_va": "0x0043E680",
+        "child_hit_dispatch_va": "0x0043E640",
+        "main_vtable_dispatches": [
+          "0x004271CC -> +0x04",
+          "0x00427513 -> +0x08"
+        ]
+      }
     }
   ],
   "resource_evidence": {
@@ -16920,7 +16930,31 @@
         "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
         "Group controls have five usable window-relative coordinate candidates.",
         "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
-      ]
+      ],
+      "friend_entry_audit": {
+        "scope": "Mir3.exe direct common-window constructor inventory and main HUD control inventory",
+        "common_window_constructor_calls": 15,
+        "separately_classified_static_windows": [
+          "inventory F250",
+          "status F200",
+          "store F1000",
+          "exchange F1050",
+          "guild F600",
+          "group F900",
+          "chat F350",
+          "group-pop F200",
+          "option F750",
+          "quest F700",
+          "horse F850",
+          "skill/other F400",
+          "NPC F1100",
+          "confirmation/prompt family",
+          "full-map ID 15 / F602"
+        ],
+        "result": "No separate static friend-list window constructor or dedicated main-HUD friend control was found in this inventory.",
+        "evidence_level": "primary-static-negative-scope",
+        "interpretation": "This does not prove that no friend/social functionality exists at runtime. It means the current EI build's friend-like behavior is more likely to be a page/state of the guild/social F600 family, a dynamically allocated dialog, or an unassigned Interface1c control cluster. Do not add a standalone friend panel until an entry point, resource frame or state field is found."
+      }
     },
     {
       "source": {
@@ -17785,6 +17819,16 @@
           "call_va": "0x0043E2E4"
         }
       ],
+      "lifecycle_and_dispatch": {
+        "init_va": "0x0043E0E0",
+        "destroy_va": "0x0043E170",
+        "child_paint_dispatch_va": "0x0043E680",
+        "child_hit_dispatch_va": "0x0043E640",
+        "main_update_dispatch": "0x00427513 -> window object vtable slot +0x08",
+        "main_paint_or_layout_dispatch": "0x004271CC -> window object vtable slot +0x04",
+        "child_count": 2,
+        "interpretation": "The ID-15 object is a real initialized window-like object in the main UI lifecycle, not only a resource preview candidate. Its two child controls are iterated through the shared control vtable for paint and hit handling."
+      },
       "evidence_level": "primary-static-exact-container-candidate",
       "interpretation": "The fixed minimap and full-map window are separate paths: the former is owner+0x2C0 at screen (672,0)-(800,128), while this ID-15 container is created at (107,110) with Frame 602. The final map image is still supplied by the MMap/FMMap surface path and must be clipped or composited into this container.",
       "source_artifact": "gameinter-cluster-43e260.json"
@@ -18447,7 +18491,31 @@
       "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
       "Group controls have five usable window-relative coordinate candidates.",
       "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
-    ]
+    ],
+    "friend_entry_audit": {
+      "scope": "Mir3.exe direct common-window constructor inventory and main HUD control inventory",
+      "common_window_constructor_calls": 15,
+      "separately_classified_static_windows": [
+        "inventory F250",
+        "status F200",
+        "store F1000",
+        "exchange F1050",
+        "guild F600",
+        "group F900",
+        "chat F350",
+        "group-pop F200",
+        "option F750",
+        "quest F700",
+        "horse F850",
+        "skill/other F400",
+        "NPC F1100",
+        "confirmation/prompt family",
+        "full-map ID 15 / F602"
+      ],
+      "result": "No separate static friend-list window constructor or dedicated main-HUD friend control was found in this inventory.",
+      "evidence_level": "primary-static-negative-scope",
+      "interpretation": "This does not prove that no friend/social functionality exists at runtime. It means the current EI build's friend-like behavior is more likely to be a page/state of the guild/social F600 family, a dynamically allocated dialog, or an unassigned Interface1c control cluster. Do not add a standalone friend panel until an entry point, resource frame or state field is found."
+    }
   },
   "system_window_evidence": {
     "source": {

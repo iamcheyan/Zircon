@@ -22,7 +22,7 @@
 | 组队 | GameInter F900 | `social-window-render-evidence.json` | 已恢复 | 成员文本/图标和操作状态 |
 | 行会 | GameInter F600 | `social-window-render-evidence.json` | 候选 | 4 个寄存器流坐标、成员列表绘制 |
 | 聊天 | GameInter F350 | `chat-window-render-evidence.json` | 已恢复 | 频道名称、字体颜色、滚动状态 |
-| 好友/社交列表 | `Interface1c.wil` 及未归属控件调用 | 全局控件目录 | 待追踪 | 通过字符串/xref/状态入口确认窗口 |
+| 好友/社交列表 | 当前 15 个通用窗口构造及主 HUD 控件清单中无独立好友窗口/按钮；行会 F600 与 Interface1c 动态簇仍是候选承载者 | `social-window-render-evidence.json` 的 `friend_entry_audit`、全局控件目录 | 静态范围已排除独立构造，功能入口待追踪 | 从行会页签、动态分配路径或 Interface1c 状态入口确认好友页 |
 | 系统设置 | GameInter F750 | `system-window-render-evidence.json` | 已恢复 | 选项标签和配置字段 |
 | 坐骑 | GameInter F850 | `system-window-render-evidence.json` | 候选 | 坐骑数据字段和按钮语义 |
 | 小地图/地图 | `MMap.wil`、`FMMap.wil`，`0x0043D4D0/0x0043D780`；完整地图 ID 15 / Frame 602 | `map-ui-resource-evidence.json`、`gameinter-cluster-43e260.json`；小地图 `(672,0)-(800,128)`，完整地图候选 `(107,110)-(691,362)` | 候选（容器坐标已恢复） | 地图边框/标记、完整地图图像裁剪、缩放/滚动和显示切换 |

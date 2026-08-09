@@ -46,5 +46,29 @@
     "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
     "Group controls have five usable window-relative coordinate candidates.",
     "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
-  ]
+  ],
+  "friend_entry_audit": {
+    "scope": "Mir3.exe direct common-window constructor inventory and main HUD control inventory",
+    "common_window_constructor_calls": 15,
+    "separately_classified_static_windows": [
+      "inventory F250",
+      "status F200",
+      "store F1000",
+      "exchange F1050",
+      "guild F600",
+      "group F900",
+      "chat F350",
+      "group-pop F200",
+      "option F750",
+      "quest F700",
+      "horse F850",
+      "skill/other F400",
+      "NPC F1100",
+      "confirmation/prompt family",
+      "full-map ID 15 / F602"
+    ],
+    "result": "No separate static friend-list window constructor or dedicated main-HUD friend control was found in this inventory.",
+    "evidence_level": "primary-static-negative-scope",
+    "interpretation": "This does not prove that no friend/social functionality exists at runtime. It means the current EI build's friend-like behavior is more likely to be a page/state of the guild/social F600 family, a dynamically allocated dialog, or an unassigned Interface1c control cluster. Do not add a standalone friend panel until an entry point, resource frame or state field is found."
+  }
 }
