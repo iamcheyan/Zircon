@@ -17,6 +17,16 @@
     "coordinate_expression": "each child receives window.x/window.y plus the listed fixed relative coordinates",
     "evidence_level": "primary-static-exact-call-order"
   },
+  "resource_visual_text": {
+    "source": "GameInter.wil frames decoded directly from the original WIL pixel data; text is embedded in the button artwork, not supplied by a modern layout.",
+    "records": [
+      {"frame_pair": [860, 861], "normal_visual_text": "马上骑", "pressed_visual_text": "马上骑", "transcription_confidence": "high"},
+      {"frame_pair": [862, 863], "normal_visual_text": "马儿跑", "pressed_visual_text": "马儿跑", "transcription_confidence": "high"},
+      {"frame_pair": [864, 865], "normal_visual_text_candidate": "马鞍骑", "transcription_confidence": "medium; second glyph requires font-level confirmation"},
+      {"frame_pair": [866, 867], "normal_visual_text_candidate": "马鞍跑", "transcription_confidence": "medium; second glyph requires font-level confirmation"}
+    ],
+    "warning": "The pixel transcription identifies the visible artwork labels but does not by itself prove which runtime horse state enables each action."
+  },
   "interaction": {
     "hit_rect_proof": "Shared control constructor 0x00417550-0x004175B0 selects the resource frame and writes SetRect(this+0x04, x, y, x+selected_frame.width, y+selected_frame.height); the widths/heights above are the GameInter.wil frame-header dimensions.",
     "click_dispatch": {
@@ -34,5 +44,5 @@
     "evidence_level": "primary-static-plus-primary-resource"
   },
   "interpretation": "The base background is proven to draw before all five child controls, and the five runtime hit rectangles are statically recoverable from the shared control constructor and GameInter frame dimensions. The control business labels remain candidates because the string pointers are runtime-populated data addresses.",
-  "pending": ["Resolve the Chinese semantic labels behind 0x0047B058/0x0047B060/0x0047B068 and determine whether state-dependent overlays are painted outside Frame 850."]
+  "pending": ["Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map the four artwork labels to the runtime state byte/horse action branches; determine whether state-dependent overlays are painted outside Frame 850."]
 }

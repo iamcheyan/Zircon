@@ -67,6 +67,6 @@
   "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
   "pending": [
     "Recover the full initial registry insertion list and default visibility bits.",
-    "Identify the ID15 component and correlate it with secondary Interface1c/notice resources."
+    "Correlate the already-identified ID15 notice object with its external caller/message routine and any secondary Interface1c prompt resources."
   ]
 }
