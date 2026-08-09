@@ -9,32 +9,36 @@
   },
   "ratios": [
     {
-      "candidate": "primary_resource",
+      "candidate": "HP / blood resource",
       "numerator_global": "0x007D9264 (low 16 bits)",
       "denominator_global": "0x007D9262 (low 16 bits)",
       "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
-      "confidence": "high"
+      "confidence": "high",
+      "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD70 = (血量)%d/%d"
     },
     {
-      "candidate": "secondary_resource",
+      "candidate": "MP / magic resource",
       "numerator_global": "0x007D9266 (low 16 bits)",
       "denominator_global": "0x007DA113 (low 16 bits)",
       "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
-      "confidence": "medium"
+      "confidence": "high",
+      "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD60 = (魔法量)%d/%d"
     },
     {
       "candidate": "experience",
       "numerator_global": "0x007DA115",
       "denominator_global": "0x007DA119",
       "assembly": "fild numerator (qword); fidiv denominator; clamp to [0,1]",
-      "confidence": "high"
+      "confidence": "high",
+      "semantic_string_evidence": "HUD formatter literals 0x0047BD4C = (经验条)%.2f%s and 0x0047BD5C = %"
     },
     {
-      "candidate": "additional_progress_or_status",
+      "candidate": "weight / load",
       "numerator_global": "0x007DA109 (low 16 bits)",
       "denominator_global": "0x007DA11F (low 16 bits)",
       "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
-      "confidence": "medium"
+      "confidence": "high",
+      "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD40 = (负重)%d/%d"
     }
   ],
   "draw_dispatch": {
@@ -53,5 +57,5 @@
     "confidence": "medium"
   },
   "evidence_addresses": ["0x00429876-0x004298B1", "0x004298CC-0x00429904", "0x00429920-0x0042994F", "0x0042996C-0x004299A4", "0x00429A4D", "0x00429CCB", "0x00429E4D"],
-  "caveat": "Global variable semantic names are deliberately not guessed from modern source; live memory or protocol tracing is still required to label HP/MP/EXP definitively."
+  "caveat": "HP/MP/weight/experience semantics are confirmed by original GB18030 formatter literals; live memory is still required to validate the exact update timing and clipping direction."
 }
