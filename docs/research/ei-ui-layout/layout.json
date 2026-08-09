@@ -16787,10 +16787,22 @@
         },
         "confidence": "primary-static; business item names remain unresolved"
       },
+      "item_resource_selection_chain": {
+        "slot_record_base": "this+0x2F4+index*0xC24",
+        "graphics_object_passed_to_draw": "slot_record+0x04 (this+0x2F8+index*0xC24)",
+        "draw_entry": "0x004341F0",
+        "frame_selector_call": "0x004341F0 -> 0x00466130",
+        "selector_owner": "ECX=0x005668C4",
+        "selector_argument": "WORD [graphics_object+0x28]",
+        "selected_frame_header": "global 0x005668FC (width/height read before composition)",
+        "composition_path": "0x004341F0 -> 0x004542F0 / 0x0045E570-family graphics helpers",
+        "evidence_level": "primary-static-item-resource-selection",
+        "interpretation": "The binary does not draw an equipment slot from an invented generic icon atlas: it derives a per-item graphics object, selects its frame through the original selector context, reads the selected frame dimensions, and sends the result through the original composition path. The final selector-context-to-WIL filename mapping is still separate evidence."
+      },
       "pending": [
         "The exact status/attribute text field coordinates and source data structures.",
         "Mapping the eight equipment candidate indices to exact item names (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
-        "The runtime resource handle used for equipment item icons."
+        "Resolve selector context 0x005668C4 to the exact WIL/WIX library filename used for equipment item icons."
       ]
     },
     {
