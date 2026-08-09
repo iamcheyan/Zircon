@@ -184,6 +184,18 @@ docs/research/ei-ui-layout/skill-window-context.json
 
 `docs/research/ei-ui-layout/skill-window-static-evidence.md`
 
+随后从窗口重绘函数 `0x00439500` 恢复了八个分类控件的最终窗口相对坐标：
+火 `(5,21)`、冰 `(3,56)`、电 `(4,91)`、风 `(2,126)`、神圣 `(2,161)`、黑暗
+`(2,196)`、幻影 `(1,231)`、剑 `(2,266)`。这些数值是在每次刷新时重新写入控件
+位置的静态证据，不是人工拖拽值；窗口屏幕原点仍需单独恢复。
+
+技能列表的读取与绘制循环也已定位到 `0x0043A440`：首行从窗口原点偏移 `(15,235)`
+开始，行距固定为 15 像素，数据记录缓冲区步进为 `0x104`。该循环识别 `#` 段标记、
+跳过 `;` 行，并通过 `0x0045E200` 解析后使用 `0x0045DBA0/0x0045DD70` 绘制多列
+字段。详细机器记录见：
+
+`docs/research/ei-ui-layout/skill-window-render-loop-evidence.json`
+
 特别注意：原版代码引用的 `Magic.exp` 是客户端根目录裸文件名，实际路径为
 `/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp`；不要写成 `Data/Magic.exp`。
 `/home/tetsuya/NAS/TMP/Mud3/Envir/magic.dat` 是另一套服务端数据，必须在文档和
