@@ -13037,7 +13037,8 @@
     "npc_special_paint": "docs/research/ei-ui-layout/npc-paint-evidence.json",
     "resource_handle_flow": "docs/research/ei-ui-layout/window-resource-handle-bindings.json",
     "hud_label_controls": "docs/research/ei-ui-layout/hud-label-evidence.json",
-    "window_position_dispatch": "docs/research/ei-ui-layout/window-position-dispatch-evidence.json"
+    "window_position_dispatch": "docs/research/ei-ui-layout/window-position-dispatch-evidence.json",
+    "window_visibility_dispatch": "docs/research/ei-ui-layout/window-visibility-dispatch-evidence.json"
   },
   "secondary_control_constructors": [
     {
@@ -22079,6 +22080,159 @@
       "Resolve the exact x/y ABI of 0x00423FA0.",
       "Recover the runtime list insertion order and initial position values for each window ID.",
       "Identify window ID 15 / main+0x52E5C and distinguish it from the Frame 602 notice wrapper."
+    ]
+  },
+  "window_visibility_dispatch_evidence": {
+    "source": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "routine": "0x0042ADB0",
+    "evidence_level": "primary-static-window-visibility-dispatch",
+    "purpose": "Dispatch the original show/hide command to the registered UI object selected by a window ID.",
+    "dispatch": {
+      "range": "0x0042ADB0-0x0042B3E0",
+      "jump_table_va": "0x0042B3E4",
+      "range_ids": [
+        0,
+        15
+      ],
+      "default_target": "0x0042B3DD",
+      "show_helper": "0x0042AC50",
+      "hide_helper": "0x0042AC30",
+      "virtual_visibility_slot": "+0x10",
+      "virtual_argument": "1 = show, 0 = hide"
+    },
+    "records": [
+      {
+        "window_id": 0,
+        "layout_id": "window.inventory",
+        "object": "main+0x6554",
+        "target": "0x0042ADCF",
+        "state_gate": "main+0x6584",
+        "show_hide": "gate != 0: hide; gate == 0: show then virtual +0x10(1) and initialize child list"
+      },
+      {
+        "window_id": 1,
+        "layout_id": "window.status",
+        "object": "main+0x29CE4",
+        "target": "0x0042AE42",
+        "state_gate": "main+0x29D14",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 2,
+        "layout_id": "window.store-candidate",
+        "object": "main+0x33188",
+        "target": "0x0042AE91",
+        "state_gate": "main+0x331B8",
+        "show_hide": "gate-controlled show/hide; store state may be rebuilt before display"
+      },
+      {
+        "window_id": 3,
+        "layout_id": "window.exchange-candidate",
+        "object": "main+0x3399C",
+        "target": "0x0042AEB0",
+        "state_gate": "main+0x339CC",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 4,
+        "layout_id": "window.guild-candidate",
+        "object": "main+0x4707C",
+        "target": "0x0042B06B",
+        "state_gate": "main+0x470AC",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 5,
+        "layout_id": null,
+        "object": null,
+        "target": "0x0042B3DD",
+        "show_hide": "no registered object branch"
+      },
+      {
+        "window_id": 6,
+        "layout_id": "window.group",
+        "object": "main+0x47834",
+        "target": "0x0042B0BA",
+        "state_gate": "main+0x47864",
+        "show_hide": "gate-controlled show/hide; show branch also initializes group child state"
+      },
+      {
+        "window_id": 7,
+        "layout_id": "window.group-pop-candidate",
+        "object": "main+0x47C28",
+        "target": "0x0042B131",
+        "state_gate": "main+0x47C58",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 8,
+        "layout_id": "window.chat-pop",
+        "object": "main+0x507EC",
+        "target": "0x0042B180",
+        "state_gate": "main+0x5081C",
+        "show_hide": "gate-controlled show/hide; chat branch also updates the native chat overlay"
+      },
+      {
+        "window_id": 9,
+        "layout_id": "window.npc-candidate",
+        "object": "main+0x51150",
+        "target": "0x0042B25E",
+        "state_gate": "main+0x51180",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 10,
+        "layout_id": null,
+        "object": null,
+        "target": "0x0042B3DD",
+        "show_hide": "no registered object branch"
+      },
+      {
+        "window_id": 11,
+        "layout_id": "window.quest",
+        "object": "main+0x516E8",
+        "target": "0x0042AF2F",
+        "state_gate": "main+0x51718",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 12,
+        "layout_id": "window.option",
+        "object": "main+0x518E0",
+        "target": "0x0042AF7E",
+        "state_gate": "main+0x51910",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 13,
+        "layout_id": "window.horse",
+        "object": "main+0x52118",
+        "target": "0x0042AFCD",
+        "state_gate": "main+0x52148",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 14,
+        "layout_id": "window.other-14-candidate",
+        "object": "main+0x524F0",
+        "target": "0x0042B01C",
+        "state_gate": "main+0x52520",
+        "show_hide": "gate-controlled show/hide"
+      },
+      {
+        "window_id": 15,
+        "layout_id": null,
+        "object": "main+0x52E5C",
+        "target": "0x0042B2AD",
+        "state_gate": "main+0x52E8C",
+        "show_hide": "gate-controlled show/hide; business identity pending"
+      }
+    ],
+    "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window can exist in the runtime registry, be hidden through the helper, and later be shown through the virtual visibility method; constructor presence is not proof of on-screen visibility.",
+    "pending": [
+      "Confirm exact target addresses for IDs 2-15 from the complete 0x42ADB0 disassembly rather than inferred branch spacing.",
+      "Recover the full initial registry insertion list and default visibility bits.",
+      "Identify the ID15 component and correlate it with secondary Interface1c/notice resources."
     ]
   }
 }
