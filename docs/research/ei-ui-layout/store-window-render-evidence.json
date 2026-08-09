@@ -1,0 +1,34 @@
+{
+  "source": {
+    "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+    "constructor_va": "0x0044D310",
+    "paint_va": "0x0044D590",
+    "evidence_level": "primary-static-with-parent-basis-pending"
+  },
+  "window_candidate": {
+    "id": "window.store-candidate",
+    "background": {"file": "Data/GameInter.wil", "frame": 1000, "constructor_size": [300, 304]},
+    "warning": "The same function contains control/grid coordinates wider than the currently bound Frame 1000 visible width; preserve raw expressions until parent/window binding is runtime-confirmed."
+  },
+  "controls": [
+    {"call_va": "0x0044D36B", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x10A", "y": "arg5+0x10E"}},
+    {"call_va": "0x0044D394", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x07F", "y": "arg5+0x10B"}},
+    {"call_va": "0x0044D3C0", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x1D2", "y": "arg5+0x0A9"}},
+    {"call_va": "0x0044D3EC", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x172", "y": "arg5+0x0A2"}},
+    {"call_va": "0x0044D418", "frame_pair": [1014, 1015], "raw_position": {"x": "arg4+0x144", "y": "arg5+0x09F"}},
+    {"call_va": "0x0044D444", "frame_pair": [1016, 1017], "raw_position": {"x": "arg4+0x1B2", "y": "arg5+0x09F"}},
+    {"call_va": "0x0044D46D", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x1FA", "y": "arg5+0x043"}},
+    {"call_va": "0x0044D496", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x188", "y": "arg5+0x03D"}}
+  ],
+  "paint_geometry": {
+    "linked_item_source": "this+0x64C",
+    "item_list_rect_loop": {"va": "0x0044D4C4", "count_candidate": 8, "left": 28, "top_start": 26, "row_step": 49, "right_offset": 64, "bottom_offset": 36},
+    "item_grid_rect_loop": {"va": "0x0044D51E", "columns_candidate": 5, "rows_candidate": 4, "x_start": 323, "y_start": 43, "step": 38, "right_offset": 37, "bottom_offset": 37},
+    "item_grid_note": "These are raw SetRect constants from the binary; parent origin/meaning is unresolved because they do not fit the currently bound 300-pixel visible background."
+  },
+  "pending": [
+    "Resolve arg4/arg5 and the actual parent window object at runtime.",
+    "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
+    "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots."
+  ]
+}
