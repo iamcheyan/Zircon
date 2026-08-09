@@ -22,12 +22,20 @@
     "surface_init_va": "0x0043D5F0",
     "surface_size_candidate": [800, 800],
     "viewport_rect": "owner+0x2C0",
+    "fixed_minimap_widget": {
+      "setrect_va": "0x0043D551",
+      "screen_rect": {"left": 672, "top": 0, "right": 800, "bottom": 128},
+      "size": [128, 128],
+      "evidence_level": "primary-static-exact-rect",
+      "basis": "The initializer pushes bottom=0x80, right=0x320, top=0 and left=0x2A0 before the SetRect IAT call for owner+0x2C0.",
+      "interpretation": "This is the original fixed 800x600 minimap destination at the top-right edge; the surrounding map surface remains an internal 800x800 buffer."
+    },
     "view_position_fields": ["owner+0x2B8", "owner+0x2BC"],
     "mode_size_candidates": [[4096, 4096], [6144, 6144]],
-    "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata; final minimap widget placement remains pending."
+    "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata. The destination widget rectangle is now statically recovered as 128x128 at screen (672,0)."
   },
   "pending": [
-    "Bind MMap/FMMap output to the GameInter minimap control and map window controls.",
+    "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
     "Recover map window frame, screen coordinates and zoom/scroll state from input and paint callers.",
     "Confirm whether map_id >= 1000 corresponds to all MMap frames or only a subset of map states."
   ]
