@@ -2074,6 +2074,40 @@
           "warning": "Visual semantics are a cautious aid to static reverse engineering, not runtime proof of the business window name."
         }
       }
+    },
+    {
+      "id": "window.notice-prompt-candidate",
+      "kind": "window",
+      "layer": "windows",
+      "resource": {
+        "file": "GameInter.wil",
+        "frame": 602
+      },
+      "position": {
+        "x": 107,
+        "y": 110
+      },
+      "size": {
+        "width": 584,
+        "height": 252
+      },
+      "hit_rect": null,
+      "window": {
+        "id": "window.notice-prompt-candidate",
+        "window_id": 15,
+        "can_move": "candidate"
+      },
+      "initialization": {
+        "window_id": 15,
+        "main_init_call": "0x0042797E",
+        "wrapper": "0x0043E260",
+        "evidence_level": "primary-static-main-window-initialization",
+        "visibility": "not promoted; visibility gate is handled separately by 0x0042B2AD"
+      },
+      "evidence": {
+        "level": "primary-static-main-window-initialization",
+        "source": "legacy-layout-record"
+      }
     }
   ],
   "control_constructors": [

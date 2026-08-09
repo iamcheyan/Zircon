@@ -218,6 +218,54 @@ def main() -> None:
             "evidence": window["evidence"],
         })
 
+    # The main initializer is authoritative for registered windows even when
+    # a specialized window extractor has not yet promoted the record into
+    # window_layout.json.  Preserve the raw constructor geometry and make
+    # such entries visible in the unified catalog instead of silently losing
+    # them (notably ID15 / Frame 602 notice window).
+    existing_ids = {r["id"] for r in layout["records"]}
+    for init in window_initialization.get("records", []):
+        layout_id = init.get("layout_id")
+        if not layout_id or layout_id in existing_ids:
+            continue
+        position = init.get("position") or [0, 0]
+        size = init.get("size") or [None, None]
+        frame = init.get("frame")
+        if frame is None or len(position) < 2 or len(size) < 2:
+            continue
+        layout["records"].append({
+            "id": layout_id,
+            "kind": "window",
+            "layer": "windows",
+            "resource": {"file": "GameInter.wil", "frame": frame},
+            "position": {"x": position[0], "y": position[1]},
+            "size": {"width": size[0], "height": size[1]},
+            "hit_rect": None,
+            "window": {"id": layout_id, "window_id": init.get("window_id"), "can_move": "candidate"},
+            "initialization": {
+                "window_id": init.get("window_id"),
+                "main_init_call": init.get("main_init_call"),
+                "wrapper": init.get("wrapper"),
+                "evidence_level": "primary-static-main-window-initialization",
+                "visibility": init.get("default_visibility"),
+            },
+            "evidence": {
+                "level": "primary-static-main-window-initialization",
+                "source": "window-initialization-evidence.json",
+                "main_init_call": init.get("main_init_call"),
+            },
+        })
+        existing_ids.add(layout_id)
+
+    # Keep the catalog schema stable when regenerating from an older layout
+    # that stored a bare evidence string.
+    for record in layout["records"]:
+        if isinstance(record.get("evidence"), str):
+            record["evidence"] = {
+                "level": record["evidence"],
+                "source": "legacy-layout-record",
+            }
+
     for record in layout["records"]:
         if record.get("kind") != "window":
             continue
