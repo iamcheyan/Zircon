@@ -126,6 +126,27 @@
 
 ## 关联工件
 
+## 技能窗口主初始化的原始参数补充
+
+主 UI 在 `0x00427904` 调用技能窗口包装器 `0x00439250` 时，调用点的原始压栈序列为：
+
+```text
+push 3
+push 1
+push 0x17c   ; 380
+push 0x1c4   ; 452
+push 0
+push 0x15c   ; 348
+push resource(GameInter)
+push 0x0e    ; wrapper/window id candidate
+```
+
+包装器随后把这些值重新排列后传入通用窗口基类 `0x00423B30`，并在自身内部构造
+11 个技能分类控件。这里的 `348/452/380/0/1/3` 仍保留为原始参数，不直接把它们
+改写成“屏幕 x/y/宽/高”，因为 `0x00439250` 是二级包装器，基类参数的完整签名尚未
+完全命名；Frame 400 的 `296×332` 资源尺寸和八个分类控件的窗口相对坐标则已经由
+重绘路径独立确认。
+
 - `skill-window-context.json`：机器可读的窗口、控件和文字关联。
 - `magic-exp-loader-evidence.json`：`Magic.exp` 加载链的机器可读记录。
 - `exp-decoder-evidence.md`：已从原版 `0x004525F0` 复现的 `*.exp` 解码算法。
