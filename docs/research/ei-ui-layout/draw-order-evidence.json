@@ -64,6 +64,16 @@
     "NPC special paint selects Frame 1100, then dynamic Frame 1101 entries, then Frame 1102.",
     "Interface1c Frame 50 is a separate 640x480 screen candidate and must not be composited as a normal in-game window."
   ],
+  "window_base_paint_evidence": {
+    "routine": "0x00423D00",
+    "visibility_gates": ["this+0x30 != 0", "global 0x008B1874 != 0"],
+    "resource_selection": {"frame_field": "this+0x28", "resource_handle": "this+0x2C", "selector_va": "0x00466130"},
+    "primary_compositor": "0x00460240",
+    "source_viewport": [800, 600],
+    "fallback_branch": {"when": "global 0x008B1874 == 0", "normalizer": "0x00466800", "meaning": "normalized/alpha path; not a different draw layer"},
+    "order_implication": "A visible normal window first passes the common background/base paint gate; derived window paint and child controls are separate subsequent call paths. This proves a base-before-child constraint, but not overlap order between two movable windows.",
+    "evidence_level": "primary-static-base-window-paint"
+  },
   "pending": [
     "Runtime z-order when multiple movable windows overlap.",
     "Exact order of HP/MP/EXP child bars relative to HUD button overlays.",

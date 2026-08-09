@@ -15,10 +15,10 @@
 | 人物状态/装备槽 | GameInter F200，11 条连续几何记录，8 个装备候选槽 38×38 | `status-window-render-evidence.json`、`0x0044B6B0/0x0044B720/0x004341F0` | 已恢复 | 装备索引业务命名、属性文字实际调用 |
 | 背包 | GameInter F250，6×6、36 px 网格 | `inventory-window-render-evidence.json`、`0x0042F150/0x0042F2A0` | 已恢复 | 物品图标/数量文本顺序、运行时选中态 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 任务详情页/分页状态 |
-| 商店/购买 | GameInter F1000、F1001–F1003 | `store-window-render-evidence.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（服务端购买/出售入口已确认） | 通过客户端状态/协议参数区分 NPC 商店、选中物品和扩展面板 |
-| 交换 | GameInter F1050 | `system-window-render-evidence.json` | 候选 | 交换双方格子、确认按钮和状态机 |
-| 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
-| NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040` | `npc-window-render-evidence.json` | 已恢复 | 动态条目字段、文字调用、按钮业务名 |
+| 商店/购买 | GameInter F1000、F1001–F1003 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态图已恢复） | 通过客户端状态/协议参数区分 NPC 商店、选中物品和扩展面板 |
+| 交换 | GameInter F1050 | `exchange-window-render-evidence.json`、`0x004159D0/0x00415B10` | 候选（左右分区与 6×5 格已恢复） | 确认按钮、协议状态和窗口最终原点 |
+| 仓库/存取 | GameInter F1000、F1002/F1003 状态分支候选 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x00423E80` 工厂调用、Mud3 `NPC_Storage` 交叉表 | 候选（服务端仓库入口已确认） | 把 state 0–4 与客户端业务入口绑定，确认仓库屏幕原点和按钮语义 |
+| NPC 对话 | GameInter F1100/F1101/F1102，`0x0043ED00/0x0043F040` | `npc-window-render-evidence.json`；`0x00440750–0x00440AA0` 已恢复分隔符、16 项上限、14/21 px 行距和三个动态控件位置 | 已恢复 | 动态条目字段、文字调用、按钮业务名 |
 | 组队 | GameInter F900，成员两列 100 px、行距 20 px | `social-window-render-evidence.json`、`0x004243D0` | 已恢复 | 成员字段文字/图标顺序与运行时上限 |
 | 行会 | GameInter F600，单列最多 18 行、滚动行高由字体度量决定 | `social-window-render-evidence.json`、`0x00425280` | 候选 | 4 个控件寄存器流坐标、标签页语义、特殊行颜色 |
 | 聊天 | GameInter F350 | `chat-window-render-evidence.json`；6 个固定频道/命令位置、GBK 字符串、文字起点 `(40,29)` 和实际 `14px` 视觉行距已从绘制循环恢复 | 已恢复 | 共享控件究竟把频道字符串绘为标题、提示还是命令说明；字体颜色、滚动状态 |
@@ -29,7 +29,7 @@
 | 角色选择/创建 | Interface1c F50，`0x004026E0/0x00456CB0` | `interface1c-*-context.json`，`/ui` 次级预览 | 候选 | 运行时状态转换和准确中文标签 |
 | 公告/提示/确认框 | GameInter F602/F603/F604/F605–607、确认框 F950、`0x00418030`/`0x0043E260` | `notice-prompt-window-evidence.json`、`confirmation-prompt-evidence.json`；公告父窗口 `(107,110)-(691,362)` 与 `[行会公告]/[行会修改]` 原版 GBK 文字已由静态绘制调用闭合 | 候选 | 区分独立公告框与行会子状态、状态机和确认框 F950 的运行时原点 |
 | 普通/悬停/按下状态 | 各控件 frame pair | `layout.json`、控件资源交叉表 | 候选 | 运行时输入和状态切换验证 |
-| 绘制层级 | `0x00423D00`、`0x004179B0`、`0x0043F040` | `draw-order-evidence.json` | 候选 | 重叠窗口运行时调用序列 |
+| 绘制层级 | `0x00423D00`、`0x004179B0`、`0x0043F040` | `draw-order-evidence.json`；已确认窗口基类背景先于本窗口派生绘制/子控件 | 候选 | 重叠窗口运行时调用序列 |
 
 ## 当前硬性原则
 
