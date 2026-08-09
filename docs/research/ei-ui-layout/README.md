@@ -93,7 +93,7 @@ docs/research/ei-ui-layout/primary-window-init-evidence.md
 docs/research/ei-ui-layout/window_layout.json
 ```
 
-统一目录为 `layout.json`。当前版本 `0.3-primary-evidence-vtable-enriched` 已合并 15 个底部 HUD 按钮、13 个窗口和 72 个窗口控件构造；窗口记录还包含 vtable/绘制槽候选，尚未确认的窗口业务名称仍保留“候选”表述。
+统一目录为 `layout.json`。当前版本 `0.3-primary-evidence-vtable-enriched` 已合并 15 个底部 HUD 按钮、13 个窗口和 72 个窗口控件构造；窗口记录还包含 vtable/绘制槽候选，技能、背包和人物状态窗口另有专门的机器可读绘制证据，尚未确认的窗口业务名称仍保留“候选”表述。
 
 `layout.json.control_constructors` 还收录窗口内部的 72 个控件构造调用。它们暂不伪造屏幕坐标，直到资源句柄和位置参数追踪完成。
 
@@ -257,4 +257,6 @@ runtime-confirmed             原版运行时捕获到实际参数
 verified                      至少两种独立证据一致
 ```
 
-当前 JSON 中的记录全部为 `static-initializer-candidate`，不能直接拿来当最终坐标表。
+主布局记录仍以 `primary-static` 为主，窗口内部控件同时保留 `primary-static-redraw-position`、
+`resolved-primary-redraw` 等更细证据等级；任何未确认的业务语义和运行时状态仍不能直接
+当作最终结论。

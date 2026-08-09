@@ -208,6 +208,15 @@ docs/research/ei-ui-layout/skill-window-context.json
 
 `docs/research/ei-ui-layout/skill-window-static-evidence.md`
 
+当前已补充两个可直接装配的窗口证据集：
+
+- 背包 Frame 250：三组子控件（161/162、264/265、267/268）及物品绘制路径中的 36 像素网格步长，见 `inventory-window-render-evidence.json`。
+- 人物状态 Frame 200：原版 `SetRect` 直接恢复的装备槽、人物图像区域和属性区域，见 `status-window-render-evidence.json`。
+
+这两组坐标都是窗口内部坐标，最终屏幕位置必须再加窗口对象 `this+0x18/this+0x1c`，
+并保留当前窗口移动状态；Frame 200/250 的业务名称和个别资源句柄仍按证据等级标注，
+不能因为视觉相似就升级为确定语义。
+
 ### 3.1 控件坐标的恢复方法
 
 窗口内部控件的坐标不是手工拖拽校准得到的。对每个 `0x00417550` 调用，提取器按
