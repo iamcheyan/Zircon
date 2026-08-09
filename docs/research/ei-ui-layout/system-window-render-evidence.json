@@ -53,6 +53,17 @@
         {"call_va": "0x0042698D", "frame_pair": [864, 865], "position": [133, 244], "semantic_candidate": "mount action"},
         {"call_va": "0x004269B3", "frame_pair": [866, 867], "position": [192, 244], "semantic_candidate": "mount action"}
       ],
+      "hit_rects": {
+        "source": "Shared control constructor 0x00417550-0x004175B0 selects the GameInter frame and writes SetRect using its width/height.",
+        "records": [
+          {"frame_pair": [161, 162], "relative_rect": [252, 293, 28, 26]},
+          {"frame_pair": [860, 861], "relative_rect": [28, 244, 44, 20]},
+          {"frame_pair": [862, 863], "relative_rect": [74, 244, 60, 20]},
+          {"frame_pair": [864, 865], "relative_rect": [133, 244, 60, 20]},
+          {"frame_pair": [866, 867], "relative_rect": [192, 244, 56, 20]}
+        ],
+        "evidence_level": "primary-static-plus-primary-resource"
+      },
       "paint_repositioned_controls": {
         "routine": "0x004269C0–0x00426A56",
         "records": [
@@ -74,7 +85,7 @@
         "evidence_level": "primary-static-hit-and-action-branch",
         "warning": "The binary proves five clickable action paths and state-dependent dispatch, but the original string bytes and business labels are not yet decoded here."
       },
-      "pending": ["mount labels and horse data fields", "whether Frame 850 is the complete visible background"]
+      "pending": ["mount labels and horse data fields", "whether state-dependent overlays are painted outside Frame 850"]
     },
     {
       "id": "window.exchange-candidate",
