@@ -250,8 +250,8 @@ def png_bytes(img) -> bytes:
     return buf.getvalue()
 
 
-def gif_bytes(imgs, fps: int, scale: int) -> bytes:
-    return wilsdk.make_gif(imgs, fps, scale)
+def gif_bytes(imgs, fps: int, scale: int, bg="checker") -> bytes:
+    return wilsdk.make_gif(imgs, fps, scale, bg)
 
 
 def json_bytes(obj) -> bytes:
@@ -270,9 +270,10 @@ def Image_transparent_1x1():
 
 
 @lru_cache(maxsize=4096)
-def thumb_bytes(lib_name: str, index: int, size: int):
-    """PNG thumbnail for grid cells, or None for blank/fully-transparent frames."""
-    lib = INDEX.get_lib(lib_name)
+def thumb_bytes(data_dir: str, lib_name: str, index: int, size: int):
+    """PNG thumbnail for grid cells, or None for blank/fully-transparent frames.
+    `data_dir` is part of the cache key so cross-root compare never mixes roots."""
+    lib = (ROOTS.get(data_dir) or INDEX).get_lib(lib_name)
     if lib is None:
         return png_bytes(Image_transparent_1x1())
     try:
@@ -292,12 +293,13 @@ def thumb_bytes(lib_name: str, index: int, size: int):
 
 
 @lru_cache(maxsize=512)
-def thumb_strip_bytes(lib_name: str, start: int, count: int, size: int):
+def thumb_strip_bytes(data_dir: str, lib_name: str, start: int, count: int, size: int):
     """One PNG strip of `count` thumbnails starting at `start` (single request
     instead of N round-trips).  Blank frames render as fully transparent cells;
     the page layers its checker background underneath.  Header-only blanks are
-    skipped from decode; opaque probes are never needed client-side."""
-    lib = INDEX.get_lib(lib_name)
+    skipped from decode; opaque probes are never needed client-side.
+    `data_dir` is part of the cache key so cross-root compare never mixes roots."""
+    lib = (ROOTS.get(data_dir) or INDEX).get_lib(lib_name)
     if lib is None:
         return b""
     canvas = _PILImage.new("RGBA", (size * count, size), (0, 0, 0, 0))
@@ -323,7 +325,13 @@ def thumb_strip_bytes(lib_name: str, start: int, count: int, size: int):
 
 
 def lib_from_dir(data_dir: str, name: str) -> wilsdk.WilLibrary | None:
-    """Look up a library in a specific root (for cross-root compare)."""
+    """Look up a library in a specific root (for cross-root compare).
+    Accepts either a client root or its Data dir; normalizes to Data."""
+    data_dir = os.path.normpath(data_dir)
+    if not data_dir.endswith("Data"):
+        cand = os.path.join(data_dir, "Data")
+        if os.path.isdir(cand):
+            data_dir = cand
     idx = ROOTS.get(data_dir)
     if idx is None:
         # Not seen yet: try a quick scan without switching the active root.
@@ -384,6 +392,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/ui-layout":
             self._send(json_bytes(load_ui_evidence()), "application/json; charset=utf-8")
             return
+        if path == "/compare":
+            self._send(COMPARE_HTML, "text/html; charset=utf-8")
+            return
         if path == "/api/root":
             self._send(json_bytes({
                 "current": INDEX.data_dir,
@@ -391,6 +402,24 @@ class Handler(BaseHTTPRequestHandler):
             }), "application/json; charset=utf-8")
             return
         if path == "/api/files":
+            r = self._qstr(q, "r")
+            if r:
+                r = os.path.normpath(r)
+                if not r.endswith("Data"):
+                    cand = os.path.join(r, "Data")
+                    if os.path.isdir(cand):
+                        r = cand
+                idx = ROOTS.get(r)
+                if idx is None and os.path.isdir(r) and any(
+                        f.lower().endswith(".wil") for f in os.listdir(r)):
+                    with INDEX_LOCK:
+                        idx = AssetIndex(r)
+                        ROOTS[r] = idx
+                if idx is None:
+                    self._err(404, f"root not found: {r}")
+                    return
+                self._send(json_bytes(idx.files_payload()), "application/json; charset=utf-8")
+                return
             self._send(json_bytes(INDEX.files_payload()), "application/json; charset=utf-8")
             return
         if path == "/api/image":
@@ -466,7 +495,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def _lib_or_404(self, q):
         name = q.get("f", [""])[0]
-        lib = INDEX.get_lib(name)
+        r = self._qstr(q, "r")
+        if r:
+            lib = lib_from_dir(r, name)
+        else:
+            lib = INDEX.get_lib(name)
         if lib is None:
             self._err(404, f"library not found: {name}")
             return None
@@ -480,7 +513,7 @@ class Handler(BaseHTTPRequestHandler):
         i = self._qint(q, "i", 0)
         s = min(max(self._qint(q, "s", 48), 8), 256)
         try:
-            data = thumb_bytes(lib.name, i, s)
+            data = thumb_bytes(INDEX.data_dir, lib.name, i, s)
         except Exception as e:
             self._err(500, str(e))
             return
@@ -608,7 +641,7 @@ class Handler(BaseHTTPRequestHandler):
         count = min(max(self._qint(q, "count", 120), 1), 512)
         s = min(max(self._qint(q, "s", 48), 8), 256)
         try:
-            data = thumb_strip_bytes(lib.name, start, count, s)
+            data = thumb_strip_bytes(INDEX.data_dir, lib.name, start, count, s)
         except Exception as e:
             self._err(500, str(e))
             return
@@ -741,9 +774,25 @@ class Handler(BaseHTTPRequestHandler):
         if la is None or lb is None:
             self._err(404, f"library not found in one root: {f}")
             return
-        self._send(json_bytes({"file": f, "root_a": ra, "root_b": rb,
-                               **wilsdk.compare_libraries(la, lb)}),
-                   "application/json; charset=utf-8")
+        c = wilsdk.compare_libraries(la, lb)
+        frames = []
+        for i in c["differ"]:
+            ha, hb = la.header(i), lb.header(i)
+            fa = {"blank": ha is None or ha["width"] <= 0}
+            fb = {"blank": hb is None or hb["width"] <= 0}
+            if not fa["blank"]:
+                fa.update({"width": ha["width"], "height": ha["height"]})
+            if not fb["blank"]:
+                fb.update({"width": hb["width"], "height": hb["height"]})
+            frames.append({"i": i, "a": fa, "b": fb})
+        self._send(json_bytes({
+            "file": f, "root_a": ra, "root_b": rb,
+            "a": {"count": la.count}, "b": {"count": lb.count},
+            "diff_count": len(c["differ"]),
+            "ranges": c["ranges"],
+            "missing_a": c["missing_a"], "missing_b": c["missing_b"],
+            "frames": frames,
+        }), "application/json; charset=utf-8")
 
 
 # ---------------------------------------------------------------------- page
@@ -760,7 +809,11 @@ PAGE_HTML = r"""<!DOCTYPE html>
          display:flex; height:100vh; overflow:hidden; }
   #sidebar { width:300px; min-width:300px; background:var(--panel); border-right:1px solid var(--line);
              display:flex; flex-direction:column; }
-  #sidebar h1 { font-size:16px; padding:12px 14px; color:var(--acc); border-bottom:1px solid var(--line); }
+  #sidehead { display:flex; align-items:center; justify-content:space-between; padding:12px 14px;
+              border-bottom:1px solid var(--line); }
+  #sidebar h1 { font-size:16px; color:var(--acc); }
+  #sidehead a { color:var(--dim); font-size:12px; text-decoration:none; }
+  #sidehead a:hover { color:var(--acc); }
   #rootrow { display:flex; gap:6px; padding:10px 12px 0; }
   #root { flex:1; min-width:0; padding:6px 8px; background:var(--panel2); border:1px solid var(--line);
           border-radius:6px; color:var(--fg); outline:none; font-size:12px; }
@@ -773,6 +826,7 @@ PAGE_HTML = r"""<!DOCTYPE html>
   #tabs button { flex:1; padding:6px; background:var(--panel2); border:1px solid var(--line); color:var(--dim);
                  border-radius:6px; cursor:pointer; }
   #tabs button.active { color:var(--acc); border-color:var(--acc); }
+  #tabs button:disabled { opacity:.4; cursor:default; }
   #tree { flex:1; overflow-y:auto; padding:0 6px 12px; }
   .cat { color:var(--acc); font-weight:bold; font-size:12px; padding:10px 8px 4px; }
   .file { display:flex; justify-content:space-between; padding:5px 8px; border-radius:5px; cursor:pointer; }
@@ -781,16 +835,22 @@ PAGE_HTML = r"""<!DOCTYPE html>
   .file .nm { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .file .cnt { color:var(--dim); font-size:12px; margin-left:8px; flex-shrink:0; }
   #main { flex:1; display:flex; flex-direction:column; min-width:0; }
-  #toolbar { display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line);
+  #toolbar { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:1px solid var(--line);
              background:var(--panel); flex-wrap:wrap; width:100%; box-sizing:border-box;
              max-width:100%; overflow-x:visible; }
   #toolbar .lbl { color:var(--dim); }
   #toolbar select { padding:4px 8px; background:var(--panel2); border:1px solid var(--line);
-             color:var(--fg); border-radius:5px; width:70px; }
-  #toolbar input[type=range] { width:130px; accent-color:var(--acc); }
+             color:var(--fg); border-radius:5px; }
+  #toolbar input[type=range] { width:110px; accent-color:var(--acc); }
+  #toolbar input[type=number] { width:64px; padding:4px 6px; background:var(--panel2); border:1px solid var(--line);
+             color:var(--fg); border-radius:5px; }
   #toolbar button { padding:5px 12px; background:var(--panel2); border:1px solid var(--line); color:var(--fg);
-             border-radius:5px; cursor:pointer; }
+             border-radius:5px; cursor:pointer; white-space:nowrap; }
   #toolbar button:hover { border-color:var(--acc); color:var(--acc); }
+  #toolbar button:disabled { opacity:.4; cursor:default; }
+  #selbar { display:flex; align-items:center; gap:6px; }
+  #selbar:empty { display:none; }
+  .tsep { width:1px; height:22px; background:var(--line); }
   #gridwrap { flex:1; overflow:auto; padding:14px; }
   #grid { display:grid; gap:4px; justify-content:start; align-content:start;
           grid-template-columns:repeat(auto-fill, var(--cell)); }
@@ -798,6 +858,8 @@ PAGE_HTML = r"""<!DOCTYPE html>
           cursor:pointer; image-rendering:pixelated; background-repeat:no-repeat,repeat;
           background-position:center, 0 0; }
   .cell:hover { border-color:var(--acc); }
+  .cell.sel { border-color:var(--acc); box-shadow:inset 0 0 0 2px var(--acc); }
+  .cell.focus { outline:2px solid #fff; outline-offset:-2px; }
   .cell .idx { position:absolute; left:2px; bottom:1px; font-size:9px; color:#fff; text-shadow:0 0 2px #000;
                opacity:.75; pointer-events:none; }
   #loadbar { padding:10px 14px; color:var(--dim); text-align:center; border-top:1px solid var(--line);
@@ -805,30 +867,65 @@ PAGE_HTML = r"""<!DOCTYPE html>
   #anim { display:none; padding:8px 14px; border-top:1px solid var(--line); background:var(--panel);
           align-items:center; gap:8px; flex-wrap:wrap; }
   #anim img { image-rendering:pixelated; max-height:180px; }
+  #anim input[type=number] { width:64px; padding:4px 6px; background:var(--panel2); border:1px solid var(--line);
+             color:var(--fg); border-radius:5px; }
+  #anim select { padding:4px 8px; background:var(--panel2); border:1px solid var(--line); color:var(--fg);
+             border-radius:5px; }
   .empty { color:var(--dim); padding:30px; text-align:center; }
   #sounds { display:none; flex-direction:column; gap:4px; padding:14px; overflow:auto; }
+  #sndbar { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  #sndsearch { flex:1; padding:7px 10px; background:var(--panel2); border:1px solid var(--line);
+               border-radius:6px; color:var(--fg); outline:none; }
+  #sndbar button { padding:5px 12px; background:var(--panel2); border:1px solid var(--line); color:var(--fg);
+               border-radius:5px; cursor:pointer; }
+  #sndbar button:hover { border-color:var(--acc); color:var(--acc); }
+  #sndbar button:disabled { opacity:.4; cursor:default; }
   #sounds audio { width:100%; }
   .sound-row { display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--panel2);
                border-radius:5px; }
-  .sound-row .nm { flex:1; color:var(--dim); font-size:12px; }
+  .sound-row .nm { flex:1; color:var(--dim); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   #overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; z-index:50; }
   #modal { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:var(--panel);
            border:1px solid var(--line); border-radius:10px; padding:16px; z-index:51; display:none;
-           max-width:90vw; max-height:90vh; overflow:auto; }
+           max-width:92vw; max-height:92vh; overflow:auto; }
   #modal h3 { margin-bottom:8px; color:var(--acc); }
   #modal .row { display:flex; gap:14px; flex-wrap:wrap; }
   #modal img { image-rendering:pixelated; background:
-      repeating-conic-gradient(#2a2f38 0% 25%, #232830 0% 50%) 0 0/16px 16px; border:1px solid var(--line); }
+      repeating-conic-gradient(#2a2f38 0% 25%, #232830 0% 50%) 0 0/16px 16px; border:1px solid var(--line);
+      max-width:70vw; max-height:60vh; }
   #meta { font-size:12px; color:var(--dim); white-space:pre; }
   #modal .btn { display:inline-block; margin-top:10px; padding:6px 14px; background:var(--panel2);
-      border:1px solid var(--acc); color:var(--acc); border-radius:6px; text-decoration:none; }
+      border:1px solid var(--acc); color:var(--acc); border-radius:6px; text-decoration:none; cursor:pointer;
+      font-size:13px; }
+  #modal .btn:hover { background:#333c4d; }
   #close { float:right; cursor:pointer; color:var(--dim); font-size:18px; }
   #close:hover { color:var(--fg); }
+  #dbar { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  #dbar select, #dbar input[type=number] { padding:4px 6px; background:var(--panel2); border:1px solid var(--line);
+      color:var(--fg); border-radius:5px; }
+  #dbar input[type=number] { width:70px; }
+  #bookmark-note { padding:4px 6px; background:var(--panel2); border:1px solid var(--line); color:var(--fg);
+      border-radius:5px; width:180px; }
+  #bkmodal { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:var(--panel);
+           border:1px solid var(--line); border-radius:10px; padding:16px; z-index:52; display:none;
+           width:560px; max-width:92vw; max-height:80vh; overflow:auto; }
+  #bkmodal h3 { color:var(--acc); margin-bottom:8px; }
+  #bklist { font-size:13px; }
+  .bk-row { display:flex; gap:8px; align-items:center; padding:5px 4px; border-bottom:1px solid #2b333e; }
+  .bk-row .bk-go { color:var(--acc); cursor:pointer; }
+  .bk-row .bk-del { color:#c96; cursor:pointer; }
+  .bk-row .bk-note { color:var(--dim); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #bkmodal .btn { display:inline-block; margin-top:10px; padding:6px 14px; background:var(--panel2);
+      border:1px solid var(--acc); color:var(--acc); border-radius:6px; text-decoration:none; cursor:pointer; }
+  #hint { position:fixed; right:14px; bottom:10px; color:var(--dim); font-size:11px; z-index:5; pointer-events:none; }
 </style>
 </head>
 <body>
 <aside id="sidebar">
-  <h1>Mir3 EI Asset Viewer</h1>
+  <div id="sidehead">
+    <h1>Mir3 EI Asset Viewer</h1>
+    <a href="/compare" title="跨版本资源对比">⇄ Compare</a>
+  </div>
   <div id="rootrow">
     <input id="root" list="rootlist" placeholder="Data directory…" spellcheck="false" title="Data directory (e.g. /path/to/client/Data)">
     <datalist id="rootlist"></datalist>
@@ -845,23 +942,40 @@ PAGE_HTML = r"""<!DOCTYPE html>
   <div id="toolbar">
     <span id="cur" class="lbl">Select a library on the left</span>
     <span id="loadinfo" class="lbl"></span>
-    <span style="flex:1"></span>
+    <span class="tsep"></span>
     <span class="lbl">Zoom</span><input type="range" id="zoom" min="1" max="8" step="0.5" value="2">
     <span id="zoomval" class="lbl">2×</span>
-    <label class="lbl"><input type="checkbox" id="hideblank" checked> Hide blank</label>
+    <label class="lbl" title="隐藏空白帧"><input type="checkbox" id="hideblank" checked> Blank</label>
+    <span class="lbl">跳帧</span><input type="number" id="goframe" min="0" title="跳到指定帧 (Enter)">
+    <span class="tsep"></span>
+    <span id="selbar"></span>
+    <span style="flex:1"></span>
+    <button id="btn-bk" title="书签批注">📑</button>
     <button id="btn-hud" style="color:#e8a33d; border-color:#e8a33d; font-weight:bold;">🖥️ UI 组装预览</button>
     <button id="btn-anim">▶ Animate</button>
   </div>
   <div id="anim">
-    <span class="lbl">Start frame</span><input id="astart" value="0">
-    <span class="lbl">Frames</span><input id="acount" value="12">
-    <span class="lbl">fps</span><input id="afps" value="8">
-    <button id="play">Play</button>
-    <button id="hide-anim">Close</button>
-    <img id="gif" alt="">
+    <span class="lbl">Start</span><input type="number" id="astart" min="0" value="0">
+    <span class="lbl">Frames</span><input type="number" id="acount" min="1" value="12">
+    <span class="lbl">fps</span><input type="number" id="afps" min="1" max="60" value="8">
+    <span class="lbl">Bg</span>
+    <select id="abg"><option value="checker">棋盘格</option><option value="black">黑</option><option value="white">白</option></select>
+    <select id="arange" title="非空区间建议"></select>
+    <button id="play" title="播放 / 暂停显示当前帧">▶ Play</button>
+    <button id="astep" title="用选区定义动画 (Shift+点击选帧)">⤢ 选区</button>
+    <button id="aseq" title="导出 PNG 序列 (ZIP)">⤓ PNG序列</button>
+    <button id="hide-anim">×</button>
+    <img id="gif" alt="" title="空格: 暂停/继续 · ←/→: 上一帧/下一帧">
   </div>
   <div id="gridwrap"><div id="grid"></div></div>
-  <div id="sounds"></div>
+  <div id="sounds">
+    <div id="sndbar">
+      <input id="sndsearch" placeholder="搜索音效… (e.g. monster, magic)">
+      <span id="sndcount" class="lbl"></span>
+      <button id="sndzip" disabled>⤓ 下载选中</button>
+    </div>
+    <div id="sndlist"></div>
+  </div>
   <div id="loadbar">Loading…</div>
 </main>
 <div id="overlay"></div>
@@ -872,8 +986,30 @@ PAGE_HTML = r"""<!DOCTYPE html>
     <div><img id="mimg" alt=""></div>
     <div id="meta"></div>
   </div>
-  <a class="btn" id="mdown" download>Export PNG</a>
-  <a class="btn" id="mdown4" download>Export ×4</a>
+  <div id="dbar">
+    <button class="btn" id="mprev">◀ 上一帧</button>
+    <button class="btn" id="mnext">下一帧 ▶</button>
+    <span class="lbl" style="color:var(--dim)">缩放</span>
+    <select id="dscale"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option><option value="8">8×</option></select>
+    <span class="lbl" style="color:var(--dim)">背景</span>
+    <select id="dbg"><option value="transparent">透明</option><option value="checker" selected>棋盘格</option><option value="white">白</option><option value="black">黑</option></select>
+    <button class="btn" id="mcopy" title="复制帧引用 (库名[帧号] 尺寸 锚点)">⧉ 复制引用</button>
+    <input id="bookmark-note" placeholder="书签备注…">
+    <button class="btn" id="mbk">🔖 存书签</button>
+  </div>
+  <div style="margin-top:10px">
+    <a class="btn" id="mdown" download>Export PNG</a>
+    <a class="btn" id="mdown4" download>Export ×4</a>
+    <a class="btn" id="mdownzip" download>⤓ 帧 ZIP</a>
+  </div>
+</div>
+
+<!-- 书签列表 -->
+<div id="bkmodal">
+  <span id="bk-close" style="float:right; cursor:pointer; color:var(--dim); font-size:18px;">✕</span>
+  <h3>📑 书签批注</h3>
+  <div id="bklist"></div>
+  <button class="btn" id="bk-export">⤓ 导出 JSON</button>
 </div>
 
 <!-- 模拟显示屏与 UI 拼装预览 Modal -->
@@ -885,41 +1021,25 @@ PAGE_HTML = r"""<!DOCTYPE html>
       <input type="checkbox" id="chk-show-borders" checked onchange="toggleControlBorders(this.checked)"> 显隐控件碰撞红框 (Show Red Bounding Boxes)
     </label>
   </h3>
-  
+
   <!-- 800x600 模拟显示器 -->
   <div id="monitor-frame" style="width:800px; height:600px; background:#000; border:12px solid #2a2e38; border-radius:6px; position:relative; overflow:hidden; box-shadow:inset 0 0 20px #000;">
-    <!-- 游戏伪背景 -->
     <div style="position:absolute; inset:0; background:linear-gradient(135deg, #18201a 0%, #0d120f 100%); opacity:0.85;"></div>
-    
-    <!-- 模拟地图文字 -->
     <div style="position:absolute; left:20px; top:20px; color:#445544; font-size:14px; font-family:monospace; pointer-events:none;">
       [Mir3 EI Client Viewport: 800 × 600]
     </div>
-
-    <!-- HUD 800x136 主面板容器 (贴合在 600px 屏幕最底部) -->
     <div id="hud-main-panel" style="position:absolute; left:0; bottom:0; width:800px; height:136px; pointer-events:auto;">
-      <!-- 1. 800x136 一体化底层主金属架 (GameInter Frame 50) -->
       <img id="part-bg" src="" style="position:absolute; left:0; top:0; width:800px; height:136px; z-index:1;" title="主框架底座 (GameInter[50])" alt="">
-
-      <!-- 2. 左侧大红血球 (Frame 60, 宽56x110, 精确 Location: 59, 16) -->
       <div class="ui-ctrl-box" style="position:absolute; left:59px; top:16px; width:56px; height:110px; border:1.5px solid red; overflow:hidden; z-index:2;" title="HP血球控件 (Index 60) Rect:(59, 480, 56, 110)">
         <img id="part-hp-ball" src="" style="position:absolute; left:0; bottom:0; width:56px; height:110px;" alt="">
       </div>
-
-      <!-- 3. 右侧大蓝魔球 (Frame 61, 宽56x110, 精确 Location: 115, 16) -->
       <div class="ui-ctrl-box" style="position:absolute; left:115px; top:16px; width:56px; height:110px; border:1.5px solid blue; overflow:hidden; z-index:2;" title="MP魔球控件 (Index 61) Rect:(115, 480, 56, 110)">
         <img id="part-mp-ball" src="" style="position:absolute; left:0; bottom:0; width:56px; height:110px;" alt="">
       </div>
-
-      <!-- 4. 中间黄色经验长条 (Frame 63, 宽164x6, 精确 Location: 350, 11) -->
       <div class="ui-ctrl-box" style="position:absolute; left:350px; top:11px; width:164px; height:6px; border:1.5px solid #ff0; overflow:hidden; z-index:3;" title="经验条控件 (Index 63) Rect:(350, 475, 164, 6)">
         <img id="part-exp-line" src="" style="position:absolute; left:0; top:0; width:164px; height:6px;" alt="">
       </div>
-
-      <!-- 5. 中间聊天输入与历史信息框控件 (ChatLog / Input Area, 精确 Location: 200, 20, 380x100) -->
       <div class="ui-ctrl-box" style="position:absolute; left:200px; top:20px; width:380px; height:100px; border:1.5px dashed cyan; z-index:4; pointer-events:auto; cursor:pointer;" title="聊天日志与文本输入区域 (ChatText & InputArea) Rect:(200, 484, 380, 100)"></div>
-
-      <!-- 6. 罗盘盘面 13 个功能按钮热区 (基于圆心 665, 68 精确测算) -->
       <div class="ui-ctrl-box" style="position:absolute; left:648px; top:12px; width:26px; height:24px; border:1.5px solid red; z-index:5; cursor:pointer;" title="属性按钮 [F10] (Index 100) Rect:(648, 476, 26, 24)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:668px; top:18px; width:26px; height:24px; border:1.5px solid red; z-index:5; cursor:pointer;" title="装备按钮 [F11] (Index 101) Rect:(668, 482, 26, 24)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:682px; top:32px; width:26px; height:24px; border:1.5px solid red; z-index:5; cursor:pointer;" title="背包按钮 [F9]  (Index 102) Rect:(682, 496, 26, 24)"></div>
@@ -933,8 +1053,6 @@ PAGE_HTML = r"""<!DOCTYPE html>
       <div class="ui-ctrl-box" style="position:absolute; left:614px; top:32px; width:26px; height:24px; border:1.5px solid red; z-index:5; cursor:pointer;" title="挂机按钮 [A]   (Index 110) Rect:(614, 496, 26, 24)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:628px; top:18px; width:26px; height:24px; border:1.5px solid red; z-index:5; cursor:pointer;" title="设置按钮 [ESC] (Index 112) Rect:(628, 482, 26, 24)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:651px; top:54px; width:28px; height:28px; border:1.5px solid gold; z-index:6; cursor:pointer; border-radius:50%;" title="中心挂锁/退出 (Index 109) Rect:(651, 518, 28, 28)"></div>
-
-      <!-- 7. 罗盘左侧小绿圈按键 (Index 90..95, 精确 Location) -->
       <div class="ui-ctrl-box" style="position:absolute; left:578px; top:18px; width:18px; height:18px; border:1.5px solid #0f0; z-index:5; border-radius:50%;" title="跑步切替 (Index 91)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:596px; top:30px; width:18px; height:18px; border:1.5px solid #0f0; z-index:5; border-radius:50%;" title="攻击模式 (Index 90)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:578px; top:48px; width:18px; height:18px; border:1.5px solid #0f0; z-index:5; border-radius:50%;" title="交易请求 (Index 92)"></div>
@@ -942,15 +1060,11 @@ PAGE_HTML = r"""<!DOCTYPE html>
       <div class="ui-ctrl-box" style="position:absolute; left:578px; top:82px; width:18px; height:18px; border:1.5px solid #0f0; z-index:5; border-radius:50%;" title="声名查看 (Index 94)"></div>
       <div class="ui-ctrl-box" style="position:absolute; left:596px; top:96px; width:18px; height:18px; border:1.5px solid #0f0; z-index:5; border-radius:50%;" title="退出游戏 (Index 95)"></div>
     </div>
-
-    <!-- 右上角小地图面板控件 (MiniMap Window) -->
     <div class="ui-ctrl-box" style="position:absolute; right:10px; top:10px; width:140px; height:140px; border:2px solid red; background:rgba(0,0,0,0.5); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#e8a33d; font-size:12px;">
       <span>MiniMap (Index 210)</span>
       <span style="font-size:10px; color:#aaa; margin-top:4px;">TopRight: (650, 10)</span>
     </div>
   </div>
-
-  <!-- 提示卡片 -->
   <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
     <div id="hud-inspector" style="font-size:13px; color:#aaa; font-family:monospace;">
       💡 提示：已开启 [红框/彩框] 控件检测，悬停或点击任意红框查看控件响应矩形 Rect(X, Y, W, H)。
@@ -958,12 +1072,68 @@ PAGE_HTML = r"""<!DOCTYPE html>
     <div style="color:#e8a33d; font-size:12px;">Standard Resolution: 800 × 600</div>
   </div>
 </div>
+<div id="hint">双击帧看详情 · Shift 点击区间选择 · Ctrl 点击追加 · ←→↑↓ 移动 · Enter 详情 · G 跳帧 · Esc 关闭</div>
 <script>
 const $ = s => document.querySelector(s);
-let STATE = { lib:null, count:0, loaded:0, per:120, loading:false, all:null, gen:0 };
+let STATE = { lib:null, count:0, loaded:0, per:120, loading:false, all:null, gen:0,
+              sel:new Set(), focus:null, anchor:null, blankSet:null, ranges:[],
+              animTimer:null, animPaused:false, animPos:0, detail:null };
 const gw = $('#gridwrap');
 const cellSize = () => Math.max(24, Math.floor(48 * (+$('#zoom').value) / 2));
+const kfmt = n => n >= 10000 ? (n/1000).toFixed(1) + 'k' : String(n);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const libBase = () => (STATE.lib || '').replace(/\.wil$/i, '');
 
+// ---------------------------------------------------------------- hash state
+function saveHash(){
+  const p = new URLSearchParams();
+  if (STATE.lib) p.set('file', STATE.lib);
+  p.set('zoom', $('#zoom').value);
+  p.set('blank', $('#hideblank').checked ? '1' : '0');
+  p.set('tab', $('#tab-img').classList.contains('active') ? 'img' : 'snd');
+  if (STATE.focus != null) p.set('frame', String(STATE.focus));
+  if (STATE.sel.size) p.set('sel', [...STATE.sel].sort((a,b)=>a-b).slice(0,400).join(','));
+  const a = +$('#astart').value, ac = +$('#acount').value, af = +$('#afps').value;
+  if (!isNaN(a)) p.set('a', String(a));
+  if (!isNaN(ac)) p.set('ac', String(ac));
+  if (!isNaN(af)) p.set('af', String(af));
+  if ($('#hud-modal').style.display === 'block') p.set('hud', '1');
+  history.replaceState(null, '', '#' + p.toString());
+}
+let hashTimer = null;
+function queueHash(){ clearTimeout(hashTimer); hashTimer = setTimeout(saveHash, 250); }
+
+function restoreFromHash(){
+  if (!STATE.all || !STATE.all.libs) return;
+  const h = new URLSearchParams(location.hash.slice(1));
+  const file = h.get('file');
+  if (file){
+    const target = STATE.all.libs.find(l => l.name.toLowerCase() === file.toLowerCase() || l.name.toLowerCase() === (file + '.wil').toLowerCase());
+    if (target){
+      selectLib(target.name, false);
+      const zoom = h.get('zoom'); if (zoom) $('#zoom').value = zoom;
+      $('#hideblank').checked = h.get('blank') !== '0';
+      applyCellSize();
+      const tab = h.get('tab'); if (tab === 'snd') $('#tab-snd').click(); else $('#tab-img').click();
+      const a = h.get('a'), ac = h.get('ac'), af = h.get('af');
+      if (a != null) $('#astart').value = a;
+      if (ac != null) $('#acount').value = ac;
+      if (af != null) $('#afps').value = af;
+      const sel = h.get('sel');
+      if (sel) sel.split(',').map(Number).filter(i => i >= 0 && i < STATE.count).forEach(i => STATE.sel.add(i));
+      renderSelUI();
+      const frame = h.get('frame');
+      if (frame != null){
+        setTimeout(() => scrollToFrame(+frame), 50);
+        setTimeout(() => scrollToFrame(+frame), 400);
+      }
+    }
+  }
+  if (h.get('hud') === '1' || localStorage.getItem('hud_preview_open') === '1') openHudPreview();
+}
+window.addEventListener('hashchange', restoreFromHash);
+
+// ---------------------------------------------------------------- roots / tree
 async function loadFiles(){
   const r = await fetch('/api/files');
   const d = await r.json();
@@ -973,32 +1143,6 @@ async function loadFiles(){
   else $('#tab-snd').disabled = true;
   restoreFromHash();
 }
-
-function restoreFromHash(){
-  if (!STATE.all || !STATE.all.libs) return;
-  const hash = location.hash;
-  if (hash){
-    const match = hash.match(/file=([^&]+)/);
-    if (match){
-      const fileName = decodeURIComponent(match[1]);
-      const target = STATE.all.libs.find(l => l.name.toLowerCase() === fileName.toLowerCase() || l.name.toLowerCase() === (fileName + '.wil').toLowerCase());
-      if (target){
-        selectLib(target.name, false);
-        document.querySelectorAll('#tree .file').forEach(d => {
-          if (d.querySelector('.nm').textContent.toLowerCase() === target.name.replace(/\.wil$/i,'').toLowerCase()){
-            setActive(d);
-          }
-        });
-      }
-    }
-  }
-
-  // Restore HUD preview open state
-  if (location.hash.includes('hud=1') || localStorage.getItem('hud_preview_open') === '1'){
-    openHudPreview();
-  }
-}
-window.addEventListener('hashchange', restoreFromHash);
 async function loadRoots(){
   try {
     const r = await fetch('/api/root');
@@ -1022,13 +1166,15 @@ async function switchRoot(){
     });
     const d = await r.json();
     if (!r.ok){ alert(d); return; }
-    STATE = { ...STATE, all: d, lib: null, count: 0, loaded: 0, loading: false, gen: STATE.gen + 1 };
+    STATE = { ...STATE, all: d, lib: null, count: 0, loaded: 0, loading: false, gen: STATE.gen + 1,
+              sel: new Set(), focus: null, anchor: null, blankSet: null, ranges: [] };
     $('#root').value = d.root;
     $('#cur').textContent = 'Select a library on the left';
     $('#grid').innerHTML = ''; $('#loadinfo').textContent = ''; $('#anim').style.display = 'none';
     renderTree(d.libs);
     if (d.sounds && d.sounds.length){ renderSounds(d.sounds); $('#tab-snd').disabled = false; }
-    else { $('#tab-snd').disabled = true; $('#sounds').innerHTML = ''; }
+    else { $('#tab-snd').disabled = true; $('#sndlist').innerHTML = ''; }
+    saveHash();
   } catch (e) { alert('switch failed: ' + e); }
   finally { $('#rootgo').disabled = false; }
 }
@@ -1043,7 +1189,8 @@ function renderTree(libs){
     const d = document.createElement('div'); d.className='file';
     d.innerHTML = `<span class="nm"></span><span class="cnt"></span>`;
     d.querySelector('.nm').textContent = l.name.replace(/\.wil$/i,'');
-    d.querySelector('.cnt').textContent = l.count;
+    d.querySelector('.cnt').textContent = kfmt(l.count);
+    d.title = `${l.name} · ${l.count} frames · ${l.size_mb} MB`;
     d.onclick = () => { selectLib(l.name); setActive(d); };
     tree.appendChild(d);
   }
@@ -1051,66 +1198,109 @@ function renderTree(libs){
 function setActive(d){ document.querySelectorAll('.file.active').forEach(x=>x.classList.remove('active')); d.classList.add('active'); }
 function selectLib(name, updateHash = true){
   const lib = STATE.all.libs.find(l=>l.name===name); if(!lib) return;
-  STATE = {...STATE, lib:name, count:lib.count, loaded:0, loading:false};
-  if (updateHash) {
-    history.replaceState(null, '', '#file=' + encodeURIComponent(name));
-  }
+  STATE = {...STATE, lib:name, count:lib.count, loaded:0, loading:false, gen: STATE.gen + 1,
+           sel:new Set(), focus:null, anchor:null, blankSet:null, ranges:[]};
   $('#cur').textContent = `${lib.name} · ${lib.count} frames · ${lib.size_mb} MB`;
   $('#loadinfo').textContent = '';
   $('#anim').style.display='none';
-  $('#astart').value = 0;
+  stopAnim();
+  $('#astart').value = 0; $('#acount').value = 12;
   gw.scrollTop = 0;
   $('#grid').innerHTML = '';
+  loadRanges();
   loadMore();
+  renderSelUI();
+  if (updateHash) saveHash();
 }
+// ---------------------------------------------------------------- ranges / blank
+async function loadRanges(){
+  try {
+    const r = await fetch(`/api/ranges?f=${encodeURIComponent(STATE.lib)}`);
+    const d = await r.json();
+    STATE.ranges = d.ranges || [];
+    const bs = new Set(); let prev = 0;
+    for (const rg of STATE.ranges){ for (let i=prev;i<rg.start;i++) bs.add(i); prev = rg.end; }
+    for (let i=prev;i<STATE.count;i++) bs.add(i);
+    STATE.blankSet = bs;
+    fillRangeSelect();
+  } catch (e) { STATE.blankSet = null; }
+}
+function fillRangeSelect(){
+  const s = $('#arange'); s.innerHTML = '';
+  const opts = (STATE.ranges || []).filter(r => r.count >= 2);
+  if (!opts.length){
+    const o = document.createElement('option'); o.value=''; o.textContent='无连续非空区间'; s.appendChild(o);
+    return;
+  }
+  let focusIdx = -1;
+  for (const r of opts){
+    const o = document.createElement('option');
+    o.value = `${r.start},${r.count}`;
+    o.textContent = `F${r.start}-${r.end-1} (${r.count})`;
+    s.appendChild(o);
+    if (STATE.focus != null && STATE.focus >= r.start && STATE.focus < r.end && focusIdx < 0){
+      focusIdx = s.options.length - 1;
+    }
+  }
+  s.selectedIndex = focusIdx >= 0 ? focusIdx : 0;
+}
+// ---------------------------------------------------------------- grid (strips)
+const CHECKER = 'repeating-conic-gradient(#2a2f38 0% 25%, #232830 0% 50%)';
+function gridCols(cell){ return Math.max(1, Math.floor(gw.clientWidth / (cell + 4))); }
 function loadMore(){
   if (!STATE.lib || STATE.loading || STATE.loaded >= STATE.count) return;
   STATE.loading = true;
-  const start = STATE.loaded, end = Math.min(start + STATE.per, STATE.count);
   const cell = cellSize();
-  const g = $('#grid');
-  g.style.setProperty('--cell', cell + 'px');
-  const frag = document.createDocumentFragment();
-  const checker = ', repeating-conic-gradient(#2a2f38 0% 25%, #232830 0% 50%)';
-  const hideBlank = $('#hideblank').checked;
+  const cols = gridCols(cell);
+  const strip = Math.max(cols, cols * Math.max(2, Math.ceil((gw.clientHeight + 300) / (cell + 4))));
+  const start = STATE.loaded, end = Math.min(start + strip, STATE.count);
   const gen = STATE.gen;
-  const mkCell = i => {
-    const d = document.createElement('div'); d.className='cell';
-    d.style.backgroundImage = `url('/api/thumb?f=${encodeURIComponent(STATE.lib)}&i=${i}&s=${cell}')` + checker;
-    d.style.backgroundSize = 'contain, 16px 16px';
-    const t = document.createElement('span'); t.className='idx'; t.textContent=i; d.appendChild(t);
-    d.onclick = () => openDetail(i);
-    return d;
-  };
-  let pending = end - start;
-  const done = () => {
-    if (--pending > 0) return;
-    if (gen !== STATE.gen) return;              // stale batch (reload/switched)
+  const hideBlank = $('#hideblank').checked && STATE.blankSet;
+  const img = new Image();
+  img.onload = () => {
+    if (gen !== STATE.gen) return;
+    const g = $('#grid');
+    g.style.setProperty('--cell', cell + 'px');
+    const frag = document.createDocumentFragment();
+    for (let k = 0; k < end - start; k++){
+      const i = start + k;
+      if (hideBlank && STATE.blankSet.has(i)) continue;
+      const d = document.createElement('div'); d.className='cell'; d.dataset.idx = i;
+      d.style.backgroundImage = `url("${img.src}")` + ', ' + CHECKER;
+      d.style.backgroundSize = `${(end - start) * cell}px ${cell}px, 16px 16px`;
+      d.style.backgroundPosition = `-${k * cell}px 0, 0 0`;
+      const t = document.createElement('span'); t.className='idx'; t.textContent = i; d.appendChild(t);
+      d.onclick = ev => onCellClick(i, ev);
+      d.ondblclick = ev => { ev.stopPropagation(); openDetail(i); };
+      frag.appendChild(d);
+    }
     STATE.loaded = end;
     g.appendChild(frag);
     STATE.loading = false;
+    refreshCellClasses();
     $('#loadinfo').textContent = `${g.children.length} / ${STATE.count}`;
     if (STATE.loaded >= STATE.count){ $('#loadbar').style.display='none'; return; }
-    // keep scanning while content doesn't fill the viewport (blank frames skipped)
     const needMore = g.scrollHeight <= gw.clientHeight;
-    if (needMore || gw.scrollTop + gw.clientHeight >= gw.scrollHeight - 800){ loadMore(); }
+    if (needMore || gw.scrollTop + gw.clientHeight >= gw.scrollHeight - 800) loadMore();
   };
-  for (let i=start;i<end;i++){
-    if (hideBlank){
-      // probe first: server returns 204 for blank frames → skip them entirely
-      const probe = new Image();
-      probe.onload = () => { if (gen !== STATE.gen) return; frag.appendChild(mkCell(i)); done(); };
-      probe.onerror = () => done();
-      probe.src = `/api/thumb?f=${encodeURIComponent(STATE.lib)}&i=${i}&s=${cell}`;
-    } else {
-      frag.appendChild(mkCell(i));
-      done();
-    }
-  }
+  img.onerror = () => { STATE.loading = false; };
+  img.src = `/api/thumbs?f=${encodeURIComponent(STATE.lib)}&start=${start}&count=${end - start}&s=${cell}`;
 }
 gw.addEventListener('scroll', () => {
   if (gw.scrollTop + gw.clientHeight >= gw.scrollHeight - 800) loadMore();
+  saveScrollHash();
 });
+let scrollTimer = null;
+function saveScrollHash(){
+  if (!STATE.lib) return;
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    const cell = cellSize() + 4, cols = gridCols(cellSize());
+    const row = Math.max(0, Math.floor(gw.scrollTop / cell));
+    STATE.focus = row * cols;
+    queueHash();
+  }, 300);
+}
 function reloadGrid(){
   if (!STATE.lib) return;
   STATE.loaded = 0; STATE.loading = false; STATE.gen++;
@@ -1120,79 +1310,433 @@ function reloadGrid(){
 }
 function applyCellSize(){
   const cell = cellSize();
-  $('#grid').style.setProperty('--cell', cell + 'px');  // only the CSS variable changes; cell & image scale together
+  $('#grid').style.setProperty('--cell', cell + 'px');
   $('#zoomval').textContent = $('#zoom').value + '×';
 }
-$('#zoom').oninput = applyCellSize;   // drag: CSS variable applies live, no relayout storm
-$('#zoom').onchange = reloadGrid;     // release: re-fetch thumbnails at exact size
-$('#hideblank').onchange = reloadGrid; // toggle hide-blank → re-render to apply
+$('#zoom').oninput = applyCellSize;
+$('#zoom').onchange = reloadGrid;
+$('#hideblank').onchange = reloadGrid;
+// ---------------------------------------------------------------- selection
+function refreshCellClasses(){
+  document.querySelectorAll('#grid .cell').forEach(d => {
+    const i = +d.dataset.idx;
+    d.classList.toggle('sel', STATE.sel.has(i));
+    d.classList.toggle('focus', STATE.focus === i);
+  });
+}
+function onCellClick(i, ev){
+  ev.preventDefault();
+  if (ev.shiftKey && STATE.anchor != null){
+    const [a, b] = [Math.min(STATE.anchor, i), Math.max(STATE.anchor, i)];
+    for (let k = a; k <= b; k++){
+      if (STATE.blankSet && STATE.blankSet.has(k) && $('#hideblank').checked) continue;
+      STATE.sel.add(k);
+    }
+  } else if (ev.ctrlKey || ev.metaKey){
+    STATE.sel.has(i) ? STATE.sel.delete(i) : STATE.sel.add(i);
+    STATE.anchor = i;
+  } else {
+    if (ev.detail > 1) return; // double click handled separately
+    STATE.sel.clear(); STATE.sel.add(i); STATE.anchor = i;
+  }
+  STATE.focus = i;
+  refreshCellClasses();
+  renderSelUI();
+  queueHash();
+}
+function scrollToFrame(i){
+  if (!STATE.lib || i < 0 || i >= STATE.count) return;
+  STATE.focus = i;
+  const cell = cellSize() + 4, cols = gridCols(cellSize());
+  const row = Math.floor(i / cols);
+  gw.scrollTop = Math.max(0, row * cell - 40);
+  const need = Math.min(STATE.count, Math.ceil((row * cell + cell) / cell) * cols + cols * 4);
+  if (STATE.loaded < need){
+    const old = STATE.loaded;
+    STATE.loading = false;
+    STATE.loaded = Math.max(STATE.loaded, need - STATE.loaded);
+    // force-load enough strips: load in batches until loaded covers need
+    const target = Math.min(STATE.count, need);
+    const loop = async () => {
+      while (STATE.loaded < target && !STATE.loading){
+        const s = STATE.loaded;
+        await loadBatch(s);
+        if (STATE.loaded === s) break;
+      }
+      setTimeout(() => { refreshCellClasses(); scrollToFrame(i); }, 60);
+    };
+    loop();
+  } else {
+    refreshCellClasses();
+    const el = document.querySelector(`#grid .cell[data-idx="${i}"]`);
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+  queueHash();
+}
+function loadBatch(start){
+  return new Promise(res => {
+    const cell = cellSize();
+    const cols = gridCols(cell);
+    const strip = Math.max(cols, cols * Math.max(2, Math.ceil((gw.clientHeight + 300) / (cell + 4))));
+    const end = Math.min(start + strip, STATE.count);
+    const gen = STATE.gen;
+    const img = new Image();
+    img.onload = () => {
+      if (gen !== STATE.gen) return res(false);
+      const g = $('#grid');
+      const frag = document.createDocumentFragment();
+      const hideBlank = $('#hideblank').checked && STATE.blankSet;
+      for (let k = 0; k < end - start; k++){
+        const i = start + k;
+        if (hideBlank && STATE.blankSet.has(i)) continue;
+        const d = document.createElement('div'); d.className='cell'; d.dataset.idx = i;
+        d.style.backgroundImage = `url("${img.src}")` + ', ' + CHECKER;
+        d.style.backgroundSize = `${(end - start) * cell}px ${cell}px, 16px 16px`;
+        d.style.backgroundPosition = `-${k * cell}px 0, 0 0`;
+        const t = document.createElement('span'); t.className='idx'; t.textContent = i; d.appendChild(t);
+        d.onclick = ev => onCellClick(i, ev);
+        d.ondblclick = ev => { ev.stopPropagation(); openDetail(i); };
+        frag.appendChild(d);
+      }
+      g.appendChild(frag);
+      STATE.loaded = end;
+      res(true);
+    };
+    img.onerror = () => res(false);
+    img.src = `/api/thumbs?f=${encodeURIComponent(STATE.lib)}&start=${start}&count=${end - start}&s=${cell}`;
+  });
+}
+function renderSelUI(){
+  const bar = $('#selbar');
+  const n = STATE.sel.size;
+  if (!n){ bar.innerHTML = ''; return; }
+  bar.innerHTML = `<span class="lbl">选中 <b style="color:var(--acc)">${n}</b></span>` +
+    `<button id="sel-anim" title="用选中帧定义动画">▶ 动画</button>` +
+    `<button id="sel-zip" title="导出选中帧为 PNG ZIP">⤓ ZIP</button>` +
+    `<button id="sel-sheet" title="导出选中帧雪碧图">▦ 雪碧图</button>` +
+    `<button id="sel-clear" title="清空选中">✕</button>`;
+  $('#sel-anim').onclick = () => { selToAnim(); };
+  $('#sel-zip').onclick = () => { selExport('png'); };
+  $('#sel-sheet').onclick = () => { selExport('sheet'); };
+  $('#sel-clear').onclick = () => { STATE.sel.clear(); refreshCellClasses(); renderSelUI(); queueHash(); };
+}
+function selCompress(){
+  const arr = [...STATE.sel].sort((a,b)=>a-b);
+  const parts = []; let runStart = arr[0];
+  for (let i = 1; i <= arr.length; i++){
+    if (i === arr.length || arr[i] !== arr[i-1] + 1){
+      parts.push(arr[i-1] === runStart ? String(runStart) : `${runStart}-${arr[i-1]}`);
+      runStart = arr[i];
+    }
+  }
+  return parts.join(',');
+}
+function selExport(kind){
+  if (!STATE.sel.size) return;
+  const url = `/api/export?f=${encodeURIComponent(STATE.lib)}&kind=${kind}&scale=${Math.max(1, Math.min(8, Math.round(+$('#zoom').value)))}` +
+    (kind === 'sheet' ? `&cols=24&bg=checker` : '') + `&i=${selCompress()}`;
+  const a = document.createElement('a'); a.href = url;
+  a.download = kind === 'sheet' ? `${libBase()}_sheet.png` : `${libBase()}_sel_${STATE.sel.size}f.zip`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+// ---------------------------------------------------------------- keyboard
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, select, textarea')) {
+    if (e.key === 'Enter' && e.target.id === 'goframe'){ jumpToFrame(); }
+    if (e.key === 'Escape'){ e.target.blur(); }
+    return;
+  }
+  const cell = cellSize() + 4, cols = gridCols(cellSize());
+  const cur = STATE.focus != null ? STATE.focus : 0;
+  let next = null;
+  switch (e.key){
+    case 'ArrowRight': next = Math.min(STATE.count - 1, cur + 1); break;
+    case 'ArrowLeft':  next = Math.max(0, cur - 1); break;
+    case 'ArrowDown':  next = Math.min(STATE.count - 1, cur + cols); break;
+    case 'ArrowUp':    next = Math.max(0, cur - cols); break;
+    case 'Enter': if (STATE.focus != null) openDetail(STATE.focus); return;
+    case 'Escape': closeModal(); closeHudModal(); $('#bkmodal').style.display='none'; $('#overlay').style.display='none'; return;
+    case 'g': case 'G':
+      $('#goframe').focus(); $('#goframe').select(); e.preventDefault(); return;
+    case '+': case '=': $('#zoom').value = Math.min(8, +$('#zoom').value + 0.5); applyCellSize(); reloadGrid(); return;
+    case '-': $('#zoom').value = Math.max(1, +$('#zoom').value - 0.5); applyCellSize(); reloadGrid(); return;
+    case ' ': e.preventDefault(); toggleAnimPause(); return;
+    case 'ArrowLeft': case 'ArrowRight': break;
+    default: return;
+  }
+  if (next != null){
+    e.preventDefault();
+    if (!e.shiftKey){ STATE.sel.clear(); STATE.anchor = next; }
+    STATE.sel.add(next);
+    STATE.focus = next;
+    scrollToFrame(next);
+    refreshCellClasses();
+    renderSelUI();
+    queueHash();
+  }
+});
+$('#goframe').addEventListener('keydown', e => { if (e.key === 'Enter') jumpToFrame(); });
+function jumpToFrame(){
+  const v = Math.max(0, Math.min(STATE.count - 1, Math.floor(+$('#goframe').value || 0)));
+  scrollToFrame(v);
+  $('#goframe').value = '';
+}
+// ---------------------------------------------------------------- detail modal
 function openDetail(i){
+  if (!STATE.lib || i < 0 || i >= STATE.count) return;
+  STATE.detail = i;
+  $('#mtitle').textContent = `${STATE.lib} · frame #${i}`;
+  renderDetail();
+  $('#overlay').style.display='block'; $('#modal').style.display='block';
+}
+function renderDetail(){
+  const i = STATE.detail;
+  const scale = +$('#dscale').value, bg = $('#dbg').value;
   fetch(`/api/info?f=${encodeURIComponent(STATE.lib)}&i=${i}`).then(r=>r.json()).then(h=>{
-    $('#mtitle').textContent = `${STATE.lib} · frame #${i}`;
-    $('#mimg').src = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=4`;
-    const base = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=1`;
-    $('#mdown').href = base; $('#mdown').setAttribute('download', `${STATE.lib.replace(/\W/g,'_')}_${i}.png`);
-    $('#mdown4').href = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=4`;
-    $('#mdown4').setAttribute('download', `${STATE.lib.replace(/\W/g,'_')}_${i}_x4.png`);
-    if (h.blank){
-      $('#meta').textContent = 'Blank placeholder frame (index 0)';
-    } else {
+    $('#mimg').src = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=${scale}&bg=${bg}`;
+    const base = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=1&bg=${bg}`;
+    $('#mdown').href = base; $('#mdown').setAttribute('download', `${libBase()}_${i}.png`);
+    $('#mdown4').href = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${i}&scale=4&bg=${bg}`;
+    $('#mdown4').setAttribute('download', `${libBase()}_${i}_x4.png`);
+    $('#mdownzip').href = `/api/export?f=${encodeURIComponent(STATE.lib)}&kind=png&scale=4&bg=${bg}&i=${i}`;
+    $('#mdownzip').setAttribute('download', `${libBase()}_${i}.zip`);
+    $('#mprev').style.visibility = i > 0 ? 'visible' : 'hidden';
+    $('#mnext').style.visibility = i < STATE.count - 1 ? 'visible' : 'hidden';
+    const bk = (getBookmarks()[STATE.lib] || {})[i];
+    $('#bookmark-note').value = bk || '';
+    if (h.blank){ $('#meta').textContent = 'Blank placeholder frame (index 0)'; }
+    else {
       $('#meta').textContent =
 `Size: ${h.width} × ${h.height}
 Anchor: x=${h.offsetX}  y=${h.offsetY}
 Shadow: ${h.shadow?'yes':'no'} (${h.shadowX}, ${h.shadowY})
 Data: ${h.words} words (${h.bytes} B)`;
     }
-    $('#overlay').style.display='block'; $('#modal').style.display='block';
   });
 }
-$('#overlay').onclick = () => { closeModal(); closeHudModal(); };
+$('#dscale').onchange = renderDetail;
+$('#dbg').onchange = renderDetail;
+$('#mprev').onclick = () => { STATE.detail--; openDetail(STATE.detail); };
+$('#mnext').onclick = () => { STATE.detail++; openDetail(STATE.detail); };
+$('#mcopy').onclick = async () => {
+  const i = STATE.detail;
+  const h = await (await fetch(`/api/info?f=${encodeURIComponent(STATE.lib)}&i=${i}`)).json();
+  const ref = `${libBase()}[${i}] // ${h.width}x${h.height} anchor(${h.offsetX},${h.offsetY})${h.shadow ? ` shadow(${h.shadowX},${h.shadowY})` : ''}`;
+  try { await navigator.clipboard.writeText(ref); $('#mcopy').textContent = '✓ 已复制'; setTimeout(()=>$('#mcopy').textContent='⧉ 复制引用', 1200); }
+  catch (e) { prompt('复制帧引用:', ref); }
+};
+$('#overlay').onclick = () => { closeModal(); closeHudModal(); $('#bkmodal').style.display='none'; $('#overlay').style.display='none'; };
 $('#close').onclick = closeModal;
 function closeModal(){ $('#overlay').style.display='none'; $('#modal').style.display='none'; }
-
-// HUD 组装原理模拟器
+// ---------------------------------------------------------------- bookmarks
+const BK_KEY = 'wilviewer_bookmarks_v1';
+function getBookmarks(){
+  try { return JSON.parse(localStorage.getItem(BK_KEY) || '{}'); } catch (e) { return {}; }
+}
+function saveBookmarks(b){ localStorage.setItem(BK_KEY, JSON.stringify(b)); }
+$('#mbk').onclick = () => {
+  const i = STATE.detail, note = $('#bookmark-note').value.trim();
+  if (!note){ alert('备注不能为空'); return; }
+  const b = getBookmarks();
+  b[STATE.lib] = b[STATE.lib] || {};
+  b[STATE.lib][i] = note;
+  saveBookmarks(b);
+  $('#mbk').textContent = '✓ 已存'; setTimeout(()=>$('#mbk').textContent='🔖 存书签', 1200);
+};
+$('#btn-bk').onclick = openBkModal;
+function openBkModal(){
+  const list = $('#bklist'); list.innerHTML = '';
+  const b = getBookmarks();
+  let n = 0;
+  for (const [lib, frames] of Object.entries(b)){
+    for (const [fr, note] of Object.entries(frames)){
+      n++;
+      const row = document.createElement('div'); row.className='bk-row';
+      row.innerHTML = `<span class="bk-go">${esc(lib.replace(/\.wil$/i,''))}[${fr}]</span><span class="bk-note">${esc(note)}</span><span class="bk-del">✕</span>`;
+      row.querySelector('.bk-go').onclick = () => {
+        $('#bkmodal').style.display='none'; $('#overlay').style.display='none';
+        const target = STATE.all.libs.find(l => l.name.toLowerCase() === lib.toLowerCase());
+        if (target && STATE.lib !== target.name){ selectLib(target.name); }
+        scrollToFrame(+fr);
+        setTimeout(()=>openDetail(+fr), 500);
+      };
+      row.querySelector('.bk-del').onclick = () => {
+        delete b[lib][fr];
+        if (!Object.keys(b[lib]).length) delete b[lib];
+        saveBookmarks(b);
+        openBkModal();
+      };
+      list.appendChild(row);
+    }
+  }
+  if (!n) list.innerHTML = '<div class="empty">暂无书签 — 打开帧详情后填写备注并保存</div>';
+  $('#bkmodal').style.display='block'; $('#overlay').style.display='block';
+}
+$('#bk-close').onclick = () => { $('#bkmodal').style.display='none'; $('#overlay').style.display='none'; };
+$('#bk-export').onclick = () => {
+  const blob = new Blob([JSON.stringify(getBookmarks(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `wilviewer_bookmarks_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+};
+// ---------------------------------------------------------------- animation
+function stopAnim(){
+  if (STATE.animTimer){ clearInterval(STATE.animTimer); STATE.animTimer = null; }
+  STATE.animPaused = false; STATE.animPos = 0;
+  $('#play').textContent = '▶ Play';
+}
+function selToAnim(){
+  if (!STATE.sel.size) return;
+  const arr = [...STATE.sel].sort((a,b)=>a-b);
+  $('#astart').value = arr[0];
+  $('#acount').value = arr[arr.length-1] - arr[0] + 1;
+  $('#anim').style.display='flex';
+  playAnim();
+}
+$('#btn-anim').onclick = () => {
+  $('#anim').style.display='flex';
+  const cell = cellSize();
+  const colsVis = gridCols(cell);
+  const row = Math.max(0, Math.floor(gw.scrollTop / (cell + 4)));
+  const guess = Math.min(STATE.count - 1, row * colsVis);
+  // 优先给一个非空区间的起点
+  let start = guess;
+  if (STATE.ranges && STATE.ranges.length){
+    const rg = STATE.ranges.find(r => r.start >= guess) || STATE.ranges[0];
+    start = rg ? rg.start : guess;
+  }
+  $('#astart').value = Math.max(0, start);
+  if (!isNaN(+$('#acount').value) && +$('#acount').value > 1 && $('#acount').value !== '12'){}
+  $('#afps').value = $('#afps').value || 8;
+  playAnim();
+};
+$('#hide-anim').onclick = () => { $('#anim').style.display='none'; stopAnim(); };
+function animUrl(){
+  const start = Math.max(0, Math.floor(+$('#astart').value || 0));
+  const count = Math.max(1, Math.floor(+$('#acount').value || 1));
+  const fps = Math.min(60, Math.max(1, Math.floor(+$('#afps').value || 8)));
+  const scale = Math.max(1, Math.min(4, Math.round(+$('#zoom').value)));
+  return `/api/anim?f=${encodeURIComponent(STATE.lib)}&start=${start}&count=${count}&fps=${fps}&scale=${scale}&bg=${$('#abg').value}&skipblank=1`;
+}
+function playAnim(){
+  stopAnim();
+  $('#gif').src = animUrl();
+  $('#play').textContent = '⏸ 暂停';
+  $('#play').onclick = toggleAnimPause;
+  queueHash();
+}
+function toggleAnimPause(){
+  if (STATE.animTimer){ stopAnim(); }
+  else {
+    const start = Math.max(0, Math.floor(+$('#astart').value || 0));
+    STATE.animPaused = true;
+    STATE.animPos = start;
+    const scale = Math.max(1, Math.min(8, Math.round(+$('#zoom').value)));
+    const step = () => {
+      $('#gif').src = `/api/image?f=${encodeURIComponent(STATE.lib)}&i=${STATE.animPos}&scale=${scale}&bg=${$('#abg').value}`;
+    };
+    step();
+    STATE.animTimer = setInterval(() => {
+      STATE.animPos++;
+      if (STATE.animPos >= Math.min(STATE.count, start + Math.floor(+$('#acount').value || 12))) STATE.animPos = start;
+      step();
+    }, Math.max(16, Math.floor(1000 / Math.min(60, Math.max(1, Math.floor(+$('#afps').value || 8))))));
+    $('#play').textContent = '⏸ 逐帧';
+  }
+}
+$('#astart').oninput = queueHash; $('#acount').oninput = queueHash; $('#afps').oninput = queueHash; $('#abg').onchange = queueHash;
+$('#arange').onchange = () => {
+  const v = $('#arange').value; if (!v) return;
+  const [st, cnt] = v.split(',').map(Number);
+  $('#astart').value = st; $('#acount').value = cnt;
+};
+$('#aseq').onclick = () => {
+  const start = Math.max(0, Math.floor(+$('#astart').value || 0));
+  const count = Math.max(1, Math.floor(+$('#acount').value || 1));
+  const scale = Math.max(1, Math.min(8, Math.round(+$('#zoom').value)));
+  const a = document.createElement('a');
+  a.href = `/api/export?f=${encodeURIComponent(STATE.lib)}&kind=png&scale=${scale}&bg=transparent&i=${start}-${start+count-1}`;
+  a.download = `${libBase()}_anim_${start}-${start+count-1}.zip`;
+  document.body.appendChild(a); a.click(); a.remove();
+};
+// ---------------------------------------------------------------- sounds
+let SND = { all: [], sel: new Set() };
+function renderSounds(list){
+  SND.all = list;
+  renderSoundRows(list);
+}
+function renderSoundRows(list){
+  const box = $('#sndlist'); box.innerHTML = '';
+  const q = $('#sndsearch').value.trim().toLowerCase();
+  const rows = list.filter(s => !q || s.name.toLowerCase().includes(q));
+  $('#sndcount').textContent = `${rows.length} / ${list.length}`;
+  for (const s of rows){
+    const row = document.createElement('div'); row.className='sound-row';
+    const cb = document.createElement('input'); cb.type='checkbox';
+    cb.checked = SND.sel.has(s.name);
+    cb.onchange = () => { SND.sel.has(s.name) ? SND.sel.delete(s.name) : SND.sel.add(s.name); $('#sndzip').disabled = !SND.sel.size; };
+    row.appendChild(cb);
+    const nm = document.createElement('span'); nm.className='nm';
+    nm.textContent = `${s.name} (${s.size_kb} KB)`; row.appendChild(nm);
+    const au = document.createElement('audio'); au.controls = true; au.preload='none';
+    au.src = `/api/sound?n=${encodeURIComponent(s.name)}`; row.appendChild(au);
+    box.appendChild(row);
+  }
+}
+$('#sndsearch').oninput = () => renderSoundRows(SND.all);
+$('#sndzip').onclick = () => {
+  if (!SND.sel.size) return;
+  const a = document.createElement('a');
+  a.href = `/api/sound-zip?` + [...SND.sel].map(n => 'n=' + encodeURIComponent(n)).join('&');
+  a.download = `sounds_${SND.sel.size}.zip`;
+  document.body.appendChild(a); a.click(); a.remove();
+};
+$('#tab-img').onclick = ()=>{ $('#tab-img').classList.add('active'); $('#tab-snd').classList.remove('active');
+  $('#gridwrap').style.display=''; $('#sounds').style.display='none'; queueHash(); };
+$('#tab-snd').onclick = ()=>{ $('#tab-snd').classList.add('active'); $('#tab-img').classList.remove('active');
+  $('#gridwrap').style.display='none'; $('#sounds').style.display='flex'; queueHash(); };
+// ---------------------------------------------------------------- HUD preview
 $('#btn-hud').onclick = openHudPreview;
 $('#hud-close').onclick = closeHudModal;
-
 function toggleControlBorders(visible){
   document.querySelectorAll('.ui-ctrl-box').forEach(el => {
     el.style.outline = visible ? '' : 'none';
     el.style.borderWidth = visible ? '1.5px' : '0px';
   });
 }
-
-function updateUrlHash(){
-  const file = STATE.lib || 'GameInter.wil';
-  const hudOpen = $('#hud-modal').style.display === 'block' ? '&hud=1' : '';
-  history.replaceState(null, '', '#file=' + encodeURIComponent(file) + hudOpen);
-}
-
 function openHudPreview(){
   const lib = 'GameInter.wil';
-  // 原版 800x600 客户端真实绘图
-  $('#part-bg').src = `/api/image?f=${encodeURIComponent(lib)}&i=50&scale=1`;
-  $('#part-hp-ball').src = `/api/image?f=${encodeURIComponent(lib)}&i=60&scale=1`;
-  $('#part-mp-ball').src = `/api/image?f=${encodeURIComponent(lib)}&i=61&scale=1`;
-  $('#part-exp-line').src = `/api/image?f=${encodeURIComponent(lib)}&i=63&scale=1`;
-
+  const frames = [[50,'part-bg'],[60,'part-hp-ball'],[61,'part-mp-ball'],[63,'part-exp-line']];
+  // 跨版本适配: 帧缺失(空白)时显示占位说明而不是裂图
+  frames.forEach(([fr, id]) => {
+    fetch(`/api/info?f=${encodeURIComponent(lib)}&i=${fr}`).then(r=>r.json()).then(h=>{
+      const el = document.getElementById(id);
+      if (h.blank || h.width <= 0){
+        el.src = '';
+        el.title = `GameInter[${fr}] 在当前 root 为空白帧 (版本差异)`;
+      } else {
+        el.src = `/api/image?f=${encodeURIComponent(lib)}&i=${fr}&scale=1`;
+        el.title = `GameInter[${fr}]`;
+      }
+    }).catch(()=>{});
+  });
   $('#overlay').style.display = 'block';
   $('#hud-modal').style.display = 'block';
   localStorage.setItem('hud_preview_open', '1');
-  updateUrlHash();
+  queueHash();
 }
-
 function closeHudModal(){
   $('#overlay').style.display = 'none';
   $('#hud-modal').style.display = 'none';
   localStorage.setItem('hud_preview_open', '0');
-  updateUrlHash();
+  queueHash();
 }
-
-// 悬停交互高亮卡片
 document.querySelectorAll('#hud-main-panel img, .hud-part-btn').forEach(el => {
   el.onmouseenter = () => {
     const info = el.getAttribute('title') || el.alt || 'MainPanel Element';
-    $('#hud-inspector').innerHTML = `<span style="color:#e8a33d; font-weight:bold;">🔍 零部件检测:</span> ${info}`;
+    $('#hud-inspector').innerHTML = `<span style="color:#e8a33d; font-weight:bold;">🔍 零部件检测:</span> ${esc(info)}`;
     el.style.outline = '2px solid #e8a33d';
   };
   el.onmouseleave = () => {
@@ -1200,40 +1744,215 @@ document.querySelectorAll('#hud-main-panel img, .hud-part-btn').forEach(el => {
     $('#hud-inspector').innerHTML = '💡 提示：悬停或点击组件查看 C# 代码中 Location(X, Y) 绝对坐标拼装原理。';
   };
 });
+// ---------------------------------------------------------------- search / boot
 $('#search').oninput = function(){
   const q = this.value.trim().toLowerCase();
   document.querySelectorAll('#tree .file').forEach(d=>{
     d.style.display = !q || d.querySelector('.nm').textContent.toLowerCase().includes(q) ? '' : 'none';
   });
 };
-$('#btn-anim').onclick = ()=>{
-  $('#anim').style.display='flex';
-  const cell = cellSize();
-  const colsVis = Math.max(1, Math.floor(gw.clientWidth / (cell + 4)));
-  const row = Math.floor(gw.scrollTop / (cell + 4));
-  $('#astart').value = String(Math.max(0, Math.min(row * colsVis, Math.max(0, STATE.count - 1))));
-};
-$('#hide-anim').onclick = ()=>{ $('#anim').style.display='none'; };
-$('#play').onclick = ()=>{
-  const start=+$('#astart').value, count=+$('#acount').value, fps=+$('#afps').value;
-  $('#gif').src = `/api/anim?f=${encodeURIComponent(STATE.lib)}&start=${start}&count=${count}&fps=${fps}&scale=${+$('#zoom').value}`;
-};
-$('#tab-img').onclick = ()=>{ $('#tab-img').classList.add('active'); $('#tab-snd').classList.remove('active');
-  $('#gridwrap').style.display=''; $('#sounds').style.display='none'; };
-$('#tab-snd').onclick = ()=>{ $('#tab-snd').classList.add('active'); $('#tab-img').classList.remove('active');
-  $('#gridwrap').style.display='none'; $('#sounds').style.display='flex'; };
-function renderSounds(list){
-  const box = $('#sounds'); box.innerHTML='';
-  for (const s of list){
-    const row = document.createElement('div'); row.className='sound-row';
-    row.innerHTML = `<span class="nm">${s.name} (${s.size_kb} KB)</span>
-      <audio controls preload="none" src="/api/sound?n=${encodeURIComponent(s.name)}"></audio>`;
-    box.appendChild(row);
-  }
-}
 loadFiles();
 loadRoots();
 applyCellSize();
+</script>
+</body>
+</html>
+"""
+
+
+# ------------------------------------------------------------------- compare page
+COMPARE_HTML = r"""<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mir3 EI 跨版本资源对比</title>
+<style>
+  :root { --bg:#15181d; --panel:#1e232b; --panel2:#262c36; --line:#333b47;
+          --fg:#d7dde6; --dim:#8b95a3; --acc:#e8a33d; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--fg); font:14px/1.5 "PingFang SC","Microsoft YaHei",sans-serif; padding:20px; }
+  header { display:flex; align-items:center; gap:16px; margin-bottom:18px; flex-wrap:wrap; }
+  header h1 { color:var(--acc); font-size:19px; }
+  header a { color:var(--dim); text-decoration:none; font-size:13px; }
+  header a:hover { color:var(--acc); }
+  label { color:var(--dim); font-size:13px; }
+  select { padding:6px 10px; background:var(--panel2); border:1px solid var(--line); color:var(--fg);
+           border-radius:6px; min-width:180px; }
+  button { padding:6px 16px; background:var(--panel2); border:1px solid var(--acc); color:var(--acc);
+           border-radius:6px; cursor:pointer; }
+  button:hover { background:#333c4d; }
+  button:disabled { opacity:.4; cursor:default; }
+  #panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px;
+           display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:16px; }
+  .col { display:flex; flex-direction:column; gap:6px; }
+  .col .lbl { font-size:12px; color:var(--acc); font-weight:bold; }
+  #stat { color:var(--dim); margin-bottom:14px; }
+  #stat b { color:var(--fg); }
+  #diffsel { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .ditem { background:var(--panel2); border:1px solid var(--line); border-radius:6px; padding:10px 14px;
+           cursor:pointer; min-width:220px; }
+  .ditem:hover { border-color:var(--acc); }
+  .ditem .dn { color:var(--acc); font-weight:bold; }
+  .ditem .dd { color:var(--dim); font-size:12px; margin-top:4px; }
+  #frames { max-height:46vh; overflow:auto; margin-bottom:16px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { padding:5px 10px; text-align:left; border-bottom:1px solid #2b333e; }
+  th { color:var(--dim); font-weight:normal; position:sticky; top:0; background:var(--panel); }
+  tr.diff { color:#ffb8b0; cursor:pointer; }
+  tr.diff:hover { background:var(--panel2); }
+  tr.blankrow { color:var(--dim); }
+  #view { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; }
+  .frame-col { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px;
+               max-width:48%; }
+  .frame-col h3 { font-size:13px; color:var(--acc); margin-bottom:8px; }
+  .frame-col img { image-rendering:pixelated; background:
+      repeating-conic-gradient(#2a2f38 0% 25%, #232830 0% 50%) 0 0/16px 16px;
+      border:1px solid var(--line); max-width:100%; }
+  .fc-meta { color:var(--dim); font-size:12px; margin-top:6px; }
+  .empty { color:var(--dim); text-align:center; padding:40px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>⇄ 跨版本资源对比</h1>
+  <a href="/">← 返回查看器</a>
+  <span style="color:var(--dim); font-size:12px;">对比两个客户端 Data 目录中的同名 .wil 库</span>
+</header>
+<div id="panel">
+  <div class="col">
+    <span class="lbl">版本 A (当前 root)</span>
+    <select id="rootA"></select>
+  </div>
+  <div class="col">
+    <span class="lbl">版本 B</span>
+    <select id="rootB"></select>
+  </div>
+  <div class="col">
+    <span class="lbl">库 (按名匹配)</span>
+    <select id="libsel"></select>
+  </div>
+  <button id="cmp">对比</button>
+</div>
+<div id="stat"></div>
+<div id="diffsel"></div>
+<div id="frames"></div>
+<div id="view"></div>
+<script>
+const $ = s => document.querySelector(s);
+let A = null, B = null, LIBS = [];
+let libA = null, libB = null;
+
+async function loadRoots(){
+  const r = await fetch('/api/root');
+  const d = await r.json();
+  const fill = (sel, cur) => {
+    sel.innerHTML = '';
+    for (const c of d.candidates){
+      const o = document.createElement('option'); o.value = c; o.textContent = c;
+      if (c === cur) o.selected = true;
+      sel.appendChild(o);
+    }
+    if (![...sel.options].some(o => o.selected)) sel.value = d.current;
+  };
+  fill($('#rootA'), d.current);
+  fill($('#rootB'), d.candidates.find(c => c !== d.current) || d.current);
+  $('#cmp').disabled = false;
+}
+async function loadLibs(){
+  const ra = $('#rootA').value, rb = $('#rootB').value;
+  const [fa, fb] = await Promise.all([
+    fetch(`/api/files?r=${encodeURIComponent(ra)}`).then(r=>r.json()),
+    fetch(`/api/files?r=${encodeURIComponent(rb)}`).then(r=>r.json()),
+  ]);
+  const map = m => new Map(m.libs.map(l => [l.name.toLowerCase(), l]));
+  const ma = map(fa), mb = map(fb);
+  const common = [...ma.keys()].filter(k => mb.has(k)).sort();
+  const sel = $('#libsel'); sel.innerHTML = '';
+  for (const k of common){
+    const o = document.createElement('option');
+    o.value = k;
+    o.textContent = `${ma.get(k).name} (${ma.get(k).count} vs ${mb.get(k).count} 帧)`;
+    sel.appendChild(o);
+  }
+  LIBS = common;
+  $('#cmp').disabled = !common.length;
+}
+$('#rootA').onchange = loadLibs;
+$('#rootB').onchange = loadLibs;
+
+async function compare(){
+  const name = LIBS[$('#libsel').selectedIndex];
+  if (!name) return;
+  const ra = $('#rootA').value, rb = $('#rootB').value;
+  const url = `/api/diff?a=${encodeURIComponent(ra)}&b=${encodeURIComponent(rb)}&f=${encodeURIComponent(name)}`;
+  const d = await (await fetch(url)).json();
+  $('#stat').innerHTML = `库 <b>${d.lib}</b> — A 帧数 <b>${d.a.count}</b>, B 帧数 <b>${d.b.count}</b>, 内容不同的帧 <b style="color:#ffb8b0">${d.diff_count}</b> / ${Math.max(d.a.count, d.b.count)} · 不同区间 <b>${d.ranges.length}</b>`;
+  // 区间
+  const ds = $('#diffsel'); ds.innerHTML = '';
+  if (!d.ranges.length){
+    ds.innerHTML = '<div class="empty" style="padding:10px">完全一致</div>';
+  }
+  d.ranges.forEach((rg, idx) => {
+    const el = document.createElement('div'); el.className='ditem';
+    el.innerHTML = `<div class="dn">F${rg.start}–${rg.end-1} (${rg.count} 帧)</div>
+      <div class="dd">${rg.count >= 2 ? '连续差异区间 — 点击查看' : '单帧差异'}</div>`;
+    el.onclick = () => showRange(rg.start, Math.min(rg.end, rg.start + 60));
+    ds.appendChild(el);
+  });
+  // 帧表
+  const fw = $('#frames'); fw.innerHTML = '';
+  const t = document.createElement('table');
+  t.innerHTML = `<thead><tr><th>帧</th><th>A</th><th>B</th><th>说明</th></tr></thead>`;
+  const tb = document.createElement('tbody');
+  const rows = d.frames.slice(0, 2000);
+  for (const fr of rows){
+    const tr = document.createElement('tr'); tr.className = 'diff';
+    const blankA = fr.a.blank, blankB = fr.b.blank;
+    const note = blankA && blankB ? '均空白' : blankA ? 'A 空白' : blankB ? 'B 空白' : `尺寸/锚点/内容不同`;
+    tr.innerHTML = `<td>${fr.i}</td><td>${blankA ? '—' : `${fr.a.width}×${fr.a.height}`}</td><td>${blankB ? '—' : `${fr.b.width}×${fr.b.height}`}</td><td>${note}</td>`;
+    tr.onclick = () => showFrame(fr.i);
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); fw.appendChild(t);
+}
+async function showFrame(i){
+  const name = LIBS[$('#libsel').selectedIndex];
+  const ra = $('#rootA').value, rb = $('#rootB').value;
+  const v = $('#view');
+  v.innerHTML = `<div class="frame-col" id="fca"><h3>A</h3><img src="/api/image?f=${encodeURIComponent(name)}&i=${i}&scale=2&r=${encodeURIComponent(ra)}"><div class="fc-meta">loading…</div></div>
+                 <div class="frame-col" id="fcb"><h3>B</h3><img src="/api/image?f=${encodeURIComponent(name)}&i=${i}&scale=2&r=${encodeURIComponent(rb)}"><div class="fc-meta">loading…</div></div>`;
+  for (const [id, root] of [['fca', ra], ['fcb', rb]]){
+    try {
+      const h = await (await fetch(`/api/info?f=${encodeURIComponent(name)}&i=${i}&r=${encodeURIComponent(root)}`)).json();
+      const col = document.getElementById(id);
+      if (h.blank || h.width <= 0){
+        col.innerHTML = `<h3>${id === 'fca' ? 'A' : 'B'}</h3><div class="empty" style="padding:20px">空白帧 (无内容)</div>`;
+      } else {
+        col.querySelector('.fc-meta').textContent = `${h.width}×${h.height} · anchor(${h.offsetX},${h.offsetY}) · ${h.bytes} B`;
+      }
+    } catch (e) {}
+  }
+  v.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function showRange(start, end){
+  const name = LIBS[$('#libsel').selectedIndex];
+  const ra = $('#rootA').value, rb = $('#rootB').value;
+  const v = $('#view');
+  let html = '';
+  for (let i = start; i <= end; i++){
+    html += `<div class="frame-col" style="max-width:220px">
+      <h3>F${i}</h3>
+      <img loading="lazy" src="/api/image?f=${encodeURIComponent(name)}&i=${i}&scale=1&r=${encodeURIComponent(ra)}">
+      <div style="height:4px"></div>
+      <img loading="lazy" src="/api/image?f=${encodeURIComponent(name)}&i=${i}&scale=1&r=${encodeURIComponent(rb)}">
+    </div>`;
+  }
+  v.innerHTML = html;
+  v.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+$('#cmp').onclick = compare;
+loadRoots();
+loadLibs();
 </script>
 </body>
 </html>

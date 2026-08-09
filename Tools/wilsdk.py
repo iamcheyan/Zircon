@@ -277,7 +277,11 @@ def contact_sheet(imgs: list, cols: int, scale: int, bg=(60, 60, 60, 255)):
         if im is None:
             continue
         r, c = divmod(i, cols)
-        sheet.paste(im, (pad + c * (cell_w + pad), pad + r * (cell_h + pad)), im)
+        pos = (pad + c * (cell_w + pad), pad + r * (cell_h + pad))
+        if im.mode == "RGBA":
+            sheet.paste(im, pos, im)
+        else:
+            sheet.paste(im, pos)  # already flattened (RGB) — no mask
     return sheet
 
 
