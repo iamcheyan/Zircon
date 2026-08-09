@@ -29214,6 +29214,24 @@
       "Group paint evidence now covers background/header → two-column member text → control reposition → permission text → five child-control paints.",
       "Guild paint evidence now covers background/header → state-specific list text → nine control reposition operations → nine child-control paints."
     ],
+    "specialized_local_paint_sources": {
+      "store": {
+        "paint_va": "0x0044D5A0–0x0044DAC0",
+        "confirmed_sequence": "state-dependent clip → up to five item rows/icon composition → selected-row marker/description → price/quantity/row text → auxiliary action text",
+        "evidence_file": "store-window-render-evidence.json"
+      },
+      "exchange": {
+        "paint_va": "0x00415B10–0x0041603D",
+        "confirmed_sequence": "window/split → state-dependent 6×5 item grids → trade labels/item text/numeric status → two Frame 94 side panels",
+        "evidence_file": "layout.json specialized_window_evidence window.exchange-candidate"
+      },
+      "option": {
+        "paint_va": "0x00441380",
+        "confirmed_sequence": "Frame 750 base → fixed close/toggle reposition → nine child control paints; labels are baked in the background resource",
+        "evidence_file": "system-window-render-evidence.json windows[window.option]"
+      },
+      "boundary": "These local sequences establish inside-window order. They do not establish cross-window overlap order or name every state-dependent business action."
+    },
     "window_base_paint_evidence": {
       "routine": "0x00423D00",
       "visibility_gates": [
@@ -29274,7 +29292,7 @@
     "pending": [
       "Whether any specific UI command performs a hide-then-show promotion sequence; the base insertion and deletion policy is now recovered from 0x00449870/0x0042AC50.",
       "Exact runtime order of HP/MP/EXP child bars relative to HUD button overlays; the internal bar resource call order is now statically recorded in hud-bars-render-evidence.json.",
-      "Exact text and icon draw calls for store, exchange and option windows; group/guild local paint order is now covered by social-window-render-evidence.json."
+      "Runtime business/state mapping and remaining field-level text semantics for store, exchange and option; their local base/text/control ordering is now recorded in the specialized evidence files."
     ]
   },
   "notice_prompt_evidence": {
