@@ -2034,6 +2034,8 @@ UI_LAYOUT_HTML = r"""<!doctype html>
   .debug .internal-control { border:1px dotted #ffb347; background:rgba(255,160,30,.10); }
   .debug .internal-control.outside-control { border-color:#ff5b5b; background:rgba(255,30,30,.12); }
   .debug .internal-control.unresolved-size { border-style:dashed; }
+  .focus-geometry { position:absolute; z-index:48; border:1px dashed #62e6a7; background:rgba(40,190,120,.07); pointer-events:none; color:#b8ffd9; font:10px monospace; overflow:visible; }
+  .focus-geometry span { position:absolute; left:2px; top:1px; white-space:nowrap; background:rgba(8,18,14,.84); padding:1px 3px; }
   .secondary-control { position:absolute; z-index:35; border:1px solid transparent; pointer-events:auto; }
   .debug .secondary-control { border:1px solid #b78cff; background:rgba(130,70,255,.10); }
   .map-evidence { position:absolute; left:672px; top:0; width:128px; height:128px; z-index:25; border:2px solid #ff4d4d; background:rgba(255,40,40,.08); pointer-events:none; }
@@ -2078,7 +2080,34 @@ function addLabel(el,text,klass){const l=document.createElement('span');l.classN
 function addMain(){const img=document.createElement('img');img.className='hud-base';img.src='/api/image?f=GameInter.wil&i=50&scale=1';img.title='GameInter.wil Frame 50 · primary-static';screen.appendChild(img);}
 function addButton(r,base){const x=resolve(r.position.x,base),y=resolve(r.position.y,base),w=r.size.width,h=r.size.height;const b=document.createElement('div');b.className='evidence-button';b.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frames.normal}&scale=1`;b.appendChild(im);addLabel(b,`${r.id} · F${r.resource.frames.normal} · (${x},${y},${w},${h})`,'button-label');b.onclick=()=>focusRecord(r.id);screen.appendChild(b);}
 function addWindow(r,analysis){const w=r.size.width,h=r.size.height,x=r.position.x,y=r.position.y;const box=document.createElement('div');box.className='evidence-window';box.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;const a=analysis.find(q=>q.id===r.id);const bb=a&&a.resource&&a.resource.visible_bbox;const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(r.resource.file)}&i=${r.resource.frame}&scale=1`;if(bb)im.style.cssText=`left:${-bb.left}px;top:${-bb.top}px`;box.appendChild(im);const lib=r.resource_handle?.library?.file||'resource unresolved';addLabel(box,`${r.id} · ${lib} · F${r.resource.frame} · (${x},${y},${w},${h})`,'window-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
-function addFocusedWindow(r,analysis){addWindow(r,analysis);const controls=(DATA.layout.control_constructors||[]).filter(c=>c.window_id===r.id);for(const c of controls)addInternalControl(c,[r],DATA.window_control_resource_analysis?.records||[]);const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);}
+function addFocusedGeometry(x,y,w,h,text){const d=document.createElement('div');d.className='focus-geometry';d.style.cssText+=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;if(text){const s=document.createElement('span');s.textContent=text;d.appendChild(s);}screen.appendChild(d);}
+function addFocusedWindow(r,analysis){
+  addWindow(r,analysis);
+  const controls=(DATA.layout.control_constructors||[]).filter(c=>c.window_id===r.id);
+  for(const c of controls)addInternalControl(c,[r],DATA.window_control_resource_analysis?.records||[]);
+  const ox=r.position.x,oy=r.position.y;
+  if(r.id==='window.inventory'){
+    for(let row=0;row<6;row++)for(let col=0;col<6;col++)addFocusedGeometry(ox+25+36*col,oy+41+36*row,36,36,(row===0&&col===0)?'6×6 / 36px':'' );
+  }else if(r.id==='window.status'){
+    const e=DATA.layout.status_window_evidence?.equipment_and_attribute_rects||[];
+    for(const q of e)addFocusedGeometry(ox+q.left,oy+q.top,q.width,q.height,q.role.replace('-candidate',''));
+  }else if(r.id==='window.group'){
+    for(let i=0;i<12;i++)addFocusedGeometry(ox+45+100*(i%2),oy+90+20*Math.floor(i/2),92,18,i===0?'成员两列 / 20px':'' );
+  }else if(r.id==='window.guild-candidate'){
+    for(let i=0;i<18;i++)addFocusedGeometry(ox+35,oy+60+20*i,500,18,i===0?'最多18行 / 动态字体行距':'' );
+  }else if(r.id==='window.chat-pop'){
+    addFocusedGeometry(ox+40,oy+29,491,279,'聊天历史区');addFocusedGeometry(ox+25,oy+311,499,15,'输入区');
+    for(let i=0;i<19;i++)addFocusedGeometry(ox+40,oy+29+15*i,491,15,i===0?'19行 / 16字节记录':'' );
+  }else if(r.id==='window.quest'){
+    for(let i=0;i<19;i++)addFocusedGeometry(ox+65,oy+90+15*i,210,15,i===0?'任务列表 / 15px':'' );
+    addFocusedGeometry(ox+65,oy+294,250,120,'任务详情候选');
+  }else if(r.id==='window.other-14-candidate'){
+    addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
+  }else if(r.id==='window.npc-candidate'){
+    addFocusedGeometry(ox+12,oy+20,528,110,'NPC动态内容候选 / 最多13条');
+  }
+  const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);
+}
 function addInternalControl(r,windows,analysis){if(!r.position||r.coordinate_status==='unresolved')return;const pair=r.resource?.frame_pair||[];const w=r.size?.width||20,h=r.size?.height||20;let x=r.position.x,y=r.position.y;const parent=windows.find(q=>q.id===r.window_id);const relative=r.position.coordinate_space==='window-relative';if(relative&&parent){x+=parent.position.x;y+=parent.position.y;}const ca=analysis.find(q=>q.call_va===r.call_va);const libs=ca?.frames?.[0]?.libraries||{};const lib=libs['GameInter.wil']?'GameInter.wil':(libs['Interface1c.wil']?'Interface1c.wil':'GameInter.wil');const box=document.createElement('div');box.className=`internal-control ${r.coordinate_status==='outside-window'?'outside-control':''} ${r.size?'':'unresolved-size'}`;box.style.cssText=`left:${x}px;top:${y}px;width:${w}px;height:${h}px`;if(pair.length){const im=document.createElement('img');im.src=`/api/image?f=${encodeURIComponent(lib)}&i=${pair[0]}&scale=1`;im.alt=`${lib} Frame ${pair[0]}`;im.style.cssText='width:100%;height:100%;image-rendering:pixelated';box.appendChild(im);}addLabel(box,`${r.window_id} · ${lib} F${pair.join('/')} · (${x},${y},${w},${h})${relative?' · window-relative':''} · ${r.coordinate_status}${r.size?'':' · size unresolved'}`,'button-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
 function addSecondaryControl(r){const box=document.createElement('div');const p=r.position,s=r.size;box.className='secondary-control';box.style.cssText=`left:${p.x}px;top:${p.y}px;width:${s.width}px;height:${s.height}px`;addLabel(box,`${r.id} · Interface1c F${r.resource.frame} · (${p.x},${p.y},${s.width},${s.height})`,'button-label');box.onclick=()=>focusRecord(r.id);screen.appendChild(box);}
 function addSecondaryScreen(l,index){const candidate=(l.secondary_screen_candidates||[])[index];if(!candidate)return;const bg=candidate.interface1c_frames?.['50']||{width:640,height:480};const image=document.createElement('img');image.src='/api/image?f=Interface1c.wil&i=50&scale=1';image.style.cssText=`position:absolute;left:${(800-bg.width)/2}px;top:${(600-bg.height)/2}px;width:${bg.width}px;height:${bg.height}px`;image.title=`Interface1c.wil Frame 50 · secondary screen candidate ${index}`;screen.appendChild(image);const scope=index===0?'interface1c-cluster-0x456d':'interface1c-cluster-0x4027';for(const r of (l.secondary_control_constructors||[])){if(r.scope!==scope)continue;const copy={...r,position:{...r.position},size:{...r.size}};copy.position.x+=(800-bg.width)/2;copy.position.y+=(600-bg.height)/2;addSecondaryControl(copy);}const label=document.createElement('div');label.style.cssText='position:absolute;left:16px;top:14px;color:#e8a33d;font:12px monospace;z-index:70';label.textContent=`[Interface1c secondary candidate ${index} · 640×480 centered in 800×600]`;screen.appendChild(label);}
