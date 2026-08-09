@@ -15998,6 +15998,56 @@
           "warning": "文字字段的最终业务语义仍需结合 Magic.exp 解码和输入路径确认"
         }
       ],
+      "status_label_draws": [
+        {
+          "order": 1,
+          "call_va": "0x0043967C-0x004396D0",
+          "renderer": "0x0046811C then 0x0045DD70",
+          "source_expression": "this+0x58 + 4*byte(this+0x54)",
+          "calculation": "signed multiply by 0x2AAAAAAB, followed by quotient*2+1",
+          "relative_position": {
+            "x": 117,
+            "y": 299
+          },
+          "description": "当前类别分页起始/页码候选文字",
+          "format_literal_va": "0x0047C334",
+          "evidence_level": "primary-static-format-and-position",
+          "semantic_status": "page-range-candidate"
+        },
+        {
+          "order": 2,
+          "call_va": "0x00439700-0x0043975C",
+          "renderer": "0x0046811C then 0x0045DD70",
+          "source_expression": "this+0x58 + 4*byte(this+0x54)",
+          "calculation": "same quotient, followed by quotient*2+2",
+          "relative_position": {
+            "x": 118,
+            "y": 309
+          },
+          "description": "当前类别分页结束/总页数候选文字",
+          "format_literal_va": "0x0047C334",
+          "evidence_level": "primary-static-format-and-position",
+          "semantic_status": "page-range-candidate"
+        },
+        {
+          "order": 3,
+          "call_va": "0x004396D5-0x004396FB and 0x0043975C-0x00439785",
+          "renderer": "0x0045DD70",
+          "relative_positions": [
+            {
+              "x": 117,
+              "y": 300
+            },
+            {
+              "x": 118,
+              "y": 309
+            }
+          ],
+          "description": "分页状态文字的颜色/字体绘制；第二条使用固定资源/颜色参数",
+          "evidence_level": "primary-static-render-call",
+          "semantic_status": "style-and-label-candidate"
+        }
+      ],
       "interpretation": {
         "candidate": "skill-book-with-element-or-school-tabs",
         "confidence": "primary-static-plus-visual-candidate",

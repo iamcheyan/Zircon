@@ -2120,6 +2120,8 @@ function addFocusedWindow(r,analysis){
     if(qe)for(let i=0;i<qe.visible_line_count;i++)addFocusedGeometry(ox+qe.origin.x,oy+qe.origin.y+qe.line_spacing*i,220,15,i===0?'详情正文 / 3行':'' );
   }else if(r.id==='window.other-14-candidate'){
     addFocusedGeometry(ox+15,oy+235,260,75,'技能列表 / 15px行距');
+    const se=evidenceWindow(r.id),sl=se.status_label_draws||[];
+    for(const q of sl){for(const p of (q.relative_positions||[q.relative_position||{}])){if(p.x==null||p.y==null)continue;addFocusedGeometry(ox+p.x,oy+p.y,150,14,q.description||'分页状态文字');}}
   }else if(r.id==='window.npc-candidate'){
     const ne=evidenceWindow(r.id),pg=ne.paint_geometry||{},loop=pg.dynamic_entry_loop||{};
     const ts=pg.dynamic_text_layout_state||{},count=Math.min(ts.max_paint_entries||16,ne.window?.dynamic_entry_count_default||13),visible=Math.min(count,6),spacing=(ts.default_line_spacing_px||21);
