@@ -39,6 +39,16 @@
     {"va": "0x0042EE42-0x0042EEBE", "fact": "The primary numeric text uses runtime value 0x007DA100 and format VA 0x0047A214; the surrounding target rectangle is (window.x+0x41, window.y+0x11A) to (window.x+0x41, window.y+0x12B) in the original call setup."},
     {"va": "0x0042EF97-0x0042F003", "fact": "The secondary text path reads 0x007DA11D and 0x007DA11F, selects among four state branches from byte this+0x54, and uses format literal candidates at 0x0047BDFC, 0x0047BE10 and 0x0047BE18; exact business labels remain unresolved."}
   ],
+  "literal_decoding": {
+    "source": "Direct byte reads from Mir3.exe image-base-relative data addresses; GB18030/CP949 decoding is recorded separately where applicable.",
+    "records": [
+      {"va": "0x0047A214", "bytes_text": "%d", "role": "primary numeric value formatter", "confidence": "high"},
+      {"va": "0x0047BDFC", "bytes_text": "负重:%d / 总量:%d", "encoding": "GB18030", "role": "inventory load/total format", "confidence": "high"},
+      {"va": "0x0047BE10", "bytes_text": "[包袱]", "encoding": "GB18030", "role": "inventory label candidate", "confidence": "high"},
+      {"va": "0x0047BE18", "bytes_text": "굴림체", "encoding": "CP949", "role": "Korean font-name literal candidate, not an inventory field", "confidence": "high", "warning": "The same address decodes as mojibake under GB18030; CP949 yields the recognizable Korean font name."}
+    ],
+    "interpretation": "The secondary text branch has at least one confirmed inventory label and one confirmed load format. The font-name literal must not be promoted to an item/slot semantic label."
+  },
   "resource_and_item_record_proof": {
     "window_handle": {
       "field": "main_owner+0xE11E4+0x5898",

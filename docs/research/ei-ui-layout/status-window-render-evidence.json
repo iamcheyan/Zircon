@@ -15,6 +15,15 @@
     {"object_offset": "this+0x58", "call_va": "0x0044B18B", "frame_pair": [161, 162], "resource_library_candidate": "GameInter.wil"},
     {"object_offset": "this+0x10C", "call_va": "0x0044B1B7", "frame_pair": [171, 172], "resource_library_candidate": "GameInter.wil"}
   ],
+  "resource_visual_inspection": {
+    "source": "Direct pixel inspection of original Data/GameInter.wil Frame 200 (256×512 WIL source; visible UI is clipped to the constructor window).",
+    "observations": [
+      "The artwork contains a vertical character/status panel with empty equipment-slot silhouettes; the slot labels are not baked into Frame 200.",
+      "The visible slot artwork must therefore be combined with runtime item graphics and the 11-record paint loop; a static screenshot of Frame 200 alone cannot name the equipment positions.",
+      "The close control and the secondary status control are separate child resources (161/162 and 171/172), not part of the slot-record loop."
+    ],
+    "confidence": "primary-static-resource-plus-pixel-inspection"
+  },
   "hit_rects": {
     "basis": "The shared 0x00417550 control constructor derives the hit rectangle from the selected GameInter frame header; all coordinates are window-relative.",
     "records": [
