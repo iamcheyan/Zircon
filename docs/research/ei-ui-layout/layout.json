@@ -17546,10 +17546,65 @@
       ],
       "notes": "The map subsystem maintains a source/view rectangle and selects a 4096 or 6144 surface mode based on loaded map metadata. The destination widget rectangle is now statically recovered as 128x128 at screen (672,0)."
     },
+    "render_evidence": {
+      "paint_va": "0x0043DA80",
+      "map_blit_or_composite": {
+        "va": "0x004542F0",
+        "context": "0x0043DB0B-0x0043DB2B",
+        "inputs": [
+          "map surface/object context",
+          "owner+0x2C0 viewport",
+          "owner+0x2B8/0x2BC view position"
+        ],
+        "evidence_level": "primary-static-draw-call"
+      },
+      "marker_rectangles": [
+        {
+          "call_va": "0x0043DB7F",
+          "source": "computed view/object rectangle",
+          "rect_adjustment": "left/top and right/bottom expanded by 4 pixels",
+          "color_arg": "0x64C864",
+          "helper_va": "0x0045E570",
+          "meaning": "map overlay marker candidate; object identity not yet resolved"
+        },
+        {
+          "call_va": "0x0043DCB8",
+          "source": "global list 0x00560070 entries with entry+0x88 == 0x32",
+          "rect_adjustment": "computed rectangle expanded by 2 pixels",
+          "color_arg": "0xFFFF00",
+          "helper_va": "0x0045E570",
+          "meaning": "typed map-object marker candidate; type 0x32 is statically confirmed, semantic name pending"
+        },
+        {
+          "call_va": "0x0043DD75",
+          "source": "global list 0x005600A0 entries",
+          "rect_adjustment": "computed rectangle expanded by 1 pixel on each side",
+          "color_arg": "0x64C864",
+          "helper_va": "0x0045E570",
+          "meaning": "second map-object marker candidate; semantic name pending"
+        }
+      ],
+      "timing_or_animation": {
+        "field": "owner+0x300",
+        "range": "0..0x320",
+        "behavior": "increments by a computed delta and wraps at 800; used to vary an intermediate map drawing condition",
+        "evidence_level": "primary-static-candidate"
+      },
+      "input_hit_test": {
+        "va": "0x0043DDB0",
+        "rect": "owner+0x2C0",
+        "result_fields": [
+          "owner+0x2F0",
+          "owner+0x2F4"
+        ],
+        "meaning": "mouse position is converted from the fixed minimap destination into map/view-relative coordinates"
+      }
+    },
     "pending": [
       "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
       "Recover map window frame, screen coordinates and zoom/scroll state from input and paint callers.",
-      "Confirm whether map_id >= 1000 corresponds to all MMap frames or only a subset of map states."
+      "Confirm whether map_id >= 1000 corresponds to all MMap frames or only a subset of map states.",
+      "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
     ]
   },
   "chat_window_evidence": {
