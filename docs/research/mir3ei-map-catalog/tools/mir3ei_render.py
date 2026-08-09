@@ -8,8 +8,10 @@ from collections import defaultdict
 from multiprocessing import Pool
 from PIL import Image
 
-DATA = '/home/tetsuya/NAS/TMP/mir3ei/Data'
-MAPDIR = '/home/tetsuya/NAS/TMP/mir3ei/Map'
+DEFAULT_DATA = '/home/tetsuya/NAS/TMP/mir3ei/Data'
+DEFAULT_MAPDIR = '/home/tetsuya/NAS/TMP/mir3ei/Map'
+DATA = DEFAULT_DATA
+MAPDIR = DEFAULT_MAPDIR
 # 输出目录:优先使用项目内 docs/research/mir3ei-map-catalog/views(脚本上级的 views)
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'views')
 # 指纹数据:项目内 data/mir3ei_fp.json(可由 tools/mir3ei_fp_build.py 重建)
@@ -137,7 +139,25 @@ def render_map(args):
     img.save(os.path.join(OUT, name + '.png'))
     return name, 'ok'
 
-if __name__ == '__main__':
+def main():
+    global DATA, MAPDIR, OUT, FP
+    import argparse
+    ap = argparse.ArgumentParser(
+        description='mir3ei 旧版客户端地图地面渲染(WIL 纯 back 层,输出 views/)')
+    ap.add_argument('--data', default=DEFAULT_DATA,
+                    help='客户端 Data 目录(含 *.wil/*.wix 素材库,默认 %(default)s)')
+    ap.add_argument('--mapdir', default=DEFAULT_MAPDIR,
+                    help='客户端 Map 目录(含 *.map,默认 %(default)s)')
+    ap.add_argument('--out', default=OUT,
+                    help='渲染输出目录(默认脚本上级 views/)')
+    ap.add_argument('--fp', default=FP,
+                    help='指纹 json 路径(默认 data/mir3ei_fp.json)')
+    args = ap.parse_args()
+    DATA = args.data
+    MAPDIR = args.mapdir
+    OUT = args.out
+    FP = args.fp
+    print(f'[mir3ei_render] data={DATA}\n[mir3ei_render] mapdir={MAPDIR}\n[mir3ei_render] out={OUT}')
     os.makedirs(OUT, exist_ok=True)
     mfp = json.load(open(FP))
     back_need = defaultdict(set)
@@ -179,3 +199,7 @@ if __name__ == '__main__':
         out = p.map(render_map, tasks)
     bad = [o for o in out if o[1] != 'ok']
     print('done', len(out), 'errors:', bad[:5] if bad else 'none')
+
+
+if __name__ == '__main__':
+    main()

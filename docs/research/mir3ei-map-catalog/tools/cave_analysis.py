@@ -143,8 +143,19 @@ def color_stats(img):
     return red, brown, n, avg
 
 def main():
-    maps = ['D201','D101','D102','D103']
-    zl_dir = 'Debug/Client/Data/Map Data'
+    import argparse
+    ap = argparse.ArgumentParser(
+        description='WIL/Zl 解码参考 + 地图图层统计(纯 Python,可换客户端目录)')
+    ap.add_argument('--zl', default='Debug/Client/Data/Map Data',
+                    help='新版 Zl 库目录(含 *.Zl,默认 %(default)s,相对当前工作目录)')
+    ap.add_argument('--map', default='Debug/Client/Map',
+                    help='新版 .map 目录(默认 %(default)s,相对当前工作目录)')
+    ap.add_argument('--maps', default='D201,D101,D102,D103',
+                    help='要分析的地图名,逗号分隔(默认 %(default)s)')
+    args = ap.parse_args()
+    zl_dir = args.zl
+    map_dir = args.map
+    maps = [m.strip() for m in args.maps.split(',') if m.strip()]
     libs = {
         2: ('Tiles5c', f'{zl_dir}/Tiles5c.Zl'),
         17: ('Wood_Tiles5c', f'{zl_dir}/Wood/Tiles5c.Zl'),
@@ -157,7 +168,7 @@ def main():
             cache[key] = read_zl(key)
         return cache[key]
     for m in maps:
-        w, h, back, cells = read_map(f'Debug/Client/Map/{m}.map')
+        w, h, back, cells = read_map(f'{map_dir}/{m}.map')
         print(f'\n===== {m} {w}x{h} =====')
         for layer in ('M','F'):
             c, fu = layer_stats(cells, layer)

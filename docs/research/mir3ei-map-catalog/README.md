@@ -63,6 +63,22 @@ python3 tools/make_contact.py
 python3 build_report.py
 ```
 
+### 更换素材目录
+
+`mir3ei_render.py` 与 `cave_analysis.py` 的素材路径已参数化,默认值不变:
+
+```bash
+# 渲染脚本:换一套 2003 客户端镜像
+python3 tools/mir3ei_render.py --data /path/to/other/Data --mapdir /path/to/other/Map
+# 可选:输出与指纹路径
+python3 tools/mir3ei_render.py --out /tmp/views2 --fp /tmp/mir3ei_fp.json
+
+# 解码参考脚本(新版 2017 客户端,路径相对当前工作目录)
+python3 tools/cave_analysis.py --zl 'Debug/Client/Data/Map Data' --map Debug/Client/Map --maps D201,D101
+```
+
+`make_contact.py` 的 views/contact 目录同样可用位置参数覆盖:`python3 tools/make_contact.py [views_dir] [out_dir]`。
+
 ## 备注
 
 - 原始镜像 `/home/tetsuya/NAS/TMP/mir3ei/` 保持只读,分析产物全部在本目录。
