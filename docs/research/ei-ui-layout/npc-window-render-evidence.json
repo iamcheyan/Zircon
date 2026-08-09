@@ -65,6 +65,19 @@
     }
   ],
   "paint_geometry": {
+    "constructor_geometry_fields": {
+      "routine": "0x0043EE00–0x0043EFF6",
+      "background_target_rect_fields": ["this+0x520", "this+0x524"],
+      "repeated_entry_target_rect_fields": ["this+0x530", "this+0x534"],
+      "final_entry_target_rect_fields": ["this+0x540", "this+0x544"],
+      "background_source_frame": 1100,
+      "repeated_source_frame": 1101,
+      "final_source_frame": 1102,
+      "screen_reference_constants": {"width": 384, "height": 384, "background_vertical_reference": 138, "entry_vertical_reference": 24},
+      "interpretation": "The constructor derives three separate destination bases from decoded WIL header dimensions and fixed reference constants before paint. Paint then consumes these fields directly; the fields are not text records.",
+      "evidence_level": "primary-static-constructor-field-flow",
+      "warning": "The constants are preserved as binary inputs, not promoted to a final screen origin; parent/window offsets remain supplied through this+0x18/+0x1C and runtime state."
+    },
     "background_select": {"va": "0x0043F06A", "frame": 1100},
     "dynamic_entry_frame": {"va": "0x0043F0BC", "frame": 1101, "count_field": "this+0x51C", "constructor_default_count": 13, "entry_stride_bytes": 18},
     "dynamic_entry_loop": {

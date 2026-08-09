@@ -25966,6 +25966,15 @@
       }
     ],
     "paint_geometry": {
+      "constructor_geometry_fields": {
+        "routine": "0x0043EE00–0x0043EFF6",
+        "background_target_rect_fields": ["this+0x520", "this+0x524"],
+        "repeated_entry_target_rect_fields": ["this+0x530", "this+0x534"],
+        "final_entry_target_rect_fields": ["this+0x540", "this+0x544"],
+        "screen_reference_constants": {"width": 384, "height": 384, "background_vertical_reference": 138, "entry_vertical_reference": 24},
+        "evidence_level": "primary-static-constructor-field-flow",
+        "warning": "These are destination-base field derivations, not independently proven final screen origins."
+      },
       "background_select": {
         "va": "0x0043F06A",
         "frame": 1100
