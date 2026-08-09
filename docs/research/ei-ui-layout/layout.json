@@ -19687,9 +19687,10 @@
     "viewport": {
       "surface_init_va": "0x0043D5F0",
       "surface_size_candidate": [
-        800,
-        800
+        128,
+        128
       ],
+      "surface_size_basis": "The constructor at 0x0043D4D0 calls 0x0043D5F0 with width=128 and height=128; 0x0043DE40 later rebuilds the same surface as 256×256 or 128×128.",
       "viewport_rect": "owner+0x2C0",
       "fixed_minimap_widget": {
         "setrect_va": "0x0043D551",
@@ -19705,7 +19706,7 @@
         ],
         "evidence_level": "primary-static-exact-rect",
         "basis": "The initializer pushes bottom=0x80, right=0x320, top=0 and left=0x2A0 before the SetRect IAT call for owner+0x2C0.",
-        "interpretation": "This is the original fixed 800x600 minimap destination at the top-right edge; the surrounding map surface remains an internal 800x800 buffer."
+        "interpretation": "This is the original fixed 800x600 minimap destination at the top-right edge. The constructor passes a 128×128 map surface; the display-mode routine can rebuild it as 256×256."
       },
       "view_position_fields": [
         "owner+0x2B8",
