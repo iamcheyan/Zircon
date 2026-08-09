@@ -11,7 +11,7 @@
 |---|---|---|---|---|
 | 800×600 主 HUD | `GameInter.wil` F50，`0x00427600` | `layout.json`、主 HUD 15 个按钮 | 已恢复 | 运行时截图与最终 z-order |
 | HP/MP/经验 | `GameInter.wil` F60/F61/F63 | 主 HUD 资源、固定 Rect、`0x00429740` 比例链、`0x00466800/0x004542F0` 合成调用 | 候选（比例链已恢复） | 运行时确认全局字段的 HP/MP/EXP 命名、精确纹理裁剪方向和最终 z-order |
-| 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–459 | `skill-window-context.json`、技能渲染循环 | 已恢复 | 运行时技能列表、文字字段与图标 |
+| 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–465 | `skill-window-context.json`、`skill-window-render-loop-evidence.json`、`0x00439250/0x0043A440` | 候选（11 组控件帧对、固定相对位置、15px 行距、Magic.exp 读取链已恢复） | 运行时技能列表、文字字段与图标业务映射 |
 | 人物状态/装备槽 | GameInter F200，11 条连续几何记录，8 个装备候选槽 38×38 | `status-window-render-evidence.json`、`0x0044B6B0/0x0044B720/0x004341F0` | 已恢复 | 装备索引业务命名、属性文字实际调用 |
 | 背包 | GameInter F250，6×6、36 px 网格；Interface1c F267/268 角色图候选 | `inventory-window-render-evidence.json`、`layout.json`、`0x0042F150/0x0042F2A0` | 候选（几何、动态字段和选中合成链已恢复） | Frame 94 顶部/详情素材的最终业务用途；主数值和打包字段的服务端语义；第三资源不是普通按钮 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 文字分隔/换行、19 行滚动运行时语义、721–724/事件 0x418 的最终业务名称 |

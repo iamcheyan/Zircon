@@ -31,6 +31,26 @@
       "fact": "The loop continues until the requested row count is reached, then resumes reading the next stream line."
     }
   ],
+  "window_constructor_control_geometry": {
+    "constructor_va": "0x00439250",
+    "resource_library": "GameInter.wil handle passed through the common control constructor 0x00417550",
+    "coordinate_space": "parent/window constructor arguments; final screen origin still follows the common window wrapper",
+    "controls": [
+      {"object_offset": "this+0x0D8", "frame_pair": [440, 441], "position_expression": ["window_arg_x+0x154", "window_arg_y+0x18F"]},
+      {"object_offset": "this+0x18C", "frame_pair": [410, 411], "position_expression": ["window_arg_x+0x12F", "window_arg_y+0x3D"]},
+      {"object_offset": "this+0x240", "frame_pair": [412, 413], "position_expression": ["window_arg_x+0x12F", "window_arg_y+0x16E"]},
+      {"object_offset": "this+0x2F4", "frame_pair": [450, 451], "position_expression": ["window_arg_x+0x15", "window_arg_y+0x05"]},
+      {"object_offset": "this+0x3A8", "frame_pair": [452, 453], "position_expression": ["window_arg_x+0x38", "window_arg_y+0x03"]},
+      {"object_offset": "this+0x45C", "frame_pair": [454, 455], "position_expression": ["window_arg_x+0x5B", "window_arg_y+0x04"]},
+      {"object_offset": "this+0x510", "frame_pair": [456, 457], "position_expression": ["window_arg_x+0x7E", "window_arg_y+0x02"]},
+      {"object_offset": "this+0x5C4", "frame_pair": [458, 459], "position_expression": ["window_arg_x+0xA1", "window_arg_y+0x00"]},
+      {"object_offset": "this+0x678", "frame_pair": [460, 461], "position_expression": ["window_arg_x+0xC4", "window_arg_y+0x00"]},
+      {"object_offset": "this+0x72C", "frame_pair": [462, 463], "position_expression": ["window_arg_x+0xE7", "window_arg_y+0x01"]},
+      {"object_offset": "this+0x7E0", "frame_pair": [464, 465], "position_expression": ["window_arg_x+0x10A", "window_arg_y+0x00"]}
+    ],
+    "evidence_level": "primary-static-control-constructor",
+    "warning": "These are recovered constructor expressions and frame pairs, not modern business names; the common wrapper may later apply centering or parent-anchor rules."
+  },
   "render_calls": [
     {"va": "0x0043A681", "callee": "0x0045DBA0", "role": "text/value draw candidate", "font_or_style": "0x81", "color_or_flags": "0x2BC"},
     {"va": "0x0043A69E", "callee": "0x0045DD70", "role": "record field draw candidate", "color_or_flags": "0x0A0A0A"},
