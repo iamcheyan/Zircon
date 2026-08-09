@@ -380,6 +380,12 @@ class Data:
         cls.npc_by_map = {}
         for n in w["npcs"]:
             cls.npc_by_map.setdefault(n["map"], []).append(n)
+        cls.npc_by_id = {n["id"]: n for n in w["npcs"]}
+        # 商店: NPC id -> 店 (反查: NPC 详情页显示所属商店)
+        cls.store_by_npc = {}
+        for si, sh in enumerate(cls.stores["stores"]):
+            for nn in sh["npcs"]:
+                cls.store_by_npc[nn["id"]] = (si, sh)
         # 任务
         cls.quests = w["quests"]
         # 宠物
@@ -490,7 +496,7 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .crumbs a {{ color:var(--ac2); }}
 .panel-npc {{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:12px 0 20px; }}
 .panel-npc .pic {{ width:64px; height:64px; object-fit:contain; background:#0d0f12; border-radius:8px; }}
-.panel-npc .noimg.pic {{ width:64px; height:64px; }}<
+.panel-npc .noimg.pic {{ width:64px; height:64px; }}
 .pager {{ display:flex; align-items:center; justify-content:center; gap:8px; margin:34px 0; flex-wrap:wrap; }}
 .pager .pg {{ display:inline-block; min-width:32px; text-align:center; padding:5px 9px; border:1px solid var(--line);
   border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; transition:border-color .15s, background .15s; }}
@@ -745,6 +751,9 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/skills": return self.skills(u.query)
         if p.startswith("/skill/"): return self.skill_detail(p[7:])
         if p == "/npcs": return self.npcs(u.query)
+        if p.startswith("/npc/"):
+            try: return self.npc_detail(int(p[5:]))
+            except ValueError: pass
         if p == "/quests": return self.quests(u.query)
         if p == "/companions": return self.companions(u.query)
         if p == "/stores": return self.stores(u.query)
