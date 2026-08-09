@@ -12,6 +12,10 @@
     "window_object_origin": {"x_field": "this+0x18", "y_field": "this+0x1c"},
     "main_init": "0x0042792A"
   },
+  "resource_bindings": {
+    "ui_resource_argument": {"source": "main init 0x0042792A", "role": "GameInter UI handle passed into the NPC constructor and its three child controls", "evidence_level": "primary-static-argument-flow"},
+    "npc_face_resource": {"owner_field": "this+0x278", "file": "Data/NPCFace.WIL", "path_literal_va": "0x0047C4EC", "load_va": "0x0043EDC5", "frame_count": 440, "nonblank_frames": 46, "role": "NPC portrait/face resource used by the NPC object", "evidence_level": "primary-static-resource-path"}
+  },
   "child_controls": [
     {
       "object_offset": "this+0x58",
@@ -61,6 +65,7 @@
   },
   "confirmed": [
     "The NPC window is initialized from GameInter.wil Frame 1100 at 552x176.",
+    "The NPC object separately loads Data/NPCFace.WIL into owner+0x278; this is distinct from the GameInter handle used by the window and child controls.",
     "The paint path selects consecutive Frames 1100, 1101 and 1102.",
     "The dynamic list uses a count at this+0x51C and an 18-byte per-entry stride.",
     "All three child controls have statically recovered window-relative positions."
