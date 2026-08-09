@@ -13,7 +13,7 @@
 | HP/MP/经验 | `GameInter.wil` F60/F61/F63 | 主 HUD 资源、固定 Rect、`0x00429740` 比例链、`0x00466800/0x004542F0` 合成调用 | 候选（比例链已恢复） | 运行时确认全局字段的 HP/MP/EXP 命名、精确纹理裁剪方向和最终 z-order |
 | 技能窗口/技能类别 | `Magic.exp`、GameInter F400/F410–459 | `skill-window-context.json`、技能渲染循环 | 已恢复 | 运行时技能列表、文字字段与图标 |
 | 人物状态/装备槽 | GameInter F200，11 条连续几何记录，8 个装备候选槽 38×38 | `status-window-render-evidence.json`、`0x0044B6B0/0x0044B720/0x004341F0` | 已恢复 | 装备索引业务命名、属性文字实际调用 |
-| 背包 | GameInter F250，6×6、36 px 网格；Interface1c F267/268 角色图候选 | `inventory-window-render-evidence.json`、`layout.json`、`0x0042F150/0x0042F2A0` | 候选（几何已恢复） | 物品图标/数量文本顺序、运行时选中态；第三资源不是普通按钮 |
+| 背包 | GameInter F250，6×6、36 px 网格；Interface1c F267/268 角色图候选 | `inventory-window-render-evidence.json`、`layout.json`、`0x0042F150/0x0042F2A0` | 候选（几何、动态字段和选中合成链已恢复） | Frame 94 顶部/详情素材的最终业务用途；主数值和打包字段的服务端语义；第三资源不是普通按钮 |
 | 任务 | GameInter F700 | `quest-window-render-evidence.json` | 已恢复 | 文字分隔/换行、19 行滚动运行时语义、721–724/事件 0x418 的最终业务名称 |
 | 商店/购买 | GameInter F1000、F1001–F1003；F1000 五行列表、F1001 紧凑网格、F1002 宽组合、F1003 当前副本空帧 | `store-window-render-evidence.json`、`store-state-graph.json`、`0x0044E9B0` 状态机、Mud3 商店 NPC 交叉表 | 候选（状态图与资源形态已恢复） | 通过客户端状态/协议参数区分 NPC 商店、选中物品和扩展面板 |
 | 交换 | GameInter F1050 | `exchange-window-render-evidence.json`、`0x004159D0/0x00415B10` | 候选（左右分区与 6×5 格已恢复） | 确认按钮、协议状态和窗口最终原点 |

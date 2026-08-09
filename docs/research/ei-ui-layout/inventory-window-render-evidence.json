@@ -84,6 +84,61 @@
     },
     "evidence_level": "primary-static-plus-primary-resource"
   },
+  "content_field_draw_mapping": {
+    "primary_value": {
+      "source_address": "0x007DA100",
+      "format_va": "0x0047A214",
+      "format": "%d",
+      "draw_helper": "0x0046811C",
+      "target_rect_expression": "window-relative x=0x41; y=0x11A..0x12B",
+      "semantic_status": "numeric inventory value; exact server-side field name remains unresolved"
+    },
+    "secondary_load_text": {
+      "source_addresses": ["0x007DA11D", "0x007DA11F"],
+      "format_va": "0x0047BDFC",
+      "format": "负重:%d / 总量:%d",
+      "encoding": "GB18030",
+      "draw_helpers": ["0x0046811C", "0x0045DE50"],
+      "target_rect_expressions": [
+        "window-relative x=0x86..0x86+measured width, y=0x18",
+        "window-relative x=0xF0..0xF0+measured width, y=0x26"
+      ],
+      "state_selector": "byte this+0x54 selects one of four original formatting/color branches",
+      "evidence_level": "primary-static-plus-primary-string"
+    },
+    "item_record_fields": {
+      "record_stride": "owner pointer array uses 4-byte entries at this+0x774+4*record_index; the pointed record carries the fields below (do not confuse this with the status-window 0xC24 stride)",
+      "identity": "+0x00 signed WORD item/resource identity",
+      "grid_column": "+0x04",
+      "grid_row": "+0x08",
+      "frame_selector": "+0x34 WORD passed to 0x0042F2A0/0x0042F6D0 and selector context 0x005668C4",
+      "type_state": "+0x2E8 byte; values 0x0A/0x0B enter the secondary status/icon branch",
+      "packed_secondary": ["+0x351", "+0x352", "+0x353"],
+      "caution": "Field offsets are recorded exactly as consumed by the original code; modern item database names are intentionally not inferred."
+    },
+    "evidence_level": "primary-static-field-to-draw-call"
+  },
+  "interaction_and_selection": {
+    "global_selection_fields": [
+      {"address": "0x007DA1C0", "role": "selection/input coordinate X candidate"},
+      {"address": "0x007DA1C4", "role": "selection/input coordinate Y candidate"},
+      {"address": "0x007243D8", "role": "selection branch gate"}
+    ],
+    "hit_test": {
+      "va": "0x0042F150",
+      "coordinate_space": "window-relative input coordinates after origin subtraction",
+      "grid_scan": "0..180 in 36-pixel steps on both axes",
+      "result": "returns a linear slot index or -1"
+    },
+    "index_to_rect": {
+      "va": "0x0042F2A0",
+      "column": "index % 6",
+      "row": "floor(index / 6)",
+      "rect": "[window.x+0x19+36*column, window.y+0x29+36*row, +36, +36]",
+      "selection_overlay": "selected source/destination rectangles are subsequently passed through 0x00466800 and 0x004542F0"
+    },
+    "evidence_level": "primary-static-selection-chain"
+  },
   "paint_order": [
     {"order": 1, "va": "0x0042EB8C-0x0042EB90", "role": "window base/background", "evidence": "The paint entry calls the window vtable +0x0C before any inventory-specific geometry or item processing."},
     {"order": 2, "va": "0x0042EB9B-0x0042EBB0", "role": "top/detail composition candidate", "evidence": "The first inventory-specific draw call uses GameInter frame 94 and coordinates derived from window origin x+0xF8, y-0xA5."},
@@ -103,7 +158,7 @@
     "The local inventory paint sequence is statically ordered from the base vtable call through item selection, value text, child-control positioning and state-dependent text."
   ],
   "pending": [
-    "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
-    "The final quantity/name text field order and the complete packed item-record stride; the GameInter handle and icon selector context are now statically bound."
+    "The semantic meaning of the x+0xF8/y-0xA5 Frame 94 draw call and whether it is a top/detail decoration or a reusable side panel.",
+    "The runtime/server semantic names of the primary value and packed +0x351/+0x353 fields; their original draw operands and branches are now recorded, but no symbol/protocol proof has been found."
   ]
 }
