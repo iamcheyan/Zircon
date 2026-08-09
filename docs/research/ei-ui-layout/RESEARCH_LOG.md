@@ -1259,3 +1259,20 @@ x=107, y=110, width=584, height=252, trailing flags=0,3
 好友列表作为行会/社交 F600 的页签或状态、由动态分配的通用对话框承载，或藏在未归属的
 `Interface1c.wil` 控件簇中。已写入 `social-window-render-evidence.json.friend_entry_audit`，
 并禁止预览器再凭现代客户端概念硬编码一个好友按钮。
+
+### Finding 66：原版 Mud3 MiniMap.txt 闭合 FMMap/MMap 的服务器映射规则（2026-08-10）
+
+检查原版服务器 `/home/tetsuya/NAS/TMP/Mud3/Envir/MiniMap.txt`，得到本发行版的明确规则：
+
+```text
+服务器值 >= 1001：FMMap.wil，frame = value - 1001
+服务器值 <  1001：MMap.wil，frame = value
+```
+
+共解析 313 条配置记录，其中 45 条指向 FMMap、268 条指向 MMap；与 EI 客户端 `Map/*.map`
+文件名匹配 211 条，WIL 帧实际可解码 209 条。`0 -> FMMap F0`、`01 -> FMMap F1`、
+`02 -> FMMap F2`、`1 -> FMMap F3` 等基础映射均可直接复核。
+
+这条证据说明完整地图资源并不是泛泛的“FMMap 候选”，而是服务器配置明确使用的资源族；但
+它属于服务器配置的第二证据源。exe 内 `0x0043D780` 的 `map_id >= 1000` 分支与服务器值
+之间仍需继续追踪调用者的归一化过程，不能把两个数值条件未经验证地当成同一个输入。

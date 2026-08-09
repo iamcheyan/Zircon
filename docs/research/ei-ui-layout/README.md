@@ -128,6 +128,17 @@ docs/research/ei-ui-layout/resource_select_calls.json
 
 该文件是下一阶段按窗口函数追踪绘制顺序的索引，不把所有 `SetIndex` 调用直接当成屏幕绘制。
 
+地图资源与服务器地图名的交叉表见：
+
+```text
+Tools/extract_mir3_minimap_server_crossref.py
+docs/research/ei-ui-layout/minimap-server-crossref.json
+```
+
+它读取原版 Mud3 `Envir/MiniMap.txt`，按 `1001+ -> FMMap.wil(value-1001)`、低于
+`1001 -> MMap.wil(value)` 生成映射，并用客户端 `Map/*.map` 与 WIL 解码结果做存在性校验。
+这是服务器配置的第二证据源，不能替代 `Mir3.exe` 内部的资源选择和绘制调用证据。
+
 按钮实际绘制链的初步证据见：
 
 ```text

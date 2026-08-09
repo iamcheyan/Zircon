@@ -17554,6 +17554,31 @@
         "role": "full-map-or-large-map-candidate"
       }
     ],
+    "server_cross_reference": {
+      "artifact": "minimap-server-crossref.json",
+      "source": "/home/tetsuya/NAS/TMP/Mud3/Envir/MiniMap.txt",
+      "evidence_level": "secondary-server-cross-reference",
+      "rules": [
+        {
+          "condition": "server_value >= 1001",
+          "library": "FMMap.wil",
+          "frame": "server_value - 1001"
+        },
+        {
+          "condition": "server_value < 1001",
+          "library": "MMap.wil",
+          "frame": "server_value"
+        }
+      ],
+      "stats": {
+        "total_rows": 313,
+        "map_file_matches": 211,
+        "decodable_frame_matches": 209,
+        "fmmap_rows": 45,
+        "mmap_rows": 268
+      },
+      "interpretation": "The original EI server configuration gives an exact map-stem to FMMap/MMap frame cross-reference for this distribution. It explains why the client-side map object has two libraries; it is not a substitute for the executable's rendering path."
+    },
     "frame_geometry_inventory": {
       "source": "Data/MMap.wil and Data/FMMap.wil 17-byte WIL headers",
       "mmap": {
@@ -17711,7 +17736,7 @@
           }
         ],
         "common_offsets": "Frames 0–28 generally carry WIL offsetX=-24, offsetY=-16; Frame 30 is offsetX=0, offsetY=0.",
-        "interpretation": "FMMap is the full-map/large-map resource family candidate; its dimensions are materially larger than the fixed minimap destination and must be displayed through a scroll/zoom viewport."
+        "interpretation": "FMMap is the full-map/large-map resource family; the original server cross-reference maps overland/city entries to its frames. Its dimensions are materially larger than the fixed minimap destination and must be displayed through a scroll/zoom viewport."
       }
     },
     "selection": {
@@ -17935,7 +17960,7 @@
     "pending": [
       "Bind the 128x128 MMap output to the GameInter minimap border/overlay control and map window controls.",
       "Recover the remaining full-map input/paint state and prove whether the ID-15 wrapper origin is already screen-absolute or translated by its parent.",
-      "Confirm whether map_id >= 1000 corresponds to all MMap frames or only a subset of map states.",
+      "Reconcile the executable's map_id >= 1000 branch with the server MiniMap value convention (the server value is >=1001 for FMMap; the runtime caller may normalize it before 0x0043D780).",
       "Resolve global object list entry layouts and type 0x32 semantics before naming markers as player, NPC, party or item."
     ]
   },
