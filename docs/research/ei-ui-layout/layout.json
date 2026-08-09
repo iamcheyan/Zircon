@@ -29210,6 +29210,7 @@
       "final_rect_owner": "0x00423B30",
       "final_rect_fields": ["window_object+0x08", "window_object+0x18"],
       "anchor_fields": ["window_object+0x40", "window_object+0x44"],
+      "shared_constructor_abi": {"va": "0x00423B30", "stack_argument_count": 9, "cleanup_bytes": 36, "resource_header_selector": "0x00466130", "confidence": "primary-static"},
       "warning": "The constructor selects WIL header dimensions and applies centering/anchor arithmetic; raw record x/y are not universally final screen origins.",
       "evidence_level": "primary-static-constructor-algorithm"
     },
