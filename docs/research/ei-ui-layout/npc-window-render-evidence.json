@@ -46,10 +46,16 @@
   ],
   "paint_geometry": {
     "background_select": {"va": "0x0043F06A", "frame": 1100},
-    "dynamic_entry_frame": {"va": "0x0043F0BC", "frame": 1101, "count_field": "this+0x51C", "entry_stride_bytes": 18},
+    "dynamic_entry_frame": {"va": "0x0043F0BC", "frame": 1101, "count_field": "this+0x51C", "constructor_default_count": 13, "entry_stride_bytes": 18},
     "dynamic_entry_blit": {"va": "0x0043F102", "target_x": "this+0x530 + entry_index", "target_y": "this+0x534 + entry_index*18"},
     "final_state_select": {"va": "0x0043F120", "frame": 1102},
     "secondary_blit": {"va": "0x0043F16D", "target_x": "this+0x540", "target_y": "this+0x544 + entry_index*18"},
+    "entry_resource_loads": [
+      {"resource_id": "0x44C", "load_va": "0x0043F06A", "role": "dialog/background or entry source candidate"},
+      {"resource_id": "0x44D", "load_va": "0x0043F0BC", "role": "repeated dynamic entry source candidate"},
+      {"resource_id": "0x44E", "load_va": "0x0043F120", "role": "final/selected dynamic entry source candidate"}
+    ],
+    "composite_destination": {"helper_va": "0x00460240", "source_dimensions": [800, 600], "source_rect_literals": [800, 600], "evidence_level": "primary-static-draw-call", "note": "The paint routine passes the window state and per-entry positions into the shared compositor; this confirms the dynamic list is drawn through the original image pipeline, while text-field semantics remain unresolved."},
     "viewport_literals": [800, 600],
     "fallback_alpha_fields": ["this+0x580", "this+0x581"]
   },
