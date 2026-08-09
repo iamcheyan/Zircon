@@ -25,7 +25,6 @@ ZIR_DATA = "/home/tetsuya/development/Zircon/Debug/Client/Data"
 OUT = "/tmp/wiki_imgs"
 
 SIZES = {"monsters": 96, "items": 64, "skills": 64, "npcs": 96, "companion": 96}
-
 # ---------------------------------------------------------------- DXT1 解码 (共用)
 def decode_dxt1(data, w, h):
     """DXT1/BC1 → RGBA 像素 (字节串)。 宽高须为 4 的倍数。"""
@@ -331,6 +330,57 @@ def render(board, item_id, img_spec):
     out.save(os.path.join(d, f"{item_id}.png"))
     return True, ""
 
+
+def render_anim(board, item_id, anim):
+    """渲染施法动画条: 从 (lib, start) 连续取 count 帧, 跳过空帧,
+    逐帧 trim 后横向拼接成一条 (半透明深色底), 存 {board}/{id}.png。
+
+    返回 (ok, reason)。
+    """
+    lib_name = anim.get("lib")
+    lib = get_zir_lib(lib_name)
+    if lib is None:
+        lib = get_lib(lib_name)
+    if lib is None:
+        return False, f"库缺失 {lib_name}"
+    start, count = anim["start"], anim["count"]
+    if start < 0 or start >= lib.count:
+        return False, f"帧越界 {start}/{lib.count}"
+
+    frames = []
+    for i in range(count):
+        idx = start + i
+        if idx >= lib.count:
+            break
+        im = lib.decode(idx)
+        if im is None:
+            continue
+        bbox = im.getbbox()
+        if not bbox:
+            continue
+        frames.append(im.crop(bbox))
+    if not frames:
+        return False, f"全空 {start}+{count}"
+
+    # 统一高度 128, 每帧按比例缩放
+    H = 128
+    scale = H / max(f.height for f in frames)
+    if scale < 1:
+        frames = [f.resize((max(1, int(f.width * scale)), H), 1) for f in frames]
+    cell_w = max(f.width for f in frames)
+    gap = 2
+    canvas = Image.new("RGBA", (cell_w * len(frames) + gap * (len(frames) - 1), H),
+                       (16, 16, 20, 170))
+    x = 0
+    for f in frames:
+        canvas.paste(f, (x + (cell_w - f.width) // 2, (H - f.height) // 2), f)
+        x += cell_w + gap
+    d = os.path.join(OUT, board)
+    os.makedirs(d, exist_ok=True)
+    canvas.save(os.path.join(d, f"{item_id}.png"))
+    return True, ""
+
+
 def main():
     w = json.load(open("/tmp/wiki_data_v2.json"))
     total = ok = 0
@@ -347,6 +397,21 @@ def main():
             else:
                 fails.append((board, x["id"], x["name"], reason))
     print(f"图片管线: {ok}/{total} 成功")
+    # 技能施法动画条 (Magic.Zl 帧段)
+    anim_ok = anim_fail = 0
+    anim = json.load(open("/tmp/skills_anim.json", encoding="utf-8")) \
+        if os.path.exists("/tmp/skills_anim.json") else {}
+    for s in w["skills"]:
+        a = anim.get(s["type"])
+        if not a:
+            continue
+        good, reason = render_anim("skills_anim", s["id"], a)
+        if good:
+            anim_ok += 1
+        else:
+            anim_fail += 1
+            print(f"  anim #{s['id']} {s['name']}: {reason}")
+    print(f"施法动画: {anim_ok}/{anim_ok + anim_fail} 条渲染成功")
     if fails:
         print(f"失败 {len(fails)} 条:")
         for b, i, n, r in fails[:25]:

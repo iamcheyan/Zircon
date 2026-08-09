@@ -26,9 +26,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON = "/tmp/wiki_data_v2.json"
 REPORT_JSON = "/tmp/report_full.json"
+MAP_LINKS_JSON = "/tmp/map_links.json"
 THUMBS_DIR = "/tmp/wiki_thumbs"
 IMGS_DIR = "/tmp/wiki_imgs"
-IMG_BOARDS = ("monsters", "items", "skills", "npcs", "companion")
+IMG_BOARDS = ("monsters", "items", "skills", "npcs", "companion", "skills_anim")
 EI_CLIENT = "/home/tetsuya/NAS/TMP/EI传奇3.0客户端"
 EI_MAPS = os.path.join(EI_CLIENT, "Map")
 EI_DATA = os.path.join(EI_CLIENT, "Data")
@@ -56,39 +57,123 @@ def ver_select(sel):
     return f'<select name="ver">{opts}</select>'
 
 # ---------------------------------------------------------------- 怪物分类/等级
-MON_CATS = [("", "全部类型"), ("boss", "Boss"), ("undead", "不死系"), ("normal", "普通")]
-MON_LVS = [("", "全部等级"), ("0-9", "0-9 级"), ("10-29", "10-29 级"),
+# 分类三标签, 无"全部"(全不选 = 全部); 多选任一命中
+MON_CATS = [("boss", "Boss"), ("undead", "不死系"), ("normal", "普通")]
+# 未知等级 (level=0, 显示"Lv ?") 单独一类, 不进 0-9 级
+MON_LVS = [("unknown", "未知等级"), ("1-9", "1-9 级"), ("10-29", "10-29 级"),
            ("30-59", "30-59 级"), ("60-89", "60-89 级"), ("90", "90 级以上")]
+MON_SORTS = [("", "默认排序"), ("lv_desc", "等级 ↓"), ("lv_asc", "等级 ↑"),
+             ("name", "名称 A-Z"), ("spawn", "刷新量 ↓")]
+ITEM_SORTS = [("", "默认排序"), ("price_desc", "价格 ↓"), ("price_asc", "价格 ↑"), ("name", "名称 A-Z")]
+PAGE = 60
 
-def mon_cat_ok(m, cat):
-    if not cat:
+def mon_has_lv(m):
+    """有真实等级 (level 非 None/0)。level=0 是展示/吉祥物怪, 归"未知等级"。"""
+    return m.get("level") not in (None, 0)
+
+def mon_cat_ok(m, cats):
+    """多选分类: 任一命中即过; 空列表 = 全部。"""
+    if not cats:
         return True
-    if cat == "boss": return m.get("boss")
-    if cat == "undead": return m.get("undead")
-    if cat == "tame": return m.get("tame")
-    if cat == "normal": return not m.get("boss") and not m.get("undead")
-    return True
+    for c in cats:
+        if c == "boss": 
+            if m.get("boss"): return True
+        elif c == "undead":
+            if m.get("undead"): return True
+        elif c == "normal":
+            if not m.get("boss") and not m.get("undead"): return True
+    return False
 
 def mon_lv_ok(m, lv):
     if not lv:
         return True
+    if lv == "unknown":
+        return not mon_has_lv(m)
     l = m.get("level") or 0
-    if lv == "0-9": return l <= 9
+    if lv == "1-9": return 1 <= l <= 9
     if lv == "10-29": return 10 <= l <= 29
     if lv == "30-59": return 30 <= l <= 59
     if lv == "60-89": return 60 <= l <= 89
     if lv == "90": return l >= 90
     return True
 
-def mon_cat_select(sel):
-    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
-                   for v, l in MON_CATS)
-    return f'<select name="cat">{opts}</select>'
+def mon_cat_chips(sel):
+    """分类 checkbox 标签组 (多选, 同名 cat)。"""
+    sel = set(sel or [])
+    chips = ""
+    for v, l in MON_CATS:
+        chk = ' checked' if v in sel else ''
+        chips += (f'<label class="chip"><input type="checkbox" name="cat" value="{v}"{chk}>'
+                  f'<span>{l}</span></label>')
+    return chips
 
 def mon_lv_select(sel):
     opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
                    for v, l in MON_LVS)
-    return f'<select name="lv">{opts}</select>'
+    return f'<select name="lv"><option value="">全部等级</option>{opts}</select>'
+
+def sort_select(sel, page_kind):
+    opts_ = MON_SORTS if page_kind == "monsters" else ITEM_SORTS
+    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
+                   for v, l in opts_)
+    return f'<select name="sort">{opts}</select>'
+
+def pager(params, page, pages, base="/monsters"):
+    """分页导航; 保留全部筛选参数, 仅换 p。窗口 ±2。"""
+    if pages <= 1:
+        return ""
+    def href(p):
+        ps = dict(params)
+        ps["p"] = p
+        return base + "?" + urllib.parse.urlencode(ps, doseq=True)
+    parts = []
+    if page > 1:
+        parts.append(f'<a class="pg" href="{href(page - 1)}">‹</a>')
+    for p in range(1, pages + 1):
+        if p < page - 2 or p > page + 2:
+            continue
+        cls = ' class="pg on"' if p == page else ' class="pg"'
+        parts.append(f'<a{cls} href="{href(p)}">{p}</a>')
+    if page < pages:
+        parts.append(f'<a class="pg" href="{href(page + 1)}">›</a>')
+    return f'<div class="pager">{"".join(parts)} <span class="dim">第 {page}/{pages} 页</span></div>'
+
+def item_price(i):
+    """从 meta '价格 80000' 提取整数价格; 无则 None。"""
+    m = re.search(r"价格\s*([\d,]+)", i.get("meta", ""))
+    return int(m.group(1).replace(",", "")) if m else None
+
+def item_sort_key(i, sort):
+    if sort == "price_desc":
+        return (-(item_price(i) if item_price(i) is not None else -1), i["name"].lower())
+    if sort == "price_asc":
+        return (item_price(i) if item_price(i) is not None else 1 << 62, i["name"].lower())
+    if sort == "name":
+        return (i["name"].lower(),)
+    return ((i.get("type_zh") or ""), i["name"])
+
+def mon_sort_key(m, sort):
+    if sort == "lv_desc":
+        return (-(m.get("level") or 0), m["name"].lower())
+    if sort == "lv_asc":
+        return ((m.get("level") or 0), m["name"].lower())
+    if sort == "name":
+        return (m["name"].lower(),)
+    if sort == "spawn":
+        return (-sum(c for _, c in parse_spawns(m.get("spawns"))), m["name"].lower())
+    return ((m.get("level") or 0), m["name"].lower())
+
+def mon_map_zh(code):
+    """怪物出现地图码 → 中文名; 无则 None。优先 report srv_name, 回退 Mapinfo 定义名。"""
+    c = str(code).lower()
+    m = Data.map_code.get(c)
+    if m and m.get("srv_name"):
+        return m["srv_name"]
+    return Data.mapinfo_names.get(c) or None
+
+# 怪物 → 出现地图列表 (去重, 保序)
+def mon_maps(m):
+    return sorted({c for c, _ in parse_spawns(m.get("spawns"))}, key=lambda x: x.lower())
 
 # ---------------------------------------------------------------- 装备细分分组
 ITEM_GROUPS = [
@@ -128,10 +213,18 @@ def item_group(i):
             return gid
     return "other"
 
-def item_group_select(sel):
-    opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
-                   for v, l in ITEM_GROUPS)
-    return f'<select name="group">{opts}</select>'
+def item_group_chips(sel):
+    """装备分类标签组 (多选, 同名 group); 跳过"全部"占位项。"""
+    sel = set(sel or [])
+    chips = ""
+    for v, l in ITEM_GROUPS:
+        if not v:
+            continue
+        chk = ' checked' if v in sel else ''
+        short = l.split("（")[0]
+        chips += (f'<label class="chip"><input type="checkbox" name="group" value="{v}"{chk}>'
+                  f'<span>{esc(short)}</span></label>')
+    return chips
 
 def ver_badges(ver):
     s = set(ver or [])
@@ -205,6 +298,7 @@ class Data:
                 seen.add(i["category"]); cls.item_cats.append(i["category"])
         # 技能: 职业分组
         cls.skills = w["skills"]
+        cls.skill_by_id = {s["id"]: s for s in w["skills"]}
         cls.skill_classes = []
         seen = set()
         for s in w["skills"]:
@@ -234,6 +328,17 @@ class Data:
         cls.thumb_name = {}
         for m in w["ei_maps"]:
             cls.thumb_name[m["name"].lower()] = m["name"]
+        # 地图路线图 (Mapinfo.txt 连接对): 码 -> 邻接列表 + 中文名
+        try:
+            with open(MAP_LINKS_JSON, encoding="utf-8") as f:
+                links = json.load(f)
+        except FileNotFoundError:
+            links = {"names": {}, "links": []}
+        cls.map_adj = {}
+        for a, b in links["links"]:
+            cls.map_adj.setdefault(a, []).append(b)
+            cls.map_adj.setdefault(b, []).append(a)
+        cls.mapinfo_names = links.get("names", {})
 
 # ---------------------------------------------------------------- templates
 BASE = """<!DOCTYPE html>
@@ -288,6 +393,22 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:8px; padding:6px 10px; font-size:14px; }}
 .filters button {{ background:#2b3547; color:var(--fg); border:none; border-radius:8px; padding:6px 14px;
   cursor:pointer; font-size:14px; }} .filters button:hover {{ background:#35435c; }}
+.chip {{ display:inline-flex; align-items:center; gap:5px; background:var(--panel); border:1px solid var(--line);
+  border-radius:16px; padding:3px 11px 3px 8px; cursor:pointer; font-size:13.5px; user-select:none; }}
+.chip input {{ accent-color:var(--acc); cursor:pointer; }}
+.chip:has(input:checked) {{ border-color:var(--acc); background:#2b2a1f; color:var(--acc); }}
+.pager {{ display:flex; align-items:center; gap:6px; margin:18px 0; flex-wrap:wrap; }}
+.pager .pg {{ display:inline-block; min-width:30px; text-align:center; padding:4px 8px; border:1px solid var(--line);
+  border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; }}
+.pager .pg:hover {{ border-color:var(--acc); text-decoration:none; }}
+.pager .pg.on {{ background:var(--acc); color:#1a1408; border-color:var(--acc); font-weight:700; }}
+.anim {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px; }}
+.anim img {{ display:block; max-width:100%; height:auto; }}
+.mapnet {{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }}
+.mapnet a {{ background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 12px;
+  font-size:13.5px; color:var(--fg); }}
+.mapnet a:hover {{ border-color:var(--acc); text-decoration:none; }}
+.mapnet a .dim {{ display:block; font-size:11.5px; }}
 .stat {{ display:inline-block; background:var(--panel); border:1px solid var(--line); border-radius:10px;
   padding:10px 16px; margin:0 10px 10px 0; text-align:center; min-width:110px; }}
 .stat b {{ display:block; font-size:22px; color:var(--acc); }}
@@ -308,6 +429,23 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .bad-tame {{ display:inline-block; font-size:11px; padding:1px 7px; border-radius:9px; margin-left:4px; background:#2f3d30; color:#b0ffb0; }}
 footer {{ max-width:1280px; margin:0 auto; padding:8px 18px 30px; color:var(--dim); font-size:12.5px; }}
 </style>
+<script>
+// 筛选即时生效: select/checkbox/radio 变化即提交; 文本输入 500ms 防抖。保留提交按钮。
+document.addEventListener('DOMContentLoaded', function () {{
+  var f = document.getElementById('filters');
+  if (!f) return;
+  var t = null;
+  f.addEventListener('change', function (e) {{
+    if (e.target.matches('select, input[type=checkbox], input[type=radio]')) f.submit();
+  }});
+  f.addEventListener('input', function (e) {{
+    if (e.target.matches('input.q, input[name=q]')) {{
+      clearTimeout(t);
+      t = setTimeout(function () {{ f.submit(); }}, 500);
+    }}
+  }});
+}});
+</script>
 </head>
 <body>
 <header><nav>
@@ -388,6 +526,7 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/items": return self.items(u.query)
         if p.startswith("/item/"): return self.item_detail(p[6:])
         if p == "/skills": return self.skills(u.query)
+        if p.startswith("/skill/"): return self.skill_detail(p[7:])
         if p == "/npcs": return self.npcs(u.query)
         if p == "/quests": return self.quests(u.query)
         if p == "/companions": return self.companions(u.query)
@@ -522,6 +661,24 @@ class Handler(BaseHTTPRequestHandler):
             npc_rows += f"<tr><td>{esc(me['name'])}</td><td>{esc(me.get('script',''))}</td><td>{me['x']},{me['y']}</td></tr>"
         if not npc_rows:
             npc_rows = '<tr><td colspan="3" class="lead">无 NPC 记录</td></tr>'
+        # 路线图: 相连地图 (Mapinfo.txt 连接对, 双向)
+        code = f.lower().removesuffix(".map")
+        nb = sorted(Data.map_adj.get(code, []), key=lambda c: c.lower())
+        net_rows = ""
+        if nb:
+            for c2 in nb:
+                zh = Data.mapinfo_names.get(c2) or ""
+                tgt = Data.map_code.get(c2)
+                if tgt and not zh:
+                    zh = tgt.get("srv_name") or ""
+                label = f"{zh}（{c2}）" if zh else c2
+                if tgt:
+                    net_rows += (f'<a href="/map/{urllib.parse.quote(tgt["file"])}">'
+                                 f'{esc(zh or c2)}<span class="dim">{esc(c2)}</span></a>')
+                else:
+                    net_rows += f'<a href="/maps?q={urllib.parse.quote(c2)}" title="无 EI 客户端缩略图">{esc(label)}</a>'
+        else:
+            net_rows = '<p class="dim">无连接记录（Mapinfo.txt 无此图的出入口）</p>'
         body = f"""
 <a href="/maps">← 返回地图列表</a>
 <h1>{esc(m['file'])}{flags}</h1>
@@ -537,6 +694,8 @@ class Handler(BaseHTTPRequestHandler):
     </dl>
   </div>
 </div>
+<h2>相连地图（{len(nb)} 张 · 出入口）</h2>
+<div class="mapnet">{net_rows}</div>
 <h2>怪物刷新（{len(m['spawns'])} 种）</h2>
 <table><tr><th>怪物</th><th>数量</th></tr>{mon_rows}</table>
 <h2>NPC / 商人（{len(m['merchants'])} 个）</h2>
@@ -549,19 +708,30 @@ class Handler(BaseHTTPRequestHandler):
         q = urllib.parse.parse_qs(qs)
         kw = (q.get("q", [""])[0]).strip().lower()
         ver = q.get("ver", [""])[0]
-        cat = q.get("cat", [""])[0]
+        cats = q.get("cat", [])
         lv = q.get("lv", [""])[0]
+        sort = q.get("sort", [""])[0]
+        mapf = q.get("map", [""])[0].strip().lower()
+        try:
+            pg = max(1, int(q.get("p", ["1"])[0]))
+        except ValueError:
+            pg = 1
         rows = [m for m in Data.monsters
                 if ver_matches(m.get("ver"), ver)
                 and (not kw or kw in m["name"].lower() or kw in (m.get("zh") or "").lower())
-                and mon_cat_ok(m, cat)
-                and mon_lv_ok(m, lv)]
-        rows.sort(key=lambda x: (x.get("level") or 0, x["name"].lower()))
+                and mon_cat_ok(m, cats)
+                and mon_lv_ok(m, lv)
+                and (not mapf or mapf in [c.lower() for c in mon_maps(m)])]
+        rows.sort(key=lambda x: mon_sort_key(x, sort))
+        pages = max(1, (len(rows) + PAGE - 1) // PAGE)
+        pg = min(pg, pages)
+        shown = rows[(pg - 1) * PAGE:pg * PAGE]
         items = []
-        for m in rows:
+        for m in shown:
             disp = m.get("zh") or m["name"]
             en = f'<span class="mono">{esc(m["name"])}</span>' if disp != m["name"] else ""
-            sub = f"Lv {m.get('level') or '?'}"
+            lv_txt = f"Lv {m.get('level') or '?'}"
+            sub = f"{lv_txt}"
             tags = []
             if m.get("boss"): tags.append('<span class="bad">Boss</span>')
             if m.get("undead"): tags.append('<span class="bad bad-undead">不死</span>')
@@ -570,23 +740,42 @@ class Handler(BaseHTTPRequestHandler):
             sp = parse_spawns(m.get("spawns"))
             if sp:
                 sub += f" · {sum(c for _, c in sp)} 只 / {len(sp)} 图"
+            # 分布地图中文名 (取前 3 张)
+            maps_zh = []
+            for c, _ in sp:
+                zh = mon_map_zh(c)
+                if zh:
+                    maps_zh.append(zh)
+                    if len(maps_zh) >= 3:
+                        break
+            if maps_zh:
+                sub += f" · <span class='dim'>{'、'.join(esc(z) for z in maps_zh)}</span>"
             items.append(f"""<div class="card"><a href="/monster/{urllib.parse.quote(m['name'])}">
   {icon_img('monsters', m['id'], 'pic', disp)}
   <div><span class="name">{esc(disp)}</span>{en} {ver_badges(m.get('ver'))}</div>
   <div class="sub">{sub}</div>
 </a></div>""")
+        map_opts = ""
+        map_names = sorted({c.lower() for m in Data.monsters for c in mon_maps(m)})
+        for c in map_names:
+            zh = mon_map_zh(c)
+            label = f"{zh}（{c}）" if zh else c
+            map_opts += f'<option value="{esc(c)}" {"selected" if mapf == c else ""}>{esc(label)}</option>'
         body = f"""
 <h1>怪物图鉴 · {len(Data.monsters)} 种</h1>
 <p class="lead">Zircon System.db 全量 {len(Data.monsters)} 种怪物（Boss {sum(1 for x in Data.monsters if x.get('boss'))} / 不死系 {sum(1 for x in Data.monsters if x.get('undead'))} / 可捕捉 {sum(1 for x in Data.monsters if x.get('tame'))}）。</p>
-<form class="filters" method="get" action="/monsters">
-  <input name="q" placeholder="搜索怪物名…" value="{esc(kw)}">
-  {mon_cat_select(cat)}
+<form class="filters" method="get" action="/monsters" id="filters">
+  <input name="q" placeholder="搜索怪物名…" value="{esc(kw)}" class="q">
+  {mon_cat_chips(cats)}
   {mon_lv_select(lv)}
+  <select name="map"><option value="">全部地图</option>{map_opts}</select>
+  {sort_select(sort, "monsters")}
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
 <p class="lead">共 {len(rows)} 种</p>
 <div class="cards">{''.join(items) or '<p class="none">无匹配条目</p>'}</div>
+{pager(q, pg, pages)}
 """
         self._send(page("怪物图鉴", body, "monsters"))
 
@@ -601,7 +790,9 @@ class Handler(BaseHTTPRequestHandler):
         sp = parse_spawns(m.get("spawns"))
         map_rows = ""
         for f, c in sorted(sp, key=lambda x: x[0].lower()):
-            map_rows += f"<tr><td>{file_link(f + '.map')}</td><td>{c}</td></tr>"
+            zh = mon_map_zh(f)
+            fdisp = f"<span class='dim'>{esc(zh)}</span>" if zh else ""
+            map_rows += f"<tr><td>{file_link(f + '.map')} {fdisp}</td><td>{c}</td></tr>"
         if not map_rows:
             map_rows = '<tr><td colspan="2" class="none">无刷怪记录</td></tr>'
         boss = '<span class="tag tag-ei">Boss</span>' if m.get("boss") else ''
@@ -629,22 +820,33 @@ class Handler(BaseHTTPRequestHandler):
     # ---------------- 装备
     def items(self, qs):
         q = urllib.parse.parse_qs(qs)
-        group = q.get("group", [""])[0]
+        groups = q.get("group", [])
         klass = q.get("class", [""])[0]
         kw = (q.get("q", [""])[0]).strip().lower()
         ver = q.get("ver", [""])[0]
+        sort = q.get("sort", [""])[0]
+        try:
+            pg = max(1, int(q.get("p", ["1"])[0]))
+        except ValueError:
+            pg = 1
         rows = [i for i in Data.items
-                if (not group or item_group(i) == group)
+                if (not groups or item_group(i) in groups)
                 and (not klass or klass in i.get("class", ""))
                 and (not kw or kw in i["name"].lower() or kw in (i.get("zh") or "").lower())
                 and ver_matches(i.get("ver"), ver)]
-        rows.sort(key=lambda i: ((i.get("type_zh") or ""), i["name"]))
+        rows.sort(key=lambda i: item_sort_key(i, sort))
+        pages = max(1, (len(rows) + PAGE - 1) // PAGE)
+        pg = min(pg, pages)
+        shown = rows[(pg - 1) * PAGE:pg * PAGE]
         klass_opts = "".join(f'<option value="{c}" {"selected" if c==klass else ""}>{c}</option>'
                              for c in ["战士","法师","道士","战法道","战道","战法","法道","全职业"])
         items = []
-        for i in rows:
+        for i in shown:
             en = f'<span class="mono">{esc(i["name"])}</span>' if i.get("zh") and i["zh"] != i["name"] else ""
+            price = item_price(i)
             sub = esc(i.get("type_zh") or i['category']) + " · " + esc(i.get('class',''))
+            if price is not None:
+                sub += f' · <span class="good">{price:,} 金</span>'
             items.append(f"""<div class="card"><a href="/item/{i['id']}">
   {icon_img('items', i['id'], 'pic', i.get('zh') or i['name'])}
   <div><span class="name">{esc(i.get('zh') or i['name'])}</span>{en} {ver_badges(i.get('ver'))}</div>
@@ -653,15 +855,17 @@ class Handler(BaseHTTPRequestHandler):
         body = f"""
 <h1>装备 · {len(Data.items)} 件</h1>
 <p class="lead">Zircon System.db 全量 {len(Data.items)} 件（武器 / 护甲 / 首饰 / 药水 / 材料等 {len([g for g in ITEM_GROUPS if g[0]])} 类）。</p>
-<form class="filters" method="get" action="/items">
-  <input name="q" placeholder="搜索装备名…" value="{esc(kw)}">
-  {item_group_select(group)}
+<form class="filters" method="get" action="/items" id="filters">
+  <input name="q" placeholder="搜索装备名…" value="{esc(kw)}" class="q">
+  {item_group_chips(groups)}
   <select name="class"><option value="">全部职业</option>{klass_opts}</select>
+  {sort_select(sort, "items")}
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
 <p class="lead">共 {len(rows)} 件</p>
 <div class="cards">{''.join(items) or '<p class="none">无匹配条目</p>'}</div>
+{pager(q, pg, pages, base="/items")}
 """
         self._send(page("装备", body, "items"))
 
@@ -706,7 +910,7 @@ class Handler(BaseHTTPRequestHandler):
             rows = ""
             for s in arr:
                 rows += (f"<tr><td>{icon_img('skills', s['id'], 'icon', s.get('zh') or s['name'])} "
-                         f"<a href='#'>{esc(s.get('zh') or s['name'])}</a> "
+                         f"<a href='/skill/{s['id']}'>{esc(s.get('zh') or s['name'])}</a> "
                          f"<span class='mono'>{esc(s['name'])}</span> {ver_badges(s.get('ver'))}</td>"
                          f"<td>{esc(s.get('type',''))} {esc(s.get('school',''))}</td>"
                          f"<td>{esc(s.get('power',''))}</td><td>{esc(s.get('cost',''))}</td>"
@@ -719,6 +923,45 @@ class Handler(BaseHTTPRequestHandler):
 </form>
 {secs or '<p class="none">无匹配条目</p>'}"""
         self._send(page("技能", body, "skills"))
+
+    def skill_detail(self, sid):
+        try:
+            s = Data.skill_by_id.get(int(sid))
+        except ValueError:
+            s = None
+        if not s:
+            self._send(page("技能", f"<h1>未找到</h1><p class='lead'>#{esc(sid)}</p>"), code=404)
+            return
+        anim = s.get("anim")
+        anim_html = ""
+        if anim:
+            ap = os.path.join(IMGS_DIR, "skills_anim", f"{s['id']}.png")
+            if os.path.exists(ap):
+                anim_html = f"""
+<h2>施法动画</h2>
+<div class="anim"><img src="/img/skills_anim/{s['id']}.png" alt="施法动画">
+<p class="dim">素材: {esc(anim['lib'])} 帧 {anim['start']}+{anim['count']} · 每帧 {anim['delay']}ms（来自客户端 MagicEffectTable 渲染表）</p></div>"""
+            else:
+                anim_html = f"<h2>施法动画</h2><p class='dim'>素材 {esc(anim['lib'])} 帧 {anim['start']} 暂无渲染图</p>"
+        else:
+            anim_html = "<h2>施法动画</h2><p class='dim'>被动 / 无独立施法特效</p>"
+        body = f"""
+<a href="/skills">← 返回技能列表</a>
+<h1>{esc(s.get('zh') or s['name'])} <span class="mono">{esc(s['name'])}</span> {ver_badges(s.get('ver'))}</h1>
+<div class="detail">{icon_img('skills', s['id'], 'bigpic', s.get('zh') or s['name'])}<div class="meta">
+<dl class="kv">
+  <dt>职业</dt><dd>{esc(s.get('klass',''))}</dd>
+  <dt>类型</dt><dd>{esc(s.get('type',''))} · {esc(s.get('school',''))}</dd>
+  <dt>威力</dt><dd>{esc(s.get('power',''))}</dd>
+  <dt>耗蓝</dt><dd>{esc(s.get('cost',''))}</dd>
+  <dt>冷却</dt><dd>{esc(s.get('delay',''))}</dd>
+  <dt>等级门槛</dt><dd>{esc(s.get('levels',''))}</dd>
+  <dt>升级经验</dt><dd>{esc(s.get('exp',''))}</dd>
+  <dt>说明</dt><dd>{esc(s.get('desc','—'))}</dd>
+</dl></div></div>
+{anim_html}
+"""
+        self._send(page(f"技能 {s.get('zh') or s['name']}", body, "skills"))
 
     # ---------------- NPC
     def npcs(self, qs):

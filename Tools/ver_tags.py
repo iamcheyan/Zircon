@@ -152,20 +152,27 @@ for it in w["items"]:
 
 # ============ 4. 技能版本 + 图 ============
 skill_img_map = imgs["skills"]
+try:
+    skill_anim = json.load(open("/tmp/skills_anim.json", encoding="utf-8"))
+except FileNotFoundError:
+    skill_anim = {}
 for s in w["skills"]:
     s["ver"] = ["zircon"] if s["klass"] == "刺客" else ["mud3", "mei", "zircon"]
     ic = skill_img_map.get(s["name"], s.get("icon"))
     s["img"] = {"lib": "MIcon.wil", "frame": int(ic), "src": "ei"} if ic is not None else None
+    a = skill_anim.get(s["type"])
+    s["anim"] = a if a else None  # 施法动画 (Magic.Zl/MagicEx*.Zl 帧段), 被动技能无
 
 # ============ 5. NPC 版本 + 图 ============
+# 权威图源 = Zircon 客户端 NPC.Zl / NPCface.Zl:
+#   NPCInfo.Image (shape) × 100 + 站立帧 (DefaultNPC = 帧 100..103)
+#   EI NPC.wil 帧号 ≠ NPCInfo.Image, 直接映射会错位(全铁匠) — 弃用
 npc_img_map = imgs["npcs"]
 for n in w["npcs"]:
     n["ver"] = ["zircon", "ei", "mei"]
     e = npc_img_map.get(n["name"])
-    if e and e["face"]:
-        n["img"] = {"lib": "NPCface.wil", "frame": e["face"], "src": "ei"}
-    elif e and e["image"]:
-        n["img"] = {"lib": "NPC.wil", "frame": e["image"], "src": "ei"}
+    if e:
+        n["img"] = {"lib": "NPC.Zl", "frame": e["image"] * 100, "shape": e["image"], "src": "zir"}
     else:
         n["img"] = None
 
