@@ -27,6 +27,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_JSON = "/tmp/wiki_data_v2.json"
 REPORT_JSON = "/tmp/report_full.json"
 STORES_JSON = "/tmp/wiki_stores.json"
+ALL_JSON = "/tmp/wiki_all.json"
 MAP_LINKS_JSON = "/tmp/map_links.json"
 THUMBS_DIR = "/tmp/wiki_thumbs"
 IMGS_DIR = "/tmp/wiki_imgs"
@@ -76,7 +77,33 @@ def ver_matches(ver, sel):
 def ver_select(sel):
     opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
                    for v, l in VER_OPTS)
-    return f'<select name="ver">{opts}</select>'
+    return custom_select("ver", sel, opts, "全部版本")
+
+def custom_select(name, sel, opts_html, placeholder):
+    """自定义下拉控件 (不用原生 select): 按钮 + 弹出菜单, 选中即提交表单。
+    opts_html 为 <option value=… selected?>…</option> 列表; sel 为当前值; placeholder 为无值时的标签。"""
+    selval = sel or ""
+    # 解析 option: 提取 value / selected / 文本 (属性区允许任意非 > 内容, 含空/selected)
+    items = []
+    cur_text = placeholder
+    for m in re.finditer(r'<option value="([^"]*)"[^>]*>([^<]*)</option>', opts_html):
+        v, txt = m.group(1), m.group(2)
+        items.append((v, txt))
+        if v == selval:
+            cur_text = txt
+    lis = ""
+    for v, txt in items:
+        selattr = ' aria-current="true"' if v == selval else ""
+        lis += f'<li role="option" data-v="{esc_attr(v)}"{selattr}><a href="#">{esc(txt)}</a></li>'
+    return (f'<span class="csel" data-name="{name}" data-cur="{esc_attr(selval)}" tabindex="0">'
+            f'<button type="button" class="csel-btn" role="combobox" aria-expanded="false" '
+            f'aria-haspopup="listbox" aria-label="{esc(name)}"><span class="csel-txt">{esc(cur_text)}</span> '
+            f'<span class="arrow">▾</span></button>'
+            f'<ul class="csel-menu" role="listbox">'
+            f'<li role="option" data-v=""><a href="#">{esc(placeholder)}</a></li>{lis}</ul></span>')
+
+def esc_attr(s):
+    return esc(s or "").replace('"', "&quot;")
 
 # ---------------------------------------------------------------- 怪物分类/等级
 # 分类三标签, 无"全部"(全不选 = 全部); 多选任一命中
@@ -132,13 +159,13 @@ def mon_cat_chips(sel):
 def mon_lv_select(sel):
     opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
                    for v, l in MON_LVS)
-    return f'<select name="lv"><option value="">全部等级</option>{opts}</select>'
+    return custom_select("lv", sel, opts, "全部等级")
 
 def sort_select(sel, page_kind):
     opts_ = MON_SORTS if page_kind == "monsters" else ITEM_SORTS
     opts = "".join(f'<option value="{v}" {"selected" if v == sel else ""}>{l}</option>'
                    for v, l in opts_)
-    return f'<select name="sort">{opts}</select>'
+    return custom_select("sort", sel, opts, "默认排序")
 
 def pager(params, page, pages, base="/monsters"):
     """分页导航; 保留全部筛选参数, 仅换 p。居中, 上下留白, 含首/末页与省略号, 附下拉跳页。"""
@@ -165,13 +192,18 @@ def pager(params, page, pages, base="/monsters"):
     if page < pages:
         parts.append(f'<a class="pg" href="{href(page + 1)}" title="下一页">›</a>')
         parts.append(f'<a class="pg" href="{href(pages)}" title="最后一页">»</a>')
-    # 下拉跳页: 列出全部页码, 选即跳转 (保留筛选参数)
-    opts = ['<option value="" disabled selected>跳转到…</option>']
-    opts += [f'<option value="{href(p)}">{p}</option>' for p in range(1, pages + 1)]
-    jump = (f'<select class="pg-go" onchange="if(this.value) location.href=this.value" '
-            f'aria-label="跳转到指定页">{"".join(opts)}</select>')
+    # 自定义跳页控件: 按钮 + 弹出页码菜单 (不用原生 select)
+    pgbtn = ('<span class="pg-jump" id="pgJump">'
+             '<button type="button" onclick="pgJumpToggle(event)" aria-haspopup="listbox" aria-expanded="false">'
+             '跳转到… <span class="arrow">▾</span></button>'
+             '<span class="menu" role="listbox">'
+             + "".join(
+                 f'<a href="{href(p)}" role="option"{" aria-current=\"page\"" if p == page else ""}'
+                 f'{" class=\"cur\"" if p == page else ""}>{p}</a>'
+                 for p in range(1, pages + 1))
+             + '</span></span>')
     return (f'<div class="pager">{"".join(parts)} '
-            f'<span class="pager-info">第 <b>{page}</b> / {pages} 页</span>{jump}</div>')
+            f'<span class="pager-info">第 <b>{page}</b> / {pages} 页</span>{pgbtn}</div>')
 
 def item_price(i):
     """从 meta '价格 80000' 提取整数价格; 无则 None。"""
@@ -327,7 +359,7 @@ class Data:
     def get(cls):
         # 30s 缓存 + 文件变更检测
         mtime = max(os.path.getmtime(DATA_JSON), os.path.getmtime(REPORT_JSON),
-                    os.path.getmtime(STORES_JSON))
+                    os.path.getmtime(STORES_JSON), os.path.getmtime(ALL_JSON))
         with cls._lock:
             if mtime != cls._t:
                 with open(DATA_JSON, encoding="utf-8") as f:
@@ -336,6 +368,8 @@ class Data:
                     cls.report = json.load(f)
                 with open(STORES_JSON, encoding="utf-8") as f:
                     cls.stores = json.load(f)
+                with open(ALL_JSON, encoding="utf-8") as f:
+                    cls.all = json.load(f)
                 cls._t = mtime
                 cls._build()
             return cls.wiki, cls.report, cls.stores
@@ -362,6 +396,12 @@ class Data:
         # 装备
         cls.items = w["items"]
         cls.item_by_id = {i["id"]: i for i in w["items"]}
+        cls.item_by_name = {}
+        for i in w["items"]:
+            cls.item_by_name.setdefault(i["name"], i)
+            zh = i.get("zh")
+            if zh and zh != i["name"]:
+                cls.item_by_name.setdefault(zh, i)
         cls.item_cats = []
         seen = set()
         for i in w["items"]:
@@ -416,6 +456,101 @@ class Data:
             cls.map_adj.setdefault(a, []).append(b)
             cls.map_adj.setdefault(b, []).append(a)
         cls.mapinfo_names = links.get("names", {})
+
+        # ---- 全量集合 (wiki_all.json) 索引 ----
+        A = cls.all
+        def rows(name):
+            return A.get(name, {}).get("rows", []) if name in A else []
+
+        # 掉落: 怪物名 -> [(item, chance, amount)], 物品名 -> [(monster, chance, amount)]
+        cls.drop_by_mon = {}
+        cls.drop_by_item = {}
+        for d in rows("DropInfo"):
+            mon, item, ch, amt = d.get("Monster"), d.get("Item"), d.get("Chance", 0), d.get("Amount", 1)
+            if not mon or not item: continue
+            cls.drop_by_mon.setdefault(mon, []).append((item, ch, amt))
+            cls.drop_by_item.setdefault(item, []).append((mon, ch, amt))
+        # NPC 脚本: Page -> {say, checks, buttons, actions, type}
+        cls.npc_pages = {}
+        for pg in rows("NPCPage"):
+            cls.npc_pages[pg.get("Description") or pg.get("_identity") or ""] = pg
+        cls.npc_actions = {}
+        for a in rows("NPCAction"):
+            cls.npc_actions.setdefault(a.get("Page"), []).append(a)
+        cls.npc_buttons = {}
+        for b in rows("NPCButton"):
+            cls.npc_buttons.setdefault(b.get("Page"), []).append(b)
+        cls.npc_checks = {}
+        for c in rows("NPCCheck"):
+            cls.npc_checks.setdefault(c.get("Page"), []).append(c)
+        # 传送: SourceRegion/DestinationRegion (含地图)
+        cls.movements = rows("MovementInfo")
+        # 套装: name -> {items, stats}, 物品名 -> [set 名]
+        cls.sets = {}
+        cls.set_by_item = {}
+        for s in rows("SetInfo"):
+            name = s.get("SetName") or s.get("_identity") or ""
+            cls.sets[name] = s
+            for it in s.get("Items") or []:
+                cls.set_by_item.setdefault(it, []).append(name)
+        cls.set_stats_by_name = {}
+        for s in rows("SetInfoStat"):
+            if s.get("Set"):
+                cls.set_stats_by_name.setdefault(s["Set"], []).append(s)
+        # 矿点: map -> [(item, chance, qty)]
+        cls.mines = rows("MineInfo")
+        # 安全区
+        cls.safezones = rows("SafeZoneInfo")
+        # 声望 / 货币 / 锻造 / 修炼 / 沙巴克
+        cls.fames = rows("FameInfo")
+        cls.fame_stats = rows("FameInfoStat")
+        cls.fame_rewards = rows("FameInfoReward")
+        cls.currencies = rows("CurrencyInfo")
+        cls.currency_images = rows("CurrencyInfoImage")
+        cls.crafts = rows("WeaponCraftStatInfo")
+        cls.disciplines = rows("DisciplineInfo")
+        cls.castle = rows("CastleInfo")
+        # 基础属性: (class, level) -> stats
+        cls.base_stats = rows("BaseStat")
+        cls.base_by_cls = {}
+        for b in cls.base_stats:
+            cls.base_by_cls.setdefault(b.get("Class"), []).append(b)
+        # 任务详情
+        cls.quest_tasks = rows("QuestTask")
+        cls.quest_rewards = rows("QuestReward")
+        cls.quest_reqs = rows("QuestRequirement")
+        cls.quest_monsters = rows("QuestTaskMonsterDetails")
+        cls.quest_by_name = {}
+        for qq in rows("QuestInfo"):
+            name = qq.get("QuestName") or qq.get("_identity") or ""
+            cls.quest_by_name[name] = qq
+        cls.quest_task_by_q = {}
+        for t in cls.quest_tasks:
+            if t.get("Quest"):
+                cls.quest_task_by_q.setdefault(t["Quest"], []).append(t)
+        cls.quest_reward_by_q = {}
+        for r in cls.quest_rewards:
+            if r.get("Quest"):
+                cls.quest_reward_by_q.setdefault(r["Quest"], []).append(r)
+        cls.quest_req_by_q = {}
+        for r in cls.quest_reqs:
+            if r.get("Quest"):
+                cls.quest_req_by_q.setdefault(r["Quest"], []).append(r)
+        # 宠物技能/成长
+        cls.comp_skills = rows("CompanionSkillInfo")
+        cls.comp_levels = rows("CompanionLevelInfo")
+        # 守卫
+        cls.guards = rows("GuardInfo")
+        # NPC 类型 (Page -> item types)
+        cls.npc_types = {}
+        for t in rows("NPCType"):
+            cls.npc_types.setdefault(t.get("Page"), []).append(t.get("ItemType"))
+        # NPC 入口页 (脚本树根)
+        cls.npc_entry = {}
+        for n in rows("NPCInfo"):
+            ep = n.get("EntryPage")
+            if ep:
+                cls.npc_entry[n.get("NPCName") or n.get("_identity") or ""] = ep
 
 # ---------------------------------------------------------------- templates
 BASE = """<!DOCTYPE html>
@@ -474,6 +609,20 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:8px; padding:6px 10px; font-size:14px; }}
 .filters button {{ background:#2b3547; color:var(--fg); border:none; border-radius:8px; padding:6px 14px;
   cursor:pointer; font-size:14px; }} .filters button:hover {{ background:#35435c; }}
+.csel {{ position:relative; display:inline-block; }}
+.csel-btn {{ background:var(--panel); border:1px solid var(--line); color:var(--fg); padding:6px 12px;
+  border-radius:8px; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; min-width:108px; }}
+.csel-btn:hover {{ border-color:var(--acc); }}
+.csel-btn .arrow {{ color:var(--dim); font-size:10px; }}
+.csel-menu {{ display:none; position:absolute; z-index:60; top:calc(100% + 4px); left:0; min-width:150px;
+  max-height:280px; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  box-shadow:0 10px 28px rgba(0,0,0,.5); list-style:none; margin:0; padding:4px 0; }}
+.csel.open .csel-menu {{ display:block; }}
+.csel.open .csel-btn {{ border-color:var(--acc); }}
+.csel-menu li a {{ display:block; padding:6px 12px; color:var(--fg); font-size:13.5px; text-decoration:none;
+  white-space:nowrap; }}
+.csel-menu li a:hover {{ background:#1b2631; }}
+.csel-menu li[aria-current="true"] a {{ color:var(--acc); font-weight:700; background:#16202a; }}
 .chip {{ display:inline-flex; align-items:center; gap:5px; background:var(--panel); border:1px solid var(--line);
   border-radius:16px; padding:3px 11px 3px 8px; cursor:pointer; font-size:13.5px; user-select:none; }}
 .chip input {{ accent-color:var(--acc); cursor:pointer; }}
@@ -509,6 +658,13 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 .panel-npc {{ display:flex; gap:14px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:12px 0 20px; }}
 .panel-npc .pic {{ width:64px; height:64px; object-fit:contain; background:#0d0f12; border-radius:8px; }}
 .panel-npc .noimg.pic {{ width:64px; height:64px; }}
+.npc-dlg {{ border-left:3px solid var(--ac2); padding:6px 0 6px 14px; margin:10px 0; }}
+.npc-dlg-head {{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-bottom:4px; }}
+.npc-say {{ white-space:pre-wrap; background:#0d0f12; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:4px 0; color:var(--fg); font-size:13px; }}
+.npc-btn {{ color:var(--ac2); font-size:12.5px; margin:2px 0; }}
+.chip-dim {{ color:var(--dim); border-color:var(--line); }}
+.chip-act {{ color:#c9a227; border-color:#c9a22766; }}
+.chip-type {{ color:#7bb26a; border-color:#7bb26a66; }}
 .pager {{ display:flex; align-items:center; justify-content:center; gap:8px; margin:34px 0; flex-wrap:wrap; }}
 .pager .pg {{ display:inline-block; min-width:32px; text-align:center; padding:5px 9px; border:1px solid var(--line);
   border-radius:7px; background:var(--panel); color:var(--fg); font-size:13.5px; transition:border-color .15s, background .15s; }}
@@ -536,7 +692,28 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
   border-radius:7px; cursor:pointer; font-size:13.5px; }}
 .mon-btns button:hover {{ border-color:var(--acc); }}
 .mon-btns button.on {{ background:var(--acc); color:#1a1408; border-color:var(--acc); font-weight:700; }}
+.mon-speed {{ display:inline-flex; gap:2px; border:1px solid var(--line); border-radius:7px; overflow:hidden; }}
+.mon-speed .spd {{ padding:4px 12px; border:none; background:transparent; color:var(--dim); font-size:12.5px;
+  cursor:pointer; border-radius:0; }}
+.mon-speed .spd:hover {{ color:var(--fg); background:#1b2631; }}
+.mon-speed .spd.on {{ background:var(--acc); color:#1a1408; font-weight:700; }}
+#monPlay {{ padding:5px 16px; border:1px solid var(--acc); background:var(--acc); color:#1a1408;
+  border-radius:7px; font-size:14px; font-weight:700; cursor:pointer; }}
+#monPlay:hover {{ filter:brightness(1.1); }}
 #monPlay:disabled {{ opacity:.45; cursor:not-allowed; }}
+.pager .pg-jump {{ position:relative; display:inline-block; }}
+.pager .pg-jump button {{ padding:5px 12px; border:1px solid var(--line); border-radius:7px; background:var(--panel);
+  color:var(--fg); font-size:13.5px; cursor:pointer; min-width:96px; text-align:left; }}
+.pager .pg-jump button:hover {{ border-color:var(--acc); }}
+.pager .pg-jump .arrow {{ float:right; color:var(--dim); }}
+.pager .pg-jump .menu {{ display:none; position:absolute; z-index:50; bottom:calc(100% + 6px); left:0;
+  max-height:240px; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.45); min-width:140px; }}
+.pager .pg-jump.open .menu {{ display:block; }}
+.pager .pg-jump .menu a {{ display:block; padding:5px 12px; color:var(--fg); font-size:13.5px; text-decoration:none; }}
+.pager .pg-jump .menu a:hover {{ background:#1b2631; }}
+.pager .pg-jump .menu a.on {{ background:var(--acc); color:#1a1408; font-weight:700; }}
+.pager .pg-jump .menu a.cur {{ color:var(--acc); font-weight:700; background:#16202a; }}
 .mapnet {{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }}
 .mapnet a {{ background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 12px;
   font-size:13.5px; color:var(--fg); }}
@@ -563,6 +740,57 @@ tr:nth-child(even) td {{ background:rgba(255,255,255,.015); }}
 footer {{ max-width:1280px; margin:0 auto; padding:8px 18px 30px; color:var(--dim); font-size:12.5px; }}
 </style>
 <script>
+// 自定义分页跳页: 点按钮弹页码菜单, 点外部关闭
+function pgJumpToggle(e) {{
+  var w = document.getElementById('pgJump');
+  if (!w) return;
+  var open = w.classList.toggle('open');
+  w.querySelector('button').setAttribute('aria-expanded', open ? 'true' : 'false');
+  e.stopPropagation();
+}}
+document.addEventListener('click', function (e) {{
+  var w = document.getElementById('pgJump');
+  if (w && !w.contains(e.target)) w.classList.remove('open');
+}});
+// 自定义下拉: 点按钮开合, 点选项写入隐藏 input + 提交表单 (或跳转)
+document.addEventListener('click', function (e) {{
+  var btn = e.target.closest('.csel-btn');
+  if (btn) {{
+    var sel = btn.parentElement;
+    var open = sel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    e.stopPropagation();
+    return;
+  }}
+  var li = e.target.closest('.csel li');
+  if (li) {{
+    e.preventDefault();
+    var sel = li.closest('.csel');
+    var name = sel.dataset.name, v = li.dataset.v;
+    sel.dataset.cur = v;
+    sel.querySelector('.csel-txt').textContent = li.textContent.trim();
+    Array.prototype.forEach.call(sel.querySelectorAll('li'), function (x) {{
+      x.removeAttribute('aria-current');
+    }});
+    li.setAttribute('aria-current', 'true');
+    sel.classList.remove('open');
+    sel.querySelector('.csel-btn').setAttribute('aria-expanded', 'false');
+    // 写隐藏 input 并提交所在表单
+    var f = sel.closest('form');
+    if (f) {{
+      var h = f.querySelector('input[type=hidden][name="' + name + '"]');
+      if (!h) {{
+        h = document.createElement('input'); h.type = 'hidden'; h.name = name;
+        f.appendChild(h);
+      }}
+      h.value = v;
+      f.submit();
+    }}
+    return;
+  }}
+  var s = e.target.closest('.csel');
+  if (s) {{ s.classList.remove('open'); s.querySelector('.csel-btn').setAttribute('aria-expanded', 'false'); }}
+}});
 // 筛选即时生效: select/checkbox/radio 变化即提交; 文本输入 500ms 防抖。保留提交按钮。
 document.addEventListener('DOMContentLoaded', function () {{
   var f = document.getElementById('filters');
@@ -603,24 +831,52 @@ function animPlay(btn) {{
   clearInterval(_animTimer);
   _animTimer = setInterval(step, delay);
 }}
-// 怪物动画: 动作按钮切换 + 播放/暂停
-var _monTimer = null, _monIdx = 0;
+var _monTimer = null, _monDir = 0, _monIdx = 0, _monSpeed = 1;
 var MON_ACT_ZH = {{ standing: '站立', walking: '行走', combat: '攻击', struck: '受击', die: '死亡' }};
 function monStop() {{
-  if (_monTimer) {{ clearInterval(_monTimer); _monTimer = null; }}
-  var b = document.getElementById('monPlay');
-  if (b) {{ b.dataset.on = '0'; b.textContent = '▶ 播放'; }}
+  clearInterval(_monTimer); _monTimer = null;
+  var pb = document.getElementById('monPlay');
+  if (pb) {{ pb.dataset.on = '0'; pb.textContent = '▶ 播放'; }}
+}}
+function monDirs(act) {{ return (window.MON_ANIM && window.MON_ANIM[act]) || []; }}
+function monShow() {{
+  var img = document.getElementById('monFrame');
+  var dirs = monDirs(img.dataset.act);
+  var d = dirs[_monDir];
+  img.src = '/img/mon_anim/' + img.dataset.mid + '/' + img.dataset.act + '/' + d.d + '/' + String(_monIdx).padStart(3, '0') + '.png';
+  document.getElementById('monDir').textContent = d.zh;
+  document.getElementById('monDirIdx').textContent = (_monDir + 1) + '/' + dirs.length;
+  document.getElementById('monIdx').textContent = _monIdx + 1;
+  document.getElementById('monCnt').textContent = d.n;
+}}
+function monAdvance() {{
+  var img = document.getElementById('monFrame');
+  var act = img.dataset.act;
+  var dirs = monDirs(act);
+  _monIdx = _monIdx + 1;
+  if (_monIdx >= dirs[_monDir].n) {{
+    _monIdx = 0; _monDir = _monDir + 1;
+    if (_monDir >= dirs.length) {{
+      if (act === 'die') {{ monStop(); return; }}  // 死亡: 播完停尸体帧, 不循环
+      _monDir = 0;
+    }}
+  }}
+  monShow();
+}}
+function monStart() {{
+  var img = document.getElementById('monFrame');
+  var act = img.dataset.act;
+  var delay = ((act === 'standing' || act === 'die') ? 180 : 120) * _monSpeed;
+  clearInterval(_monTimer);
+  _monTimer = setInterval(monAdvance, delay);
 }}
 function monPlay(btn, mid) {{
   monStop();
   var img = document.getElementById('monFrame');
   var act = btn.dataset.act;
-  var n = parseInt(btn.dataset.n, 10) || 1;
   img.dataset.act = act; img.dataset.mid = mid;
-  img.src = '/img/mon_anim/' + mid + '/' + act + '/000.png';
-  _monIdx = 0;
-  document.getElementById('monIdx').textContent = '1';
-  document.getElementById('monCnt').textContent = n;
+  _monDir = 0; _monIdx = 0;
+  monShow();
   document.getElementById('monActZh').textContent = MON_ACT_ZH[act] || act;
   Array.prototype.forEach.call(document.querySelectorAll('.mon-act'), function (b) {{
     b.classList.remove('on');
@@ -633,62 +889,20 @@ function monPlay(btn, mid) {{
 }}
 function monPlayBtn(btn) {{
   var img = document.getElementById('monFrame');
-  var mid = img.dataset.mid, act = img.dataset.act;
-  var n = parseInt(document.getElementById('monCnt').textContent, 10) || 1;
-  if (!mid) return;
-  if (btn.dataset.on === '1') {{
-    btn.dataset.on = '0'; btn.textContent = '▶ 播放';
-    clearInterval(_monTimer); _monTimer = null;
-    return;
-  }}
+  if (!img.dataset.mid || monDirs(img.dataset.act).length === 0) return;
+  if (btn.dataset.on === '1') {{ monStop(); return; }}
   btn.dataset.on = '1'; btn.textContent = '⏸ 暂停';
-  // 速度: 正常1x / 慢2x / 极慢4x
-  var speed = parseInt(document.getElementById('monSpeed').value, 10) || 1;
-  var delay = ((act === 'standing' || act === 'die') ? 180 : 120) * speed;
-  var loop = (act !== 'die');  // 死亡播完停在尸体帧
-  var step = function () {{
-    img.src = '/img/mon_anim/' + mid + '/' + act + '/' + String(_monIdx).padStart(3, '0') + '.png';
-    document.getElementById('monIdx').textContent = _monIdx + 1;
-    _monIdx = _monIdx + 1;
-    if (_monIdx >= n) {{
-      if (!loop) {{
-        // 死亡: 停在最后一帧 (尸体), 不循环
-        btn.dataset.on = '0'; btn.textContent = '▶ 播放';
-        clearInterval(_monTimer); _monTimer = null;
-        return;
-      }}
-      _monIdx = 0;
-    }}
-  }};
-  step();
-  clearInterval(_monTimer);
-  _monTimer = setInterval(step, delay);
+  monStart();
 }}
-// 速度切换: 若正在播放, 用新速度继续
-function monSpeedChange() {{
+// 速度分段按钮: 正常1x / 慢2x / 极慢4x, 播放中切换即时生效
+function monSpeed(btn) {{
+  _monSpeed = parseInt(btn.dataset.s, 10) || 1;
+  Array.prototype.forEach.call(document.querySelectorAll('#monSpeedGrp .spd'), function (b) {{
+    b.classList.remove('on');
+  }});
+  btn.classList.add('on');
   var pb = document.getElementById('monPlay');
-  if (pb && pb.dataset.on === '1') {{
-    clearInterval(_monTimer);
-    var act = document.getElementById('monFrame').dataset.act;
-    var n = parseInt(document.getElementById('monCnt').textContent, 10) || 1;
-    var speed = parseInt(document.getElementById('monSpeed').value, 10) || 1;
-    var delay = ((act === 'standing' || act === 'die') ? 180 : 120) * speed;
-    _monTimer = setInterval(function () {{
-      var img = document.getElementById('monFrame');
-      var mid = img.dataset.mid;
-      img.src = '/img/mon_anim/' + mid + '/' + act + '/' + String(_monIdx).padStart(3, '0') + '.png';
-      document.getElementById('monIdx').textContent = _monIdx + 1;
-      _monIdx = _monIdx + 1;
-      if (_monIdx >= n) {{
-        if (act !== 'die') _monIdx = 0;
-        else {{
-          clearInterval(_monTimer); _monTimer = null;
-          pb.dataset.on = '0'; pb.textContent = '▶ 播放';
-          return;
-        }}
-      }}
-    }}, delay);
-  }}
+  if (pb && pb.dataset.on === '1') monStart();
 }}
 // 页面加载后自动播放默认动作 (行走)
 window.addEventListener('load', function () {{
@@ -708,6 +922,9 @@ window.addEventListener('load', function () {{
 <a href="/quests" {quests}>任务</a>
 <a href="/companions" {companions}>宠物与坐骑</a>
 <a href="/stores" {stores}>商店</a>
+<a href="/classes" {classes}>职业</a>
+<a href="/sets" {sets}>套装</a>
+<a href="/moves" {moves}>传送</a>
 <a href="/library" {library}>资源库</a>
 <a href="/diff" {diff}>差异裁剪</a>
 </nav></header>
@@ -719,7 +936,7 @@ window.addEventListener('load', function () {{
 """
 
 def page(title, body, active=""):
-    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","stores","library","diff"]}
+    nav = {k: "" for k in ["home","maps","monsters","items","skills","npcs","quests","companions","stores","classes","sets","moves","library","diff"]}
     nav[active] = 'class="active"'
     try:
         meta = Data.get()[0].get("_meta", {})
@@ -758,6 +975,34 @@ def mon_link(name):
 
 def file_link(f):
     return f'<a href="/map/{urllib.parse.quote(f)}">{esc(f)}</a>'
+
+def item_link(name):
+    """物品名 → 详情链接 (老版卡负 id)。未收录 → 纯文本。"""
+    it = Data.item_by_name.get(name)
+    if not it:
+        return esc(name)
+    disp = it.get("zh") or it["name"]
+    href = f"/item/{it['id']}"
+    mono = f' <span class="mono">{esc(it["name"])}</span>' if disp != it["name"] and not it.get("legacy") else ""
+    return f'<a href="{href}">{esc(disp)}{mono}</a>'
+
+def drop_table(drops):
+    """掉落列表 [(item, chance, amount)] → HTML 表 (物品名/概率/数量, 物品链)。"""
+    if not drops:
+        return '<tr><td colspan="3" class="none">无掉落记录</td></tr>'
+    def prob_str(ch):
+        if not ch: return "—"
+        if ch == 1: return "100%"
+        return f"1/{max(1, round(1 / ch))}"
+    rows = []
+    for item, ch, amt in sorted(drops, key=lambda x: x[1]):
+        amt_s = f"×{amt}" if amt and amt != 1 else ""
+        rows.append(f"<tr><td>{item_link(item)}</td><td>{prob_str(ch)}</td><td>{esc(amt_s)}</td></tr>")
+    return "".join(rows)
+
+def monster_link_by_name(name):
+    """怪物名 → 详情链接 (mon_link 别名, 兼容 drop 表)。"""
+    return mon_link(name)
 
 # ---------------------------------------------------------------- handlers
 class Handler(BaseHTTPRequestHandler):
@@ -805,11 +1050,25 @@ class Handler(BaseHTTPRequestHandler):
             try: return self.npc_detail(int(p[5:]))
             except ValueError: pass
         if p == "/quests": return self.quests(u.query)
+        if p.startswith("/quest/"): return self.quest_detail(urllib.parse.unquote(p[7:]))
         if p == "/companions": return self.companions(u.query)
         if p == "/stores": return self.stores(u.query)
         if p.startswith("/store/"):
             try: return self.store_detail(int(p[7:]))
             except ValueError: pass
+        if p == "/classes": return self.classes(u.query)
+        if p == "/moves": return self.moves(u.query)
+        if p == "/sets": return self.sets_page(u.query)
+        if p.startswith("/set/"): return self.set_detail(urllib.parse.unquote(p[5:]))
+        if p == "/mines": return self.mines_page(u.query)
+        if p == "/safezones": return self.safezones_page(u.query)
+        if p == "/fames": return self.fames_page(u.query)
+        if p == "/currencies": return self.currencies_page(u.query)
+        if p == "/crafts": return self.crafts_page(u.query)
+        if p == "/discipline": return self.discipline_page(u.query)
+        if p == "/castle": return self.castle_page(u.query)
+        if p == "/guards": return self.guards_page(u.query)
+        if p == "/search": return self.search(u.query)
         if p == "/diff": return self.diff()
         if p == "/library": return self.library(u.query)
         if p.startswith("/thumb/"): return self.thumb(urllib.parse.unquote(p[7:]))
@@ -866,6 +1125,30 @@ class Handler(BaseHTTPRequestHandler):
     武器店 / 防具店 / 药店 / 首饰店等 {s['stats']['kinds']} 类商店，NPC 与在售货品（图文）。</div>
   <div class="panel"><h3><a href="/library">资源库</a></h3>
     EI 客户端 WIL 图库浏览（怪物 / 装备 / 地图贴图 / 图标）。</div>
+  <div class="panel"><h3><a href="/classes">职业成长</a></h3>
+    战士 / 法师 / 道士 / 刺客每级 HP / MP / 攻防曲线（BaseStat）。</div>
+  <div class="panel"><h3><a href="/sets">套装 · {len(Data.sets)} 套</a></h3>
+    套装组成装备与套装属性一览（SetInfo / SetInfoStat）。</div>
+  <div class="panel"><h3><a href="/moves">传送网络 · {len(Data.movements)} 条</a></h3>
+    区域间传送点，图标 / 需求物品 / 职业限制（MovementInfo）。</div>
+  <div class="panel"><h3><a href="/mines">矿点 · {len(Data.mines)} 处</a></h3>
+    地图 × 矿石 × 产出概率 × 刷新时间（MineInfo）。</div>
+  <div class="panel"><h3><a href="/guards">守卫 · {len(Data.guards)} 名</a></h3>
+    各图守卫点位与坐标（GuardInfo）。</div>
+  <div class="panel"><h3><a href="/safezones">安全区 · {len(Data.safezones)} 处</a></h3>
+    安全 / 红区、绑定复活点（SafeZoneInfo）。</div>
+  <div class="panel"><h3><a href="/fames">声望 · {len(Data.fames)} 级</a></h3>
+    声望等级、成本与属性奖励（FameInfo）。</div>
+  <div class="panel"><h3><a href="/currencies">货币 · {len(Data.currencies)} 种</a></h3>
+    货币体系与兑换物品（CurrencyInfo）。</div>
+  <div class="panel"><h3><a href="/crafts">武器锻造 · {len(Data.crafts)} 条</a></h3>
+    锻造附加属性池（WeaponCraftStatInfo）。</div>
+  <div class="panel"><h3><a href="/discipline">修炼 · {len(Data.disciplines)} 项</a></h3>
+    修炼项目（DisciplineInfo）。</div>
+  <div class="panel"><h3><a href="/castle">沙巴克</a></h3>
+    城堡攻城信息（CastleInfo）。</div>
+  <div class="panel"><h3><a href="/search">全局搜索</a></h3>
+    跨怪物 / 装备 / 技能 / NPC / 任务 / 商店 / 套装全文搜索。</div>
   <div class="panel"><h3><a href="/diff">差异裁剪</a></h3>
     EI 客户端 vs mir3ei vs Zircon 差异对照 + 老版 DAT vs Zircon 逐条对照表，为裁剪 mir3ei 新内容提供依据。</div>
 </div>
@@ -914,11 +1197,7 @@ class Handler(BaseHTTPRequestHandler):
 <form class="filters" method="get" action="/maps">
   <input name="q" placeholder="搜索文件名或中文名…" value="{esc(kw)}">
   {ver_select(ver)}
-  <select name="only">
-    <option value="">全部地图</option>
-    <option value="mon" {"selected" if only=="mon" else ""}>有怪物刷新</option>
-    <option value="npc" {"selected" if only=="npc" else ""}>有 NPC</option>
-  </select>
+  {custom_select("only", only, '<option value="">全部地图</option><option value="mon" {"selected" if only=="mon" else ""}>有怪物刷新</option><option value="npc" {"selected" if only=="npc" else ""}>有 NPC</option>', "全部地图")}
   <button type="submit">筛选</button>
 </form>
 <p class="lead">共 {len(rows)} 张</p>
@@ -966,6 +1245,27 @@ class Handler(BaseHTTPRequestHandler):
                     net_rows += f'<a href="/maps?q={urllib.parse.quote(c2)}" title="无 EI 客户端缩略图">{esc(label)}</a>'
         else:
             net_rows = '<p class="dim">无连接记录（Mapinfo.txt 无此图的出入口）</p>'
+        # 守卫 (GuardInfo: Map 文件名)
+        code = f.lower().removesuffix(".map")
+        guards_here = [g for g in Data.guards if (g.get("Map") or "").lower().removesuffix(".map") == code]
+        guard_rows = ""
+        if guards_here:
+            guard_rows = "".join(
+                f"<tr><td>{monster_link_by_name(g.get('Monster') or '')}</td><td>{esc(g.get('X'))},{esc(g.get('Y'))}</td>"
+                f"<td>{esc(g.get('Direction') or '')}</td></tr>"
+                for g in guards_here)
+            guard_rows = f"""<h2>守卫（{len(guards_here)} 名）</h2>
+<table><tr><th>守卫</th><th>坐标</th><th>方向</th></tr>{guard_rows}</table>"""
+        # 传送点 (MovementInfo: SourceRegion 含此图)
+        moves_here = [mv for mv in Data.movements if code in ((mv.get("SourceRegion") or "") + (mv.get("DestinationRegion") or "")).lower()]
+        move_rows = ""
+        if moves_here:
+            move_rows = "".join(
+                f"<tr><td>{esc(mv.get('SourceRegion') or '')}</td><td>{esc(mv.get('DestinationRegion') or '')}</td>"
+                f"<td>{esc(mv.get('Icon') or '')}</td><td>{esc(mv.get('RequiredClass') or '')}</td></tr>"
+                for mv in moves_here[:50])
+            move_rows = f"""<h2>传送点（{len(moves_here)} 条）</h2>
+<table><tr><th>源区域</th><th>目标区域</th><th>图标</th><th>职业</th></tr>{move_rows}</table>"""
         body = f"""
 <a href="/maps">← 返回地图列表</a>
 <h1>{esc(m['file'])}{flags}</h1>
@@ -987,6 +1287,8 @@ class Handler(BaseHTTPRequestHandler):
 <table><tr><th>怪物</th><th>数量</th></tr>{mon_rows}</table>
 <h2>NPC / 商人（{len(m['merchants'])} 个）</h2>
 <table><tr><th>名称</th><th>脚本</th><th>坐标</th></tr>{npc_rows}</table>
+{guard_rows}
+{move_rows}
 """
         self._send(page(f"地图 {m['file']}", body, "maps"))
 
@@ -1056,7 +1358,7 @@ class Handler(BaseHTTPRequestHandler):
   <input name="q" placeholder="搜索怪物名…" value="{esc(kw)}" class="q">
   {mon_cat_chips(cats)}
   {mon_lv_select(lv)}
-  <select name="map"><option value="">全部地图</option>{map_opts}</select>
+  {custom_select("map", mapf, '<option value="">全部地图</option>' + map_opts, "全部地图")}
   {sort_select(sort, "monsters")}
   {ver_select(ver)}
   <button type="submit">筛选</button>
@@ -1092,43 +1394,61 @@ class Handler(BaseHTTPRequestHandler):
             map_rows = '<tr><td colspan="2" class="none">无刷怪记录</td></tr>'
         boss = '<span class="tag tag-ei">Boss</span>' if m.get("boss") else ''
         undead = '<span class="bad">亡灵</span>' if m.get("undead") else ''
+        # 结构化掉落 (DropInfo 表)
+        drops_struct = Data.drop_by_mon.get(m["name"], [])
+        drops_html = ""
+        if drops_struct:
+            drops_html = f"""<h2>掉落物品（{len(drops_struct)} 种 · DropInfo）</h2>
+<table><tr><th>物品</th><th>概率</th><th>数量</th></tr>{drop_table(drops_struct)}</table>"""
         src_row = (f'<dt>来源</dt><dd>{esc(m.get("source",""))} · 判定 {esc(m.get("tag",""))}</dd>'
                    if legacy else "")
         note = esc(m.get("tag_note") or "") if legacy else esc(m.get("traits", ""))
         img_note = '<p class="dim">无客户端素材图（诚实占位）</p>' if legacy and not m.get("img") else ""
         old = old_block(m.get("old")) if m.get("old") else ""
-        # 怪物动画播放器 (img_pipeline 渲染逐帧 PNG)
+        # 怪物动画播放器 (img_pipeline 渲染 8 方向逐帧 PNG)
         mon_anim_html = ""
         anim_cnt = m.get("anim") or {}
         ma = Data.mon_anim.get(str(m["id"])) or {}
         if m.get("img") and ma:
             ACT_ZH = [("standing", "站立"), ("walking", "行走"), ("combat", "攻击"),
                       ("struck", "受击"), ("die", "死亡")]
+            DIR_ORDER = ["Down", "DownLeft", "Left", "UpLeft", "Up", "UpRight", "Right", "DownRight"]
+            DIR_ZH = {"Up": "上", "UpRight": "右上", "Right": "右", "DownRight": "右下",
+                      "Down": "下", "DownLeft": "左下", "Left": "左", "UpLeft": "左上"}
             btns = ""
+            anim_json = {}
             for act, zh in ACT_ZH:
-                n = ma.get(act, 0)
-                if n <= 0:
+                dmap = ma.get(act)
+                if not isinstance(dmap, dict):
                     continue
+                dirs = [{"d": d, "zh": DIR_ZH[d], "n": int(dmap[d])}
+                        for d in DIR_ORDER if int(dmap.get(d, 0)) > 0]
+                if not dirs:
+                    continue
+                anim_json[act] = dirs
                 on = ' class="mon-act on"' if act == "walking" else ' class="mon-act"'
-                btns += (f'<button type="button"{on} data-act="{act}" data-n="{n}" '
+                btns += (f'<button type="button"{on} data-act="{act}" '
                          f'onclick="monPlay(this, {m["id"]})">{zh}</button>')
-            first_act = "walking" if ma.get("walking", 0) > 0 else "standing"
-            first_n = ma.get(first_act, 0)
-            mon_anim_html = f"""
+            if anim_json:
+                first_act = "walking" if "walking" in anim_json else next(iter(anim_json))
+                first = anim_json[first_act][0]
+                first_n = first["n"]
+                mon_anim_html = f"""
 <div class="mon-anim">
-  <div class="anim-stage"><img id="monFrame" src="/img/mon_anim/{m['id']}/{first_act}/000.png"
+  <div class="anim-stage"><img id="monFrame" src="/img/mon_anim/{m['id']}/{first_act}/{first['d']}/000.png"
        alt="怪物动画" data-mid="{m['id']}" data-act="{first_act}"></div>
   <div class="anim-ctrl">
     <span class="mon-btns">{btns}</span>
+    <span class="mon-speed" id="monSpeedGrp" aria-label="播放速度">
+      <button type="button" class="spd on" data-s="1" onclick="monSpeed(this)">正常</button>
+      <button type="button" class="spd" data-s="2" onclick="monSpeed(this)">慢</button>
+      <button type="button" class="spd" data-s="4" onclick="monSpeed(this)">极慢</button>
+    </span>
     <button type="button" id="monPlay" onclick="monPlayBtn(this)" disabled>▶ 播放</button>
-    <select id="monSpeed" class="pg-go" aria-label="播放速度" title="播放速度" onchange="monSpeedChange()">
-      <option value="1" selected>正常</option>
-      <option value="2">慢</option>
-      <option value="4">极慢</option>
-    </select>
-    <span class="dim">第 <b id="monIdx">1</b>/<b id="monCnt">{first_n}</b> 帧 · <span id="monActZh">行走</span></span>
+    <span class="dim">方向 <b id="monDir">下</b> <b id="monDirIdx">1/{len(first_act and anim_json[first_act])}</b> · 帧 <b id="monIdx">1</b>/<b id="monCnt">{first_n}</b> · <span id="monActZh">行走</span></span>
   </div>
-</div>"""
+</div>
+<script>window.MON_ANIM = {json.dumps(anim_json, ensure_ascii=False)};</script>"""
         body = f"""
 <a href="/monsters">← 返回图鉴</a>
 <h1>{esc(disp)}{name_html} {flags}</h1>
@@ -1147,6 +1467,7 @@ class Handler(BaseHTTPRequestHandler):
   </div>
 </div>
 {mon_anim_html}
+{drops_html}
 <h2>分布地图（{len(sp)} 张）</h2>
 <table><tr><th>地图</th><th>数量</th></tr>{map_rows}</table>
 {old}
@@ -1194,7 +1515,7 @@ class Handler(BaseHTTPRequestHandler):
 <form class="filters" method="get" action="/items" id="filters">
   <input name="q" placeholder="搜索装备名…" value="{esc(kw)}" class="q">
   {item_group_chips(groups)}
-  <select name="class"><option value="">全部职业</option>{klass_opts}</select>
+  {custom_select("class", klass, '<option value="">全部职业</option>' + klass_opts, "全部职业")}
   {sort_select(sort, "items")}
   {ver_select(ver)}
   <button type="submit">筛选</button>
@@ -1220,6 +1541,19 @@ class Handler(BaseHTTPRequestHandler):
         note = esc(i.get("tag_note") or "") if legacy else ""
         img_note = '<p class="dim">无客户端素材图（诚实占位）</p>' if legacy and not i.get("img") else ""
         old = old_block(i.get("old")) if i.get("old") else ""
+        # 谁掉落它 (DropInfo 反查)
+        droppers = Data.drop_by_item.get(i["name"], [])
+        droppers_html = ""
+        if droppers:
+            def prob_str(ch):
+                if not ch: return "—"
+                if ch == 1: return "100%"
+                return f"1/{max(1, round(1 / ch))}"
+            d_rows = "".join(
+                f"<tr><td>{monster_link_by_name(mn)}</td><td>{prob_str(ch)}</td><td>{esc('×'+str(am)) if am and am != 1 else '—'}</td></tr>"
+                for mn, ch, am in sorted(droppers, key=lambda x: x[1]))
+            droppers_html = f"""<h2>掉落来源（{len(droppers)} 种怪物 · DropInfo）</h2>
+<table><tr><th>怪物</th><th>概率</th><th>数量</th></tr>{d_rows}</table>"""
         body = f"""
 <a href="/items">← 返回装备列表</a>
 <h1>{esc(i.get('zh') or i['name'])} <span class="mono">{esc(i['name'])}</span> {ver_badges(i.get('ver'), legacy)}</h1>
@@ -1237,6 +1571,7 @@ class Handler(BaseHTTPRequestHandler):
 <p class="lead">{note}</p>
 {img_note}
 </div></div>
+{droppers_html}
 {old}
 """
         self._send(page(f"装备 {i.get('zh') or i['name']}", body, "items"))
@@ -1400,6 +1735,14 @@ class Handler(BaseHTTPRequestHandler):
         # 地图: 视图编号 -> 地图详情
         mlink = file_link(n["map"] + ".map") if n.get("map") else "—"
         pos_html = f"({pos[0]}, {pos[1]})" if pos and pos[0] is not None else "—"
+        # 脚本树 (NPCInfo.EntryPage -> NPCPage)
+        entry = Data.npc_entry.get(n["name"])
+        scripts_html = ""
+        if entry:
+            tree = self.npc_script_tree(entry)
+            scripts_html = f"""<h2>对话脚本（入口 {esc(entry)}）</h2>
+<p class="lead">来自 NPCPage / NPCButton / NPCAction / NPCCheck 表 · 按钮递归展开</p>
+{tree}"""
         body = f"""<p class="crumbs"><a href="/npcs">NPC</a> › {esc(n.get('zh') or n['name'])}</p>
 <h1>{esc(n.get('zh') or n['name'])} <span class="mono">{esc(n['name'])}</span> {ver_badges(n.get('ver'))}</h1>
 <div class="detail">{face}<div class="meta">
@@ -1413,8 +1756,52 @@ class Handler(BaseHTTPRequestHandler):
 </div>
 <h2>全身像</h2>
 <div class="panel-npc">{full}<div><div class="name">{esc(n.get('zh') or n['name'])}</div>
-<div class="sub">{esc(n['name'])} · {esc(n.get('map',''))}</div></div></div>"""
+<div class="sub">{esc(n['name'])} · {esc(n.get('map',''))}</div></div></div>
+{scripts_html}"""
         self._send(page(n.get("zh") or n["name"], body, "npcs"))
+
+    # ---------------- NPC 脚本树渲染
+    def npc_script_tree(self, entry_page):
+        """从入口页递归渲染 NPC 对话框脚本树。返回 HTML。"""
+        seen = set()
+        out = []
+
+        def render_page(page_name, depth):
+            if page_name in seen or depth > 6:
+                return
+            seen.add(page_name)
+            pg = Data.npc_pages.get(page_name)
+            if not pg:
+                return
+            say = (pg.get("Say") or "").strip()
+            checks = Data.npc_checks.get(page_name, [])
+            actions = Data.npc_actions.get(page_name, [])
+            types = Data.npc_types.get(page_name, [])
+            pad = " style='margin-left:{}px'".format(depth * 18)
+            chk = ""
+            if checks:
+                chk = "".join(
+                    f"<span class='chip chip-dim'>{esc(c.get('CheckType',''))} {esc(c.get('Operator',''))} {esc(str(c.get('IntParameter1','')))}</span>"
+                    for c in checks[:4])
+            act = ""
+            if actions:
+                act = "".join(
+                    f"<span class='chip chip-act'>{esc(a.get('ActionType',''))}</span>"
+                    for a in actions[:4])
+            typ = "".join(f"<span class='chip chip-type'>{esc(t)}</span>" for t in types[:3])
+            out.append(f"""<div class="npc-dlg"{pad}>
+  <div class="npc-dlg-head"><b>{esc(page_name)}</b>{typ}{chk}{act}</div>
+  <pre class="npc-say">{esc(say)}</pre>
+  <div class="npc-btns">""")
+            for b in Data.npc_buttons.get(page_name, []):
+                dest = b.get("DestinationPage")
+                bid = b.get("ButtonID")
+                out.append(f'<div class="npc-btn" data-bid="{bid}">[{bid}] → <span class="mono">{esc(dest)}</span></div>')
+                render_page(dest, depth + 1)
+            out.append("</div></div>")
+
+        render_page(entry_page, 0)
+        return "".join(out)
 
     # ---------------- 任务
     def quests(self, qs):
@@ -1424,7 +1811,7 @@ class Handler(BaseHTTPRequestHandler):
         for qq in Data.quests:
             if not ver_matches(qq.get("ver"), ver):
                 continue
-            rows += (f"<tr><td>{esc(qq.get('zh') or qq['name'])} <span class='mono'>{esc(qq['name'])}</span> {ver_badges(qq.get('ver'))}</td>"
+            rows += (f"<tr><td><a href='/quest/{urllib.parse.quote(qq['name'])}'>{esc(qq.get('zh') or qq['name'])}</a> <span class='mono'>{esc(qq['name'])}</span> {ver_badges(qq.get('ver'))}</td>"
                      f"<td>{esc(qq.get('type',''))}</td><td>{esc(qq.get('npc',''))}</td>"
                      f"<td>{esc(qq.get('desc',''))}</td><td>{esc(qq.get('rewards',''))}</td></tr>")
         body = f"""<h1>任务 · {len(Data.quests)} 个</h1>
@@ -1434,6 +1821,287 @@ class Handler(BaseHTTPRequestHandler):
 </form>
 <table><tr><th>任务</th><th>类型</th><th>接取</th><th>说明</th><th>奖励</th></tr>{rows or '<tr><td colspan="5" class="none">无匹配条目</td></tr>'}</table>"""
         self._send(page("任务", body, "quests"))
+
+    # ---------------- 任务详情
+    def quest_detail(self, qname):
+        w, r, s = Data.get()
+        # 先看视图数据
+        qv = None
+        for qq in Data.quests:
+            if qq["name"] == qname or (qq.get("zh") or "") == qname:
+                qv = qq
+                break
+        qf = Data.quest_by_name.get(qname)
+        if not qv and not qf:
+            self._send(page("任务", f"<h1>未找到</h1><p class='lead'>{esc(qname)}</p>"), code=404)
+            return
+        disp = (qv or {}).get("zh") or qf.get("QuestName") if qf else (qv or {}).get("zh")
+        if not disp: disp = qname
+        name_html = f' <span class="mono">{esc(qname)}</span>' if disp != qname else ""
+        # 步骤
+        tasks = Data.quest_task_by_q.get(qname, [])
+        task_rows = ""
+        for t in tasks:
+            tdesc = (t.get("Task") or "") + (" " + esc(str(t.get("ItemParameter"))) if t.get("ItemParameter") else "")
+            mobs = t.get("MonsterDetails") or []
+            mob_s = " · ".join(str(m) for m in mobs if m)
+            amt = t.get("Amount")
+            task_rows += f"<tr><td>{esc(tdesc)}</td><td>{esc('×'+str(amt)) if amt else '—'}</td><td>{esc(mob_s)}</td></tr>"
+        tasks_html = f"""<h2>任务步骤（{len(tasks)}）</h2>
+<table><tr><th>步骤</th><th>数量</th><th>目标怪物</th></tr>{task_rows or '<tr><td colspan="3" class="none">无步骤</td></tr>'}</table>"""
+        # 需求
+        reqs = Data.quest_req_by_q.get(qname, [])
+        req_rows = "".join(
+            f"<tr><td>{esc(r.get('Requirement',''))}</td><td>{esc(r.get('IntParameter1') or '')}</td><td>{esc(r.get('QuestParameter') or '')}</td><td>{esc(r.get('Class') or '')}</td></tr>"
+            for r in reqs)
+        reqs_html = f"""<h2>前置需求（{len(reqs)}）</h2>
+<table><tr><th>需求</th><th>参数</th><th>关联任务</th><th>职业</th></tr>{req_rows or '<tr><td colspan="4" class="none">无前置</td></tr>'}</table>"""
+        # 奖励
+        rws = Data.quest_reward_by_q.get(qname, [])
+        rw_rows = "".join(
+            f"<tr><td>{item_link(r.get('Item') or '') if r.get('Item') and r.get('Item') != 'Experience' else esc(r.get('Item') or '')}</td>"
+            f"<td>{esc('×'+str(r.get('Amount'))) if r.get('Amount') else '—'}</td>"
+            f"<td>{esc('可选' if r.get('Choice') else '固定')}</td><td>{esc(r.get('Class') or '')}</td></tr>"
+            for r in rws)
+        rws_html = f"""<h2>奖励（{len(rws)}）</h2>
+<table><tr><th>奖励</th><th>数量</th><th>类型</th><th>职业</th></tr>{rw_rows or '<tr><td colspan="4" class="none">无奖励</td></tr>'}</table>"""
+        # 详情
+        acc = (qf or {}).get("AcceptText") or ""
+        com = (qf or {}).get("CompleteText") or ""
+        details_html = ""
+        if acc or com:
+            details_html = f"""<h2>对话</h2>
+<div class="panel"><h3>接取</h3><pre class="npc-say">{esc(acc)}</pre></div>
+<div class="panel"><h3>完成</h3><pre class="npc-say">{esc(com)}</pre></div>"""
+        body = f"""<p class="crumbs"><a href="/quests">任务</a> › {esc(disp)}</p>
+<h1>{esc(disp)}{name_html} {ver_badges((qv or {}).get('ver'))}</h1>
+<p class="lead">类型 {esc((qv or {}).get('type') or (qf or {}).get('QuestType') or '—')} · 接取 {esc((qv or {}).get('npc') or '—')}</p>
+<p>{esc((qv or {}).get('desc') or '—')}</p>
+{details_html}
+{tasks_html}
+{reqs_html}
+{rws_html}"""
+        self._send(page(f"任务 {disp}", body, "quests"))
+
+    # ---------------- 职业成长
+    def classes(self, qs):
+        CLS_ZH = {"Warrior": "战士", "Wizard": "法师", "Taoist": "道士", "Assassin": "刺客"}
+        cls_rows = ""
+        for cls_name in ["Warrior", "Wizard", "Taoist", "Assassin"]:
+            lst = Data.base_by_cls.get(cls_name, [])
+            if not lst: continue
+            rows = "".join(
+                f"<tr><td>{b.get('Level')}</td><td>{b.get('Health')}</td><td>{b.get('Mana')}</td>"
+                f"<td>{b.get('MinAC')}-{b.get('MaxAC')}</td><td>{b.get('MinDC')}-{b.get('MaxDC')}</td>"
+                f"<td>{b.get('MinMC')}-{b.get('MaxMC')}</td><td>{b.get('MinSC')}-{b.get('MaxSC')}</td></tr>"
+                for b in sorted(lst, key=lambda x: x.get("Level", 0)))
+            cls_rows += f"""<h2>{esc(CLS_ZH.get(cls_name, cls_name))}（{len(lst)} 级）</h2>
+<table><tr><th>等级</th><th>生命</th><th>魔法</th><th>物防</th><th>物攻</th><th>魔攻</th><th>道术</th></tr>{rows}</table>"""
+        body = f"""<h1>职业成长 · 基础属性</h1>
+<p class="lead">来自 BaseStat 表（{len(Data.base_stats)} 条），四职业 × 每级 HP/MP/攻防。</p>
+{cls_rows}"""
+        self._send(page("职业成长", body, "classes"))
+
+    # ---------------- 传送网络
+    def moves(self, qs):
+        rows = ""
+        for mv in Data.movements:
+            src = mv.get("SourceRegion") or ""
+            dst = mv.get("DestinationRegion") or ""
+            icon = mv.get("Icon") or ""
+            need = mv.get("NeedItem") or ""
+            reqc = mv.get("RequiredClass") or ""
+            eff = mv.get("Effect") or ""
+            rows += (f"<tr><td>{esc(src)}</td><td>{esc(dst)}</td>"
+                     f"<td>{esc(icon)}</td><td>{item_link(need)}</td>"
+                     f"<td>{esc(reqc)}</td><td>{esc(eff)}</td></tr>")
+        body = f"""<h1>传送网络 · {len(Data.movements)} 条</h1>
+<p class="lead">来自 MovementInfo 表：源区域 → 目标区域，图标/需求物品/职业限制/效果。</p>
+<table><tr><th>源区域</th><th>目标区域</th><th>图标</th><th>需求物品</th><th>职业</th><th>效果</th></tr>{rows or '<tr><td colspan="6" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("传送网络", body, "moves"))
+
+    # ---------------- 套装
+    def sets_page(self, qs):
+        cards = ""
+        for name, s in sorted(Data.sets.items()):
+            items = s.get("Items") or []
+            n_items = len(items)
+            stats = s.get("SetStats") or []
+            n_stat = len(stats)
+            cards += f"""<div class="card"><a href="/set/{urllib.parse.quote(name)}">
+  <div><span class="name">{esc(name)}</span></div>
+  <div class="sub">{n_items} 件装备 · {n_stat} 条套装属性</div>
+</a></div>"""
+        body = f"""<h1>套装 · {len(Data.sets)} 套</h1>
+<p class="lead">来自 SetInfo / SetInfoStat 表：套装装备 + 套装属性。</p>
+<div class="cards">{cards or '<p class="none">无数据</p>'}</div>"""
+        self._send(page("套装", body, "sets"))
+
+    def set_detail(self, name):
+        s = Data.sets.get(name)
+        if not s:
+            self._send(page("套装", f"<h1>未找到</h1><p class='lead'>{esc(name)}</p>"), code=404)
+            return
+        items = s.get("Items") or []
+        item_rows = "".join(f"<tr><td>{item_link(it)}</td></tr>" for it in items)
+        stats = Data.set_stats_by_name.get(name, [])
+        stat_rows = "".join(
+            f"<tr><td>{esc(ss.get('Stat') or '')}</td><td>{esc(ss.get('Amount') or '')}</td>"
+            f"<td>{esc(ss.get('Class') or '')}</td><td>{esc(ss.get('Level') or '')}</td></tr>"
+            for ss in stats)
+        body = f"""<p class="crumbs"><a href="/sets">套装</a> › {esc(name)}</p>
+<h1>套装 {esc(name)}</h1>
+<h2>组成装备（{len(items)}）</h2>
+<table><tr><th>装备</th></tr>{item_rows or '<tr><td class="none">无</td></tr>'}</table>
+<h2>套装属性（{len(stats)}）</h2>
+<table><tr><th>属性</th><th>数值</th><th>职业</th><th>等级</th></tr>{stat_rows or '<tr><td colspan="4" class="none">无</td></tr>'}</table>"""
+        self._send(page(f"套装 {name}", body, "sets"))
+
+    # ---------------- 矿点
+    def mines_page(self, qs):
+        rows = ""
+        for m in Data.mines:
+            rows += (f"<tr><td>{file_link(str(m.get('Map','')) + '.map')}</td>"
+                     f"<td>{item_link(m.get('Item') or '')}</td>"
+                     f"<td>{esc(m.get('Chance'))}</td><td>{esc(m.get('Quantity'))}</td>"
+                     f"<td>{esc(m.get('RestockTimeInMinutes'))}</td></tr>")
+        body = f"""<h1>矿点 · {len(Data.mines)} 处</h1>
+<p class="lead">来自 MineInfo 表：地图 × 矿石 × 产出概率 × 数量 × 刷新时间。</p>
+<table><tr><th>地图</th><th>矿石</th><th>概率</th><th>数量</th><th>刷新(分)</th></tr>{rows or '<tr><td colspan="5" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("矿点", body, "mines"))
+
+    # ---------------- 安全区
+    def safezones_page(self, qs):
+        rows = ""
+        for z in Data.safezones:
+            rows += (f"<tr><td>{esc(z.get('Region') or '')}</td><td>{esc(z.get('BindRegion') or '')}</td>"
+                     f"<td>{esc(z.get('StartClass') or '')}</td>"
+                     f"<td>{'<span class=bad>红区</span>' if z.get('RedZone') else '安全'}</td>"
+                     f"<td>{esc(z.get('Border') or '')}</td></tr>")
+        body = f"""<h1>安全区 · {len(Data.safezones)} 处</h1>
+<p class="lead">来自 SafeZoneInfo 表：安全/红区、绑定复活点、职业限制。</p>
+<table><tr><th>区域</th><th>绑定复活</th><th>职业</th><th>类型</th><th>边界</th></tr>{rows or '<tr><td colspan="5" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("安全区", body, "mines"))
+
+    # ---------------- 声望
+    def fames_page(self, qs):
+        rows = ""
+        for f in Data.fames:
+            stats = [s for s in Data.fame_stats if s.get("Fame") == f.get("Name")]
+            rws = [r for r in Data.fame_rewards if r.get("Fame") == f.get("Name")]
+            stat_s = " · ".join(f"{esc(s.get('Stat'))} +{esc(s.get('Amount'))}" for s in stats)
+            rw_s = " · ".join(f"{item_link(r.get('Item') or '')}×{esc(r.get('Amount'))}" for r in rws)
+            rows += (f"<tr><td>{esc(f.get('Name') or '')}</td>"
+                     f"<td>{esc(f.get('Shape') or '')}</td>"
+                     f"<td>{esc(f.get('Cost') or '')}</td>"
+                     f"<td>{esc(f.get('Description') or '')}</td>"
+                     f"<td>{stat_s or '—'}</td><td>{rw_s or '—'}</td></tr>")
+        body = f"""<h1>声望 · {len(Data.fames)} 级</h1>
+<p class="lead">来自 FameInfo / FameInfoStat / FameInfoReward 表：每级声望的属性加成与物品奖励。</p>
+<table><tr><th>声望</th><th>图标</th><th>成本</th><th>说明</th><th>属性加成</th><th>奖励</th></tr>{rows or '<tr><td colspan="6" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("声望", body, "mines"))
+
+    # ---------------- 货币
+    def currencies_page(self, qs):
+        rows = ""
+        for c in Data.currencies:
+            rows += (f"<tr><td>{esc(c.get('Name') or '')}</td><td>{esc(c.get('Abbreviation') or '')}</td>"
+                     f"<td>{esc(c.get('Type') or '')}</td><td>{esc(c.get('Category') or '')}</td>"
+                     f"<td>{item_link(c.get('DropItem') or '')}</td></tr>")
+        body = f"""<h1>货币 · {len(Data.currencies)} 种</h1>
+<p class="lead">来自 CurrencyInfo 表：货币体系与兑换物品。</p>
+<table><tr><th>名称</th><th>缩写</th><th>类型</th><th>类别</th><th>掉落物品</th></tr>{rows or '<tr><td colspan="5" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("货币", body, "mines"))
+
+    # ---------------- 武器锻造
+    def crafts_page(self, qs):
+        rows = ""
+        for c in Data.crafts:
+            rows += (f"<tr><td>{esc(c.get('RequiredClass') or '')}</td><td>{esc(c.get('Stat') or '')}</td>"
+                     f"<td>{esc(c.get('MinValue') or '')}-{esc(c.get('MaxValue') or '')}</td>"
+                     f"<td>{esc(c.get('Weight') or '')}</td></tr>")
+        body = f"""<h1>武器锻造 · {len(Data.crafts)} 条</h1>
+<p class="lead">来自 WeaponCraftStatInfo 表：锻造附加属性池。</p>
+<table><tr><th>职业</th><th>属性</th><th>数值范围</th><th>权重</th></tr>{rows or '<tr><td colspan="4" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("武器锻造", body, "mines"))
+
+    # ---------------- 修炼
+    def discipline_page(self, qs):
+        rows = ""
+        for d in Data.disciplines:
+            rows += (f"<tr><td>{esc(d.get('Level') or '')}</td>"
+                     f"<td>{esc(d.get('RequiredLevel') or '')}</td>"
+                     f"<td>{esc(d.get('RequiredExperience') or '')}</td>"
+                     f"<td>{esc(d.get('RequiredGold') or '')}</td>"
+                     f"<td>{esc(d.get('FocusPoints') or '')}</td></tr>")
+        body = f"""<h1>修炼 · {len(Data.disciplines)} 级</h1>
+<p class="lead">来自 DisciplineInfo 表：每级专精需求与专注点。</p>
+<table><tr><th>等级</th><th>需求等级</th><th>需求经验</th><th>需求金币</th><th>专注点</th></tr>{rows or '<tr><td colspan="5" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("修炼", body, "mines"))
+
+    # ---------------- 沙巴克
+    def castle_page(self, qs):
+        rows = ""
+        for c in Data.castle:
+            rows += (f"<tr><td>{esc(c.get('Name') or '')}</td><td>{file_link(str(c.get('Map','')) + '.map')}</td>"
+                     f"<td>{esc(c.get('StartTime') or '')}</td><td>{esc(c.get('Duration') or '')}</td>"
+                     f"<td>{esc(c.get('CastleRegion') or '')}</td><td>{esc(c.get('ObjectiveRegion') or '')}</td>"
+                     f"<td>{esc(c.get('AttackSpawnRegion') or '')}</td>"
+                     f"<td>{item_link(c.get('Item') or '')}</td><td>{monster_link_by_name(c.get('Monster') or '')}</td>"
+                     f"<td>{esc(c.get('Discount') or '')}</td></tr>")
+        body = f"""<h1>沙巴克城堡</h1>
+<p class="lead">来自 CastleInfo 表：攻城时间、区域与攻防目标。</p>
+<table><tr><th>城堡</th><th>地图</th><th>开始</th><th>时长</th><th>城内区</th><th>目标区</th><th>攻方刷点</th><th>物品</th><th>怪物</th><th>折扣</th></tr>{rows or '<tr><td colspan="10" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("沙巴克", body, "mines"))
+
+    # ---------------- 守卫
+    def guards_page(self, qs):
+        rows = ""
+        for g in Data.guards:
+            rows += (f"<tr><td>{file_link(str(g.get('Map','')) + '.map')}</td>"
+                     f"<td>{monster_link_by_name(g.get('Monster') or '')}</td>"
+                     f"<td>{esc(g.get('X'))},{esc(g.get('Y'))}</td><td>{esc(g.get('Direction') or '')}</td></tr>")
+        body = f"""<h1>守卫 · {len(Data.guards)} 名</h1>
+<p class="lead">来自 GuardInfo 表：地图守卫点位。</p>
+<table><tr><th>地图</th><th>怪物</th><th>坐标</th><th>方向</th></tr>{rows or '<tr><td colspan="4" class="none">无数据</td></tr>'}</table>"""
+        self._send(page("守卫", body, "mines"))
+
+    # ---------------- 全局搜索
+    def search(self, qs):
+        q = urllib.parse.parse_qs(qs)
+        kw = (q.get("q", [""])[0]).strip().lower()
+        if not kw:
+            self._send(page("搜索", """<h1>全局搜索</h1>
+<p class="lead">搜索怪物/装备/技能/NPC/任务/商店/套装。</p>
+<form class="filters" method="get" action="/search"><input type="text" name="q" placeholder="输入关键词…"><button type="submit">搜索</button></form>""", "home"))
+            return
+        hits = []
+        w, r, s = Data.get()
+        def add(kind, name, href, brief):
+            hay = f"{name} {brief}".lower()
+            if kw in hay:
+                hits.append((kind, name, href, brief))
+        for m in Data.monsters:
+            add("怪物", m.get("zh") or m["name"], f"/monster/{urllib.parse.quote(m['name'])}", f"{m['name']} {m.get('level','')}")
+        for i in Data.items:
+            add("装备", i.get("zh") or i["name"], f"/item/{i['id']}", f"{i['name']} {i.get('type_zh') or i.get('category') or ''}")
+        for sk in Data.skills:
+            add("技能", sk.get("zh") or sk["name"], f"/skill/{urllib.parse.quote(sk['name'])}", f"{sk['name']} {sk.get('klass') or ''}")
+        for n in Data.npcs:
+            add("NPC", n.get("zh") or n["name"], f"/npc/{n['id']}", f"{n['name']} {n.get('map') or ''}")
+        for qq in Data.quests:
+            add("任务", qq.get("zh") or qq["name"], f"/quest/{urllib.parse.quote(qq['name'])}", f"{qq['name']} {qq.get('type') or ''}")
+        for si, sh in enumerate(s["stores"]):
+            add("商店", sh.get("name_zh") or "", f"/store/{si}", f"{sh.get('kind_zh') or ''} {sh.get('name') or ''}")
+        for name in Data.sets:
+            add("套装", name, f"/set/{urllib.parse.quote(name)}", "")
+        rows = "".join(
+            f"<tr><td><span class='chip'>{esc(k)}</span></td><td><a href='{href}'>{esc(name)}</a></td><td>{esc(brief)}</td></tr>"
+            for k, name, href, brief in hits[:200])
+        body = f"""<h1>全局搜索「{esc(kw)}」· {len(hits)} 条</h1>
+<form class="filters" method="get" action="/search"><input type="text" name="q" value="{esc(kw)}"><button type="submit">搜索</button></form>
+<table><tr><th>类型</th><th>名称</th><th>简述</th></tr>{rows or '<tr><td colspan="3" class="none">无结果</td></tr>'}</table>"""
+        self._send(page(f"搜索 {kw}", body, "home"))
 
     # ---------------- 宠物与坐骑
     def companions(self, qs):
@@ -1459,13 +2127,27 @@ class Handler(BaseHTTPRequestHandler):
   <div class="sub">宠物 #{c['monster_id']} · 对应怪物 {mlink}</div>
   <div class="sub">价格 {c.get('price') or '—'} 金币 · {avail}{img_note}</div>
 </a></div>"""
+        # 宠物技能 (每级可学属性上限) + 成长表
+        sk_rows = "".join(
+            f"<tr><td>{esc(sk.get('Level') or '')}</td><td>{esc(sk.get('StatType') or '')}</td>"
+            f"<td>{esc(sk.get('MaxAmount') or '')}</td><td>{esc(sk.get('Weight') or '')}</td></tr>"
+            for sk in sorted(Data.comp_skills, key=lambda x: x.get("Level", 0)))
+        lv_rows = "".join(
+            f"<tr><td>{esc(lv.get('Level') or '')}</td><td>{esc(lv.get('MaxExperience') or '')}</td>"
+            f"<td>{esc(lv.get('InventorySpace') or '')}</td><td>{esc(lv.get('InventoryWeight') or '')}</td>"
+            f"<td>{esc(lv.get('MaxHunger') or '')}</td></tr>"
+            for lv in sorted(Data.comp_levels, key=lambda x: x.get("Level", 0)))
         body = f"""<h1>宠物与坐骑 · {len(Data.companions)} 种</h1>
 <p class="lead">来自 CompanionInfo 表。对应怪物条目见怪物图鉴。</p>
 <form class="filters" method="get" action="/companions">
   {ver_select(ver)}
   <button type="submit">筛选</button>
 </form>
-<div class="cards">{cards or '<p class="none">无匹配条目</p>'}</div>"""
+<div class="cards">{cards or '<p class="none">无匹配条目</p>'}</div>
+<h2>宠物技能（{len(Data.comp_skills)} 条 · 每级可学属性上限）</h2>
+<table><tr><th>等级</th><th>属性</th><th>上限</th><th>权重</th></tr>{sk_rows or '<tr><td colspan="4" class="none">无数据</td></tr>'}</table>
+<h2>宠物成长（{len(Data.comp_levels)} 级）</h2>
+<table><tr><th>等级</th><th>经验</th><th>背包格</th><th>负重</th><th>饱食度</th></tr>{lv_rows or '<tr><td colspan="5" class="none">无数据</td></tr>'}</table>"""
         self._send(page("宠物与坐骑", body, "companions"))
 
     # ---------------- 商店
@@ -1781,7 +2463,11 @@ class Handler(BaseHTTPRequestHandler):
     # ---------------- 条目图片（/img/<board>/<id>.png 或 /img/<board>/<id>/<frame>.png, 磁盘缓存）
     def img(self, path):
         parts = path.split("/")
-        if len(parts) == 4 and parts[0] == "mon_anim":
+        if len(parts) == 5 and parts[0] == "mon_anim":
+            # /img/mon_anim/<id>/<action>/<dir>/<frame>.png
+            board, sid, act, dirn, fname = parts
+            iid = sid
+        elif len(parts) == 4 and parts[0] == "mon_anim":
             board, sid, act, fname = parts
             iid = sid
         elif len(parts) == 3 and parts[0] in IMG_BOARDS:
@@ -1794,7 +2480,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(page("404", f"<p class='lead'>图片不存在: {esc(path)}</p>"), code=404)
             return
         if iid.lstrip("-").isdigit():
-            if len(parts) == 4:
+            if len(parts) == 5:
+                png = os.path.join(IMGS_DIR, board, str(int(iid)), act, dirn, fname)
+            elif len(parts) == 4:
                 png = os.path.join(IMGS_DIR, board, str(int(iid)), act, fname)
             elif len(parts) == 3:
                 # /img/<board>/<id>/<frame>.png → <board>/<id>/<frame>.png

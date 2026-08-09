@@ -20,6 +20,7 @@ string dumpDir = null;
 string viewDir = null;
 string imagesOut = null;
 string storesOut = null;
+string allOut = null;
 string minimapOut = null;
 string bc7Lib = null, bc7Frame = null, bc7Out = null;
 
@@ -57,6 +58,11 @@ for (int i = 0; i < args.Length; i++)
         storesOut = args[++i];
         continue;
     }
+    if (args[i] == "--all")
+    {
+        allOut = args[++i];
+        continue;
+    }
     root = args[i];
 }
 if (!Path.IsPathRooted(root)) root = Path.GetFullPath(root);
@@ -88,7 +94,7 @@ if (minimapOut != null)
     return;
 }
 
-if (dumpDir == null && viewDir == null && imagesOut == null && storesOut == null)
+if (dumpDir == null && viewDir == null && imagesOut == null && storesOut == null && allOut == null)
 {
     void Dump(string label, int count)
         => Console.WriteLine($"{label,-12} {count,6}");
@@ -108,6 +114,13 @@ if (storesOut != null)
 {
     GenerateStores(session, storesOut);
     Console.WriteLine($"商店数据 -> {storesOut}");
+    return;
+}
+
+if (allOut != null)
+{
+    GenerateAll(session, allOut);
+    Console.WriteLine($"全量数据 -> {allOut}");
     return;
 }
 
@@ -1064,4 +1077,108 @@ static void GenerateStores(Session session, string outPath)
     });
     File.WriteAllText(outPath, json);
     Console.WriteLine($"NPC {npcs.Count} / 货品 {goods.Count} / 商店页 {obj.storeCount}");
+}
+
+// ---------- 通用全量 JSON 导出（供 WikiServer 等消费） ----------
+
+static void GenerateAll(Session session, string outPath)
+{
+    IList Coll(Type t) => (IList)session.GetCollection(t).GetType().GetField("Binding").GetValue(session.GetCollection(t));
+    string RefName(DBObject db) => db == null ? null : IdentityOf(db);
+
+    var all = new Dictionary<string, object>();
+    var seen = new HashSet<Type>();
+    var types = session.Assemblies
+        .SelectMany(a => a.GetTypes())
+        .Where(t => t.IsSubclassOf(typeof(DBObject)) && !t.IsAbstract)
+        .Where(t => t.GetCustomAttribute<UserObjectAttribute>() == null)
+        .Distinct()
+        .OrderBy(t => t.Name)
+        .ToList();
+
+    foreach (Type type in types)
+    {
+        IList binding;
+        try { binding = Coll(type); }
+        catch { continue; }
+        int count = binding.Count;
+        if (count == 0) continue;
+
+        var props = type.GetProperties();
+        var rows = new List<Dictionary<string, object>>();
+        for (int i = 0; i < count; i++)
+        {
+            DBObject ob = (DBObject)binding[i];
+            var row = new Dictionary<string, object> { ["_index"] = ob.Index };
+            string ident = IdentityOf(ob);
+            if (ident.Length > 0) row["_identity"] = ident;
+
+            foreach (PropertyInfo p in props)
+            {
+                if (ShouldSkip(p)) continue;
+                object v;
+                try { v = p.GetValue(ob); }
+                catch { continue; }
+                if (v == null) continue;
+
+                if (v is DBObject dbo) { row[p.Name] = RefName(dbo); continue; }
+                if (v is Stats stats) { row[p.Name] = string.Join(", ", stats.Values.Select(kv => $"{kv.Key} {kv.Value}")); continue; }
+                if (v is DateTime dt) { row[p.Name] = dt.ToString("yyyy-MM-dd HH:mm:ss"); continue; }
+                if (v is byte[] bytes) { row[p.Name] = Convert.ToHexString(bytes.Take(Math.Min(bytes.Length, 16)).ToArray()) + (bytes.Length > 16 ? $"…({bytes.Length}B)" : ""); continue; }
+                if (p.PropertyType.IsEnum) { row[p.Name] = v.ToString(); continue; }
+                if (p.PropertyType.IsArray)
+                {
+                    var arr = (Array)v;
+                    if (arr.Length == 0) continue;
+                    var items = new List<object>();
+                    foreach (object it in arr)
+                    {
+                        if (it != null && it.GetType().Name == "Point")
+                        {
+                            var x = it.GetType().GetProperty("X")?.GetValue(it);
+                            var y = it.GetType().GetProperty("Y")?.GetValue(it);
+                            items.Add(new { x, y });
+                            continue;
+                        }
+                        if (it is DBObject el) { items.Add(RefName(el)); continue; }
+                        if (it is Stats st) { items.Add(string.Join(", ", st.Values.Select(kv => $"{kv.Key} {kv.Value}"))); continue; }
+                        items.Add(it?.ToString());
+                    }
+                    row[p.Name] = items;
+                    continue;
+                }
+                if (p.PropertyType.IsGenericType &&
+                    p.PropertyType.GetGenericTypeDefinition() == typeof(DBBindingList<>))
+                {
+                    IList list = (IList)v;
+                    if (list.Count == 0) continue;
+                    var names = new List<object>();
+                    foreach (object it in list)
+                        names.Add(it is DBObject el ? RefName(el) : it?.ToString());
+                    row[p.Name] = names;
+                    continue;
+                }
+                if (v is System.Collections.IEnumerable && v is not string)
+                {
+                    var items = new List<object>();
+                    foreach (object it in (System.Collections.IEnumerable)v)
+                        items.Add(it is DBObject el ? RefName(el) : it?.ToString());
+                    row[p.Name] = items;
+                    continue;
+                }
+                row[p.Name] = v;
+            }
+            rows.Add(row);
+        }
+
+        all[type.Name] = new { count, rows };
+    }
+
+    string json = System.Text.Json.JsonSerializer.Serialize(all, new System.Text.Json.JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    });
+    File.WriteAllText(outPath, json);
+    Console.WriteLine($"导出集合 {all.Count} 个");
 }
