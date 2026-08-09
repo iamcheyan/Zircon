@@ -16017,6 +16017,18 @@
           "fact": "The corresponding vertical coordinate is y+0x29 plus a row/record difference multiplied by 36 pixels."
         },
         {
+          "va": "0x0042EC8C-0x0042EE2A",
+          "fact": "The selected item path builds source and destination rectangles, converts their integer extents through shared float helper 0x00466800, and composites with context 0x005600FC via 0x004542F0. This is the original item-icon/selection pipeline; it is not a plain 36px CSS slot fill."
+        },
+        {
+          "va": "0x0042EE62",
+          "fact": "The inventory paint formats a numeric text value through 0x0046811C using data string VA 0x0047A214 (the executable stores the format token '%d'); the surrounding positions are window.x+0x41 and window.y+0x11A/0x12B candidates."
+        },
+        {
+          "va": "0x0042EFC4-0x0042F003",
+          "fact": "The same paint branch draws a second numeric/text pair through 0x0045DE50 with fixed text color/format arguments and rectangles derived from window.x+0x86/+0xF0 and window.y+0x18/+0x26; field names remain unresolved."
+        },
+        {
           "va": "0x0042F150",
           "fact": "The inventory hit-test/search loop scans both axes in 36-pixel steps from 0 through 180, proving a 6-column by 6-row, 36-slot grid."
         },
@@ -16034,7 +16046,8 @@
         "Three child control construction calls and their normal/state frame pairs are primary static evidence.",
         "The item draw path contains a 36-pixel spacing constant.",
         "The original constructor caller passes the same GameInter resource handle to all three child controls, so Frames 161/162, 264/265 and 267/268 are GameInter controls in this build.",
-        "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count."
+        "The inventory grid is exactly 6 columns x 6 rows, not an inferred visual count.",
+        "Selected-item rendering is a source/destination rectangle composition through 0x00466800 and 0x004542F0, with static text formatting call sites separately recovered."
       ],
       "pending": [
         "The semantic meaning of the x+0xF8/y-0xA5 draw call and all text/icon column fields.",
