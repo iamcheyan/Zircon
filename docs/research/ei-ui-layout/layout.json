@@ -16518,6 +16518,238 @@
         "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
         "The exact text/font/color draw order around the composited NPC dialogue content."
       ]
+    },
+    {
+      "source": {
+        "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+        "method": "static x86 constructor/control-call analysis",
+        "evidence_level": "primary-static"
+      },
+      "windows": [
+        {
+          "id": "window.group",
+          "constructor_va": "0x004242AB",
+          "main_init": "0x00427811",
+          "background": {
+            "file": "Data/GameInter.wil",
+            "frame": 900,
+            "constructor_size": [
+              256,
+              244
+            ]
+          },
+          "window_origin": [
+            272,
+            123
+          ],
+          "can_move": true,
+          "child_controls": [
+            {
+              "call_va": "0x004242AB",
+              "frame_pair": [
+                161,
+                162
+              ],
+              "position": [
+                226,
+                214
+              ],
+              "semantic_candidate": "close/confirm"
+            },
+            {
+              "call_va": "0x004242D4",
+              "frame_pair": [
+                910,
+                911
+              ],
+              "position": [
+                17,
+                197
+              ],
+              "semantic_candidate": "member/action slot 1"
+            },
+            {
+              "call_va": "0x004242FD",
+              "frame_pair": [
+                912,
+                913
+              ],
+              "position": [
+                80,
+                197
+              ],
+              "semantic_candidate": "member/action slot 2"
+            },
+            {
+              "call_va": "0x00424329",
+              "frame_pair": [
+                914,
+                915
+              ],
+              "position": [
+                159,
+                197
+              ],
+              "semantic_candidate": "member/action slot 3"
+            },
+            {
+              "call_va": "0x0042434F",
+              "frame_pair": [
+                920,
+                921
+              ],
+              "position": [
+                9,
+                52
+              ],
+              "semantic_candidate": "group operation/tab"
+            }
+          ],
+          "pending": [
+            "member text/icon draw order",
+            "whether all 3 action slots are always visible",
+            "runtime open-state transitions"
+          ]
+        },
+        {
+          "id": "window.guild-candidate",
+          "constructor_va": "0x00424EC0",
+          "main_init": "0x004277E8",
+          "background": {
+            "file": "Data/GameInter.wil",
+            "frame": 600,
+            "constructor_size": [
+              596,
+              446
+            ]
+          },
+          "window_origin": [
+            102,
+            22
+          ],
+          "can_move": true,
+          "child_controls": [
+            {
+              "call_va": "0x00424EC6",
+              "frame_pair": [
+                161,
+                162
+              ],
+              "position": [
+                260,
+                298
+              ],
+              "semantic_candidate": "close/confirm"
+            },
+            {
+              "call_va": "0x00424EF3",
+              "frame_pair": [
+                610,
+                611
+              ],
+              "position": [
+                159,
+                50
+              ],
+              "semantic_candidate": "guild tab/action"
+            },
+            {
+              "call_va": "0x00424F27",
+              "frame_pair": [
+                612,
+                613
+              ],
+              "position": [
+                567,
+                413
+              ],
+              "semantic_candidate": "bottom-right action"
+            },
+            {
+              "call_va": "0x00424F54",
+              "frame_pair": [
+                614,
+                615
+              ],
+              "position": [
+                196,
+                50
+              ],
+              "semantic_candidate": "guild tab/action"
+            },
+            {
+              "call_va": "0x00424F7B",
+              "frame_pair": [
+                616,
+                617
+              ],
+              "position_expression": {
+                "x": "window.y+123",
+                "y": "window.y+123"
+              },
+              "evidence_level": "primary-static-register-ambiguous"
+            },
+            {
+              "call_va": "0x00424FA3",
+              "frame_pair": [
+                618,
+                619
+              ],
+              "position_expression": {
+                "x": "window.x+196",
+                "y": "arg8"
+              },
+              "evidence_level": "primary-static-register-ambiguous"
+            },
+            {
+              "call_va": "0x00424FC3",
+              "frame_pair": [
+                620,
+                621
+              ],
+              "position_expression": {
+                "x": "window.y+123",
+                "y": "window.y+50"
+              },
+              "evidence_level": "primary-static-register-ambiguous"
+            },
+            {
+              "call_va": "0x00424FEB",
+              "frame_pair": [
+                622,
+                623
+              ],
+              "position_expression": {
+                "x": "arg8",
+                "y": "ecx+1360"
+              },
+              "evidence_level": "primary-static-register-ambiguous"
+            },
+            {
+              "call_va": "0x0042500F",
+              "frame_pair": [
+                624,
+                625
+              ],
+              "position": [
+                196,
+                50
+              ],
+              "semantic_candidate": "guild tab/action"
+            }
+          ],
+          "pending": [
+            "four ambiguous register-flow positions",
+            "guild member list row geometry",
+            "exact tab labels and business semantics"
+          ]
+        }
+      ],
+      "confirmed": [
+        "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
+        "Group controls have five usable window-relative coordinate candidates.",
+        "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
+      ]
     }
   ],
   "map_ui_evidence": {
@@ -16903,6 +17135,238 @@
       "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55.",
       "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
       "The exact text/font/color draw order around the composited NPC dialogue content."
+    ]
+  },
+  "social_window_evidence": {
+    "source": {
+      "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Mir3.exe",
+      "method": "static x86 constructor/control-call analysis",
+      "evidence_level": "primary-static"
+    },
+    "windows": [
+      {
+        "id": "window.group",
+        "constructor_va": "0x004242AB",
+        "main_init": "0x00427811",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 900,
+          "constructor_size": [
+            256,
+            244
+          ]
+        },
+        "window_origin": [
+          272,
+          123
+        ],
+        "can_move": true,
+        "child_controls": [
+          {
+            "call_va": "0x004242AB",
+            "frame_pair": [
+              161,
+              162
+            ],
+            "position": [
+              226,
+              214
+            ],
+            "semantic_candidate": "close/confirm"
+          },
+          {
+            "call_va": "0x004242D4",
+            "frame_pair": [
+              910,
+              911
+            ],
+            "position": [
+              17,
+              197
+            ],
+            "semantic_candidate": "member/action slot 1"
+          },
+          {
+            "call_va": "0x004242FD",
+            "frame_pair": [
+              912,
+              913
+            ],
+            "position": [
+              80,
+              197
+            ],
+            "semantic_candidate": "member/action slot 2"
+          },
+          {
+            "call_va": "0x00424329",
+            "frame_pair": [
+              914,
+              915
+            ],
+            "position": [
+              159,
+              197
+            ],
+            "semantic_candidate": "member/action slot 3"
+          },
+          {
+            "call_va": "0x0042434F",
+            "frame_pair": [
+              920,
+              921
+            ],
+            "position": [
+              9,
+              52
+            ],
+            "semantic_candidate": "group operation/tab"
+          }
+        ],
+        "pending": [
+          "member text/icon draw order",
+          "whether all 3 action slots are always visible",
+          "runtime open-state transitions"
+        ]
+      },
+      {
+        "id": "window.guild-candidate",
+        "constructor_va": "0x00424EC0",
+        "main_init": "0x004277E8",
+        "background": {
+          "file": "Data/GameInter.wil",
+          "frame": 600,
+          "constructor_size": [
+            596,
+            446
+          ]
+        },
+        "window_origin": [
+          102,
+          22
+        ],
+        "can_move": true,
+        "child_controls": [
+          {
+            "call_va": "0x00424EC6",
+            "frame_pair": [
+              161,
+              162
+            ],
+            "position": [
+              260,
+              298
+            ],
+            "semantic_candidate": "close/confirm"
+          },
+          {
+            "call_va": "0x00424EF3",
+            "frame_pair": [
+              610,
+              611
+            ],
+            "position": [
+              159,
+              50
+            ],
+            "semantic_candidate": "guild tab/action"
+          },
+          {
+            "call_va": "0x00424F27",
+            "frame_pair": [
+              612,
+              613
+            ],
+            "position": [
+              567,
+              413
+            ],
+            "semantic_candidate": "bottom-right action"
+          },
+          {
+            "call_va": "0x00424F54",
+            "frame_pair": [
+              614,
+              615
+            ],
+            "position": [
+              196,
+              50
+            ],
+            "semantic_candidate": "guild tab/action"
+          },
+          {
+            "call_va": "0x00424F7B",
+            "frame_pair": [
+              616,
+              617
+            ],
+            "position_expression": {
+              "x": "window.y+123",
+              "y": "window.y+123"
+            },
+            "evidence_level": "primary-static-register-ambiguous"
+          },
+          {
+            "call_va": "0x00424FA3",
+            "frame_pair": [
+              618,
+              619
+            ],
+            "position_expression": {
+              "x": "window.x+196",
+              "y": "arg8"
+            },
+            "evidence_level": "primary-static-register-ambiguous"
+          },
+          {
+            "call_va": "0x00424FC3",
+            "frame_pair": [
+              620,
+              621
+            ],
+            "position_expression": {
+              "x": "window.y+123",
+              "y": "window.y+50"
+            },
+            "evidence_level": "primary-static-register-ambiguous"
+          },
+          {
+            "call_va": "0x00424FEB",
+            "frame_pair": [
+              622,
+              623
+            ],
+            "position_expression": {
+              "x": "arg8",
+              "y": "ecx+1360"
+            },
+            "evidence_level": "primary-static-register-ambiguous"
+          },
+          {
+            "call_va": "0x0042500F",
+            "frame_pair": [
+              624,
+              625
+            ],
+            "position": [
+              196,
+              50
+            ],
+            "semantic_candidate": "guild tab/action"
+          }
+        ],
+        "pending": [
+          "four ambiguous register-flow positions",
+          "guild member list row geometry",
+          "exact tab labels and business semantics"
+        ]
+      }
+    ],
+    "confirmed": [
+      "Group and guild backgrounds, initialization sites, movable status and control frame pairs are statically linked to the original client.",
+      "Group controls have five usable window-relative coordinate candidates.",
+      "Guild has nine control constructor calls; five positions are direct usable candidates and four remain register-flow ambiguous."
     ]
   }
 }

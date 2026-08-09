@@ -1057,3 +1057,16 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 语义及文字绘制顺序仍未提升到 runtime-confirmed。机器记录见
 `npc-window-render-evidence.json`，并已接入 `layout.json` 的 `specialized_window_evidence`
 和顶层 `npc_window_evidence`。
+
+### Finding 47：组队与行会窗口的控件构造位置已整理（2026-08-09）
+
+原版 `Mir3.exe` 的组队窗口构造路径 `0x004242AB`（主初始化 `0x00427811`）绑定
+`GameInter.wil` Frame 900，尺寸 `256×244`，主屏候选原点为 `(272,123)`。五个控件
+调用使用 Frame `161/162`、`910/911`、`912/913`、`914/915`、`920/921`，窗口相对
+坐标分别为 `(226,214)`、`(17,197)`、`(80,197)`、`(159,197)`、`(9,52)`。
+
+行会窗口构造路径 `0x00424EC0`（主初始化 `0x004277E8`）绑定 Frame 600，尺寸
+`596×446`，原点候选 `(102,22)`。共发现 9 个控件构造调用，其中 5 个坐标可直接解析，
+4 个因寄存器复用暂保留表达式歧义；控件帧对覆盖 `161/162`、`610/611` 至 `624/625`。
+这批结果属于 `primary-static`，尚未把控件业务名和成员列表文字绘制顺序升级为最终结论。
+机器记录见 `social-window-render-evidence.json`，并已接入 `layout.json`。

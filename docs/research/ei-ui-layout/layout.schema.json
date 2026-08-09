@@ -89,6 +89,10 @@
     "npc_window_evidence": {
       "type": "object",
       "description": "Primary static evidence for NPC dialogue window construction, frame compositing and dynamic entry stride."
+    },
+    "social_window_evidence": {
+      "type": "object",
+      "description": "Primary static evidence for group and guild window construction and control geometry."
     }
   }
 }
