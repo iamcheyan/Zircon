@@ -18552,6 +18552,31 @@
         ],
         "evidence_level": "primary-static-draw-call"
       },
+      "source_to_view_transform": {
+        "routine_va": "0x0043DA80",
+        "normalizer_va": "0x00466800",
+        "source_view_fields": [
+          "owner+0x2C0",
+          "owner+0x2C4"
+        ],
+        "map_position_fields": [
+          "owner+0x2B8",
+          "owner+0x2BC"
+        ],
+        "source_offset_fields": [
+          "owner+0x2D0",
+          "owner+0x2D4"
+        ],
+        "intermediate_animation_field": "owner+0x300",
+        "compositor_context": "0x005600FC",
+        "alpha_branch": {
+          "field": "owner+0x290",
+          "zero_value": "1.0f",
+          "nonzero_value": "0x3F2FAFB0"
+        },
+        "interpretation": "The map is normalized through the shared float helper before the fixed destination is composited; this is executable source/view evidence, not hand-scaled screenshot placement.",
+        "evidence_level": "primary-static-transform"
+      },
       "marker_rectangles": [
         {
           "call_va": "0x0043DB7F",
