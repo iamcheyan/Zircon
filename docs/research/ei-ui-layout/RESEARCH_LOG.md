@@ -2402,6 +2402,12 @@ NPC 窗口构造器把 GameInter 帧头尺寸直接用于公共控件 `SetRect`�
 
 因此系统设置的复刻应直接使用原版 Frame 750 作为视觉标签来源；`760/761` 与 `762/763` 只证明四行 ON/OFF 子控件的资源与命中矩形，不能仅凭按钮位置断定具体配置字段。两个 Frame 751 条目仍作为独立的非按钮/滑块候选，等待与状态字段和输入处理路径对应。
 
+### Finding 159：主 HUD 血蓝球与经验条的资源层区别确认（2026-08-10）
+
+直接检查原版 `Data/GameInter.wil` Frame 60–63：Frame 60 是 `56×110` 红色半球，Frame 61 是 `56×110` 蓝色半球，Frame 62 是 `112×110` 完整红球，Frame 63 是 `164×6` 黄色经验条。它们不能简单合并成一个“血条/蓝条”概念。
+
+机器码 `0x00429740` 的静态调用顺序为：动态 Frame 82–85 → Frame 62 → Frame 60 → Frame 61 → Frame 63 → 经验百分比文字。统一证据已加入 `hud-bars-render-evidence.json.resource_visual_inspection`。当前仍不把 Frame 60/61/62 分别命名为满值、当前值或耗尽遮罩，因为那需要运行时字段与裁剪方向共同确认；但预览器和后续复刻器必须保留这四种独立资源及原始顺序。
+
 ### Finding 158：地图资源与服务器地图名目录接入预览器（2026-08-10）
 
 在不改变地图 exe 证据等级的前提下，扩展 `extract_mir3_minimap_server_crossref.py`：从原版 EI `Envir/MiniMap.txt` 读取服务器值与地图 stem，再从 `Envir/Mapinfo.txt`（GB18030）读取对应中文显示名。当前目录共生成 313 条映射，其中 FMMap 45 条、MMap 268 条；211 条能在客户端 `Map/` 找到同名地图文件，209 条对应 WIL Frame 可以解码。

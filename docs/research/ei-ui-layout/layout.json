@@ -29329,5 +29329,188 @@
     "pending": [
       "Confirm the medium-confidence glyph transcriptions for Frames 864–867 and map the four artwork labels to the runtime state byte/horse action branches; determine whether state-dependent overlays are painted outside Frame 850."
     ]
+  },
+  "hud_bars_render_evidence": {
+    "version": "EI-3.0-static-reverse-engineering",
+    "source": "Mir3.exe",
+    "function": "0x00429740",
+    "purpose": "Main HUD dynamic scalar preparation and bar draw dispatch",
+    "rects": {
+      "hp_or_primary_bar": {
+        "field": "this+0xC68",
+        "rect": [
+          61,
+          496,
+          104,
+          566
+        ],
+        "width": 43,
+        "height": 70
+      },
+      "mp_or_secondary_bar": {
+        "field": "this+0xC78",
+        "rect": [
+          105,
+          496,
+          147,
+          566
+        ],
+        "width": 42,
+        "height": 70
+      }
+    },
+    "ratios": [
+      {
+        "candidate": "HP / blood resource",
+        "numerator_global": "0x007D9264 (low 16 bits)",
+        "denominator_global": "0x007D9262 (low 16 bits)",
+        "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+        "confidence": "high",
+        "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD70 = (血量)%d/%d"
+      },
+      {
+        "candidate": "MP / magic resource",
+        "numerator_global": "0x007D9266 (low 16 bits)",
+        "denominator_global": "0x007DA113 (low 16 bits)",
+        "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+        "confidence": "high",
+        "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD60 = (魔法量)%d/%d"
+      },
+      {
+        "candidate": "experience",
+        "numerator_global": "0x007DA115",
+        "denominator_global": "0x007DA119",
+        "assembly": "fild numerator (qword); fidiv denominator; clamp to [0,1]",
+        "confidence": "high",
+        "semantic_string_evidence": "HUD formatter literals 0x0047BD4C = (经验条)%.2f%s and 0x0047BD5C = %"
+      },
+      {
+        "candidate": "weight / load",
+        "numerator_global": "0x007DA109 (low 16 bits)",
+        "denominator_global": "0x007DA11F (low 16 bits)",
+        "assembly": "fild numerator; fidiv denominator; clamp to [0,1]",
+        "confidence": "high",
+        "semantic_string_evidence": "GameInter HUD hover formatter literal 0x0047BD40 = (负重)%d/%d"
+      }
+    ],
+    "draw_dispatch": {
+      "resource_hit_tests": [
+        "0x004299CB -> GameInter frame 0x3E",
+        "0x00429BDB -> GameInter frame 0x3C/0x3D"
+      ],
+      "bar_geometry_helper": "0x00466800",
+      "composite_helper": "0x004542F0",
+      "draw_order_observation": "The primary HUD routine has a statically recoverable resource-call order: dynamic state frame 0x82-0x85 at 0x00429819, then GameInter frame 0x3E at 0x004299CB, frame 0x3C at 0x00429BDB, frame 0x3D at 0x00429C53, frame 0x3F at 0x00429FD5, followed by the experience percentage text path at 0x0042A065. Each fill frame computes a normalized scalar before the texture/composite helper.",
+      "static_coordinate_rule": "The resource frame is drawn relative to main HUD origin this+0xC58; primary and secondary clipping/hit rectangles are fixed by SetRect at 0x004276D6 and 0x004276F0."
+    },
+    "resource_visual_inspection": {
+      "source": "Direct pixel inspection of original Data/GameInter.wil frames 60-63; WIL headers provide the exact dimensions.",
+      "records": [
+        {
+          "frame": 60,
+          "size": [
+            56,
+            110
+          ],
+          "visual_description": "red half-orb artwork",
+          "confidence": "high"
+        },
+        {
+          "frame": 61,
+          "size": [
+            56,
+            110
+          ],
+          "visual_description": "blue half-orb artwork",
+          "confidence": "high"
+        },
+        {
+          "frame": 62,
+          "size": [
+            112,
+            110
+          ],
+          "visual_description": "full red orb artwork",
+          "confidence": "high"
+        },
+        {
+          "frame": 63,
+          "size": [
+            164,
+            6
+          ],
+          "visual_description": "solid yellow experience/progress strip",
+          "confidence": "high"
+        }
+      ],
+      "warning": "Artwork appearance does not by itself identify depleted/foreground state. The executable call order remains the stronger layering evidence: 62, then 60, 61, 63, then experience text."
+    },
+    "draw_sequence": [
+      {
+        "order": 1,
+        "va": "0x00429819-0x00429863",
+        "resource_frame": "dynamic 0x82-0x85",
+        "role": "state-dependent HUD frame",
+        "evidence_level": "primary-static-call-order"
+      },
+      {
+        "order": 2,
+        "va": "0x004299CB-0x00429A42",
+        "resource_frame": 62,
+        "role": "first normalized bar fill path",
+        "ratio_stack_candidate": "normalized scalar prepared before 0x004299CB",
+        "evidence_level": "primary-static-call-order"
+      },
+      {
+        "order": 3,
+        "va": "0x00429BDB-0x00429C4E",
+        "resource_frame": 60,
+        "role": "second normalized bar fill path",
+        "evidence_level": "primary-static-call-order"
+      },
+      {
+        "order": 4,
+        "va": "0x00429C53-0x00429CC6",
+        "resource_frame": 61,
+        "role": "third normalized bar fill/state path",
+        "evidence_level": "primary-static-call-order"
+      },
+      {
+        "order": 5,
+        "va": "0x00429FD5-0x0042A038",
+        "resource_frame": 63,
+        "role": "experience/progress fill path",
+        "evidence_level": "primary-static-call-order"
+      },
+      {
+        "order": 6,
+        "va": "0x0042A065-0x0042A087",
+        "resource_frame": null,
+        "role": "experience percentage text",
+        "formatters": [
+          "0x0047BD4C",
+          "0x0047BD5C"
+        ],
+        "evidence_level": "primary-static-call-order"
+      }
+    ],
+    "text_overlay": {
+      "va": "0x0042A065-0x0042A087",
+      "source_ratio": "stack scalar [esp+0x50], prepared from 0x007DA115/0x007DA119",
+      "operation": "multiply by float at 0x0047644C, format through 0x0046811C using literals 0x0047BD5C and 0x0047BD4C",
+      "target_rect": "this+0xC88 = (235,586)-(400,597)",
+      "interpretation": "experience/progress percentage text candidate; exact localized format string should be decoded before naming",
+      "confidence": "medium"
+    },
+    "evidence_addresses": [
+      "0x00429876-0x004298B1",
+      "0x004298CC-0x00429904",
+      "0x00429920-0x0042994F",
+      "0x0042996C-0x004299A4",
+      "0x00429A4D",
+      "0x00429CCB",
+      "0x00429E4D"
+    ],
+    "caveat": "HP/MP/weight/experience semantics are confirmed by original GB18030 formatter literals; the call order is static, while live memory is still required to validate exact update timing, clipping direction and which of frames 60/61/62/63 is the visible foreground versus depleted overlay in every state."
   }
 }

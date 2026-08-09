@@ -48,6 +48,16 @@
     "draw_order_observation": "The primary HUD routine has a statically recoverable resource-call order: dynamic state frame 0x82-0x85 at 0x00429819, then GameInter frame 0x3E at 0x004299CB, frame 0x3C at 0x00429BDB, frame 0x3D at 0x00429C53, frame 0x3F at 0x00429FD5, followed by the experience percentage text path at 0x0042A065. Each fill frame computes a normalized scalar before the texture/composite helper.",
     "static_coordinate_rule": "The resource frame is drawn relative to main HUD origin this+0xC58; primary and secondary clipping/hit rectangles are fixed by SetRect at 0x004276D6 and 0x004276F0."
   },
+  "resource_visual_inspection": {
+    "source": "Direct pixel inspection of original Data/GameInter.wil frames 60-63; WIL headers provide the exact dimensions.",
+    "records": [
+      {"frame": 60, "size": [56, 110], "visual_description": "red half-orb artwork", "confidence": "high"},
+      {"frame": 61, "size": [56, 110], "visual_description": "blue half-orb artwork", "confidence": "high"},
+      {"frame": 62, "size": [112, 110], "visual_description": "full red orb artwork", "confidence": "high"},
+      {"frame": 63, "size": [164, 6], "visual_description": "solid yellow experience/progress strip", "confidence": "high"}
+    ],
+    "warning": "Artwork appearance does not by itself identify depleted/foreground state. The executable call order remains the stronger layering evidence: 62, then 60, 61, 63, then experience text."
+  },
   "draw_sequence": [
     {"order": 1, "va": "0x00429819-0x00429863", "resource_frame": "dynamic 0x82-0x85", "role": "state-dependent HUD frame", "evidence_level": "primary-static-call-order"},
     {"order": 2, "va": "0x004299CB-0x00429A42", "resource_frame": 62, "role": "first normalized bar fill path", "ratio_stack_candidate": "normalized scalar prepared before 0x004299CB", "evidence_level": "primary-static-call-order"},
