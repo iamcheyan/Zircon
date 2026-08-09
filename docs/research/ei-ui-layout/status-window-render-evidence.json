@@ -33,9 +33,36 @@
     "state_dispatch_va": "0x0044B2D0",
     "notes": "The paint path branches by state and calls shared text/image composition helpers. Equipment slot business names and exact resource families remain pending."
   },
+  "item_record_and_draw_chain": {
+    "hit_test_va": "0x0044B6B0",
+    "index_scan_va": "0x0044B720",
+    "record_stride": "0xC24",
+    "record_base": "this+0x2F4",
+    "position_record_base": "this+0x1C0",
+    "position_stride": "0x10",
+    "draw_va": "0x004341F0",
+    "fact": "The returned slot index selects item record this+0x2F4+index*0xC24 and position record this+0x1C0+index*0x10. The first two dwords of the position record become window-relative x/y after +0x0F; the item draw helper then receives the selected record.",
+    "special_indices": [
+      {"index": 0, "position_record": "this+0x1C0", "rect": [86,114,146,204], "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"},
+      {"index": 1, "position_record": "this+0x1D0", "rect": [38,70,91,154], "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"},
+      {"index": 4, "position_record": "this+0x200", "rect": [94,71,143,104], "draw_rule": "fixed central character-area target (window.x+0x61, window.y+0xC8), flag=1"}
+    ],
+    "equipment_candidate_indices": [2,3,5,6,7,8,9,10],
+    "equipment_candidate_rects_by_index": {
+      "2": [27,264,65,302],
+      "3": [177,70,215,108],
+      "5": [27,186,65,224],
+      "6": [175,186,213,224],
+      "7": [27,227,65,265],
+      "8": [175,227,213,265],
+      "9": [64,264,102,302],
+      "10": [103,264,141,302]
+    },
+    "confidence": "primary-static; business item names remain unresolved"
+  },
   "pending": [
-    "Mapping each object offset to the exact equipment item (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
     "The exact status/attribute text field coordinates and source data structures.",
+    "Mapping the eight equipment candidate indices to exact item names (weapon, helmet, necklace, rings, bracelet, boots, etc.).",
     "The runtime resource handle used for equipment item icons."
   ]
 }
