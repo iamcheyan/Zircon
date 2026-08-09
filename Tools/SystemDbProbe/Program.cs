@@ -18,6 +18,8 @@ using MirDB;
 string root = "Debug/Server/Database/";
 string dumpDir = null;
 string viewDir = null;
+string imagesOut = null;
+string bc7Lib = null, bc7Frame = null, bc7Out = null;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -31,9 +33,27 @@ for (int i = 0; i < args.Length; i++)
         viewDir = args[++i];
         continue;
     }
+    if (args[i] == "--images")
+    {
+        imagesOut = args[++i];
+        continue;
+    }
+    if (args[i] == "--bc7")
+    {
+        bc7Lib = args[++i];
+        bc7Frame = args[++i];
+        bc7Out = args[++i];
+        continue;
+    }
     root = args[i];
 }
 if (!Path.IsPathRooted(root)) root = Path.GetFullPath(root);
+
+if (bc7Lib != null)
+{
+    Bc7Probe.Run(bc7Lib, int.Parse(bc7Frame), bc7Out);
+    return;
+}
 
 var session = new Session(SessionMode.Users, root);
 session.Initialize(
@@ -44,7 +64,7 @@ session.Initialize(
 Console.WriteLine($"数据库: {session.SystemPath}");
 Console.WriteLine($"版本:   {session.SystemDatabaseVersion}");
 
-if (dumpDir == null && viewDir == null)
+if (dumpDir == null && viewDir == null && imagesOut == null)
 {
     void Dump(string label, int count)
         => Console.WriteLine($"{label,-12} {count,6}");
@@ -66,6 +86,13 @@ if (viewDir != null)
     Directory.CreateDirectory(Path.Combine(viewDir, "items"));
     GenerateViews(session, viewDir);
     Console.WriteLine($"玩家视图 -> {viewDir}");
+    return;
+}
+
+if (imagesOut != null)
+{
+    GenerateImages(session, imagesOut);
+    Console.WriteLine($"图片映射 -> {imagesOut}");
     return;
 }
 
@@ -912,4 +939,48 @@ static void GenerateViews(Session session, string viewDir)
     sb.AppendLine("- 图标 / 头像数字为客户端图片资源编号");
     File.WriteAllText(Path.Combine(viewDir, "README.md"), sb.ToString());
     Console.WriteLine($"索引 -> README.md");
+}
+
+// ---------- 图片映射导出（--images） ----------
+// 输出各实体在客户端图库中的图片编号 (JSON)，供百科渲染使用。
+//   monsters:  MonsterName -> Image 枚举名 (MonsterImage)
+//   items:     ItemName    -> Image (StoreItem/Inventory 帧号)
+//   skills:    Name        -> Icon (MIcon 帧号)
+//   npcs:      NPCName     -> { image, face } (NPC.wil / NPCface.wil)
+//   companions:MonsterName -> { price, available } (宠物外观 = 绑定怪物)
+static void GenerateImages(Session session, string outPath)
+{
+    IList Coll(Type t) => (IList)session.GetCollection(t).GetType().GetField("Binding").GetValue(session.GetCollection(t));
+
+    var monsters = Coll(typeof(MonsterInfo)).Cast<MonsterInfo>()
+        .GroupBy(m => m.MonsterName)
+        .ToDictionary(g => g.Key, g => g.First().Image.ToString());
+    var items = Coll(typeof(ItemInfo)).Cast<ItemInfo>()
+        .GroupBy(i => i.ItemName)
+        .ToDictionary(g => g.Key, g => g.First().Image);
+    var skills = Coll(typeof(MagicInfo)).Cast<MagicInfo>()
+        .GroupBy(s => s.Name)
+        .ToDictionary(g => g.Key, g => g.First().Icon);
+    var npcs = Coll(typeof(NPCInfo)).Cast<NPCInfo>()
+        .GroupBy(n => n.NPCName)
+        .ToDictionary(g => g.Key, g => new { image = g.First().Image, face = g.First().FaceImage });
+    var companions = Coll(typeof(CompanionInfo)).Cast<CompanionInfo>()
+        .GroupBy(c => c.MonsterInfo?.MonsterName ?? "?")
+        .ToDictionary(g => g.Key, g => new { price = g.First().Price, available = g.First().Available });
+
+    var obj = new
+    {
+        monsters,
+        items,
+        skills,
+        npcs,
+        companions,
+    };
+    string json = System.Text.Json.JsonSerializer.Serialize(obj, new System.Text.Json.JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    });
+    File.WriteAllText(outPath, json);
+    Console.WriteLine($"怪物 {monsters.Count} / 物品 {items.Count} / 技能 {skills.Count} / NPC {npcs.Count} / 宠物 {companions.Count}");
 }
