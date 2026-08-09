@@ -24,6 +24,7 @@
       "resource_library_candidate": "GameInter.wil",
       "window_relative_position": [7, 141],
       "position_expression": {"x": "window.x+7", "y": "window.y+0x8D"},
+      "hit_rect": [7, 141, 28, 26],
       "semantic_candidate": "close/confirm or generic NPC dialogue control",
       "evidence_level": "primary-static-expression"
     },
@@ -34,6 +35,7 @@
       "resource_library_candidate": "GameInter.wil",
       "window_relative_position": [290, 145],
       "position_expression": {"x": "window.x+0x122", "y": "window.y+0x91"},
+      "hit_rect": [290, 145, 12, 8],
       "semantic_candidate": "NPC face/portrait or dialogue-side control",
       "evidence_level": "primary-static-expression"
     },
@@ -44,6 +46,7 @@
       "resource_library_candidate": "GameInter.wil",
       "window_relative_position": [306, 136],
       "position_expression": {"x": "window.x+0x132", "y": "window.y+0x88"},
+      "hit_rect": [306, 136, 12, 8],
       "semantic_candidate": "NPC dialogue-side state/control",
       "evidence_level": "primary-static-expression"
     }
@@ -137,7 +140,7 @@
     "The NPC paint entry statically orders the primary Frame 1100 composition, repeated Frame 1101 entries, final Frame 1102 entry and fallback composition branch."
   ],
   "pending": [
-    "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55.",
+    "The business names and exact click semantics of Frames 161/162, 52/53 and 54/55; static GameInter hit rectangles are now recorded.",
     "The runtime meaning of the dynamic entry fields at this+0x520 through this+0x544.",
     "The exact text/font/color draw order around the composited NPC dialogue content."
   ]
