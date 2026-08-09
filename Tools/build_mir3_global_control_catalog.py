@@ -31,6 +31,33 @@ def main() -> None:
         for address in r.get("evidence", {}).get("addresses", [])
     }
 
+    # These direct calls are already bound by dedicated static evidence files.
+    # Keep them in the global catalog, but do not leave them in the generic
+    # unassigned bucket merely because they are outside the main window wrapper
+    # ranges.
+    secondary_owners = {
+        "0x004027df": "interface1c.select-screen",
+        "0x00402801": "interface1c.select-screen",
+        "0x00402823": "interface1c.select-screen",
+        "0x00402845": "interface1c.select-screen",
+        "0x00418176": "prompt.confirmation",
+        "0x004181ab": "prompt.confirmation",
+        "0x004181e0": "prompt.confirmation",
+        "0x00418968": "prompt.confirmation.secondary-cluster",
+        "0x0041898e": "prompt.confirmation.secondary-cluster",
+        "0x0043e2bb": "notice.frame602",
+        "0x0043e2e4": "notice.frame602",
+        "0x00456dc1": "interface1c.parent-screen",
+        "0x00456de0": "interface1c.parent-screen",
+        "0x00456dff": "interface1c.parent-screen",
+        "0x00456e1e": "interface1c.parent-screen",
+        "0x00456e40": "interface1c.parent-screen",
+        "0x00456e62": "interface1c.parent-screen",
+        "0x00456e84": "interface1c.parent-screen",
+        "0x00456ea6": "interface1c.parent-screen",
+        "0x00456ec8": "interface1c.parent-screen",
+    }
+
     records = []
     for item in all_records:
         call_va = item["call_va"]
@@ -41,6 +68,9 @@ def main() -> None:
         elif call_va.lower() in hud_calls:
             classification = "main-hud-control"
             owner = "hud"
+        elif call_va.lower() in secondary_owners:
+            classification = "secondary-window-control"
+            owner = secondary_owners[call_va.lower()]
         else:
             classification = "unassigned-control-candidate"
             owner = None
@@ -56,7 +86,10 @@ def main() -> None:
             "evidence": {
                 "level": item.get("confidence", "primary-call-unknown-control"),
                 "source": "Mir3.exe",
-                "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted.",
+                "warning": ("Secondary wrapper ownership is supported by a dedicated static evidence file; "
+                             "business semantics or runtime state may still be pending."
+                             if classification == "secondary-window-control" else
+                             "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."),
             },
         })
 

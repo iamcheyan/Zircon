@@ -5,14 +5,14 @@
     "all": 109,
     "main_window": 72,
     "main_hud": 15,
-    "unassigned": 22
+    "unassigned": 2
   },
   "records": [
     {
       "id": "control.0x004027df",
       "call_va": "0x004027df",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.select-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "4027d9: 8d 8b 68 0a 00 00            \tlea\tecx, [ebx + 0xa68]",
       "position_register_pushes_near_call": [
@@ -48,14 +48,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00402801",
       "call_va": "0x00402801",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.select-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "4027fb: 8d 8b 1c 0b 00 00            \tlea\tecx, [ebx + 0xb1c]",
       "position_register_pushes_near_call": [
@@ -91,14 +91,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00402823",
       "call_va": "0x00402823",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.select-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "40281d: 8d 8b d0 0b 00 00            \tlea\tecx, [ebx + 0xbd0]",
       "position_register_pushes_near_call": [
@@ -134,14 +134,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00402845",
       "call_va": "0x00402845",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.select-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "40283f: 8d 8b 84 0c 00 00            \tlea\tecx, [ebx + 0xc84]",
       "position_register_pushes_near_call": [
@@ -177,7 +177,7 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
@@ -1111,8 +1111,8 @@
     {
       "id": "control.0x00418176",
       "call_va": "0x00418176",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "prompt.confirmation",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -1171,14 +1171,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x004181ab",
       "call_va": "0x004181ab",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "prompt.confirmation",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -1237,14 +1237,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x004181e0",
       "call_va": "0x004181e0",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "prompt.confirmation",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -1303,14 +1303,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00418968",
       "call_va": "0x00418968",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "prompt.confirmation.secondary-cluster",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -1369,14 +1369,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x0041898e",
       "call_va": "0x0041898e",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "prompt.confirmation.secondary-cluster",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -1449,7 +1449,7 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
@@ -5020,8 +5020,8 @@
     {
       "id": "control.0x0043e2bb",
       "call_va": "0x0043e2bb",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "notice.frame602",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -5080,14 +5080,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x0043e2e4",
       "call_va": "0x0043e2e4",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "notice.frame602",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -5160,7 +5160,7 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
@@ -7340,8 +7340,8 @@
     {
       "id": "control.0x00456dc1",
       "call_va": "0x00456dc1",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "456dbb: 8d 8e e8 09 00 00            \tlea\tecx, [esi + 0x9e8]",
       "position_register_pushes_near_call": [
@@ -7381,14 +7381,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456de0",
       "call_va": "0x00456de0",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "456dda: 8d 8e 9c 0a 00 00            \tlea\tecx, [esi + 0xa9c]",
       "position_register_pushes_near_call": [
@@ -7424,14 +7424,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456dff",
       "call_va": "0x00456dff",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "456df9: 8d 8e 50 0b 00 00            \tlea\tecx, [esi + 0xb50]",
       "position_register_pushes_near_call": [
@@ -7467,14 +7467,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456e1e",
       "call_va": "0x00456e1e",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [],
       "object_lea_near_call": "456e18: 8d 8e 04 0c 00 00            \tlea\tecx, [esi + 0xc04]",
       "position_register_pushes_near_call": [
@@ -7510,14 +7510,14 @@
       "evidence": {
         "level": "primary-call-unknown-control",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456e40",
       "call_va": "0x00456e40",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -7568,14 +7568,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456e62",
       "call_va": "0x00456e62",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -7640,14 +7640,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456e84",
       "call_va": "0x00456e84",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -7698,14 +7698,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456ea6",
       "call_va": "0x00456ea6",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -7756,14 +7756,14 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     },
     {
       "id": "control.0x00456ec8",
       "call_va": "0x00456ec8",
-      "classification": "unassigned-control-candidate",
-      "owner": null,
+      "classification": "secondary-window-control",
+      "owner": "interface1c.parent-screen",
       "frame_pair_candidates": [
         {
           "push_sequence": [
@@ -7828,7 +7828,7 @@
       "evidence": {
         "level": "primary-static-control-initializer",
         "source": "Mir3.exe",
-        "warning": "Unassigned controls require wrapper/function ownership and resource-handle tracing before coordinates are promoted."
+        "warning": "Secondary wrapper ownership is supported by a dedicated static evidence file; business semantics or runtime state may still be pending."
       }
     }
   ]
