@@ -18916,10 +18916,37 @@
         },
         "note": "The code directly draws original GBK guild/announcement placeholder strings through the shared text compositor. Resource Frame 602 and constructor id 15 alone do not prove whether this is a standalone notice dialog or a guild-information state."
       },
+      "paint_order": [
+        {
+          "order": 1,
+          "va": "0x0043E3C4-0x0043E3C8",
+          "role": "Frame 602 window background",
+          "evidence": "The notice paint entry calls the window vtable +0x0C before selecting the state-dependent text."
+        },
+        {
+          "order": 2,
+          "va": "0x0043E3C9-0x0043E432",
+          "role": "state-dependent primary notice text",
+          "evidence": "this+0x1D0 selects the original GBK string at 0x47C460 or 0x47C440 and emits it at window-relative (23,94) with color 0x323232."
+        },
+        {
+          "order": 3,
+          "va": "0x0043E432-0x0043E459",
+          "role": "secondary notice text",
+          "evidence": "The second text call emits the state-selected notice string at window-relative (24,95) with the alternate color path."
+        },
+        {
+          "order": 4,
+          "va": "0x0043E45E-0x0043E4AC",
+          "role": "close/action controls",
+          "evidence": "The close and notice-side controls are repositioned, then their two child vtable +0x04 paint slots are called."
+        }
+      ],
       "confirmed": [
         "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
         "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
-        "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family."
+        "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
+        "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths."
       ],
       "pending": [
         "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
@@ -19144,10 +19171,31 @@
         "evidence_level": "primary-static-message-rect-candidate",
         "note": "The raw RECT expressions and branch heights are exact; IAT calls after the RECT setup are retained as candidates until runtime/API naming confirms their text role."
       },
+      "paint_order": [
+        {
+          "order": 1,
+          "va": "0x004182A0-0x00418300",
+          "role": "Frame 950 prompt background",
+          "evidence": "The prompt paint entry tests visible state, selects the parent resource and composites the 800x600 source viewport before text and child controls."
+        },
+        {
+          "order": 2,
+          "va": "0x00418300-0x00418332",
+          "role": "prompt message text",
+          "evidence": "The dialog message buffer at this+0x2C is passed through the shared text/resource compositor after the background composition."
+        },
+        {
+          "order": 3,
+          "va": "0x00418339-0x004183CA",
+          "role": "three prompt action controls",
+          "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."
+        }
+      ],
       "confirmed": [
         "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
         "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
-        "The frame family visually supports confirmation/prompt UI semantics."
+        "The frame family visually supports confirmation/prompt UI semantics.",
+        "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
       ],
       "pending": [
         "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
@@ -21769,10 +21817,37 @@
       },
       "note": "The code directly draws original GBK guild/announcement placeholder strings through the shared text compositor. Resource Frame 602 and constructor id 15 alone do not prove whether this is a standalone notice dialog or a guild-information state."
     },
+    "paint_order": [
+      {
+        "order": 1,
+        "va": "0x0043E3C4-0x0043E3C8",
+        "role": "Frame 602 window background",
+        "evidence": "The notice paint entry calls the window vtable +0x0C before selecting the state-dependent text."
+      },
+      {
+        "order": 2,
+        "va": "0x0043E3C9-0x0043E432",
+        "role": "state-dependent primary notice text",
+        "evidence": "this+0x1D0 selects the original GBK string at 0x47C460 or 0x47C440 and emits it at window-relative (23,94) with color 0x323232."
+      },
+      {
+        "order": 3,
+        "va": "0x0043E432-0x0043E459",
+        "role": "secondary notice text",
+        "evidence": "The second text call emits the state-selected notice string at window-relative (24,95) with the alternate color path."
+      },
+      {
+        "order": 4,
+        "va": "0x0043E45E-0x0043E4AC",
+        "role": "close/action controls",
+        "evidence": "The close and notice-side controls are repositioned, then their two child vtable +0x04 paint slots are called."
+      }
+    ],
     "confirmed": [
       "Frame 602 is a distinct large announcement/notice visual resource, not a normal 800x136 HUD plate.",
       "The 0x43E260 code cluster constructs two child controls and uses GameInter resource frames 161/162 and 606/607.",
-      "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family."
+      "Frame 603 visually provides an independent Chinese YES/NO confirmation prompt resource in the same nearby frame family.",
+      "The notice paint entry statically orders the Frame 602 background, state text, secondary text and child-control paths."
     ],
     "pending": [
       "Determine whether the 1024-wide header includes an offscreen shadow/atlas region beyond the visible 584×252 argument region.",
@@ -21997,10 +22072,31 @@
       "evidence_level": "primary-static-message-rect-candidate",
       "note": "The raw RECT expressions and branch heights are exact; IAT calls after the RECT setup are retained as candidates until runtime/API naming confirms their text role."
     },
+    "paint_order": [
+      {
+        "order": 1,
+        "va": "0x004182A0-0x00418300",
+        "role": "Frame 950 prompt background",
+        "evidence": "The prompt paint entry tests visible state, selects the parent resource and composites the 800x600 source viewport before text and child controls."
+      },
+      {
+        "order": 2,
+        "va": "0x00418300-0x00418332",
+        "role": "prompt message text",
+        "evidence": "The dialog message buffer at this+0x2C is passed through the shared text/resource compositor after the background composition."
+      },
+      {
+        "order": 3,
+        "va": "0x00418339-0x004183CA",
+        "role": "three prompt action controls",
+        "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."
+      }
+    ],
     "confirmed": [
       "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
       "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
-      "The frame family visually supports confirmation/prompt UI semantics."
+      "The frame family visually supports confirmation/prompt UI semantics.",
+      "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
     ],
     "pending": [
       "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",

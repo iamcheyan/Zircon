@@ -2170,6 +2170,10 @@ function load(){const s=state();if(typeof s.debug==='boolean')$('#debug').checke
 const basePromptEvidence = addPromptEvidence;
 addPromptEvidence = function(mode){
   basePromptEvidence(mode);
+  const panel=document.createElement('div');
+  panel.style.cssText='position:absolute;right:10px;top:40px;width:290px;padding:6px 8px;color:#c9f5d0;background:rgba(8,16,12,.92);border:1px solid #62e6a7;font:10px monospace;z-index:72;pointer-events:none';
+  panel.innerHTML=mode==='prompt.confirmation'?'<b style="color:#62e6a7">原版局部绘制顺序</b><div>01 · F950 prompt background</div><div>02 · message text</div><div>03 · three action controls</div>':'<b style="color:#62e6a7">原版局部绘制顺序</b><div>01 · F602 background</div><div>02 · state-dependent notice text</div><div>03 · secondary notice text</div><div>04 · close/action controls</div>';
+  screen.appendChild(panel);
   if(mode !== 'prompt.notice') return;
   [[161,162,655,126,28,26,'F602 子控件 / 关闭或确认候选'],[606,607,603,153,40,20,'F606 子控件 / 状态候选']].forEach(([frame,state,x,y,w,h,text])=>{
     const b=document.createElement('div');

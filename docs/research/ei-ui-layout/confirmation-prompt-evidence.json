@@ -74,10 +74,16 @@
     "evidence_level": "primary-static-message-rect-candidate",
     "note": "The raw RECT expressions and branch heights are exact; IAT calls after the RECT setup are retained as candidates until runtime/API naming confirms their text role."
   },
+  "paint_order": [
+    {"order": 1, "va": "0x004182A0-0x00418300", "role": "Frame 950 prompt background", "evidence": "The prompt paint entry tests visible state, selects the parent resource and composites the 800x600 source viewport before text and child controls."},
+    {"order": 2, "va": "0x00418300-0x00418332", "role": "prompt message text", "evidence": "The dialog message buffer at this+0x2C is passed through the shared text/resource compositor after the background composition."},
+    {"order": 3, "va": "0x00418339-0x004183CA", "role": "three prompt action controls", "evidence": "Up to three action child objects are hit-tested/painted in sequence; their resource handles are resolved and each is composited through the original 800x600 pipeline."}
+  ],
   "confirmed": [
     "Frames 151/152, 154/155 and 157/158 are prompt/action state resources, not arbitrary unnamed icons.",
     "Both unassigned code clusters directly call the common control constructor 0x00417550 and pass these frame pairs.",
-    "The frame family visually supports confirmation/prompt UI semantics."
+    "The frame family visually supports confirmation/prompt UI semantics.",
+    "The prompt paint entry statically orders the Frame 950 composition, message text and three action-control paths."
   ],
   "pending": [
     "Parent function names, dialog text source and runtime confirmation that the -1/-1 call path is used.",
