@@ -10,6 +10,11 @@
     "background": {"file": "Data/GameInter.wil", "frame": 1000, "constructor_size": [300, 304]},
     "warning": "The same function contains control/grid coordinates wider than the currently bound Frame 1000 visible width; preserve raw expressions until parent/window binding is runtime-confirmed."
   },
+  "related_resource_visuals": [
+    {"frame": 1001, "header_size": [256, 256], "visual": "compact framed item panel with lower navigation controls"},
+    {"frame": 1002, "header_size": [1024, 256], "visual": "wide composite item panel with attached side controls"},
+    {"frame": 1003, "header_size": [1024, 256], "visual": "wide composite item panel variant with attached side controls"}
+  ],
   "controls": [
     {"call_va": "0x0044D36B", "frame_pair": [1010, 1011], "raw_position": {"x": "arg4+0x10A", "y": "arg5+0x10E"}},
     {"call_va": "0x0044D394", "frame_pair": [1012, 1013], "raw_position": {"x": "arg4+0x07F", "y": "arg5+0x10B"}},
@@ -29,6 +34,7 @@
   "pending": [
     "Resolve arg4/arg5 and the actual parent window object at runtime.",
     "Confirm whether Frame 1000 is the complete store background or one panel of a larger composition.",
-    "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots."
+    "Map frames 1010–1017 to shop tabs, paging, buy/sell and item slots.",
+    "Determine whether Frames 1001–1003 are warehouse/extended shop variants or unused composite resources; visual similarity alone is not a binding."
   ]
 }
