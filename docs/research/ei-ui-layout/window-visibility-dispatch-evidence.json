@@ -46,9 +46,17 @@
     {"window_id": 14, "layout_id": "window.other-14-candidate", "object": "main+0x524F0", "target": "0x0042B01C", "state_gate": "main+0x52520", "show_hide": "gate-controlled show/hide"},
     {"window_id": 15, "layout_id": null, "object": "main+0x52E5C", "target": "0x0042B2AD", "state_gate": "main+0x52E8C", "show_hide": "gate-controlled show/hide; business identity pending"}
   ],
-  "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Constructor presence is not proof of on-screen visibility.",
+  "initial_state_proof": {
+    "base_constructor_va": "0x00423CA0",
+    "shared_gate_write": "window_object+0x30 = 0",
+    "registered_wrapper_count": 15,
+    "main_init_va": "0x00427600",
+    "show_helper_calls_in_registration_sequence": [],
+    "evidence_level": "primary-static-constructor-and-init-call-scan",
+    "interpretation": "Every registered wrapper invokes the shared constructor path, so the initial gate is zero. The visible linked-list manager starts empty until 0x0042AC30 inserts an explicit ID."
+  },
+  "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
   "pending": [
-    "Confirm exact target addresses for IDs 2-15 from the complete 0x42ADB0 disassembly rather than inferred branch spacing.",
     "Recover the full initial registry insertion list and default visibility bits.",
     "Identify the ID15 component and correlate it with secondary Interface1c/notice resources."
   ]

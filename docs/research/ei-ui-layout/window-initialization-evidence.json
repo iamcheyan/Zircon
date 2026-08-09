@@ -19,9 +19,18 @@
     {"window_id": 14, "layout_id": "window.other-14-candidate", "main_init_call": "0x00427904", "wrapper": "0x00439250", "frame": 400, "position": [0, 0], "size": [296, 332], "registered": true, "default_visibility": "not promoted; visibility gate is handled separately by 0x0042B01C"},
     {"window_id": 15, "layout_id": null, "main_init_call": "0x0042797E", "wrapper": "0x0043E260", "frame": 602, "position": [107, 110], "size": [584, 252], "registered": true, "default_visibility": "not promoted; visibility gate is handled separately by 0x0042B2AD", "identity": "secondary prompt/notice component candidate"}
   ],
-  "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; it does not prove that every wrapper is visible on the first gameplay frame.",
+  "initial_visibility_proof": {
+    "base_constructor_va": "0x00423CA0",
+    "derived_constructor_calls": "All 15 registered wrapper paths call 0x00423B30, which initializes the shared window object; ID15 wrapper 0x0043E260 is included.",
+    "visibility_field": "window_object+0x30",
+    "initial_value": 0,
+    "main_initializer_va": "0x00427600",
+    "main_initializer_show_calls": [],
+    "interpretation": "The shared constructor writes zero to +0x30. The main initializer constructs/registers the windows but has no 0x0042AC30 show-helper call in the registration sequence; normal windows therefore begin hidden and are promoted by the visibility dispatcher only after an explicit command/state path.",
+    "evidence_level": "primary-static-constructor-and-init-call-scan"
+  },
+  "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; the shared constructor proves the default visibility gate is zero before any explicit show command.",
   "pending": [
-    "Recover the exact initial values of the per-object visibility gates before any user command.",
     "Resolve whether ID15's 0x0043E260 wrapper is the same runtime object as the Frame 602 notice/prompt family."
   ]
 }

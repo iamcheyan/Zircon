@@ -22900,9 +22900,17 @@
         "show_hide": "gate-controlled show/hide; business identity pending"
       }
     ],
-    "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Constructor presence is not proof of on-screen visibility.",
+    "initial_state_proof": {
+      "base_constructor_va": "0x00423CA0",
+      "shared_gate_write": "window_object+0x30 = 0",
+      "registered_wrapper_count": 15,
+      "main_init_va": "0x00427600",
+      "show_helper_calls_in_registration_sequence": [],
+      "evidence_level": "primary-static-constructor-and-init-call-scan",
+      "interpretation": "Every registered wrapper invokes the shared constructor path, so the initial gate is zero. The visible linked-list manager starts empty until 0x0042AC30 inserts an explicit ID."
+    },
+    "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
     "pending": [
-      "Confirm exact target addresses for IDs 2-15 from the complete 0x42ADB0 disassembly rather than inferred branch spacing.",
       "Recover the full initial registry insertion list and default visibility bits.",
       "Identify the ID15 component and correlate it with secondary Interface1c/notice resources."
     ]
@@ -23153,9 +23161,18 @@
         "identity": "secondary prompt/notice component candidate"
       }
     ],
-    "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; it does not prove that every wrapper is visible on the first gameplay frame.",
+    "initial_visibility_proof": {
+      "base_constructor_va": "0x00423CA0",
+      "derived_constructor_calls": "All 15 registered wrapper paths call 0x00423B30, which initializes the shared window object; ID15 wrapper 0x0043E260 is included.",
+      "visibility_field": "window_object+0x30",
+      "initial_value": 0,
+      "main_initializer_va": "0x00427600",
+      "main_initializer_show_calls": [],
+      "interpretation": "The shared constructor writes zero to +0x30. The main initializer constructs/registers the windows but has no 0x0042AC30 show-helper call in the registration sequence; normal windows therefore begin hidden and are promoted by the visibility dispatcher only after an explicit command/state path.",
+      "evidence_level": "primary-static-constructor-and-init-call-scan"
+    },
+    "interpretation": "Construction and registration are now separated from display state. The main initializer proves that these wrappers exist in the original client and records their resource/geometry inputs; the shared constructor proves the default visibility gate is zero before any explicit show command.",
     "pending": [
-      "Recover the exact initial values of the per-object visibility gates before any user command.",
       "Resolve whether ID15's 0x0043E260 wrapper is the same runtime object as the Frame 602 notice/prompt family."
     ]
   },
