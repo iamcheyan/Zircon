@@ -2271,7 +2271,7 @@ const restored=state();
 if(typeof restored.mapFile==='string'&&['FMMap.wil','MMap.wil'].includes(restored.mapFile))MAP_FILE=restored.mapFile;
 if(Number.isInteger(restored.mapFrame)&&restored.mapFrame>=0)MAP_FRAME=restored.mapFrame;
 $('#map-library').value=MAP_FILE;$('#map-frame').value=MAP_FRAME;
-const syncMap=()=>{MAP_FILE=$('#map-library').value;MAP_FRAME=Math.max(0,Number($('#map-frame').value)||0);save();if(SCREEN_MODE==='map-candidate')render();};
+const syncMap=()=>{MAP_FILE=$('#map-library').value;MAP_FRAME=Math.max(0,Number($('#map-frame').value)||0);save();if(SCREEN_MODE==='map-candidate'||SCREEN_MODE==='map-minimap-candidate')render();};
 $('#map-library').onchange=syncMap;$('#map-frame').oninput=syncMap;
 load();
 </script></body></html>"""
