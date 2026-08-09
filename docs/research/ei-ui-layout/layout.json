@@ -18210,6 +18210,80 @@
               "semantic_candidate": "mount action"
             }
           ],
+          "paint_repositioned_controls": {
+            "routine": "0x004269C0–0x00426A56",
+            "records": [
+              {
+                "object_offset": "this+0x54",
+                "position": [
+                  252,
+                  293
+                ],
+                "source_va": "0x004269DE",
+                "role": "close/confirm-candidate"
+              },
+              {
+                "object_offset": "this+0x108",
+                "position": [
+                  28,
+                  244
+                ],
+                "source_va": "0x004269F5",
+                "role": "mount-action-candidate"
+              },
+              {
+                "object_offset": "this+0x1BC",
+                "position": [
+                  74,
+                  244
+                ],
+                "source_va": "0x00426A11",
+                "role": "mount-action-candidate"
+              },
+              {
+                "object_offset": "this+0x270",
+                "position": [
+                  133,
+                  244
+                ],
+                "source_va": "0x00426A31",
+                "role": "mount-action-candidate"
+              },
+              {
+                "object_offset": "this+0x324",
+                "position": [
+                  192,
+                  244
+                ],
+                "source_va": "0x00426A4F",
+                "role": "mount-action-candidate"
+              }
+            ],
+            "evidence_level": "primary-static-redraw-position"
+          },
+          "action_state_handler": {
+            "routine": "0x00426A80–0x00426B45",
+            "control_order": [
+              "this+0x54",
+              "this+0x108",
+              "this+0x1BC",
+              "this+0x270",
+              "this+0x324"
+            ],
+            "state_global": "0x007DA060",
+            "message_or_action_string_candidates": [
+              "0x0047B058",
+              "0x0047B060",
+              "0x0047B068"
+            ],
+            "action_dispatch_helper": "0x004520F0",
+            "cooldown_or_timer_fields": [
+              "0x008A68BC",
+              "0x008A68C0"
+            ],
+            "evidence_level": "primary-static-hit-and-action-branch",
+            "warning": "The binary proves five clickable action paths and state-dependent dispatch, but the original string bytes and business labels are not yet decoded here."
+          },
           "pending": [
             "mount labels and horse data fields",
             "whether Frame 850 is the complete visible background"
@@ -20617,6 +20691,80 @@
             "semantic_candidate": "mount action"
           }
         ],
+        "paint_repositioned_controls": {
+          "routine": "0x004269C0–0x00426A56",
+          "records": [
+            {
+              "object_offset": "this+0x54",
+              "position": [
+                252,
+                293
+              ],
+              "source_va": "0x004269DE",
+              "role": "close/confirm-candidate"
+            },
+            {
+              "object_offset": "this+0x108",
+              "position": [
+                28,
+                244
+              ],
+              "source_va": "0x004269F5",
+              "role": "mount-action-candidate"
+            },
+            {
+              "object_offset": "this+0x1BC",
+              "position": [
+                74,
+                244
+              ],
+              "source_va": "0x00426A11",
+              "role": "mount-action-candidate"
+            },
+            {
+              "object_offset": "this+0x270",
+              "position": [
+                133,
+                244
+              ],
+              "source_va": "0x00426A31",
+              "role": "mount-action-candidate"
+            },
+            {
+              "object_offset": "this+0x324",
+              "position": [
+                192,
+                244
+              ],
+              "source_va": "0x00426A4F",
+              "role": "mount-action-candidate"
+            }
+          ],
+          "evidence_level": "primary-static-redraw-position"
+        },
+        "action_state_handler": {
+          "routine": "0x00426A80–0x00426B45",
+          "control_order": [
+            "this+0x54",
+            "this+0x108",
+            "this+0x1BC",
+            "this+0x270",
+            "this+0x324"
+          ],
+          "state_global": "0x007DA060",
+          "message_or_action_string_candidates": [
+            "0x0047B058",
+            "0x0047B060",
+            "0x0047B068"
+          ],
+          "action_dispatch_helper": "0x004520F0",
+          "cooldown_or_timer_fields": [
+            "0x008A68BC",
+            "0x008A68C0"
+          ],
+          "evidence_level": "primary-static-hit-and-action-branch",
+          "warning": "The binary proves five clickable action paths and state-dependent dispatch, but the original string bytes and business labels are not yet decoded here."
+        },
         "pending": [
           "mount labels and horse data fields",
           "whether Frame 850 is the complete visible background"

@@ -2143,6 +2143,9 @@ function addFocusedWindow(r,analysis){
     if(split){addFocusedGeometry(ox,oy,Math.floor(r.size.width/2),r.size.height,'左交易区 · this+0x5C');addFocusedGeometry(ox+Math.floor(r.size.width/2),oy,Math.ceil(r.size.width/2),r.size.height,'右交易区 · this+0x6C');}
     const g=se.paint_geometry?.item_grid||{};
     for(let row=0;row<5;row++)for(let col=0;col<6;col++){addFocusedGeometry(ox+21+36*col,oy+48+36*row,36,36,(row===0&&col===0)?'状态0 6×5 / 36px':'' );addFocusedGeometry(ox+253+36*col,oy+48+36*row,36,36,(row===0&&col===0)?'状态1 6×5 / 36px':'' );}
+  }else if(r.id==='window.horse'){
+    const se=evidenceWindow(r.id),pc=se.paint_repositioned_controls?.records||[];
+    for(const q of pc)addFocusedGeometry(ox+q.position[0],oy+q.position[1],28,26,q.role);
   }
   const label=document.createElement('div');label.style.cssText='position:absolute;left:12px;top:10px;color:#e8a33d;background:rgba(10,14,18,.88);padding:4px 6px;border:1px solid #e8a33d;font:12px monospace;z-index:70';label.textContent=`[${r.id} · original window evidence · fixed 800×600 viewport]`;screen.appendChild(label);
 }
