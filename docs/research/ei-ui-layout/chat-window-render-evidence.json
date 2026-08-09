@@ -26,7 +26,20 @@
     {"object_offset": "this+0x6C0", "left": 40, "top": 29, "right": 531, "bottom": 308, "width": 491, "height": 279, "role": "chat-history-area-candidate", "source_va": "0x004140A6"},
     {"object_offset": "this+0x954", "left": 25, "top": 311, "right": 524, "bottom": 326, "width": 499, "height": 15, "role": "chat-input-area-candidate", "source_va": "0x004140BF"}
   ],
-  "refresh": {"line_buffer": "this+0x720", "line_stride": 16, "line_count_candidate": 19, "notes": "The refresh path walks chat-linked data and updates the visible line list; exact text renderer and channel label semantics remain pending."},
+  "refresh": {
+    "line_buffer": "this+0x720",
+    "record_stride_bytes": 16,
+    "line_count_candidate": 19,
+    "draw_geometry": {
+      "routine": "0x00414700–0x00414999",
+      "text_origin_relative": [40, 29],
+      "visual_line_step_px": 14,
+      "clip_rect_relative_first_line": [35, 28, 520, 43],
+      "clip_rect_step_px": 14,
+      "evidence_level": "primary-static-exact-draw-loop"
+    },
+    "notes": "The linked-line record stride is 16 bytes, but the paint loop advances the screen Y coordinate by 0x0E (14 pixels). Do not use the record stride as visual line spacing."
+  },
   "original_command_strings": {
     "source": "Mir3.exe .data string literals passed by the constructor at 0x00414155–0x00414219",
     "encoding": "GBK",

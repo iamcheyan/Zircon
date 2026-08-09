@@ -2141,6 +2141,10 @@ render = function(){
     screen.querySelectorAll(':scope > *:not(#world-label)').forEach(x=>x.remove());
     const target = DATA?.layout?.records?.find(r=>r.kind==='window' && r.id===wanted);
     if(target) addFocusedWindow(target, DATA.window_resource_analysis?.records||[]);
+    if(wanted==='window.chat-pop'&&target){
+      const boxes=[...screen.querySelectorAll('.focus-geometry')];
+      boxes.slice(-19).forEach((b,i)=>{b.style.top=`${target.position.y+29+14*i}px`;b.style.left=`${target.position.x+40}px`;b.style.width='491px';b.style.height='14px';const s=b.querySelector('span');if(i===0&&s)s.textContent='19行 / 记录16字节 / 视觉14px';});
+    }
     return;
   }
   renderEvidenceLayout();
