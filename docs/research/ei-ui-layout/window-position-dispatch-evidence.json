@@ -49,8 +49,8 @@
     {"window_id": 14, "layout_id": "window.other-14-candidate", "object": "main+0x524F0", "target": "0x0042B630", "position_update": true},
     {"window_id": 15, "layout_id": "window.notice-prompt-candidate", "object": "main+0x52E5C", "target": "0x0042B63F", "position_update": true, "notes": "Frame 602 announcement/guild-notice object; business opening path remains pending."}
   ],
-  "interpretation": "The original client does not require every movable window to have a hard-coded final screen origin. It maintains a runtime window list and dispatches position updates by window ID; initial origins and later drag/state updates are separate evidence layers.",
+  "interpretation": "The original client does not require every movable window to have a hard-coded final screen origin. It maintains a runtime window list and dispatches position updates by window ID; initial origins are recorded independently in window-initialization-evidence.json, while later drag/state updates use this resolved X/Y ABI.",
   "pending": [
-    "Recover the runtime list insertion order and initial position values for each window ID."
+    "Correlate each input/drag caller's two runtime arguments with the corresponding window interaction; the initial positions themselves are closed by the main-initializer records."
   ]
 }

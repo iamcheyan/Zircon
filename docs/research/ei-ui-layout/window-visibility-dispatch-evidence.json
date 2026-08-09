@@ -64,9 +64,36 @@
     "evidence_level": "primary-static-constructor-and-init-call-scan",
     "interpretation": "Every registered wrapper invokes the shared constructor path, so the initial gate is zero. The visible linked-list manager starts empty until 0x0042AC30 inserts an explicit ID."
   },
+  "caller_scan": {
+    "method": "Static scan of direct calls to 0x0042ADB0 (show/hide dispatcher) and 0x0042AC50 (hide helper), with immediate ID arguments and surrounding basic blocks preserved.",
+    "show_paths": [
+      {"call_va": "0x0042BFA2", "window_id": 0, "role": "inventory command path", "evidence": "0x0042BF9E pushes 0 before the dispatcher"},
+      {"call_va": "0x0042BFD0", "window_id": 1, "role": "status command path", "evidence": "0x0042BFCC pushes 1 before the dispatcher"},
+      {"call_va": "0x0042BFFA", "window_id": 2, "role": "store command path", "evidence": "0x0042BFF6 pushes 2 before the dispatcher"},
+      {"call_va": "0x0042C028", "window_id": 3, "role": "exchange command path", "evidence": "0x0042C024 pushes 3 before the dispatcher"},
+      {"call_va": "0x0042C052", "window_id": 4, "role": "guild command path", "evidence": "0x0042C04E pushes 4 before the dispatcher"},
+      {"call_va": "0x0042C07C", "window_id": 6, "role": "group command path", "evidence": "0x0042C078 pushes 6 before the dispatcher"},
+      {"call_va": "0x0042C0A6", "window_id": 7, "role": "group-pop command path", "evidence": "0x0042C0A2 pushes 7 before the dispatcher"},
+      {"call_va": "0x0042C0D0", "window_id": 8, "role": "chat command path", "evidence": "0x0042C0CC pushes 8 before the dispatcher"},
+      {"call_va": "0x0042C0FA", "window_id": 11, "role": "quest command path", "evidence": "0x0042C0F6 pushes 11 before the dispatcher"},
+      {"call_va": "0x0042C120", "window_id": 12, "role": "option command path", "evidence": "0x0042C11C pushes 12 before the dispatcher"},
+      {"call_va": "0x0042C146", "window_id": 13, "role": "horse command path", "evidence": "0x0042C142 pushes 13 before the dispatcher"},
+      {"call_va": "0x0042C16C", "window_id": 14, "role": "skill-book command path", "evidence": "0x0042C168 pushes 14 before the dispatcher"},
+      {"call_va": "0x0042BE99", "window_id": 15, "role": "notice result path", "evidence": "0x0042BE95 pushes 15 after the notice preparation call succeeds"}
+    ],
+    "hide_paths": [
+      {"call_va": "0x0041C1F6", "window_id": 9, "role": "NPC/dialogue cleanup", "evidence": "0x0041C1EE pushes 9"},
+      {"call_va": "0x0041C227", "window_id": 2, "role": "store cleanup", "evidence": "0x0041C21F pushes 2"},
+      {"call_va": "0x0041C254", "window_id": "dynamic", "role": "conditional overlay cleanup", "evidence": "0x0041C24C pushes a runtime value"},
+      {"call_va": "0x0042062D", "window_id": 3, "role": "exchange cleanup", "evidence": "0x00420625 pushes 3"},
+      {"call_va": "0x0042B1BC", "window_id": 8, "role": "chat native-overlay cleanup", "evidence": "0x0042B1B8 pushes 8 after the native overlay call"},
+      {"call_va": "0x0042B2EE", "window_id": 15, "role": "notice cleanup", "evidence": "0x0042B2EA pushes 15 after the native notification call"}
+    ],
+    "promotion_result": "The recovered command paths show ordinary open actions call the dispatcher once with the target ID; the corresponding cleanup paths are separate. No direct hide-then-show pair was found in the same basic block. A later open can still append a window after a prior cleanup, but an unconditional top-level promotion policy is not proven.",
+    "evidence_level": "primary-static-caller-scan"
+  },
   "interpretation": "The original UI has a separate visibility state machine from its position-update dispatcher. A window object is tested at its +0x30 state gate; showing registers its window ID in the main+0xD24 linked-list manager, while hiding removes that ID node. The virtual +0x10 callback then receives 1/0. Shared construction and the main-init call scan now prove the default gate is zero and registration alone does not make a window visible.",
   "pending": [
-    "Recover the full initial registry insertion list and default visibility bits.",
     "Correlate the already-identified ID15 notice object with its external caller/message routine and any secondary Interface1c prompt resources."
   ]
 }
