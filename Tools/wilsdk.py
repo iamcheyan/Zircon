@@ -281,8 +281,33 @@ def contact_sheet(imgs: list, cols: int, scale: int, bg=(60, 60, 60, 255)):
     return sheet
 
 
-def make_gif(imgs: list, fps: int, scale: int) -> bytes:
-    """Frames -> animated GIF bytes (transparent background becomes checkboard)."""
+CHECKER_A = (42, 47, 56, 255)
+CHECKER_B = (35, 40, 48, 255)
+
+
+def _composite_bg(im, bg, cell=16):
+    """Flatten RGBA onto a background: 'checker' (16px), 'white', 'black', or an
+    (r,g,b) tuple.  Transparent pixels keep the checker dark enough that dark
+    sprites stay visible (matching the grid cells' checker)."""
+    if bg == "checker":
+        w, h = im.size
+        base = Image.new("RGB", (w, h))
+        for y in range(0, h, cell):
+            for x in range(0, w, cell):
+                color = CHECKER_A if ((x // cell) + (y // cell)) % 2 == 0 else CHECKER_B
+                base.paste(color, (x, y, min(x + cell, w), min(y + cell, h)))
+        return Image.alpha_composite(base.convert("RGBA"), im).convert("RGB")
+    if bg == "white":
+        bg = (255, 255, 255)
+    elif bg == "black":
+        bg = (0, 0, 0)
+    base = Image.new("RGBA", im.size, tuple(bg) + (255,))
+    return Image.alpha_composite(base, im).convert("RGB")
+
+
+def make_gif(imgs: list, fps: int, scale: int, bg="checker") -> bytes:
+    """Frames -> animated GIF bytes.  bg: 'checker'|'white'|'black'|(r,g,b);
+    transparent pixels are flattened onto it (default checker)."""
     from io import BytesIO
     frames = []
     for im in imgs:
@@ -290,8 +315,7 @@ def make_gif(imgs: list, fps: int, scale: int) -> bytes:
             continue
         if scale > 1:
             im = im.resize((im.width * scale, im.height * scale), Image.NEAREST)
-        im = im.convert("RGB")
-        frames.append(im)
+        frames.append(_composite_bg(im, bg))
     if not frames:
         return b""
     buf = BytesIO()
@@ -299,3 +323,70 @@ def make_gif(imgs: list, fps: int, scale: int) -> bytes:
     frames[0].save(buf, format="GIF", save_all=True, append_images=frames[1:],
                    duration=duration, loop=0, disposal=2)
     return buf.getvalue()
+
+
+# ------------------------------------------------------------- scan helpers
+def is_blank(lib: WilLibrary, index: int) -> bool:
+    """Blank placeholder = wix offset 0 / bad header / zero-size.  Header-only,
+    O(1) per frame — same basis the grid's hide-blank uses (plus pixel probe)."""
+    hdr = lib.header(index)
+    return hdr is None or hdr["width"] <= 0 or hdr["height"] <= 0
+
+
+def scan_ranges(lib: WilLibrary) -> list[dict]:
+    """Non-blank frame ranges: [{start, end(exclusive), count}].  Blank
+    placeholder gaps break ranges.  O(count) header reads (fast, mmap)."""
+    ranges = []
+    run = None
+    for i in range(lib.count):
+        if not is_blank(lib, i):
+            if run is None:
+                run = [i, i + 1]
+            else:
+                run[1] = i + 1
+        elif run is not None:
+            ranges.append({"start": run[0], "end": run[1], "count": run[1] - run[0]})
+            run = None
+    if run is not None:
+        ranges.append({"start": run[0], "end": run[1], "count": run[1] - run[0]})
+    return ranges
+
+
+def frame_bytes(lib: WilLibrary, index: int) -> bytes | None:
+    """Raw stored bytes (17-byte header + RLE payload), or None for blank."""
+    hdr = lib.header(index)
+    if hdr is None:
+        return None
+    start = lib.offsets[index]
+    n = HEADER_SIZE + hdr["bytes"]
+    if start + n > len(lib._mm):
+        return None
+    return bytes(lib._mm[start:start + n])
+
+
+def compare_libraries(a: WilLibrary, b: WilLibrary) -> dict:
+    """Diff two libraries frame-by-frame on stored bytes (header + RLE).
+    Returns {total, differ: [idx], missing_a: [idx], missing_b: [idx],
+             ranges: [{start,end,count}] of differing frames}."""
+    n = min(a.count, b.count)
+    differ, missing_a, missing_b = [], [], []
+    for i in range(n):
+        ba, bb = frame_bytes(a, i), frame_bytes(b, i)
+        if ba != bb:
+            differ.append(i)
+    if a.count > n:
+        missing_b = list(range(n, a.count))
+    if b.count > n:
+        missing_a = list(range(n, b.count))
+    ranges, run = [], None
+    for i, d in enumerate(differ):
+        if run is None:
+            run = [d, d + 1]
+        else:
+            run[1] = d + 1
+        if i + 1 < len(differ) and differ[i + 1] == d + 1:
+            continue
+        ranges.append({"start": run[0], "end": run[1], "count": run[1] - run[0]})
+        run = None
+    return {"total": n, "differ": differ, "missing_a": missing_a,
+            "missing_b": missing_b, "ranges": ranges}
