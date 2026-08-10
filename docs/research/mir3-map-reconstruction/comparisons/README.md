@@ -77,3 +77,24 @@ ground frames are alpha=255, so the fix is a no-op there.
   numbering/art for 3.map's objects within frame range; ZL fills the
   out-of-range cells with different art.  Cross-referencing both is required
   to reconstruct a map faithfully (see audit + catalog stages).
+
+## 800×600 simulator (原版视角)
+
+```bash
+python3 Tools/mapviewer.py '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map' \
+    --data '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data' \
+    --catalog docs/research/mir3-map-reconstruction/catalog \
+    --envir /home/tetsuya/NAS/TMP/Mud3/Envir \
+    --port 8766
+```
+
+- `/` 地图浏览器（catalog 面板、网格、格坐标、frame 越界警告）
+- `/sim#sim=3.map&c=220,200&z=3` 800×600 模拟器：rect 投影取景、方向键/WASD 移动、
+  Ctrl+滚轮缩放、T 小地图 128/256、H 切 HUD；实体 = Mud3 服务端数据
+  （StartPoint.txt 出生点 / Merchant.txt NPC / MonGen.txt→Mon_Def/*.gen 怪物），
+  悬停显示信息、点击设目标（黄框 + HUD 读数）；小地图黄框 = 玩家位置。
+- 原版布局证据：HUD 底部条 (0,465)-(800,600)、小地图固定 (672,0)-(800,128)
+  （`docs/research/ei-ui-layout/layout.json`，records=29）。
+
+10 张代表性地图的原版视角帧见 `sim_*.map.webp`，逐图说明见
+`ORIGINAL-VIEW-10MAPS.md`。
