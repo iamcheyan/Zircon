@@ -37,9 +37,71 @@ t-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.c
 
 - 账号：`test@test.com`，密码：`test123`，角色：`TestHero`
 - 用途：登录本地/远程测试服务器进行游戏内验证
-- GM 权限：取决于该账号在服务器 `Users.db` 中的 `AccountInfo.Admin` 字段；
+- GM 权限：**该账号 `Admin = True`（永久 GM）**，可直接使用所有 `@` 管理命令；
   另外服务器支持 `MasterPassword` 机制（非邮箱格式登录名 + 主密码 → TempAdmin），
   详见 `ServerLibrary/Envir/SEnvir.cs` Login 逻辑
+
+## GM 命令（管理员权限）
+
+**用法**：游戏内聊天框直接输入，`@` 开头 + 空格分隔参数。
+命令定义在 `ServerLibrary/Envir/Commands/Command/Admin/`，仅 `Account.Admin` 或
+`TempAdmin` 可用（`AdminCommandHandler.IsAllowedByPlayer`）。
+
+### 传送类
+
+| 命令 | 用途 | 示例 |
+|------|------|------|
+| `@move 地图  x  y` | 传送到地图指定坐标（省略坐标=随机点） | `@move D201`、`@move D201 54 287` |
+| `@goto 角色名` | 传送到某角色身边 | `@goto TestHero` |
+| `@recall 角色名` | 把某角色拉到身边 | `@recall TestHero` |
+
+### 角色/状态类
+
+| 命令 | 用途 | 示例 |
+|------|------|------|
+| `@level 数字` | 设置等级 | `@level 50` |
+| `@addstat 属性 值` | 加属性点 | `@addstat` |
+| `@giveSkills` | 给技能 | `@giveSkills` |
+| `@levelSkill` | 技能升级 | `@levelSkill` |
+| `@levelWeapon` | 武器升级 | `@levelWeapon` |
+| `@toggleGM` | 切换 GameMaster 模式（怪物不主动攻击） | `@toggleGM` |
+| `@toggleSuperman` | 超人模式（无敌） | `@toggleSuperman` |
+| `@toggleObserver` | 观察者模式 | `@toggleObserver` |
+| `@resetDiscipline` | 重置修炼 | `@resetDiscipline` |
+| `@removePKPoints` | 清除 PK 值 | `@removePKPoints` |
+
+### 物品/生成类
+
+| 命令 | 用途 | 示例 |
+|------|------|------|
+| `@make 物品名` | 刷物品到背包 | `@make 金创药` |
+| `@giveHorse` | 给马 | `@giveHorse` |
+| `@spawn 怪物 数量` | 刷怪 | `@spawn GhostSorcerer 5` |
+| `@setCompanionLevel/Stat` | 宠物等级/属性 | `@setCompanionLevel` |
+| `@setHermitStat` | 隐士属性 | `@setHermitStat` |
+
+### 服务器管理类
+
+| 命令 | 用途 | 示例 |
+|------|------|------|
+| `@kick 角色名` | 踢人下线 | `@kick TestHero` |
+| `@ban 账号 天数 原因` | 封禁 | `@ban` |
+| `@chatban` | 禁言 | `@chatban` |
+| `@clearIPBlocks` | 清空 IP 封禁 | `@clearIPBlocks` |
+| `@reboot` | 重启服务器 | `@reboot` |
+| `@createGuild` | 创建公会 | `@createGuild` |
+| `@giveGameGold` | 发游戏金币 | `@giveGameGold` |
+| `@takeGameGold` | 扣游戏金币 | `@takeGameGold` |
+| `@promoteFame` | 提升声望 | `@promoteFame` |
+
+### 常用矿区传送（测试用）
+
+```
+@move D201    ← 废矿1层（僵尸洞，黑/熔岩地砖）
+@move D202    ← 废矿2层
+@move D203    ← 废矿3层
+@move D101    ← 比奇矿洞1层
+```
 
 ## 工作约定
 
