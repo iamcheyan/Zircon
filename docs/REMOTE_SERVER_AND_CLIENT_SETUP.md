@@ -191,6 +191,16 @@ Godot 客户端使用 Godot 的 user://Zircon.ini，而不是项目目录里的�
 
 ### 7.3 启动命令
 
+构建客户端（必须在仓库根目录执行）：
+
+    cd /home/tetsuya/development/Zircon && dotnet build GodotClient/ZirconClient.csproj
+
+以测试账号启动（自动登录 test@test.com / test123，角色 TestHero）：
+
+    godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
+
+或者（不带测试账号，手动登录）：
+
     godot-mono --path GodotClient/
 
 或者：
