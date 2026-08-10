@@ -29,6 +29,18 @@
    export MIR3_ZIRCON_ROOT=/home/tetsuya/development/Zircon
    ```
 
+## 测试账号
+
+```bash
+t-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
+```
+
+- 账号：`test@test.com`，密码：`test123`，角色：`TestHero`
+- 用途：登录本地/远程测试服务器进行游戏内验证
+- GM 权限：取决于该账号在服务器 `Users.db` 中的 `AccountInfo.Admin` 字段；
+  另外服务器支持 `MasterPassword` 机制（非邮箱格式登录名 + 主密码 → TempAdmin），
+  详见 `ServerLibrary/Envir/SEnvir.cs` Login 逻辑
+
 ## 工作约定
 
 - 推送远程是 `fork`（iamcheyan/Zircon），不是 `origin`（Suprcode/Zircon）
