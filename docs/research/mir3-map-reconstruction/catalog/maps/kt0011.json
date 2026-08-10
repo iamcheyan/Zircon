@@ -1,0 +1,151 @@
+{
+ "name": "kt0011.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 20,
+ "h": 20,
+ "size": 5528,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 100,
+   "frame_min": 10044,
+   "frame_max": 11973,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "38": {
+   "lib": "sand_furnituresc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "39": {
+   "lib": "sand_wallsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 860
+  },
+  "40": {
+   "lib": "sand_smobjectsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 631
+  },
+  "41": {
+   "lib": "sand_animationsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 127
+  },
+  "48": {
+   "lib": "snow_smtilesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "49": {
+   "lib": "snow_housesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9577
+  },
+  "50": {
+   "lib": "snow_cliffsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "51": {
+   "lib": "snow_dungeonsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  },
+  "52": {
+   "lib": "snow_innersc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 68
+  },
+  "53": {
+   "lib": "snow_furnituresc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "54": {
+   "lib": "snow_wallsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9213
+  },
+  "55": {
+   "lib": "snow_smobjectsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  },
+  "56": {
+   "lib": "snow_animationsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 2921
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "254": 1,
+  "255": 1
+ },
+ "animated_cells": 400,
+ "anomalies": {},
+ "anomaly_total": 0
+}

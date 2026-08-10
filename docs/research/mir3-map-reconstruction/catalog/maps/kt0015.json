@@ -1,0 +1,113 @@
+{
+ "name": "kt0015.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 30,
+ "h": 30,
+ "size": 12403,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 225,
+   "frame_min": 11900,
+   "frame_max": 13079,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "63": {
+   "lib": "forest_smtilesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "64": {
+   "lib": "forest_housesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9577
+  },
+  "65": {
+   "lib": "forest_cliffsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "66": {
+   "lib": "forest_dungeonsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  },
+  "67": {
+   "lib": "forest_innersc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 68
+  },
+  "68": {
+   "lib": "forest_furnituresc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "69": {
+   "lib": "forest_wallsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9213
+  },
+  "70": {
+   "lib": "forest_smobjectsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  },
+  "71": {
+   "lib": "forest_animationsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 2921
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "255": 1
+ },
+ "anomalies": {},
+ "anomaly_total": 0
+}

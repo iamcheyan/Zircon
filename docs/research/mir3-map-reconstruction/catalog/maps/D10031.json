@@ -1,0 +1,83 @@
+{
+ "name": "D10031.map",
+ "display": "103",
+ "theme": 0,
+ "theme_name": "",
+ "w": 300,
+ "h": 300,
+ "size": 1327528,
+ "size_ok": true,
+ "cell_bytes": 14,
+ "legacy_13b": false,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 22500,
+   "frame_min": 20,
+   "frame_max": 42766,
+   "frame_oob": 62,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "3": {
+   "lib": "smtilesc",
+   "cells": 62,
+   "frame_min": 9998,
+   "frame_max": 9998,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 10180
+  },
+  "12": {
+   "lib": "object1c",
+   "cells": 164,
+   "frame_min": 0,
+   "frame_max": 2766,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 33125
+  },
+  "13": {
+   "lib": "object2c",
+   "cells": 16865,
+   "frame_min": 2291,
+   "frame_max": 19640,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 30000
+  }
+ },
+ "front": {
+  "12": {
+   "lib": "object1c",
+   "cells": 6,
+   "frame_min": 5,
+   "frame_max": 12,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 33125
+  },
+  "13": {
+   "lib": "object2c",
+   "cells": 56,
+   "frame_min": 19636,
+   "frame_max": 19643,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 30000
+  }
+ },
+ "cell_flag0": {
+  "252": 1,
+  "253": 1,
+  "254": 1,
+  "255": 1
+ },
+ "animated_cells": 89997,
+ "anomalies": {
+  "ground_lib2_frame_oob": 62
+ },
+ "anomaly_total": 62
+}

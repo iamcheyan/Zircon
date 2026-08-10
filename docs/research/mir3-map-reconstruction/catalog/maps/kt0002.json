@@ -1,0 +1,114 @@
+{
+ "name": "kt0002.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 20,
+ "h": 20,
+ "size": 5528,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 100,
+   "frame_min": 11957,
+   "frame_max": 12873,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "10": {
+   "lib": "smobjectsc",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  },
+  "11": {
+   "lib": "animationsc",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 2921
+  },
+  "12": {
+   "lib": "object1c",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 33125
+  },
+  "13": {
+   "lib": "object2c",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 30000
+  },
+  "38": {
+   "lib": "sand_furnituresc",
+   "cells": 2,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 1714
+  },
+  "39": {
+   "lib": "sand_wallsc",
+   "cells": 2,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 860
+  },
+  "50": {
+   "lib": "snow_cliffsc",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "53": {
+   "lib": "snow_furnituresc",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "63": {
+   "lib": "forest_smtilesc",
+   "cells": 1,
+   "frame_min": 65285,
+   "frame_max": 65285,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "255": 1
+ },
+ "animated_cells": 400,
+ "anomalies": {},
+ "anomaly_total": 0
+}

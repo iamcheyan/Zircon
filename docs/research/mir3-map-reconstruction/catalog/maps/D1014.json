@@ -1,0 +1,43 @@
+{
+ "name": "D1014.map",
+ "display": "115",
+ "theme": 0,
+ "theme_name": "",
+ "w": 300,
+ "h": 300,
+ "size": 1327528,
+ "size_ok": true,
+ "cell_bytes": 14,
+ "legacy_13b": false,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 22500,
+   "frame_min": 10021,
+   "frame_max": 12973,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "13": {
+   "lib": "object2c",
+   "cells": 16877,
+   "frame_min": 2291,
+   "frame_max": 3452,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 30000
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "254": 1,
+  "255": 1
+ },
+ "animated_cells": 90000,
+ "anomalies": {},
+ "anomaly_total": 0
+}

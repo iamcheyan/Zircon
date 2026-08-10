@@ -1,0 +1,241 @@
+{
+ "name": "d610.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 50,
+ "h": 50,
+ "size": 34403,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 625,
+   "frame_min": 11950,
+   "frame_max": 14893,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "35": {
+   "lib": "sand_cliffsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "36": {
+   "lib": "sand_dungeonsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  },
+  "37": {
+   "lib": "sand_innersc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 68
+  },
+  "38": {
+   "lib": "sand_furnituresc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "39": {
+   "lib": "sand_wallsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 860
+  },
+  "40": {
+   "lib": "sand_smobjectsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 631
+  },
+  "41": {
+   "lib": "sand_animationsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 127
+  },
+  "48": {
+   "lib": "snow_smtilesc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "49": {
+   "lib": "snow_housesc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9577
+  },
+  "50": {
+   "lib": "snow_cliffsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "52": {
+   "lib": "snow_innersc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 68
+  },
+  "53": {
+   "lib": "snow_furnituresc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "54": {
+   "lib": "snow_wallsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9213
+  },
+  "55": {
+   "lib": "snow_smobjectsc",
+   "cells": 2,
+   "frame_min": 65400,
+   "frame_max": 65405,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 7569
+  },
+  "56": {
+   "lib": "snow_animationsc",
+   "cells": 2,
+   "frame_min": 65400,
+   "frame_max": 65405,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 2921
+  },
+  "63": {
+   "lib": "forest_smtilesc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "64": {
+   "lib": "forest_housesc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9577
+  },
+  "65": {
+   "lib": "forest_cliffsc",
+   "cells": 2,
+   "frame_min": 65400,
+   "frame_max": 65405,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 7619
+  },
+  "66": {
+   "lib": "forest_dungeonsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  },
+  "67": {
+   "lib": "forest_innersc",
+   "cells": 2,
+   "frame_min": 65400,
+   "frame_max": 65405,
+   "frame_oob": 0,
+   "reserved": 2,
+   "lib_frames": 68
+  },
+  "69": {
+   "lib": "forest_wallsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9213
+  },
+  "70": {
+   "lib": "forest_smobjectsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  },
+  "71": {
+   "lib": "forest_animationsc",
+   "cells": 1,
+   "frame_min": 65400,
+   "frame_max": 65400,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 2921
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "254": 1,
+  "255": 1
+ },
+ "animated_cells": 2500,
+ "anomalies": {},
+ "anomaly_total": 0
+}

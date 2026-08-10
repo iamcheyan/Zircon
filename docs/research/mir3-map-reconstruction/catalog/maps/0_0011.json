@@ -1,0 +1,213 @@
+{
+ "name": "0_0011.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 30,
+ "h": 30,
+ "size": 12403,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "0": {
+   "lib": "tilesc",
+   "cells": 17,
+   "frame_min": 500,
+   "frame_max": 504,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 9836
+  },
+  "2": {
+   "lib": "tiles5c",
+   "cells": 208,
+   "frame_min": 5,
+   "frame_max": 24,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "8": {
+   "lib": "furnituresc",
+   "cells": 1,
+   "frame_min": 10240,
+   "frame_max": 10240,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 1714
+  },
+  "9": {
+   "lib": "wallsc",
+   "cells": 1,
+   "frame_min": 10496,
+   "frame_max": 10496,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 9213
+  },
+  "10": {
+   "lib": "smobjectsc",
+   "cells": 1,
+   "frame_min": 65280,
+   "frame_max": 65280,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  },
+  "11": {
+   "lib": "animationsc",
+   "cells": 1,
+   "frame_min": 52480,
+   "frame_max": 52480,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 2921
+  },
+  "19": {
+   "lib": "wood_housesc",
+   "cells": 1,
+   "frame_min": 9472,
+   "frame_max": 9472,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 9010
+  },
+  "22": {
+   "lib": "wood_innersc",
+   "cells": 1,
+   "frame_min": 7680,
+   "frame_max": 7680,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 1797
+  },
+  "23": {
+   "lib": "wood_furnituresc",
+   "cells": 1,
+   "frame_min": 65280,
+   "frame_max": 65280,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "24": {
+   "lib": "wood_wallsc",
+   "cells": 1,
+   "frame_min": 65280,
+   "frame_max": 65280,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 3791
+  },
+  "25": {
+   "lib": "wood_smobjectsc",
+   "cells": 1,
+   "frame_min": 65280,
+   "frame_max": 65280,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 969
+  },
+  "33": {
+   "lib": "sand_smtilesc",
+   "cells": 1,
+   "frame_min": 27905,
+   "frame_max": 27905,
+   "frame_oob": 1,
+   "reserved": 0,
+   "lib_frames": 10180
+  },
+  "34": {
+   "lib": "sand_housesc",
+   "cells": 1,
+   "frame_min": 65281,
+   "frame_max": 65281,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1274
+  },
+  "36": {
+   "lib": "sand_dungeonsc",
+   "cells": 1,
+   "frame_min": 65281,
+   "frame_max": 65281,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  },
+  "38": {
+   "lib": "sand_furnituresc",
+   "cells": 1,
+   "frame_min": 65281,
+   "frame_max": 65281,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "49": {
+   "lib": "snow_housesc",
+   "cells": 4,
+   "frame_min": 4608,
+   "frame_max": 65280,
+   "frame_oob": 1,
+   "reserved": 2,
+   "lib_frames": 9577
+  },
+  "50": {
+   "lib": "snow_cliffsc",
+   "cells": 4,
+   "frame_min": 5376,
+   "frame_max": 65280,
+   "frame_oob": 1,
+   "reserved": 2,
+   "lib_frames": 7619
+  },
+  "67": {
+   "lib": "forest_innersc",
+   "cells": 1,
+   "frame_min": 65280,
+   "frame_max": 65280,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 68
+  },
+  "69": {
+   "lib": "forest_wallsc",
+   "cells": 1,
+   "frame_min": 65281,
+   "frame_max": 65281,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9213
+  },
+  "70": {
+   "lib": "forest_smobjectsc",
+   "cells": 1,
+   "frame_min": 65281,
+   "frame_max": 65281,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7569
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "0": 1,
+  "2": 1,
+  "3": 1
+ },
+ "anomalies": {
+  "mid_lib11_frame_oob": 1,
+  "mid_lib19_frame_oob": 1,
+  "mid_lib22_frame_oob": 1,
+  "mid_lib33_frame_oob": 1,
+  "mid_lib49_frame_oob": 1,
+  "mid_lib50_frame_oob": 1,
+  "mid_lib8_frame_oob": 1,
+  "mid_lib9_frame_oob": 1
+ },
+ "anomaly_total": 8
+}

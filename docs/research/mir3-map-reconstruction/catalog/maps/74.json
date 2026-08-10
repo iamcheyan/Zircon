@@ -1,0 +1,163 @@
+{
+ "name": "74.map",
+ "display": "1013",
+ "theme": 1,
+ "theme_name": "Wood",
+ "w": 600,
+ "h": 600,
+ "size": 5310028,
+ "size_ok": true,
+ "cell_bytes": 14,
+ "legacy_13b": false,
+ "ground": {
+  "0": {
+   "lib": "tilesc",
+   "cells": 6451,
+   "frame_min": 468,
+   "frame_max": 7596,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 9836
+  },
+  "1": {
+   "lib": "tiles30c",
+   "cells": 73465,
+   "frame_min": 0,
+   "frame_max": 664,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 1080
+  },
+  "30": {
+   "lib": "sand_tilesc",
+   "cells": 9994,
+   "frame_min": 2,
+   "frame_max": 1754,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 4299
+  }
+ },
+ "mid": {
+  "4": {
+   "lib": "housesc",
+   "cells": 90,
+   "frame_min": 7651,
+   "frame_max": 7810,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 9577
+  },
+  "5": {
+   "lib": "cliffsc",
+   "cells": 42049,
+   "frame_min": 6,
+   "frame_max": 3783,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 7619
+  },
+  "10": {
+   "lib": "smobjectsc",
+   "cells": 15464,
+   "frame_min": 334,
+   "frame_max": 7564,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 7569
+  },
+  "11": {
+   "lib": "animationsc",
+   "cells": 7,
+   "frame_min": 2032,
+   "frame_max": 2079,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 2921
+  },
+  "34": {
+   "lib": "sand_housesc",
+   "cells": 409,
+   "frame_min": 1,
+   "frame_max": 417,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 1274
+  },
+  "39": {
+   "lib": "sand_wallsc",
+   "cells": 937,
+   "frame_min": 1,
+   "frame_max": 853,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 860
+  },
+  "40": {
+   "lib": "sand_smobjectsc",
+   "cells": 2473,
+   "frame_min": 2,
+   "frame_max": 628,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 631
+  }
+ },
+ "front": {
+  "4": {
+   "lib": "housesc",
+   "cells": 1,
+   "frame_min": 7668,
+   "frame_max": 7668,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 9577
+  },
+  "5": {
+   "lib": "cliffsc",
+   "cells": 220,
+   "frame_min": 12,
+   "frame_max": 3605,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 7619
+  },
+  "10": {
+   "lib": "smobjectsc",
+   "cells": 2395,
+   "frame_min": 363,
+   "frame_max": 7553,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 7569
+  },
+  "39": {
+   "lib": "sand_wallsc",
+   "cells": 7,
+   "frame_min": 304,
+   "frame_max": 850,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 860
+  },
+  "40": {
+   "lib": "sand_smobjectsc",
+   "cells": 205,
+   "frame_min": 8,
+   "frame_max": 600,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 631
+  }
+ },
+ "cell_flag0": {
+  "0": 1,
+  "2": 1,
+  "3": 1
+ },
+ "animated_cells": 7,
+ "anomalies": {
+  "ground_not_drawn": 90
+ },
+ "anomaly_total": 90
+}

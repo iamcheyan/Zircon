@@ -1,0 +1,159 @@
+{
+ "name": "kt0013.map",
+ "display": null,
+ "theme": 0,
+ "theme_name": "",
+ "w": 20,
+ "h": 20,
+ "size": 5528,
+ "size_ok": true,
+ "cell_bytes": 13,
+ "legacy_13b": true,
+ "ground": {
+  "2": {
+   "lib": "tiles5c",
+   "cells": 100,
+   "frame_min": 10044,
+   "frame_max": 11923,
+   "frame_oob": 0,
+   "reserved": 0,
+   "lib_frames": 20000
+  }
+ },
+ "mid": {
+  "13": {
+   "lib": "object2c",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 30000
+  },
+  "18": {
+   "lib": "wood_smtilesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "19": {
+   "lib": "wood_housesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 9010
+  },
+  "20": {
+   "lib": "wood_cliffsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "21": {
+   "lib": "wood_dungeonsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 4710
+  },
+  "22": {
+   "lib": "wood_innersc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1797
+  },
+  "23": {
+   "lib": "wood_furnituresc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1714
+  },
+  "24": {
+   "lib": "wood_wallsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 3791
+  },
+  "25": {
+   "lib": "wood_smobjectsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 969
+  },
+  "26": {
+   "lib": "wood_animationsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1393
+  },
+  "33": {
+   "lib": "sand_smtilesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 10180
+  },
+  "34": {
+   "lib": "sand_housesc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 1274
+  },
+  "35": {
+   "lib": "sand_cliffsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 7619
+  },
+  "36": {
+   "lib": "sand_dungeonsc",
+   "cells": 1,
+   "frame_min": 65299,
+   "frame_max": 65299,
+   "frame_oob": 0,
+   "reserved": 1,
+   "lib_frames": 5364
+  }
+ },
+ "front": {},
+ "cell_flag0": {
+  "252": 1,
+  "255": 1
+ },
+ "animated_cells": 400,
+ "anomalies": {},
+ "anomaly_total": 0
+}
