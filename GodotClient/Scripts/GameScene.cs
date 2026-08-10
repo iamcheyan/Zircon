@@ -1992,7 +1992,10 @@ public partial class GameScene : Control
         ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
-            _moveServerLockUntilMs = 0;  // 收到移动回包, 解除 ServerTime 门控
+            // 不要在这里提前解除 ServerTime 门控。这里的网络事件会把
+            // ShowUserLocation 延迟到主线程帧末执行；如果此时立即解锁，
+            // MouseWalker 可能先发出下一步，而旧回包随后会把预测坐标
+            // 误判为“需要纠正”，表现为走路回拉/瞬移。
             bool autoPathActive = _autoPathRoutes.Count > 0 || _autoPathCancelPending;
             if (autoPathActive)
             {
@@ -2014,7 +2017,6 @@ public partial class GameScene : Control
                 };
                 return;
             }
-            _canRun = true;
             _mouseWalker?.AddMoveDelay(slow);
             CallDeferred(nameof(ShowUserLocation), (int)dir, loc.X, loc.Y, Math.Max(1, distance));
             return;
@@ -7135,7 +7137,15 @@ public partial class GameScene : Control
 
     private void ShowUserLocation(int direction, int x, int y, int distance)
     {
-        if (_player == null) return;
+        if (_player == null)
+        {
+            _moveServerLockUntilMs = 0;
+            return;
+        }
+        // 只有在本次服务器回包真正应用到客户端状态后，才允许下一次
+        // MouseWalker 请求。这样预测坐标与旧回包不会交叉覆盖。
+        _moveServerLockUntilMs = 0;
+        _canRun = true;
         MirDirection dir = (MirDirection)direction;
         _playerDirection = dir;
 

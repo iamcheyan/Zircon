@@ -41,7 +41,9 @@ public static class ClientSettings
     public static Vector2I GameSize { get; set; } = new(1024, 768);
     public static int DefaultMonitor { get; set; }
     public static string RenderingPipeline { get; set; } = "Forward Plus";
-    public static bool SmoothMove { get; set; }
+    // 原版移动是按走/跑帧时长连续回拉的；默认关闭会退化成按帧阶梯位移，
+    // 在高刷新率窗口中明显感觉“卡步”。保留设置项，但新配置默认开启。
+    public static bool SmoothMove { get; set; } = true;
     public static bool ClipMouse { get; set; }
     public static bool DebugLabel { get; set; }
     public static int SystemVolume { get; set; } = 25;
