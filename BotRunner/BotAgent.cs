@@ -205,7 +205,7 @@ public sealed class BotAgent
                     Fail($"account creation failed: {account.Result}");
                 break;
             case S.Login login:
-                if (login.Result != LoginResult.Success || login.Characters == null || login.Characters.Count == 0)
+                if (login.Result != LoginResult.Success)
                 {
                     // 服务器重启后旧会话的断连检测有延迟, 快速重连会撞上
                     // AlreadyLoggedIn。等服务器踢掉残留会话再重试, 不算致命失败。
@@ -218,9 +218,29 @@ public sealed class BotAgent
                     }
                     Fail($"login failed: {login.Result} {login.Message}"); break;
                 }
-                _connection.Enqueue(new C.StartGame { CharacterIndex = login.Characters[0].CharacterIndex });
-                Status = BotStatus.Starting;
-                _startRequestedAt = DateTime.UtcNow + StartResponseTimeout;
+                if (login.Characters is { Count: > 0 })
+                    QueueStartGame(login.Characters[0]);
+                else if (_config.AutoCreateAccount)
+                {
+                    _connection.Enqueue(new C.NewCharacter
+                    {
+                        CharacterName = Name,
+                        Class = MirClass.Warrior,
+                        Gender = MirGender.Male,
+                        HairType = 0,
+                        HairColour = Color.Black,
+                        ArmourColour = Color.White,
+                        CheckSum = string.Empty
+                    });
+                }
+                else
+                    Fail("login succeeded but account has no characters");
+                break;
+            case S.NewCharacter character:
+                if (character.Result == NewCharacterResult.Success && character.Character != null)
+                    QueueStartGame(character.Character);
+                else
+                    Fail($"character creation failed: {character.Result}");
                 break;
             case S.StartGame start:
                 if (start.Result != StartGameResult.Success) { Fail($"start failed: {start.Result} {start.Message}"); break; }
@@ -353,6 +373,13 @@ public sealed class BotAgent
     {
         if (_accountReady || !_config.AutoCreateAccount)
             _connection.Enqueue(new C.Login { EMailAddress = _email, Password = _password, CheckSum = string.Empty });
+    }
+
+    private void QueueStartGame(SelectInfo character)
+    {
+        _connection.Enqueue(new C.StartGame { CharacterIndex = character.CharacterIndex });
+        Status = BotStatus.Starting;
+        _startRequestedAt = DateTime.UtcNow + StartResponseTimeout;
     }
 
     private void Tick()
