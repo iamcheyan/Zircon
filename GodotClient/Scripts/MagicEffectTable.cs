@@ -316,10 +316,13 @@ public static class MagicEffectTable
             CastAtSource = true,
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning, FrameLight = 150 },
         },
+        // 原版 MapObject.cs:1084-1108: 同一帧 Effect(1450,3,150ms) 对 MagicLocations(MapTarget=point)
+        // 和 AttackTargets(Target=attackTarget) 各播一次. 旧配置只有 Impact(目标), 漏了地面 MapImpact.
         [MagicType.ThunderStrike] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning,
             CastAtSource = true,
+            MapImpact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning, FrameLight = 150 },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1450, FrameCount = 3, DelayMs = 150, Colour = Lightning, FrameLight = 150 },
         },
         [MagicType.FireBounce] = new CastEffect
@@ -347,7 +350,11 @@ public static class MagicEffectTable
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 2970, FrameCount = 10, Colour = Ice },
         },
         [MagicType.Cyclone] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind, Source = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1970, FrameCount = 10, DelayMs = 60, Colour = Wind, FrameLight = 50 }, MapImpact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1990, FrameCount = 5, Colour = Wind, FrameLight = 50 }, TargetEffect = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1970, FrameCount = 10, DelayMs = 60, Colour = Wind, FrameLight = 50 }, Additional = { new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 2000, FrameCount = 8, StartDelayMs = 500, Colour = Wind, FrameLight = 50 } } },
-        [MagicType.FireStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 940, FrameCount = 10, DelayMs = 60, Colour = Fire, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 950, FrameCount = 7, Colour = Fire } },
+        // 原版 MapObject.cs:1351 release: Effect(950,7,100ms,MapTarget=point) 每个 MagicLocation 一枚地面火焰;
+        // start(:4046): Effect(940,10,60ms,Target=this). 旧配置把 950 配成 Impact(目标命中),
+        // 但 FireStorm 是地面范围魔法 — CastAtSource=true 时 destCells 循环不播 Impact, 只在 targets
+        // 循环对目标对象播, 地面火焰丢失. 改为 MapImpact 在地面格播放.
+        [MagicType.FireStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 940, FrameCount = 10, DelayMs = 60, Colour = Fire, CastAtSource = true, MapImpact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 950, FrameCount = 7, Colour = Fire } },
         [MagicType.MagicShield] = new CastEffect { File = LibraryFile.Magic, StartIndex = 830, FrameCount = 19, DelayMs = 60, Colour = Phantom, CastAtSource = true },
         [MagicType.SuperiorMagicShield] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 1900, FrameCount = 17, DelayMs = 60, Colour = Fire, CastAtSource = true },
 
@@ -358,10 +365,13 @@ public static class MagicEffectTable
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 610, FrameCount = 10, Colour = Holy },
             CastAtSource = true,
         },
+        // 原版: start Effect(660,10,60ms,Target=this) + release Effect(670,7,100ms,MapTarget=point) 地面治疗.
+        // 旧配置把 670 配成 Impact(目标), 但 MassHeal 是地面范围治疗 — CastAtSource=true 阻断 destCells,
+        // 地面治疗光环丢失. 改为 MapImpact.
         [MagicType.MassHeal] = new CastEffect
         {
             File = LibraryFile.Magic, StartIndex = 660, FrameCount = 10, DelayMs = 60, Colour = Holy,
-            Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 670, FrameCount = 7, Colour = Holy },
+            MapImpact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 670, FrameCount = 7, Colour = Holy },
             CastAtSource = true,
         },
         [MagicType.PoisonDust] = new CastEffect
@@ -427,9 +437,15 @@ public static class MagicEffectTable
         [MagicType.ExpelUndead] = new CastEffect { File = LibraryFile.Magic, StartIndex = 130, FrameCount = 10, Colour = Phantom, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 140, FrameCount = 10, Colour = Phantom } },
         [MagicType.FireWall] = new CastEffect { File = LibraryFile.Magic, StartIndex = 910, FrameCount = 10, DelayMs = 60, Colour = Fire, CastAtSource = true },
         [MagicType.GeoManipulation] = new CastEffect { File = LibraryFile.Magic, StartIndex = 110, FrameCount = 10, DelayMs = 60, Colour = Phantom, CastAtSource = true },
-        [MagicType.LightningWave] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 980, FrameCount = 8, Colour = Lightning } },
-        [MagicType.IceStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 770, FrameCount = 10, DelayMs = 60, Colour = Ice, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 780, FrameCount = 7, Colour = Ice } },
-        [MagicType.DragonTornado] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1030, FrameCount = 10, DelayMs = 60, Colour = Wind, CastAtSource = true, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1040, FrameCount = 16, Colour = Wind } },
+        // 原版: start Effect(1430,12,50ms,Target=this) + release Effect(980,8,100ms,MapTarget=point) 地面闪电.
+        // 旧配置 Impact(目标) 被 CastAtSource=true 阻断, 地面闪电丢失. 改为 MapImpact.
+        [MagicType.LightningWave] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning, CastAtSource = true, MapImpact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 980, FrameCount = 8, Colour = Lightning } },
+        // 原版: start Effect(770,10,60ms,Target=this) + release Effect(780,7,100ms,MapTarget=point) 地面冰暴.
+        // 旧配置 Impact(目标) 被 CastAtSource=true 阻断, 地面冰暴丢失. 改为 MapImpact.
+        [MagicType.IceStorm] = new CastEffect { File = LibraryFile.Magic, StartIndex = 770, FrameCount = 10, DelayMs = 60, Colour = Ice, CastAtSource = true, MapImpact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 780, FrameCount = 7, Colour = Ice } },
+        // 原版: start Effect(1030,10,60ms,Target=this) + release Effect(1040,16,100ms,MapTarget=point) 地面龙卷.
+        // 旧配置 Impact(目标) 被 CastAtSource=true 阻断, 地面龙卷丢失. 改为 MapImpact.
+        [MagicType.DragonTornado] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 1030, FrameCount = 10, DelayMs = 60, Colour = Wind, CastAtSource = true, MapImpact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 1040, FrameCount = 16, Colour = Wind } },
         [MagicType.GreaterFrozenEarth] = new CastEffect { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, Colour = Ice, BlendRate = 0.5f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice }, TargetEffect = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 0, FrameCount = 10, DelayMs = 50, Colour = Ice, DirectionFromCast = true }, Impact = new ImpactDef { File = LibraryFile.MagicEx, StartIndex = 90, FrameCount = 20, DelayMs = 50, DistanceDelayMs = 50, Colour = Ice, FrameLight = 20, Opacity = 0.5f }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 260, FrameCount = 1, DelayMs = 2500, StartDelayMs = 1000, DistanceDelayMs = 50, Colour = None, FrameLight = 0, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         [MagicType.ChainLightning] = new CastEffect { File = LibraryFile.MagicEx2, StartIndex = 470, FrameCount = 10, Colour = Lightning, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1430, FrameCount = 12, DelayMs = 50, Colour = Lightning } },
         // 原版只有地面落点弹道 (Origin=落点+(4,-10) 的直落陨石)，对
