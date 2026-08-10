@@ -239,6 +239,8 @@ public sealed class BotAgent
             case S.NewCharacter character:
                 if (character.Result == NewCharacterResult.Success && character.Character != null)
                     QueueStartGame(character.Character);
+                else if (character.Result == NewCharacterResult.AlreadyExists)
+                    QueueLogin();
                 else
                     Fail($"character creation failed: {character.Result}");
                 break;
