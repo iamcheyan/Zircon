@@ -11,7 +11,7 @@
 先完整阅读：
 
 ```text
-docs/MIR3_UI_RECONSTRUCTION_HANDOFF.md
+docs/handoffs/MIR3_UI_RECONSTRUCTION_HANDOFF.md
 docs/research/ei-ui-layout/README.md
 docs/research/ei-ui-layout/UI_COMPLETION_AUDIT.md
 docs/research/ei-ui-layout/UI_COVERAGE_MATRIX.md
