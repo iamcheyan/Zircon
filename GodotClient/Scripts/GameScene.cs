@@ -3267,7 +3267,7 @@ public partial class GameScene : Control
         {
             GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
                 $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
-                "请按 docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
+                "请按 Mir3-Research/docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
             return;
         }
 
@@ -4729,7 +4729,7 @@ public partial class GameScene : Control
 
         if (_magicBar != null && _mainPanel != null)
         {
-            // docs/UI_GLOBAL_OFFSET_ANALYSIS.md：清掉贴顶脏配置后再锚底。
+            // Mir3-Research/docs/UI_GLOBAL_OFFSET_ANALYSIS.md：清掉贴顶脏配置后再锚底。
             _magicBar.ClearInvalidPersistedPosition();
             _magicBar.ApplyDefaultAnchor(vp, _mainPanel.Location, _mainPanel.Size);
         }

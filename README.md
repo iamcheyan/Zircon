@@ -1,115 +1,31 @@
-# Zircon — Legend of Mir 3（传奇 3）
+# Zircon
 
-原项目：[Suprcode/Zircon](https://github.com/Suprcode/Zircon) · 社区：[LOMCN 论坛](http://www.lomcn.org/forum/forumdisplay.php?735)
+传奇 3 的正式开发仓库：服务端、共享协议库、原客户端参考代码以及 Godot 客户端。
 
-传奇 3 的 C# 服务端 + 客户端代码库。本仓库为 fork，当前目标：**用 Godot 重写跨平台客户端，连接原版服务端**（先本机 127.0.0.1，后上线/web）。
+本仓库负责可编译、可运行的产品代码，不再承载原版客户端逆向资料、WIL/WIX/DAT/MAP 解码工具或研究网页。那些内容已经拆分到独立仓库：
 
-> 📚 **学习笔记**：[`docs/notes/`](docs/notes/) 记录每次讨论的结论（架构决策、服务端跑通实战、复用边界等），新手向，建议按序号阅读。数据库内容自动生成的文档在 [`docs/database/`](docs/database/)。
+**Mir3-Research**：工具、研究文档、证据 JSON、地图/UI 调查和 800×600 HTML 模拟器。
 
----
+## 主要项目
 
-## 一、为什么用 Godot 重构
+- `Server/`、`ServerCore/`、`ServerLibrary/`：服务端和服务端核心
+- `LibraryCore/`：MirDB、SystemModels 和网络协议
+- `GodotClient/`：跨平台客户端重写
+- `Client/`、`RenderingCore/`：原 Windows 客户端及渲染参考
+- `Launcher/`、`PluginCore/`、`Components/`：启动器和共享组件
 
-原客户端**无法跨平台复用**：
+## 资源
 
-- `Client/`：`net10.0-windows8.0` + `UseWindowsForms`，UI 是 WinForms（DXButton/DXWindow/DXTabControl…），渲染走 SharpDX/D3D11，全部钉死在 Windows 上，在 Godot/Linux 上不存在。
-- 客户端渲染逻辑与游戏逻辑纠缠（例如 `Process(S.ObjectMoved)` 里既改坐标又加特效），无法整块搬进 Godot。
+大型运行资源不进入 Git。请按本机情况准备 `Debug/`、`Resource/` 和原版客户端目录；研究工具和资源索引在 `Mir3-Research` 仓库维护。
 
-但**服务端逻辑是纯 .NET、跨平台、久经线上验证的**，且客户端资产（图库/地图/声音/数据库）已完整下载。因此最优路线不是用 GDScript 重写规则，而是：
+## 构建
 
-> **ServerCore（无头服务端）原样在本机跑，Godot(C#) 客户端通过 TCP 连接它。服务端一行不改，Godot 只负责渲染、输入、UI。** 协议层（packet 序列化 + TCP 收发）已在 `LibraryCore/BaseConnection` 现成跨平台，客户端直接复用。
+请使用仓库中的 `Zircon Server.sln`，并根据目标项目安装对应的 .NET SDK、Godot .NET 版和 Windows 依赖。正式客户端与服务端的运行说明应随项目代码维护；原版资源调查、地图审计和网页工具请阅读 `Mir3-Research` 的 README。
 
-## 二、复用边界
+## 仓库边界
 
-| 层 | 处置 | 说明 |
-|---|---|---|
-| `ServerLibrary/` | ✅ 原样复用 | 纯 `net10.0`，只引用 LibraryCore；`System.Drawing` 仅用 Point/Size/Color 值类型（SEnvir.cs 实测：45 Point / 18 Size / 2 Color，无 Bitmap/Graphics），跨平台无碍 |
-| `LibraryCore/` | ✅ 原样复用 | MirDB（自研二进制 ORM）、SystemModels、网络 packet 定义 |
-| `ServerCore/` | ✅ 原样复用 | 纯 `net10.0` + autofac，ServerLibrary 的无头 host。**已验证 Linux 可跑**，监听 127.0.0.1:7000（见 docs/notes/03） |
-| `Server/` | ⛔ 不碰 | DevExpress 可视化编辑器（策划改数值用），`net10.0-windows8.0` + WinForms，仅 Windows |
-| `Client/` | ♻️ 部分复用 + 重写 | 网络收发层（继承 BaseConnection）参考复用；WinForms + SharpDX 渲染层在 Godot 全重写 |
-| `System.db` | ✅ 直接读 | 未加密（明文头，EncryptionEnabled=false），已下载于 `Debug/Server/Database/System.db` |
-| `Data/*.Zl` 图库 | ✅ 直接读 | 已下载于 `Debug/Client/Data/`，格式读取器在 LibraryEditor（WeMadeLibrary/WTLLibrary） |
-| `Map/*.map` | ✅ 直接读 | 已下载 |
-| `Sound/*.wav` | ✅ 直接用 | 已下载 |
-
-## 三、架构：客户端-服务端分离（本机开发）
-
-原架构就是 TCP 传 packet，我们保持原样，不改服务端：
-
+```text
+Zircon           正式源码、解决方案和产品代码
+Mir3-Research    逆向工具、文档、证据数据、网页和模拟器
+NAS              原版客户端与大型资源，不纳入 Git
 ```
-┌──────────────────┐   TCP 127.0.0.1:7000   ┌────────────────────┐
-│  ServerCore       │ ◄────────────────────► │  Godot 客户端       │
-│  无头服务端进程    │   packet (S.*/C.*)     │  (跨平台, 我们要写)  │
-│  原样跑, 零改动    │                        │  渲染/UI/输入全重写  │
-└──────────────────┘                        └────────────────────┘
-```
-
-- **服务端**：`ServerCore/` 原样跑，监听 7000 端口。本机跑 = 开发体验等同单机，以后上线只改 IP。
-- **客户端网络层**：继承 `LibraryCore/BaseConnection`（TCP 收发 + packet 序列化，跨平台现成），参考原 `CConnection` 的收发循环，几十行。
-- **客户端渲染/UI/输入**：Godot 全重写。原 `CConnection.Process(S.*)` 把包应用到 WinForms 画面的部分，改写成应用到 Godot 场景节点。
-- **登录流程**：原协议现成（Connect → CheckVersion → Login → SelectCharacter → StartGame）。
-
-> 为什么不做单机化（LocalBridge）？因为它反而要动服务端（去 `sealed`、跳网络、线程同步），而在线方案服务端零改动。两者共享 90% 代码（渲染 + 包处理），随时可互转。详见 [`docs/notes/02`](docs/notes/02-架构方向修正-从单机改为在线客户端.md)。
-
-## 四、路线图
-
-| 步骤 | 内容 | 状态 |
-|---|---|---|
-| 第 0 步 | Linux 编译 ServerLibrary + 读 System.db（验证逻辑层跨平台、数据可读） | ✅ **已完成**：0 警告 0 错误；`Tools/SystemDbProbe` 读出 244 地图 / 309 怪物 / 1078 物品 / 174 魔法 / 1471 刷新点 |
-| 第 1 步 | 服务端本机跑起来 + 协议链路验证 | ✅ **已完成**：ServerCore 监听 127.0.0.1:7000；`Tools/ClientProbe`（继承 BaseConnection）走通握手→GoodVersion→Login，服务端返回 `BadPassword`（业务逻辑响应）。修复了 MirDB 路径分隔符跨平台坑（[`03`](docs/notes/03-服务端在Linux跑通-路径分隔符坑与修复.md)），协议链路验证见 [`04`](docs/notes/04-协议链路验证-最小客户端走通登录流程.md) |
-| 第 2 步 | Godot 客户端骨架：连接服务端 + 登录/选角色 UI（复用 BaseConnection） | ✅ **已完成**：`GodotClient/` 工程引用 LibraryCore（Godot.NET.Sdk/4.6.0 + net10.0）；headless 验证走通登录→建角色→选角色→StartGame 全流程（服务端返回 `Delayed` 是冷却保护，非 bug）。详见 [`docs/notes/05`](docs/notes/05-Godot客户端骨架-登录与选角色全流程走通.md) |
-| 第 3 步 | `.Zl` / `.map` 读取器 + 地图渲染 + 游戏场景骨架 | 🔨 **进行中**：.Zl 读取器（DXT1/5/BC7 解码 via BCnEncoder.NET）+ .map 解析器 + 地形渲染验证通过（Tiles30c 1080 帧解码成功，0.map 350x350 渲染完成）；GameScene 骨架就位，StartGame 回包路由有遗留问题待解。详见 [`docs/notes/06`](docs/notes/06-地图渲染-Zl图库与Map地图读取器.md) |
-| 第 4 步 | 逐 packet 接渲染：走路 → 攻击 → 背包 → 魔法，直至可玩 | ⏳ 未开始 |
-| 第 5 步（远期） | 客户端导出 web，连远程服务端 | 💤 规划中 |
-
-## 五、环境要求
-
-- **.NET 10 SDK**：`sudo dnf install dotnet-sdk-10.0`（本机已装 10.0.110）
-- **Godot 4.x .NET 版**：Fedora 源的是标准版（无 C# 支持），需从官网下载 `_mono_linux_arm64.zip`（本机已装 4.6.3 mono，软链 `~/.local/bin/godot-mono`）。**不要**用标准版打开 C# 工程。
-- **ServerDb 探测工具**：`dotnet run --project Tools/SystemDbProbe -- <Database目录>`（验证逻辑层 + 数据可读）
-- **启动 Godot 客户端**（需先启动服务端）：
-
-  ```bash
-  # 手动登录（有 UI，选角色进游戏）
-  ~/.local/bin/godot-mono --path GodotClient/
-
-  # headless 自动测试（--auto-login 固定 test@test.com/test123，无角色自动建 TestHero 并进游戏）
-  ~/.local/bin/godot-mono --path GodotClient/ --headless -- --auto-login
-
-  # 命令行直连：跳过登录/选角色，直接进指定角色（-- 之后是用户参数）
-  ~/.local/bin/godot-mono --path GodotClient/ -- --user test@test.com --pass test123 --char TestHero
-  ```
-
-  直连参数（`--` 后）：`--user`/`--username` 账号（提供即自动登录，缺省 `test@test.com`）、`--pass`/`--password` 密码（缺省 `test123`）、`--char`/`--character` 角色名（按名精确匹配，缺省进第一个角色）。也支持 `--key=value` 写法。
-
-- **Hyprland 一键直达**（切到新工作区 + 直接进游戏，测试最方便）：
-
-  ```bash
-  # 在新工作区打开客户端并自动登录进 TestHero（客户端窗口会出现在新工作区）
-  hyprctl dispatch 'hl.dsp.focus({ workspace = "empty" })' \
-    && hyprctl dispatch 'hl.dsp.exec_cmd("~/.local/bin/godot-mono --path ~/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero")'
-  ```
-
-  要点：① 必须用 `hyprctl dispatch` 启动（归 hyprland 托管，进程不随终端退出被杀）；② Hyprland 0.55+ 语法为 `hl.dsp.focus({ workspace = "empty" })` 与 `hl.dsp.exec_cmd("...")`（旧 `hyprctl dispatch workspace empty` 已失效）；③ `workspace = "empty"` 是选中一个空工作区，可换成具体编号 `"9"`；④ `exec_cmd` 内命令用**绝对路径**最稳。
-- **测试角色已增强**：`TestHero`（**道士**）70 级、10 件装备（含 Odyn Elemental）、34 个技能（含**召唤骷髅 Summon Skeleton / 召唤神兽 Summon Shinsu**，Lv.3）、护身符 Talisman ×200、1000 万金币、背包大药+回城卷。想再改等级/装备/技能/职业/金币，用 `Tools/CharacterEditor`（用法和数据库结构见 [`docs/notes/20`](docs/notes/20-测试角色修改指南-CharacterEditor.md)，改完重启服务端生效）。
-- **一键还原环境**：`bash Tools/setup_environment.sh`（下载 System.db + 全部 Data/Map/Sound 资源到 `Debug/Client/`，并还原环境修复：Map Data 目录重组织、HorseS/MagicEx 落位、Data/System.db 副本；需要 curl，建议装 aria2c 并行）；可选 `--server-dir` 搭建服务端运行目录、`--convert-ogg` 转换音频、`--skip-data` 只拉数据库
-
-## 六、仓库结构
-
-Client/          原 WinForms 客户端（网络层参考复用，渲染层在 Godot 重写）
-Server/          DevExpress 可视化编辑器（Windows only，不参与重构）
-ServerLibrary/   服务端核心逻辑 —— 原样复用
-ServerCore/      无头服务端 host（Linux 可跑，已验证）
-LibraryCore/     共享库：MirDB / SystemModels / 网络 packet（BaseConnection 跨平台）
-GodotClient/     Godot C# 客户端（引用 LibraryCore，登录+选角色已通）
-LibraryEditor/   .Zl 图库编辑器（读取器可移植到 Godot）
-RenderingCore/   客户端渲染（Windows only）
-Tools/           资产下载脚本 + SystemDbProbe + ServerProbe + ClientProbe + AccountSetup
-docs/notes/      讨论笔记（学习材料，人工整理）
-docs/database/   数据库内容文档（SystemDbProbe 自动生成）
-Debug/           构建输出 + 已下载资产（System.db / .Zl / .map / .wav）
-
----
-
-*维护说明：本 README 由中文编写；后续架构决策请同步更新本文档的"复用边界"与"路线图"两节。*
