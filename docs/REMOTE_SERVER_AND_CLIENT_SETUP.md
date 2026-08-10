@@ -329,8 +329,9 @@ BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用�
       "Port": 7000,
       "TickMilliseconds": 250,
       "MaxBots": 20,
-      "AccountPrefix": "bot82",
+      "AccountPrefix": "bot",
       "Password": "bot123456",
+      "AutoCreateAccount": false,
       "EnableBotPvP": true,
       "DatabasePath": "/home/tetsuya/development/Debug/ServerCore/Database",
       "MapPath": "/home/tetsuya/development/Debug/ServerCore/Map",
@@ -361,12 +362,31 @@ BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用�
     Zircon BotRunner: 20 bots -> 127.0.0.1:7000
     [Bot01] online ...
 
-首次启动时，BotRunner 会自动为 bot82 前缀账号注册账号并创建唯一角色：
+生产/长期运行时必须使用已经由 `BotProvisioner` 配置过的账号，并关闭自动建号：
 
-    bot8201@bot.local  ->  bot8201
-    bot8202@bot.local  ->  bot8202
+    "AccountPrefix": "bot",
+    "AutoCreateAccount": false
 
-以后重启会收到 AlreadyExists，然后直接使用已有账号和角色登录。
+这样 BotRunner 使用的是 `bot01@bot.local`～`bot20@bot.local`，对应角色
+`Bot01`～`Bot20`。这些角色已经按职业、性别、等级配置了装备、技能、金币、药品，
+不会因为服务重启而生成新的 1 级空白战士。
+
+如果数据库中尚未有这批角色，先停止 BotRunner 和 ServerCore，备份
+`Debug/ServerCore/Database/Users.db`，再运行：
+
+    dotnet run --project Tools/BotProvisioner -- \
+      /home/tetsuya/development/Debug/ServerCore/Database \
+      --prefix bot --count 20 --reference TestHero
+
+工具是幂等的：已有角色会保留，并补齐缺失的职业装备、技能、货币和消耗品。
+不要在服务端运行时直接改 `Users.db`。
+
+首次测试/临时环境才允许自动建号，例如：
+
+    "AccountPrefix": "bot82",
+    "AutoCreateAccount": true
+
+这种模式只会创建新手角色，不会自动附加装备和技能；它不适合作为正式机器人配置。
 
 按 Ctrl+C 会停止所有机器人。
 
@@ -377,12 +397,13 @@ BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用�
 | Host | 服务端地址；82 上运行时用 127.0.0.1 |
 | Port | 服务端游戏端口，当前为 7000 |
 | MaxBots | 启动的机器人数量，程序限制为 1 到 20 |
-| AccountPrefix | 账号名前缀，例如 bot82，会生成 bot8201 等账号 |
+| AccountPrefix | 账号名前缀；正式配置为 `bot`，使用 `bot01`～`bot20` |
 | Password | 机器人账号统一使用的密码 |
 | DatabasePath | BotRunner 读取 System.db 的目录 |
 | MapPath | BotRunner 读取地图文件的目录 |
 | EnableBotPvP | 是否允许机器人之间进行 PvP |
 | ClientHashPath | 开启服务端版本校验时才需要填写 |
+| AutoCreateAccount | 正式配置必须为 `false`；开启时新账号只会得到空白新手角色 |
 
 BotRunner 读取 DatabasePath 主要是为了得到地图、怪物、物品和技能等系统
 数据；它不直接操作 Users.db。账号和角色仍由 ServerCore 负责创建和保存。
