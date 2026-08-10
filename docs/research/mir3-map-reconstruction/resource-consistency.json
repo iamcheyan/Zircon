@@ -1,0 +1,1317 @@
+{
+ "generated": "2026-08-10",
+ "data_ei": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data",
+ "data_zl": "Debug/Client/Data/Map Data",
+ "note": "Per-(theme,lib) cross-client consistency: frame counts, distinct sizes, alpha-placeholder detection (ZL BC3 alpha=4 ground libs).  EI resolves theme-folder-first then root; ZL resolves theme-folder-first then root.",
+ "summary": {
+  "total": 48,
+  "match": 0,
+  "frame_diff": 3,
+  "size_diff": 0,
+  "diff": 45,
+  "zl_missing": 0,
+  "ei_missing": 0,
+  "zl_alpha_placeholder": 2
+ },
+ "rows": [
+  {
+   "theme": "Forest",
+   "lib": "Animationsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Animationsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Animationsc.Zl",
+   "ei": {
+    "count": 2921,
+    "sizes": {
+     "48x160": 1,
+     "48x192": 1,
+     "48x544": 1,
+     "48x352": 2,
+     "48x96": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 116,
+    "sizes": {
+     "48x32": 5,
+     "48x224": 2
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Cliffsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Cliffsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Cliffsc.Zl",
+   "ei": {
+    "count": 7619,
+    "sizes": {
+     "48x64": 1,
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 3140,
+    "sizes": {
+     "48x32": 5,
+     "48x288": 1,
+     "48x320": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Dungeonsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Dungeonsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Dungeonsc.Zl",
+   "ei": {
+    "count": 5364,
+    "sizes": {
+     "48x224": 1,
+     "48x32": 3,
+     "48x192": 1,
+     "48x768": 1,
+     "48x96": 1,
+     "48x352": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 5622,
+    "sizes": {
+     "48x32": 5,
+     "48x352": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Furnituresc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Furnituresc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Furnituresc.Zl",
+   "ei": {
+    "count": 1714,
+    "sizes": {
+     "48x96": 2,
+     "48x32": 4,
+     "48x128": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Housesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Housesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Housesc.Zl",
+   "ei": {
+    "count": 9577,
+    "sizes": {
+     "48x32": 3,
+     "48x192": 1
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 7581,
+    "sizes": {
+     "48x32": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Innersc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Innersc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Innersc.Zl",
+   "ei": {
+    "count": 68,
+    "sizes": {
+     "48x192": 4,
+     "48x224": 1
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "SmObjectsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmObjectsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/SmObjectsc.Zl",
+   "ei": {
+    "count": 7569,
+    "sizes": {
+     "48x416": 1,
+     "48x288": 1,
+     "48x32": 1,
+     "48x448": 1
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 6379,
+    "sizes": {
+     "48x32": 4,
+     "48x832": 1
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "SmTilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmTilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/SmTilesc.Zl",
+   "ei": {
+    "count": 10180,
+    "sizes": {
+     "48x32": 1
+    },
+    "errors": 8,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tiles30c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles30c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Tiles30c.Zl",
+   "ei": {
+    "count": 1080,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 180,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "FRAME_DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tiles5c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles5c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Tiles5c.Zl",
+   "ei": {
+    "count": 20000,
+    "sizes": {
+     "96x64": 3
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 73,
+    "sizes": {
+     "96x64": 3
+    },
+    "errors": 6,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "FRAME_DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Tilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Tilesc.Zl",
+   "ei": {
+    "count": 9836,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 10933,
+    "sizes": {
+     "96x64": 3
+    },
+    "errors": 6,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Forest",
+   "lib": "Wallsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wallsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Forest/Wallsc.Zl",
+   "ei": {
+    "count": 9213,
+    "sizes": {
+     "48x32": 2,
+     "48x192": 1
+    },
+    "errors": 6,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1564,
+    "sizes": {
+     "48x32": 5,
+     "48x256": 1,
+     "48x416": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Animationsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Sand/Animationsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Animationsc.Zl",
+   "ei": {
+    "count": 127,
+    "sizes": {
+     "48x384": 1,
+     "48x416": 1,
+     "48x448": 2,
+     "48x480": 2,
+     "48x352": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 173,
+    "sizes": {
+     "48x224": 1,
+     "48x192": 1,
+     "48x256": 1,
+     "48x512": 1,
+     "48x320": 1,
+     "48x288": 2,
+     "48x544": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Cliffsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Cliffsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Cliffsc.Zl",
+   "ei": {
+    "count": 7619,
+    "sizes": {
+     "48x64": 1,
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 664,
+    "sizes": {
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Dungeonsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Dungeonsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Dungeonsc.Zl",
+   "ei": {
+    "count": 5364,
+    "sizes": {
+     "48x224": 1,
+     "48x32": 3,
+     "48x192": 1,
+     "48x768": 1,
+     "48x96": 1,
+     "48x352": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 16654,
+    "sizes": {
+     "48x32": 6,
+     "48x256": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Furnituresc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Furnituresc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Furnituresc.Zl",
+   "ei": {
+    "count": 1714,
+    "sizes": {
+     "48x96": 2,
+     "48x32": 4,
+     "48x128": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Housesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Sand/Housesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Housesc.Zl",
+   "ei": {
+    "count": 1274,
+    "sizes": {
+     "48x32": 5,
+     "48x608": 1,
+     "48x224": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1815,
+    "sizes": {
+     "48x32": 5,
+     "48x128": 1,
+     "48x256": 1,
+     "48x224": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Innersc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Innersc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Innersc.Zl",
+   "ei": {
+    "count": 68,
+    "sizes": {
+     "48x192": 4,
+     "48x224": 1
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "SmObjectsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Sand/SmObjectsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/SmObjectsc.Zl",
+   "ei": {
+    "count": 631,
+    "sizes": {
+     "48x32": 3,
+     "48x160": 1,
+     "48x480": 1,
+     "48x352": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 3968,
+    "sizes": {
+     "48x480": 1,
+     "48x32": 4,
+     "48x512": 1,
+     "48x192": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "SmTilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmTilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/SmTilesc.Zl",
+   "ei": {
+    "count": 10180,
+    "sizes": {
+     "48x32": 1
+    },
+    "errors": 8,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tiles30c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles30c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Tiles30c.Zl",
+   "ei": {
+    "count": 1080,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tiles5c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles5c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Tiles5c.Zl",
+   "ei": {
+    "count": 20000,
+    "sizes": {
+     "96x64": 3
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 35,
+    "sizes": {
+     "96x64": 9
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Tilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Sand/Tilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Tilesc.Zl",
+   "ei": {
+    "count": 4299,
+    "sizes": {
+     "96x64": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 9476,
+    "sizes": {
+     "96x64": 6
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Sand",
+   "lib": "Wallsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Sand/Wallsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Sand/Wallsc.Zl",
+   "ei": {
+    "count": 860,
+    "sizes": {
+     "48x32": 5,
+     "48x224": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1845,
+    "sizes": {
+     "48x32": 5,
+     "48x384": 2,
+     "48x160": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Animationsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Animationsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Animationsc.Zl",
+   "ei": {
+    "count": 2921,
+    "sizes": {
+     "48x160": 1,
+     "48x192": 1,
+     "48x544": 1,
+     "48x352": 2,
+     "48x96": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1148,
+    "sizes": {
+     "48x32": 3,
+     "48x224": 1,
+     "48x576": 2
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Cliffsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Cliffsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Cliffsc.Zl",
+   "ei": {
+    "count": 7619,
+    "sizes": {
+     "48x64": 1,
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 14475,
+    "sizes": {
+     "48x32": 8
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Dungeonsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Dungeonsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Dungeonsc.Zl",
+   "ei": {
+    "count": 5364,
+    "sizes": {
+     "48x224": 1,
+     "48x32": 3,
+     "48x192": 1,
+     "48x768": 1,
+     "48x96": 1,
+     "48x352": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 19767,
+    "sizes": {
+     "48x32": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Furnituresc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Furnituresc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Furnituresc.Zl",
+   "ei": {
+    "count": 1714,
+    "sizes": {
+     "48x96": 2,
+     "48x32": 4,
+     "48x128": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 196,
+    "sizes": {
+     "48x64": 3,
+     "48x32": 2
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Housesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Housesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Housesc.Zl",
+   "ei": {
+    "count": 9577,
+    "sizes": {
+     "48x32": 3,
+     "48x192": 1
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 11616,
+    "sizes": {
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Innersc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Innersc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Innersc.Zl",
+   "ei": {
+    "count": 68,
+    "sizes": {
+     "48x192": 4,
+     "48x224": 1
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1930,
+    "sizes": {
+     "48x160": 2,
+     "48x128": 1,
+     "48x32": 5,
+     "68x62": 1
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "SmObjectsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmObjectsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/SmObjectsc.Zl",
+   "ei": {
+    "count": 7569,
+    "sizes": {
+     "48x416": 1,
+     "48x288": 1,
+     "48x32": 1,
+     "48x448": 1
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 11622,
+    "sizes": {
+     "48x32": 6
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "SmTilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmTilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/SmTilesc.Zl",
+   "ei": {
+    "count": 10180,
+    "sizes": {
+     "48x32": 1
+    },
+    "errors": 8,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 240,
+    "sizes": {
+     "48x32": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tiles30c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles30c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Tiles30c.Zl",
+   "ei": {
+    "count": 1080,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 600,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "FRAME_DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tiles5c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles5c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Tiles5c.Zl",
+   "ei": {
+    "count": 20000,
+    "sizes": {
+     "96x64": 3
+    },
+    "errors": 5,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 60,
+    "sizes": {
+     "96x64": 9
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Tilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Tilesc.Zl",
+   "ei": {
+    "count": 9836,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 9746,
+    "sizes": {
+     "96x64": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Snow",
+   "lib": "Wallsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wallsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Snow/Wallsc.Zl",
+   "ei": {
+    "count": 9213,
+    "sizes": {
+     "48x32": 2,
+     "48x192": 1
+    },
+    "errors": 6,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 3518,
+    "sizes": {
+     "48x32": 6
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Animationsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Animationsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Animationsc.Zl",
+   "ei": {
+    "count": 1393,
+    "sizes": {
+     "48x64": 1,
+     "48x32": 1,
+     "48x160": 1,
+     "48x224": 1,
+     "48x384": 1,
+     "48x736": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 1471,
+    "sizes": {
+     "48x32": 1,
+     "48x96": 1,
+     "48x192": 2,
+     "48x256": 1,
+     "48x224": 1
+    },
+    "errors": 3,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Cliffsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Cliffsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Cliffsc.Zl",
+   "ei": {
+    "count": 7619,
+    "sizes": {
+     "48x64": 1,
+     "48x32": 7
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 29513,
+    "sizes": {
+     "48x32": 7,
+     "1x1": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Dungeonsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Dungeonsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Dungeonsc.Zl",
+   "ei": {
+    "count": 4710,
+    "sizes": {
+     "48x32": 6,
+     "48x352": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 9202,
+    "sizes": {
+     "48x32": 5,
+     "48x704": 1,
+     "48x192": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Furnituresc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Furnituresc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Furnituresc.Zl",
+   "ei": {
+    "count": 1714,
+    "sizes": {
+     "48x96": 2,
+     "48x32": 4,
+     "48x128": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 4887,
+    "sizes": {
+     "48x32": 6,
+     "48x128": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Housesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Housesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Housesc.Zl",
+   "ei": {
+    "count": 9010,
+    "sizes": {
+     "48x256": 1,
+     "48x32": 4,
+     "48x64": 1,
+     "48x224": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 14607,
+    "sizes": {
+     "48x448": 1,
+     "48x32": 6
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Innersc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Innersc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Innersc.Zl",
+   "ei": {
+    "count": 1797,
+    "sizes": {
+     "48x32": 7,
+     "48x1024": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 68,
+    "sizes": {
+     "1x1": 4,
+     "48x192": 4,
+     "48x224": 1
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "SmObjectsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/SmObjectsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/SmObjectsc.Zl",
+   "ei": {
+    "count": 969,
+    "sizes": {
+     "48x32": 4,
+     "48x96": 1
+    },
+    "errors": 4,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 12586,
+    "sizes": {
+     "48x32": 4,
+     "48x160": 2,
+     "48x64": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "SmTilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/SmTilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/SmTilesc.Zl",
+   "ei": {
+    "count": 10180,
+    "sizes": {
+     "48x32": 1
+    },
+    "errors": 8,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 2,
+    "sizes": {},
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Tiles30c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Tiles30c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Tiles30c.Zl",
+   "ei": {
+    "count": 1080,
+    "sizes": {
+     "96x64": 8
+    },
+    "errors": 0,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 389,
+    "sizes": {
+     "96x64": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "EI_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF"
+  },
+  {
+   "theme": "Wood",
+   "lib": "Tiles5c",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Tiles5c.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Tiles5c.Zl",
+   "ei": {
+    "count": 12,
+    "sizes": {
+     "96x64": 10
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 60,
+    "sizes": {
+     "96x64": 9
+    },
+    "errors": 0,
+    "alpha_placeholder": true
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF",
+   "zl_alpha_placeholder": true
+  },
+  {
+   "theme": "Wood",
+   "lib": "Tilesc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Tilesc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Tilesc.Zl",
+   "ei": {
+    "count": 3927,
+    "sizes": {
+     "96x64": 7
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 13841,
+    "sizes": {
+     "96x64": 9
+    },
+    "errors": 0,
+    "alpha_placeholder": true
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "MATCH",
+   "cmp": "DIFF",
+   "zl_alpha_placeholder": true
+  },
+  {
+   "theme": "Wood",
+   "lib": "Wallsc",
+   "ei_path": "/home/tetsuya/NAS/TMP/EI\u4f20\u59473.0\u5ba2\u6237\u7aef/Data/Wood/Wallsc.wil",
+   "zl_path": "Debug/Client/Data/Map Data/Wood/Wallsc.Zl",
+   "ei": {
+    "count": 3791,
+    "sizes": {
+     "48x32": 5,
+     "48x128": 1,
+     "48x96": 1
+    },
+    "errors": 2,
+    "alpha_placeholder": false
+   },
+   "zl": {
+    "count": 7531,
+    "sizes": {
+     "48x32": 7,
+     "48x96": 1
+    },
+    "errors": 1,
+    "alpha_placeholder": false
+   },
+   "frame_cmp": "ZL_LARGER",
+   "size_cmp": "DIFF",
+   "cmp": "DIFF"
+  }
+ ]
+}
