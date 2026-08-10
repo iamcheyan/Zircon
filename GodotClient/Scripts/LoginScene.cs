@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using Library;
 using ZirconClient.Controls;
+using S = Library.Network.ServerPackets;
 
 namespace ZirconClient.Scripts;
 
@@ -25,6 +26,7 @@ public partial class LoginScene : Control
     private RankingDialog _loginRanking;
     private ConfigDialog _loginConfig;
     private LegacyLoginDialog _accountDialog, _changeDialog, _requestResetDialog, _resetDialog, _activationDialog, _requestActivationDialog;
+    private readonly List<Action> _unsubscribers = new();
 
     public override void _Ready()
     {
@@ -55,6 +57,7 @@ public partial class LoginScene : Control
 
         // 连接服务端
         _net.Log += OnNetLog;
+        _unsubscribers.Add(() => _net.Log -= OnNetLog);
         // 自动登录: --auto-login 固定测试账号, 或 --user/--pass 指定账号
         bool autoLogin = AutoLoginArgs.AutoLogin;
         string host = ClientSettings.UseNetworkConfig ? ClientSettings.IPAddress : "127.0.0.1";
@@ -65,27 +68,37 @@ public partial class LoginScene : Control
             return;
         }
 
-        // 订阅网络事件
+        // 订阅网络事件（_ExitTree 统一退订，避免场景释放后回调已销毁对象）
         _net.Connection.ConnectedEvent += OnConnected;
-        _net.Connection.VersionOK += (v, k) =>
-        {
-            GD.Print($"[Login] 版本校验通过, version={v}, dbKey={k}");
-            CallDeferred(nameof(ShowVersionOK), v);
-            if (autoLogin)
-            {
-                GD.Print($"[Login] 自动登录: {AutoLoginArgs.User}");
-                _net.Connection.SendLogin(AutoLoginArgs.User, AutoLoginArgs.Password);
-            }
-        };
+        _unsubscribers.Add(() => _net.Connection.ConnectedEvent -= OnConnected);
+        _net.Connection.VersionOK += OnVersionOK;
+        _unsubscribers.Add(() => _net.Connection.VersionOK -= OnVersionOK);
         _net.Connection.LoginResultEvent += OnLoginResult;
-        _net.Connection.ChangePasswordResultEvent += r => SetStatus($"修改密码结果: {r}");
-        _net.Connection.RequestPasswordResetResultEvent += r => SetStatus($"申请重置结果: {r}");
-        _net.Connection.ResetPasswordResultEvent += r => SetStatus($"重置密码结果: {r}");
-        _net.Connection.ActivationResultEvent += r => SetStatus($"激活结果: {r}");
-        _net.Connection.RequestActivationKeyResultEvent += r => SetStatus($"申请激活码结果: {r}");
+        _unsubscribers.Add(() => _net.Connection.LoginResultEvent -= OnLoginResult);
+        _net.Connection.ChangePasswordResultEvent += OnChangePasswordResult;
+        _unsubscribers.Add(() => _net.Connection.ChangePasswordResultEvent -= OnChangePasswordResult);
+        _net.Connection.RequestPasswordResetResultEvent += OnRequestPasswordResetResult;
+        _unsubscribers.Add(() => _net.Connection.RequestPasswordResetResultEvent -= OnRequestPasswordResetResult);
+        _net.Connection.ResetPasswordResultEvent += OnResetPasswordResult;
+        _unsubscribers.Add(() => _net.Connection.ResetPasswordResultEvent -= OnResetPasswordResult);
+        _net.Connection.ActivationResultEvent += OnActivationResult;
+        _unsubscribers.Add(() => _net.Connection.ActivationResultEvent -= OnActivationResult);
+        _net.Connection.RequestActivationKeyResultEvent += OnRequestActivationKeyResult;
+        _unsubscribers.Add(() => _net.Connection.RequestActivationKeyResultEvent -= OnRequestActivationKeyResult);
         _net.Connection.NewAccountResultEvent += OnNewAccountResult;
-        _net.Connection.RankingsEvent += p => _loginRanking?.ApplyRankings(p);
+        _unsubscribers.Add(() => _net.Connection.NewAccountResultEvent -= OnNewAccountResult);
+        _net.Connection.RankingsEvent += OnRankings;
+        _unsubscribers.Add(() => _net.Connection.RankingsEvent -= OnRankings);
         _net.Connection.DisconnectedEvent += OnDisconnected;
+        _unsubscribers.Add(() => _net.Connection.DisconnectedEvent -= OnDisconnected);
+    }
+
+    public override void _ExitTree()
+    {
+        foreach (var unsubscribe in _unsubscribers)
+            unsubscribe();
+        _unsubscribers.Clear();
+        base._ExitTree();
     }
 
     private void AddAccountButton(VBoxContainer parent, string text, Action action)
@@ -151,6 +164,30 @@ public partial class LoginScene : Control
     {
         CallDeferred(nameof(ShowNewAccountResult), (int)result);
     }
+
+    private void OnVersionOK(string version, string dbKey)
+    {
+        GD.Print($"[Login] 版本校验通过, version={version}, dbKey={dbKey}");
+        CallDeferred(nameof(ShowVersionOK), version);
+        if (AutoLoginArgs.AutoLogin)
+        {
+            GD.Print($"[Login] 自动登录: {AutoLoginArgs.User}");
+            _net.Connection.SendLogin(AutoLoginArgs.User, AutoLoginArgs.Password);
+        }
+    }
+
+    private void OnChangePasswordResult(ChangePasswordResult result)
+        => SetStatus($"修改密码结果: {result}");
+    private void OnRequestPasswordResetResult(RequestPasswordResetResult result)
+        => SetStatus($"申请重置结果: {result}");
+    private void OnResetPasswordResult(ResetPasswordResult result)
+        => SetStatus($"重置密码结果: {result}");
+    private void OnActivationResult(ActivationResult result)
+        => SetStatus($"激活结果: {result}");
+    private void OnRequestActivationKeyResult(RequestActivationKeyResult result)
+        => SetStatus($"申请激活码结果: {result}");
+    private void OnRankings(S.Rankings rankings)
+        => _loginRanking?.ApplyRankings(rankings);
     private void ShowNewAccountResult(int resultInt)
     {
         var result = (NewAccountResult)resultInt;

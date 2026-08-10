@@ -40,6 +40,7 @@ public partial class SelectScene : Control
     private readonly List<DXButton> _skinCharacters = new();
     private readonly List<DXButton> _createClassButtons = new();
     private readonly List<DXButton> _createGenderButtons = new();
+    private readonly List<Action> _unsubscribers = new();
 
     public override void _Ready()
     {
@@ -73,18 +74,20 @@ public partial class SelectScene : Control
         if (_charList != null) _charList.ItemSelected += idx => { if (_startBtn != null) _startBtn.Disabled = false; _deleteBtn.Disabled = false; };
         if (_deleteBtn != null) _deleteBtn.Pressed += OnDeletePressed;
 
-        // 订阅网络事件
+        // 订阅网络事件（_ExitTree 统一退订，避免场景释放后回调已销毁对象）
         if (_net?.Connection != null)
         {
             _net.Connection.NewCharacterResultEvent += OnNewCharacterResult;
+            _unsubscribers.Add(() => _net.Connection.NewCharacterResultEvent -= OnNewCharacterResult);
             _net.Connection.DeleteCharacterResultEvent += OnDeleteCharacterResult;
+            _unsubscribers.Add(() => _net.Connection.DeleteCharacterResultEvent -= OnDeleteCharacterResult);
             _net.Connection.StartGameResultEvent += OnStartGameResult;
+            _unsubscribers.Add(() => _net.Connection.StartGameResultEvent -= OnStartGameResult);
         }
 
         RefreshList();
 
-        // headless 自动测试: --auto-login / --user 时自动进游戏; --char 指定角色名
-        if (AutoLoginArgs.AutoLogin)
+        // headless 自动测试: --auto-login / --user 时自动进游戏; --char 指定角色名        if (AutoLoginArgs.AutoLogin)
         {
             var wantChar = AutoLoginArgs.Character;
             if (wantChar.Length > 0)
@@ -113,6 +116,14 @@ public partial class SelectScene : Control
                 CallDeferred(nameof(AutoStartGame));
             }
         }
+    }
+
+    public override void _ExitTree()
+    {
+        foreach (var unsubscribe in _unsubscribers)
+            unsubscribe();
+        _unsubscribers.Clear();
+        base._ExitTree();
     }
 
     public override void _Process(double delta)
