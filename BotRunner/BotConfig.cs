@@ -44,6 +44,7 @@ public sealed class BotConfig
     public int MaxBots { get; set; } = 20;
     public string AccountPrefix { get; set; } = "bot";
     public string Password { get; set; } = "bot123456";
+    public bool AutoCreateAccount { get; set; } = true;
     public string ChatPrefix { get; set; } = "大家好";
     public string ClientHashPath { get; set; } = "";
     public string DatabasePath { get; set; } = "Debug/Server/Database";

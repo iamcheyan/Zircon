@@ -17,6 +17,7 @@ public sealed class BotAgent
     private readonly Random _random;
     private readonly string _email;
     private readonly string _password;
+    private bool _accountReady;
     private BotConnection _connection;
     private DateTime _nextMove;
     private DateTime _nextChat;
@@ -178,7 +179,30 @@ public sealed class BotAgent
         {
             case G.GoodVersion:
                 _connection.Enqueue(new C.SelectLanguage { Language = "CHINESE" });
-                _connection.Enqueue(new C.Login { EMailAddress = _email, Password = _password, CheckSum = string.Empty });
+                if (_config.AutoCreateAccount)
+                {
+                    _connection.Enqueue(new C.NewAccount
+                    {
+                        EMailAddress = _email,
+                        Password = _password,
+                        RealName = Name,
+                        BirthDate = new DateTime(1990, 1, 1),
+                        Referral = string.Empty,
+                        CheckSum = string.Empty
+                    });
+                }
+                else
+                    QueueLogin();
+                break;
+            case S.NewAccount account:
+                if (account.Result is NewAccountResult.Success or NewAccountResult.AlreadyExists)
+                {
+                    _accountReady = true;
+                    Console.WriteLine($"[{Name}] account ready ({account.Result})");
+                    QueueLogin();
+                }
+                else
+                    Fail($"account creation failed: {account.Result}");
                 break;
             case S.Login login:
                 if (login.Result != LoginResult.Success || login.Characters == null || login.Characters.Count == 0)
@@ -323,6 +347,12 @@ public sealed class BotAgent
                     Console.WriteLine($"[{Name}] chat: {p.Text}");
                 break;
         }
+    }
+
+    private void QueueLogin()
+    {
+        if (_accountReady || !_config.AutoCreateAccount)
+            _connection.Enqueue(new C.Login { EMailAddress = _email, Password = _password, CheckSum = string.Empty });
     }
 
     private void Tick()

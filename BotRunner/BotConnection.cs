@@ -57,6 +57,7 @@ public sealed class BotConnection : BaseConnection
     }
 
     public void Process(S.Login p) => PacketReceived?.Invoke(this, p);
+    public void Process(S.NewAccount p) => PacketReceived?.Invoke(this, p);
     public void Process(S.StartGame p) => PacketReceived?.Invoke(this, p);
     public void Process(S.MapChanged p) => PacketReceived?.Invoke(this, p);
     public void Process(S.UserLocation p) => PacketReceived?.Invoke(this, p);

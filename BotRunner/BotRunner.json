@@ -27,6 +27,7 @@
   "MaxBots": 20,
   "AccountPrefix": "bot",
   "Password": "bot123456",
+  "AutoCreateAccount": true,
   "ChatPrefix": "大家好",
   "ClientHashPath": "",
   "DatabasePath": "Debug/Server/Database",
