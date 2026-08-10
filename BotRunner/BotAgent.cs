@@ -109,6 +109,7 @@ public sealed class BotAgent
     private int _reconnectAttempt;
 
     public string Name { get; }
+    private string CharacterName => $"{_config.AccountPrefix}{_index:00}";
     public BotStatus Status { get; private set; } = BotStatus.Created;
     public BotWorld World { get; } = new();
 
@@ -224,7 +225,7 @@ public sealed class BotAgent
                 {
                     _connection.Enqueue(new C.NewCharacter
                     {
-                        CharacterName = Name,
+                        CharacterName = CharacterName,
                         Class = MirClass.Warrior,
                         Gender = MirGender.Male,
                         HairType = 0,
