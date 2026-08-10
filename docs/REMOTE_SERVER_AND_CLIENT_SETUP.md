@@ -263,3 +263,184 @@ Mir3-Research，不是游戏服务端：
     端口：7000
 
 如果服务端代码刚更新，则先在 82 编译和重启，再启动本机客户端。
+
+## 12. AI Bot 的归属和运行位置
+
+当前 AI Bot 位于正式源码仓库的：
+
+    BotRunner/
+
+它是独立的 .NET 控制台程序，不属于 Godot 的图形客户端，也不是
+ServerCore 内部自动启动的模块。
+
+BotRunner 的工作方式是：
+
+    BotRunner
+        ├─ 建立多个 TCP 客户端连接
+        ├─ 使用游戏协议登录服务器
+        ├─ 被服务器视为普通玩家
+        └─ 自己执行移动、攻击、练级、聊天、交易等行为
+
+因此它的准确归类是：
+
+- 部署形态：独立后台进程；
+- 网络身份：多个模拟客户端；
+- 游戏规则：仍由 ServerCore 决定；
+- AI 行为：由 BotRunner 自己决定；
+- 推荐运行位置：82 服务器；
+- 启动顺序：先 ServerCore，后 BotRunner。
+
+不要把 BotRunner 的代码合并到 ServerCore 的启动流程中，也不要在 Godot
+客户端启动时顺便启动 BotRunner。这样拆开后，服务端、真人客户端和机器人
+可以分别重启，互不影响。
+
+## 13. 为什么 BotRunner 推荐放在 82
+
+BotRunner 需要持续在线，但不需要图形界面。因此放在 82 比放在本机更合适：
+
+- 本机关机后，机器人仍然在线；
+- BotRunner 和 ServerCore 在同一台机器，网络延迟低；
+- 不需要启动 Godot 或 Windows 客户端；
+- 可以用 systemd 自动重启；
+- 本机客户端可以随时上线观察机器人。
+
+本机也可以运行 BotRunner 进行调试，但本机关闭后所有机器人会断线。
+
+## 14. 在 82 上编译和手动启动 BotRunner
+
+首先更新并编译：
+
+    ssh 82
+    cd /home/tetsuya/development/zircon
+    dotnet restore BotRunner/BotRunner.csproj
+    dotnet build BotRunner/BotRunner.csproj -c Debug
+
+BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用绝对路径，
+不要直接使用 BotRunner.json 里的本机相对路径。
+
+可以在 82 的正式源码仓库中创建一个本地配置文件，例如：
+
+    BotRunner.82.json
+
+配置示例：
+
+    {
+      "Host": "127.0.0.1",
+      "Port": 7000,
+      "TickMilliseconds": 250,
+      "MaxBots": 20,
+      "AccountPrefix": "bot82",
+      "Password": "bot123456",
+      "EnableBotPvP": true,
+      "DatabasePath": "/home/tetsuya/development/Debug/ServerCore/Database",
+      "MapPath": "/home/tetsuya/development/Debug/ServerCore/Map",
+      "ClientHashPath": ""
+    }
+
+因为 BotRunner 和 ServerCore 都在 82，Host 使用 127.0.0.1 即可。若从本机
+运行 BotRunner，Host 才应改为 192.168.3.82。
+
+启动 20 个机器人：
+
+    cd /home/tetsuya/development/zircon
+    dotnet run --project BotRunner/BotRunner.csproj -- \
+      BotRunner.82.json 20
+
+最后的数字会覆盖配置中的 MaxBots。例如只启动 3 个：
+
+    dotnet run --project BotRunner/BotRunner.csproj -- \
+      BotRunner.82.json 3
+
+也可以直接运行编译输出，但具体输出目录要以构建结果为准：
+
+    dotnet BotRunner/bin/Debug/net10.0/BotRunner.dll \
+      BotRunner.82.json 20
+
+正常启动时会看到类似输出：
+
+    Zircon BotRunner: 20 bots -> 127.0.0.1:7000
+    [Bot01] online ...
+
+按 Ctrl+C 会停止所有机器人。
+
+## 15. BotRunner 配置重点
+
+| 配置 | 作用 |
+|---|---|
+| Host | 服务端地址；82 上运行时用 127.0.0.1 |
+| Port | 服务端游戏端口，当前为 7000 |
+| MaxBots | 启动的机器人数量，程序限制为 1 到 20 |
+| AccountPrefix | 账号名前缀，例如 bot82，会生成 bot8201 等账号 |
+| Password | 机器人账号统一使用的密码 |
+| DatabasePath | BotRunner 读取 System.db 的目录 |
+| MapPath | BotRunner 读取地图文件的目录 |
+| EnableBotPvP | 是否允许机器人之间进行 PvP |
+| ClientHashPath | 开启服务端版本校验时才需要填写 |
+
+BotRunner 读取 DatabasePath 主要是为了得到地图、怪物、物品和技能等系统
+数据；它不直接操作 Users.db。账号和角色仍由 ServerCore 负责创建和保存。
+
+首次运行时，服务端需要允许注册：
+
+    AllowNewAccount=True
+    AllowNewCharacter=True
+
+当前服务端默认允许注册。机器人账号注册成功后会保存到服务端的 Users.db，
+后续启动会继续使用这些账号。
+
+## 16. 用 systemd 长期运行 BotRunner
+
+确认手动启动正常后，才建议把 BotRunner 托管到 systemd。服务文件示例：
+
+    [Unit]
+    Description=Zircon AI BotRunner
+    After=zircon-server.service
+    Requires=zircon-server.service
+
+    [Service]
+    Type=simple
+    User=tetsuya
+    WorkingDirectory=/home/tetsuya/development/zircon
+    ExecStart=/usr/bin/dotnet /home/tetsuya/development/zircon/BotRunner/bin/Debug/net10.0/BotRunner.dll /home/tetsuya/development/zircon/BotRunner.82.json 20
+    Restart=always
+    RestartSec=10
+
+    [Install]
+    WantedBy=multi-user.target
+
+将它保存为：
+
+    /etc/systemd/system/zircon-bots.service
+
+然后执行：
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now zircon-bots
+    sudo systemctl status zircon-bots
+
+查看机器人日志：
+
+    sudo journalctl -u zircon-bots -f
+
+停止机器人但保留服务端：
+
+    sudo systemctl stop zircon-bots
+
+重启机器人：
+
+    sudo systemctl restart zircon-bots
+
+如果只是临时测试，优先使用 tmux 或前台运行；确认账号、地图和行为都正常
+后再启用 systemd，避免机器人不断重连并制造大量日志。
+
+## 17. 三类进程的关系
+
+    82:
+      zircon-server.service   正式游戏服务端，监听 7000
+      zircon-bots.service     可选 AI 机器人，连接 127.0.0.1:7000
+
+    本机:
+      GodotClient             你操作的图形客户端，连接 192.168.3.82:7000
+
+服务端必须先启动。BotRunner 和本机客户端都可以随后启动；它们都是服务端
+的 TCP 客户端，但 BotRunner 没有图形界面。
