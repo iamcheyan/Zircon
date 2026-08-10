@@ -32,11 +32,13 @@
 ## 测试账号
 
 ```bash
-t-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
+godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
 ```
 
 - 账号：`test@test.com`，密码：`test123`，角色：`TestHero`
 - 用途：登录本地/远程测试服务器进行游戏内验证
+- 构建客户端：`cd /home/tetsuya/development/Zircon && dotnet build GodotClient/ZirconClient.csproj`
+  （注意必须在仓库根目录执行，`~` 下找不到项目文件）
 - GM 权限：**该账号 `Admin = True`（永久 GM）**，可直接使用所有 `@` 管理命令；
   另外服务器支持 `MasterPassword` 机制（非邮箱格式登录名 + 主密码 → TempAdmin），
   详见 `ServerLibrary/Envir/SEnvir.cs` Login 逻辑
