@@ -228,7 +228,7 @@ public sealed class BotAgent
                         Class = MirClass.Warrior,
                         Gender = MirGender.Male,
                         HairType = 0,
-                        HairColour = Color.Black,
+                        HairColour = Color.FromArgb(0, 0, 0, 0),
                         ArmourColour = Color.White,
                         CheckSum = string.Empty
                     });
