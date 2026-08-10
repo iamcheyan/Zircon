@@ -361,6 +361,13 @@ BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用�
     Zircon BotRunner: 20 bots -> 127.0.0.1:7000
     [Bot01] online ...
 
+首次启动时，BotRunner 会自动为 bot82 前缀账号注册账号并创建唯一角色：
+
+    bot8201@bot.local  ->  bot8201
+    bot8202@bot.local  ->  bot8202
+
+以后重启会收到 AlreadyExists，然后直接使用已有账号和角色登录。
+
 按 Ctrl+C 会停止所有机器人。
 
 ## 15. BotRunner 配置重点
@@ -380,15 +387,49 @@ BotRunner 需要读取 System.db 和地图文件。82 上运行时建议使用�
 BotRunner 读取 DatabasePath 主要是为了得到地图、怪物、物品和技能等系统
 数据；它不直接操作 Users.db。账号和角色仍由 ServerCore 负责创建和保存。
 
-首次运行时，服务端需要允许注册：
+首次运行时，服务端需要允许注册和创建角色：
 
     AllowNewAccount=True
     AllowNewCharacter=True
+
+当前版本的 BotRunner 已经内置自动注册账号和自动创建角色逻辑，不需要手工
+逐个在客户端注册。机器人使用的账号和角色会写入 82 的 Users.db。
 
 当前服务端默认允许注册。机器人账号注册成功后会保存到服务端的 Users.db，
 后续启动会继续使用这些账号。
 
 ## 16. 用 systemd 长期运行 BotRunner
+
+当前 82 已经安装并启用 zircon-bots.service。它通过
+/etc/systemd/system/zircon-server.service.wants/ 下的 systemd Wants 关系，
+绑定到 zircon-server.service。
+
+当前实际行为：
+
+- 启动 zircon-server 时自动启动 zircon-bots；
+- 停止 zircon-server 时先停止 zircon-bots，再停止 zircon-server；
+- ServerCore 重启时 BotRunner 会重新启动；
+- BotRunner 启动前会等待 7000 端口真正进入 LISTEN，避免启动竞态；
+- BotRunner 运行异常时会自动重启。
+
+因此日常不需要单独启动 BotRunner：
+
+    sudo systemctl start zircon-server
+    sudo systemctl stop zircon-server
+    sudo systemctl restart zircon-server
+
+查看联动状态：
+
+    sudo systemctl is-active zircon-server
+    sudo systemctl is-active zircon-bots
+
+两者都显示 active 才表示正式服务端和机器人都已经运行。
+
+如果只想临时停止机器人而不停止服务端，可以执行：
+
+    sudo systemctl stop zircon-bots
+
+但下一次服务端重启或启动时，BotRunner 会按联动关系再次启动。
 
 确认手动启动正常后，才建议把 BotRunner 托管到 systemd。服务文件示例：
 
