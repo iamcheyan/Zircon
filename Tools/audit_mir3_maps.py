@@ -2,9 +2,11 @@
 """audit_mir3_maps.py — per-map resource audit for Mir3 EI maps.
 
 Reads every .map in a directory (28-byte header + 3-byte/block ground layer +
-14-byte/cell object layer), resolves each mid/front cell's file/frame through
-the authoritative v-transform (`v = file - floor(file/14)`, lib = v % 14,
-theme-group = v // 14) and KR_ORDER mapping, then checks the resolved frame
+14-byte/cell object layer), resolves each mid/front cell's file/frame
+through the renderer's authoritative lookup (raw file byte -> KR_ORDER key;
+Mir3.exe indexes a contiguous 14-slot/group table with v = file - floor(file/14),
+and ZL's discrete 12-key groups are v + q = file, so both clients resolve the
+same library from the same file byte), then checks the resolved frame
 against the real library frame count as loaded by the renderer (FramePool with
 the EI data dir: theme folder first, root fallback).
 
@@ -43,21 +45,26 @@ def v_lookup(file_arr: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return q, r, v
 
 
-def kr_lib_id(q: np.ndarray, r: np.ndarray, v: np.ndarray) -> np.ndarray:
-    """Map a cell to its EI library slot id.
+def kr_lib_id(q: np.ndarray, r: np.ndarray, v: np.ndarray, file_arr: np.ndarray) -> np.ndarray:
+    """Map a cell's raw file byte to the KR_ORDER library id used by the
+    renderer (raw file -> KR_ORDER[file], same lookup as GodotClient
+    MapView.cs:278 and mapviewer's FramePool._get_lib).
 
-    Mir3.exe indexes the library table directly with v (0x43bbce:
-    lea 0x5600fc(,%edx,4), edx = v*9 -> slot stride 36 B).  KR_ORDER's keys
-    ARE the slot ids: 0-13 root, 15-26 wood, 30-41 sand, 45-56 snow,
-    60-71 forest.  v=14 (file 15, the no-object marker) and the group-tail
-    gaps (27-29, 42-44, 57-59) have no slot key -> -1 (unresolved).  The
-    theme-group "off + r" form (15+r, 30+r, ...) is off by q because the
-    slot start is 14*q+r, not 15*q+r.
+    Why the raw file value, not v: Mir3.exe indexes its 14-lib/group slot
+    table with the v-transform (slot = v = file - floor(file/14); groups are
+    CONTIGUOUS 14-slot bands 0-13/14-27/28-41/42-55/56-69, each including
+    object1c/object2c — 0x43bbce lea 0x5600fc(,%edx,4) with edx=v*9, stride
+    324 B; 0x43bbb2 skips v>0x45=69=5*14).  ZL KR_ORDER instead uses DISCRETE
+    12-lib groups (0-13, 15-26, 30-41, 45-56, 60-71 — no object1c/2c), so
+    ZL key = 14q + r + q = v + q = file - floor(file/14) + floor(file/14)
+    = file for regular libs (r <= 11).  Both clients agree on the same map
+    file bytes; the renderer's raw lookup IS the EI semantics.  Files outside
+    the KR_ORDER key set -> -1 (unresolved).
     """
     out = np.full(q.shape, -1, dtype=np.int32)
     keys = np.fromiter(mapviewer.KR_ORDER, dtype=np.int32)
-    ok = np.isin(v, keys)
-    out[ok] = v[ok]
+    ok = np.isin(file_arr, keys)
+    out[ok] = file_arr[ok]
     return out
 
 
@@ -120,7 +127,7 @@ def audit_map(path: str, pool: mapviewer.FramePool) -> dict:
     if g_undrawn:
         anom["ground_not_drawn"] = g_undrawn
     g_used = {}
-    g_kr = kr_lib_id(gq, gr, gv)
+    g_kr = kr_lib_id(gq, gr, gv, g_file)
     for lid in np.unique(g_kr[g_draw & (g_kr >= 0)]):
         m = g_draw & (g_kr == lid)
         frames = g_frame[m]
@@ -141,7 +148,7 @@ def audit_map(path: str, pool: mapviewer.FramePool) -> dict:
     # --- object layer checks
     def object_check(file_arr, frame_arr, label):
         q, r, v = v_lookup(file_arr)
-        lib_id = kr_lib_id(q, r, v)
+        lib_id = kr_lib_id(q, r, v, file_arr)
         # skip conditions the renderer honours: empty frame, no-object file,
         # ground-group lib (r<=2), v>69, unresolved lib id
         skip = (frame_arr == EMPTY_FRAME) | (file_arr == NO_OBJECT_FILE) | (r <= 2) | (v > 69) | (lib_id < 0)
@@ -278,7 +285,11 @@ h1 {{ font-size: 1.4em; }}
 <th>anim cells</th><th>reserved</th><th>anomalies</th><th>detail</th></tr>
 {''.join(rows)}
 </table>
-<p>Library slot id = v (Mir3.exe 0x43bbce indexes 0x5600fc with v*36).
+<p>Library lookup = raw file byte -> KR_ORDER key (renderer path; Mir3.exe
+resolves the same library via v = file - floor(file/14) into a contiguous
+14-slot/group table, and ZL's discrete 12-key groups equal v + q = file for
+regular libs).  EI Wood/SmObjectsc.wil holds only 969 frames, so file 25
+cells with large frames are the real OOB driver on 3.map etc.
 0xff00-0xfffe are sparse reserved markers, excluded from frame-oob.
 Legacy 13 B/cell maps are not in the server minimap index.</p>
 </body></html>"""
