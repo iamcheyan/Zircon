@@ -4856,7 +4856,12 @@ public partial class GameScene : Control
     // StartGame 数据 -> HUD (等级/职业/属性/血蓝/经验/Buff/任务/攻击宠物模式)
     private void InitHudData(StartInformation info)
     {
-        _playerStats = new Stats();
+        // StatsUpdate 可能在 StartGame 的延迟初始化之前到达。此前这里无条件
+        // new Stats() 会把已经收到的最大负重、攻击速度等属性清空，随后
+        // WeightUpdate 仍保留当前重量，于是出现 bag=225/0、wear=42/0，
+        // 跑步判断永远失败。只有尚未收到有效属性时才初始化为空集合。
+        if (_playerStats == null || _playerStats.Count == 0)
+            _playerStats = new Stats();
         _observer = false;
         _playerPoison = info.Poison;
         _playerLevel = info.Level;
