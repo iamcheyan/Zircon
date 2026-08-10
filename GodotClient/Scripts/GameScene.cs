@@ -3836,6 +3836,7 @@ public partial class GameScene : Control
         fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
         fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
+        fx.UseEffectTransparency = !imp.NoColourKey;
     }
 
     private void SpawnImpactTarget(MagicEffectTable.ImpactDef imp, Node2D target)
@@ -3858,6 +3859,7 @@ public partial class GameScene : Control
         fx.Direction = imp.DirectionStartIndices != null ? MirDirection.Up : direction;
         fx.FrameLight = imp.FrameLight;
         fx.FrameLightColour = imp.Colour;
+        fx.UseEffectTransparency = !imp.NoColourKey;
         if (frameSound != SoundIndex.None && soundFrame >= 0)
         {
             bool played = false;

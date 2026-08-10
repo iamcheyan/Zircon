@@ -47,6 +47,10 @@ public partial class MirEffectNode : Node2D
     public bool UseOffSet = true; // true 使用图库 OffSet；false 从节点左上角绘制
     public int FrameLight;
     public Color FrameLightColour = Colors.White;
+    // true=用 GetEffectTexture(黑色透明键抠除, 适合背景为 opaque 黑的帧);
+    // false=用 GetImageTexture(仅靠 Dxt1 alpha 通道透明, 不做 RGB 抠除)。
+    // 暗色火焰/冰系帧经 Dxt1 压缩后主体 RGB 可能 ≤32, 透明键会误删主体 → 设 false。
+    public bool UseEffectTransparency = true;
 
     // 生命周期
     protected double _startMs;
@@ -241,7 +245,9 @@ public partial class MirEffectNode : Node2D
         // transparency before the DirectX blend.  GetImageTexture() is the
         // raw decoded frame in Godot and leaves the rectangular key colour
         // visible, which is why skill frames can appear as shifted squares.
-        var tex = _lib.GetEffectTexture(df);
+        // 但暗色火焰/冰系帧经 Dxt1 压缩后主体 RGB≤32, 透明键会误删主体;
+        // 这类帧(背景已是 Dxt1 alpha=0 透明)用 GetImageTexture 即可。
+        var tex = UseEffectTransparency ? _lib.GetEffectTexture(df) : _lib.GetImageTexture(df);
         if (tex == null) return;
 
         // MirLibrary.Draw uses the supplied position as the top-left when

@@ -185,6 +185,9 @@ public static class MagicEffectTable
         public SoundIndex SoundFrameSound = SoundIndex.None;
         // 旧端按 8 方向分组的起始帧；未配置时使用 StartIndex。
         public int[] DirectionStartIndices;
+        // true=跳过黑色透明键抠除(用 GetImageTexture, 仅靠 Dxt1 alpha 透明)。
+        // 暗色火焰/冰系帧经 Dxt1 压缩后主体 RGB≤32 会被透明键误删, 需设 true。
+        public bool NoColourKey;
 
         public int ResolveStartIndex(MirDirection direction)
         {
@@ -413,7 +416,10 @@ public static class MagicEffectTable
         //   3) Magic 1900, 30帧, 50ms — 爆发火焰(Blend, BlendRate 1)
         // Godot 旧配置只有 1900(主) + 220(焦痕) + 1820(Source,原版无), 漏掉 2450 地面火焰,
         // 导致"只看到焦痕和爆发, 看不到那团持续燃烧的火"。补齐 2450。
-        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f }, new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f } } },
+        // 2450 地面火焰帧经 Dxt1 压缩后火焰主体 RGB≤32, 被 EffectTransparentKeyTolerance=32
+        // 的黑色透明键误删(77% opaque 像素被清成透明, 只剩 4-5% 灰色残留). 设 NoColourKey=true
+        // 改用 GetImageTexture(仅靠 Dxt1 alpha 通道透明, 不做 RGB 抠除), 火焰本体才可见.
+        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f }, new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, NoColourKey = true } } },
         // 原版: 起手 MirEffect(1970,10,30ms){Target=this}；光束 MirEffect
         // (1180,4,100ms,light 150){Target=this, Direction=施法者→格} 每个
         // MagicLocation 各播一次，目标上无特效。旧实现把光束挂到目标上。
