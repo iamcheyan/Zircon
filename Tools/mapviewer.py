@@ -974,6 +974,27 @@ SIM_TEMPLATE = """<!DOCTYPE html>
     /* HUD buttons from the static evidence (GameInter.wil frames at hud.left+offset) */
     .hud-btn { position:absolute; background:rgba(60,50,30,.55); border:1px solid #6a5a30;
                box-sizing:border-box; }
+    /* entity layer: sprites + name tags, positioned over the world view */
+    #ents { position:absolute; left:0; top:0; width:800px; height:600px; pointer-events:none; }
+    .ent { position:absolute; transform:translate(-50%,-100%); pointer-events:auto;
+           cursor:pointer; }
+    .ent img { display:block; image-rendering:pixelated; filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5)); }
+    .ent .tag { position:absolute; left:50%; top:100%; transform:translateX(-50%);
+                font-size:10px; color:#fff; background:rgba(0,0,0,.55); border:1px solid #555;
+                padding:0 3px; white-space:nowrap; border-radius:2px; pointer-events:none; }
+    .ent.npc img { border:1px solid rgba(120,200,120,.35); }
+    .ent.monster img { border:1px solid rgba(230,80,60,.4); }
+    .ent.player img { border:1px solid rgba(120,180,255,.6); }
+    .ent.player .tag { color:#8cf; border-color:#46a; }
+    .ent:hover .tag { background:rgba(255,220,90,.92); color:#000; }
+    .ent.target { outline:2px solid #ffd23d; outline-offset:1px; }
+    .ent .info { display:none; position:absolute; left:50%; bottom:calc(100% + 6px);
+                 transform:translateX(-50%); background:rgba(10,12,18,.94); color:#ddd;
+                 border:1px solid #6a5a30; border-radius:3px; padding:5px 8px;
+                 font-size:11px; min-width:150px; white-space:nowrap; z-index:5; }
+    .ent:hover .info { display:block; }
+    #mm .mm-box { position:absolute; border:1px solid #ffd23d; background:rgba(255,210,61,.25);
+                  box-sizing:border-box; }
     /* title bar / toolbar outside the stage */
     #bar { width:800px; margin:6px auto 4px; display:flex; gap:8px; align-items:center;
            color:#ccc; font-size:12px; }
@@ -995,8 +1016,9 @@ SIM_TEMPLATE = """<!DOCTYPE html>
 </div>
 <div id="stage">
     <div id="world"><img id="wimg" alt=""></div>
+    <div id="ents"></div>
     <div id="mm"><img id="mimg" alt=""><span class="mm-label" id="mm-name"></span>
-        <span class="mm-zoom" id="mm-zoom">128</span></div>
+        <span class="mm-zoom" id="mm-zoom">128</span><div class="mm-box" id="mm-box"></div></div>
     <div id="hud">
         <div class="cell-label" id="hud-map">—</div>
         <div class="stats" id="hud-stats"></div>
@@ -1020,6 +1042,14 @@ let maps = [], curName = null, cat = null;
 let cx = 0, cy = 0, z = 0;            // center cell + zoom ladder level
 let mm = 128;                          // minimap surface: 128 or 256 (T key)
 let showHud = true;
+let ents = [], target = null;          // entities on the current map; clicked target
+let player = { x: -1, y: -1 };         // player cell (spawn point when available)
+
+const entStyle = {
+    player:   { src: "/sprite?lib=M-Hum.wil&frame=0&scale=1", label: "我" },
+    npc:      { src: "/sprite?lib=NPC.wil&frame=0&scale=1",    label: "" },
+    monster:  { src: "/sprite?lib=Mon-1.wil&frame=0&scale=1", label: "" },
+};
 
 async function init() {
     const res = await fetch("/api/maps");
@@ -1041,14 +1071,81 @@ function pick(name) {
     curName = name;
     const mi = maps.find(m => m.name === name);
     if (!mi) return;
-    // default center: map middle
+    // default center: map middle; player: spawn point if this map has one
     if (!location.hash.match(/c=/)) { cx = Math.floor(mi.w / 2); cy = Math.floor(mi.h / 2); }
     const maxZ = mi.ladder.length - 1;
     z = Math.min(z, maxZ);
+    loadEntities(mi);
     loadCat(mi);
     loadImg();
     loadMini();
     updateHash();
+}
+async function loadEntities(mi) {
+    ents = []; target = null;
+    const box = document.getElementById("ents");
+    box.innerHTML = "";
+    try {
+        const res = await fetch("/api/entities?map=" + encodeURIComponent(mi.name));
+        const d = await res.json();
+        if (d.ok) ents = d.entities;
+    } catch (e) { ents = []; }
+    const spawn = ents.find(e => e.kind === "spawn");
+    if (spawn) player = { x: spawn.x, y: spawn.y };
+    else player = { x: Math.floor(mi.w / 2), y: Math.floor(mi.h / 2) };
+    renderEnts();
+}
+function renderEnts() {
+    const mi = maps.find(m => m.name === curName);
+    const box = document.getElementById("ents");
+    box.innerHTML = "";
+    const s = 1 << z;
+    const cxw = cx * 48 + 24, cyw = cy * 32 + 16;
+    // visible filter: cell within screen + margin
+    const visX = 800 / 48 * s + 2, visY = 600 / 32 * s + 2;
+    const all = [{ x: player.x, y: player.y, kind: "player", name: "玩家", info: "" }];
+    for (const e of ents) {
+        if (e.kind === "spawn") continue;   // spawn point is the player start, not an entity
+        all.push(e);
+    }
+    for (const e of all) {
+        if (Math.abs(e.x - cx) > visX || Math.abs(e.y - cy) > visY) continue;
+        const st = entStyle[e.kind];
+        const div = document.createElement("div");
+        div.className = "ent " + e.kind;
+        if (target && target.x === e.x && target.y === e.y && target.kind === e.kind) div.classList.add("target");
+        div.style.left = (400 + (e.x * 48 + 24 - cxw) / s) + "px";
+        div.style.top = (300 + (e.y * 32 + 16 - cyw) / s) + "px";
+        const img = document.createElement("img");
+        img.src = st.src; img.alt = "";
+        div.appendChild(img);
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.textContent = (e.kind === "player" ? "我" : (e.name || e.kind));
+        div.appendChild(tag);
+        const info = document.createElement("div");
+        info.className = "info";
+        let t = e.kind === "player" ? "玩家" : (e.kind === "npc" ? "NPC" : "怪物");
+        info.innerHTML = `<b>${t}</b> ${e.name || ""}<br>格 ${e.x},${e.y}${e.kind === "npc" ? " · face " + (e.face ?? 0) + " · body " + (e.body ?? 0) : ""}${e.kind === "monster" ? " · Lv " + (e.level ?? 0) + (e.count && e.count > 1 ? " · ×" + e.count : "") : ""}`;
+        div.appendChild(info);
+        div.addEventListener("click", () => {
+            target = { x: e.x, y: e.y, kind: e.kind, name: e.name };
+            renderEnts(); renderHud(); renderMiniBox();
+        });
+        box.appendChild(div);
+    }
+    renderMiniBox();
+}
+function renderMiniBox() {
+    const mi = maps.find(m => m.name === curName);
+    const bb = document.getElementById("mm-box");
+    if (!mi) { bb.style.display = "none"; return; }
+    const size = 128;   // fixed display size; `mm` = render surface (128/256)
+    const bw = Math.max(3, 128 / mi.w * size), bh = Math.max(3, 128 / mi.h * size);
+    const px = player.x / mi.w * size, py = player.y / mi.h * size;
+    bb.style.display = "block";
+    bb.style.width = bw + "px"; bb.style.height = bh + "px";
+    bb.style.left = (px - bw / 2) + "px"; bb.style.top = (py - bh / 2) + "px";
 }
 async function loadCat(mi) {
     try {
@@ -1089,6 +1186,7 @@ function renderHud() {
     if (cat) {
         let s = `主题 ${cat.theme_name || "base"} · ${cat.w}×${cat.h} · ${cat.cell_bytes}B/格`;
         if (cat.animated_cells) s += " · 动画格 " + cat.animated_cells;
+        if (target) s += ` · 目标: ${target.kind === "npc" ? "NPC" : target.kind === "monster" ? "怪物" : "玩家"} ${target.name || ""} @${target.x},${target.y}`;
         hudStats.textContent = s;
         hudOob.textContent = cat.anomaly_total ? `⚠ ${cat.anomaly_total} 帧越界 (${Object.keys(cat.anomalies || {}).length} 项)` : "";
     } else {
@@ -1104,6 +1202,7 @@ function move(dx, dy) {
     const mi = maps.find(m => m.name === curName);
     if (mi) { cx = Math.max(0, Math.min(cx, mi.w - 1)); cy = Math.max(0, Math.min(cy, mi.h - 1)); }
     loadImg();
+    renderEnts();
     updateHash();
 }
 function updateHash() {
@@ -1136,7 +1235,7 @@ window.addEventListener("wheel", (e) => {
     if (e.deltaY < 0 && z > 0) z--;
     else if (e.deltaY > 0 && z < maxZ) z++;
     else return;
-    loadImg(); updateHash();
+    loadImg(); renderEnts(); updateHash();
 }, { passive: false });
 init();
 </script>
@@ -1917,6 +2016,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
     current_root_path: str = ""
     layout: str = LAYOUT_RECT   # axis-aligned (original Mir3.exe projection); "iso" legacy
     catalog: dict = {}          # map_name -> catalog doc (build_map_catalog.py)
+    entities: list = []         # Mud3 Envir entity data (load_entities)
 
     @classmethod
     def _render_lock(cls, key: tuple):
@@ -2026,7 +2126,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
 
-        elif self.path == "/sim" or self.path == "/sim.html":
+        elif self.path.split("?")[0] in ("/sim", "/sim.html"):
             body = SIM_TEMPLATE.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -2082,6 +2182,61 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
+
+        elif self.path.startswith("/api/entities?"):
+            from urllib.parse import parse_qs, urlparse
+            qs = parse_qs(urlparse(self.path).query)
+            map_name = os.path.basename(qs.get("map", [""])[0])
+            ents = [e for e in self.entities if e["map"] == map_name]
+            body = json.dumps({"ok": True, "count": len(ents), "entities": ents},
+                              ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif self.path.startswith("/sprite?"):
+            # Decode a single frame from a named WIL library (character / NPC /
+            # monster sprites for the simulator) as a transparent PNG.
+            from urllib.parse import parse_qs, urlparse
+            qs = parse_qs(urlparse(self.path).query)
+            lib_name = os.path.basename(qs.get("lib", [""])[0])
+            try:
+                frame = int(qs.get("frame", ["0"])[0])
+                scale = int(qs.get("scale", ["1"])[0])
+            except ValueError:
+                self.send_error(400, "frame/scale must be ints")
+                return
+            if not lib_name.lower().endswith(".wil"):
+                self.send_error(400, "lib must be a .wil file")
+                return
+            lib_path = os.path.join(self.pool.data_dir, lib_name)
+            if not os.path.exists(lib_path):
+                self.send_error(404, "lib not found in data dir")
+                return
+            try:
+                from wilsdk import open_library as _open_wil
+                lib = _open_wil(lib_path)
+                img = lib.decode(frame) if frame < lib.count else None
+                if img is None:
+                    self.send_error(404, f"frame {frame} blank or out of range")
+                    return
+                if scale > 1:
+                    img = img.resize((max(1, img.width // scale), max(1, img.height // scale)),
+                                     Image.NEAREST)
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                data = buf.getvalue()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Cache-Control", "public, max-age=86400")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            except Exception as ex:
+                self.send_error(500, str(ex))
 
         elif self.path.startswith("/thumb?"):
             from urllib.parse import parse_qs, urlparse
@@ -2286,6 +2441,95 @@ def load_catalog(catalog_dir: str) -> dict:
     except Exception:
         return {}
 
+
+def load_entities(envir_dir: str) -> list[dict]:
+    """Parse Mud3 server entity data into a flat list of dicts.
+
+    Sources (all GBK-encoded names):
+      StartPoint.txt  -> one spawn point per map  (map x y)
+      Merchant.txt    -> NPCs                      (name map x y face body)
+      MonGen.txt      -> loadgen lines expanding to .gen files in Mon_Def/
+                        (map x y name count level attack respawn)
+    Returns [{map, x, y, kind, name, face?, body?, count?, level?}].
+    Map names are normalised to '<name>.map'.  MonGen's loadgen refs that do
+    not resolve to a file are skipped (pending note)."""
+    out: list[dict] = []
+
+    def norm(name: str) -> str:
+        name = name.strip()
+        return name if name.lower().endswith(".map") else name + ".map"
+
+    def lines(path: str):
+        try:
+            with open(path, "rb") as f:
+                raw = f.read()
+        except OSError:
+            return
+        try:
+            text = raw.decode("gbk", errors="replace")
+        except Exception:
+            text = raw.decode("utf-8", errors="replace")
+        for ln in text.splitlines():
+            ln = ln.strip()
+            if not ln or ln.startswith(";"):
+                continue
+            yield ln
+
+    # spawn points
+    sp = os.path.join(envir_dir, "StartPoint.txt")
+    for ln in lines(sp):
+        parts = ln.split()
+        if len(parts) >= 3 and parts[0].replace(".", "", 1).isdigit():
+            try:
+                out.append({"map": norm(parts[0]), "x": int(parts[1]),
+                            "y": int(parts[2]), "kind": "spawn", "name": "出生点"})
+            except ValueError:
+                pass
+
+    # merchants / NPCs
+    mp = os.path.join(envir_dir, "Merchant.txt")
+    for ln in lines(mp):
+        parts = ln.split()
+        if len(parts) < 6:
+            continue
+        fname, mapn, xs, ys = parts[0], parts[1], parts[2], parts[3]
+        if not fname or mapn in ("Map", "map") or not xs.isdigit():
+            continue
+        try:
+            out.append({"map": norm(mapn), "x": int(xs), "y": int(ys),
+                        "kind": "npc", "name": parts[4],
+                        "face": int(parts[5]) if parts[5].isdigit() else 0,
+                        "body": int(parts[6]) if len(parts) > 6 and parts[6].isdigit() else 0})
+        except (ValueError, IndexError):
+            continue
+
+    # monsters: MonGen.txt loadgen refs -> .gen files (Mon_Def/ and Envir/)
+    mon_gen = os.path.join(envir_dir, "MonGen.txt")
+    gen_files: list[str] = []
+    for ln in lines(mon_gen):
+        low = ln.lower()
+        if low.startswith("loadgen"):
+            ref = ln.split('"')[1] if '"' in ln else ln.split()[1]
+            for base in (os.path.join(envir_dir, "Mon_Def"), envir_dir):
+                p = os.path.join(base, ref)
+                if os.path.exists(p):
+                    gen_files.append(p)
+                    break
+    for gp in gen_files:
+        for ln in lines(gp):
+            parts = ln.split()
+            if len(parts) < 4:
+                continue
+            try:
+                mon = {"map": norm(parts[0]), "x": int(parts[1]), "y": int(parts[2]),
+                       "kind": "monster", "name": parts[3],
+                       "count": int(parts[4]) if len(parts) > 4 and parts[4].isdigit() else 1,
+                       "level": int(parts[5]) if len(parts) > 5 and parts[5].isdigit() else 0}
+            except (ValueError, IndexError):
+                continue
+            out.append(mon)
+    return out
+
 def main():
 
     parser = argparse.ArgumentParser(description="Mir3 EI / Zircon Map Viewer")
@@ -2296,6 +2540,8 @@ def main():
                         help="Disk tile cache dir (default: <maps_dir>/.tilecache; empty disables)")
     parser.add_argument("--catalog", default=None,
                         help="map-catalog.json dir from build_map_catalog.py (enables /api/catalog)")
+    parser.add_argument("--envir", default=None,
+                        help="Mud3 server Envir dir (enables /api/entities: spawn/NPC/monster positions)")
     parser.add_argument("--thumbs-dir", default=THUMBS_DIR,
                         help="Full-map thumbnail dir (shared with WikiServer/thumb_gen)")
     parser.add_argument("--layout", choices=[LAYOUT_RECT, LAYOUT_ISO], default=LAYOUT_RECT,
@@ -2328,6 +2574,11 @@ def main():
     ViewerHandler.catalog = load_catalog(args.catalog)
     if ViewerHandler.catalog:
         print(f"[*] Catalog: {len(ViewerHandler.catalog)} maps loaded")
+    if args.envir:
+        ViewerHandler.entities = load_entities(args.envir)
+        print(f"[*] Envir entities: {len(ViewerHandler.entities)} loaded")
+    else:
+        ViewerHandler.entities = []
     os.makedirs(args.thumbs_dir, exist_ok=True)
     print(f"[*] Thumbnails: {args.thumbs_dir}")
     print(f"[*] Tile cache: {cache_dir}")
