@@ -3793,6 +3793,7 @@ public partial class GameScene : Control
             fx.Direction = castDirection;
         fx.FrameLight = def.FrameLight;
         fx.FrameLightColour = def.Colour;
+        fx.UseEffectTransparency = !def.NoColourKey;
     }
 
     private void SpawnCastEffectTarget(MagicEffectTable.CastEffect def, Node2D target)
@@ -3811,8 +3812,8 @@ public partial class GameScene : Control
         fx.Skip = def.Skip;
         fx.SetStartDelay(def.StartDelayMs);
         fx.Direction = direction;
-        fx.FrameLight = def.FrameLight;
         fx.FrameLightColour = def.Colour;
+        fx.UseEffectTransparency = !def.NoColourKey;
     }
 
     private void SpawnImpact(MagicEffectTable.ImpactDef imp, int x, int y, int sourceX = int.MinValue, int sourceY = int.MinValue)

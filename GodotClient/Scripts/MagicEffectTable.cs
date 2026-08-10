@@ -134,6 +134,8 @@ public static class MagicEffectTable
         public List<ProjectileDef> AdditionalProjectiles = new();
         public List<ProjectileDef> TargetAdditionalProjectiles = new();
         public double ProjectileDelayStepMs;
+        // true=跳过黑色透明键(用 GetImageTexture)。暗色火焰帧经 Dxt1 压缩后主体 RGB≤32 会被误删。
+        public bool NoColourKey;
     }
 
     public class ProjectileDef
@@ -410,16 +412,15 @@ public static class MagicEffectTable
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 420, FrameCount = 5, Colour = Fire },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 580, FrameCount = 10, Colour = Fire },
         },
-        // 原版 MapObject.cs:1209-1238 对每个 MagicLocation 创建 3 个 MirEffect:
-        //   1) ProgUse 220, 1帧, 3500ms — 地面焦痕(Floor, Opacity 0.8)
-        //   2) Magic 2450+rand*10, 10帧, 250ms — 地面火焰动画(Floor, Blend)  ← 旧实现漏了这个
-        //   3) Magic 1900, 30帧, 50ms — 爆发火焰(Blend, BlendRate 1)
-        // Godot 旧配置只有 1900(主) + 220(焦痕) + 1820(Source,原版无), 漏掉 2450 地面火焰,
-        // 导致"只看到焦痕和爆发, 看不到那团持续燃烧的火"。补齐 2450。
-        // 2450 地面火焰帧经 Dxt1 压缩后火焰主体 RGB≤32, 被 EffectTransparentKeyTolerance=32
-        // 的黑色透明键误删(77% opaque 像素被清成透明, 只剩 4-5% 灰色残留). 设 NoColourKey=true
-        // 改用 GetImageTexture(仅靠 Dxt1 alpha 通道透明, 不做 RGB 抠除), 火焰本体才可见.
-        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f }, new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, NoColourKey = true } } },
+        // 原版 MapObject.cs:1209-1238 对每个 MagicLocation 创建 3 个 MirEffect, 全部 MapTarget=point(地面格):
+        //   1) Magic 1900, 30帧, 50ms, Blend, BlendRate=1, Object层 — 爆发火焰(大团亮火焰), DistanceDelay=50
+        //   2) Magic 2450, 10帧, 250ms, Blend, Floor层 — 地面持续火焰, StartDelay=500, DistanceDelay=50
+        //   3) ProgUse 220, 1帧, 3500ms, Floor, Opacity=0.8 — 地面焦痕, StartDelay=500, DistanceDelay=50
+        // 旧配置把 1900 配成主CastEffect+Source(1820,原版无)+DirectionFromCast, 导致 destCells 循环
+        // (Source!=null → 跳过 SpawnCastEffect) 1900 不在地面格播放; 2450 漏配后被透明键误删.
+        // 修正: 去掉 Source/CastAtSource/DirectionFromCast, 主CastEffect=1900(地面格), Additional=[2450,220].
+        // 1900/2450 均 NoColourKey=true(Dxt1暗色火焰被透明键误删).
+        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, BlendRate = 1f, NoColourKey = true, Additional = { new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, NoColourKey = true }, new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
         // 原版: 起手 MirEffect(1970,10,30ms){Target=this}；光束 MirEffect
         // (1180,4,100ms,light 150){Target=this, Direction=施法者→格} 每个
         // MagicLocation 各播一次，目标上无特效。旧实现把光束挂到目标上。
