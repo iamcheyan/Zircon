@@ -951,6 +951,18 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         #viewport { position:absolute; top:40px; left:0; right:0; bottom:0; overflow:auto; background:#0b0b0f; cursor:grab; }
         #viewport.dragging { cursor:grabbing; }
         #map-img { display:block; background:#000; }
+        #grid-canvas { position:absolute; top:40px; left:0; pointer-events:none; }
+        #cat-panel { position:fixed; left:10px; bottom:10px; width:330px; max-height:46vh; overflow:auto;
+            background:rgba(10,12,16,.92); border:1px solid #3a3a46; border-radius:6px; padding:8px 10px;
+            font-size:12px; color:#c8c8d2; z-index:60; display:none; line-height:1.45; }
+        #cat-panel h4 { margin:0 0 6px; font-size:13px; color:#ffd54a; }
+        #cat-panel .row { display:flex; justify-content:space-between; gap:10px; }
+        #cat-panel .k { color:#8a8a98; }
+        #cat-panel .v { color:#e8e8f0; font-family:ui-monospace,monospace; }
+        #cat-panel .warn { color:#ff8f6b; }
+        #cat-panel .lib { font-family:ui-monospace,monospace; }
+        #cat-panel .lib .oob { color:#ff8f6b; }
+        #cat-panel::-webkit-scrollbar { width:8px; } #cat-panel::-webkit-scrollbar-thumb { background:#3a3a44; border-radius:4px; }
         #info { font-size:12px; color:#aaa; white-space:nowrap; }
         #status { margin-left:auto; font-size:12px; color:#e90; white-space:nowrap; }
         button { font-size:14px; min-width:32px; padding:4px 9px; white-space:nowrap; cursor:pointer; background:#333; color:#eee; border:1px solid #555; border-radius:3px; }
@@ -1070,10 +1082,12 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         <label><input type="checkbox" id="chk-ground" checked> 地表</label>
         <label><input type="checkbox" id="chk-objects" checked> 物件</label>
+        <label><input type="checkbox" id="chk-grid"> 网格</label>
         <span id="info"></span>
         <span id="status"></span>
     </div>
-    <div id="viewport"><img id="map-img" draggable="false" alt=""></div>
+    <div id="viewport"><img id="map-img" draggable="false" alt=""><canvas id="grid-canvas" width="0" height="0"></canvas></div>
+    <div id="cat-panel"></div>
     <div id="minimap">
         <div class="mm-title">全图</div>
         <div id="mm-box"><img id="mm-img" draggable="false" alt=""><div id="mm-rect" style="display:none"></div></div>
@@ -1147,6 +1161,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 statusEl.textContent = "就绪";
                 applyAnchor();
                 drawMini();
+                drawGrid();
                 hideLoading();
             };
             img.onerror = () => { 
@@ -1200,6 +1215,106 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             drawMini();
         }
 
+        // ---- grid overlay (rect layout: cell = 48x32 world px) ----
+        const gridCanvas = document.getElementById("grid-canvas");
+        const gridCtx = gridCanvas.getContext("2d");
+        const gridOn = () => document.getElementById("chk-grid").checked;
+
+        function drawGrid() {
+            const s = curScale();
+            if (!gridOn() || !imgEl.naturalWidth) { gridCanvas.width = 0; gridCanvas.height = 0; return; }
+            // canvas is a child of #viewport (position:absolute), so imgRect
+            // (viewport-relative) maps 1:1 to canvas coordinates
+            const vpRect = vp.getBoundingClientRect();
+            const imgRect = imgEl.getBoundingClientRect();
+            const ox = imgRect.left - vpRect.left, oy = imgRect.top - vpRect.top;
+            gridCanvas.style.left = ox + "px";
+            gridCanvas.style.top = oy + "px";
+            const cw = imgRect.width, ch = imgRect.height;
+            if (cw <= 0 || ch <= 0) return;
+            gridCanvas.width = cw * (window.devicePixelRatio || 1);
+            gridCanvas.height = ch * (window.devicePixelRatio || 1);
+            gridCanvas.style.width = cw + "px";
+            gridCanvas.style.height = ch + "px";
+            const ctx = gridCtx;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+            const cwPx = 48 / s, chPx = 32 / s;   // world->screen at this zoom
+            if (cwPx < 2 || chPx < 2) return;      // too dense to draw
+            ctx.strokeStyle = "rgba(255,213,74,0.35)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= cw; x += cwPx) { ctx.moveTo(x, 0); ctx.lineTo(x, ch); }
+            for (let y = 0; y <= ch; y += chPx) { ctx.moveTo(0, y); ctx.lineTo(cw, y); }
+            ctx.stroke();
+        }
+
+        // ---- cursor cell coordinate readout (rect: world px -> cell) ----
+        vp.addEventListener("mousemove", (e) => {
+            const mi = curMap();
+            if (!mi) return;
+            const s = curScale();
+            const rect = vp.getBoundingClientRect();
+            const wx = (vp.scrollLeft + e.clientX - rect.left) * s;
+            const wy = (vp.scrollTop + e.clientY - rect.top) * s;
+            const cx = Math.floor(wx / 48), cy = Math.floor(wy / 32);
+            let extra = "";
+            const cat = catCache[mi.name];
+            if (cat) {
+                const flag = cellFlag(cat, cx, cy);
+                if (flag) extra = " · flag=" + flag;
+            }
+            infoEl.textContent = fmt(mi, curZ()) + " · 格 " + cx + "," + cy + extra;
+        });
+
+        // ---- catalog info panel ----
+        let catCache = {};   // map_name -> catalog doc
+
+        function cellFlag(cat, x, y) {
+            // flag byte lives at cell offset +0; catalog doesn't store the
+            // full matrix, so report only when the flag histogram says 1s exist.
+            return "";
+        }
+
+        function fmtLibRow(layer, entries) {
+            const rows = [];
+            for (const [lid, info] of Object.entries(entries)) {
+                const oob = info.frame_oob ? `<span class="oob"> OOB ${info.frame_oob}</span>` : "";
+                rows.push(`<div class="row"><span class="k">${layer} ${lid} ${info.lib}</span><span class="v">${info.cells}格 ≤${info.frame_max}${oob}</span></div>`);
+            }
+            return rows.join("");
+        }
+
+        async function loadCatalog(mi) {
+            if (catCache[mi.name]) { renderCat(mi); return; }
+            try {
+                const res = await fetch("/api/catalog?map=" + encodeURIComponent(mi.name));
+                const data = await res.json();
+                if (data.ok) catCache[mi.name] = data.catalog;
+                else catCache[mi.name] = null;
+            } catch (e) { catCache[mi.name] = null; }
+            renderCat(mi);
+        }
+
+        function renderCat(mi) {
+            const panel = document.getElementById("cat-panel");
+            const cat = catCache[mi.name];
+            if (!cat) { panel.style.display = "none"; return; }
+            const anom = cat.anomaly_total || 0;
+            const warn = anom ? `<span class="warn"> ⚠ ${anom} 帧越界</span>` : "";
+            let html = `<h4>${cat.name}${cat.display ? " · MiniMap " + cat.display : ""}${warn}</h4>
+<div class="row"><span class="k">主题</span><span class="v">${cat.theme_name || "base"}</span></div>
+<div class="row"><span class="k">尺寸</span><span class="v">${cat.w}×${cat.h} · ${cat.cell_bytes}B/格${cat.legacy_13b ? " · legacy" : ""}</span></div>
+<div class="row"><span class="k">动画格</span><span class="v">${cat.animated_cells || 0}</span></div>`;
+            for (const layer of ["ground", "mid", "front"]) {
+                const e = cat[layer];
+                if (e && Object.keys(e).length) html += `<div class="lib"><b>${layer}</b>${fmtLibRow(layer, e)}</div>`;
+            }
+            panel.innerHTML = html;
+            panel.style.display = "block";
+        }
+
         // ---- custom map dropdown ----
         function mselLabelOf(m) { return m ? (m.cn ? m.cn + " — " : "") + m.name : "加载中…"; }
         function mselOpen() { mselPop.hidden = false; mselFilter.value = ""; renderMselList(); mselFilter.focus(); }
@@ -1231,6 +1346,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             mselLabel.textContent = mselLabelOf(mi);
             mselClose();
             loadMap();
+            loadCatalog(mi);
         }
         mselBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -1463,6 +1579,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         vp.addEventListener("scroll", () => {
             drawMini();
+            drawGrid();
             setAnchorFromView();
             updateUrlHash();
         });
@@ -1497,6 +1614,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
         document.getElementById("chk-ground").addEventListener("change", () => { render(); updateUrlHash(); });
         document.getElementById("chk-objects").addEventListener("change", () => { render(); updateUrlHash(); });
+        document.getElementById("chk-grid").addEventListener("change", () => { drawGrid(); });
 
         // Drag to pan
         vp.addEventListener("mousedown", (e) => {
@@ -1593,6 +1711,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
     render_locks_mu = threading.Lock()
     current_root_path: str = ""
     layout: str = LAYOUT_RECT   # axis-aligned (original Mir3.exe projection); "iso" legacy
+    catalog: dict = {}          # map_name -> catalog doc (build_map_catalog.py)
 
     @classmethod
     def _render_lock(cls, key: tuple):
@@ -1727,6 +1846,22 @@ class ViewerHandler(BaseHTTPRequestHandler):
             roots = get_client_roots()
             cur = self.current_root_path or (roots[0]["path"] if roots else "")
             body = json.dumps({"roots": roots, "current": cur}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif self.path.startswith("/api/catalog?"):
+            from urllib.parse import parse_qs, urlparse
+            qs = parse_qs(urlparse(self.path).query)
+            map_name = os.path.basename(qs.get("map", [""])[0])
+            doc = self.catalog.get(map_name)
+            if doc is None:
+                body = json.dumps({"ok": False, "error": "not_in_catalog"}).encode("utf-8")
+            else:
+                body = json.dumps({"ok": True, "catalog": doc}).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
@@ -1921,6 +2056,22 @@ def scan_maps(maps_dir: str, layout: str = LAYOUT_RECT) -> list[dict]:
     out.sort(key=lambda m: m["name"])
     return out
 
+
+def load_catalog(catalog_dir: str) -> dict:
+    """Load map-catalog.json (from build_map_catalog.py) into
+    {map_name: doc}.  Returns {} when the dir/file is absent or invalid."""
+    if not catalog_dir:
+        return {}
+    p = os.path.join(catalog_dir, "map-catalog.json")
+    if not os.path.exists(p):
+        return {}
+    try:
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+        return {d.get("name"): d for d in data.get("maps", []) if d.get("name")}
+    except Exception:
+        return {}
+
 def main():
 
     parser = argparse.ArgumentParser(description="Mir3 EI / Zircon Map Viewer")
@@ -1929,6 +2080,8 @@ def main():
     parser.add_argument("--port", type=int, default=8766, help="HTTP Server Port")
     parser.add_argument("--cache-dir", default=None,
                         help="Disk tile cache dir (default: <maps_dir>/.tilecache; empty disables)")
+    parser.add_argument("--catalog", default=None,
+                        help="map-catalog.json dir from build_map_catalog.py (enables /api/catalog)")
     parser.add_argument("--thumbs-dir", default=THUMBS_DIR,
                         help="Full-map thumbnail dir (shared with WikiServer/thumb_gen)")
     parser.add_argument("--layout", choices=[LAYOUT_RECT, LAYOUT_ISO], default=LAYOUT_RECT,
@@ -1958,6 +2111,9 @@ def main():
     ViewerHandler.cache_dir = cache_dir
     ViewerHandler.thumbs_dir = args.thumbs_dir
     ViewerHandler.layout = args.layout
+    ViewerHandler.catalog = load_catalog(args.catalog)
+    if ViewerHandler.catalog:
+        print(f"[*] Catalog: {len(ViewerHandler.catalog)} maps loaded")
     os.makedirs(args.thumbs_dir, exist_ok=True)
     print(f"[*] Thumbnails: {args.thumbs_dir}")
     print(f"[*] Tile cache: {cache_dir}")
