@@ -329,7 +329,7 @@ if (cell.BackImage <= 0) continue;
 
 ### 补充（2026-08-10，全库重解析定量确认）
 
-`Tools/lib_frame_stats.py` 对全部 544 张 EI 地图的 14B cell 重解析后：
+`Tools/maps/lib_frame_stats.py` 对全部 544 张 EI 地图的 14B cell 重解析后：
 - **tiles5c 帧 20 是全游戏引用最多的单帧（293,933 格）**；帧 20–24 合计约 1.2M 格
   引用（EI 版本），即黑地砖在官方地图数据中是被显式、大量使用的素材。
 - 蒙太奇目视（`catalog/lib-frames/previews/02_tiles5c.png`）：15 个抽样帧中

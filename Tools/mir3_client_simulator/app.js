@@ -2,7 +2,7 @@
  *
  * Fixed 800x600 logical canvas. Real textures are decoded by the wilviewer
  * server via /api/image (WIL -> PNG). All geometry is consumed from the
- * unified data model (data/*.json, built by Tools/build_mir3_simulator_data.py
+ * unified data model (data/*.json, built by Tools/web/build_mir3_simulator_data.py
  * from docs/research/ei-ui-layout/). Nothing here hard-codes coordinates.
  *
  * Evidence levels are carried through: primary / derived / candidate / pending.

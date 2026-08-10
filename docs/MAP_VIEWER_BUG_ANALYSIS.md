@@ -1,8 +1,8 @@
-# 地图浏览工具 (Tools/mapviewer.py) 贴图错乱彻底修复报告
+# 地图浏览工具 (Tools/maps/mapviewer.py) 贴图错乱彻底修复报告
 
 ## 1. 核心问题重温
 
-用户打开地图浏览工具 (`Tools/mapviewer.py`) 时，全地图平铺了重复的小圆圈和错误切片，没有正常地表纹理。
+用户打开地图浏览工具 (`Tools/maps/mapviewer.py`) 时，全地图平铺了重复的小圆圈和错误切片，没有正常地表纹理。
 
 ---
 
@@ -28,7 +28,7 @@
 
 通过命令测试提取比奇省地图 (`0.map`):
 ```bash
-python3 Tools/mapviewer.py Debug/Client/Map
+python3 Tools/maps/mapviewer.py Debug/Client/Map
 ```
 已成功准确解析 `0.map` (`350x350`) 的地表 `back_file=1` (`Tiles30c`), `back_img=721` 等真实资源，全图纹理与地表贴图已完全恢复正常！
 
@@ -39,7 +39,7 @@ python3 Tools/mapviewer.py Debug/Client/Map
 ### 4.1 “矩形黑块”根因 = 素材/地图数据侧，非渲染 bug
 
 - EI `Tiles5c.wil` 帧 20–24 资源本身近纯黑（mean≈2.7，std≈3.8，alpha 1.0），
-  不是解码错误（`Tools/lib_frame_stats.py` 全库 544 图重解析 + 蒙太奇目视，
+  不是解码错误（`Tools/maps/lib_frame_stats.py` 全库 544 图重解析 + 蒙太奇目视，
   见 `docs/research/mir3-map-reconstruction/catalog/lib-frames/previews/02_tiles5c.png`）。
 - **tiles5c f20 是全游戏引用最多的单帧（293,933 格）**；帧 20–24 合计约 1.2M 格，
   即地图数据显式引用黑帧（D201 废弃矿洞、D1423 洞穴等大面积黑块由此而来）。

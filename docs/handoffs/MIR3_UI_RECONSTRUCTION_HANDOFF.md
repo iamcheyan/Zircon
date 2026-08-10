@@ -30,10 +30,10 @@
 
 ```text
 docs/research/ei-ui-layout/
-Tools/extract_mir3_ui_layout.py
-Tools/enrich_mir3_layout_evidence.py
-Tools/verify_mir3_ui_evidence.py
-Tools/wilviewer.py
+Tools/reverse-engineering/extract_mir3_ui_layout.py
+Tools/reverse-engineering/enrich_mir3_layout_evidence.py
+Tools/reverse-engineering/verify_mir3_ui_evidence.py
+Tools/web/wilviewer.py
 ```
 
 不要把现代 C# Zircon 的坐标直接当作原版事实。Zircon 代码只能作为待修改目标、名称线索或功能参考；原版坐标必须标记来源和证据等级。
@@ -141,8 +141,8 @@ simulator/style.css
 
 1. 更新对应 JSON/Markdown 文档。
 2. 更新 `UI_COMPLETION_AUDIT.md` 或 `ui-coverage-matrix.json`。
-3. 运行 `python3 Tools/enrich_mir3_layout_evidence.py`。
-4. 运行 `python3 Tools/verify_mir3_ui_evidence.py`。
+3. 运行 `python3 Tools/reverse-engineering/enrich_mir3_layout_evidence.py`。
+4. 运行 `python3 Tools/reverse-engineering/verify_mir3_ui_evidence.py`。
 5. 运行 `git diff --check` 和必要的编译/网页 smoke test。
 6. 进行小而清晰的 commit，并推送到当前远程分支。
 

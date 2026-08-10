@@ -2,7 +2,7 @@
   "source": {
     "file": "/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp",
     "sha256": "5b2300ee587aea774cca8a5a3fc0ee35172d6dbdf8583b42254fbc28e22fc8e1",
-    "decoder": "Tools/decode_mir3_exp.py",
+    "decoder": "Tools/content/decode_mir3_exp.py",
     "decode": {
       "input_size": 14735,
       "raw_length": 160578032,

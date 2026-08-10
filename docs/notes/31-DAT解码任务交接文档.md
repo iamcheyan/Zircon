@@ -214,7 +214,7 @@ docs/research/mud3-dat-decoded/README.md
 现有当前版本目录生成器：
 
 ```
-Tools/build_content_catalog.py
+Tools/content/build_content_catalog.py
 ```
 
 现有详细页面：

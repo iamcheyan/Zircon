@@ -4,14 +4,14 @@
 
 ## 已实现
 
-`Tools/decode_mir3_exp.py` 复现了 `Mir3.exe` 的 `0x004525F0` 例程。它适用于
+`Tools/content/decode_mir3_exp.py` 复现了 `Mir3.exe` 的 `0x004525F0` 例程。它适用于
 供应的 EI 3.0 `Magic.exp` 和 `MExplain.exp`，输出到 `/tmp` 或用户指定目录，
 不改写原始客户端文件。
 
 示例：
 
 ```bash
-python3 Tools/decode_mir3_exp.py \
+python3 Tools/content/decode_mir3_exp.py \
   /home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp \
   /home/tetsuya/NAS/TMP/EI传奇3.0客户端/MExplain.exp \
   --out-dir /tmp/mir3-exp-decoded

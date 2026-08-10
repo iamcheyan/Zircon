@@ -8,7 +8,7 @@
 ## 运行方式
 
 ```bash
-python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+python3 Tools/web/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
 # 浏览器打开 http://127.0.0.1:8765/sim/
 ```
 
@@ -33,7 +33,7 @@ python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --p
 | `data/skills.json` | 技能格（12 个，Magic.wil 帧，candidate） |
 | `data/resources.json` | 157 个资源（WIL 库 + 帧数），来自 `resource-family-catalog.json` |
 
-生成器：`Tools/build_mir3_simulator_data.py`（单向、幂等），HTML/JS 只消费这些文件。
+生成器：`Tools/web/build_mir3_simulator_data.py`（单向、幂等），HTML/JS 只消费这些文件。
 `data/layout.json` 的 `meta` 记录 `generated_by` 与规则声明：
 **candidate 几何永不冒充 primary 事实**。
 
@@ -122,6 +122,6 @@ Tools/mir3_client_simulator/
 ├── app.js              # 交互引擎（纯数据驱动，无硬编码坐标）
 ├── data/*.json         # 统一数据模型（build 脚本生成）
 └── README.md           # 本文件
-Tools/build_mir3_simulator_data.py   # 数据生成器（单向、幂等）
-Tools/wilviewer.py                   # 服务器 + /sim 路由（+ 既有 /ui /api）
+Tools/web/build_mir3_simulator_data.py   # 数据生成器（单向、幂等）
+Tools/web/wilviewer.py                   # 服务器 + /sim 路由（+ 既有 /ui /api）
 ```

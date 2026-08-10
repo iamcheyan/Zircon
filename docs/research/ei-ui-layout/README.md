@@ -53,9 +53,9 @@ JSON 的 `pending` 字段中，尤其是运行时窗口打开入口、好友是�
 在项目根目录执行：
 
 ```bash
-python3 -m py_compile Tools/wilviewer.py Tools/enrich_mir3_layout_evidence.py Tools/verify_mir3_ui_evidence.py
-python3 Tools/enrich_mir3_layout_evidence.py
-python3 Tools/verify_mir3_ui_evidence.py
+python3 -m py_compile Tools/web/wilviewer.py Tools/reverse-engineering/enrich_mir3_layout_evidence.py Tools/reverse-engineering/verify_mir3_ui_evidence.py
+python3 Tools/reverse-engineering/enrich_mir3_layout_evidence.py
+python3 Tools/reverse-engineering/verify_mir3_ui_evidence.py
 git diff --check
 ```
 
@@ -64,7 +64,7 @@ git diff --check
 预览服务：
 
 ```bash
-python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+python3 Tools/web/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
 ```
 
 打开 [`/ui`](http://127.0.0.1:8765/ui)。根路径 `/` 仍是 WIL 素材浏览器；`/compare` 是资源差异工具；`/api/ui-layout` 返回统一布局及专题证据。
@@ -72,10 +72,10 @@ python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --p
 交互式客户端模拟器（同一服务）：
 
 ```bash
-python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+python3 Tools/web/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
 ```
 
-打开 [`/sim/`](http://127.0.0.1:8765/sim/)（`/sim` 自动 301 到 `/sim/`）。模拟器固定 800×600 逻辑画布、整数缩放、真实 WIL 贴图、14 窗口开/关/拖拽、确认框/公告、证据模式覆盖层与测试导航；数据模型与运行说明见 `Tools/mir3_client_simulator/README.md`，数据由 `Tools/build_mir3_simulator_data.py` 从本目录证据生成。
+打开 [`/sim/`](http://127.0.0.1:8765/sim/)（`/sim` 自动 301 到 `/sim/`）。模拟器固定 800×600 逻辑画布、整数缩放、真实 WIL 贴图、14 窗口开/关/拖拽、确认框/公告、证据模式覆盖层与测试导航；数据模型与运行说明见 `Tools/mir3_client_simulator/README.md`，数据由 `Tools/web/build_mir3_simulator_data.py` 从本目录证据生成。
 
 持续研究日志（记录反汇编地址、推理过程、失败尝试和待验证事项）：
 
@@ -90,7 +90,7 @@ docs/research/ei-ui-layout/RESEARCH_LOG.md
 提取脚本：
 
 ```text
-Tools/extract_mir3_ui_layout.py
+Tools/reverse-engineering/extract_mir3_ui_layout.py
 ```
 
 生成数据：
@@ -102,13 +102,13 @@ docs/research/ei-ui-layout/static_rect_initializers.json
 运行：
 
 ```bash
-python3 Tools/extract_mir3_ui_layout.py
+python3 Tools/reverse-engineering/extract_mir3_ui_layout.py
 ```
 
 只读完整性审计：
 
 ```bash
-python3 Tools/verify_mir3_ui_evidence.py
+python3 Tools/reverse-engineering/verify_mir3_ui_evidence.py
 ```
 
 审计只检查原版文件存在性、统一布局的 `800×600` 不变量、记录 ID/证据等级和专题 JSON
@@ -355,7 +355,7 @@ docs/research/ei-ui-layout/window-control-resource-analysis.json
 
 ## 证据布局预览
 
-`Tools/wilviewer.py` 新增独立证据预览页：
+`Tools/web/wilviewer.py` 新增独立证据预览页：
 
 ```text
 http://127.0.0.1:8765/ui

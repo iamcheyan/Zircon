@@ -91,7 +91,7 @@ push pointer
 call helper
 ```
 
-现已在 `Tools/extract_mir3_ui_layout.py` 中反转还原，并在 JSON 中保留 `raw_pushes` 作为原始证据。这个 helper 的字段语义仍未确认，所以 93 条记录继续标记为 `static-initializer-candidate`，不能当成屏幕 Rect。
+现已在 `Tools/reverse-engineering/extract_mir3_ui_layout.py` 中反转还原，并在 JSON 中保留 `raw_pushes` 作为原始证据。这个 helper 的字段语义仍未确认，所以 93 条记录继续标记为 `static-initializer-candidate`，不能当成屏幕 Rect。
 
 ### 发现四：源码交叉参考与 EI 不完全一致
 
@@ -171,7 +171,7 @@ docs/research/ei-ui-layout/primary-ptinrect-evidence.md
 | 1050 | 512×512 | 484×330 |
 | 1100 | 512×256 | 552×176 |
 
-这里的“WIL 头部尺寸”来自 `Tools/wilsdk.py` 的原始解码，不是把窗口尺寸倒推出来的；“显式尺寸”来自窗口创建调用的参数。二者不能混为一谈：前者是资源绘制/解码矩形，后者是窗口容器或裁剪/交互区域候选。Frame 145、202、251、253、254、255 在 `GameInter.wil` 中为空或不存在，早期源码中相同数字的含义不能直接覆盖 EI 的资源编号。
+这里的“WIL 头部尺寸”来自 `Tools/common/wilsdk.py` 的原始解码，不是把窗口尺寸倒推出来的；“显式尺寸”来自窗口创建调用的参数。二者不能混为一谈：前者是资源绘制/解码矩形，后者是窗口容器或裁剪/交互区域候选。Frame 145、202、251、253、254、255 在 `GameInter.wil` 中为空或不存在，早期源码中相同数字的含义不能直接覆盖 EI 的资源编号。
 
 这一差异是后续还原完整窗口时的重要约束：预览器必须同时显示 `resource_rect` 与 `window_rect`，并记录两者的证据来源。
 
@@ -201,7 +201,7 @@ docs/research/ei-ui-layout/window-resource-analysis.json
 
 ### 发现九：建立数据驱动的证据布局预览页
 
-为避免旧版 HUD 拆解页中的手写红框继续被误认为原版坐标，`Tools/wilviewer.py` 新增：
+为避免旧版 HUD 拆解页中的手写红框继续被误认为原版坐标，`Tools/web/wilviewer.py` 新增：
 
 ```text
 /ui                 固定 800×600 证据布局页面
@@ -252,7 +252,7 @@ docs/research/ei-ui-layout/window-control-calls.json
 
 当前清理后的扫描结果为 72 个窗口内部控件构造调用，其中 70 个具有连续 Frame 对候选。提取器现在按“当前 `0x00417550` 调用之前的上一个调用边界”截取参数块，避免把相邻控件的 Frame 对串入当前记录；原始指令和压栈参数仍全部保留。
 
-这些控件构造调用已通过 `Tools/enrich_mir3_layout_evidence.py` 写入统一 `layout.json` 的 `control_constructors` 字段。字段明确保留 `position=null`、`size=null` 和未解析资源句柄，防止预览器把 Frame 对误画成已经确认的屏幕坐标。
+这些控件构造调用已通过 `Tools/reverse-engineering/enrich_mir3_layout_evidence.py` 写入统一 `layout.json` 的 `control_constructors` 字段。字段明确保留 `position=null`、`size=null` 和未解析资源句柄，防止预览器把 Frame 对误画成已经确认的屏幕坐标。
 
 进一步根据 `0x00417550` 的栈访问和 `ret 0x24` 确认了参数槽位：调用者按 `arg9..arg1` 压栈；`arg1` 是资源对象，`arg2/arg3` 是普通/状态 Frame，`arg4/arg5` 是控件的 X/Y，后续参数是控件标志和附加字段。窗口控件 JSON 现在保留这些命名槽位。X/Y 的寄存器值仍可能是窗口基准加偏移，尚未把寄存器表达式误算成绝对屏幕坐标。
 
@@ -403,7 +403,7 @@ docs/research/ei-ui-layout/npc-paint-evidence.json
 
 ### 发现十八：vtable/特殊绘制证据已并入统一 layout
 
-重新运行 `Tools/enrich_mir3_layout_evidence.py` 后，统一 `layout.json` 已升级为 `0.3-primary-evidence-vtable-enriched`：
+重新运行 `Tools/reverse-engineering/enrich_mir3_layout_evidence.py` 后，统一 `layout.json` 已升级为 `0.3-primary-evidence-vtable-enriched`：
 
 - 13 个窗口记录各自包含 `vtable.derived_vtable`、vtable 赋值地址、`paint_slot_plus_0xc` 和候选证据等级；
 - `window.npc-candidate` 额外包含 `special_paint`，保存 `0x0043F040`、连续 Frame 和调用邻域；
@@ -478,7 +478,7 @@ docs/research/ei-ui-layout/window-resource-handle-bindings.json
 Tools/resolve_mir3_control_positions.py
 docs/research/ei-ui-layout/window-control-position-analysis.json
 docs/research/ei-ui-layout/layout.json
-Tools/wilviewer.py
+Tools/web/wilviewer.py
 ```
 
 预览器现在显示所有已解析但窗口外的控件为红色调试框；坐标未闭合或 Frame 尺寸缺失
@@ -675,7 +675,7 @@ docs/research/ei-ui-layout/mir3-dat-resource-path-table.json
 
 ### 发现二十八：资源族索引已进入统一 layout
 
-`Tools/enrich_mir3_layout_evidence.py` 现在把路径表和 WIL/WIX 资源族索引写入
+`Tools/reverse-engineering/enrich_mir3_layout_evidence.py` 现在把路径表和 WIL/WIX 资源族索引写入
 `layout.json.resource_evidence`，记录两个机器可读 artifact、157 条路径记录及当前库统计。
 这让 800×600 预览器、交接文档和后续窗口匹配共享同一份资源证据入口，同时继续保留“资源存在
 不等于窗口绘制”的警告。
@@ -993,7 +993,7 @@ FMMap 为 31 槽/29 非空。
 ### 当前产物
 
 ```text
-Tools/extract_mir3_ui_layout.py
+Tools/reverse-engineering/extract_mir3_ui_layout.py
 Tools/find_mir3_ui_patterns.py
 Tools/extract_mir3_button_calls.py
 Tools/extract_mir3_button_draw_calls.py
@@ -1075,7 +1075,7 @@ docs/research/ei-ui-layout/secondary-source-catalog.md
 
 ### Finding 48：800×600 证据预览增加次级 Interface1c 界面切换（2026-08-09）
 
-`Tools/wilviewer.py` 的 `/ui` 页面新增预览模式选择器：主 HUD、角色选择/创建候选 A、
+`Tools/web/wilviewer.py` 的 `/ui` 页面新增预览模式选择器：主 HUD、角色选择/创建候选 A、
 角色选择候选 B。次级模式读取 `layout.json.secondary_screen_candidates` 中的原版
 `Interface1c.wil` Frame 50（640×480），按原始坐标居中到固定 800×600 视口，并叠加对应
 `secondary_control_constructors` 的 Frame 和命中矩形。模式选择与调试/Frame 开关共同写入
@@ -1235,7 +1235,7 @@ Frame 151/154/157 的悬停状态转换仍需运行时点击路径继续确认�
 
 ### Finding 59：证据预览器已改用原版小地图 Rect 并持久化调试开关（2026-08-09）
 
-修正 `Tools/wilviewer.py` 中旧的占位框：原先错误的 `(650,10,140×140)` 已替换为原版
+修正 `Tools/web/wilviewer.py` 中旧的占位框：原先错误的 `(650,10,140×140)` 已替换为原版
 机器码确认的 `(672,0,128×128)`。证据布局 `/ui` 新增“显示原版小地图 Rect”开关，直接
 读取 `layout.map_ui_evidence.viewport.fixed_minimap_widget.screen_rect`，并把开关与
 调试框、Frame、差异截图、绘制层级一起写入 `mir3_evidence_ui_state`。这只是坐标/证据层，
@@ -1282,7 +1282,7 @@ Frame 151/154/157 的悬停状态转换仍需运行时点击路径继续确认�
 
 ### Finding 62：预览器增加完整地图资源候选模式（2026-08-10）
 
-`Tools/wilviewer.py` 的固定 800×600 证据预览新增“完整地图资源候选 / FMMap F0”模式，
+`Tools/web/wilviewer.py` 的固定 800×600 证据预览新增“完整地图资源候选 / FMMap F0”模式，
 把原版 `FMMap.wil` Frame 0（头部尺寸 `1200×800`）按比例显示在 800×600 视口内，并
 明确标记为资源候选，不伪装成已确认的地图编号、窗口原点或最终缩放规则。主 HUD 模式
 仍独立显示原版小地图 Rect `(672,0,128×128)`，两者不会混在同一层中。
@@ -2526,7 +2526,7 @@ Frame 1003 在当前客户端副本中没有可导出的像素内容，但状态
 
 ### Finding 176：统一 layout 生成器按实际 WIL 库选择控件资源（2026-08-10）
 
-修正 `Tools/enrich_mir3_layout_evidence.py`：窗口控件的尺寸、资源来源和命中矩形不再无条件写成 `GameInter.wil`，而是从 `window-control-resource-analysis.json` 的已解码库头中选择实际存在的 WIL。重新生成后，背包三个控件分别为 GameInter 161/162、GameInter 264/265、Interface1c 267/268；第三项尺寸为 76×88，统一 `layout.json` 与独立证据保持一致。
+修正 `Tools/reverse-engineering/enrich_mir3_layout_evidence.py`：窗口控件的尺寸、资源来源和命中矩形不再无条件写成 `GameInter.wil`，而是从 `window-control-resource-analysis.json` 的已解码库头中选择实际存在的 WIL。重新生成后，背包三个控件分别为 GameInter 161/162、GameInter 264/265、Interface1c 267/268；第三项尺寸为 76×88，统一 `layout.json` 与独立证据保持一致。
 
 这条规则是通用修复，不是背包特例：当相同 Frame 编号在多个 WIL 库中有不同含义时，预览器和后续还原器必须以“调用点 + 实际可解码库 + 帧头尺寸”联合决定资源，不能只看 Frame 数字。
 
@@ -2556,7 +2556,7 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 
 ### Finding 181：将 EI 地图/小地图交叉引用生成为可检索目录（2026-08-10）
 
-为了让后续 UI 还原和内容百科都能直接查地图，而不是只读一份难以浏览的 JSON，新增 `Tools/build_ei_map_catalog.py`，从 `minimap-server-crossref.json` 生成 `EI_MAP_RESOURCE_CATALOG.md`。当前目录明确记录 313 条服务器地图值、地图文件名、`FMMap.wil`/`MMap.wil` 资源库、Frame、服务器名称、客户端 `.map` 是否存在以及 WIL 帧是否能解码。
+为了让后续 UI 还原和内容百科都能直接查地图，而不是只读一份难以浏览的 JSON，新增 `Tools/content/build_ei_map_catalog.py`，从 `minimap-server-crossref.json` 生成 `EI_MAP_RESOURCE_CATALOG.md`。当前目录明确记录 313 条服务器地图值、地图文件名、`FMMap.wil`/`MMap.wil` 资源库、Frame、服务器名称、客户端 `.map` 是否存在以及 WIL 帧是否能解码。
 
 这次整理同时固定了证据边界：地图名称和数值属于 Mud3 服务器配置的二级交叉引用；资源库选择、Frame 范围、固定小地图目标 `(672,0)-(800,128)` 和 `128×128/256×256` 表面模式属于原版 `Mir3.exe` 与 WIL 的一级证据。目录中的名称不能反过来证明客户端标记一定是玩家、NPC 或物品，未解析的标记业务语义继续保留为待验证。
 
@@ -2740,7 +2740,7 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 
 ### Finding 203：窗口预览已改为原始控件图层叠加，而非仅显示几何框（2026-08-10）
 
-预览器 `Tools/wilviewer.py` 的聊天和坐骑窗口模式现在直接使用原版 `GameInter.wil` 控件帧对叠加到窗口背景上。聊天窗口按 Paint 重定位记录绘制六个频道控件（F360/362/364/366/368/370）及其原始 36×34 命中区域；坐骑窗口按 F860/862/864/866 与 F161 的实际资源尺寸绘制四个坐骑操作按钮和右上控件，均保留窗口相对坐标。
+预览器 `Tools/web/wilviewer.py` 的聊天和坐骑窗口模式现在直接使用原版 `GameInter.wil` 控件帧对叠加到窗口背景上。聊天窗口按 Paint 重定位记录绘制六个频道控件（F360/362/364/366/368/370）及其原始 36×34 命中区域；坐骑窗口按 F860/862/864/866 与 F161 的实际资源尺寸绘制四个坐骑操作按钮和右上控件，均保留窗口相对坐标。
 
 这些图层是“原始资源 + 原始静态坐标”的可视化验证工具，不代表已经证明所有运行时状态、文字渲染、透明像素裁剪或窗口最终锚点。界面标签仍明确标为 original window evidence，未把预览居中规则升级成原版屏幕位置。该改动已通过 Python 编译、HTTP 页面加载检查，并提交为 `622d0e4` 推送到远端。
 
@@ -2798,7 +2798,7 @@ Frame 17 与 Frame 57 虽有静态尺寸/索引记录，但在当前客户端副
 
 ### Finding 213：800×600 交互式客户端模拟器交付（2026-08-10）
 
-新增 `Tools/mir3_client_simulator/`（HTML 客户端模拟器），作为 wilviewer 的新路由 `/sim` 内嵌（`/sim` → `/sim/` 301 重定向保证相对资源解析）。模拟器消费 `Tools/build_mir3_simulator_data.py` 从 `layout.json` + 专项证据生成的统一数据模型 `data/*.json`（windows=14、controls=37 = 22 专项 + 15 HUD 按钮、resources=157、entities=6、equipment_slots=6、skills=12、maps=2），HTML/JS 内不散落坐标。
+新增 `Tools/mir3_client_simulator/`（HTML 客户端模拟器），作为 wilviewer 的新路由 `/sim` 内嵌（`/sim` → `/sim/` 301 重定向保证相对资源解析）。模拟器消费 `Tools/web/build_mir3_simulator_data.py` 从 `layout.json` + 专项证据生成的统一数据模型 `data/*.json`（windows=14、controls=37 = 22 专项 + 15 HUD 按钮、resources=157、entities=6、equipment_slots=6、skills=12、maps=2），HTML/JS 内不散落坐标。
 
 关键事实复用（均来自既有证据文件，未新增伪证）：
 

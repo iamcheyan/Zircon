@@ -70,10 +70,10 @@
 
 ## 工具链
 
-- `Tools/audit_mir3_maps.py` — 结构审计（v 变换、库表、anomaly）
-- `Tools/build_map_catalog.py` — per-map JSON + per-lib 帧统计 + 汇总
-- `Tools/lib_frame_stats.py` — 全库帧直方图 + 每库抽样帧级像素统计 + 蒙太奇
-- `Tools/mapviewer.py` — 渲染器 /fullmap /tile /sim /api/cell /api/strip，offset 三模式、Back/Middle/Front 独立开关、实体（含掉落）层
-- `Tools/render_map_comparison.py` — EI vs ZL 面板与 offset 条带
+- `Tools/maps/audit_mir3_maps.py` — 结构审计（v 变换、库表、anomaly）
+- `Tools/maps/build_map_catalog.py` — per-map JSON + per-lib 帧统计 + 汇总
+- `Tools/maps/lib_frame_stats.py` — 全库帧直方图 + 每库抽样帧级像素统计 + 蒙太奇
+- `Tools/maps/mapviewer.py` — 渲染器 /fullmap /tile /sim /api/cell /api/strip，offset 三模式、Back/Middle/Front 独立开关、实体（含掉落）层
+- `Tools/maps/render_map_comparison.py` — EI vs ZL 面板与 offset 条带
 - 产物：`docs/research/mir3-map-reconstruction/{catalog,comparisons,lib-frames}`、
   `docs/research/mapviewer-investigation.md`、`LAYER-ORDER.md`、`OFFSET-EXPERIMENT.md`

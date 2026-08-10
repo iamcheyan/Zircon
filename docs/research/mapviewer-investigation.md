@@ -1,6 +1,6 @@
 # 地图查看工具 mapviewer.py — 调查与使用说明
 
-> 日期:2026-08-09。对象:`Tools/mapviewer.py`(911 行,未提交,`??` 状态)。
+> 日期:2026-08-09。对象:`Tools/maps/mapviewer.py`(911 行,未提交,`??` 状态)。
 > 结论:**mapviewer 不是独立新工具,是 `Tools/` 下 WIL 素材工具集(wilsdk/wilviewer/wilextract)的延伸**——它复用同一个 `wilsdk.WilLibrary` 解码核心,只是消费方式完全不同:前者看素材帧,它把 `.map` 组装成可平移缩放的等距地图。
 
 ---
@@ -36,10 +36,10 @@ wilsdk.py      核心库:WilLibrary(mmap 惰性解码, 17B 帧头 + 0xC0/0xC1/0x
 
 ```bash
 # 基本用法:maps 目录必须,data 自动探测(<maps_dir>/../Data、<maps_dir>/Data、maps_dir 自身)
-python3 Tools/mapviewer.py <maps_dir> [--data <data_dir>] [--port 8766]
+python3 Tools/maps/mapviewer.py <maps_dir> [--data <data_dir>] [--port 8766]
 
 # 实测(NAS 镜像)
-python3 Tools/mapviewer.py /home/tetsuya/NAS/TMP/mir3ei/Map \
+python3 Tools/maps/mapviewer.py /home/tetsuya/NAS/TMP/mir3ei/Map \
     --data /home/tetsuya/NAS/TMP/mir3ei/Data --port 8766
 # 启动日志:maps: 566  data: ...   libraries: ground[4] objects[59]
 # 浏览器打开 http://127.0.0.1:8766/
@@ -131,4 +131,4 @@ flags 区  W*H*3/4 字节 → 单元格区  W*H × 14 字节(列主序,index = x
 
 - `Tools/` 下 mapviewer/wilsdk/wilviewer/wilextract 及 README **全部未提交**(`??`);已提交的只有 `Tools/CharacterEditor` 等旧目录
 - `Tools/README.md` 只写了 wilviewer/wilextract,**没提 mapviewer**——建议补一节"地图浏览器",并把 `__pycache__/` 加入 .gitignore
-- 若要入库:`git add Tools/mapviewer.py Tools/wilsdk.py Tools/wilviewer.py Tools/wilextract.py Tools/README.md`
+- 若要入库:`git add Tools/maps/mapviewer.py Tools/common/wilsdk.py Tools/web/wilviewer.py Tools/reverse-engineering/wilextract.py Tools/README.md`

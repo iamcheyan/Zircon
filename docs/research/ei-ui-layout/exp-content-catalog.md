@@ -3,11 +3,11 @@
 更新时间：2026-08-09
 
 `Magic.exp` 已通过原版 `Mir3.exe` 的解码例程恢复为 GB18030 文本，并由
-`Tools/parse_mir3_magic_exp.py` 解析为逐条 JSON。当前恢复出 50 条技能记录，
+`Tools/content/parse_mir3_magic_exp.py` 解析为逐条 JSON。当前恢复出 50 条技能记录，
 每条包含原版 ID、中文名、属性、元素、1–4 级门槛、修炼值和原版说明。
 
 ```bash
-python3 Tools/parse_mir3_magic_exp.py \
+python3 Tools/content/parse_mir3_magic_exp.py \
   /home/tetsuya/NAS/TMP/EI传奇3.0客户端/Magic.exp
 ```
 

@@ -22,10 +22,10 @@ docs/research/ei-ui-layout/ui-coverage-matrix.json
 再检查：
 
 ```text
-Tools/extract_mir3_ui_layout.py
-Tools/enrich_mir3_layout_evidence.py
-Tools/verify_mir3_ui_evidence.py
-Tools/wilviewer.py
+Tools/reverse-engineering/extract_mir3_ui_layout.py
+Tools/reverse-engineering/enrich_mir3_layout_evidence.py
+Tools/reverse-engineering/verify_mir3_ui_evidence.py
+Tools/web/wilviewer.py
 ```
 
 原版资源位于：
@@ -101,8 +101,8 @@ Tools/wilviewer.py
 每个阶段完成后执行：
 
 ```bash
-python3 Tools/enrich_mir3_layout_evidence.py
-python3 Tools/verify_mir3_ui_evidence.py
+    python3 Tools/reverse-engineering/enrich_mir3_layout_evidence.py
+    python3 Tools/reverse-engineering/verify_mir3_ui_evidence.py
 python3 -m py_compile Tools/*.py
 git diff --check
 ```

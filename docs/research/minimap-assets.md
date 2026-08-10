@@ -61,7 +61,7 @@ System.db 是 .NET `BinaryFormatter` 序列化，反序列化需要 .NET 类型�
 ## 6. 结论 / 已实现（2026-08-09）
 
 - 小地图必须用游戏素材（`MiniMap.Zl` / `mmap.wil`），不能直接缩大图——**用户明确要求，已实现**
-- 实现（`Tools/mapviewer.py`）：
+- 实现（`Tools/maps/mapviewer.py`）：
   1. `Tools/SystemDbProbe --minimap <out>` 新增模式：dump `Debug/Client/Database/System.db` 的 MapInfo → `{FileName \t MiniMap帧号}`（244 条）
   2. mapviewer 新增 `MiniMapSource`：懒打开 `MiniMap.Zl`（data dir 下，缺失时降级 `mmap.wil`），`frame(stem)` 按映射取帧
   3. 新增 HTTP `/minimap?map=X.map`：解码帧 → JPEG（缓存头 max-age=86400）
@@ -81,15 +81,15 @@ EI 客户端（`/home/tetsuya/NAS/TMP/EI传奇3.0客户端/`，544 图）**没�
 
 - `10.map`（比奇城堡）、`11.map`（道馆）在 MiniMap.txt **无条目** → EI 版这两张无小地图（与 2017 不同——2017 有帧 151/163）
 - 客户端存在但 MiniMap.txt 未列、或帧无内容的图 → 无小地图（约 100+ 张野外小图）
-- 生成脚本：`Tools/gen_minimap_ei.py <MiniMap.txt> <Map目录> <Data目录>` → 输出 `Tools/minimap_map_ei.txt` 格式 `地图名\t库名\t帧号`（182 条）
+- 生成脚本：`Tools/maps/gen_minimap_ei.py <MiniMap.txt> <Map目录> <Data目录>` → 输出 `Tools/minimap_map_ei.txt` 格式 `地图名\t库名\t帧号`（182 条）
 - mapviewer `MiniMapSource` 已支持**双体系自动检测**：data dir 有 `MiniMap.Zl` → 2017 模式（`_minimap_index()`）；有 `MMap.wil` → EI 模式（`_minimap_index_ei()`）
 - 两版同帧号**内容不同**（2017 帧1=比奇城森林城堡，EI FMMap 帧0=比奇城扁平色块），索引不能跨客户端复用
 
 ## 8. 服务现状（2026-08-09）
 
 - **8898**：2017 版（258 图），`setsid nohup` 独立进程（hub 的 mvtest 反复被回收，改独立跑），http://127.0.0.1:8898/
-- **8899**：EI 版（544 图），用户手动启动（`Tools/mapviewer.py /home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map --data .../Data --port 8899`），http://127.0.0.1:8899/
-- 同一份 `Tools/mapviewer.py` 自动适配两版数据（MiniMapSource 按 data dir 检测）
+- **8899**：EI 版（544 图），用户手动启动（`Tools/maps/mapviewer.py /home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map --data .../Data --port 8899`），http://127.0.0.1:8899/
+- 同一份 `Tools/maps/mapviewer.py` 自动适配两版数据（MiniMapSource 按 data dir 检测）
 - 用户新增 hash 深链接逻辑（`#map=X.map&cur=N&x=Y&y=Y&g=0/1&o=0/1`）：静态地图 URL 可还原到指定地图/缩放/中心坐标，`updateUrlHash()` + `hashchange` 监听，已实测工作正常
 
 ## 9. mid/front 渲染锚定修复（2026-08-09）
@@ -110,7 +110,7 @@ mapviewer 旧代码应用 `off_x/off_y` 是 bug。实测各库偏移：
 
 smtilesc 的偏移会把 sprite 甩出地图外——这是"无建筑"假象的一大来源。
 
-### 修复（`Tools/mapviewer.py`，commit 7278e12）
+### 修复（`Tools/maps/mapviewer.py`，commit 7278e12）
 
 - `render_tile` / `render_full_map` 的 mid/front 绘制统一改为：
   `px = cx - 24; py = cy + 16 - img.height * scale`（格底锚定），**删除 off_x/off_y 依赖**

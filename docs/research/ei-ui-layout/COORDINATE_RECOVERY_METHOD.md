@@ -80,8 +80,8 @@ map_id <  1000  → MMap.wil， frame = map_id
 
 ## 当前实现约束
 
-- `layout.json` 是统一预览输入，生成方式是 `Tools/enrich_mir3_layout_evidence.py`。
-- `Tools/wilviewer.py /ui` 固定显示 800×600，并把资源矩形、窗口容器矩形、控件
+- `layout.json` 是统一预览输入，生成方式是 `Tools/reverse-engineering/enrich_mir3_layout_evidence.py`。
+- `Tools/web/wilviewer.py /ui` 固定显示 800×600，并把资源矩形、窗口容器矩形、控件
   命中矩形分层显示。
 - 每个未闭合的语义都保留 `candidate` 或 `pending`，不能为了画面好看写成已确认。
 - 原版文件必须保持只读；所有结论写入 `docs/research/ei-ui-layout/*.json`、

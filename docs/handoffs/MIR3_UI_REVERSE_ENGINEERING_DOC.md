@@ -323,11 +323,11 @@ docs/research/ei-ui-layout/gameinter-cluster-43e260.json
 
 ## 5. 素材预览与 UI 组装工具使用说明
 
-系统内置的 WIL 素材查看与 UI 组装预览 Web 工具为 `Tools/wilviewer.py`。
+系统内置的 WIL 素材查看与 UI 组装预览 Web 工具为 `Tools/web/wilviewer.py`。
 
 ### 1) 启动 Web 服务
 ```bash
-python3 Tools/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
+python3 Tools/web/wilviewer.py --root /home/tetsuya/NAS/TMP/EI传奇3.0客户端 --port 8765
 ```
 
 ### 2) 关键功能点

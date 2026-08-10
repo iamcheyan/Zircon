@@ -2802,7 +2802,7 @@
   "meta": {
     "source": "docs/research/ei-ui-layout/layout.json + specialist evidence",
     "version": "0.3-primary-evidence-vtable-enriched",
-    "generated_by": "Tools/build_mir3_simulator_data.py",
+    "generated_by": "Tools/web/build_mir3_simulator_data.py",
     "evidence_rule": "candidate geometry is never presented as primary fact"
   }
 }

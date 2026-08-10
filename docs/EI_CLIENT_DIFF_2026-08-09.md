@@ -199,7 +199,7 @@ Zircon 本地库 174 技能按职业分布：战士 32 / 法师 42 / 道士 47 /
 ## 6. 交付：HTML 地图报告网站 + 百科服务
 
 - `Zircon/Tools/EI_MAP_REPORT.html`（单文件、静态、可离线；生成器 `EI_MAP_REPORT_gen.py`，读 `/tmp/report_full.json`）—— 544 张 EI 地图全列表 + 刷怪清单 + 商人 + 怪物图鉴 + 中英对照 + EI/mir3ei 差异高亮
-- `Zircon/Tools/WikiServer.py`（本地百科服务，`/diff` 页即本报告的三版本可视化）—— 地图 / 怪物 / 装备 / 技能 / NPC / 任务 / 宠物 / 资源库 / 差异裁剪十板块
+- `Zircon/Tools/web/WikiServer.py`（本地百科服务，`/diff` 页即本报告的三版本可视化）—— 地图 / 怪物 / 装备 / 技能 / NPC / 任务 / 宠物 / 资源库 / 差异裁剪十板块
 - 三版本分析数据: `/tmp/three_versions.json`（生成器 `Tools/three_versions_check.py` v5，中文词根+英文族双层匹配）
 
 ---

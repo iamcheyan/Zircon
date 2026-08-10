@@ -247,7 +247,7 @@
     "../../../Tools/mir3_client_simulator/index.html",
     "../../../Tools/mir3_client_simulator/style.css",
     "../../../Tools/mir3_client_simulator/data/layout.json",
-    "../../../Tools/build_mir3_simulator_data.py"
+    "../../../Tools/web/build_mir3_simulator_data.py"
    ],
    "layout_ids": [
     "sim.*"

@@ -1,6 +1,6 @@
 # EI vs ZL map rendering comparison
 
-Tool: `Tools/render_map_comparison.py` — renders the *same* `.map` file through
+Tool: `Tools/maps/render_map_comparison.py` — renders the *same* `.map` file through
 the authoritative renderer (`mapviewer`, rect layout = Mir3.exe projection)
 with two library sources and stitches side-by-side PNGs:
 
@@ -12,7 +12,7 @@ Output: `comparisons/<stem>__ei_vs_zl_z<z>.png` (labelled panels, vertical divid
 ## How to run
 
 ```bash
-python3 Tools/render_map_comparison.py '<EI Map dir>' \
+python3 Tools/maps/render_map_comparison.py '<EI Map dir>' \
     --data-ei '<EI Data dir>' \
     --data-zl '<Zircon>/Debug/Client/Data/Map Data' \
     --maps 3,0,41 --z 4 \
@@ -81,7 +81,7 @@ ground frames are alpha=255, so the fix is a no-op there.
 ## 800×600 simulator (原版视角)
 
 ```bash
-python3 Tools/mapviewer.py '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map' \
+python3 Tools/maps/mapviewer.py '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map' \
     --data '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Data' \
     --catalog docs/research/mir3-map-reconstruction/catalog \
     --envir /home/tetsuya/NAS/TMP/Mud3/Envir \
