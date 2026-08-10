@@ -397,7 +397,13 @@ public static class MagicEffectTable
             Projectile = new ProjectileDef { File = LibraryFile.Magic, StartIndex = 420, FrameCount = 5, Colour = Fire },
             Impact = new ImpactDef { File = LibraryFile.Magic, StartIndex = 580, FrameCount = 10, Colour = Fire },
         },
-        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f } } },
+        // 原版 MapObject.cs:1209-1238 对每个 MagicLocation 创建 3 个 MirEffect:
+        //   1) ProgUse 220, 1帧, 3500ms — 地面焦痕(Floor, Opacity 0.8)
+        //   2) Magic 2450+rand*10, 10帧, 250ms — 地面火焰动画(Floor, Blend)  ← 旧实现漏了这个
+        //   3) Magic 1900, 30帧, 50ms — 爆发火焰(Blend, BlendRate 1)
+        // Godot 旧配置只有 1900(主) + 220(焦痕) + 1820(Source,原版无), 漏掉 2450 地面火焰,
+        // 导致"只看到焦痕和爆发, 看不到那团持续燃烧的火"。补齐 2450。
+        [MagicType.ScortchedEarth] = new CastEffect { File = LibraryFile.Magic, StartIndex = 1900, FrameCount = 30, DelayMs = 50, DistanceDelayMs = 50, Colour = Fire, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f, DirectionFromCast = true, Source = new ImpactDef { File = LibraryFile.Magic, StartIndex = 1820, FrameCount = 8, DelayMs = 60, Colour = Fire }, Additional = { new ImpactDef { File = LibraryFile.ProgUse, StartIndex = 220, FrameCount = 1, DelayMs = 3500, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, Opacity = 0.8f }, new ImpactDef { File = LibraryFile.Magic, StartIndex = 2450, FrameCount = 10, DelayMs = 250, StartDelayMs = 500, DistanceDelayMs = 50, Colour = None, DrawType = MirEffectNode.EffectLayer.Floor, BlendRate = 1f } } },
         // 原版: 起手 MirEffect(1970,10,30ms){Target=this}；光束 MirEffect
         // (1180,4,100ms,light 150){Target=this, Direction=施法者→格} 每个
         // MagicLocation 各播一次，目标上无特效。旧实现把光束挂到目标上。
