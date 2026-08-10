@@ -841,14 +841,14 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                 continue
             lib_id, fr, iw, ih, off_x, off_y, rgba = res
             img = Image.frombuffer("RGBA", (iw, ih), rgba, "raw", "RGBA", 0, 1)
-            sprites[(lib_id, fr)] = (img, off_x, off_y, _sprite_opaque(img))
+            sprites[(lib_id, fr)] = (img, off_x, off_y, _sprite_opaque(img, lib_id))
     else:
         for lib_id, frames in needs.items():
             for fr in frames:
                 got = pool.decode(lib_id, fr, scale)
                 if got is not None:
                     img, off_x, off_y = got
-                    sprites[(lib_id, fr)] = (img, off_x, off_y, _sprite_opaque(img))
+                    sprites[(lib_id, fr)] = (img, off_x, off_y, _sprite_opaque(img, lib_id))
 
     canvas = Image.new("RGBA", (W, H), (16, 16, 20, 255))
     for x, y, cell in cells:
@@ -889,8 +889,20 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
     return buf.getvalue()
 
 
-def _sprite_opaque(img: Image.Image) -> bool:
-    """True when the sprite has no transparent pixels (paste == composite)."""
+def _sprite_opaque(img: Image.Image, lib_id: int = None) -> bool:
+    """True when the sprite has no transparent pixels (paste == composite).
+
+    Ground libraries are always fully opaque.  This matters for ZL data:
+    the ZL toolchain stores Wood/Tilesc.Zl and Wood/Tiles5c.Zl BC3 alpha as
+    4 (placeholder) instead of 255, while the ZL client never consumes those
+    libs per-tile (it draws ground from MapInfo.Background) — so the
+    placeholder never surfaced there.  In our per-tile ground renderer a
+    composite with alpha=4 would make the whole ground layer vanish, so
+    treat every ground frame as opaque regardless of its stored alpha.
+    """
+    lib_name = KR_ORDER.get(lib_id, "") if lib_id is not None else ""
+    if lib_name in ("tilesc", "tiles30c", "tiles5c", "wood_tilesc", "tiles"):
+        return True
     try:
         return img.getextrema()[3] == (255, 255)
     except Exception:

@@ -19,24 +19,35 @@ python3 Tools/render_map_comparison.py '<EI Map dir>' \
     --out docs/research/mir3-map-reconstruction/comparisons
 ```
 
-Note the ZL data dir must be the real 2017 client `Map Data` (root ZLs +
+The ZL data dir must be the real 2017 client `Map Data` (root ZLs +
 `Wood/`/`Sand/`/`Snow/`/`Forest/` subdirs).  Passing the EI mirror data
 (`mir3ei/Data`) produces identical panels — a useless comparison.
+
+## Renderer fix required for fair ZL panels
+
+`mapviewer._sprite_opaque` forces **ground libraries** (`tilesc`,
+`tiles30c`, `tiles5c`, `wood_tilesc`, `tiles`) to blit opaque regardless of
+the stored alpha.  This matters because the ZL toolchain stores
+`Wood/Tilesc.Zl` and `Wood/Tiles5c.Zl` BC3 alpha as a constant **4**
+(placeholder), not 255.  The 2017 ZL client never notices: it draws ground
+from `MapInfo.Background` (static image) and skips per-tile `Tilesc` blits
+(`Client/Scenes/Views/MapControl.cs` `DrawObjects` guards
+`file != LibraryFile.Tilesc`).  Our per-tile ground renderer would
+alpha-composite alpha=4 frames to ~invisible, wiping the ZL panel's ground
+layer; the forced-opaque path reproduces what both clients show.  EI WIL
+ground frames are alpha=255, so the fix is a no-op there.
 
 ## Findings (z4, 3.map / 41.map / 0.map)
 
 1. **No systematic hole in either panel.**  Exact canvas-background pixels are
-   ~0 in both panels for 3.map and 41.map (0/0 exact at z4; 13 px in ZL panel
-   of 3.map = 0.0009%).  Every map renders fully under both data sets.
+   0 in both panels for all three maps (z4).  Every map renders fully under
+   both data sets.
 
-2. **The ZL "dark" tiles are artwork differences, not missing frames.**  In
-   the z5 side-by-side, the six darkest ZL tiles had mean RGB 78–100 vs EI
-   118–149 — brighter than the canvas (16,16,20) background, i.e. ZL sprites
-   exist but are darker than EI's for the same frame number.  Per-cell
-   statistics on 3.map z4: 87% of sampled cells have matching bright/dark
-   status; where they differ, mid=15/19 cells (housesc roofs etc.) are
-   covered by an EI sprite but show sparse/transparent ZL sprite — same frame
-   id, different artwork.
+2. **ZL panels are slightly darker overall — artwork difference, not
+   missing frames.**  Dark fraction (mean RGB < 120) at z4:
+   `3.map` EI 0.0603 / ZL 0.0770, `0.map` EI 0.0884 / ZL 0.0950,
+   `41.map` EI 0.0165 / ZL 0.0173.  ZL sprites exist for the same frame ids
+   but are a different, marginally darker artwork generation.
 
 3. **Real resource shortfall is in the EI *data*, hidden by layering.**
    `3.map` mid file 25 -> `wood_smobjectsc`: EI `Wood/SmObjectsc.wil` has 969
@@ -44,9 +55,9 @@ Note the ZL data dir must be the real 2017 client `Map Data` (root ZLs +
    decode to `None` under EI data (audit `map-audit.json`, anomaly total
    3255).  ZL `Wood/SmObjectsc.Zl` has 12586 frames, so the ZL panel renders
    those cells.  Visually the missing EI sprites are masked because the cells
-   sit above ground/neighbour sprites (sparse per-cell stats: only 289 of
-   2575 OOB cells are measurably brighter under EI).  Similarly 41.map:
-   file 34 `sand_housesc` (EI 1274 vs map frame_max 1752) and file 40
+   sit above ground/neighbour sprites (per-cell: only 289 of 2575 OOB cells
+   are measurably brighter under EI).  Similarly 41.map: file 34
+   `sand_housesc` (EI 1274 vs map frame_max 1752) and file 40
    `sand_smobjectsc` (EI 631 vs map frame_max 3618) — 1619 OOB cells.
 
 4. **Library-frame table** (`ei-vs-zl-libraries.json`): EI is the *smaller*
