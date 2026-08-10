@@ -1,14 +1,23 @@
 {
  "name": "D5072.map",
  "display": "37",
+ "cn": "D5072",
  "theme": 0,
  "theme_name": "",
  "w": 100,
  "h": 100,
  "size": 147528,
+ "md5": "fda814b6b5b806a551fafadd342884a8",
+ "cell_off": 7528,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

@@ -1,14 +1,23 @@
 {
  "name": "d609.map",
  "display": null,
+ "cn": "d609",
  "theme": 0,
  "theme_name": "",
  "w": 50,
  "h": 50,
  "size": 34403,
+ "md5": "3956ebee33a08c8ba3cc379ec9ce6402",
+ "cell_off": 1903,
  "size_ok": true,
  "cell_bytes": 13,
  "legacy_13b": true,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

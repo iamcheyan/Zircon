@@ -1,14 +1,25 @@
 {
  "name": "3.map",
  "display": "1018",
+ "cn": "沙巴克城",
  "theme": 0,
  "theme_name": "",
  "w": 400,
  "h": 600,
  "size": 3540028,
+ "md5": "60036c1f522de8153254aaf02375adf9",
+ "cell_off": 180028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "confirmed",
+  "notes": [
+   "anomaly 3255 全库最高：lib24/25 (wood_housesc/wood_smobjectsc) EI 帧数 < 地图引用",
+   "帧越界根因 = EI 素材帧数不足 [confirmed]",
+   "原版对越界帧的替换逻辑（空帧/首帧/取模）[pending]"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

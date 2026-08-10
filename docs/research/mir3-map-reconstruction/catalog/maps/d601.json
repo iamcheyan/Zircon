@@ -1,14 +1,23 @@
 {
  "name": "d601.map",
  "display": null,
+ "cn": "d601",
  "theme": 0,
  "theme_name": "",
  "w": 250,
  "h": 250,
  "size": 859403,
+ "md5": "26f105f68dbc1406f7aaac98986a9156",
+ "cell_off": 46903,
  "size_ok": true,
  "cell_bytes": 13,
  "legacy_13b": true,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

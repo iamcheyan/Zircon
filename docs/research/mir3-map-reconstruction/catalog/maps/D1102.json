@@ -1,14 +1,23 @@
 {
  "name": "D1102.map",
  "display": "202",
+ "cn": "D1102",
  "theme": 0,
  "theme_name": "",
  "w": 300,
  "h": 300,
  "size": 1327528,
+ "md5": "e4f457608d9e1052304719f0f224d01c",
+ "cell_off": 67528,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

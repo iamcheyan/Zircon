@@ -1,14 +1,23 @@
 {
  "name": "8.map",
  "display": "1019",
+ "cn": "冰雪村",
  "theme": 0,
  "theme_name": "",
  "w": 800,
  "h": 800,
  "size": 9440028,
+ "md5": "932f3eb08dc0d3aaf51beaf76ed6b4ac",
+ "cell_off": 480028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

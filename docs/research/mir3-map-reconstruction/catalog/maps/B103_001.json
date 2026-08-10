@@ -1,14 +1,23 @@
 {
  "name": "B103_001.map",
  "display": null,
+ "cn": "B103_001",
  "theme": 0,
  "theme_name": "",
  "w": 40,
  "h": 40,
  "size": 23628,
+ "md5": "651a151d52d23232c09bb9c08d4b10ed",
+ "cell_off": 1228,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "1": {
    "lib": "tiles30c",

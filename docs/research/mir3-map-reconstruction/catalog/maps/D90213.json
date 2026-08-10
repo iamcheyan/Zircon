@@ -1,14 +1,23 @@
 {
  "name": "D90213.map",
  "display": null,
+ "cn": "D90213",
  "theme": 0,
  "theme_name": "",
  "w": 50,
  "h": 50,
  "size": 36903,
+ "md5": "60d13121f78c1cbefdbc8d609aeecf5c",
+ "cell_off": 1903,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

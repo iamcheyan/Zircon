@@ -1,14 +1,23 @@
 {
  "name": "50_001.map",
  "display": null,
+ "cn": "50_001",
  "theme": 0,
  "theme_name": "",
  "w": 70,
  "h": 70,
  "size": 72303,
+ "md5": "23e8088b31e98ae09a7ed7be8f57a0c2",
+ "cell_off": 3703,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

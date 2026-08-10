@@ -1,8 +1,9 @@
 # Mir3 EI 原版视角 10 图对照（rect 基准）
 
-基准与证据见 `docs/research/mir3-map-reconstruction/mapviewer-investigation.md`（Mir3.exe
+基准与证据见 `docs/research/mapviewer-investigation.md`（Mir3.exe
 反汇编：rect 投影、cell anchor、v 变换、库表槽号 = v）与 `comparisons/README.md`
 （EI WIL vs ZL 数据差异、地面 alpha=4 根因、真实 ZL SmObjectsc = 12586 帧）。
+图层顺序/锚点/offset 结论文档：`../LAYER-ORDER.md`、`OFFSET-EXPERIMENT.md`。
 
 ## 方法
 

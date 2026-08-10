@@ -1,14 +1,23 @@
 {
  "name": "D9021.map",
  "display": "147",
+ "cn": "D9021",
  "theme": 0,
  "theme_name": "",
  "w": 140,
  "h": 140,
  "size": 289128,
+ "md5": "9d7afcfd1d86771ed9ab3b45afdd2e7d",
+ "cell_off": 14728,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

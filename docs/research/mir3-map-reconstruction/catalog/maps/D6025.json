@@ -1,14 +1,23 @@
 {
  "name": "D6025.map",
  "display": "65",
+ "cn": "D6025",
  "theme": 0,
  "theme_name": "",
  "w": 400,
  "h": 400,
  "size": 2360028,
+ "md5": "971d58a28b83d761f0548f0ab819e943",
+ "cell_off": 120028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

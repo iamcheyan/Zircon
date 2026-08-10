@@ -1,14 +1,23 @@
 {
  "name": "D9022.map",
  "display": "148",
+ "cn": "D9022",
  "theme": 0,
  "theme_name": "",
  "w": 140,
  "h": 140,
  "size": 289128,
+ "md5": "02f7ab685b337a8997597d9838f45ac8",
+ "cell_off": 14728,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "14B 格式小图基准，anomaly 1"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

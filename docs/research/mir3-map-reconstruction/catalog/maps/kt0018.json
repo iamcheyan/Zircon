@@ -1,14 +1,23 @@
 {
  "name": "kt0018.map",
  "display": null,
+ "cn": "kt0018",
  "theme": 0,
  "theme_name": "",
  "w": 36,
  "h": 36,
  "size": 17848,
+ "md5": "e293a0b4b36aff109a8d359d1d687a85",
+ "cell_off": 1000,
  "size_ok": true,
  "cell_bytes": 13,
  "legacy_13b": true,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

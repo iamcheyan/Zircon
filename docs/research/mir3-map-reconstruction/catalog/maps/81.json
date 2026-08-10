@@ -1,14 +1,23 @@
 {
  "name": "81.map",
  "display": "1020",
+ "cn": "81",
  "theme": 0,
  "theme_name": "",
  "w": 300,
  "h": 350,
  "size": 1548778,
+ "md5": "523ce30f2a79a12e0d01bfe2dc7fda86",
+ "cell_off": 78778,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

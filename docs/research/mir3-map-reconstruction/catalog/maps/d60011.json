@@ -1,14 +1,23 @@
 {
  "name": "d60011.map",
  "display": "41",
+ "cn": "d60011",
  "theme": 0,
  "theme_name": "",
  "w": 250,
  "h": 250,
  "size": 921903,
+ "md5": "ce59df6e63b9eece2e9b95aaf899b1b0",
+ "cell_off": 46903,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

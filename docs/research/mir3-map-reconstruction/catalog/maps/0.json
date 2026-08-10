@@ -1,14 +1,24 @@
 {
  "name": "0.map",
  "display": "1001",
+ "cn": "比奇城",
  "theme": 0,
  "theme_name": "",
  "w": 800,
  "h": 800,
  "size": 9440028,
+ "md5": "5a1eb03ac319aeab0af6d40ccbf81ab9",
+ "cell_off": 480028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "confirmed",
+  "notes": [
+   "800×800 rect 全图渲染与 catalog 对齐 [confirmed]",
+   "地图层零 offset + 格底锚（反汇编 0x43bb10/0x43be00/0x43b440 系）[confirmed]"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

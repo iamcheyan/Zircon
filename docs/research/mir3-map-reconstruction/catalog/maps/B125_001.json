@@ -1,14 +1,23 @@
 {
  "name": "B125_001.map",
  "display": null,
+ "cn": "B125_001",
  "theme": 0,
  "theme_name": "",
  "w": 16,
  "h": 18,
  "size": 4276,
+ "md5": "a4d34972bd1a79dfe8ff596da9d2c119",
+ "cell_off": 244,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

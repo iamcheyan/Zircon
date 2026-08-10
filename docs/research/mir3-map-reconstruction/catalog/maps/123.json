@@ -1,14 +1,23 @@
 {
  "name": "123.map",
  "display": "1027",
+ "cn": "123",
  "theme": 0,
  "theme_name": "",
  "w": 400,
  "h": 400,
  "size": 2360028,
+ "md5": "9c79a5756e915227e73c86ced3bddc16",
+ "cell_off": 120028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "野外悬崖 cliffsc + 动画物件 animationsc；34 格地面未绘制"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

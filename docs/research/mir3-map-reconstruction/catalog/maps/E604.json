@@ -1,14 +1,23 @@
 {
  "name": "E604.map",
  "display": "80",
+ "cn": "E604",
  "theme": 0,
  "theme_name": "",
  "w": 150,
  "h": 150,
  "size": 331903,
+ "md5": "38ed1d4a810e239003286baa91e5dffa",
+ "cell_off": 16903,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

@@ -1,14 +1,23 @@
 {
  "name": "41.map",
  "display": "1021",
+ "cn": "41",
  "theme": 1,
  "theme_name": "Wood",
  "w": 400,
  "h": 400,
  "size": 2360028,
+ "md5": "407deda0bf17bb1a6ec771ae4e65f361",
+ "cell_off": 120028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "lib34/40 (sand_housesc/sand_smobjectsc) 帧越界与 3.map 同类，素材版本差异 [derived]"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

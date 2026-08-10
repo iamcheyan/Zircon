@@ -53,6 +53,18 @@ FIT_FULL_DIM = 2048    # full-map "fit" level: longest side target (px)
 LAYOUT_RECT = "rect"
 LAYOUT_ISO = "iso"
 
+# WIL frame-offset modes (rect layout only; iso keeps the legacy
+# centre-anchor + offset behaviour and ignores this switch).
+# Disassembly of Mir3.exe is conclusive that the EI map layers NEVER read
+# the frame +4/+6 offset fields (ground 0x43b440/0x43b9a0/0x43c3xx/0x43c4c9,
+# animated ground 0x434a20, mid/front 0x43bb10/0x43be00, blend 0x43bcf5) —
+# only the actor layer (0x41cbd0/0x40b5xx/0x40fbxx/0x430axx) does.  These
+# modes exist purely to record the divergence ("none" = the original).
+OFFSET_NONE = "none"      # original: no offsets anywhere
+OFFSET_ALL = "all"        # hypothetical: back + mid/front shifted by frame offsets
+OFFSET_MIDFRONT = "midfront"  # hypothetical: only mid/front shifted
+OFFSET_MODES = (OFFSET_NONE, OFFSET_ALL, OFFSET_MIDFRONT)
+
 # ---- Game minimap assets (MiniMap.Zl / mmap.wil) ----
 # MapInfo.MiniMap (System.db, via Tools/SystemDbProbe --minimap) maps a map
 # file stem -> frame index in the MiniMap library.  The library lives next to
@@ -716,8 +728,12 @@ def is_object_library(lib_id: int) -> bool:
 def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                 tx: int, ty: int, zoom: int,
                 draw_ground: bool = True, draw_objects: bool = True,
-                layout: str = LAYOUT_RECT) -> bytes:
-    """Render a single tile at zoom level `zoom` (0 is 1:1, 1 is 1:2, etc)."""
+                layout: str = LAYOUT_RECT,
+                offset_mode: str = OFFSET_NONE) -> bytes:
+    """Render a single tile at zoom level `zoom` (0 is 1:1, 1 is 1:2, etc).
+
+    `offset_mode` (rect only) selects the WIL frame-offset experiment mode;
+    OFFSET_NONE is the original Mir3.exe behaviour (no offsets)."""
     scale = 1 << zoom
     tile_world_sz = TILE_SZ * scale
     w, h, _ = map_cache.get(map_name)
@@ -748,18 +764,27 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                     px = cx - 24 + off_x
                     py = cy - 16 + off_y
                 else:
-                    img, _, _ = got
-                    px, py = cx, cy
+                    img, off_x, off_y = got
+                    if offset_mode == OFFSET_ALL:
+                        px = cx + off_x * scale
+                        py = cy + off_y * scale
+                    else:
+                        px, py = cx, cy
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
 
         # 2. Middle Layer (SmTiles, SmObjects, Furnitures, etc)
-        # Mir3 client ignores the WIL frame offset for mid/front objects and
-        # anchors the sprite bottom to the cell bottom edge (drawX, drawY - h):
-        #   drawX = cell left  = cx - 24,  drawY = cell bottom = cy + 16
-        # Some libs (e.g. SmTilesc) carry garbage offsets (-1132, -19694) that
-        # would fling sprites off-map, so offsets are intentionally dropped.
+        # Mir3.exe anchors mid/front sprites bottom-LEFT to the cell and
+        # never reads the WIL frame offset (dest math at 0x43bce6/0x43bfd2:
+        # destX = (x-viewX)*48 - scrollX - 200, destY = (y-viewY)*32 -
+        # scrollY - h - 125; the ground's -157 vs mid/front's -125 differ by
+        # exactly one cell height, so the frame bottom sits on the cell's
+        # bottom edge).  The ZL C# client (MapControl.cs DrawObjects) does the
+        # same: Draw(index, drawX, drawY - h, useOffSet=false) with drawX =
+        # cell left and drawY = cell bottom.  Some libs (e.g. SmTilesc) carry
+        # garbage offsets (-1132, -19694) that would fling sprites off-map.
+        # `offset_mode` switches those offsets on for the experiment only.
         #
         # Frame index semantics: the .map file stores the raw WIL frame index
         # (Mir3.exe 0x43b3c7 pushes cell+5 verbatim; the 2017 ZL client reads
@@ -768,13 +793,16 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
             frame_idx = cell.mid_img
             got = pool.decode(cell.mid_file, frame_idx, scale)
             if got is not None:
-                img = got[0]
+                img, off_x, off_y = got
                 if layout == LAYOUT_ISO:
                     px = cx - 24
                     py = cy + 16 - img.height * scale
+                elif offset_mode in (OFFSET_ALL, OFFSET_MIDFRONT):
+                    px = cx + off_x * scale
+                    py = cy + 32 - img.height * scale + off_y * scale
                 else:
                     px = cx
-                    py = cy - img.height * scale
+                    py = cy + 32 - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -784,13 +812,16 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
             frame_idx = cell.front_img
             got = pool.decode(cell.front_file, frame_idx, scale)
             if got is not None:
-                img = got[0]
+                img, off_x, off_y = got
                 if layout == LAYOUT_ISO:
                     px = cx - 24
                     py = cy + 16 - img.height * scale
+                elif offset_mode in (OFFSET_ALL, OFFSET_MIDFRONT):
+                    px = cx + off_x * scale
+                    py = cy + 32 - img.height * scale + off_y * scale
                 else:
                     px = cx
-                    py = cy - img.height * scale
+                    py = cy + 32 - img.height * scale
                 iw, ih = img.width * scale, img.height * scale
                 if px + iw >= wx0 and px <= wx1 and py + ih >= wy0 and py <= wy1:
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
@@ -809,7 +840,8 @@ PARALLEL_MIN_FRAMES = 200  # unique frames above which full-map decode uses the 
 
 def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                     draw_ground: bool = True, draw_objects: bool = True,
-                    fmt: str = "JPEG", layout: str = LAYOUT_RECT) -> bytes:
+                    fmt: str = "JPEG", layout: str = LAYOUT_RECT,
+                    offset_mode: str = OFFSET_NONE) -> bytes:
     scale = 1 << z
     w, h, _ = map_cache.get(map_name)
     world_w, world_h = world_bounds(w, h, layout)
@@ -860,26 +892,34 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                 img, off_x, off_y, opaque = got
                 if layout == LAYOUT_ISO:
                     _blit(canvas, img, cx - 24 + off_x, cy - 16 + off_y, scale, opaque)
+                elif offset_mode == OFFSET_ALL:
+                    _blit(canvas, img, cx + off_x * scale, cy + off_y * scale, scale, opaque)
                 else:
                     _blit(canvas, img, cx, cy, scale, opaque)
         # 2. Middle Layer
         if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             got = sprites.get((cell.mid_file, cell.mid_img))
             if got is not None:
-                img = got[0]
+                img, off_x, off_y, opaque = got
                 if layout == LAYOUT_ISO:
                     _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                elif offset_mode in (OFFSET_ALL, OFFSET_MIDFRONT):
+                    _blit(canvas, img, cx + off_x * scale,
+                          cy + 32 - img.height * scale + off_y * scale, scale, False)
                 else:
-                    _blit(canvas, img, cx, cy - img.height * scale, scale, False)
+                    _blit(canvas, img, cx, cy + 32 - img.height * scale, scale, False)
         # 3. Front Layer
         if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             got = sprites.get((cell.front_file, cell.front_img))
             if got is not None:
-                img = got[0]
+                img, off_x, off_y, opaque = got
                 if layout == LAYOUT_ISO:
                     _blit(canvas, img, cx - 24, cy + 16 - img.height * scale, scale, False)
+                elif offset_mode in (OFFSET_ALL, OFFSET_MIDFRONT):
+                    _blit(canvas, img, cx + off_x * scale,
+                          cy + 32 - img.height * scale + off_y * scale, scale, False)
                 else:
-                    _blit(canvas, img, cx, cy - img.height * scale, scale, False)
+                    _blit(canvas, img, cx, cy + 32 - img.height * scale, scale, False)
 
     buf = io.BytesIO()
     if fmt == "PNG":
@@ -1010,6 +1050,11 @@ SIM_TEMPLATE = """<!DOCTYPE html>
     <span>中心格:</span><span id="sel-cell" style="font-family:ui-monospace,monospace;">—</span>
     <label><input type="checkbox" id="chk-ground" checked> 地表</label>
     <label><input type="checkbox" id="chk-objects" checked> 物件</label>
+    <span>offset:</span><select id="sel-off" title="WIL 帧 offset 实验模式；原版 Mir3.exe 地图层从不读取 offset（none）">
+        <option value="none" selected>none 原版</option>
+        <option value="all">all 全层</option>
+        <option value="midfront">mid/front</option>
+    </select>
     <button id="btn-hud" title="切换原版 HUD 显示">HUD 开/关</button>
     <button id="btn-mm" title="T 键 128/256 小地图">小地图 128/256</button>
     <button id="btn-back">← 返回浏览器</button>
@@ -1032,6 +1077,7 @@ const stage = document.getElementById("stage");
 const wimg = document.getElementById("wimg");
 const mimg = document.getElementById("mimg");
 const selMap = document.getElementById("sel-map");
+const selOff = document.getElementById("sel-off");
 const selCell = document.getElementById("sel-cell");
 const hudMap = document.getElementById("hud-map");
 const hudStats = document.getElementById("hud-stats");
@@ -1065,6 +1111,8 @@ async function init() {
     if (cm) { cx = +cm[1]; cy = +cm[2]; }
     const zm = location.hash.match(/z=(\\d+)/);
     if (zm) z = +zm[1];
+    const om = location.hash.match(/om=([a-z]+)/);
+    if (om && ["none", "all", "midfront"].includes(om[1])) selOff.value = om[1];
     pick(target);
 }
 function pick(name) {
@@ -1074,7 +1122,8 @@ function pick(name) {
     // default center: map middle; player: spawn point if this map has one
     if (!location.hash.match(/c=/)) { cx = Math.floor(mi.w / 2); cy = Math.floor(mi.h / 2); }
     const maxZ = mi.ladder.length - 1;
-    z = Math.min(z, maxZ);
+    const minZ = mi.ladder[0] ?? 0;   // server clamps z up to ladder[0]; client must match
+    z = Math.min(Math.max(z, minZ), maxZ);
     loadEntities(mi);
     loadCat(mi);
     loadImg();
@@ -1170,7 +1219,8 @@ function loadImg() {
     wimg.onload = onload;
     wimg.src = "/fullmap?map=" + encodeURIComponent(mi.name) + "&z=" + z +
                "&g=" + (document.getElementById("chk-ground").checked ? 1 : 0) +
-               "&o=" + (document.getElementById("chk-objects").checked ? 1 : 0);
+               "&o=" + (document.getElementById("chk-objects").checked ? 1 : 0) +
+               "&om=" + selOff.value;
 }
 function loadMini() {
     const mi = maps.find(m => m.name === curName);
@@ -1206,12 +1256,13 @@ function move(dx, dy) {
     updateHash();
 }
 function updateHash() {
-    history.replaceState(null, "", `#sim=${encodeURIComponent(curName)}&c=${cx},${cy}&z=${z}`);
+    history.replaceState(null, "", `#sim=${encodeURIComponent(curName)}&c=${cx},${cy}&z=${z}&om=${selOff.value}`);
 }
 selMap.addEventListener("change", () => { cx = Math.floor((maps.find(m => m.name === selMap.value) || {}).w / 2) || 0;
     cy = Math.floor((maps.find(m => m.name === selMap.value) || {}).h / 2) || 0; pick(selMap.value); });
 document.getElementById("chk-ground").addEventListener("change", loadImg);
 document.getElementById("chk-objects").addEventListener("change", loadImg);
+selOff.addEventListener("change", () => { updateHash(); loadImg(); });
 document.getElementById("btn-hud").addEventListener("click", () => { showHud = !showHud; renderHud(); });
 document.getElementById("btn-mm").addEventListener("click", () => { mm = mm === 128 ? 256 : 128; renderHud(); });
 document.getElementById("btn-back").addEventListener("click", () => { location.href = "/"; });
@@ -1232,7 +1283,8 @@ window.addEventListener("wheel", (e) => {
     const mi = maps.find(m => m.name === curName);
     if (!mi) return;
     const maxZ = mi.ladder.length - 1;
-    if (e.deltaY < 0 && z > 0) z--;
+    const minZ = mi.ladder[0] ?? 0;
+    if (e.deltaY < 0 && z > minZ) z--;
     else if (e.deltaY > 0 && z < maxZ) z++;
     else return;
     loadImg(); renderEnts(); updateHash();
@@ -1819,9 +1871,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
             if (location.hash) {
                 const matchMap = location.hash.match(/map=([^&]+)/);
-                const matchCur = location.hash.match(/cur=(\d+)/);
-                const matchX   = location.hash.match(/x=(\d+)/);
-                const matchY   = location.hash.match(/y=(\d+)/);
+                const matchCur = location.hash.match(/cur=(\\d+)/);
+                const matchX   = location.hash.match(/x=(\\d+)/);
+                const matchY   = location.hash.match(/y=(\\d+)/);
                 if (matchMap) {
                     const parsed = decodeURIComponent(matchMap[1]);
                     if (maps.some(m => m.name.toLowerCase() === parsed.toLowerCase())) {
@@ -2087,11 +2139,12 @@ class ViewerHandler(BaseHTTPRequestHandler):
                             ladder = map_ladder(w, h, self.layout)
                             if ladder:
                                 z = ladder[-1]
-                                key = (mname, z, True, True)
+                                key = (mname, z, True, True, OFFSET_NONE)
                                 dp = self._fullmap_path(key)
                                 if not os.path.exists(dp):
                                     data = render_full_map(self.map_cache, self.pool, mname, z, True, True,
-                                                           layout=self.layout)
+                                                           layout=self.layout,
+                                                           offset_mode=OFFSET_NONE)
                                     os.makedirs(os.path.dirname(dp), exist_ok=True)
                                     with open(dp, "wb") as f:
                                         f.write(data)
@@ -2301,12 +2354,15 @@ class ViewerHandler(BaseHTTPRequestHandler):
             z = int(qs.get("z", ["0"])[0])
             g = qs.get("g", ["1"])[0] == "1"
             o = qs.get("o", ["1"])[0] == "1"
+            om = qs.get("om", [OFFSET_NONE])[0]
+            if om not in OFFSET_MODES:
+                om = OFFSET_NONE
             try:
                 w, h, _ = self.map_cache.get(map_name)
                 ladder = map_ladder(w, h, self.layout)
                 if ladder:
                     z = min(max(z, ladder[0]), ladder[-1])
-                key = (map_name, z, g, o)
+                key = (map_name, z, g, o, om)
                 dp = self._fullmap_path(key)
                 try:
                     with open(dp, "rb") as f:
@@ -2326,7 +2382,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                             # static file read instead of a re-render.
                             data = render_full_map(self.map_cache, self.pool,
                                                    map_name, z, g, o,
-                                                   layout=self.layout)
+                                                   layout=self.layout,
+                                                   offset_mode=om)
                             os.makedirs(os.path.dirname(dp), exist_ok=True)
                             tmp = dp + ".tmp"
                             with open(tmp, "wb") as f:
@@ -2350,9 +2407,12 @@ class ViewerHandler(BaseHTTPRequestHandler):
             z = int(qs.get("z", ["0"])[0])
             g = qs.get("g", ["1"])[0] == "1"
             o = qs.get("o", ["1"])[0] == "1"
+            om = qs.get("om", [OFFSET_NONE])[0]
+            if om not in OFFSET_MODES:
+                om = OFFSET_NONE
 
             try:
-                key = (map_name, tx, ty, z, g, o)
+                key = (map_name, tx, ty, z, g, o, om)
                 with self.tile_cache_lock:
                     data = self.tile_cache.get(key)
                 if data is None and self.cache_dir:
@@ -2367,7 +2427,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
                         data = None
                 if data is None:
                     data = render_tile(self.map_cache, self.pool, map_name, tx, ty, z, g, o,
-                                       layout=self.layout)
+                                       layout=self.layout, offset_mode=om)
                     with self.tile_cache_lock:
                         self.tile_cache[key] = data
                         while len(self.tile_cache) > CACHE_TILES_MAX:
@@ -2391,17 +2451,19 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def _tile_path(self, key: tuple) -> str:
-        map_name, tx, ty, z, g, o = key
+        map_name, tx, ty, z, g, o, om = key
         safe = map_name.replace("/", "_").replace("\\", "_")
         ext = "png" if z == 0 else "jpg"
         tag = "r" if self.layout == LAYOUT_RECT else "i"
-        return os.path.join(self.cache_dir, safe, f"{tag}_{tx}_{ty}_{z}_{int(g)}{int(o)}.{ext}")
+        omt = "n" if om == OFFSET_NONE else ("a" if om == OFFSET_ALL else "m")
+        return os.path.join(self.cache_dir, safe, f"{tag}_{tx}_{ty}_{z}_{int(g)}{int(o)}{omt}.{ext}")
 
     def _fullmap_path(self, key: tuple) -> str:
-        map_name, z, g, o = key
+        map_name, z, g, o, om = key
         safe = map_name.replace("/", "_").replace("\\", "_")
         tag = "r" if self.layout == LAYOUT_RECT else "i"
-        return os.path.join(self.cache_dir, safe, f"full_{tag}_{z}_{int(g)}{int(o)}.jpg")
+        omt = "n" if om == OFFSET_NONE else ("a" if om == OFFSET_ALL else "m")
+        return os.path.join(self.cache_dir, safe, f"full_{tag}_{z}_{int(g)}{int(o)}{omt}.jpg")
 
 
 def scan_maps(maps_dir: str, layout: str = LAYOUT_RECT) -> list[dict]:

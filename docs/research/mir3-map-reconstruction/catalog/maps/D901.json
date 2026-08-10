@@ -1,14 +1,23 @@
 {
  "name": "D901.map",
  "display": "146",
+ "cn": "D901",
  "theme": 0,
  "theme_name": "",
  "w": 140,
  "h": 140,
  "size": 289128,
+ "md5": "c5a69ffc3104c783fdec2b8fc110b7ed",
+ "cell_off": 14728,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

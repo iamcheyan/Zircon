@@ -1,14 +1,23 @@
 {
  "name": "D10031.map",
  "display": "103",
+ "cn": "D10031",
  "theme": 0,
  "theme_name": "",
  "w": 300,
  "h": 300,
  "size": 1327528,
+ "md5": "1d1407d01e7edaa0e3180bbc654d49fd",
+ "cell_off": 67528,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "pending",
+  "notes": [
+   "唯一 ground_lib2_frame_oob；lib2 槽位 = smtilesc，越界原因未定 [pending]"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

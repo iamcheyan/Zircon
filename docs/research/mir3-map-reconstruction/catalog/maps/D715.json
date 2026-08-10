@@ -1,14 +1,23 @@
 {
  "name": "D715.map",
  "display": "95",
+ "cn": "D715",
  "theme": 0,
  "theme_name": "",
  "w": 400,
  "h": 400,
  "size": 2360028,
+ "md5": "016e383631c762b40ad988dcf382dff7",
+ "cell_off": 120028,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

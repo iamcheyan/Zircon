@@ -1,14 +1,23 @@
 {
  "name": "E401.map",
  "display": "73",
+ "cn": "E401",
  "theme": 0,
  "theme_name": "",
  "w": 110,
  "h": 110,
  "size": 178503,
+ "md5": "e5419d5c6b26aef178f68dea91b787c6",
+ "cell_off": 9103,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

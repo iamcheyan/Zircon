@@ -1,14 +1,23 @@
 {
  "name": "B136_003.map",
  "display": null,
+ "cn": "B136_003",
  "theme": 0,
  "theme_name": "",
  "w": 22,
  "h": 22,
  "size": 7167,
+ "md5": "980d2999e3e143706aba81e9525e94bb",
+ "cell_off": 391,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

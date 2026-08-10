@@ -1,14 +1,23 @@
 {
  "name": "5_0013.map",
  "display": null,
+ "cn": "5_0013",
  "theme": 0,
  "theme_name": "",
  "w": 68,
  "h": 68,
  "size": 68232,
+ "md5": "e0e15d6711aca2eac59659aacf3b600b",
+ "cell_off": 3496,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "pending",
+  "notes": [
+   "室内图地面 67 格未绘制；原版是否用 MapInfo.Background 静态背景 [pending]"
+  ]
+ },
  "ground": {
   "0": {
    "lib": "tilesc",

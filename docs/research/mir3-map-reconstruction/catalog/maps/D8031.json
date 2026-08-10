@@ -1,14 +1,23 @@
 {
  "name": "D8031.map",
  "display": null,
+ "cn": "D8031",
  "theme": 0,
  "theme_name": "",
  "w": 36,
  "h": 36,
  "size": 19144,
+ "md5": "b92ebeea4f8ffafb4c1f53f5a73d3cd2",
+ "cell_off": 1000,
  "size_ok": true,
  "cell_bytes": 14,
  "legacy_13b": false,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",

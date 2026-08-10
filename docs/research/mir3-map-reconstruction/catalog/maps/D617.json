@@ -1,14 +1,23 @@
 {
  "name": "D617.map",
  "display": null,
+ "cn": "D617",
  "theme": 0,
  "theme_name": "",
  "w": 100,
  "h": 100,
  "size": 137528,
+ "md5": "51b14fcf2ba8fd5efa91b1bacf6b35d7",
+ "cell_off": 7528,
  "size_ok": true,
  "cell_bytes": 13,
  "legacy_13b": true,
+ "evidence": {
+  "level": "derived",
+  "notes": [
+   "catalog 级：14B 结构解析 + 库表槽号=v 核对（未逐图研究）"
+  ]
+ },
  "ground": {
   "2": {
    "lib": "tiles5c",
