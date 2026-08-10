@@ -940,6 +940,210 @@ def _blit(canvas: Image.Image, img: Image.Image, px: int, py: int, scale: int,
 
 # ------------------------------------------------------------------ web server
 
+SIM_TEMPLATE = """<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mir3 EI 原版 800×600 模拟器</title>
+<style>
+    html, body { margin:0; padding:0; background:#222; overflow:hidden; font-family:sans-serif; }
+    #stage { position:relative; width:800px; height:600px; margin:0 auto; background:#000;
+             box-shadow:0 0 30px rgba(0,0,0,.8); overflow:hidden; }
+    /* world view: the full-map render is positioned so the requested cell is centered */
+    #world { position:absolute; left:0; top:0; width:800px; height:600px; overflow:hidden; }
+    #world img { position:absolute; display:block; image-rendering:pixelated; }
+    /* original HUD bottom bar (0,465)-(800,600) — semi-transparent over the world */
+    #hud { position:absolute; left:0; top:465px; width:800px; height:135px;
+           background:rgba(12,12,16,.88); border-top:2px solid #4a3a1a; box-sizing:border-box; }
+    #hud .cell-label { position:absolute; left:10px; top:6px; font-size:12px; color:#d8c890;
+                       font-family:ui-monospace,monospace; text-shadow:1px 1px 0 #000; }
+    #hud .stats { position:absolute; left:10px; top:26px; font-size:11px; color:#9aa;
+                  font-family:ui-monospace,monospace; line-height:1.5; }
+    #hud .cell-nav { position:absolute; left:10px; top:88px; font-size:11px; color:#887; }
+    #hud .cell-nav b { color:#dd8; cursor:pointer; }
+    #hud .cell-nav b:hover { color:#ffd; }
+    #hud .oob { position:absolute; right:10px; top:6px; font-size:11px; color:#f86; font-family:ui-monospace,monospace; }
+    /* original minimap widget: fixed (672,0)-(800,128) */
+    #mm { position:absolute; left:672px; top:0; width:128px; height:128px;
+          background:rgba(8,10,14,.85); border-left:1px solid #3a3a46; border-bottom:1px solid #3a3a46;
+          box-sizing:border-box; }
+    #mm img { width:128px; height:128px; image-rendering:pixelated; display:block; }
+    #mm .mm-label { position:absolute; left:3px; top:2px; font-size:10px; color:#ffe; opacity:.8;
+                    text-shadow:1px 1px 0 #000; }
+    #mm .mm-zoom { position:absolute; right:3px; bottom:2px; font-size:10px; color:#ffe; opacity:.9; }
+    /* HUD buttons from the static evidence (GameInter.wil frames at hud.left+offset) */
+    .hud-btn { position:absolute; background:rgba(60,50,30,.55); border:1px solid #6a5a30;
+               box-sizing:border-box; }
+    /* title bar / toolbar outside the stage */
+    #bar { width:800px; margin:6px auto 4px; display:flex; gap:8px; align-items:center;
+           color:#ccc; font-size:12px; }
+    #bar select { background:#333; color:#eee; border:1px solid #555; border-radius:3px; padding:2px 6px; }
+    #bar label { cursor:pointer; }
+    #bar button { background:#333; color:#eee; border:1px solid #555; border-radius:3px; cursor:pointer; }
+    #tip { width:800px; margin:0 auto; font-size:11px; color:#777; font-family:ui-monospace,monospace; }
+</style>
+</head>
+<body>
+<div id="bar">
+    <span>地图:</span><select id="sel-map"></select>
+    <span>中心格:</span><span id="sel-cell" style="font-family:ui-monospace,monospace;">—</span>
+    <label><input type="checkbox" id="chk-ground" checked> 地表</label>
+    <label><input type="checkbox" id="chk-objects" checked> 物件</label>
+    <button id="btn-hud" title="切换原版 HUD 显示">HUD 开/关</button>
+    <button id="btn-mm" title="T 键 128/256 小地图">小地图 128/256</button>
+    <button id="btn-back">← 返回浏览器</button>
+</div>
+<div id="stage">
+    <div id="world"><img id="wimg" alt=""></div>
+    <div id="mm"><img id="mimg" alt=""><span class="mm-label" id="mm-name"></span>
+        <span class="mm-zoom" id="mm-zoom">128</span></div>
+    <div id="hud">
+        <div class="cell-label" id="hud-map">—</div>
+        <div class="stats" id="hud-stats"></div>
+        <div class="cell-nav">方向键/WASD 移动 1 格 · <b>←</b> <b>↑</b> <b>↓</b> <b>→</b> 箭头移动 · Ctrl+滚轮缩放 · T 切换小地图 · H 切换 HUD</div>
+        <div class="oob" id="hud-oob"></div>
+    </div>
+</div>
+<div id="tip">Mir3 EI 原版 800×600 模拟 · 世界画面 rect 投影 · 小地图固定 (672,0)-(800,128) · 底部 HUD (0,465)-(800,600)（原版静态证据 layout.json）</div>
+<script>
+const stage = document.getElementById("stage");
+const wimg = document.getElementById("wimg");
+const mimg = document.getElementById("mimg");
+const selMap = document.getElementById("sel-map");
+const selCell = document.getElementById("sel-cell");
+const hudMap = document.getElementById("hud-map");
+const hudStats = document.getElementById("hud-stats");
+const hudOob = document.getElementById("hud-oob");
+const mmName = document.getElementById("mm-name");
+const mmZoom = document.getElementById("mm-zoom");
+let maps = [], curName = null, cat = null;
+let cx = 0, cy = 0, z = 0;            // center cell + zoom ladder level
+let mm = 128;                          // minimap surface: 128 or 256 (T key)
+let showHud = true;
+
+async function init() {
+    const res = await fetch("/api/maps");
+    maps = await res.json();
+    selMap.innerHTML = maps.map(m =>
+        `<option value="${m.name.replace(/"/g, "&quot;")}">${(m.cn || "") + " " + m.name}</option>`).join("");
+    // hash: #sim=3.map&c=200,300&z=2
+    let target = maps[0] && maps[0].name;
+    const h = location.hash.match(/sim=([^&]+)/);
+    if (h && maps.some(m => m.name === decodeURIComponent(h[1]))) target = decodeURIComponent(h[1]);
+    selMap.value = target;
+    const cm = location.hash.match(/c=(\\d+),(\\d+)/);
+    if (cm) { cx = +cm[1]; cy = +cm[2]; }
+    const zm = location.hash.match(/z=(\\d+)/);
+    if (zm) z = +zm[1];
+    pick(target);
+}
+function pick(name) {
+    curName = name;
+    const mi = maps.find(m => m.name === name);
+    if (!mi) return;
+    // default center: map middle
+    if (!location.hash.match(/c=/)) { cx = Math.floor(mi.w / 2); cy = Math.floor(mi.h / 2); }
+    const maxZ = mi.ladder.length - 1;
+    z = Math.min(z, maxZ);
+    loadCat(mi);
+    loadImg();
+    loadMini();
+    updateHash();
+}
+async function loadCat(mi) {
+    try {
+        const res = await fetch("/api/catalog?map=" + encodeURIComponent(mi.name));
+        const d = await res.json();
+        cat = d.ok ? d.catalog : null;
+    } catch (e) { cat = null; }
+    renderHud();
+}
+function loadImg() {
+    const mi = maps.find(m => m.name === curName);
+    if (!mi) return;
+    const s = 1 << z;
+    const onload = () => {
+        // center world px on stage center (400, 300)
+        const cxw = cx * 48 + 24, cyw = cy * 32 + 16;   // rect anchor
+        const left = 400 - cxw / s, top = 300 - cyw / s;
+        wimg.style.left = left + "px";
+        wimg.style.top = top + "px";
+        renderHud();
+    };
+    wimg.onload = onload;
+    wimg.src = "/fullmap?map=" + encodeURIComponent(mi.name) + "&z=" + z +
+               "&g=" + (document.getElementById("chk-ground").checked ? 1 : 0) +
+               "&o=" + (document.getElementById("chk-objects").checked ? 1 : 0);
+}
+function loadMini() {
+    const mi = maps.find(m => m.name === curName);
+    if (!mi) return;
+    mimg.src = "/minimap?map=" + encodeURIComponent(mi.name);
+    mmName.textContent = (mi.cn || "") + " " + mi.name;
+}
+function renderHud() {
+    const mi = maps.find(m => m.name === curName);
+    if (!mi) return;
+    hudMap.textContent = (mi.cn || "") + " " + mi.name + " | 中心格 " + cx + "," + cy + " | 缩放 1:" + (1 << z);
+    selCell.textContent = cx + "," + cy;
+    if (cat) {
+        let s = `主题 ${cat.theme_name || "base"} · ${cat.w}×${cat.h} · ${cat.cell_bytes}B/格`;
+        if (cat.animated_cells) s += " · 动画格 " + cat.animated_cells;
+        hudStats.textContent = s;
+        hudOob.textContent = cat.anomaly_total ? `⚠ ${cat.anomaly_total} 帧越界 (${Object.keys(cat.anomalies || {}).length} 项)` : "";
+    } else {
+        hudStats.textContent = "（无 catalog 数据）";
+        hudOob.textContent = "";
+    }
+    const scale = mm === 128 ? "128" : "256";
+    mmZoom.textContent = scale;
+    document.getElementById("hud").style.display = showHud ? "block" : "none";
+}
+function move(dx, dy) {
+    cx += dx; cy += dy;
+    const mi = maps.find(m => m.name === curName);
+    if (mi) { cx = Math.max(0, Math.min(cx, mi.w - 1)); cy = Math.max(0, Math.min(cy, mi.h - 1)); }
+    loadImg();
+    updateHash();
+}
+function updateHash() {
+    history.replaceState(null, "", `#sim=${encodeURIComponent(curName)}&c=${cx},${cy}&z=${z}`);
+}
+selMap.addEventListener("change", () => { cx = Math.floor((maps.find(m => m.name === selMap.value) || {}).w / 2) || 0;
+    cy = Math.floor((maps.find(m => m.name === selMap.value) || {}).h / 2) || 0; pick(selMap.value); });
+document.getElementById("chk-ground").addEventListener("change", loadImg);
+document.getElementById("chk-objects").addEventListener("change", loadImg);
+document.getElementById("btn-hud").addEventListener("click", () => { showHud = !showHud; renderHud(); });
+document.getElementById("btn-mm").addEventListener("click", () => { mm = mm === 128 ? 256 : 128; renderHud(); });
+document.getElementById("btn-back").addEventListener("click", () => { location.href = "/"; });
+window.addEventListener("keydown", (e) => {
+    const k = e.key;
+    if (k === "ArrowLeft" || k === "a" || k === "A") move(-1, 0);
+    else if (k === "ArrowRight" || k === "d" || k === "D") move(1, 0);
+    else if (k === "ArrowUp" || k === "w" || k === "W") move(0, -1);
+    else if (k === "ArrowDown" || k === "s" || k === "S") move(0, 1);
+    else if (k === "t" || k === "T") { mm = mm === 128 ? 256 : 128; renderHud(); }
+    else if (k === "h" || k === "H") { showHud = !showHud; renderHud(); }
+    else return;
+    e.preventDefault();
+});
+window.addEventListener("wheel", (e) => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    const mi = maps.find(m => m.name === curName);
+    if (!mi) return;
+    const maxZ = mi.ladder.length - 1;
+    if (e.deltaY < 0 && z > 0) z--;
+    else if (e.deltaY > 0 && z < maxZ) z++;
+    else return;
+    loadImg(); updateHash();
+}, { passive: false });
+init();
+</script>
+</body>
+</html>
+"""
+
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1070,6 +1274,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         <button id="btn-fit" title="适配全图窗口大小">⛶ 适配</button>
         <button id="btn-rebuild-one" style="background:#4a2e18; border-color:#e8a33d; color:#ffd899;" title="重新生成当前地图静态图 (清空缓存并重新渲染)">🔄 重新生成</button>
         <button id="btn-rebuild-all" style="background:#183828; border-color:#3de88a; color:#85ffc7;" title="后台批量预生成全库地图静态高清大图">⚡ 预生成全库</button>
+        <a href="/sim" style="font-size:13px; color:#8cf; text-decoration:none; background:#1c2333; border:1px solid #3a4a6a; border-radius:3px; padding:5px 9px; white-space:nowrap;" title="Mir3 EI 原版 800×600 视口模拟器">800×600 模拟</a>
         
         <!-- 后台预生成实时进度条 -->
         <div id="progress-box" style="display:none; background:#141d18; border:1px solid #3de88a; border-radius:6px; padding:3px 10px; font-size:12px; color:#3de88a; align-items:center; gap:8px;">
@@ -1814,6 +2019,15 @@ class ViewerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/" or self.path == "/index.html":
             body = HTML_TEMPLATE.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif self.path == "/sim" or self.path == "/sim.html":
+            body = SIM_TEMPLATE.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
