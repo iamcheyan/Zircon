@@ -31,3 +31,33 @@
 python3 Tools/mapviewer.py Debug/Client/Map
 ```
 已成功准确解析 `0.map` (`350x350`) 的地表 `back_file=1` (`Tiles30c`), `back_img=721` 等真实资源，全图纹理与地表贴图已完全恢复正常！
+
+---
+
+## 4. 后续核查结论（2026-08，地图重建研究）
+
+### 4.1 “矩形黑块”根因 = 素材/地图数据侧，非渲染 bug
+
+- EI `Tiles5c.wil` 帧 20–24 资源本身近纯黑（mean≈2.7，std≈3.8，alpha 1.0），
+  不是解码错误（`Tools/lib_frame_stats.py` 全库 544 图重解析 + 蒙太奇目视，
+  见 `docs/research/mir3-map-reconstruction/catalog/lib-frames/previews/02_tiles5c.png`）。
+- **tiles5c f20 是全游戏引用最多的单帧（293,933 格）**；帧 20–24 合计约 1.2M 格，
+  即地图数据显式引用黑帧（D201 废弃矿洞、D1423 洞穴等大面积黑块由此而来）。
+- mapviewer 对 `back_img==0` 与黑帧一视同仁正常绘制（不跳过）——行为正确。
+
+### 4.2 数据驱动能力（本轮新增）
+
+- **Back/Middle/Front 独立开关**：`/fullmap` 与模拟器均支持 `g/m/f` 参数
+  （替换原 `g/o` 二开关），缓存键与磁盘文件含 g/m/f。
+- **`/api/cell?map=&x=&y=`**：逐格返回 flag / anim[a,b] / 三层 {file,lib,frame}；
+  模拟器悬停格子显示 tooltip（60ms 防抖）。实测 0.map (400,400)
+  `flag=15 back=tilesc f9633`；D1423 (200,202) `back=tiles5c f24`（黑帧）。
+- **`/api/strip?map=&z=&g=&m=&f=`**：三模式 offset 对比条带 PNG；模拟器
+  “导出对比图”按钮新标签页打开。
+- **HUD 证据级**：模拟器 HUD 显示 `证据 confirmed/derived` + 三层库计数 +
+  动画格数 + 越界警告（数据来自 catalog）。
+- **怪物掉落**：Envir `MonItems/*.txt`（280 文件）解析接入，点击怪物 tooltip
+  显示前 5 条掉落（`1/N 物品 [数量]`，GBK）。
+- **地图选择器缩略图**：`/thumb?map=`（`/tmp/wiki_thumbs` 预渲染缓存）。
+- 模拟器地图加载使用 **URL hash**：`/sim#sim=<map>&c=<x>,<y>&z=<z>[&om=<mode>]`
+  （query `?map=` 不解析，会静默回退 0.map）。

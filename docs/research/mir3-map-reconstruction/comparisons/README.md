@@ -98,3 +98,23 @@ python3 Tools/mapviewer.py '/home/tetsuya/NAS/TMP/EI传奇3.0客户端/Map' \
 
 10 张代表性地图的原版视角帧见 `sim_*.map.webp`，逐图说明见
 `ORIGINAL-VIEW-10MAPS.md`。
+
+## 数据驱动（本轮新增）
+
+- **图层独立开关**：模拟器与浏览器均提供 Back/Middle/Front 三个复选框，
+  缓存键与 /fullmap 文件均含 g/m/f；模拟器 hash 不持久化图层位
+  （`om` 仍持久化）。
+- **`/api/cell?map=&x=&y=`**：逐格返回 `{flag, anim[a,b], back/mid/front{file,lib,frame}}`；
+  模拟器悬停任意格子显示该 JSON（60ms 防抖）。实测 0.map 格 400,400
+  flag=15、back=tilesc f9633；D1423 格 200,202 back=tiles5c f24（黑帧）。
+- **`/api/strip?map=&z=&g=&m=&f=`**：三模式（none/all/midfront）对比条带 PNG
+  （z 缩放、400px 高缩略、带标签条），模拟器“导出对比图”按钮新标签页打开。
+- **HUD 证据级**：`证据 confirmed/derived` + 三层库计数 + 动画格数 +
+  越界警告 + 目标实体，全部来自 catalog。
+- **地图选择器缩略图**：`/thumb?map=` 预渲染全图缩略（`/tmp/wiki_thumbs`）。
+- **怪物掉落**：Envir `MonItems/*.txt`（280 文件，GBK，`1/N 物品 [数量]`）解析后
+  挂到怪物实体，点击 tooltip 显示前 5 条掉落（实测 半兽勇士 金币×4000(1/1) …）；
+  93/98 个 .gen 怪物名匹配到掉落文件（4 个未匹配列档 P11）。
+- **补充证据帧**：`sim_D1423__{none,all,midfront}.webp`（1024×768）——
+  黑帧最多（29697 格）的 EI 洞穴图；none 帧 black-frac 0.204/mean 33.4，
+  all/midfront 与 none 的 diff 见 `offset-mode-diff-stats.json`（D1423 行）。

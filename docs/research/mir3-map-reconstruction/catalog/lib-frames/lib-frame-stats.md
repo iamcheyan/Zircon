@@ -1,0 +1,59 @@
+# Mir3 EI per-library frame-level statistics
+
+libs: 53 · histogram from 544 maps (every referenced frame counted across ground/mid/front)
+
+| # | lib | cells | frames_used | min | max | top10 | sampled_black | sampled_empty |
+|---|---|---|---|---|---|---|---|---|
+| 2 | tiles5c | 4241653 | 2004 | 0 | 16188 | 10 | 10 | 0 |
+| 1 | tiles30c | 1289575 | 723 | 0 | 1078 | 10 | 0 | 0 |
+| 12 | object1c | 1000768 | 5295 | 0 | 32795 | 10 | 10 | 0 |
+| 5 | cliffsc | 862718 | 7440 | 6 | 7616 | 10 | 0 | 0 |
+| 13 | object2c | 590265 | 9301 | 990 | 26082 | 10 | 0 | 0 |
+| 10 | smobjectsc | 379270 | 4764 | 0 | 7564 | 10 | 0 | 1 |
+| 21 | wood_dungeonsc | 325541 | 3879 | 0 | 4686 | 10 | 0 | 0 |
+| 0 | tilesc | 315034 | 8503 | 0 | 9835 | 10 | 0 | 0 |
+| 17 | wood_tiles5c | 212658 | 10 | 0 | 9 | 10 | 0 | 0 |
+| 6 | dungeonsc | 172022 | 4269 | 0 | 5353 | 10 | 1 | 0 |
+| 30 | sand_tilesc | 31105 | 3784 | 2 | 4293 | 10 | 0 | 0 |
+| 11 | animationsc | 16706 | 400 | 1 | 2911 | 10 | 3 | 1 |
+| 3 | smtilesc | 15397 | 596 | 0 | 10177 | 10 | 0 | 0 |
+| 4 | housesc | 10892 | 5239 | 1 | 9573 | 10 | 1 | 0 |
+| 40 | sand_smobjectsc | 10295 | 1228 | 2 | 628 | 10 | 2 | 0 |
+| 9 | wallsc | 7875 | 2653 | 1 | 9210 | 10 | 1 | 0 |
+| 8 | furnituresc | 7566 | 1255 | 7 | 1712 | 10 | 1 | 0 |
+| 25 | wood_smobjectsc | 6206 | 1052 | 2 | 968 | 10 | 0 | 0 |
+| 24 | wood_wallsc | 3785 | 3129 | 2 | 3786 | 10 | 0 | 0 |
+| 22 | wood_innersc | 3760 | 1774 | 2 | 1796 | 10 | 0 | 0 |
+| 15 | wood_tilesc | 3316 | 3006 | 1 | 3914 | 10 | 0 | 0 |
+| 19 | wood_housesc | 2296 | 1718 | 77 | 9006 | 10 | 1 | 1 |
+| 26 | wood_animationsc | 1333 | 260 | 2 | 1375 | 10 | 2 | 6 |
+| 34 | sand_housesc | 1167 | 994 | 1 | 595 | 10 | 1 | 1 |
+| 39 | sand_wallsc | 1121 | 804 | 1 | 853 | 10 | 0 | 0 |
+| 7 | innersc | 587 | 51 | 1 | 67 | 10 | 0 | 0 |
+| 38 | sand_furnituresc | 272 | 12 | None | None | 0 | 0 | 0 |
+| 36 | sand_dungeonsc | 238 | 10 | None | None | 0 | 0 | 0 |
+| 41 | sand_animationsc | 232 | 11 | 0 | 16 | 2 | 0 | 0 |
+| 37 | sand_innersc | 231 | 8 | None | None | 0 | 0 | 0 |
+| 18 | wood_smtilesc | 218 | 9 | None | None | 0 | 0 | 0 |
+| 20 | wood_cliffsc | 215 | 9 | None | None | 0 | 0 | 0 |
+| 23 | wood_furnituresc | 202 | 12 | None | None | 0 | 0 | 0 |
+| 56 | snow_animationsc | 183 | 11 | None | None | 0 | 0 | 0 |
+| 33 | sand_smtilesc | 180 | 10 | None | None | 0 | 0 | 0 |
+| 63 | lib63 | 179 | 11 | None | None | 0 | 0 | 0 |
+| 55 | snow_smobjectsc | 175 | 10 | 2817 | 2817 | 1 | 0 | 0 |
+| 35 | sand_cliffsc | 160 | 8 | None | None | 0 | 0 | 0 |
+| 49 | snow_housesc | 157 | 14 | 4608 | 4608 | 1 | 0 | 0 |
+| 53 | snow_furnituresc | 157 | 8 | None | None | 0 | 0 | 0 |
+| 67 | lib67 | 154 | 11 | None | None | 0 | 0 | 0 |
+| 69 | lib69 | 149 | 11 | None | None | 0 | 0 | 0 |
+| 65 | lib65 | 142 | 9 | None | None | 0 | 0 | 0 |
+| 71 | lib71 | 140 | 13 | None | None | 0 | 0 | 0 |
+| 51 | snow_dungeonsc | 137 | 8 | None | None | 0 | 0 | 0 |
+| 54 | snow_wallsc | 135 | 10 | 2561 | 2561 | 1 | 0 | 0 |
+| 50 | snow_cliffsc | 133 | 12 | 5376 | 5376 | 1 | 0 | 0 |
+| 68 | lib68 | 123 | 8 | None | None | 0 | 0 | 0 |
+| 66 | lib66 | 121 | 10 | None | None | 0 | 0 | 0 |
+| 64 | lib64 | 119 | 8 | None | None | 0 | 0 | 0 |
+| 48 | snow_smtilesc | 116 | 9 | None | None | 0 | 0 | 0 |
+| 52 | snow_innersc | 81 | 6 | None | None | 0 | 0 | 0 |
+| 70 | lib70 | 75 | 10 | None | None | 0 | 0 | 0 |

@@ -91,6 +91,21 @@ D9022.map c=70,70 z=0），HUD/实体/小地图同原版视角集。
 模式切换经像素差验证生效（0.map：none-vs-all mean diff 23.7、none-vs-midfront
 20.3、all-vs-midfront 9.5 @z2）。
 
+### 洞穴图补充（D1423，黑帧代表）
+
+EI 集合中黑帧最多的地图（29697 格全黑/近黑）在模拟器同取景
+（c=200,200 z=1）三模式对比：
+
+| 对比（z=4 全图 diff，800×1200） | mean abs | %>24 |
+|---|---|---|
+| none vs all | 14.49 | 0.266 |
+| none vs midfront | 0.8 | 0.022 |
+| mid vs all | 14.42 | 0.265 |
+
+`sim_D1423__{none,all,midfront}.webp`（1024×768）目视：三帧均大范围纯黑洞穴；
+all 模式下地面（岩石/铁轨）整体错位破碎，midfront 与 none 几乎一致。
+→ 洞穴图同样证实原版 = none。
+
 ## 含义
 
 - mapviewer 默认 `om=none` 即原版渲染路径（格底锚 + 零 offset）——与
@@ -104,5 +119,8 @@ D9022.map c=70,70 z=0），HUD/实体/小地图同原版视角集。
 
 - `comparisons/*__offset_modes_z4.png` ×10、`offset-mode-diff-stats.json`
 - `comparisons/sim_*.map__{none,all,midfront}.webp` ×30
+- `comparisons/D201/D202/D203__offset_modes_z4.png`（废弃矿洞 3 图条带，
+  目视 midfront 撕裂严重、all 轻微，与 none 结论一致）
+- `comparisons/sim_D1423__{none,all,midfront}.webp`（黑帧洞穴图补充帧，1024×768）
 - 反汇编文本 `/tmp/mir3_text.txt`（161763 行；grep 仅前 4MB ≈ 行 98000）
 - 生成脚本 `/tmp/gen_offset_strips.py`

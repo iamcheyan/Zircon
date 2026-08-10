@@ -300,7 +300,8 @@ KR_ORDER = {
 # ------------------------------------------------------------------- .map I/O
 
 class MapCell:
-    __slots__ = ('back_file', 'back_img', 'mid_file', 'mid_img', 'front_file', 'front_img')
+    __slots__ = ('back_file', 'back_img', 'mid_file', 'mid_img', 'front_file', 'front_img',
+                 'flag', 'anim_a', 'anim_b')
 
     def __init__(self):
         self.back_file = 255
@@ -309,6 +310,9 @@ class MapCell:
         self.mid_img = 0
         self.front_file = 255
         self.front_img = 0
+        self.flag = 0
+        self.anim_a = 0xFF
+        self.anim_b = 0xFF
 
 
 def parse_map_header(path: str) -> tuple[int, int]:
@@ -340,22 +344,26 @@ def parse_map(path: str) -> tuple[int, int, list[list[MapCell]]]:
             cells[x * 2][y * 2].back_img = bi
 
     # Segment 2: Full-res Cells (14 bytes each)
-    for x in range(w):
-        for y in range(h):
-            # cell structure:
-            # 0: flag, 1: midAnim, 2: frontAnim, 3: frontFile, 4: midFile
-            # 5-6: midImg (uint16), 7-8: frontImg (uint16)
-            ff = data[offset + 3]
-            mf = data[offset + 4]
-            mi = struct.unpack_from("<H", data, offset + 5)[0]
-            fi = struct.unpack_from("<H", data, offset + 7)[0]
-            offset += 14
+    n_cells = min(w * h, max(0, (len(data) - 28) // 14))
+    for i in range(n_cells):
+        x, y = divmod(i, h)
+        offset = 28 + i * 14
+        # cell structure:
+        # 0: flag, 1: midAnim, 2: frontAnim, 3: frontFile, 4: midFile
+        # 5-6: midImg (uint16), 7-8: frontImg (uint16), 9+: unused/padding
+        ff = data[offset + 3]
+        mf = data[offset + 4]
+        mi = struct.unpack_from("<H", data, offset + 5)[0]
+        fi = struct.unpack_from("<H", data, offset + 7)[0]
 
-            c = cells[x][y]
-            c.mid_file = mf
-            c.mid_img = mi
-            c.front_file = ff
-            c.front_img = fi
+        c = cells[x][y]
+        c.flag = data[offset]
+        c.anim_a = data[offset + 1]
+        c.anim_b = data[offset + 2]
+        c.mid_file = mf
+        c.mid_img = mi
+        c.front_file = ff
+        c.front_img = fi
 
     return w, h, cells
 
@@ -727,7 +735,8 @@ def is_object_library(lib_id: int) -> bool:
 
 def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                 tx: int, ty: int, zoom: int,
-                draw_ground: bool = True, draw_objects: bool = True,
+                draw_ground: bool = True, draw_mid: bool = True,
+                draw_front: bool = True,
                 layout: str = LAYOUT_RECT,
                 offset_mode: str = OFFSET_NONE) -> bytes:
     """Render a single tile at zoom level `zoom` (0 is 1:1, 1 is 1:2, etc).
@@ -789,7 +798,7 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
         # Frame index semantics: the .map file stores the raw WIL frame index
         # (Mir3.exe 0x43b3c7 pushes cell+5 verbatim; the 2017 ZL client reads
         # +1 and draws -1, netting to the raw value).  No -1 here.
-        if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
+        if draw_mid and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             frame_idx = cell.mid_img
             got = pool.decode(cell.mid_file, frame_idx, scale)
             if got is not None:
@@ -808,7 +817,7 @@ def render_tile(map_cache: MapCache, pool: FramePool, map_name: str,
                     canvas.alpha_composite(img, ((px - wx0) // scale, (py - wy0) // scale))
 
         # 3. Front Layer (Houses, Walls, Cliffs, Objects, etc)
-        if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
+        if draw_front and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             frame_idx = cell.front_img
             got = pool.decode(cell.front_file, frame_idx, scale)
             if got is not None:
@@ -839,7 +848,8 @@ PARALLEL_MIN_FRAMES = 200  # unique frames above which full-map decode uses the 
 
 
 def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
-                    draw_ground: bool = True, draw_objects: bool = True,
+                    draw_ground: bool = True, draw_mid: bool = True,
+                    draw_front: bool = True,
                     fmt: str = "JPEG", layout: str = LAYOUT_RECT,
                     offset_mode: str = OFFSET_NONE) -> bytes:
     scale = 1 << z
@@ -852,9 +862,9 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
     for _, _, cell in cells:
         if draw_ground and cell.back_file != 255 and cell.back_img >= 0:
             needs.setdefault(cell.back_file, set()).add(cell.back_img)
-        if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
+        if draw_mid and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             needs.setdefault(cell.mid_file, set()).add(cell.mid_img)
-        if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
+        if draw_front and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             needs.setdefault(cell.front_file, set()).add(cell.front_img)
 
     tasks: list[tuple] = []
@@ -897,7 +907,7 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                 else:
                     _blit(canvas, img, cx, cy, scale, opaque)
         # 2. Middle Layer
-        if draw_objects and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
+        if draw_mid and is_object_library(cell.mid_file) and cell.mid_img > 0 and cell.mid_img < 65535:
             got = sprites.get((cell.mid_file, cell.mid_img))
             if got is not None:
                 img, off_x, off_y, opaque = got
@@ -909,7 +919,7 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
                 else:
                     _blit(canvas, img, cx, cy + 32 - img.height * scale, scale, False)
         # 3. Front Layer
-        if draw_objects and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
+        if draw_front and is_object_library(cell.front_file) and cell.front_img > 0 and cell.front_img < 65535:
             got = sprites.get((cell.front_file, cell.front_img))
             if got is not None:
                 img, off_x, off_y, opaque = got
@@ -926,6 +936,45 @@ def render_full_map(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
         canvas.convert("RGB").save(buf, format="PNG")
     else:
         canvas.convert("RGB").save(buf, format="JPEG", quality=78)
+    return buf.getvalue()
+
+
+def render_offset_strip(map_cache: MapCache, pool: FramePool, map_name: str, z: int,
+                        draw_ground: bool = True, draw_mid: bool = True,
+                        draw_front: bool = True,
+                        layout: str = LAYOUT_RECT) -> bytes:
+    """Side-by-side PNG of the three offset experiment modes (none|all|midfront).
+
+    Panels are full-map renders at zoom z, downscaled to height 400 with
+    labelled bars — same layout as the offline comparisons/*__offset_modes_z4.png
+    strips, so /strip (sim "导出对比图" button) and the offline generator share
+    one code path."""
+    from PIL import Image, ImageDraw
+
+    labels = {
+        OFFSET_NONE: "none (Mir3.exe)",
+        OFFSET_ALL: "all (back+mid/front)",
+        OFFSET_MIDFRONT: "midfront",
+    }
+    panels = {}
+    for om in (OFFSET_NONE, OFFSET_ALL, OFFSET_MIDFRONT):
+        buf = render_full_map(map_cache, pool, map_name, z, draw_ground, draw_mid,
+                              draw_front, fmt="PNG", layout=layout, offset_mode=om)
+        im = Image.open(io.BytesIO(buf)).convert("RGB")
+        im.thumbnail((10_000, 400), Image.LANCZOS)
+        panels[om] = im
+    w = max(i.width for i in panels.values())
+    h = max(i.height for i in panels.values())
+    gap, bar = 8, 26
+    strip = Image.new("RGB", (3 * w + 2 * gap, bar + h), (20, 20, 26))
+    d = ImageDraw.Draw(strip)
+    for k, om in enumerate((OFFSET_NONE, OFFSET_ALL, OFFSET_MIDFRONT)):
+        x = k * (w + gap)
+        d.rectangle([x, 0, x + w, bar], fill=(32, 32, 44))
+        d.text((x + 6, 8), f"{map_name}  offset={labels[om]}", fill=(240, 240, 240))
+        strip.paste(panels[om], (x, bar))
+    buf = io.BytesIO()
+    strip.save(buf, format="PNG", optimize=True)
     return buf.getvalue()
 
 
@@ -1047,14 +1096,17 @@ SIM_TEMPLATE = """<!DOCTYPE html>
 <body>
 <div id="bar">
     <span>地图:</span><select id="sel-map"></select>
+    <img id="map-thumb" alt="" style="height:22px;border:1px solid #555;border-radius:2px;display:none;">
     <span>中心格:</span><span id="sel-cell" style="font-family:ui-monospace,monospace;">—</span>
-    <label><input type="checkbox" id="chk-ground" checked> 地表</label>
-    <label><input type="checkbox" id="chk-objects" checked> 物件</label>
+    <label><input type="checkbox" id="chk-g" checked> Back</label>
+    <label><input type="checkbox" id="chk-m" checked> Middle</label>
+    <label><input type="checkbox" id="chk-f" checked> Front</label>
     <span>offset:</span><select id="sel-off" title="WIL 帧 offset 实验模式；原版 Mir3.exe 地图层从不读取 offset（none）">
         <option value="none" selected>none 原版</option>
         <option value="all">all 全层</option>
         <option value="midfront">mid/front</option>
     </select>
+    <button id="btn-strip" title="导出三模式 offset 对比条带 PNG（新标签页）">导出对比图</button>
     <button id="btn-hud" title="切换原版 HUD 显示">HUD 开/关</button>
     <button id="btn-mm" title="T 键 128/256 小地图">小地图 128/256</button>
     <button id="btn-back">← 返回浏览器</button>
@@ -1062,6 +1114,9 @@ SIM_TEMPLATE = """<!DOCTYPE html>
 <div id="stage">
     <div id="world"><img id="wimg" alt=""></div>
     <div id="ents"></div>
+    <div id="cell-info" style="display:none;position:absolute;z-index:50;pointer-events:none;
+        background:rgba(10,10,14,.92);border:1px solid #666;border-radius:4px;
+        color:#d8e6ff;font:11px ui-monospace,monospace;padding:5px 7px;white-space:pre;"></div>
     <div id="mm"><img id="mimg" alt=""><span class="mm-label" id="mm-name"></span>
         <span class="mm-zoom" id="mm-zoom">128</span><div class="mm-box" id="mm-box"></div></div>
     <div id="hud">
@@ -1126,6 +1181,7 @@ function pick(name) {
     z = Math.min(Math.max(z, minZ), maxZ);
     loadEntities(mi);
     loadCat(mi);
+    loadThumb();
     loadImg();
     loadMini();
     updateHash();
@@ -1176,6 +1232,11 @@ function renderEnts() {
         info.className = "info";
         let t = e.kind === "player" ? "玩家" : (e.kind === "npc" ? "NPC" : "怪物");
         info.innerHTML = `<b>${t}</b> ${e.name || ""}<br>格 ${e.x},${e.y}${e.kind === "npc" ? " · face " + (e.face ?? 0) + " · body " + (e.body ?? 0) : ""}${e.kind === "monster" ? " · Lv " + (e.level ?? 0) + (e.count && e.count > 1 ? " · ×" + e.count : "") : ""}`;
+        if (e.kind === "monster" && Array.isArray(e.drops) && e.drops.length) {
+            const fmtCh = (d) => (d.chance < 1 ? "1/" + Math.round(1 / d.chance) : "1/1");
+            const top = e.drops.slice(0, 5).map(d => `${d.item}${d.count > 1 ? "×" + d.count : ""}(${fmtCh(d)})`).join(" ");
+            info.innerHTML += `<br><span style="color:#ffd27f;">掉落: ${top}${e.drops.length > 5 ? " …" : ""}</span>`;
+        }
         div.appendChild(info);
         div.addEventListener("click", () => {
             target = { x: e.x, y: e.y, kind: e.kind, name: e.name };
@@ -1218,8 +1279,9 @@ function loadImg() {
     };
     wimg.onload = onload;
     wimg.src = "/fullmap?map=" + encodeURIComponent(mi.name) + "&z=" + z +
-               "&g=" + (document.getElementById("chk-ground").checked ? 1 : 0) +
-               "&o=" + (document.getElementById("chk-objects").checked ? 1 : 0) +
+               "&g=" + (document.getElementById("chk-g").checked ? 1 : 0) +
+               "&m=" + (document.getElementById("chk-m").checked ? 1 : 0) +
+               "&f=" + (document.getElementById("chk-f").checked ? 1 : 0) +
                "&om=" + selOff.value;
 }
 function loadMini() {
@@ -1234,7 +1296,12 @@ function renderHud() {
     hudMap.textContent = (mi.cn || "") + " " + mi.name + " | 中心格 " + cx + "," + cy + " | 缩放 1:" + (1 << z);
     selCell.textContent = cx + "," + cy;
     if (cat) {
-        let s = `主题 ${cat.theme_name || "base"} · ${cat.w}×${cat.h} · ${cat.cell_bytes}B/格`;
+        const ev = (cat.evidence && cat.evidence.level) || "derived";
+        let s = `主题 ${cat.theme_name || "base"} · ${cat.w}×${cat.h} · ${cat.cell_bytes}B/格 · 证据 ${ev}`;
+        const gl = Object.keys(cat.ground || {}).length;
+        const ml = Object.keys(cat.mid || {}).length;
+        const fl = Object.keys(cat.front || {}).length;
+        s += ` · 库 g${gl}/m${ml}/f${fl}`;
         if (cat.animated_cells) s += " · 动画格 " + cat.animated_cells;
         if (target) s += ` · 目标: ${target.kind === "npc" ? "NPC" : target.kind === "monster" ? "怪物" : "玩家"} ${target.name || ""} @${target.x},${target.y}`;
         hudStats.textContent = s;
@@ -1260,9 +1327,25 @@ function updateHash() {
 }
 selMap.addEventListener("change", () => { cx = Math.floor((maps.find(m => m.name === selMap.value) || {}).w / 2) || 0;
     cy = Math.floor((maps.find(m => m.name === selMap.value) || {}).h / 2) || 0; pick(selMap.value); });
-document.getElementById("chk-ground").addEventListener("change", loadImg);
-document.getElementById("chk-objects").addEventListener("change", loadImg);
+document.getElementById("chk-g").addEventListener("change", loadImg);
+document.getElementById("chk-m").addEventListener("change", loadImg);
+document.getElementById("chk-f").addEventListener("change", loadImg);
 selOff.addEventListener("change", () => { updateHash(); loadImg(); });
+document.getElementById("btn-strip").addEventListener("click", () => {
+    const mi = maps.find(m => m.name === curName);
+    if (!mi) return;
+    const g = document.getElementById("chk-g").checked ? 1 : 0;
+    const m = document.getElementById("chk-m").checked ? 1 : 0;
+    const f = document.getElementById("chk-f").checked ? 1 : 0;
+    window.open("/strip?map=" + encodeURIComponent(mi.name) + "&z=2&g=" + g + "&m=" + m + "&f=" + f, "_blank");
+});
+function loadThumb() {
+    const mi = maps.find(m => m.name === curName);
+    const t = document.getElementById("map-thumb");
+    if (!mi) { t.style.display = "none"; return; }
+    t.src = "/thumb?map=" + encodeURIComponent(mi.name);
+    t.style.display = "inline-block";
+}
 document.getElementById("btn-hud").addEventListener("click", () => { showHud = !showHud; renderHud(); });
 document.getElementById("btn-mm").addEventListener("click", () => { mm = mm === 128 ? 256 : 128; renderHud(); });
 document.getElementById("btn-back").addEventListener("click", () => { location.href = "/"; });
@@ -1289,6 +1372,36 @@ window.addEventListener("wheel", (e) => {
     else return;
     loadImg(); renderEnts(); updateHash();
 }, { passive: false });
+
+// hover: cell under cursor -> /api/cell (per-layer file/frame/flag/animation)
+const cellInfo = document.getElementById("cell-info");
+let cellTimer = null;
+wimg.addEventListener("mousemove", (e) => {
+    if (!curName) return;
+    const s = 1 << z;
+    const wx = Math.floor(e.offsetX * s / 48);
+    const wy = Math.floor(e.offsetY * s / 32);
+    if (wx < 0 || wy < 0) { cellInfo.style.display = "none"; return; }
+    clearTimeout(cellTimer);
+    cellTimer = setTimeout(async () => {
+        try {
+            const r = await fetch("/api/cell?map=" + encodeURIComponent(curName) +
+                                  "&x=" + wx + "&y=" + wy);
+            const d = await r.json();
+            if (!d.ok) { cellInfo.style.display = "none"; return; }
+            const fmt = (o) => o.frame !== undefined ? `${o.frame}` : "—";
+            cellInfo.textContent =
+                `格 ${d.x},${d.y}  flag=${d.flag} anim=${d.anim[0]},${d.anim[1]}\n` +
+                `Back  : ${d.back.lib} [${d.back.file}] f${fmt(d.back)}\n` +
+                `Middle: ${d.mid.lib} [${d.mid.file}] f${fmt(d.mid)}\n` +
+                `Front : ${d.front.lib} [${d.front.file}] f${fmt(d.front)}`;
+            cellInfo.style.left = Math.min(e.clientX + 14, window.innerWidth - 260) + "px";
+            cellInfo.style.top = Math.max(6, e.clientY - 90) + "px";
+            cellInfo.style.display = "block";
+        } catch (_) { cellInfo.style.display = "none"; }
+    }, 60);
+});
+wimg.addEventListener("mouseleave", () => { cellInfo.style.display = "none"; });
 init();
 </script>
 </body>
@@ -1436,8 +1549,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             <span id="progress-text" style="font-family:monospace;">0% (0/0)</span>
         </div>
 
-        <label><input type="checkbox" id="chk-ground" checked> 地表</label>
-        <label><input type="checkbox" id="chk-objects" checked> 物件</label>
+        <label><input type="checkbox" id="chk-g" checked> Back</label>
+        <label><input type="checkbox" id="chk-m" checked> Middle</label>
+        <label><input type="checkbox" id="chk-f" checked> Front</label>
         <label><input type="checkbox" id="chk-grid"> 网格</label>
         <span id="info"></span>
         <span id="status"></span>
@@ -1476,8 +1590,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         const curMap = () => maps.find(m => m.name === curName);
         const curZ = () => ladder[cur];
         const curScale = () => 1 << curZ();
-        const gOn = () => document.getElementById("chk-ground").checked ? 1 : 0;
-        const oOn = () => document.getElementById("chk-objects").checked ? 1 : 0;
+        const gOn = () => document.getElementById("chk-g").checked ? 1 : 0;
+        const mOn = () => document.getElementById("chk-m").checked ? 1 : 0;
+        const fOn = () => document.getElementById("chk-f").checked ? 1 : 0;
 
         function fmt(mi, z) {
             const s = 1 << z;
@@ -1527,7 +1642,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
                 }
             };
             img.src = "/fullmap?map=" + encodeURIComponent(mi.name) + "&z=" + z +
-                      "&g=" + gOn() + "&o=" + oOn();
+                      "&g=" + gOn() + "&m=" + mOn() + "&f=" + fOn();
         }
 
         function loadMap() {
@@ -1740,9 +1855,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             const s = curScale();
             const ax = Math.round(anchorX || (vp.scrollLeft + vp.clientWidth / 2) * s);
             const ay = Math.round(anchorY || (vp.scrollTop + vp.clientHeight / 2) * s);
-            const g = document.getElementById("chk-ground").checked ? 1 : 0;
-            const o = document.getElementById("chk-objects").checked ? 1 : 0;
-            const hash = `#map=${encodeURIComponent(curMap().name)}&cur=${cur}&x=${ax}&y=${ay}&g=${g}&o=${o}`;
+            const g = document.getElementById("chk-g").checked ? 1 : 0;
+            const m = document.getElementById("chk-m").checked ? 1 : 0;
+            const f = document.getElementById("chk-f").checked ? 1 : 0;
+            const hash = `#map=${encodeURIComponent(curMap().name)}&cur=${cur}&x=${ax}&y=${ay}&g=${g}&m=${m}&f=${f}`;
             history.replaceState(null, '', hash);
         }
 
@@ -1968,8 +2084,9 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             showToast("批量预生成任务已启动", `后台多线程已开始合成全库 ${maps.length} 张地图静态图！顶部进度条将实时更新。`);
         });
 
-        document.getElementById("chk-ground").addEventListener("change", () => { render(); updateUrlHash(); });
-        document.getElementById("chk-objects").addEventListener("change", () => { render(); updateUrlHash(); });
+        document.getElementById("chk-g").addEventListener("change", () => { render(); updateUrlHash(); });
+        document.getElementById("chk-m").addEventListener("change", () => { render(); updateUrlHash(); });
+        document.getElementById("chk-f").addEventListener("change", () => { render(); updateUrlHash(); });
         document.getElementById("chk-grid").addEventListener("change", () => { drawGrid(); });
 
         // Drag to pan
@@ -2139,10 +2256,10 @@ class ViewerHandler(BaseHTTPRequestHandler):
                             ladder = map_ladder(w, h, self.layout)
                             if ladder:
                                 z = ladder[-1]
-                                key = (mname, z, True, True, OFFSET_NONE)
+                                key = (mname, z, True, True, True, OFFSET_NONE)
                                 dp = self._fullmap_path(key)
                                 if not os.path.exists(dp):
-                                    data = render_full_map(self.map_cache, self.pool, mname, z, True, True,
+                                    data = render_full_map(self.map_cache, self.pool, mname, z, True, True, True,
                                                            layout=self.layout,
                                                            offset_mode=OFFSET_NONE)
                                     os.makedirs(os.path.dirname(dp), exist_ok=True)
@@ -2250,6 +2367,72 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
 
+        elif self.path.startswith("/api/cell?"):
+            from urllib.parse import parse_qs, urlparse
+            qs = parse_qs(urlparse(self.path).query)
+            map_name = os.path.basename(qs.get("map", [""])[0])
+            try:
+                x = int(qs.get("x", ["0"])[0])
+                y = int(qs.get("y", ["0"])[0])
+            except ValueError:
+                self.send_error(400, "x/y must be ints")
+                return
+            try:
+                w, h, cells = self.map_cache.get(map_name)
+            except Exception as ex:
+                self.send_error(404, f"map not readable: {ex}")
+                return
+            if not (0 <= x < w and 0 <= y < h):
+                body = json.dumps({"ok": False, "error": "out_of_bounds",
+                                   "w": w, "h": h}).encode("utf-8")
+            else:
+                c = cells[x][y]
+                def lib_name(lid):
+                    return KR_ORDER.get(lid, f"lib{lid}") if lid >= 0 else "none"
+                body = json.dumps({
+                    "ok": True, "x": x, "y": y, "w": w, "h": h,
+                    "flag": c.flag, "anim": [c.anim_a, c.anim_b],
+                    "back": {"file": c.back_file, "lib": lib_name(c.back_file),
+                             "frame": c.back_img},
+                    "mid": {"file": c.mid_file, "lib": lib_name(c.mid_file),
+                            "frame": c.mid_img},
+                    "front": {"file": c.front_file, "lib": lib_name(c.front_file),
+                              "frame": c.front_img},
+                }, ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        elif self.path.startswith("/strip?"):
+            # Export the 3-mode offset comparison strip as PNG (sim "导出对比图").
+            from urllib.parse import parse_qs, urlparse
+            qs = parse_qs(urlparse(self.path).query)
+            map_name = os.path.basename(qs.get("map", [""])[0])
+            if not map_name.lower().endswith(".map"):
+                self.send_error(400, "map must be a .map file")
+                return
+            try:
+                z = int(qs.get("z", ["2"])[0])
+            except ValueError:
+                z = 2
+            g = qs.get("g", ["1"])[0] == "1"
+            m = qs.get("m", ["1"])[0] == "1"
+            f = qs.get("f", ["1"])[0] == "1"
+            try:
+                data = render_offset_strip(self.map_cache, self.pool, map_name, z,
+                                           g, m, f, layout=self.layout)
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            except Exception as ex:
+                self.send_error(500, str(ex))
+
         elif self.path.startswith("/sprite?"):
             # Decode a single frame from a named WIL library (character / NPC /
             # monster sprites for the simulator) as a transparent PNG.
@@ -2353,7 +2536,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 return
             z = int(qs.get("z", ["0"])[0])
             g = qs.get("g", ["1"])[0] == "1"
-            o = qs.get("o", ["1"])[0] == "1"
+            m = qs.get("m", ["1"])[0] == "1"
+            f = qs.get("f", ["1"])[0] == "1"
             om = qs.get("om", [OFFSET_NONE])[0]
             if om not in OFFSET_MODES:
                 om = OFFSET_NONE
@@ -2362,7 +2546,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 ladder = map_ladder(w, h, self.layout)
                 if ladder:
                     z = min(max(z, ladder[0]), ladder[-1])
-                key = (map_name, z, g, o, om)
+                key = (map_name, z, g, m, f, om)
                 dp = self._fullmap_path(key)
                 try:
                     with open(dp, "rb") as f:
@@ -2381,7 +2565,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
                             # disk-cached, so the browser's next open is a
                             # static file read instead of a re-render.
                             data = render_full_map(self.map_cache, self.pool,
-                                                   map_name, z, g, o,
+                                                   map_name, z, g, m, f,
                                                    layout=self.layout,
                                                    offset_mode=om)
                             os.makedirs(os.path.dirname(dp), exist_ok=True)
@@ -2406,13 +2590,14 @@ class ViewerHandler(BaseHTTPRequestHandler):
             ty = int(qs.get("ty", ["0"])[0])
             z = int(qs.get("z", ["0"])[0])
             g = qs.get("g", ["1"])[0] == "1"
-            o = qs.get("o", ["1"])[0] == "1"
+            m = qs.get("m", ["1"])[0] == "1"
+            f = qs.get("f", ["1"])[0] == "1"
             om = qs.get("om", [OFFSET_NONE])[0]
             if om not in OFFSET_MODES:
                 om = OFFSET_NONE
 
             try:
-                key = (map_name, tx, ty, z, g, o, om)
+                key = (map_name, tx, ty, z, g, m, f, om)
                 with self.tile_cache_lock:
                     data = self.tile_cache.get(key)
                 if data is None and self.cache_dir:
@@ -2426,7 +2611,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
                     except FileNotFoundError:
                         data = None
                 if data is None:
-                    data = render_tile(self.map_cache, self.pool, map_name, tx, ty, z, g, o,
+                    data = render_tile(self.map_cache, self.pool, map_name, tx, ty, z, g, m, f,
                                        layout=self.layout, offset_mode=om)
                     with self.tile_cache_lock:
                         self.tile_cache[key] = data
@@ -2451,19 +2636,19 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def _tile_path(self, key: tuple) -> str:
-        map_name, tx, ty, z, g, o, om = key
+        map_name, tx, ty, z, g, m, f, om = key
         safe = map_name.replace("/", "_").replace("\\", "_")
         ext = "png" if z == 0 else "jpg"
         tag = "r" if self.layout == LAYOUT_RECT else "i"
         omt = "n" if om == OFFSET_NONE else ("a" if om == OFFSET_ALL else "m")
-        return os.path.join(self.cache_dir, safe, f"{tag}_{tx}_{ty}_{z}_{int(g)}{int(o)}{omt}.{ext}")
+        return os.path.join(self.cache_dir, safe, f"{tag}_{tx}_{ty}_{z}_{int(g)}{int(m)}{int(f)}{omt}.{ext}")
 
     def _fullmap_path(self, key: tuple) -> str:
-        map_name, z, g, o, om = key
+        map_name, z, g, m, f, om = key
         safe = map_name.replace("/", "_").replace("\\", "_")
         tag = "r" if self.layout == LAYOUT_RECT else "i"
         omt = "n" if om == OFFSET_NONE else ("a" if om == OFFSET_ALL else "m")
-        return os.path.join(self.cache_dir, safe, f"full_{tag}_{z}_{int(g)}{int(o)}{omt}.jpg")
+        return os.path.join(self.cache_dir, safe, f"full_{tag}_{z}_{int(g)}{int(m)}{int(f)}{omt}.jpg")
 
 
 def scan_maps(maps_dir: str, layout: str = LAYOUT_RECT) -> list[dict]:
@@ -2502,6 +2687,54 @@ def load_catalog(catalog_dir: str) -> dict:
         return {d.get("name"): d for d in data.get("maps", []) if d.get("name")}
     except Exception:
         return {}
+
+
+_DROPS_CACHE: dict[str, list[dict]] = {}
+
+
+def load_drops(envir_dir: str, monster_name: str) -> list[dict]:
+    """Parse Envir/MonItems/<monster>.txt into a drop list.
+
+    Lines are '<num>/<den> <item> [count]' (GBK item names).  Returns up to
+    12 entries sorted by chance descending: [{item, chance (num/den), count}].
+    Falls back to the trailing-digit-stripped name (e.g. '巨象兽8' -> '巨象兽'),
+    then to None.  Cached per envir_dir+name.
+    """
+    key = (envir_dir, monster_name)
+    cached = _DROPS_CACHE.get(key)
+    if cached is not None:
+        return cached
+    import re as _re
+    candidates = [monster_name]
+    stripped = _re.sub(r"\d+$", "", monster_name)
+    if stripped != monster_name:
+        candidates.append(stripped)
+    result: list[dict] = []
+    for cand in candidates:
+        p = os.path.join(envir_dir, "MonItems", cand + ".txt")
+        try:
+            raw = open(p, "rb").read()
+        except OSError:
+            continue
+        text = raw.decode("gbk", errors="replace")
+        for ln in text.splitlines():
+            ln = ln.strip()
+            if not ln or ln.startswith(";"):
+                continue
+            m = _re.match(r"^(\d+)/(\d+)\s+(.+)$", ln)
+            if not m:
+                continue
+            num, den = int(m.group(1)), int(m.group(2))
+            rest = m.group(3).split()
+            item = rest[0]
+            count = int(rest[1]) if len(rest) > 1 and rest[1].isdigit() else 1
+            result.append({"item": item, "chance": num / den, "count": count})
+        if result:
+            break
+    result.sort(key=lambda d: (-d["chance"], d["item"]))
+    result = result[:12]
+    _DROPS_CACHE[key] = result
+    return result
 
 
 def load_entities(envir_dir: str) -> list[dict]:
@@ -2589,6 +2822,9 @@ def load_entities(envir_dir: str) -> list[dict]:
                        "level": int(parts[5]) if len(parts) > 5 and parts[5].isdigit() else 0}
             except (ValueError, IndexError):
                 continue
+            drops = load_drops(envir_dir, mon["name"])
+            if drops:
+                mon["drops"] = drops
             out.append(mon)
     return out
 

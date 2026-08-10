@@ -87,3 +87,12 @@
   未解析）。[pending]
 - 小地图位置框按 地图尺寸/128px 线性映射；EI 客户端 FMMap/MMap.wil 帧为 600×400 /
   300×200 拼接图，帧内地图间留白未逐图校准。[pending]
+
+## 补充证据帧（2026-08-10）
+
+- `comparisons/sim_D1423__{none,all,midfront}.webp`（1024×768）——D1423.map 是
+  EI 洞穴图（400×400），黑帧 29697 格为 EI 集合最高，作黑帧代表；
+  （D201.map 为 ZL 命名，不在 EI catalog 544 图内，故用 D1423 替代）。
+  none 帧 black-frac 0.204 / mean 33.4；全图 diff（z4）见 OFFSET-EXPERIMENT.md。
+- 模拟器点击怪物 tooltip 现显示 **掉落**（Envir MonItems/*.txt，GBK，
+  前 5 条按概率排序），实测 半兽勇士 金币×4000(1/1) 传统项链(1/2) 匕首(1/2) …。
