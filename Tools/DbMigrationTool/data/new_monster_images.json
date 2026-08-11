@@ -1,0 +1,3392 @@
+[
+ {
+  "ei_name": "桃园骑兵",
+  "spawns": 26,
+  "king": {
+   "page": 539,
+   "pos": 1162,
+   "idx": 438,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 370,
+   "lvl": 200,
+   "name": "桃园骑兵",
+   "next": 1430,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=370 -> (37,0)",
+  "image_kind": "new",
+  "image": "TaoyuanCavalry",
+  "image_slot": [
+   37,
+   0
+  ]
+ },
+ {
+  "ei_name": "桃园步兵",
+  "spawns": 26,
+  "king": {
+   "page": 539,
+   "pos": 1430,
+   "idx": 439,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 371,
+   "lvl": 200,
+   "name": "桃园步兵",
+   "next": 1698,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=371 -> (37,1)",
+  "image_kind": "new",
+  "image": "TaoyuanInfantry",
+  "image_slot": [
+   37,
+   1
+  ]
+ },
+ {
+  "ei_name": "异界轻甲守卫",
+  "spawns": 18,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone",
+  "note": "变体怪，复用基底 Life Stone 的图槽",
+  "image": "BloodStone",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "桃园火毒花",
+  "spawns": 15,
+  "king": {
+   "page": 539,
+   "pos": 1698,
+   "idx": 440,
+   "appr": 85,
+   "race": 19,
+   "raceimg": 372,
+   "lvl": 200,
+   "name": "桃园火毒花",
+   "next": 1968,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=372 -> (37,2)",
+  "image_kind": "new",
+  "image": "TaoyuanFireFlower",
+  "image_slot": [
+   37,
+   2
+  ]
+ },
+ {
+  "ei_name": "桃园火凤凰",
+  "spawns": 15,
+  "king": {
+   "page": 539,
+   "pos": 2238,
+   "idx": 442,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 374,
+   "lvl": 250,
+   "name": "桃园火凤凰",
+   "next": 2508,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=374 -> (37,4)",
+  "image_kind": "new",
+  "image": "TaoyuanFirePhoenix",
+  "image_slot": [
+   37,
+   4
+  ]
+ },
+ {
+  "ei_name": "异界爆毒神魔",
+  "spawns": 14,
+  "king": {
+   "page": 552,
+   "pos": 1454,
+   "idx": 180,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔0",
+   "next": 1730,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter",
+  "note": "变体怪，复用基底 Venom Spitter 的图槽",
+  "image": "VenomSpitter",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界神舰守卫",
+  "spawns": 14,
+  "king": {
+   "page": 552,
+   "pos": 2282,
+   "idx": 183,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 99,
+   "lvl": 100,
+   "name": "异界神舰守卫0",
+   "next": 2558,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "variant",
+  "base": "Infernal Soldier",
+  "note": "变体怪，复用基底 Infernal Soldier 的图槽",
+  "image": "InfernalSoldier",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界触角神魔",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror",
+  "note": "变体怪，复用基底 Tainted Terror 的图槽",
+  "image": "TaintedTerror",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界红衣法师",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 2558,
+   "idx": 184,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师0",
+   "next": 2834,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage",
+  "note": "变体怪，复用基底 Ember Mage 的图槽",
+  "image": "NewMob7",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界海神将领",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 2006,
+   "idx": 182,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领0",
+   "next": 2282,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate",
+  "note": "变体怪，复用基底 Netherworld Gate 的图槽",
+  "image": "NetherWorldGate",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶惩戒者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 5796,
+   "idx": 370,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 220,
+   "lvl": 135,
+   "name": "邪恶惩戒者0",
+   "next": 6070,
+   "exp_hero": 4000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   22,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=220 -> (22,0)",
+  "image": "EscortCommander",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶唤雷者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6342,
+   "idx": 372,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 222,
+   "lvl": 135,
+   "name": "邪恶唤雷者0",
+   "next": 6616,
+   "exp_hero": 4000000,
+   "exp_old": 16000
+  },
+  "slot": [
+   22,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=222 -> (22,2)",
+  "image": "FieryDancer",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶复仇者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6616,
+   "idx": 373,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 223,
+   "lvl": 135,
+   "name": "邪恶复仇者0",
+   "next": 6890,
+   "exp_hero": 4000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   22,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=223 -> (22,3)",
+  "image": "EmeraldDancer",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶镇魂者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6890,
+   "idx": 374,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 224,
+   "lvl": 135,
+   "name": "邪恶镇魂者0",
+   "next": 7164,
+   "exp_hero": 4000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   22,
+   0
+  ],
+  "src": "raceimg",
+  "note": "原槽 [22, 4] 在英雄杀图库为空/OOR，改指 [22, 0]（同族或对应精灵）",
+  "slot_orig": [
+   22,
+   4
+  ],
+  "image": "EscortCommander",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶审判者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 7164,
+   "idx": 375,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 225,
+   "lvl": 135,
+   "name": "邪恶审判者0",
+   "next": 7438,
+   "exp_hero": 4000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   22,
+   2
+  ],
+  "src": "raceimg",
+  "note": "原槽 [22, 5] 在英雄杀图库为空/OOR，改指 [22, 2]（同族或对应精灵）",
+  "slot_orig": [
+   22,
+   5
+  ],
+  "image": "FieryDancer",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "邪恶堕落者",
+  "spawns": 13,
+  "king": {
+   "page": 541,
+   "pos": 6358,
+   "idx": 401,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 226,
+   "lvl": 135,
+   "name": "邪恶堕落者0",
+   "next": 6632,
+   "exp_hero": 5000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   22,
+   3
+  ],
+  "src": "raceimg",
+  "note": "原槽 [22, 6] 在英雄杀图库为空/OOR，改指 [22, 3]（同族或对应精灵）",
+  "slot_orig": [
+   22,
+   6
+  ],
+  "image": "EmeraldDancer",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "桃园冰毒花",
+  "spawns": 11,
+  "king": {
+   "page": 539,
+   "pos": 1968,
+   "idx": 441,
+   "appr": 85,
+   "race": 19,
+   "raceimg": 373,
+   "lvl": 200,
+   "name": "桃园冰毒花",
+   "next": 2238,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=373 -> (37,3)",
+  "image_kind": "new",
+  "image": "TaoyuanIceFlower",
+  "image_slot": [
+   37,
+   3
+  ]
+ },
+ {
+  "ei_name": "桃园冰凤凰",
+  "spawns": 11,
+  "king": {
+   "page": 539,
+   "pos": 2508,
+   "idx": 443,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 378,
+   "lvl": 200,
+   "name": "桃园冰凤凰",
+   "next": 2778,
+   "exp_hero": 50000000,
+   "exp_old": 45000
+  },
+  "slot": [
+   37,
+   8
+  ],
+  "src": "raceimg",
+  "note": "raceimg=378 -> (37,8)",
+  "image_kind": "new",
+  "image": "TaoyuanIcePhoenix",
+  "image_slot": [
+   37,
+   8
+  ]
+ },
+ {
+  "ei_name": "玛法战士",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1173,
+   "idx": 426,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 316,
+   "lvl": 250,
+   "name": "玛法战士",
+   "next": 1441,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   31,
+   6
+  ],
+  "src": "raceimg",
+  "note": "英雄杀槽 (31, 6) 与 Zircon 现内容冲突/为空，移植英雄杀帧到 Zircon Mon-31 s6",
+  "port": {
+   "src": "hero Mon-31 s6",
+   "dst": "Zircon Mon-31 s6"
+  },
+  "image_kind": "new",
+  "image": "MafaWarrior",
+  "image_slot": [
+   31,
+   6
+  ]
+ },
+ {
+  "ei_name": "玛法法师",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1441,
+   "idx": 427,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 318,
+   "lvl": 180,
+   "name": "玛法法师",
+   "next": 1712,
+   "exp_hero": 5000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   31,
+   8
+  ],
+  "src": "raceimg",
+  "note": "raceimg=318 -> (31,8)",
+  "image_kind": "new",
+  "image": "MafaMage",
+  "image_slot": [
+   31,
+   8
+  ]
+ },
+ {
+  "ei_name": "玛法道士",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1712,
+   "idx": 428,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 317,
+   "lvl": 220,
+   "name": "玛法道士",
+   "next": 1980,
+   "exp_hero": 5000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   31,
+   7
+  ],
+  "src": "raceimg",
+  "note": "英雄杀槽 (31, 7) 与 Zircon 现内容冲突/为空，移植英雄杀帧到 Zircon Mon-31 s7",
+  "port": {
+   "src": "hero Mon-31 s7",
+   "dst": "Zircon Mon-31 s7"
+  },
+  "image_kind": "new",
+  "image": "MafaTaoist",
+  "image_slot": [
+   31,
+   7
+  ]
+ },
+ {
+  "ei_name": "月河幽灵",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4454,
+   "idx": 394,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 230,
+   "lvl": 180,
+   "name": "月河幽灵0",
+   "next": 4726,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=230 -> (23,0)",
+  "image": "ChiwooGeneral",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "月河罗汉",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4726,
+   "idx": 395,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 231,
+   "lvl": 180,
+   "name": "月河罗汉0",
+   "next": 4998,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=231 -> (23,1)",
+  "image": "DragonLord",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "月河鼠仙",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4998,
+   "idx": 396,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 232,
+   "lvl": 180,
+   "name": "月河鼠仙0",
+   "next": 5270,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=232 -> (23,2)",
+  "image": "DragonQueen",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "月河幽魂",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 6086,
+   "idx": 400,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 236,
+   "lvl": 180,
+   "name": "月河幽魂0",
+   "next": 6358,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   6
+  ],
+  "src": "raceimg",
+  "note": "raceimg=236 -> (23,6)",
+  "image": "YumgonWitch",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "人马战士",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5270,
+   "idx": 397,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 233,
+   "lvl": 200,
+   "name": "人马战士0",
+   "next": 5542,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=233 -> (23,3)",
+  "image": "OYoungBeast",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "树人精灵",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5542,
+   "idx": 398,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 234,
+   "lvl": 200,
+   "name": "树人精灵0",
+   "next": 5814,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=234 -> (23,4)",
+  "image": "MaWarlord",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "战马将军",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5814,
+   "idx": 399,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 235,
+   "lvl": 200,
+   "name": "战马将军0",
+   "next": 6086,
+   "exp_hero": 5000000,
+   "exp_old": 25000
+  },
+  "slot": [
+   23,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=235 -> (23,5)",
+  "image": "YumgonGeneral",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "修罗战士",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4378,
+   "idx": 450,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 392,
+   "lvl": 200,
+   "name": "修罗战士0",
+   "next": 4650,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   39,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=392 -> (39,2)",
+  "image_kind": "new",
+  "image": "XiuluoWarrior",
+  "image_slot": [
+   39,
+   2
+  ]
+ },
+ {
+  "ei_name": "修罗法师",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4650,
+   "idx": 451,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 393,
+   "lvl": 200,
+   "name": "修罗法师0",
+   "next": 4922,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   39,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=393 -> (39,3)",
+  "image_kind": "new",
+  "image": "XiuluoMage",
+  "image_slot": [
+   39,
+   3
+  ]
+ },
+ {
+  "ei_name": "修罗道士",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4922,
+   "idx": 452,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 397,
+   "lvl": 200,
+   "name": "修罗道士0",
+   "next": 5194,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   39,
+   7
+  ],
+  "src": "raceimg",
+  "note": "raceimg=397 -> (39,7)",
+  "image_kind": "new",
+  "image": "XiuluoTaoist",
+  "image_slot": [
+   39,
+   7
+  ]
+ },
+ {
+  "ei_name": "冰宫巫师",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 5810,
+   "idx": 80,
+   "appr": 213,
+   "race": 19,
+   "raceimg": 203,
+   "lvl": 75,
+   "name": "冰宫巫师0",
+   "next": 6082,
+   "exp_hero": 1100000,
+   "exp_old": 3200
+  },
+  "slot": [
+   20,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=203 -> (20,3)",
+  "image": "MutantLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰宫骑士",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 4994,
+   "idx": 77,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 204,
+   "lvl": 80,
+   "name": "冰宫骑士0",
+   "next": 5266,
+   "exp_hero": 1100000,
+   "exp_old": 3800
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=204 -> (20,4)",
+  "image": "VenomSpitter",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰宫法师",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 4722,
+   "idx": 76,
+   "appr": 204,
+   "race": 19,
+   "raceimg": 202,
+   "lvl": 75,
+   "name": "冰宫法师0",
+   "next": 4994,
+   "exp_hero": 1100000,
+   "exp_old": 3400
+  },
+  "slot": [
+   20,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=202 -> (20,2)",
+  "image": "SawToothLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰城帝王",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 4178,
+   "idx": 74,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 205,
+   "lvl": 200,
+   "name": "冰城帝王0",
+   "next": 4450,
+   "exp_hero": 3000000,
+   "exp_old": 20000
+  },
+  "slot": [
+   20,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=205 -> (20,5)",
+  "image": "SonicLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "绝情殿主",
+  "spawns": 4,
+  "king": {
+   "page": 532,
+   "pos": 4998,
+   "idx": 135,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 211,
+   "lvl": 230,
+   "name": "绝情殿主0",
+   "next": 5270,
+   "exp_hero": 3000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   21,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=211 -> (21,1)",
+  "image": "FerociousIceTiger",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "火焰狮子5",
+  "spawns": 4,
+  "king": {
+   "page": 531,
+   "pos": 2262,
+   "idx": 96,
+   "appr": 224,
+   "race": 19,
+   "raceimg": 159,
+   "lvl": 55,
+   "name": "火焰狮子0",
+   "next": 2534,
+   "exp_hero": 800000,
+   "exp_old": 1600
+  },
+  "slot": [
+   22,
+   5
+  ],
+  "src": "raceimg",
+  "note": "英雄杀槽 (15, 9) 与 Zircon 现内容冲突/为空，移植英雄杀帧到 Zircon Mon-22 s5",
+  "slot_orig": [
+   15,
+   9
+  ],
+  "port": {
+   "src": "hero Mon-15 s9",
+   "dst": "Zircon Mon-22 s5"
+  },
+  "image_kind": "new",
+  "image": "FlameLion",
+  "image_slot": [
+   22,
+   5
+  ]
+ },
+ {
+  "ei_name": "玛法上将",
+  "spawns": 4,
+  "king": {
+   "page": 522,
+   "pos": 1980,
+   "idx": 429,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 315,
+   "lvl": 160,
+   "name": "玛法上将",
+   "next": 2251,
+   "exp_hero": 5000000,
+   "exp_old": 18000
+  },
+  "slot": [
+   31,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=315 -> (31,5)",
+  "image_kind": "new",
+  "image": "MafaGeneral",
+  "image_slot": [
+   31,
+   5
+  ]
+ },
+ {
+  "ei_name": "玛法巫师",
+  "spawns": 4,
+  "king": {
+   "page": 522,
+   "pos": 902,
+   "idx": 425,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 314,
+   "lvl": 180,
+   "name": "玛法巫师",
+   "next": 1173,
+   "exp_hero": 5000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   31,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=314 -> (31,4)",
+  "image_kind": "new",
+  "image": "MafaWizard",
+  "image_slot": [
+   31,
+   4
+  ]
+ },
+ {
+  "ei_name": "秦王步兵刀手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 5466,
+   "idx": 454,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 414,
+   "lvl": 200,
+   "name": "秦王步兵刀手0",
+   "next": 5742,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   41,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=414 -> (41,4)",
+  "image_kind": "new",
+  "image": "QinSwordInfantry",
+  "image_slot": [
+   41,
+   4
+  ]
+ },
+ {
+  "ei_name": "秦王步兵矛手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 5742,
+   "idx": 455,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 415,
+   "lvl": 200,
+   "name": "秦王步兵矛手0",
+   "next": 6018,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   41,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=415 -> (41,5)",
+  "image_kind": "new",
+  "image": "QinSpearInfantry",
+  "image_slot": [
+   41,
+   5
+  ]
+ },
+ {
+  "ei_name": "秦王骑战刀手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 6018,
+   "idx": 456,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 416,
+   "lvl": 200,
+   "name": "秦王骑战刀手0",
+   "next": 6294,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   41,
+   6
+  ],
+  "src": "raceimg",
+  "note": "raceimg=416 -> (41,6)",
+  "image_kind": "new",
+  "image": "QinSwordCavalry",
+  "image_slot": [
+   41,
+   6
+  ]
+ },
+ {
+  "ei_name": "秦王骑战矛手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 6294,
+   "idx": 457,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 417,
+   "lvl": 200,
+   "name": "秦王骑战矛手0",
+   "next": 6570,
+   "exp_hero": 1000000,
+   "exp_old": 65000
+  },
+  "slot": [
+   41,
+   7
+  ],
+  "src": "raceimg",
+  "note": "raceimg=417 -> (41,7)",
+  "image_kind": "new",
+  "image": "QinSpearCavalry",
+  "image_slot": [
+   41,
+   7
+  ]
+ },
+ {
+  "ei_name": "冰宫射手",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 5266,
+   "idx": 78,
+   "appr": 236,
+   "race": 19,
+   "raceimg": 200,
+   "lvl": 75,
+   "name": "冰宫射手0",
+   "next": 5538,
+   "exp_hero": 1100000,
+   "exp_old": 3200
+  },
+  "slot": [
+   20,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=200 -> (20,0)",
+  "image_kind": "new",
+  "image": "IcePalaceArcher",
+  "image_slot": [
+   20,
+   0
+  ]
+ },
+ {
+  "ei_name": "冰魂武将",
+  "spawns": 4,
+  "missing": true,
+  "approx": "冰原勇士",
+  "king": {
+   "page": 528,
+   "pos": 6898,
+   "idx": 84,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 206,
+   "lvl": 75,
+   "name": "冰原勇士0",
+   "next": 7170,
+   "exp_hero": 1100000,
+   "exp_old": 3500
+  },
+  "slot": [
+   20,
+   6
+  ],
+  "src": "missing-approx",
+  "note": "King 无此怪，指到近似怪 冰原勇士",
+  "image": "GiantLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰原勇士",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 6898,
+   "idx": 84,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 206,
+   "lvl": 75,
+   "name": "冰原勇士0",
+   "next": 7170,
+   "exp_hero": 1100000,
+   "exp_old": 3500
+  },
+  "slot": [
+   20,
+   6
+  ],
+  "src": "raceimg",
+  "note": "raceimg=206 -> (20,6)",
+  "image": "GiantLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰魂武士",
+  "spawns": 4,
+  "missing": true,
+  "approx": "冰原战士",
+  "king": {
+   "page": 528,
+   "pos": 7170,
+   "idx": 85,
+   "appr": 216,
+   "race": 19,
+   "raceimg": 209,
+   "lvl": 75,
+   "name": "冰原战士0",
+   "next": 7442,
+   "exp_hero": 1100000,
+   "exp_old": 4800
+  },
+  "slot": [
+   20,
+   9
+  ],
+  "src": "missing-approx",
+  "note": "King 无此怪，指到近似怪 冰原战士",
+  "image": "CrazedLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "角蝇",
+  "spawns": 3,
+  "king": {
+   "page": 531,
+   "pos": 4963,
+   "idx": 106,
+   "appr": 103,
+   "race": 43,
+   "raceimg": 73,
+   "lvl": 30,
+   "name": "角蝇0",
+   "next": 5231,
+   "exp_hero": 500,
+   "exp_old": 560
+  },
+  "slot": [
+   7,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=73 -> (7,3)",
+  "image": "Beetle",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "寒冰守护神",
+  "spawns": 3,
+  "king": {
+   "page": 510,
+   "pos": 1994,
+   "idx": 37,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 172,
+   "lvl": 180,
+   "name": "寒冰守护神0",
+   "next": 2268,
+   "exp_hero": 2000000,
+   "exp_old": 10000
+  },
+  "slot": [
+   17,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=172 -> (17,2)",
+  "image": "PinkGoddess",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "地牢女神3",
+  "spawns": 3,
+  "king": {
+   "page": 537,
+   "pos": 4989,
+   "idx": 19,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 162,
+   "lvl": 55,
+   "name": "地牢女神30",
+   "next": 5262,
+   "exp_hero": 800000,
+   "exp_old": 2100
+  },
+  "slot": [
+   16,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=162 -> (16,2)",
+  "image_kind": "new",
+  "image": "DungeonGoddess1",
+  "image_slot": [
+   16,
+   2
+  ]
+ },
+ {
+  "ei_name": "冰原豪猪",
+  "spawns": 3,
+  "king": {
+   "page": 528,
+   "pos": 6082,
+   "idx": 81,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 171,
+   "lvl": 75,
+   "name": "冰原豪猪0",
+   "next": 6354,
+   "exp_hero": 1100000,
+   "exp_old": 2700
+  },
+  "slot": [
+   17,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=171 -> (17,1)",
+  "image": "MutantCaptain",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "绝情红姬",
+  "spawns": 3,
+  "king": {
+   "page": 510,
+   "pos": 1180,
+   "idx": 34,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 212,
+   "lvl": 90,
+   "name": "绝情红姬0",
+   "next": 1452,
+   "exp_hero": 1200000,
+   "exp_old": 6500
+  },
+  "slot": [
+   21,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=212 -> (21,2)",
+  "image": "IcySpiritWarrior",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "绝情绿姬",
+  "spawns": 3,
+  "king": {
+   "page": 520,
+   "pos": 369,
+   "idx": 292,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 213,
+   "lvl": 90,
+   "name": "绝情绿姬0",
+   "next": 641,
+   "exp_hero": 1200000,
+   "exp_old": 6500
+  },
+  "slot": [
+   21,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=213 -> (21,3)",
+  "image": "IcySpiritGeneral",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "绝情护卫",
+  "spawns": 3,
+  "king": {
+   "page": 531,
+   "pos": 1446,
+   "idx": 93,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 210,
+   "lvl": 95,
+   "name": "绝情护卫0",
+   "next": 1718,
+   "exp_hero": 1200000,
+   "exp_old": 6800
+  },
+  "slot": [
+   21,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=210 -> (21,0)",
+  "image": "IcyRanger",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "霜石狰",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3286,
+   "idx": 416,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 365,
+   "lvl": 250,
+   "name": "霜石狰",
+   "next": 3552,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=365 -> (36,5)",
+  "image_kind": "new",
+  "image": "FrostStoneBeast",
+  "image_slot": [
+   36,
+   5
+  ]
+ },
+ {
+  "ei_name": "丛林猛犸",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3552,
+   "idx": 417,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 360,
+   "lvl": 250,
+   "name": "丛林猛犸",
+   "next": 3820,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=360 -> (36,0)",
+  "image_kind": "new",
+  "image": "JungleMammoth",
+  "image_slot": [
+   36,
+   0
+  ]
+ },
+ {
+  "ei_name": "独角犀",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 2752,
+   "idx": 414,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 364,
+   "lvl": 250,
+   "name": "独角犀",
+   "next": 3018,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=364 -> (36,4)",
+  "image_kind": "new",
+  "image": "UnicornRhino",
+  "image_slot": [
+   36,
+   4
+  ]
+ },
+ {
+  "ei_name": "绝地殍",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 2486,
+   "idx": 413,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 361,
+   "lvl": 250,
+   "name": "绝地殍",
+   "next": 2752,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=361 -> (36,1)",
+  "image_kind": "new",
+  "image": "JuediPiao",
+  "image_slot": [
+   36,
+   1
+  ]
+ },
+ {
+  "ei_name": "深潭泥人",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3018,
+   "idx": 415,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 369,
+   "lvl": 250,
+   "name": "深潭泥人",
+   "next": 3286,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   7
+  ],
+  "src": "raceimg",
+  "note": "原槽 [36, 9] 在英雄杀图库为空/OOR，改指 [36, 7]（同族或对应精灵）",
+  "slot_orig": [
+   36,
+   9
+  ],
+  "image_kind": "new",
+  "image": "DeepMudMan",
+  "image_slot": [
+   36,
+   7
+  ]
+ },
+ {
+  "ei_name": "火焰魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 1448,
+   "idx": 383,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 240,
+   "lvl": 180,
+   "name": "火焰魔兵0",
+   "next": 1720,
+   "exp_hero": 4000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   24,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=240 -> (24,0)",
+  "image_kind": "new",
+  "image": "FlameMob",
+  "image_slot": [
+   24,
+   0
+  ]
+ },
+ {
+  "ei_name": "破冰魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 3910,
+   "idx": 392,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 241,
+   "lvl": 180,
+   "name": "破冰魔兵0",
+   "next": 4182,
+   "exp_hero": 4000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   24,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=241 -> (24,1)",
+  "image_kind": "new",
+  "image": "IceMob",
+  "image_slot": [
+   24,
+   1
+  ]
+ },
+ {
+  "ei_name": "雷神魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 1720,
+   "idx": 384,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 242,
+   "lvl": 180,
+   "name": "雷神魔兵0",
+   "next": 1992,
+   "exp_hero": 4000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   24,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=242 -> (24,2)",
+  "image_kind": "new",
+  "image": "ThunderMob",
+  "image_slot": [
+   24,
+   2
+  ]
+ },
+ {
+  "ei_name": "旋风魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 4182,
+   "idx": 393,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 243,
+   "lvl": 180,
+   "name": "旋风魔兵0",
+   "next": 4454,
+   "exp_hero": 4000000,
+   "exp_old": 24000
+  },
+  "slot": [
+   24,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=243 -> (24,3)",
+  "image_kind": "new",
+  "image": "WhirlwindMob",
+  "image_slot": [
+   24,
+   3
+  ]
+ },
+ {
+  "ei_name": "地牢女神1",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 4443,
+   "idx": 17,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 162,
+   "lvl": 55,
+   "name": "地牢女神10",
+   "next": 4716,
+   "exp_hero": 800000,
+   "exp_old": 1800
+  },
+  "slot": [
+   16,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=162 -> (16,2)",
+  "image_kind": "new",
+  "image": "DungeonGoddess1",
+  "image_slot": [
+   16,
+   2
+  ]
+ },
+ {
+  "ei_name": "地牢女神2",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 4716,
+   "idx": 18,
+   "appr": 119,
+   "race": 19,
+   "raceimg": 163,
+   "lvl": 55,
+   "name": "地牢女神20",
+   "next": 4989,
+   "exp_hero": 800000,
+   "exp_old": 1800
+  },
+  "slot": [
+   16,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=163 -> (16,3)",
+  "image_kind": "new",
+  "image": "DungeonGoddess2",
+  "image_slot": [
+   16,
+   3
+  ]
+ },
+ {
+  "ei_name": "武力神将1",
+  "spawns": 2,
+  "king": {
+   "page": 521,
+   "pos": 7414,
+   "idx": 289,
+   "appr": 222,
+   "race": 19,
+   "raceimg": 161,
+   "lvl": 60,
+   "name": "武力神将10",
+   "next": 7687,
+   "exp_hero": 800000,
+   "exp_old": 2300
+  },
+  "slot": [
+   1,
+   6
+  ],
+  "src": "variant",
+  "base": "Light Armed Soldier",
+  "note": "变体怪，复用基底 Light Armed Soldier 的图槽",
+  "image": "LightArmedSoldier",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "地牢女神4",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 5262,
+   "idx": 20,
+   "appr": 119,
+   "race": 19,
+   "raceimg": 163,
+   "lvl": 55,
+   "name": "地牢女神40",
+   "next": 5535,
+   "exp_hero": 800000,
+   "exp_old": 2100
+  },
+  "slot": [
+   16,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=163 -> (16,3)",
+  "image_kind": "new",
+  "image": "DungeonGoddess2",
+  "image_slot": [
+   16,
+   3
+  ]
+ },
+ {
+  "ei_name": "凶悍风魔",
+  "spawns": 2,
+  "king": {
+   "page": 543,
+   "pos": 7463,
+   "idx": 347,
+   "appr": 205,
+   "race": 19,
+   "raceimg": 97,
+   "lvl": 105,
+   "name": "凶悍风魔0",
+   "next": 7735,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   9,
+   7
+  ],
+  "src": "raceimg",
+  "note": "raceimg=97 -> (9,7)",
+  "image_kind": "new",
+  "image": "FierceWindDemon",
+  "image_slot": [
+   9,
+   7
+  ]
+ },
+ {
+  "ei_name": "凶悍尸王",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1456,
+   "idx": 354,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 53,
+   "lvl": 105,
+   "name": "凶悍尸王0",
+   "next": 1728,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   20,
+   8
+  ],
+  "src": "variant",
+  "base": "Death Lord Jichon",
+  "note": "变体怪，复用基底 Death Lord Jichon 的图槽",
+  "image": "DeathLordJichon",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍树魔",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 2000,
+   "idx": 356,
+   "appr": 206,
+   "race": 19,
+   "raceimg": 95,
+   "lvl": 105,
+   "name": "凶悍树魔0",
+   "next": 2272,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   9,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=95 -> (9,5)",
+  "image": "ZumaKing",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍石人",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1728,
+   "idx": 355,
+   "appr": 200,
+   "race": 19,
+   "raceimg": 4,
+   "lvl": 105,
+   "name": "凶悍石人0",
+   "next": 2000,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   1,
+   4
+  ],
+  "src": "single-digit",
+  "note": "raceimg=4 单数字 -> Mon-1 shape 4",
+  "image": "StoneGolem",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍僧侣",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1184,
+   "idx": 353,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 49,
+   "lvl": 105,
+   "name": "凶悍僧侣0",
+   "next": 1456,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   4,
+   9
+  ],
+  "src": "raceimg",
+  "note": "raceimg=49 -> (4,9)",
+  "image_kind": "new",
+  "image": "FierceMonk",
+  "image_slot": [
+   4,
+   9
+  ]
+ },
+ {
+  "ei_name": "凶悍猎鹰",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 640,
+   "idx": 351,
+   "appr": 81,
+   "race": 228,
+   "raceimg": 59,
+   "lvl": 105,
+   "name": "凶悍猎鹰0",
+   "next": 912,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   10,
+   0
+  ],
+  "src": "variant",
+  "base": "Shinsu",
+  "note": "变体怪，复用基底 Shinsu 的图槽",
+  "image": "Shinsu",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍鱼魔",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 2544,
+   "idx": 358,
+   "appr": 203,
+   "race": 19,
+   "raceimg": 94,
+   "lvl": 105,
+   "name": "凶悍鱼魔0",
+   "next": 2816,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   9,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=94 -> (9,4)",
+  "image": "ZumaGuardian",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "群魔御医",
+  "spawns": 2,
+  "king": {
+   "page": 543,
+   "pos": 6373,
+   "idx": 343,
+   "appr": 207,
+   "race": 11,
+   "raceimg": 7,
+   "lvl": 105,
+   "name": "群魔御医0",
+   "next": 6645,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   1,
+   7
+  ],
+  "src": "single-digit",
+  "note": "raceimg=7 单数字 -> Mon-1 shape 7",
+  "image": "AntHealer",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "尸灵横骨",
+  "spawns": 2,
+  "missing": true,
+  "approx": "伤魂尸",
+  "king": {
+   "page": 540,
+   "pos": 2220,
+   "idx": 412,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 368,
+   "lvl": 250,
+   "name": "伤魂尸",
+   "next": 2486,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   8
+  ],
+  "src": "missing-approx",
+  "note": "King 无此怪，指到近似怪 伤魂尸",
+  "image_kind": "new",
+  "image": "WoundedSoulCorpse",
+  "image_slot": [
+   36,
+   8
+  ]
+ },
+ {
+  "ei_name": "钻卡树",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 2834,
+   "idx": 185,
+   "appr": 209,
+   "race": 19,
+   "raceimg": 153,
+   "lvl": 100,
+   "name": "钻卡树0",
+   "next": 3104,
+   "exp_hero": 0,
+   "exp_old": 5000
+  },
+  "slot": [
+   22,
+   4
+  ],
+  "src": "raceimg",
+  "note": "英雄杀槽 (15, 3) 与 Zircon 现内容冲突/为空，移植英雄杀帧到 Zircon Mon-22 s4",
+  "slot_orig": [
+   15,
+   3
+  ],
+  "port": {
+   "src": "hero Mon-15 s3",
+   "dst": "Zircon Mon-22 s4"
+  },
+  "image_kind": "new",
+  "image": "ZuanKaTree",
+  "image_slot": [
+   22,
+   4
+  ]
+ },
+ {
+  "ei_name": "恶灵弓箭手",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7155,
+   "idx": 27,
+   "appr": 236,
+   "race": 19,
+   "raceimg": 144,
+   "lvl": 75,
+   "name": "恶灵弓箭手0",
+   "next": 7429,
+   "exp_hero": 500,
+   "exp_old": 2500
+  },
+  "slot": [
+   14,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=144 -> (14,4)",
+  "image": "ShockMinotaur",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "恶灵士兵",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7429,
+   "idx": 28,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 142,
+   "lvl": 75,
+   "name": "恶灵士兵0",
+   "next": 7701,
+   "exp_hero": 5000,
+   "exp_old": 2800
+  },
+  "slot": [
+   14,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=142 -> (14,2)",
+  "image": "DecayingGhoul",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "恶灵武士",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7701,
+   "idx": 29,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 143,
+   "lvl": 75,
+   "name": "恶灵武士0",
+   "next": null
+  },
+  "slot": [
+   14,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=143 -> (14,3)",
+  "image": "FrostMinotaur",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "大法老",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 3090,
+   "idx": 12,
+   "appr": 204,
+   "race": 19,
+   "raceimg": 13,
+   "lvl": 50,
+   "name": "大法老0",
+   "next": 3360,
+   "exp_hero": 3000000,
+   "exp_old": 2400
+  },
+  "slot": [
+   1,
+   3
+  ],
+  "src": "raceimg",
+  "note": "raceimg=13 -> (1,3)",
+  "image_kind": "new",
+  "image": "GreatPharaoh",
+  "image_slot": [
+   1,
+   3
+  ]
+ },
+ {
+  "ei_name": "1\"  护法天",
+  "spawns": 1,
+  "king": {
+   "page": 531,
+   "pos": 1176,
+   "idx": 92,
+   "appr": 101,
+   "race": 47,
+   "raceimg": 84,
+   "lvl": 85,
+   "name": "护法天0",
+   "next": 1446,
+   "exp_hero": 1200000,
+   "exp_old": 3300
+  },
+  "slot": [
+   8,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=84 -> (8,4)",
+  "image": "LesserWedgeMoth",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "群魔勇士",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6101,
+   "idx": 342,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 216,
+   "lvl": 105,
+   "name": "群魔勇士0",
+   "next": 6373,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   21,
+   6
+  ],
+  "src": "raceimg",
+  "note": "raceimg=216 -> (21,6)",
+  "image": "IcySpiritSpearman",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "群魔霸王",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 5281,
+   "idx": 339,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 215,
+   "lvl": 160,
+   "name": "群魔霸王0",
+   "next": 5553,
+   "exp_hero": 3000000,
+   "exp_old": 23000
+  },
+  "slot": [
+   21,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=215 -> (21,5)",
+  "image": "FrostLordHwa",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界守护神3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178,
+   "exp_hero": 30000000,
+   "exp_old": 16600
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=10 -> (1,0)",
+  "image_kind": "new",
+  "image": "OtherworldGuardian",
+  "image_slot": [
+   1,
+   0
+  ]
+ },
+ {
+  "ei_name": "异界守护神2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178,
+   "exp_hero": 30000000,
+   "exp_old": 16600
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=10 -> (1,0)",
+  "image_kind": "new",
+  "image": "OtherworldGuardian",
+  "image_slot": [
+   1,
+   0
+  ]
+ },
+ {
+  "ei_name": "异界守护神1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178,
+   "exp_hero": 30000000,
+   "exp_old": 16600
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=10 -> (1,0)",
+  "image_kind": "new",
+  "image": "OtherworldGuardian",
+  "image_slot": [
+   1,
+   0
+  ]
+ },
+ {
+  "ei_name": "异界守护神",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178,
+   "exp_hero": 30000000,
+   "exp_old": 16600
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=10 -> (1,0)",
+  "image_kind": "new",
+  "image": "OtherworldGuardian",
+  "image_slot": [
+   1,
+   0
+  ]
+ },
+ {
+  "ei_name": "石像狮子5",
+  "spawns": 1,
+  "king": {
+   "page": 521,
+   "pos": 2256,
+   "idx": 270,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 160,
+   "lvl": 55,
+   "name": "石像狮子00",
+   "next": 2529,
+   "exp_hero": 800000,
+   "exp_old": 1400
+  },
+  "slot": [
+   16,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=160 -> (16,0)",
+  "image": "RazorTusk",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "武力神将2",
+  "spawns": 1,
+  "king": {
+   "page": 521,
+   "pos": 7687,
+   "idx": 290,
+   "appr": 222,
+   "race": 19,
+   "raceimg": 161,
+   "lvl": 60,
+   "name": "武力神将20",
+   "next": null
+  },
+  "slot": [
+   1,
+   6
+  ],
+  "src": "variant",
+  "base": "Light Armed Soldier",
+  "note": "变体怪，复用基底 Light Armed Soldier 的图槽",
+  "image": "LightArmedSoldier",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界轻甲守卫3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone",
+  "note": "变体怪，复用基底 Life Stone 的图槽",
+  "image": "BloodStone",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界触角神魔3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 7253,
+   "idx": 201,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔30",
+   "next": 7530,
+   "exp_hero": 1500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror",
+  "note": "变体怪，复用基底 Tainted Terror 的图槽",
+  "image": "TaintedTerror",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界海神将领3",
+  "spawns": 1,
+  "king": {
+   "page": 553,
+   "pos": 96,
+   "idx": 204,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领30",
+   "next": 373,
+   "exp_hero": 1500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate",
+  "note": "变体怪，复用基底 Netherworld Gate 的图槽",
+  "image": "NetherWorldGate",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界爆毒神魔3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 7530,
+   "idx": 202,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔30",
+   "next": 7807,
+   "exp_hero": 1500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter",
+  "note": "变体怪，复用基底 Venom Spitter 的图槽",
+  "image": "VenomSpitter",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界轻甲守卫2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone",
+  "note": "变体怪，复用基底 Life Stone 的图槽",
+  "image": "BloodStone",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界触角神魔2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror",
+  "note": "变体怪，复用基底 Tainted Terror 的图槽",
+  "image": "TaintedTerror",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界爆毒神魔2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1454,
+   "idx": 180,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔0",
+   "next": 1730,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter",
+  "note": "变体怪，复用基底 Venom Spitter 的图槽",
+  "image": "VenomSpitter",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界红衣法师2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 2558,
+   "idx": 184,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师0",
+   "next": 2834,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage",
+  "note": "变体怪，复用基底 Ember Mage 的图槽",
+  "image": "NewMob7",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界触角神魔1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454,
+   "exp_hero": 3000000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror",
+  "note": "变体怪，复用基底 Tainted Terror 的图槽",
+  "image": "TaintedTerror",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界爆毒神魔1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 3656,
+   "idx": 188,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔10",
+   "next": 3933,
+   "exp_hero": 2500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter",
+  "note": "变体怪，复用基底 Venom Spitter 的图槽",
+  "image": "VenomSpitter",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界红衣法师1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4764,
+   "idx": 192,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师10",
+   "next": 5041,
+   "exp_hero": 2500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage",
+  "note": "变体怪，复用基底 Ember Mage 的图槽",
+  "image": "NewMob7",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界神舰守卫1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4487,
+   "idx": 191,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 99,
+   "lvl": 100,
+   "name": "异界神舰守卫10",
+   "next": 4764,
+   "exp_hero": 2500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "variant",
+  "base": "Infernal Soldier",
+  "note": "变体怪，复用基底 Infernal Soldier 的图槽",
+  "image": "InfernalSoldier",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界轻甲守卫1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 3933,
+   "idx": 189,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫10",
+   "next": 4210,
+   "exp_hero": 2500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone",
+  "note": "变体怪，复用基底 Life Stone 的图槽",
+  "image": "BloodStone",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "异界海神将领1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4210,
+   "idx": 190,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领10",
+   "next": 4487,
+   "exp_hero": 2500000,
+   "exp_old": 5000
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate",
+  "note": "变体怪，复用基底 Netherworld Gate 的图槽",
+  "image": "NetherWorldGate",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍多角虫",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6917,
+   "idx": 345,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 64,
+   "lvl": 105,
+   "name": "凶悍多角虫0",
+   "next": 7191,
+   "exp_hero": 3000000,
+   "exp_old": 8000
+  },
+  "slot": [
+   7,
+   6
+  ],
+  "src": "variant",
+  "base": "Centipede",
+  "note": "变体怪，复用基底 Centipede 的图槽",
+  "image": "Centipede",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍沃玛",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 2272,
+   "idx": 357,
+   "appr": 92,
+   "race": 21,
+   "raceimg": 45,
+   "lvl": 110,
+   "name": "凶悍沃玛0",
+   "next": 2544,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   5,
+   5
+  ],
+  "src": "variant-xiong",
+  "base": "Uma King",
+  "note": "凶悍变体（与基底同 raceimg），复用 Uma King",
+  "image": "UmaKing",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍黑野猪",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 7735,
+   "idx": 348,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 150,
+   "lvl": 110,
+   "name": "凶悍黑野猪0",
+   "next": null
+  },
+  "slot": [
+   8,
+   7
+  ],
+  "src": "variant",
+  "base": "Black Boar",
+  "note": "变体怪，复用基底 Black Boar 的图槽",
+  "image": "BlackBoar",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍骷髅",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 96,
+   "idx": 349,
+   "appr": 225,
+   "race": 19,
+   "raceimg": 141,
+   "lvl": 110,
+   "name": "凶悍骷髅0",
+   "next": 368,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   4,
+   2
+  ],
+  "src": "variant",
+  "base": "Skeleton",
+  "note": "变体怪，复用基底 Skeleton 的图槽",
+  "image": "Skeleton",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍毒龙",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6645,
+   "idx": 344,
+   "appr": 107,
+   "race": 33,
+   "raceimg": 67,
+   "lvl": 110,
+   "name": "凶悍毒龙0",
+   "next": 6917,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   6,
+   7
+  ],
+  "src": "raceimg",
+  "note": "raceimg=67 -> (6,7)",
+  "image": "TigerSnake",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍恶魔",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 7191,
+   "idx": 346,
+   "appr": 115,
+   "race": 34,
+   "raceimg": 104,
+   "lvl": 110,
+   "name": "凶悍恶魔0",
+   "next": 7463,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   11,
+   4
+  ],
+  "src": "variant-xiong",
+  "base": "Red Moon The Fallen",
+  "note": "凶悍变体（与基底同 raceimg），复用 Red Moon The Fallen",
+  "image": "RedMoonTheFallen",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍狂牛",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 368,
+   "idx": 350,
+   "appr": 215,
+   "race": 19,
+   "raceimg": 139,
+   "lvl": 110,
+   "name": "凶悍狂牛0",
+   "next": 640,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   13,
+   9
+  ],
+  "src": "raceimg",
+  "note": "raceimg=139 -> (13,9)",
+  "image": "NumaWarrior",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "群魔伙头兵",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 5553,
+   "idx": 340,
+   "appr": 102,
+   "race": 49,
+   "raceimg": 85,
+   "lvl": 105,
+   "name": "群魔伙头兵0",
+   "next": 5827,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   8,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=85 -> (8,5)",
+  "image": "WedgeMoth",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "凶悍魔神",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 912,
+   "idx": 352,
+   "appr": 223,
+   "race": 19,
+   "raceimg": 164,
+   "lvl": 110,
+   "name": "凶悍魔神0",
+   "next": 1184,
+   "exp_hero": 3000000,
+   "exp_old": 12000
+  },
+  "slot": [
+   16,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=164 -> (16,4)",
+  "image": "Monkey",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰原雪狼",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 6626,
+   "idx": 83,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 208,
+   "lvl": 75,
+   "name": "冰原雪狼0",
+   "next": 6898,
+   "exp_hero": 1100000,
+   "exp_old": 1600
+  },
+  "slot": [
+   20,
+   8
+  ],
+  "src": "raceimg",
+  "note": "raceimg=208 -> (20,8)",
+  "image": "DeathLordJichon",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰原狼王",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 6354,
+   "idx": 82,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 207,
+   "lvl": 80,
+   "name": "冰原狼王0",
+   "next": 6626,
+   "exp_hero": 1100000,
+   "exp_old": 3500
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "raceimg",
+  "note": "raceimg=207 -> (20,7)",
+  "image": "TaintedTerror",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰原战士",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 7170,
+   "idx": 85,
+   "appr": 216,
+   "race": 19,
+   "raceimg": 209,
+   "lvl": 75,
+   "name": "冰原战士0",
+   "next": 7442,
+   "exp_hero": 1100000,
+   "exp_old": 4800
+  },
+  "slot": [
+   20,
+   9
+  ],
+  "src": "raceimg",
+  "note": "raceimg=209 -> (20,9)",
+  "image": "CrazedLizard",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "冰宫守卫",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 5538,
+   "idx": 79,
+   "appr": 104,
+   "race": 45,
+   "raceimg": 170,
+   "lvl": 75,
+   "name": "冰宫守卫0",
+   "next": 5810,
+   "exp_hero": 1100000,
+   "exp_old": 3900
+  },
+  "slot": [
+   17,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=170 -> (17,0)",
+  "image": "StoneGriffin",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "伤魂尸",
+  "spawns": 1,
+  "king": {
+   "page": 540,
+   "pos": 2220,
+   "idx": 412,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 368,
+   "lvl": 250,
+   "name": "伤魂尸",
+   "next": 2486,
+   "exp_hero": 5000000,
+   "exp_old": 22000
+  },
+  "slot": [
+   36,
+   8
+  ],
+  "src": "raceimg",
+  "note": "raceimg=368 -> (36,8)",
+  "image_kind": "new",
+  "image": "WoundedSoulCorpse",
+  "image_slot": [
+   36,
+   8
+  ]
+ },
+ {
+  "ei_name": "守护剑信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3088,
+   "idx": 389,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 260,
+   "lvl": 155,
+   "name": "守护剑信徒0",
+   "next": 3362,
+   "exp_hero": 4000000,
+   "exp_old": 20000
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "raceimg",
+  "note": "raceimg=260 -> (26,0)",
+  "image": "InfernalSoldier",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "守护术信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3362,
+   "idx": 390,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 261,
+   "lvl": 155,
+   "name": "守护术信徒0",
+   "next": 3636,
+   "exp_hero": 4000000,
+   "exp_old": 20000
+  },
+  "slot": [
+   26,
+   1
+  ],
+  "src": "raceimg",
+  "note": "raceimg=261 -> (26,1)",
+  "image_kind": "new",
+  "image": "GuardianSpellDisciple",
+  "image_slot": [
+   26,
+   1
+  ]
+ },
+ {
+  "ei_name": "守护火信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3636,
+   "idx": 391,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 262,
+   "lvl": 155,
+   "name": "守护火信徒0",
+   "next": 3910,
+   "exp_hero": 4000000,
+   "exp_old": 20000
+  },
+  "slot": [
+   26,
+   2
+  ],
+  "src": "raceimg",
+  "note": "raceimg=262 -> (26,2)",
+  "image_kind": "new",
+  "image": "GuardianFireDisciple",
+  "image_slot": [
+   26,
+   2
+  ]
+ },
+ {
+  "ei_name": "朱雀四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 1992,
+   "idx": 385,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 244,
+   "lvl": 220,
+   "name": "朱雀四天王0",
+   "next": 2266,
+   "exp_hero": 4000000,
+   "exp_old": 40000
+  },
+  "slot": [
+   24,
+   4
+  ],
+  "src": "raceimg",
+  "note": "raceimg=244 -> (24,4)",
+  "image_kind": "new",
+  "image": "SuzakuTianwang",
+  "image_slot": [
+   24,
+   4
+  ]
+ },
+ {
+  "ei_name": "玄武四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2266,
+   "idx": 386,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 245,
+   "lvl": 220,
+   "name": "玄武四天王0",
+   "next": 2540,
+   "exp_hero": 4000000,
+   "exp_old": 40000
+  },
+  "slot": [
+   24,
+   5
+  ],
+  "src": "raceimg",
+  "note": "raceimg=245 -> (24,5)",
+  "image_kind": "new",
+  "image": "XuanwuTianwang",
+  "image_slot": [
+   24,
+   5
+  ]
+ },
+ {
+  "ei_name": "白虎四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2814,
+   "idx": 388,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 247,
+   "lvl": 220,
+   "name": "白虎四天王0",
+   "next": 3088,
+   "exp_hero": 4000000,
+   "exp_old": 40000
+  },
+  "slot": [
+   25,
+   7
+  ],
+  "src": "raceimg",
+  "note": "原槽 [24, 7] 在英雄杀图库为空/OOR，改指 [25, 7]（同族或对应精灵）",
+  "slot_orig": [
+   24,
+   7
+  ],
+  "image": "WhiteTiger",
+  "image_kind": "reuse"
+ },
+ {
+  "ei_name": "青龙四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2540,
+   "idx": 387,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 246,
+   "lvl": 220,
+   "name": "青龙四天王0",
+   "next": 2814,
+   "exp_hero": 4000000,
+   "exp_old": 40000
+  },
+  "slot": [
+   24,
+   6
+  ],
+  "src": "raceimg",
+  "note": "raceimg=246 -> (24,6)",
+  "image_kind": "new",
+  "image": "QinglongTianwang",
+  "image_slot": [
+   24,
+   6
+  ]
+ }
+]

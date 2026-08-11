@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 
 namespace Library
@@ -1398,6 +1398,49 @@ namespace Library
 
         //Mon59
 
+        // 2026-08-11 EI 英雄杀新怪（raceimg 图槽）
+        DeepMudMan = 600,
+        DungeonGoddess1 = 601,
+        DungeonGoddess2 = 602,
+        FierceMonk = 603,
+        FierceWindDemon = 604,
+        FlameLion = 605,
+        FlameMob = 606,
+        FrostStoneBeast = 607,
+        GreatPharaoh = 608,
+        GuardianFireDisciple = 609,
+        GuardianSpellDisciple = 610,
+        IceMob = 611,
+        IcePalaceArcher = 612,
+        JuediPiao = 613,
+        JungleMammoth = 614,
+        MafaGeneral = 615,
+        MafaMage = 616,
+        MafaTaoist = 617,
+        MafaWarrior = 618,
+        MafaWizard = 619,
+        OtherworldGuardian = 620,
+        QinSpearCavalry = 621,
+        QinSpearInfantry = 622,
+        QinSwordCavalry = 623,
+        QinSwordInfantry = 624,
+        QinglongTianwang = 625,
+        SuzakuTianwang = 626,
+        TaoyuanCavalry = 627,
+        TaoyuanFireFlower = 628,
+        TaoyuanFirePhoenix = 629,
+        TaoyuanIceFlower = 630,
+        TaoyuanIcePhoenix = 631,
+        TaoyuanInfantry = 632,
+        ThunderMob = 633,
+        UnicornRhino = 634,
+        WhirlwindMob = 635,
+        WoundedSoulCorpse = 636,
+        XiuluoMage = 637,
+        XiuluoTaoist = 638,
+        XiuluoWarrior = 639,
+        XuanwuTianwang = 640,
+        ZuanKaTree = 641,
 
         //Flag
         CastleFlag = 1000

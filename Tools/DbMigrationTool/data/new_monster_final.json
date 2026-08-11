@@ -1,0 +1,2543 @@
+[
+ {
+  "ei_name": "桃园骑兵",
+  "spawns": 26,
+  "king": {
+   "page": 539,
+   "pos": 1162,
+   "idx": 438,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 370,
+   "lvl": 200,
+   "name": "桃园骑兵",
+   "next": 1430
+  },
+  "slot": [
+   37,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "桃园步兵",
+  "spawns": 26,
+  "king": {
+   "page": 539,
+   "pos": 1430,
+   "idx": 439,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 371,
+   "lvl": 200,
+   "name": "桃园步兵",
+   "next": 1698
+  },
+  "slot": [
+   37,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界轻甲守卫",
+  "spawns": 18,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone"
+ },
+ {
+  "ei_name": "桃园火毒花",
+  "spawns": 15,
+  "king": {
+   "page": 539,
+   "pos": 1698,
+   "idx": 440,
+   "appr": 85,
+   "race": 19,
+   "raceimg": 372,
+   "lvl": 200,
+   "name": "桃园火毒花",
+   "next": 1968
+  },
+  "slot": [
+   37,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "桃园火凤凰",
+  "spawns": 15,
+  "king": {
+   "page": 539,
+   "pos": 2238,
+   "idx": 442,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 374,
+   "lvl": 250,
+   "name": "桃园火凤凰",
+   "next": 2508
+  },
+  "slot": [
+   37,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界爆毒神魔",
+  "spawns": 14,
+  "king": {
+   "page": 552,
+   "pos": 1454,
+   "idx": 180,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔0",
+   "next": 1730
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter"
+ },
+ {
+  "ei_name": "异界神舰守卫",
+  "spawns": 14,
+  "king": {
+   "page": 552,
+   "pos": 2282,
+   "idx": 183,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 99,
+   "lvl": 100,
+   "name": "异界神舰守卫0",
+   "next": 2558
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "variant",
+  "base": "Infernal Soldier"
+ },
+ {
+  "ei_name": "异界触角神魔",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror"
+ },
+ {
+  "ei_name": "异界红衣法师",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 2558,
+   "idx": 184,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师0",
+   "next": 2834
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage"
+ },
+ {
+  "ei_name": "异界海神将领",
+  "spawns": 13,
+  "king": {
+   "page": 552,
+   "pos": 2006,
+   "idx": 182,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领0",
+   "next": 2282
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate"
+ },
+ {
+  "ei_name": "邪恶惩戒者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 5796,
+   "idx": 370,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 220,
+   "lvl": 135,
+   "name": "邪恶惩戒者0",
+   "next": 6070
+  },
+  "slot": [
+   22,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "邪恶唤雷者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6342,
+   "idx": 372,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 222,
+   "lvl": 135,
+   "name": "邪恶唤雷者0",
+   "next": 6616
+  },
+  "slot": [
+   22,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "邪恶复仇者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6616,
+   "idx": 373,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 223,
+   "lvl": 135,
+   "name": "邪恶复仇者0",
+   "next": 6890
+  },
+  "slot": [
+   22,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "邪恶镇魂者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 6890,
+   "idx": 374,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 224,
+   "lvl": 135,
+   "name": "邪恶镇魂者0",
+   "next": 7164
+  },
+  "slot": [
+   22,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "邪恶审判者",
+  "spawns": 13,
+  "king": {
+   "page": 542,
+   "pos": 7164,
+   "idx": 375,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 225,
+   "lvl": 135,
+   "name": "邪恶审判者0",
+   "next": 7438
+  },
+  "slot": [
+   22,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "邪恶堕落者",
+  "spawns": 13,
+  "king": {
+   "page": 541,
+   "pos": 6358,
+   "idx": 401,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 226,
+   "lvl": 135,
+   "name": "邪恶堕落者0",
+   "next": 6632
+  },
+  "slot": [
+   22,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "桃园冰毒花",
+  "spawns": 11,
+  "king": {
+   "page": 539,
+   "pos": 1968,
+   "idx": 441,
+   "appr": 85,
+   "race": 19,
+   "raceimg": 373,
+   "lvl": 200,
+   "name": "桃园冰毒花",
+   "next": 2238
+  },
+  "slot": [
+   37,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "桃园冰凤凰",
+  "spawns": 11,
+  "king": {
+   "page": 539,
+   "pos": 2508,
+   "idx": 443,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 378,
+   "lvl": 200,
+   "name": "桃园冰凤凰",
+   "next": 2778
+  },
+  "slot": [
+   37,
+   8
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玛法战士",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1173,
+   "idx": 426,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 316,
+   "lvl": 250,
+   "name": "玛法战士",
+   "next": 1441
+  },
+  "slot": [
+   31,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玛法法师",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1441,
+   "idx": 427,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 318,
+   "lvl": 180,
+   "name": "玛法法师",
+   "next": 1712
+  },
+  "slot": [
+   31,
+   8
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玛法道士",
+  "spawns": 8,
+  "king": {
+   "page": 522,
+   "pos": 1712,
+   "idx": 428,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 317,
+   "lvl": 220,
+   "name": "玛法道士",
+   "next": 1980
+  },
+  "slot": [
+   31,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "月河幽灵",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4454,
+   "idx": 394,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 230,
+   "lvl": 180,
+   "name": "月河幽灵0",
+   "next": 4726
+  },
+  "slot": [
+   23,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "月河罗汉",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4726,
+   "idx": 395,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 231,
+   "lvl": 180,
+   "name": "月河罗汉0",
+   "next": 4998
+  },
+  "slot": [
+   23,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "月河鼠仙",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 4998,
+   "idx": 396,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 232,
+   "lvl": 180,
+   "name": "月河鼠仙0",
+   "next": 5270
+  },
+  "slot": [
+   23,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "月河幽魂",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 6086,
+   "idx": 400,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 236,
+   "lvl": 180,
+   "name": "月河幽魂0",
+   "next": 6358
+  },
+  "slot": [
+   23,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "人马战士",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5270,
+   "idx": 397,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 233,
+   "lvl": 200,
+   "name": "人马战士0",
+   "next": 5542
+  },
+  "slot": [
+   23,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "树人精灵",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5542,
+   "idx": 398,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 234,
+   "lvl": 200,
+   "name": "树人精灵0",
+   "next": 5814
+  },
+  "slot": [
+   23,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "战马将军",
+  "spawns": 6,
+  "king": {
+   "page": 541,
+   "pos": 5814,
+   "idx": 399,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 235,
+   "lvl": 200,
+   "name": "战马将军0",
+   "next": 6086
+  },
+  "slot": [
+   23,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "修罗战士",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4378,
+   "idx": 450,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 392,
+   "lvl": 200,
+   "name": "修罗战士0",
+   "next": 4650
+  },
+  "slot": [
+   39,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "修罗法师",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4650,
+   "idx": 451,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 393,
+   "lvl": 200,
+   "name": "修罗法师0",
+   "next": 4922
+  },
+  "slot": [
+   39,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "修罗道士",
+  "spawns": 5,
+  "king": {
+   "page": 539,
+   "pos": 4922,
+   "idx": 452,
+   "appr": 81,
+   "race": 54,
+   "raceimg": 397,
+   "lvl": 200,
+   "name": "修罗道士0",
+   "next": 5194
+  },
+  "slot": [
+   39,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰宫巫师",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 5810,
+   "idx": 80,
+   "appr": 213,
+   "race": 19,
+   "raceimg": 203,
+   "lvl": 75,
+   "name": "冰宫巫师0",
+   "next": 6082
+  },
+  "slot": [
+   20,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰宫骑士",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 4994,
+   "idx": 77,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 204,
+   "lvl": 80,
+   "name": "冰宫骑士0",
+   "next": 5266
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰宫法师",
+  "spawns": 5,
+  "king": {
+   "page": 528,
+   "pos": 4722,
+   "idx": 76,
+   "appr": 204,
+   "race": 19,
+   "raceimg": 202,
+   "lvl": 75,
+   "name": "冰宫法师0",
+   "next": 4994
+  },
+  "slot": [
+   20,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰城帝王",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 4178,
+   "idx": 74,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 205,
+   "lvl": 200,
+   "name": "冰城帝王0",
+   "next": 4450
+  },
+  "slot": [
+   20,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "绝情殿主",
+  "spawns": 4,
+  "king": {
+   "page": 532,
+   "pos": 4998,
+   "idx": 135,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 211,
+   "lvl": 230,
+   "name": "绝情殿主0",
+   "next": 5270
+  },
+  "slot": [
+   21,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "火焰狮子5",
+  "spawns": 4,
+  "king": {
+   "page": 531,
+   "pos": 2262,
+   "idx": 96,
+   "appr": 224,
+   "race": 19,
+   "raceimg": 159,
+   "lvl": 55,
+   "name": "火焰狮子0",
+   "next": 2534
+  },
+  "slot": [
+   15,
+   9
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玛法上将",
+  "spawns": 4,
+  "king": {
+   "page": 522,
+   "pos": 1980,
+   "idx": 429,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 315,
+   "lvl": 160,
+   "name": "玛法上将",
+   "next": 2251
+  },
+  "slot": [
+   31,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玛法巫师",
+  "spawns": 4,
+  "king": {
+   "page": 522,
+   "pos": 902,
+   "idx": 425,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 314,
+   "lvl": 180,
+   "name": "玛法巫师",
+   "next": 1173
+  },
+  "slot": [
+   31,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "秦王步兵刀手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 5466,
+   "idx": 454,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 414,
+   "lvl": 200,
+   "name": "秦王步兵刀手0",
+   "next": 5742
+  },
+  "slot": [
+   41,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "秦王步兵矛手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 5742,
+   "idx": 455,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 415,
+   "lvl": 200,
+   "name": "秦王步兵矛手0",
+   "next": 6018
+  },
+  "slot": [
+   41,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "秦王骑战刀手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 6018,
+   "idx": 456,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 416,
+   "lvl": 200,
+   "name": "秦王骑战刀手0",
+   "next": 6294
+  },
+  "slot": [
+   41,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "秦王骑战矛手",
+  "spawns": 4,
+  "king": {
+   "page": 539,
+   "pos": 6294,
+   "idx": 457,
+   "appr": 200,
+   "race": 54,
+   "raceimg": 417,
+   "lvl": 200,
+   "name": "秦王骑战矛手0",
+   "next": 6570
+  },
+  "slot": [
+   41,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰宫射手",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 5266,
+   "idx": 78,
+   "appr": 236,
+   "race": 19,
+   "raceimg": 200,
+   "lvl": 75,
+   "name": "冰宫射手0",
+   "next": 5538
+  },
+  "slot": [
+   20,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰魂武将",
+  "spawns": 4,
+  "missing": true,
+  "approx": "冰原勇士",
+  "king": {
+   "page": 528,
+   "pos": 6898,
+   "idx": 84,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 206,
+   "lvl": 75,
+   "name": "冰原勇士0",
+   "next": 7170
+  },
+  "slot": [
+   20,
+   6
+  ],
+  "src": "missing-approx"
+ },
+ {
+  "ei_name": "冰原勇士",
+  "spawns": 4,
+  "king": {
+   "page": 528,
+   "pos": 6898,
+   "idx": 84,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 206,
+   "lvl": 75,
+   "name": "冰原勇士0",
+   "next": 7170
+  },
+  "slot": [
+   20,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰魂武士",
+  "spawns": 4,
+  "missing": true,
+  "approx": "冰原战士",
+  "king": {
+   "page": 528,
+   "pos": 7170,
+   "idx": 85,
+   "appr": 216,
+   "race": 19,
+   "raceimg": 209,
+   "lvl": 75,
+   "name": "冰原战士0",
+   "next": 7442
+  },
+  "slot": [
+   20,
+   9
+  ],
+  "src": "missing-approx"
+ },
+ {
+  "ei_name": "角蝇",
+  "spawns": 3,
+  "king": {
+   "page": 531,
+   "pos": 4963,
+   "idx": 106,
+   "appr": 103,
+   "race": 43,
+   "raceimg": 73,
+   "lvl": 30,
+   "name": "角蝇0",
+   "next": 5231
+  },
+  "slot": [
+   7,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "寒冰守护神",
+  "spawns": 3,
+  "king": {
+   "page": 510,
+   "pos": 1994,
+   "idx": 37,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 172,
+   "lvl": 180,
+   "name": "寒冰守护神0",
+   "next": 2268
+  },
+  "slot": [
+   17,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "地牢女神3",
+  "spawns": 3,
+  "king": {
+   "page": 537,
+   "pos": 4989,
+   "idx": 19,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 162,
+   "lvl": 55,
+   "name": "地牢女神30",
+   "next": 5262
+  },
+  "slot": [
+   16,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰原豪猪",
+  "spawns": 3,
+  "king": {
+   "page": 528,
+   "pos": 6082,
+   "idx": 81,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 171,
+   "lvl": 75,
+   "name": "冰原豪猪0",
+   "next": 6354
+  },
+  "slot": [
+   17,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "绝情红姬",
+  "spawns": 3,
+  "king": {
+   "page": 510,
+   "pos": 1180,
+   "idx": 34,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 212,
+   "lvl": 90,
+   "name": "绝情红姬0",
+   "next": 1452
+  },
+  "slot": [
+   21,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "绝情绿姬",
+  "spawns": 3,
+  "king": {
+   "page": 520,
+   "pos": 369,
+   "idx": 292,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 213,
+   "lvl": 90,
+   "name": "绝情绿姬0",
+   "next": 641
+  },
+  "slot": [
+   21,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "绝情护卫",
+  "spawns": 3,
+  "king": {
+   "page": 531,
+   "pos": 1446,
+   "idx": 93,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 210,
+   "lvl": 95,
+   "name": "绝情护卫0",
+   "next": 1718
+  },
+  "slot": [
+   21,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "霜石狰",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3286,
+   "idx": 416,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 365,
+   "lvl": 250,
+   "name": "霜石狰",
+   "next": 3552
+  },
+  "slot": [
+   36,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "丛林猛犸",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3552,
+   "idx": 417,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 360,
+   "lvl": 250,
+   "name": "丛林猛犸",
+   "next": 3820
+  },
+  "slot": [
+   36,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "独角犀",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 2752,
+   "idx": 414,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 364,
+   "lvl": 250,
+   "name": "独角犀",
+   "next": 3018
+  },
+  "slot": [
+   36,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "绝地殍",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 2486,
+   "idx": 413,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 361,
+   "lvl": 250,
+   "name": "绝地殍",
+   "next": 2752
+  },
+  "slot": [
+   36,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "深潭泥人",
+  "spawns": 3,
+  "king": {
+   "page": 540,
+   "pos": 3018,
+   "idx": 415,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 369,
+   "lvl": 250,
+   "name": "深潭泥人",
+   "next": 3286
+  },
+  "slot": [
+   36,
+   9
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "火焰魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 1448,
+   "idx": 383,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 240,
+   "lvl": 180,
+   "name": "火焰魔兵0",
+   "next": 1720
+  },
+  "slot": [
+   24,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "破冰魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 3910,
+   "idx": 392,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 241,
+   "lvl": 180,
+   "name": "破冰魔兵0",
+   "next": 4182
+  },
+  "slot": [
+   24,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "雷神魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 1720,
+   "idx": 384,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 242,
+   "lvl": 180,
+   "name": "雷神魔兵0",
+   "next": 1992
+  },
+  "slot": [
+   24,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "旋风魔兵",
+  "spawns": 3,
+  "king": {
+   "page": 541,
+   "pos": 4182,
+   "idx": 393,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 243,
+   "lvl": 180,
+   "name": "旋风魔兵0",
+   "next": 4454
+  },
+  "slot": [
+   24,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "地牢女神1",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 4443,
+   "idx": 17,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 162,
+   "lvl": 55,
+   "name": "地牢女神10",
+   "next": 4716
+  },
+  "slot": [
+   16,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "地牢女神2",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 4716,
+   "idx": 18,
+   "appr": 119,
+   "race": 19,
+   "raceimg": 163,
+   "lvl": 55,
+   "name": "地牢女神20",
+   "next": 4989
+  },
+  "slot": [
+   16,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "武力神将1",
+  "spawns": 2,
+  "king": {
+   "page": 521,
+   "pos": 7414,
+   "idx": 289,
+   "appr": 222,
+   "race": 19,
+   "raceimg": 161,
+   "lvl": 60,
+   "name": "武力神将10",
+   "next": 7687
+  },
+  "slot": [
+   1,
+   6
+  ],
+  "src": "variant",
+  "base": "Light Armed Soldier"
+ },
+ {
+  "ei_name": "地牢女神4",
+  "spawns": 2,
+  "king": {
+   "page": 537,
+   "pos": 5262,
+   "idx": 20,
+   "appr": 119,
+   "race": 19,
+   "raceimg": 163,
+   "lvl": 55,
+   "name": "地牢女神40",
+   "next": 5535
+  },
+  "slot": [
+   16,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍风魔",
+  "spawns": 2,
+  "king": {
+   "page": 543,
+   "pos": 7463,
+   "idx": 347,
+   "appr": 205,
+   "race": 19,
+   "raceimg": 97,
+   "lvl": 105,
+   "name": "凶悍风魔0",
+   "next": 7735
+  },
+  "slot": [
+   41,
+   1
+  ],
+  "src": "variant-sameimg",
+  "base": "沙漠风魔0"
+ },
+ {
+  "ei_name": "凶悍尸王",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1456,
+   "idx": 354,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 53,
+   "lvl": 105,
+   "name": "凶悍尸王0",
+   "next": 1728
+  },
+  "slot": [
+   20,
+   8
+  ],
+  "src": "variant",
+  "base": "Death Lord Jichon"
+ },
+ {
+  "ei_name": "凶悍树魔",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 2000,
+   "idx": 356,
+   "appr": 206,
+   "race": 19,
+   "raceimg": 95,
+   "lvl": 105,
+   "name": "凶悍树魔0",
+   "next": 2272
+  },
+  "slot": [
+   9,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍石人",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1728,
+   "idx": 355,
+   "appr": 200,
+   "race": 19,
+   "raceimg": 4,
+   "lvl": 105,
+   "name": "凶悍石人0",
+   "next": 2000
+  },
+  "slot": [
+   28,
+   1
+  ],
+  "src": "variant-sameimg",
+  "base": "沙漠石人0"
+ },
+ {
+  "ei_name": "凶悍僧侣",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 1184,
+   "idx": 353,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 49,
+   "lvl": 105,
+   "name": "凶悍僧侣0",
+   "next": 1456
+  },
+  "slot": [
+   5,
+   2
+  ],
+  "src": "variant-sameimg",
+  "base": "僵尸20"
+ },
+ {
+  "ei_name": "凶悍猎鹰",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 640,
+   "idx": 351,
+   "appr": 81,
+   "race": 228,
+   "raceimg": 59,
+   "lvl": 105,
+   "name": "凶悍猎鹰0",
+   "next": 912
+  },
+  "slot": [
+   10,
+   0
+  ],
+  "src": "variant",
+  "base": "Shinsu"
+ },
+ {
+  "ei_name": "凶悍鱼魔",
+  "spawns": 2,
+  "king": {
+   "page": 542,
+   "pos": 2544,
+   "idx": 358,
+   "appr": 203,
+   "race": 19,
+   "raceimg": 94,
+   "lvl": 105,
+   "name": "凶悍鱼魔0",
+   "next": 2816
+  },
+  "slot": [
+   9,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "群魔御医",
+  "spawns": 2,
+  "king": {
+   "page": 543,
+   "pos": 6373,
+   "idx": 343,
+   "appr": 207,
+   "race": 11,
+   "raceimg": 7,
+   "lvl": 105,
+   "name": "群魔御医0",
+   "next": 6645
+  },
+  "slot": [
+   1,
+   7
+  ],
+  "src": "variant-sameimg",
+  "base": "蚂蚁道士0"
+ },
+ {
+  "ei_name": "尸灵横骨",
+  "spawns": 2,
+  "missing": true,
+  "approx": "伤魂尸",
+  "king": {
+   "page": 540,
+   "pos": 2220,
+   "idx": 412,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 368,
+   "lvl": 250,
+   "name": "伤魂尸",
+   "next": 2486
+  },
+  "slot": [
+   36,
+   8
+  ],
+  "src": "missing-approx"
+ },
+ {
+  "ei_name": "钻卡树",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 2834,
+   "idx": 185,
+   "appr": 209,
+   "race": 19,
+   "raceimg": 153,
+   "lvl": 100,
+   "name": "钻卡树0",
+   "next": 3104
+  },
+  "slot": [
+   15,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "恶灵弓箭手",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7155,
+   "idx": 27,
+   "appr": 236,
+   "race": 19,
+   "raceimg": 144,
+   "lvl": 75,
+   "name": "恶灵弓箭手0",
+   "next": 7429
+  },
+  "slot": [
+   4,
+   4
+  ],
+  "src": "variant-sameimg",
+  "base": "骷髅弓箭手0"
+ },
+ {
+  "ei_name": "恶灵士兵",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7429,
+   "idx": 28,
+   "appr": 118,
+   "race": 19,
+   "raceimg": 142,
+   "lvl": 75,
+   "name": "恶灵士兵0",
+   "next": 7701
+  },
+  "slot": [
+   4,
+   2
+  ],
+  "src": "variant-sameimg",
+  "base": "骷髅士兵0"
+ },
+ {
+  "ei_name": "恶灵武士",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 7701,
+   "idx": 29,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 143,
+   "lvl": 75,
+   "name": "恶灵武士0",
+   "next": null
+  },
+  "slot": [
+   14,
+   3
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "大法老",
+  "spawns": 1,
+  "king": {
+   "page": 537,
+   "pos": 3090,
+   "idx": 12,
+   "appr": 204,
+   "race": 19,
+   "raceimg": 13,
+   "lvl": 50,
+   "name": "大法老0",
+   "next": 3360
+  },
+  "slot": [
+   19,
+   4
+  ],
+  "src": "variant-sameimg",
+  "base": "诺玛法老0"
+ },
+ {
+  "ei_name": "1\"  护法天",
+  "spawns": 1,
+  "king": {
+   "page": 531,
+   "pos": 1176,
+   "idx": 92,
+   "appr": 101,
+   "race": 47,
+   "raceimg": 84,
+   "lvl": 85,
+   "name": "护法天0",
+   "next": 1446
+  },
+  "slot": [
+   9,
+   4
+  ],
+  "src": "variant-sameimg",
+  "base": "祖玛卫士0"
+ },
+ {
+  "ei_name": "群魔勇士",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6101,
+   "idx": 342,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 216,
+   "lvl": 105,
+   "name": "群魔勇士0",
+   "next": 6373
+  },
+  "slot": [
+   21,
+   6
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "群魔霸王",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 5281,
+   "idx": 339,
+   "appr": 208,
+   "race": 19,
+   "raceimg": 215,
+   "lvl": 160,
+   "name": "群魔霸王0",
+   "next": 5553
+  },
+  "slot": [
+   21,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界守护神3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界守护神2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界守护神1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "异界守护神",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 904,
+   "idx": 178,
+   "appr": 230,
+   "race": 19,
+   "raceimg": 10,
+   "lvl": 100,
+   "name": "异界守护神0",
+   "next": 1178
+  },
+  "slot": [
+   1,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "石像狮子5",
+  "spawns": 1,
+  "king": {
+   "page": 521,
+   "pos": 2256,
+   "idx": 270,
+   "appr": 221,
+   "race": 19,
+   "raceimg": 160,
+   "lvl": 55,
+   "name": "石像狮子00",
+   "next": 2529
+  },
+  "slot": [
+   16,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "武力神将2",
+  "spawns": 1,
+  "king": {
+   "page": 521,
+   "pos": 7687,
+   "idx": 290,
+   "appr": 222,
+   "race": 19,
+   "raceimg": 161,
+   "lvl": 60,
+   "name": "武力神将20",
+   "next": null
+  },
+  "slot": [
+   1,
+   6
+  ],
+  "src": "variant",
+  "base": "Light Armed Soldier"
+ },
+ {
+  "ei_name": "异界轻甲守卫3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone"
+ },
+ {
+  "ei_name": "异界触角神魔3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 7253,
+   "idx": 201,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔30",
+   "next": 7530
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror"
+ },
+ {
+  "ei_name": "异界海神将领3",
+  "spawns": 1,
+  "king": {
+   "page": 553,
+   "pos": 96,
+   "idx": 204,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领30",
+   "next": 373
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate"
+ },
+ {
+  "ei_name": "异界爆毒神魔3",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 7530,
+   "idx": 202,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔30",
+   "next": 7807
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter"
+ },
+ {
+  "ei_name": "异界轻甲守卫2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1730,
+   "idx": 181,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫0",
+   "next": 2006
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone"
+ },
+ {
+  "ei_name": "异界触角神魔2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror"
+ },
+ {
+  "ei_name": "异界爆毒神魔2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1454,
+   "idx": 180,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔0",
+   "next": 1730
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter"
+ },
+ {
+  "ei_name": "异界红衣法师2",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 2558,
+   "idx": 184,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师0",
+   "next": 2834
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage"
+ },
+ {
+  "ei_name": "异界触角神魔1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 1178,
+   "idx": 179,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 2,
+   "lvl": 100,
+   "name": "异界触角神魔0",
+   "next": 1454
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "variant",
+  "base": "Tainted Terror"
+ },
+ {
+  "ei_name": "异界爆毒神魔1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 3656,
+   "idx": 188,
+   "appr": 228,
+   "race": 37,
+   "raceimg": 93,
+   "lvl": 100,
+   "name": "异界爆毒神魔10",
+   "next": 3933
+  },
+  "slot": [
+   20,
+   4
+  ],
+  "src": "variant",
+  "base": "Venom Spitter"
+ },
+ {
+  "ei_name": "异界红衣法师1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4764,
+   "idx": 192,
+   "appr": 229,
+   "race": 19,
+   "raceimg": 19,
+   "lvl": 100,
+   "name": "异界红衣法师10",
+   "next": 5041
+  },
+  "slot": [
+   47,
+   6
+  ],
+  "src": "variant",
+  "base": "Ember Mage"
+ },
+ {
+  "ei_name": "异界神舰守卫1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4487,
+   "idx": 191,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 99,
+   "lvl": 100,
+   "name": "异界神舰守卫10",
+   "next": 4764
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "variant",
+  "base": "Infernal Soldier"
+ },
+ {
+  "ei_name": "异界轻甲守卫1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 3933,
+   "idx": 189,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 6,
+   "lvl": 100,
+   "name": "异界轻甲守卫10",
+   "next": 4210
+  },
+  "slot": [
+   19,
+   7
+  ],
+  "src": "variant",
+  "base": "Life Stone"
+ },
+ {
+  "ei_name": "异界海神将领1",
+  "spawns": 1,
+  "king": {
+   "page": 552,
+   "pos": 4210,
+   "idx": 190,
+   "appr": 201,
+   "race": 19,
+   "raceimg": 9,
+   "lvl": 100,
+   "name": "异界海神将领10",
+   "next": 4487
+  },
+  "slot": [
+   1,
+   5
+  ],
+  "src": "variant",
+  "base": "Netherworld Gate"
+ },
+ {
+  "ei_name": "凶悍多角虫",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6917,
+   "idx": 345,
+   "appr": 97,
+   "race": 19,
+   "raceimg": 64,
+   "lvl": 105,
+   "name": "凶悍多角虫0",
+   "next": 7191
+  },
+  "slot": [
+   7,
+   6
+  ],
+  "src": "variant",
+  "base": "Centipede"
+ },
+ {
+  "ei_name": "凶悍沃玛",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 2272,
+   "idx": 357,
+   "appr": 92,
+   "race": 21,
+   "raceimg": 45,
+   "lvl": 110,
+   "name": "凶悍沃玛0",
+   "next": 2544
+  },
+  "slot": [
+   4,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍黑野猪",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 7735,
+   "idx": 348,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 150,
+   "lvl": 110,
+   "name": "凶悍黑野猪0",
+   "next": null
+  },
+  "slot": [
+   8,
+   7
+  ],
+  "src": "variant",
+  "base": "Black Boar"
+ },
+ {
+  "ei_name": "凶悍骷髅",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 96,
+   "idx": 349,
+   "appr": 225,
+   "race": 19,
+   "raceimg": 141,
+   "lvl": 110,
+   "name": "凶悍骷髅0",
+   "next": 368
+  },
+  "slot": [
+   4,
+   2
+  ],
+  "src": "variant",
+  "base": "Skeleton"
+ },
+ {
+  "ei_name": "凶悍毒龙",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 6645,
+   "idx": 344,
+   "appr": 107,
+   "race": 33,
+   "raceimg": 67,
+   "lvl": 110,
+   "name": "凶悍毒龙0",
+   "next": 6917
+  },
+  "slot": [
+   6,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍恶魔",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 7191,
+   "idx": 346,
+   "appr": 115,
+   "race": 34,
+   "raceimg": 104,
+   "lvl": 110,
+   "name": "凶悍恶魔0",
+   "next": 7463
+  },
+  "slot": [
+   10,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍狂牛",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 368,
+   "idx": 350,
+   "appr": 215,
+   "race": 19,
+   "raceimg": 139,
+   "lvl": 110,
+   "name": "凶悍狂牛0",
+   "next": 640
+  },
+  "slot": [
+   13,
+   9
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "群魔伙头兵",
+  "spawns": 1,
+  "king": {
+   "page": 543,
+   "pos": 5553,
+   "idx": 340,
+   "appr": 102,
+   "race": 49,
+   "raceimg": 85,
+   "lvl": 105,
+   "name": "群魔伙头兵0",
+   "next": 5827
+  },
+  "slot": [
+   8,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "凶悍魔神",
+  "spawns": 1,
+  "king": {
+   "page": 542,
+   "pos": 912,
+   "idx": 352,
+   "appr": 223,
+   "race": 19,
+   "raceimg": 164,
+   "lvl": 110,
+   "name": "凶悍魔神0",
+   "next": 1184
+  },
+  "slot": [
+   16,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰原雪狼",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 6626,
+   "idx": 83,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 208,
+   "lvl": 75,
+   "name": "冰原雪狼0",
+   "next": 6898
+  },
+  "slot": [
+   20,
+   8
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰原狼王",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 6354,
+   "idx": 82,
+   "appr": 81,
+   "race": 19,
+   "raceimg": 207,
+   "lvl": 80,
+   "name": "冰原狼王0",
+   "next": 6626
+  },
+  "slot": [
+   20,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰原战士",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 7170,
+   "idx": 85,
+   "appr": 216,
+   "race": 19,
+   "raceimg": 209,
+   "lvl": 75,
+   "name": "冰原战士0",
+   "next": 7442
+  },
+  "slot": [
+   20,
+   9
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "冰宫守卫",
+  "spawns": 1,
+  "king": {
+   "page": 528,
+   "pos": 5538,
+   "idx": 79,
+   "appr": 104,
+   "race": 45,
+   "raceimg": 170,
+   "lvl": 75,
+   "name": "冰宫守卫0",
+   "next": 5810
+  },
+  "slot": [
+   17,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "伤魂尸",
+  "spawns": 1,
+  "king": {
+   "page": 540,
+   "pos": 2220,
+   "idx": 412,
+   "appr": 228,
+   "race": 19,
+   "raceimg": 368,
+   "lvl": 250,
+   "name": "伤魂尸",
+   "next": 2486
+  },
+  "slot": [
+   36,
+   8
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "守护剑信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3088,
+   "idx": 389,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 260,
+   "lvl": 155,
+   "name": "守护剑信徒0",
+   "next": 3362
+  },
+  "slot": [
+   26,
+   0
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "守护术信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3362,
+   "idx": 390,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 261,
+   "lvl": 155,
+   "name": "守护术信徒0",
+   "next": 3636
+  },
+  "slot": [
+   26,
+   1
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "守护火信徒",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 3636,
+   "idx": 391,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 262,
+   "lvl": 155,
+   "name": "守护火信徒0",
+   "next": 3910
+  },
+  "slot": [
+   26,
+   2
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "朱雀四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 1992,
+   "idx": 385,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 244,
+   "lvl": 220,
+   "name": "朱雀四天王0",
+   "next": 2266
+  },
+  "slot": [
+   24,
+   4
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "玄武四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2266,
+   "idx": 386,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 245,
+   "lvl": 220,
+   "name": "玄武四天王0",
+   "next": 2540
+  },
+  "slot": [
+   24,
+   5
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "白虎四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2814,
+   "idx": 388,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 247,
+   "lvl": 220,
+   "name": "白虎四天王0",
+   "next": 3088
+  },
+  "slot": [
+   24,
+   7
+  ],
+  "src": "raceimg"
+ },
+ {
+  "ei_name": "青龙四天王",
+  "spawns": 1,
+  "king": {
+   "page": 541,
+   "pos": 2540,
+   "idx": 387,
+   "appr": 255,
+   "race": 19,
+   "raceimg": 246,
+   "lvl": 220,
+   "name": "青龙四天王0",
+   "next": 2814
+  },
+  "slot": [
+   24,
+   6
+  ],
+  "src": "raceimg"
+ }
+]

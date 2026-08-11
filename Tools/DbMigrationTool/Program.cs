@@ -128,6 +128,29 @@ switch (command)
         if (cargs.Length < 1) throw new ArgumentException("import-ei <planJson> [outputFile]");
         ImportEI(session, cargs[0], cargs.Length > 1 ? cargs[1] : null);
         break;
+    case "import-monsters":
+        if (cargs.Length < 1) throw new ArgumentException("import-monsters <monstersJson> [outputFile]");
+        ImportMonsters(session, cargs[0], cargs.Length > 1 ? cargs[1] : null);
+        break;
+    case "del-monster":
+        if (cargs.Length < 1) throw new ArgumentException("del-monster <name>");
+        DeleteMonster(session, cargs[0]);
+        break;
+    case "delete-records":
+        if (cargs.Length < 2) throw new ArgumentException("delete-records <CollectionName> <indexesJson>");
+        DeleteRecords(session, cargs[0], cargs[1]);
+        break;
+    case "set-safezone-point":
+        if (cargs.Length < 4) throw new ArgumentException("set-safezone-point <safeZoneIndex> <mapFileName> <x> <y>");
+        SetSafeZonePoint(session, int.Parse(cargs[0]), cargs[1], int.Parse(cargs[2]), int.Parse(cargs[3]));
+        break;
+    case "trim-safezones":
+        TrimSafeZones(session);
+        break;
+    case "move-respawns":
+        if (cargs.Length < 1) throw new ArgumentException("move-respawns <fixesJson>");
+        MoveRespawns(session, cargs[0]);
+        break;
     case "fix-sabuk":
         if (cargs.Length < 1) throw new ArgumentException("fix-sabuk <zirconDataJson> [outputFile]");
         FixSabuk(session, cargs[0], cargs.Length > 1 ? cargs[1] : null);
@@ -1077,6 +1100,221 @@ void ImportEI(Session s, string planJsonPath, string outputFile = null)
     Emit($"NPCInfo     {npcCol.Count}");
     Emit($"RespawnInfo {respCol.Count}");
     Emit($"MovementInfo{movCol.Count}");
+}
+
+// ---------------- del-monster ----------------
+
+// Delete every MonsterInfo row with the given name (case-insensitive).
+// Used to clean up import mistakes before re-import.
+void DeleteMonster(Session s, string name)
+{
+    BackupDb(s);
+    var monsterCol = s.GetCollection<MonsterInfo>();
+    var rows = monsterCol.Binding.Where(x => string.Equals(x.MonsterName, name, StringComparison.OrdinalIgnoreCase)).ToList();
+    foreach (var m in rows)
+    {
+        // RespawnInfo references must be detached first (they hold Monster FK)
+        var respawns = s.GetCollection<RespawnInfo>().Binding
+            .Where(r => r.Monster == m).ToList();
+        foreach (var r in respawns) r.Monster = null;
+        m.Delete();
+    }
+    s.Save(true);
+    Console.WriteLine($"Deleted MonsterInfo rows: {rows.Count} (name='{name}')");
+}
+
+// ---------------- import-monsters ----------------
+
+// Import the EI (英雄杀) new-monster roster into System.db.
+//
+// The <monstersJson> is an array of:
+//   { "name", "image", "ai", "level", "experience", "viewRange", "coolEye",
+//     "undead", "canPush", "canTame", "attackDelay", "moveDelay", "isBoss",
+//     "flag", "faceImage" }
+// image is the MonsterImage enum name (already added to LibraryCore/Enum.cs and
+// MonsterLookup.cs). Existing monsters (by name, case-insensitive) are skipped.
+void ImportMonsters(Session s, string jsonPath, string outputFile = null)
+{
+    BackupDb(s);
+
+    using var log = new StreamWriter(outputFile ?? Path.Combine(Path.GetTempPath(), "import_monsters_result.txt"), append: false);
+    void Emit(string line)
+    {
+        Console.WriteLine(line);
+        log.WriteLine(line);
+    }
+
+    if (!File.Exists(jsonPath)) throw new FileNotFoundException("monsters json not found", jsonPath);
+
+    using JsonDocument doc = JsonDocument.Parse(File.ReadAllText(jsonPath));
+    var monsterCol = s.GetCollection<MonsterInfo>();
+    var existing = new HashSet<string>(monsterCol.Binding.Select(x => x.MonsterName), StringComparer.OrdinalIgnoreCase);
+
+    int added = 0, skipped = 0;
+    var errors = new List<string>();
+
+    foreach (JsonElement e in doc.RootElement.EnumerateArray())
+    {
+        string name = e.GetProperty("name").GetString();
+        if (existing.Contains(name))
+        {
+            skipped++;
+            continue;
+        }
+        string image = e.GetProperty("image").GetString();
+        if (!Enum.TryParse<MonsterImage>(image, out var imageEnum))
+        {
+            errors.Add($"bad image enum '{image}' for {name}");
+            continue;
+        }
+        var m = monsterCol.CreateNewObject();
+        m.MonsterName = name;
+        m.Image = imageEnum;
+        m.AI = e.GetProperty("ai").GetInt32();
+        m.Level = e.GetProperty("level").GetInt32();
+        m.Experience = e.GetProperty("experience").GetDecimal();
+        m.ViewRange = e.GetProperty("viewRange").GetInt32();
+        m.CoolEye = e.GetProperty("coolEye").GetInt32();
+        m.Undead = e.GetProperty("undead").GetBoolean();
+        m.CanPush = e.GetProperty("canPush").GetBoolean();
+        m.CanTame = e.GetProperty("canTame").GetBoolean();
+        m.AttackDelay = e.GetProperty("attackDelay").GetInt32();
+        m.MoveDelay = e.GetProperty("moveDelay").GetInt32();
+        m.IsBoss = e.GetProperty("isBoss").GetBoolean();
+        m.Flag = e.GetProperty("flag").GetString() is string fl && Enum.TryParse<MonsterFlag>(fl, out var flagEnum)
+            ? flagEnum
+            : MonsterFlag.None;
+        m.FaceImage = e.TryGetProperty("faceImage", out var fi) ? fi.GetInt32() : 0;
+        added++;
+    }
+
+    s.Save(true);
+    Emit("=== import-monsters results ===");
+    Emit($"MonsterInfo added: {added}   (skipped existing: {skipped})");
+    foreach (var err in errors) Emit($"ERROR: {err}");
+}
+
+// ---------------- delete-records ----------------
+
+// Delete records of a collection by explicit DB Index list (JSON array of ints).
+// Used to remove guards/movements whose coordinates fail validation on the
+// deployed (EI) map files — they can never spawn/work and only spam errors.
+void DeleteRecords(Session s, string collectionName, string indexesJson)
+{
+    BackupDb(s);
+    var indexes = JsonSerializer.Deserialize<List<int>>(File.ReadAllText(indexesJson))
+                  ?? throw new ArgumentException("indexes json must be an int array");
+    var set = new HashSet<int>(indexes);
+    var errors = new List<string>();
+    int deleted = collectionName.ToLowerInvariant() switch
+    {
+        "guardinfo" => DeleteByIndex<GuardInfo>(s, set, errors, "delete-by-index"),
+        "movementinfo" => DeleteByIndex<MovementInfo>(s, set, errors, "delete-by-index"),
+        "npcinfo" => DeleteByIndex<NPCInfo>(s, set, errors, "delete-by-index"),
+        "respawninfo" => DeleteByIndex<RespawnInfo>(s, set, errors, "delete-by-index"),
+        _ => throw new ArgumentException($"unsupported collection '{collectionName}' (GuardInfo/MovementInfo/NPCInfo/RespawnInfo)"),
+    };
+    s.Save(true);
+    Console.WriteLine($"Deleted {deleted} records from {collectionName} (requested {indexes.Count})");
+    foreach (var e in errors) Console.WriteLine($"ERROR: {e}");
+}
+
+// ---------------- set-safezone-point ----------------
+
+// Move a SafeZoneInfo's region (and bind region) to a single walkable point.
+// Used to relocate EI safezones whose map-center coordinate is a wall.
+void SetSafeZonePoint(Session s, int safeZoneIndex, string mapFileName, int x, int y)
+{
+    BackupDb(s);
+    var sz = s.GetCollection<SafeZoneInfo>().Binding.FirstOrDefault(z => z.Index == safeZoneIndex)
+             ?? throw new ArgumentException($"SafeZoneInfo #{safeZoneIndex} not found");
+    var map = s.GetCollection<MapInfo>().Binding
+        .FirstOrDefault(m => string.Equals(m.FileName, mapFileName, StringComparison.OrdinalIgnoreCase))
+        ?? throw new ArgumentException($"MapInfo '{mapFileName}' not found");
+    foreach (var region in new[] { sz.Region, sz.BindRegion })
+    {
+        if (region == null) continue;
+        region.Map = map;
+        region.PointRegion = new[] { new Point(x, y) };
+        region.Size = 1;
+    }
+    s.Save(true);
+    Console.WriteLine($"SafeZone #{safeZoneIndex} moved to {mapFileName} ({x},{y})");
+}
+
+// ---------------- trim-safezones ----------------
+
+// For every SafeZoneInfo region, drop PointRegion points that are not walkable
+// on the deployed map file (the old Zircon safezones were designed for the
+// original map layouts; after the EI map swap some points land on walls).
+// Walkable check mirrors ServerLibrary/Models/Map.cs Load(): flag 0x01|0x02.
+void TrimSafeZones(Session s)
+{
+    BackupDb(s);
+    var mapDir = Path.Combine(Path.GetDirectoryName(s.SystemPath), "..", "Map");
+    if (!Directory.Exists(mapDir)) mapDir = "Debug/ServerCore/Map/";
+    int trimmed = 0, unchanged = 0;
+    foreach (var sz in s.GetCollection<SafeZoneInfo>().Binding)
+    {
+        foreach (var region in new[] { sz.Region, sz.BindRegion })
+        {
+            if (region?.Map == null || region.PointRegion == null || region.PointRegion.Length == 0) continue;
+            string mapFile = region.Map.FileName + ".map";
+            string path = Path.Combine(mapDir, mapFile);
+            if (!File.Exists(path)) continue;
+            byte[] fileBytes = File.ReadAllBytes(path);
+            int w = fileBytes[23] << 8 | fileBytes[22];
+            int h = fileBytes[25] << 8 | fileBytes[24];
+            int offSet = 28 + w * h / 4 * 3;
+            var keep = region.PointRegion.Where(p =>
+            {
+                if (p.X < 0 || p.X >= w || p.Y < 0 || p.Y >= h) return false;
+                int idx = offSet + (p.X * h + p.Y) * 14;
+                if (idx + 1 >= fileBytes.Length) return false;
+                byte flag = fileBytes[idx];
+                return (flag & 0x02) == 2 && (flag & 0x01) == 1;
+            }).ToArray();
+            if (keep.Length != region.PointRegion.Length)
+            {
+                region.PointRegion = keep.Length > 0 ? keep : region.PointRegion;
+                if (keep.Length > 0) trimmed++;
+            }
+            else unchanged++;
+        }
+    }
+    s.Save(true);
+    Console.WriteLine($"Trimmed {trimmed} safezone regions (kept valid walkable points), {unchanged} unchanged");
+}
+
+// ---------------- move-respawns ----------------
+
+// Relocate RespawnInfo region points that land on non-walkable cells to the
+// nearest walkable cell (computed offline by the migration script). Input JSON:
+// [{ "index", "map", "x", "y", "nx", "ny" }, ...]
+void MoveRespawns(Session s, string fixesJson)
+{
+    BackupDb(s);
+    using var doc = JsonDocument.Parse(File.ReadAllText(fixesJson));
+    var respawns = s.GetCollection<RespawnInfo>().Binding.ToDictionary(x => x.Index);
+    var mapsByName = s.GetCollection<MapInfo>().Binding
+        .ToDictionary(x => x.FileName, StringComparer.OrdinalIgnoreCase);
+    int moved = 0, skipped = 0;
+    foreach (JsonElement f in doc.RootElement.EnumerateArray())
+    {
+        int idx = f.GetProperty("index").GetInt32();
+        if (!respawns.TryGetValue(idx, out var resp) || resp.Region == null)
+        {
+            skipped++; continue;
+        }
+        string mapName = f.GetProperty("map").GetString();
+        if (!mapsByName.TryGetValue(mapName, out var map)) { skipped++; continue; }
+        resp.Region.Map = map;
+        resp.Region.PointRegion = new[] { new Point(f.GetProperty("nx").GetInt32(), f.GetProperty("ny").GetInt32()) };
+        resp.Region.Size = 1;
+        moved++;
+    }
+    s.Save(true);
+    Console.WriteLine($"Moved {moved} respawn regions (skipped {skipped})");
 }
 
 // ---------------- fix-sabuk ----------------
