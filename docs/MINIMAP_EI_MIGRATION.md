@@ -83,3 +83,20 @@ frame 32-286= MMap  f0-254  洞穴 (MMap f1 -> index 33)
   (MapInfo.MiniMap 38 条绑定修正, 206 条归零)
 - 未动: `MiniMapIcon.Zl` (图标库, 与地图布局无关)
 - 备份: `zircon-backup-20260811-095139/` 下 MiniMap-original.Zl 与两份 System.db
+
+## 2026-08-11 沙巴克混合资源修正
+
+`3.map` 当前明确保留 Zircon 原版地图资源，而不是 EI 地图。因此它不能沿用
+EI 小地图迁移表中的 `FMMap f17 -> MiniMap.Zl frame 18`。旧 Zircon 的
+`System.db` 记录为 `FileName=3, MiniMap=7`，对应旧 `MiniMap-original.Zl`
+的第 7 帧（`800×600`, offset `(0,0)`）。
+
+本次修正采用混合图库：保留 EI `MiniMap.Zl` 的全部 287 帧，仅用 Zircon 原版
+第 7 帧替换当前图库第 7 帧，同时保留该帧的旧版尺寸和定位；客户端与服务器两份
+`System.db` 均改为 `3 -> 7`。EI 第 18 帧仍为 `300×200`，用于其它 EI 地图，
+未被删除或重绑。
+
+验证记录：Godot `ZlReader` 实际读取混合文件时，frame 7 为 `800×600, offset=(0,0)`，
+frame 18 为 `300×200, offset=(0,0)`；总帧数 287、有效 payload 183。地图几何
+重构中已记录的 `3.map/Sabak.Zl` 索引偏移问题属于另一条独立问题，不能用小地图修正
+代替，见 `Sabak_Map_Migration_Audit_2026-08-11.md`。

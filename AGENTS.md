@@ -32,7 +32,10 @@
 ## 测试账号
 
 ```bash
-godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
+godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --server 127.0.0.1 --port 7000 --user test@test.com --pass test123 --char TestHero --window
+
+# 连接 82 远程服务端时改为：
+# godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --server 192.168.3.82 --port 7000 --user test@test.com --pass test123 --char TestHero --window
 ```
 
 - 账号：`test@test.com`，密码：`test123`，角色：`TestHero`
@@ -113,3 +116,26 @@ godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@te
 - 用 `hub` 启动/停止服务（`zircon-dev`、`zircon-server`）
 - commit 信息用中文，遵循仓库现有风格
 - 切勿泄露个人信息或 API keys
+
+## 验证深度约定（防"编译通过但逻辑全错"）
+
+**教训记录**：
+- 2026-08-11 `SelectScene.cs`：注释与 `if` 写在同一行，导致自动登录逻辑被整体注释掉——
+  客户端停在选人界面，服务器看不到 StartGame。`dotnet build` 通过（注释后语法仍合法），
+  只有跑完整登录流程才暴露。
+- 2026-08-11 沙巴克移植：中层/前景索引 `-1/+1` 双重偏移，离线渲染验证用了同样错误的
+  约定所以"验证通过"，实际游戏墙体缺口。工具逻辑错误必须用**独立于工具的正确约定**验证。
+
+**强制规则**（任何涉及登录/进游戏/地图渲染的改动）：
+
+1. **行为验证 ≥ 编译验证**：`dotnet build` 通过只证明语法正确，不证明逻辑正确。
+   涉及以下场景必须跑真实流程验证：
+   - 登录/进游戏逻辑 → 用测试账号完整登录到进入游戏（不能只看 build + 启动日志）
+   - 地图/贴图渲染 → 游戏内实际查看（或独立离线渲染对照）
+   - 数据转换/索引映射 → 用独立于转换工具的方法交叉验证
+2. **注释不能吞代码**：写完含注释的代码，检查注释行是否把后续语句整行注释掉。
+   可用 `grep -n "//.*if\|//.*{"` 快速扫描。
+3. **数据约定先确认再写工具**：涉及 `.map` 帧索引、`+1/-1` 偏移、字节布局等格式约定，
+   先读原版客户端/服务端源码确认约定（如 `MapControl.cs` 的 `+1` 存储），再写转换工具。
+4. **验证工具不得与生产工具共用同一错误**：校验脚本若复用了生产工具的解析逻辑，
+   错误会被"自洽"掩盖。校验必须用独立实现或对照真实游戏表现。
