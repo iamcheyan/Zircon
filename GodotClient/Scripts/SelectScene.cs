@@ -87,7 +87,8 @@ public partial class SelectScene : Control
 
         RefreshList();
 
-        // headless 自动测试: --auto-login / --user 时自动进游戏; --char 指定角色名        if (AutoLoginArgs.AutoLogin)
+        // headless 自动测试: --auto-login / --user 时自动进游戏; --char 指定角色名
+        if (AutoLoginArgs.AutoLogin)
         {
             var wantChar = AutoLoginArgs.Character;
             if (wantChar.Length > 0)

@@ -128,6 +128,13 @@ namespace Library.Network
 
             int length = rawBytes[3] << 24 | rawBytes[2] << 16 | rawBytes[1] << 8 | rawBytes[0];
 
+            // 合法包至少包含长度字段和 2 字节包类型；拒绝坏长度，
+            // 否则 p 为空时会在末尾空引用，或者把异常长度长期留在半包缓冲区。
+            const int minimumPacketLength = 6;
+            const int maximumPacketLength = 64 * 1024 * 1024;
+            if (length < minimumPacketLength || length > maximumPacketLength)
+                throw new InvalidDataException($"Invalid packet length: {length}");
+
             if (length > rawBytes.Length) return null;
 
             extra = new byte[rawBytes.Length - length];
@@ -147,6 +154,9 @@ namespace Library.Network
                     ReadObject(reader, p);
                 }
             }
+
+            if (p == null)
+                throw new InvalidDataException("Packet type id is outside the packet table.");
 
             p.Length = length;
 

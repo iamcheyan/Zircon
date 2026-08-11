@@ -5,6 +5,7 @@ namespace ZirconClient.Scripts;
 /// <summary>
 /// 命令行直连测试参数（放在 `--` 之后，Godot 引擎参数之前用 --path 等）：
 ///   godot-mono --path GodotClient -- --user <邮箱> --pass <密码> --char <角色名>
+///   godot-mono --path GodotClient -- --server 127.0.0.1 --port 7000 ...
 /// 提供 --user（或 --username）即触发自动登录，不再需要 --auto-login；
 /// --char 指定要进入的角色名（缺省进第一个角色）；提供 --char 时若角色不存在会报错留手动。
 /// 兼容旧参数 --auto-login（固定 test@test.com / test123，无角色时自动建 TestHero）。
@@ -26,8 +27,34 @@ public static class AutoLoginArgs
     public static string Character =>
         GetValue("--char", "--character") ?? "";
 
+    /// <summary>
+    /// 启动命令指定的游戏服务器地址；未指定时交给 ClientSettings 处理。
+    /// 支持 --server/--host 以及等号写法。
+    /// </summary>
+    public static string ServerAddress =>
+        GetValue("--server", "--host");
+
+    /// <summary>
+    /// 启动命令指定的游戏服务器端口；未指定时交给 ClientSettings 处理。
+    /// </summary>
+    public static int? ServerPort
+    {
+        get
+        {
+            string raw = GetValue("--port", "--server-port");
+            return int.TryParse(raw, out int port) && port is > 0 and <= 65535
+                ? port
+                : null;
+        }
+    }
+
     public static bool RunningTest => Has("--test-running");
     public static bool RightRunTest => Has("--test-right-run");
+    /// <summary>
+    /// 只在本地执行移动预测/动画，不发送 C.Move，也不等待 S.ObjectMove。
+    /// 登录和初始地图仍使用现有流程，便于直接在真实地图上检查走跑切换。
+    /// </summary>
+    public static bool OfflineMovementTest => Has("--offline-movement-test");
     public static bool InteractionAudit => Has("--interaction-audit");
     public static bool OperationAudit => Has("--operation-audit");
     public static bool OperationAuditExt => Has("--operation-audit-ext");

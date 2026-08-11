@@ -60,8 +60,13 @@ public partial class LoginScene : Control
         _unsubscribers.Add(() => _net.Log -= OnNetLog);
         // 自动登录: --auto-login 固定测试账号, 或 --user/--pass 指定账号
         bool autoLogin = AutoLoginArgs.AutoLogin;
-        string host = ClientSettings.UseNetworkConfig ? ClientSettings.IPAddress : "127.0.0.1";
-        int port = ClientSettings.UseNetworkConfig ? ClientSettings.Port : 7000;
+        // 命令行服务器参数优先于持久化配置，方便在本地/远程服务器之间快速切换：
+        // --server 127.0.0.1 --port 7000 或 --server 192.168.3.82 --port 7000。
+        string host = AutoLoginArgs.ServerAddress
+                      ?? (ClientSettings.UseNetworkConfig ? ClientSettings.IPAddress : "127.0.0.1");
+        int port = AutoLoginArgs.ServerPort
+                   ?? (ClientSettings.UseNetworkConfig ? ClientSettings.Port : 7000);
+        GD.Print($"[Login] 目标服务器: {host}:{port}");
         if (!_net.Connect(host, port))
         {
             SetStatus("无法连接服务端");
@@ -446,7 +451,11 @@ public partial class LoginScene : Control
         _skinChange.MouseClick += (o, e) => OpenChangeDialog();
         _skinRanking.MouseClick += (o, e) => ToggleLoginRanking();
         _skinOptions.MouseClick += (o, e) => ToggleLoginConfig();
-        _skinExit.MouseClick += (o, e) => GetTree().Quit();
+        _skinExit.MouseClick += (o, e) =>
+        {
+            MirSkin.DisposeAll();
+            GetTree().Quit();
+        };
 
         dialog.AddControl(_skinLogin);
         dialog.AddControl(_skinRegister);

@@ -46,6 +46,12 @@ namespace Library.Network
         public ConcurrentQueue<Packet> ReceiveList = new ConcurrentQueue<Packet>();
         public ConcurrentQueue<Packet> SendList = new ConcurrentQueue<Packet>();
         private byte[] _rawData = new byte[0];
+        // TCP 不保证一次 BeginSend 会写完全部数据。必须保留发送缓冲区和偏移，
+        // 否则登录后的大 StartGame 包会被截断，客户端会永久停在选人界面。
+        private byte[] _sendBuffer;
+        private int _sendOffset;
+        private byte[] _disconnectSendBuffer;
+        private int _disconnectSendOffset;
 
         public EventHandler<Exception> OnException;
 
@@ -126,8 +132,9 @@ namespace Library.Network
             try
             {
                 Sending = true;
-                TotalBytesSent += data.Count;
-                Client.Client.BeginSend(data.ToArray(), 0, data.Count, SocketFlags.None, SendData, null);
+                _sendBuffer = data.ToArray();
+                _sendOffset = 0;
+                BeginSendChunk();
                 UpdateTimeOut();
             }
             catch (Exception ex)
@@ -138,12 +145,47 @@ namespace Library.Network
                 Sending = false;
             }
         }
+
+        private void BeginSendChunk()
+        {
+            if (!Connected || _sendBuffer == null || _sendOffset >= _sendBuffer.Length)
+            {
+                Sending = false;
+                return;
+            }
+
+            Client.Client.BeginSend(
+                _sendBuffer,
+                _sendOffset,
+                _sendBuffer.Length - _sendOffset,
+                SocketFlags.None,
+                SendData,
+                null);
+        }
+
         private void SendData(IAsyncResult result)
         {
             try
             {
+                int sent = Client.Client.EndSend(result);
+                if (sent <= 0)
+                {
+                    Disconnecting = true;
+                    Sending = false;
+                    return;
+                }
+
+                _sendOffset += sent;
+                TotalBytesSent += sent;
+                if (_sendBuffer != null && _sendOffset < _sendBuffer.Length)
+                {
+                    BeginSendChunk();
+                    return;
+                }
+
+                _sendBuffer = null;
+                _sendOffset = 0;
                 Sending = false;
-                Client.Client.EndSend(result);
                 UpdateTimeOut();
             }
             catch (Exception ex)
@@ -151,6 +193,7 @@ namespace Library.Network
                 if (AdditionalLogging)
                     OnException(this, ex);
                 Disconnecting = true;
+                Sending = false;
             }
         }
         public virtual void Enqueue(Packet p)
@@ -171,6 +214,11 @@ namespace Library.Network
             SendList = null;
             ReceiveList = null;
             _rawData = null;
+            _sendBuffer = null;
+            _sendOffset = 0;
+            _disconnectSendBuffer = null;
+            _disconnectSendOffset = 0;
+            Sending = false;
 
             Client.Client.Dispose();
             Client = null;
@@ -202,21 +250,56 @@ namespace Library.Network
             {
                 Disconnecting = true;
 
-                TotalBytesSent += data.Count;
-                Client.Client.BeginSend(data.ToArray(), 0, data.Count, SocketFlags.None, SendDataDisconnect, null);
+                _disconnectSendBuffer = data.ToArray();
+                _disconnectSendOffset = 0;
+                BeginSendDisconnectChunk();
             }
             catch (Exception ex)
             {
                 if (AdditionalLogging)
-                    OnException(this, ex);
+                OnException(this, ex);
             }
         }
+
+        private void BeginSendDisconnectChunk()
+        {
+            if (!Connected || _disconnectSendBuffer == null ||
+                _disconnectSendOffset >= _disconnectSendBuffer.Length)
+                return;
+
+            Client.Client.BeginSend(
+                _disconnectSendBuffer,
+                _disconnectSendOffset,
+                _disconnectSendBuffer.Length - _disconnectSendOffset,
+                SocketFlags.None,
+                SendDataDisconnect,
+                null);
+        }
+
         private void SendDataDisconnect(IAsyncResult result)
         {
 
             try
             {
-                Client.Client.EndSend(result);
+                int sent = Client.Client.EndSend(result);
+                if (sent <= 0)
+                {
+                    _disconnectSendBuffer = null;
+                    _disconnectSendOffset = 0;
+                    return;
+                }
+
+                _disconnectSendOffset += sent;
+                TotalBytesSent += sent;
+                if (_disconnectSendBuffer != null &&
+                    _disconnectSendOffset < _disconnectSendBuffer.Length)
+                {
+                    BeginSendDisconnectChunk();
+                    return;
+                }
+
+                _disconnectSendBuffer = null;
+                _disconnectSendOffset = 0;
             }
             catch (Exception ex)
             {

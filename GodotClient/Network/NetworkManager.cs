@@ -69,6 +69,9 @@ public partial class NetworkManager : Node
     public bool Connect(string host, int port)
     {
         Disconnect();
+        // 连接重建时不能复用上一次 TCP 连接留下的半包，否则新连接的
+        // 第一个长度字段会被旧数据污染，表现为登录/选角随机卡死。
+        _rawData = Array.Empty<byte>();
         Packet.IsClient = true;
         var client = new TcpClient();
         try { client.Connect(host, port); }
@@ -93,5 +96,6 @@ public partial class NetworkManager : Node
             Connection.Disconnect();
             Connection = null;
         }
+        _rawData = Array.Empty<byte>();
     }
 }
