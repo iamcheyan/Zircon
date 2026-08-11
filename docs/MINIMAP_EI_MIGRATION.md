@@ -1,0 +1,85 @@
+# EI 小地图迁移报告 (MiniMap.Zl + System.db)
+
+日期: 2026-08-11
+任务: 把 EI 传奇3.0 客户端的小地图资源迁移到 Zircon Godot 客户端, 使游戏内
+右上角小地图正确显示 EI 地图布局。
+
+## 背景
+
+- Zircon 客户端已把 544 张 EI 地图替换到位 (画面正确, 与 EI Map 目录 md5 一致),
+  但小地图图库 `MiniMap.Zl` 仍是旧版 Zircon 资源 (537帧 v1 DXT1), 显示旧地图布局。
+- 客户端加载机制 (未改任何源码):
+  - `GodotClient/Controls/MiniMapDialog.cs`: `LibraryFile = LibraryFile.MiniMap`
+    固定读 `Data/MiniMap.Zl`, `Image.Index = map.MiniMap` (来自 DB MapInfo.MiniMap)。
+  - `LibraryCore/Libraries.cs`: `[LibraryFile.MiniMap] = @"Data\MiniMap.Zl"`。
+  - `GodotClient/Controls/BigMapDialog.cs` 第56/133行: 大地图同样读
+    `LibraryFile.MiniMap` + `map.MiniMap` → 替换 MiniMap.Zl 同时修好大小地图。
+
+## 资源与转换
+
+| 项 | 值 |
+|---|---|
+| EI 城镇大地图 | `Data/FMMap.wil`+`.wix`, 31 帧 (含 2 空白: f19/f29) |
+| EI 洞穴小地图 | `Data/MMap.wil`+`.wix`, 255 帧 (含 101 空白) |
+| 帧绑定表 | `Mir3-Research/Tools/mir3_client_simulator/data/map_bindings.json`, 182 条 |
+| 工具 | `Tools/convert_wil_to_zl2.py` → `Tools/zl2writer.py` (PNG codec, raw deflate) |
+| 合并脚本 | `Tools/convert_ei_minimap.py` |
+
+### 合并布局 (MiniMap.Zl, 287 帧)
+
+```
+frame 0     = 空白占位   (对齐旧库: 帧0空, DB 索引 1-based)
+frame 1-31  = FMMap f0-30   城镇 (0.map 比奇 f0 -> index 1)
+frame 32-286= MMap  f0-254  洞穴 (MMap f1 -> index 33)
+```
+
+> 空白占位帧 0 是必须的: `MiniMapDialog.SetMap` 在 `Image.Index <= 0` 时把窗口
+> 收缩成 32px 条 (无小地图)。比奇绑定 FMMap f0=0, 直接绑定会触发塌缩, 所以
+> 整体 +1 偏移, 全部绑定帧从 1 起。
+
+### 转换验证
+
+- FMMap: `frames=31 payloads=29 blanks=2 errors=0 size=15,769,597`
+- MMap:  `frames=255 payloads=154 blanks=101 errors=0 size=10,958,777`
+- 合并:  `frames=287 payloads=183 blanks=104 size=26,728,312`
+- 结构校验 (按 zl2writer/ZlImage.Read 布局): 元数据 287 条 present 183,
+  index 183 条, 全部 PNG payload raw-deflate 可解压, 帧尺寸/offset 保留
+  (f1=1200×800 比奇, f33=600×400 = MMap f1)。
+- 可复现: `python3 Tools/convert_ei_minimap.py <EI Data> <out.Zl>` 输出与
+  部署文件 md5 一致 (`ecdffb20...`)。
+- 原 `MiniMap.Zl` (43,835,975 B) 备份至
+  `/home/tetsuya/NAS/TMP/zircon-backup-20260811-095139/MiniMap-original.Zl`。
+
+## DB 更新 (System.db, MirDB 格式)
+
+用 C# 工具 (引用 LibraryCore, Session API 加载/保存) 遍历 MapInfo 更新:
+
+- `FMMap.wil` 绑定: `MiniMap = frame + 1`
+- `MMap.wil` 绑定: `MiniMap = frame + 32`
+- 无绑定地图: `MiniMap = 0` (小地图收缩隐藏)
+
+统计 (客户端 + 服务器两份):
+- 地图总数 244, 绑定命中 38 (全部与 EI Map 目录文件 md5 一致, 无错绑),
+  已更新 38, 归零 205/206, 保存后无残留错值。
+- 关键绑定: `0` 比奇 f0 → 1; `2` 毒蛇山谷 f5 → 6; `D001` 半兽洞穴 f1 → 33;
+  `D401` 废矿矿山入口 f11 → 43; `D1001` 赤月山谷1层 f101 → 133。
+- 服务器副本 `Debug/ServerCore/Database/System.db` 同步, 两边 244 条值全同。
+- DB 修改前已备份: `zircon-backup-20260811-095139/System-{client,server}-original.db`。
+- Zircon 专属地图 (D201 废矿、D2301 戈鲁洞等, EI 绑定表无对应) 一律 MiniMap=0,
+  小地图不显示 (按旧库也无对应帧, 行为一致)。
+
+## 游戏内验证
+
+- 启动本地服务器 (加载新 DB) + Godot 客户端 (`--screenshot-after-enter`)。
+- 玩家位于 2.map (Banya Village = EI 毒蛇山谷): 右上角小地图窗口标题
+  "Banya Village", 显示绿色林地 + 标记点, 与 EI FMMap f5 毒蛇山谷布局一致。
+- 小地图渲染链路 (新 MiniMap.Zl → 客户端 ZlLibrary → 帧索引) 全程正确;
+  未改任何客户端源码, 只替换数据 + DB。
+
+## 文件清单
+
+- 替换: `Debug/Client/Data/MiniMap.Zl` (287帧, EI FMMap+MMap 合并版)
+- 更新: `Debug/Client/Data/System.db` + `Debug/ServerCore/Database/System.db`
+  (MapInfo.MiniMap 38 条绑定修正, 206 条归零)
+- 未动: `MiniMapIcon.Zl` (图标库, 与地图布局无关)
+- 备份: `zircon-backup-20260811-095139/` 下 MiniMap-original.Zl 与两份 System.db
