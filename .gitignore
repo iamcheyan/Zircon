@@ -18,3 +18,6 @@ licenses.licx
 __pycache__/
 # 运行时数据库(账号数据),不进 git
 /System.db
+
+# Godot 导出产物 (deploy.sh 生成)
+/deploy-out/

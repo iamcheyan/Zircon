@@ -1,8 +1,8 @@
-﻿using Library;
+using Library;
 
 namespace Server.Envir.Translations
 {
-    [ConfigPath(@".\Translations\ChineseMessages.ini")]
+    [ConfigPath(@"./Translations/ChineseMessages.ini")]
     public class ChineseMessages : StringMessages
     {
         public override string BannedWrongPassword { get; set; } = "错误密码登录尝试次数太多";

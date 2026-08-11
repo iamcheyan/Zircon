@@ -52,7 +52,7 @@ namespace Server.Envir
                 SEnvir.Log(string.Format("Crashed: Account: {0}, Character: {1}.", Account?.EMailAddress, Player?.Name));
                 SEnvir.Log(e.ToString());
                 SEnvir.Log(e.StackTrace.ToString());
-                File.AppendAllText(@".\Errors.txt", e.StackTrace + Environment.NewLine);
+                File.AppendAllText(@"./Errors.txt", e.StackTrace + Environment.NewLine);
             };
 
             SEnvir.Log(string.Format("[Connection] IP Address:{0}", IPAddress));

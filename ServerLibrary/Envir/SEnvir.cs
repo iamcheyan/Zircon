@@ -397,10 +397,10 @@ namespace Server.Envir
 
         public static void LoadExperienceList()
         {
-            string path = @".\Config\ExperienceList.txt";
+            string path = @"./Config/ExperienceList.txt";
             if (!File.Exists(path))
             {
-                if (!Directory.Exists(@".\Config")) Directory.CreateDirectory(@".\Config");
+                if (!Directory.Exists(@"./Config")) Directory.CreateDirectory(@"./Config");
                 using (StreamWriter file = new StreamWriter(path))
                 {
                     for (int i = 0; i < Globals.ExperienceList.Count; i++)
@@ -1473,7 +1473,7 @@ namespace Server.Envir
 
                             Log(ex.Message);
                             Log(ex.StackTrace);
-                            File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
+                            File.AppendAllText(@"./Errors.txt", ex.StackTrace + Environment.NewLine);
                         }
                     }
 
@@ -1619,7 +1619,7 @@ namespace Server.Envir
 
                     Log(ex.Message);
                     Log(ex.StackTrace);
-                    File.AppendAllText(@".\Errors.txt", ex.StackTrace + Environment.NewLine);
+                    File.AppendAllText(@"./Errors.txt", ex.StackTrace + Environment.NewLine);
 
                     Packet p = new G.Disconnect { Reason = DisconnectReason.Crashed };
                     for (int i = Connections.Count - 1; i >= 0; i--)
@@ -1831,8 +1831,8 @@ namespace Server.Envir
         }
         private static void WriteLogs()
         {
-            var logPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Logs.txt"));
-            var chatLogPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Chat Logs.txt"));
+            var logPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "./Logs.txt"));
+            var chatLogPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "./Chat Logs.txt"));
 
             List<string> lines = new List<string>();
             while (!Logs.IsEmpty)
@@ -4087,7 +4087,7 @@ namespace Server.Envir
             {
                 if (++ErrorCount > 200 || String.Compare(ex, LastError, StringComparison.OrdinalIgnoreCase) == 0) return;
 
-                const string LogPath = @".\Errors\";
+                const string LogPath = @"./Errors/";
 
                 LastError = ex;
 
