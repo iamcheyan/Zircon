@@ -80,6 +80,9 @@ public partial class MiniMapDialog : DXWindow
         };
         Image.Moving += (o, e) => ClipMap();
         Panel.AddControl(Image);
+        // GM 专用: 点击小地图传送到对应格 (原版 TeleportRing, 服务端对 Admin/TempAdmin 直传)。
+        // 用 GuiInput 自行判定按下/抬起距离, 避免拖动平移小地图时误触发。
+        Image.GuiInput += OnImageInput;
         _routeLayer = new AutoPathRouteControl { ZIndex = 20 };
         Image.AddControl(_routeLayer);
 
@@ -121,6 +124,39 @@ public partial class MiniMapDialog : DXWindow
     }
 
     public void SetBigMapRequestHandler(Action handler) => _onBigMapRequest = handler;
+
+    private Vector2 _pressPos;
+    private bool _pressValid;
+
+    /// <summary>GM 点击小地图传送 (仅 GM; 非 GM 完全忽略)。左键按下+抬起且未拖动 → 传送。</summary>
+    private void OnImageInput(InputEvent input)
+    {
+        if (input is not InputEventMouseButton mb || mb.ButtonIndex != MouseButton.Left) return;
+        if (!Globals.IsGM) return;
+
+        if (mb.Pressed)
+        {
+            _pressPos = mb.Position;
+            _pressValid = true;
+        }
+        else if (_pressValid)
+        {
+            _pressValid = false;
+            // 拖动平移小地图后抬起不算点击 (阈值 6px)
+            if (mb.Position.DistanceTo(_pressPos) > 6f) return;
+            var point = GetMapPoint();
+            GameScene.Game?.SendTeleportRing(point.X, point.Y, _mapIndex);
+        }
+    }
+
+    /// <summary>Image 局部坐标 → 地图 cell (与 BigMapDialog.GetMapPoint 同公式)</summary>
+    private System.Drawing.Point GetMapPoint()
+    {
+        Vector2 pos = Image.GetLocalMousePosition();
+        int x = Mathf.Clamp(Mathf.RoundToInt(pos.X / Math.Max(.001f, ScaleX)), 0, Math.Max(0, _mapWidth - 1));
+        int y = Mathf.Clamp(Mathf.RoundToInt(pos.Y / Math.Max(.001f, ScaleY)), 0, Math.Max(0, _mapHeight - 1));
+        return new System.Drawing.Point(x, y);
+    }
 
     // ---- 数据源 (GameScene 调用) ----
 

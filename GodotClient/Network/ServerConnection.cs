@@ -386,6 +386,7 @@ public partial class ServerConnection : BaseConnection
     {
         PendingStorageItems = p.Items ?? new List<ClientUserItem>();
         BlockListEvent?.Invoke(p.BlockList ?? new List<ClientBlockInfo>());
+        Globals.IsGM = p.IsGM;
         LoginResultEvent?.Invoke(p.Result, p.Message ?? "", p.Characters, p.Address ?? string.Empty);
     }
     public void Process(S.ChangePassword p) => ChangePasswordResultEvent?.Invoke(p.Result);

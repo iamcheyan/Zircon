@@ -37,6 +37,9 @@ namespace Library.Network.ServerPackets
         public string Address { get; set; }
 
         public bool TestServer { get; set; }
+
+        /// <summary>GM 权限 (Account.Admin 或 TempAdmin): 小地图点击传送等 GM 功能据此启用</summary>
+        public bool IsGM { get; set; }
     }
     public sealed class RequestPasswordReset : Packet
     {

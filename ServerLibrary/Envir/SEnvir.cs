@@ -3404,6 +3404,7 @@ namespace Server.Envir
                 Address = $"{Config.BuyAddress}?Key={account.Key}&Character=",
 
                 TestServer = Config.TestServer,
+                IsGM = account.Admin || admin,
             });
 
             account.LastLogin = Now;

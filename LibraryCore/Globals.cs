@@ -13,6 +13,9 @@ namespace Library
     {
         public static ItemInfo GoldInfo;
 
+        /// <summary>GM 权限标志 (登录时由 S.Login.IsGM 下发): 小地图点击传送等 GM 功能</summary>
+        public static bool IsGM;
+
         public static DBCollection<ItemInfo> ItemInfoList;
         public static DBCollection<MagicInfo> MagicInfoList;
         public static DBCollection<MapInfo> MapInfoList;

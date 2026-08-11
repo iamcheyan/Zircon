@@ -36,6 +36,9 @@ public partial class BigMapDialog : DXWindow
     private Func<MapInfo> _recenterMapProvider = () => null;
     private Action<MapInfo> _openBigMap = _ => { };
 
+    private Vector2 _pressPos;
+    private bool _pressValid;
+
     public BigMapDialog()
     {
         BackColour = Colors.Black;
@@ -70,11 +73,32 @@ public partial class BigMapDialog : DXWindow
         };
         Image.GuiInput += input =>
         {
-            if (input is not InputEventMouseButton mouse || !mouse.Pressed || mouse.ButtonIndex != MouseButton.Right) return;
-            var point = GetMapPoint();
-            GameScene.Game?.SendTeleportRing(point.X, point.Y, _mapIndex);
+            if (input is not InputEventMouseButton mouse) return;
+            if (mouse.ButtonIndex == MouseButton.Right)
+            {
+                if (!mouse.Pressed) return;
+                var point = GetMapPoint();
+                GameScene.Game?.SendTeleportRing(point.X, point.Y, _mapIndex);
+                CloseBigMapAfterTeleport();
+            }
+            else if (mouse.ButtonIndex == MouseButton.Left)
+            {
+                if (mouse.Pressed)
+                {
+                    _pressPos = mouse.Position;
+                    _pressValid = true;
+                }
+                else if (_pressValid)
+                {
+                    _pressValid = false;
+                    // 拖动查看大地图后抬起不算点击
+                    if (mouse.Position.DistanceTo(_pressPos) > 6f) return;
+                    var point = GetMapPoint();
+                    GameScene.Game?.SendTeleportRing(point.X, point.Y, _mapIndex);
+                    CloseBigMapAfterTeleport();
+                }
+            }
         };
-
         RecenterButton = new DXButton
         {
             Type = DXButton.ButtonType.Default,
@@ -202,6 +226,13 @@ public partial class BigMapDialog : DXWindow
         dot.Location = new Vector2I((int)(ScaleX * cellX) - 1, (int)(ScaleY * cellY) - 1);
     }
 
+    /// <summary>传送后关闭大地图 (原版: 点一下地图跳走, 地图消失)。只隐藏不移除节点, 否则 B 键无法再打开。</summary>
+    private void CloseBigMapAfterTeleport()
+    {
+        Visible = false;
+    }
+
+    /// <summary>Image 局部坐标 → 地图 cell (与 BigMapDialog.GetMapPoint 同公式)</summary>
     private System.Drawing.Point GetMapPoint()
     {
         Vector2 point = Image.GetLocalMousePosition();

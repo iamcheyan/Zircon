@@ -2813,7 +2813,7 @@ namespace Server.Models
 
             if (destInfo == null) return;
 
-            if (!Character.Account.TempAdmin)
+            if (!Character.Account.IsAdmin(true))
             {
                 if (!Config.TestServer && Stats[Stat.TeleportRing] == 0) return;
 
