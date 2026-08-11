@@ -192,7 +192,7 @@ public partial class ServerConnection : BaseConnection
     public event Action<uint, PoisonType> ObjectPoisonEvent;
     public event Action<uint, Effect> ObjectEffectEvent;
     public event Action<System.Drawing.Point, Effect, MirDirection> MapEffectEvent;
-    public event Action<uint, int, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical
+    public event Action<uint, int, bool, bool, bool, bool> HealthChangedEvent; // id, change, miss, block, critical, resist
     public event Action<uint, int, int, bool> DataObjectHealthManaEvent; // id, health, mana, dead
     public event Action<uint, int, int> DataObjectMaxHealthManaEvent; // id, maxHealth, maxMana
     public event Action<uint, int, int, int, int, bool> DataObjectMonsterEvent; // id, health, maxHealth, light, monsterIndex, dead
@@ -670,7 +670,7 @@ public partial class ServerConnection : BaseConnection
     public void Process(S.HealthChanged p)
     {
         if (BufferPendingPackets) PendingHealthChanges.Enqueue(p);
-        HealthChangedEvent?.Invoke(p.ObjectID, p.Change, p.Miss, p.Block, p.Critical);
+        HealthChangedEvent?.Invoke(p.ObjectID, p.Change, p.Miss, p.Block, p.Critical, p.Resist);
     }
 
     public void Process(S.DataObjectHealthMana p)

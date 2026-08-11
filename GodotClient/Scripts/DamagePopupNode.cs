@@ -10,10 +10,28 @@ public partial class DamagePopupNode : Node2D
     private double _start;
     private const double Duration = 900.0;
 
-    public void Setup(int value, bool critical)
+    public void Setup(int value, bool miss, bool block, bool critical, bool resist)
     {
-        _text = Math.Abs(value).ToString();
-        _colour = critical ? new Color(1f, 0.85f, 0.15f) : new Color(1f, 0.35f, 0.25f);
+        if (miss)
+        {
+            _text = "Miss";
+            _colour = new Color(1f, 1f, 1f);
+        }
+        else if (block)
+        {
+            _text = "Block";
+            _colour = new Color(1f, 1f, 1f);
+        }
+        else if (resist)
+        {
+            _text = Math.Abs(value).ToString();
+            _colour = new Color(0.35f, 0.85f, 1f);  // 青色: 免疫/防御精通部分减伤
+        }
+        else
+        {
+            _text = Math.Abs(value).ToString();
+            _colour = critical ? new Color(1f, 0.85f, 0.15f) : new Color(1f, 0.35f, 0.25f);
+        }
         _start = Time.GetTicksMsec();
         ZIndex = 4095;  // Godot 4 上限 4096, 用最大值保证飘字在最顶层
         QueueRedraw();

@@ -1,4 +1,4 @@
-﻿using Library.Network;
+using Library.Network;
 using Library.SystemModels;
 using MirDB;
 using System;

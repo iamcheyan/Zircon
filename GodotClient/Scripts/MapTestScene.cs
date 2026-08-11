@@ -91,6 +91,9 @@ public partial class MapTestScene : Control
     private readonly HashSet<MirAnimation> _actionAnimations = new();
     private readonly List<(string Name, Action<PlayerRenderer> Start, MirAnimation Expected)> _actions = new();
     private const float WorldScale = 2f;
+    private string _dumpZlFile;
+    private string _dumpZlOutput;
+    private int _dumpZlIndex = -1;
 
     // 网格常量（第 7.1 章）
     const int CellWidth = 48;
@@ -124,6 +127,9 @@ public partial class MapTestScene : Control
         bool weatherTextureDump = OS.GetCmdlineUserArgs().Contains("--weather-texture-dump");
         bool progUseEffectDump = OS.GetCmdlineUserArgs().Contains("--proguse-effect-dump");
         bool sludgeDump = OS.GetCmdlineUserArgs().Contains("--green-sludge-dump");
+        _dumpZlFile = GetCmdlineValue("--dump-zl-file=");
+        _dumpZlOutput = GetCmdlineValue("--dump-zl-output=");
+        _dumpZlIndex = ParseAuditInt("--dump-zl-index=", -1);
 
         // 与实际 GameScene 保持一致：地图、对象、特效都在逻辑 48x32
         // 坐标绘制，根世界统一放大 2 倍。否则审计截图只能验证 1x。
@@ -178,6 +184,10 @@ public partial class MapTestScene : Control
             if (weatherTextureDump) CallDeferred(nameof(DumpWeatherTextures));
             if (progUseEffectDump) CallDeferred(nameof(DumpProgUseEffectTextures));
             if (sludgeDump) CallDeferred(nameof(DumpGreenSludgeTextures));
+            if (!string.IsNullOrWhiteSpace(_dumpZlFile)
+                && !string.IsNullOrWhiteSpace(_dumpZlOutput)
+                && _dumpZlIndex >= 0)
+                CallDeferred(nameof(DumpRequestedZlFrame));
         }
         catch (Exception ex)
         {
@@ -1170,9 +1180,16 @@ public partial class MapTestScene : Control
 
     private void RunMapAudit()
     {
+        string requestedMap = OS.GetCmdlineUserArgs()
+            .FirstOrDefault(arg => arg.StartsWith("--audit-map=", StringComparison.OrdinalIgnoreCase))?
+            .Substring("--audit-map=".Length);
         var files = Directory.GetFiles(_mapPath, "*.map")
+            .Where(path => string.IsNullOrWhiteSpace(requestedMap) ||
+                string.Equals(Path.GetFileNameWithoutExtension(path), requestedMap,
+                    StringComparison.OrdinalIgnoreCase))
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
+        GD.Print($"[MapAudit] source={(string.IsNullOrWhiteSpace(requestedMap) ? "all maps" : requestedMap)} files={files.Length}");
         int valid = 0, layered = 0, totalCells = 0;
         var failures = new List<string>();
         var textureRefs = new HashSet<(int FileByte, int ImageIndex)>();
@@ -1207,6 +1224,28 @@ public partial class MapTestScene : Control
             catch (Exception ex)
             {
                 failures.Add($"{Path.GetFileName(path)}:{ex.GetType().Name}:{ex.Message}");
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(requestedMap))
+        {
+            foreach (var group in textureRefs.GroupBy(x => x.FileByte).OrderBy(x => x.Key))
+            {
+                if (!Libraries.KROrder.TryGetValue(group.Key, out var mappedFile)) continue;
+                var library = LibraryCache.Get(mappedFile);
+                int refValid = 0, nonCell = 0, refMissing = 0;
+                foreach (var reference in group)
+                {
+                    var image = library?.Images != null && reference.ImageIndex >= 0 &&
+                                reference.ImageIndex < library.Images.Length
+                        ? library.Images[reference.ImageIndex] : null;
+                    if (image == null) { refMissing++; continue; }
+                    refValid++;
+                    if (!((image.Width == CellWidth || image.Width == CellWidth * 2) &&
+                          (image.Height == CellHeight || image.Height == CellHeight * 2)))
+                        nonCell++;
+                }
+                GD.Print($"[MapAudit] fileByte={group.Key} library={mappedFile} refs={group.Count()} valid={refValid} nonCell={nonCell} missing={refMissing}");
             }
         }
 
@@ -2144,6 +2183,46 @@ public partial class MapTestScene : Control
     {
         string arg = OS.GetCmdlineUserArgs().FirstOrDefault(a => a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
         return arg != null && int.TryParse(arg.Substring(prefix.Length), out int value) ? Math.Max(0, value) : fallback;
+    }
+
+    private static string GetCmdlineValue(string prefix)
+    {
+        string arg = OS.GetCmdlineUserArgs()
+            .FirstOrDefault(a => a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        return arg == null ? null : arg.Substring(prefix.Length);
+    }
+
+    private void DumpRequestedZlFrame()
+    {
+        try
+        {
+            using var library = new ZlLibrary(_dumpZlFile);
+            if (_dumpZlIndex >= library.Images.Length || library.Images[_dumpZlIndex] == null)
+            {
+                GD.PrintErr($"[ZlFrameDump] FAIL file={_dumpZlFile} frame={_dumpZlIndex} absent");
+                return;
+            }
+
+            var image = library.GetImageTexture(_dumpZlIndex)?.GetImage();
+            if (image == null || image.SavePng(_dumpZlOutput) != Error.Ok)
+            {
+                GD.PrintErr($"[ZlFrameDump] FAIL file={_dumpZlFile} frame={_dumpZlIndex} decode/save");
+                return;
+            }
+
+            var meta = library.Images[_dumpZlIndex];
+            GD.Print($"[ZlFrameDump] PASS file={_dumpZlFile} frame={_dumpZlIndex} "
+                + $"size={meta.Width}x{meta.Height} offset=({meta.OffSetX},{meta.OffSetY}) "
+                + $"codec={meta.ImageCodec} output={_dumpZlOutput}");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[ZlFrameDump] EXCEPTION {ex.GetType().Name}: {ex.Message}");
+        }
+        finally
+        {
+            GetTree().Quit();
+        }
     }
 
     private void RunWeatherAudit()

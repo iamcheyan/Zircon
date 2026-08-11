@@ -102,6 +102,15 @@ public partial class PlayerRenderer : Node2D
     public double MovementDurationMs => _currentFrame?.Sum > 0 ? _currentFrame.Sum : 600.0;
     public int MovementFrameCount => _currentFrame?.FrameCount ?? 1;
     public int MovementFrame => FrameIndex;
+    /// <summary>施法动作正在播放；施法期间 MouseWalker 必须停止发移动。</summary>
+    public bool IsSpellAnimation => _spellType != MagicType.None
+        && Animation is MirAnimation.Combat1 or MirAnimation.Combat2 or MirAnimation.Combat3
+            or MirAnimation.Combat4 or MirAnimation.Combat5 or MirAnimation.Combat6
+            or MirAnimation.Combat7 or MirAnimation.Combat8 or MirAnimation.Combat9
+            or MirAnimation.Combat10 or MirAnimation.Combat11 or MirAnimation.Combat12
+            or MirAnimation.Combat13 or MirAnimation.Combat14 or MirAnimation.Combat15
+            or MirAnimation.ChannellingStart or MirAnimation.ChannellingMiddle
+            or MirAnimation.ChannellingEnd;
 
     // 旧端魔法特效不是收到 ObjectMagic 的瞬间就落地：人物先完成抬手，
     // 到施法动作的释放关键帧后才出现轨迹/命中特效。普通施法动作以第

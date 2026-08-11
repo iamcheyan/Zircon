@@ -29,6 +29,9 @@ public partial class MapView : Node2D
     public int CenterY = 0;
     public int ViewRangeX = 12;
     public int ViewRangeY = 15;
+    // 连续跟随玩家时的像素级摄像机偏移。CenterX/CenterY 仍是地图格索引，
+    // 但移动期间不能让背景随索引瞬间跳整格。
+    public Vector2 CameraOffset { get; set; } = Vector2.Zero;
 
     private double _animationTime;
     private int _mapAnimation;
@@ -102,8 +105,8 @@ public partial class MapView : Node2D
         int ey = Math.Min(Map.Height, CenterY + ViewRangeY + 26);
 
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
-        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth;
-        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset;
+        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth + CameraOffset.X;
+        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset + CameraOffset.Y;
 
         int drawn = 0;
         DrawMapBackground(viewport);
@@ -238,8 +241,8 @@ public partial class MapView : Node2D
         if (Map == null || y < 0 || y >= Map.Height) return;
 
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
-        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth;
-        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset;
+        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth + CameraOffset.X;
+        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset + CameraOffset.Y;
         int firstX = Math.Max(0, CenterX - ViewRangeX - 4);
         int lastX = Math.Min(Map.Width - 1, CenterX + ViewRangeX + 4);
 
@@ -349,8 +352,8 @@ public partial class MapView : Node2D
     public Vector2 CellToScreen(int cellX, int cellY, bool objectBaseline)
     {
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
-        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth;
-        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset;
+        float offsetX = (viewport.X - CellWidth) / 2f - ViewRangeX * CellWidth + CameraOffset.X;
+        float offsetY = (viewport.Y - CellHeight) / 2f - ViewRangeY * CellHeight - ManualHeightOffset + CameraOffset.Y;
         return new Vector2(
             (cellX - CenterX + ViewRangeX) * CellWidth + offsetX,
             (cellY - CenterY + ViewRangeY + (objectBaseline ? 1 : 0)) * CellHeight + offsetY);

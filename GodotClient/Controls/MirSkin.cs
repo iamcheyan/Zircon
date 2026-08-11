@@ -137,4 +137,21 @@ public static class MirSkin
         if (font == null || string.IsNullOrEmpty(text)) return Vector2.Zero;
         return font.GetStringSize(text, HorizontalAlignment.Left, -1, fontSize);
     }
+
+    /// <summary>进程退出前调用: 释放所有静态资源, 消除 Godot 退出时的 RID 泄漏警告。
+    /// 纹理对象的所有权在 ZlLibrary 的缓存里 (GetPartTexture 写入), 此处不重复
+    /// Dispose 纹理, 只清引用并释放图库 (图库 Dispose 会释放自己的纹理缓存)。</summary>
+    public static void DisposeAll()
+    {
+        foreach (var lib in _libraries.Values)
+            lib?.Dispose();
+        _libraries.Clear();
+
+        _textures.Clear();
+        _overlayTextures.Clear();
+
+        _font?.Dispose();
+        _font = null;
+        _fontFailed = false;
+    }
 }

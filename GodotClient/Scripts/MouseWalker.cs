@@ -49,8 +49,15 @@ public partial class MouseWalker : Node2D
     private const double WalkIntervalMs = 600.0;
     private const double RunIntervalMs = 600.0;
     private double _nextSendMs;
+    private bool _suspendUntilInputRelease;
     public bool Enabled = true;  // GameScene 可在登录前关掉
     public bool AutoRun;  // D 键切换; 开启时左键也跑步
+
+    /// <summary>
+    /// 技能开始时中断当前鼠标移动意图。必须先松开鼠标，再重新按下，
+    /// 才能开始下一段移动；否则施法结束后会沿用旧的按键状态继续乱走。
+    /// </summary>
+    public void SuspendUntilInputRelease() => _suspendUntilInputRelease = true;
 
     public void AddMoveDelay(TimeSpan slow)
     {
@@ -97,6 +104,13 @@ public partial class MouseWalker : Node2D
         bool leftDown = Input.IsMouseButtonPressed(MouseButton.Left);
         bool rightDown = Input.IsMouseButtonPressed(MouseButton.Right);
         bool autoRun = AutoRun;
+        if (_suspendUntilInputRelease)
+        {
+            if (!leftDown && !rightDown && !autoRun)
+                _suspendUntilInputRelease = false;
+            else
+                return;
+        }
         // 鼠标在游戏 UI (背包/人物/商店等窗口或主面板) 上: 点击是操作界面, 不是移动角色。
         // 原版等价物是 MapControl.ProcessInput 的 MouseControl == this 判断。
         // 但原版 AutoRun 在 MouseControl 判断之前执行，不能被 UI 悬停截断。

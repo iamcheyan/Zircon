@@ -1,4 +1,4 @@
-﻿using Library.SystemModels;
+using Library.SystemModels;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -512,6 +512,7 @@ namespace Library.Network.ServerPackets
         public bool Miss { get; set; }
         public bool Block { get; set; }
         public bool Critical { get; set; }
+        public bool Resist { get; set; }
     }
     public sealed class ObjectStats : Packet
     {

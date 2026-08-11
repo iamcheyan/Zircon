@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Library
 {
@@ -379,6 +379,7 @@ namespace Library
             [LibraryFile.Wood_Tilesc] = @"Data\Map Data\Wood\Tilesc.Zl",
             [LibraryFile.Wood_Wallsc] = @"Data\Map Data\Wood\Wallsc.Zl",
 
+            [LibraryFile.Sabak] = @"Data\Map Data\Sabak.Zl",
         };
 
         public static Dictionary<int, LibraryFile> KROrder = new Dictionary<int, LibraryFile>
@@ -453,6 +454,9 @@ namespace Library
             [69] = LibraryFile.Forest_Wallsc,
             [70] = LibraryFile.Forest_SmObjectsc,
             [71] = LibraryFile.Forest_Animationsc,
+
+            // Zircon 沙巴克专用图库（自定义地图包：3.map 只引用此库）
+            [200] = LibraryFile.Sabak,
         };
     }
 
@@ -825,5 +829,7 @@ namespace Library
         Wood_Tiles30c,
         Wood_Tilesc,
         Wood_Wallsc,
+
+        Sabak,
     }
 }

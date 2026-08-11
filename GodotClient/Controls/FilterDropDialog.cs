@@ -66,6 +66,9 @@ public sealed partial class DXTextInput : DXControl
     public event Action<string> TextSubmitted;
     /// <summary>输入框按 Escape 时触发（原版 DXTextBox 的 KeyPress Escape 路径）。</summary>
     public event Action Canceled;
+    /// <summary>输入框按 ↑/↓ 时触发（聊天历史导航）。</summary>
+    public event Action HistoryUp;
+    public event Action HistoryDown;
 
     public new string Text
     {
@@ -124,8 +127,23 @@ public sealed partial class DXTextInput : DXControl
         _edit.TextSubmitted += value => TextSubmitted?.Invoke(value);
         _edit.GuiInput += e =>
         {
-            if (e is InputEventKey key && key.Pressed && key.Keycode == Key.Escape)
-                Canceled?.Invoke();
+            if (e is InputEventKey key && key.Pressed)
+            {
+                if (key.Keycode == Key.Escape)
+                {
+                    Canceled?.Invoke();
+                }
+                else if (key.Keycode == Key.Up)
+                {
+                    HistoryUp?.Invoke();
+                    _edit.AcceptEvent();
+                }
+                else if (key.Keycode == Key.Down)
+                {
+                    HistoryDown?.Invoke();
+                    _edit.AcceptEvent();
+                }
+            }
         };
         Resized += () => _edit.Size = Size - new Vector2(4, 2);
     }

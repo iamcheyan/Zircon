@@ -165,17 +165,18 @@ namespace Server.Models
             DisplayHPMPTime = SEnvir.Now.AddMilliseconds(200);
 
             bool changed = false;
-            if (DisplayHP != CurrentHP || DisplayBlock || DisplayCrit || DisplayMiss)
+            if (DisplayHP != CurrentHP || DisplayBlock || DisplayCrit || DisplayMiss || DisplayResist)
             {
                 int change = CurrentHP - DisplayHP;
 
-                Broadcast(new S.HealthChanged { ObjectID = ObjectID, Change = change, Critical = DisplayCrit, Miss = DisplayMiss, Block = DisplayBlock });
+                Broadcast(new S.HealthChanged { ObjectID = ObjectID, Change = change, Critical = DisplayCrit, Miss = DisplayMiss, Block = DisplayBlock, Resist = DisplayResist });
 
                 DisplayHP = CurrentHP;
 
                 DisplayMiss = false;
                 DisplayBlock = false;
                 DisplayCrit = false;
+                DisplayResist = false;
 
                 changed = true;
             }
@@ -1827,9 +1828,9 @@ namespace Server.Models
 
             if (defensiveMastery > 0)
             {
-                if (defensiveMastery >= 10) return max;
+                if (defensiveMastery >= 10) { DisplayResist = true; return max; }
 
-                if (SEnvir.Random.Next(10) < defensiveMastery) return max;
+                if (SEnvir.Random.Next(10) < defensiveMastery) { DisplayResist = true; return max; }
             }
 
             return SEnvir.Random.Next(min, max + 1);

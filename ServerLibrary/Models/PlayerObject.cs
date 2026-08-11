@@ -901,6 +901,11 @@ namespace Server.Models
             if (!SetBindPoint())
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, Failed to reset bind point.");
+
+                // 兜底: 所有安全区出生点均失效时，强制重置到比奇城 (map "0")
+                if (TrySpawnFallback())
+                    return;
+
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -929,7 +934,9 @@ namespace Server.Models
                 }
                 else
                 {
-                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}");
+                    SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName} (instance)");
+                    if (TrySpawnFallback())
+                        return;
                     Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                     Connection = null;
                     Character = null;
@@ -939,6 +946,20 @@ namespace Server.Models
             else if (!Spawn(Character.CurrentMap, null, 0, CurrentLocation) && !Spawn(Character.BindPoint.BindRegion, null, 0))
             {
                 SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, curMap={Character.CurrentMap?.Index} loc=({CurrentLocation.X},{CurrentLocation.Y}) bindRegion={Character.BindPoint?.BindRegion?.ServerDescription} bindPts={Character.BindPoint?.ValidBindPoints?.Count}");
+
+                // 兜底 1: 重选绑定出生点再试（CurrentMap/BindRegion 可能因地图迁移失效）
+                Character.BindPoint = null;
+                if (SetBindPoint() && Spawn(Character.BindPoint.BindRegion, null, 0))
+                {
+                    UpdateOnlineState(true);
+                    return;
+                }
+
+                // 兜底 2: 强制重置到比奇城
+                if (TrySpawnFallback())
+                    return;
+
+                SEnvir.Log($"[Failed to spawn Character] Index: {Character.Index}, Name: {Character.CharacterName}, 所有出生点均失败");
                 Enqueue(new S.StartGame { Result = StartGameResult.UnableToSpawn });
                 Connection = null;
                 Character = null;
@@ -1371,6 +1392,51 @@ namespace Server.Models
 
             return Character.BindPoint != null;
         }
+        /// <summary>
+        /// 出生兜底：角色在当前地图/绑定出生点均无法生成时，
+        /// 优先尝试角色自己的绑定出生点（SetBindPoint），
+        /// 仍失败则强制重置到比奇城 (map "0") 出生区，避免永久卡在选人界面。
+        /// </summary>
+        private bool TrySpawnFallback()
+        {
+            // 优先: 角色自己的绑定出生点（用户要求: 有就重置到那儿）
+            if (Character.BindPoint != null && Spawn(Character.BindPoint.BindRegion, null, 0))
+            {
+                SEnvir.Log($"[Spawn Fallback] Character {Character.CharacterName} 使用绑定出生点 {Character.BindPoint.BindRegion?.ServerDescription}");
+                UpdateOnlineState(true);
+                return true;
+            }
+
+            // 其次: 重选出生点（SetBindPoint 优先主城出生区）
+            Character.BindPoint = null;
+            if (SetBindPoint() && Spawn(Character.BindPoint.BindRegion, null, 0))
+            {
+                SEnvir.Log($"[Spawn Fallback] Character {Character.CharacterName} 重选出生点 {Character.BindPoint.BindRegion?.ServerDescription}");
+                UpdateOnlineState(true);
+                return true;
+            }
+
+            // 兜底: 比奇城 (map "0")
+            MapInfo bichon = SEnvir.MapInfoList.Binding.FirstOrDefault(m => m.FileName == "0");
+            if (bichon != null)
+            {
+                Character.CurrentMap = bichon;
+                Map bichonMap = SEnvir.GetMap(bichon);
+                if (bichonMap != null)
+                {
+                    Character.CurrentLocation = new System.Drawing.Point(bichonMap.Width / 2, bichonMap.Height / 2);
+                    if (Spawn(bichonMap, bichonMap.GetRandomLocation()))
+                    {
+                        SEnvir.Log($"[Spawn Fallback] Character {Character.CharacterName} 重置到比奇城 ({bichonMap.Width/2},{bichonMap.Height/2})");
+                        UpdateOnlineState(true);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public void TownRevive()
         {
             if (!Dead) return;
@@ -15630,6 +15696,7 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+                    DisplayResist = true;
 
                     LevelMagic(magicImmunity.Magic);
                 }
@@ -15651,6 +15718,7 @@ namespace Server.Models
                         DisplayMiss = true;
                         return 0;
                     }
+                    DisplayResist = true;
 
                     LevelMagic(physicalImmunity.Magic);
                 }

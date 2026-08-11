@@ -813,6 +813,9 @@ public partial class GameScene : Control
     // 移动插值状态
     private System.Drawing.Point _moveFrom;
     private double _moveStartMs;
+    // 每一段移动开始时固定的位移时间。位移不能读取随时变化的动画帧状态，
+    // 否则旧配置或动作切换会把连续插值退化成按帧跳格。
+    private double _moveDurationMs = 600.0;
     private int _moveFrameCount = 1;
     // 原版 UserObject.ServerTime 门控: 发完一个移动请求后锁住, 等服务端回包
     // (S.ObjectMove 确认 或 S.UserLocation 纠正)才解锁, 一次只发一个 C.Move。
@@ -1446,11 +1449,16 @@ public partial class GameScene : Control
     /// </summary>
     private void SendTurn(MirDirection dir)
     {
-        if (_net?.Connection?.Connected != true) return;
         if (!CanPlayerTurn() || _player == null) return;
         if (!ShouldSendTurn(_player.Direction, dir)) return;
         _playerDirection = dir;
         _player.Direction = dir;
+        if (AutoLoginArgs.OfflineMovementTest)
+        {
+            GD.Print($"[OfflineMove] TURN direction={dir}");
+            return;
+        }
+        if (_net?.Connection?.Connected != true) return;
         _net.Connection.Enqueue(new C.Turn { Direction = dir });
     }
 
@@ -1673,6 +1681,11 @@ public partial class GameScene : Control
         }
 
         if (Game == this) Game = null;
+
+        // 进程退出前释放静态资源缓存, 消除 Godot 退出时的 RID 泄漏警告。
+        // 注意: 回登录界面/切场景也会触发 _ExitTree, 但 MirSkin 缓存是惰性
+        // 重建的, 重新进入时 GetTexture/GetFont 会重新加载, 功能不受影响。
+        MirSkin.DisposeAll();
     }
 
     private void OnStartGameResult(StartGameResult result, StartInformation info)
@@ -1818,6 +1831,11 @@ public partial class GameScene : Control
 
     private void OnUserLocation(MirDirection dir, System.Drawing.Point loc)
     {
+        if (AutoLoginArgs.OfflineMovementTest)
+        {
+            GD.Print($"[OfflineMove] IGNORE UserLocation location=({loc.X},{loc.Y})");
+            return;
+        }
         // S.UserLocation 是服务端对非法/过早移动的纠正，不是 S.ObjectMove。
         // 原客户端收到它会校正格子并停止当前移动，不能再播放一次 Walking。
         if (_player == null) return;
@@ -1992,6 +2010,11 @@ public partial class GameScene : Control
         ClearMovementEffect(objectID);
         if (objectID == _playerObjectID)
         {
+            if (AutoLoginArgs.OfflineMovementTest)
+            {
+                GD.Print($"[OfflineMove] IGNORE ObjectMove location=({loc.X},{loc.Y}) distance={distance}");
+                return;
+            }
             // 不要在这里提前解除 ServerTime 门控。这里的网络事件会把
             // ShowUserLocation 延迟到主线程帧末执行；如果此时立即解锁，
             // MouseWalker 可能先发出下一步，而旧回包随后会把预测坐标
@@ -4013,33 +4036,34 @@ public partial class GameScene : Control
     }
 
     // 血量变化: 受伤扣血并显示血条 (Miss/Block 只播动画不扣)
-    private void OnHealthChanged(uint objectID, int change, bool miss, bool block, bool critical)
+    private void OnHealthChanged(uint objectID, int change, bool miss, bool block, bool critical, bool resist)
     {
+        bool applyDamage = !miss && !block;
         if (objectID == _playerObjectID)
         {
             if (_player == null) return;
-        if (!miss && !block)
-        {
-            _player.Health += change;
-            _currentHP = _player.Health;
-            _mainPanel?.SetHealth(_currentHP);
-            if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(_player, change, critical);
+            if (applyDamage)
+            {
+                _player.Health += change;
+                _currentHP = _player.Health;
+                _mainPanel?.SetHealth(_currentHP);
             }
+            if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(_player, change, miss, block, critical, resist);
             _player.ShowHealthBar = true;
             _player.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
-            if (!miss && !block) _player.PlayStruck();
+            if (applyDamage) _player.PlayStruck();
             return;
         }
         if (_objects.TryGetValue(objectID, out var ob))
         {
             ob.ShowHealthBar = true;
             ob.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
-            if (!miss && !block)
+            if (applyDamage)
             {
                 ob.Health += change;
                 ob.SetAnimation(MirAnimation.Struck);
-                if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(ob, change, critical);
             }
+            if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(ob, change, miss, block, critical, resist);
             _groupHealthPanel?.UpdateMember(objectID, ob.Health, ob.MaxHealth);
             return;
         }
@@ -4047,22 +4071,24 @@ public partial class GameScene : Control
         {
             player.ShowHealthBar = true;
             player.DrawHealthUntilMs = Godot.Time.GetTicksMsec() + 5000;
-            if (!miss && !block)
+            if (applyDamage)
             {
                 player.Health += change;
                 player.PlayStruck();
-                if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(player, change, critical);
             }
+            if (ClientSettings.ShowDamageNumbers) SpawnDamagePopup(player, change, miss, block, critical, resist);
             _groupHealthPanel?.UpdateMember(objectID, player.Health, player.MaxHealth);
         }
     }
 
-    private void SpawnDamagePopup(Node2D target, int value, bool critical)
+    private void SpawnDamagePopup(Node2D target, int value, bool miss, bool block, bool critical, bool resist)
     {
-        if (target == null || value == 0) return;
+        if (target == null) return;
+        // 纯伤害且无任何标志且数值为 0 时不飘字; miss/block/resist 即使 change=0 也要显示反馈
+        if (value == 0 && !miss && !block && !resist) return;
         var popup = new DamagePopupNode { Position = target.Position + new Vector2(0f, -62f) };
         AddChild(popup);
-        popup.Setup(value, critical);
+        popup.Setup(value, miss, block, critical, resist);
     }
 
     private void OnDataObjectHealthMana(uint objectID, int health, int mana, bool dead)
@@ -4549,7 +4575,21 @@ public partial class GameScene : Control
     {
         return CanPlayerTurn()
             && !_player.ElementalHurricane
-            && !_playerPoison.HasFlag(PoisonType.WraithGrip);
+            && !_playerPoison.HasFlag(PoisonType.WraithGrip)
+            && _pendingMagicPacket == null
+            && !_player.IsSpellAnimation;
+    }
+
+    private void SuspendMovementForMagic()
+    {
+        // 技能开始时清除自动跑步，并要求鼠标释放后重新按下。
+        // 这样技能释放完成不会继承施法前残留的移动意图。
+        _autoRun = false;
+        if (_mouseWalker != null)
+        {
+            _mouseWalker.AutoRun = false;
+            _mouseWalker.SuspendUntilInputRelease();
+        }
     }
 
     private bool BlockLeftMouseMovement()
@@ -6984,7 +7024,7 @@ public partial class GameScene : Control
         while (conn.PendingHealthChanges.Count > 0)
         {
             var h = conn.PendingHealthChanges.Dequeue();
-            OnHealthChanged(h.ObjectID, h.Change, h.Miss, h.Block, h.Critical);
+            OnHealthChanged(h.ObjectID, h.Change, h.Miss, h.Block, h.Critical, h.Resist);
         }
         while (conn.PendingHealthManas.Count > 0)
         {
@@ -7192,6 +7232,10 @@ public partial class GameScene : Control
         // 原版 PlayerObject.SetFrame：Moving.Extra[0] >= 2 才使用 Running。
         // 右键只是请求跑步，最终动作必须以服务器接受的移动距离为准。
         _player.BeginMove(dir, distance, _playerHorse != HorseType.None, distance >= 2);
+        _moveDurationMs = Math.Max(1.0, _player.MovementDurationMs);
+        _mapView.CameraOffset = new Vector2(
+            (x - _moveFrom.X) * 48f,
+            (y - _moveFrom.Y) * 32f);
         if (AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest)
             GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY(corrected) distance={distance} animation={_player.Animation} " +
                      $"frameStart={_player.FrameIndex} location=({x},{y})");
@@ -7273,8 +7317,9 @@ public partial class GameScene : Control
 
     private void SendMouseMove(MirDirection direction, int distance, bool running)
     {
-        if (_net?.Connection?.Connected != true) return;
         if (_player == null) return;
+        bool offline = AutoLoginArgs.OfflineMovementTest;
+        if (!offline && _net?.Connection?.Connected != true) return;
         distance = Math.Max(1, distance);
         // 原版 UserObject.AttemptAction(Moving) → SetAction(Moving) 立即把
         // CurrentLocation 跳到预测终点并启动 MovingOffSet 插值; 回包(S.ObjectMove)
@@ -7297,13 +7342,30 @@ public partial class GameScene : Control
         _pendingDistance = distance;
         _player.BeginMove(direction, distance, _playerHorse != HorseType.None,
             running && distance >= 2);
+        _moveDurationMs = Math.Max(1.0, _player.MovementDurationMs);
+        _mapView.CameraOffset = new Vector2(
+            (predicted.X - _moveFrom.X) * 48f,
+            (predicted.Y - _moveFrom.Y) * 32f);
         _moveFrameCount = 2;
         UpdatePlayerPosition();
         UpdateAutoPathProgress();
-        _net.Connection.Enqueue(new C.Move { Direction = direction, Distance = distance });
-        // 原版 AttemptAction 末尾 ServerTime = Now.AddSeconds(5): 锁住直到回包。
-        // 5 秒是容错上限, 正常回包几十毫秒就解锁; 超时仍解锁避免永久卡死。
-        _moveServerLockUntilMs = Godot.Time.GetTicksMsec() + 5000.0;
+        if (offline)
+        {
+            // 离线测试不等待服务端确认；本地预测就是权威位置，
+            // 因此下一段移动可以按 MouseWalker 的 600ms 节拍继续。
+            _moveServerLockUntilMs = 0;
+            GD.Print($"[OfflineMove] MOVE distance={distance} running={running} " +
+                     $"direction={direction} location=({_playerLocation.X},{_playerLocation.Y}) " +
+                     $"animation={_player.Animation} frameCount={_player.MovementFrameCount} " +
+                     $"durationMs={_moveDurationMs:0}");
+        }
+        else
+        {
+            _net.Connection.Enqueue(new C.Move { Direction = direction, Distance = distance });
+            // 原版 AttemptAction 末尾 ServerTime = Now.AddSeconds(5): 锁住直到回包。
+            // 5 秒是容错上限, 正常回包几十毫秒就解锁; 超时仍解锁避免永久卡死。
+            _moveServerLockUntilMs = Godot.Time.GetTicksMsec() + 5000.0;
+        }
         // 原版 UserObject.AttemptAction(Moving) 在发包后立即允许下一段 Run。
         _canRun = true;
         if (AutoLoginArgs.RunningTest)
@@ -7636,23 +7698,22 @@ public partial class GameScene : Control
         if (_moveFrameCount <= 1 && !IsRunInputHeld())
             _canRun = false;
 
-        // 原版移动插值：权威格是终点，Offset 以走/跑帧表总时长从起点回拉。
+        // 原版移动插值：权威格是终点，Offset 以本段固定的走/跑动作时长从起点回拉。
+        // 位移必须使用时间轴；动画帧只负责贴图。不能在这里按 FrameIndex
+        // 计算，否则旧 Zircon.ini 中 SmoothMove=false 会导致角色跳格抖动。
         if (_moveFrameCount > 1 && _player != null)
         {
-            double k;
-            if (ClientSettings.SmoothMove)
-            {
-                double moveMs = _player.MovementDurationMs;
-                double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) / moveMs, 0.0, 1.0);
-                k = 1.0 - t;
-            }
-            else
-            {
-                k = Math.Max(0.0, (_player.MovementFrameCount - (_player.MovementFrame + 1)) /
-                    (double)Math.Max(1, _player.MovementFrameCount));
-            }
+            double t = Math.Clamp((Godot.Time.GetTicksMsec() - _moveStartMs) /
+                Math.Max(1.0, _moveDurationMs), 0.0, 1.0);
+            double k = 1.0 - t;
             float xStep = 48f * _player.MoveDistance * (float)k;
             float yStep = 32f * _player.MoveDistance * (float)k;
+            // 地图中心已经切换到目标格；用同一时间轴把背景从旧格连续
+            // 滚到目标格。玩家自己的 Offset 与这里方向相反，角色保持
+            // 在连续摄像机的正确位置，不再出现“人平滑、地图跳格”。
+            _mapView.CameraOffset = new Vector2(
+                (_player.CellX - _moveFrom.X) * 48f * (float)k,
+                (_player.CellY - _moveFrom.Y) * 32f * (float)k);
             _player.OffsetX = 0f;
             _player.OffsetY = 0f;
             switch (_player.Direction)
@@ -7675,6 +7736,7 @@ public partial class GameScene : Control
                 _canRun = IsRunInputHeld();
                 _player.OffsetX = 0f;
                 _player.OffsetY = 0f;
+                _mapView.CameraOffset = Vector2.Zero;
                 _player.PlayStandingForState();
             }
             UpdatePlayerPosition();
@@ -7685,6 +7747,7 @@ public partial class GameScene : Control
             _player.CellY = _playerLocation.Y;
             _player.OffsetX = 0f;
             _player.OffsetY = 0f;
+            _mapView.CameraOffset = Vector2.Zero;
             UpdatePlayerPosition();
         }
     }
@@ -9191,6 +9254,7 @@ public partial class GameScene : Control
             Target = targetID,
             Location = castCell,
         };
+        SuspendMovementForMagic();
         if (IsPlayerWalking())
         {
             // 原版 UseMagic 只设置 User.MagicAction；真正发包在 ProcessInput

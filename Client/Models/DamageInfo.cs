@@ -146,6 +146,30 @@ namespace Client.Models
 
         #endregion
 
+        #region Resist
+
+        public bool Resist
+        {
+            get { return _Resist; }
+            set
+            {
+                if (_Resist == value) return;
+
+                bool oldValue = _Resist;
+                _Resist = value;
+
+                OnResistChanged(oldValue, value);
+            }
+        }
+        private bool _Resist;
+        public event EventHandler<EventArgs> ResistChanged;
+        public virtual void OnResistChanged(bool oValue, bool nValue)
+        {
+            ResistChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
         #region Miss
 
         public bool Miss
@@ -334,6 +358,7 @@ namespace Client.Models
                     index = BlueIndex;
                     width = BlueWidth;
                 }
+                if (Resist) { index = WhiteIndex; width = WhiteWidth; }
                 drawX -= width * text.Length / 2;
 
                 if (Critical && Value < 0)
