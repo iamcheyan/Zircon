@@ -9,7 +9,7 @@ namespace ZirconClient.Controls;
 /// <summary>NPC 对话中的原版 DrawTextExtensions 文本：颜色和 [按钮:id] 保持在同一行。</summary>
 public sealed partial class NPCTextControl : DXControl
 {
-    private sealed record Glyph(string Text, Vector2 Position, Color Colour, int ButtonId, Rect2 HitBox);
+    private sealed record Glyph(string Text, Vector2 Position, Color Colour, int ButtonId, Rect2 HitBox, int FontSize);
     private readonly List<Glyph> _glyphs = new();
     private readonly List<(Rect2 Rect, int Id)> _buttons = new();
     private int _hoveredButton = -1;
@@ -62,7 +62,7 @@ public sealed partial class NPCTextControl : DXControl
             float glyphWidth = MirSkin.MeasureText(glyph, fontSize).X;
             if (x > 0 && x + glyphWidth > width) { x = 0; y += lineHeight; }
             var hit = new Rect2(x, y, Mathf.Max(1, glyphWidth), lineHeight);
-            _glyphs.Add(new Glyph(glyph, new Vector2(x, y + fontSize), colour, buttonId, hit));
+            _glyphs.Add(new Glyph(glyph, new Vector2(x, y + MirSkin.ScaledSize(fontSize)), colour, buttonId, hit, MirSkin.ScaledSize(fontSize)));
             if (buttonId >= 0) _buttons.Add((hit, buttonId));
             x += glyphWidth;
         }
@@ -77,7 +77,7 @@ public sealed partial class NPCTextControl : DXControl
             Color colour = glyph.ButtonId >= 0 && glyph.ButtonId == _hoveredButton
                 ? Colors.Red
                 : glyph.Colour;
-            DrawString(font, glyph.Position, glyph.Text, HorizontalAlignment.Left, -1, 10, colour);
+            DrawString(font, glyph.Position, glyph.Text, HorizontalAlignment.Left, -1, glyph.FontSize, colour);
         }
     }
 

@@ -93,7 +93,7 @@ public sealed partial class AutoPathRouteControl : DXControl
         DrawRect(new Rect2(centre - new Vector2(6, 5), new Vector2(12, 10)), colour);
         var font = MirSkin.GetFont();
         if (font != null)
-            DrawString(font, centre + new Vector2(-3, 4), waypointNumber.ToString(), HorizontalAlignment.Left, -1, 10, Colors.Black);
+            DrawString(font, centre + new Vector2(-3, 4), waypointNumber.ToString(), HorizontalAlignment.Left, -1, MirSkin.ScaledSize(10), Colors.Black);
     }
 
     private Vector2 Project(System.Drawing.Point point)

@@ -1419,6 +1419,12 @@ public partial class GameScene : Control
             AutoSize = true,
             ZIndex = 500,
             Visible = false,
+            // 旧版 ItemLabelBuilder.CreateLabel 的悬浮框：深棕半透明底 + 金棕边框。
+            // 之前只有文字、没有框，地图/UI 背景下文字看不清。
+            BackColour = new Color(18f / 255f, 15f / 255f, 8f / 255f, 230f / 255f),
+            Border = true,
+            BorderColour = new Color(105f / 255f, 95f / 255f, 62f / 255f),
+            TextPadding = new Vector2I(6, 4),
         };
         _uiLayer.AddChild(_hoverLabel);
 
@@ -5425,6 +5431,7 @@ public partial class GameScene : Control
         {
             _hoverLabel.Visible = true;
             _hoverLabel.Text = BuildItemHoverText(_hoverItem);
+            FitHoverLabelSize();
         }
         else
         {
@@ -5445,14 +5452,33 @@ public partial class GameScene : Control
     }
 
     /// <summary>
-    /// 原版 GameScene.CreateItemLabel 的物品悬停信息（B9 范围：名称/稀有度
-    /// 颜色、部件标记、过期时间、锁定提示；数量与不可用角标由物品格绘制）。
+    /// 按当前文本重算悬浮框 Size（DXLabel 不自动调整；背景/边框按 Size 绘制）。
+    /// 旧版 ItemLabelBuilder.Complete：文本宽 + 边距。
+    /// </summary>
+    private void FitHoverLabelSize()
+    {
+        if (_hoverLabel == null) return;
+        const float padding = 6f;
+        var lines = _hoverLabel.Text.Split('\n');
+        float maxW = 0f;
+        foreach (var line in lines)
+        {
+            var w = MirSkin.MeasureText(line, _hoverLabel.FontSize).X;
+            if (w > maxW) maxW = w;
+        }
+        float lineH = lines.Length == 0 ? 0f : MirSkin.MeasureText("字", _hoverLabel.FontSize).Y;
+        _hoverLabel.Size = new Vector2I(Mathf.RoundToInt(maxW + padding * 2f), Mathf.RoundToInt(lineH * lines.Length + padding * 2f));
+    }
+
+    /// <summary>
+    /// 原版 GameScene.CreateItemLabel 的物品悬停信息。新版单色标签无法复刻
+    /// 旧版每行颜色，但内容与顺序对齐旧版 ItemLabelBuilder。
     /// </summary>
     private string BuildItemHoverText(ClientUserItem item)
     {
         if (item?.Info == null) return string.Empty;
         _hoverLabel.TextColour = HoverRarityColour(item.Info.Rarity);
-        return BuildItemHoverCore(item);
+        return BuildItemHoverFull(item);
     }
 
     /// <summary>原版 GetItemLabelRarityColour 的稀有度颜色。</summary>
@@ -5493,6 +5519,479 @@ public partial class GameScene : Control
             sb.Append('\n').Append("Locked: Prevents accidentally selling or throwing away");
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// 完整版物品悬停信息：对齐旧版 CreateItemLabel 的全部分区
+    /// （元数据/属性/需求/插槽/交易状态/描述/修理/套装等）。
+    /// 单色标签，行序与旧版一致；玩家相关判断用当前实例状态。
+    /// </summary>
+    private string BuildItemHoverFull(ClientUserItem item)
+    {
+        if (item?.Info == null) return string.Empty;
+
+        ItemInfo displayInfo = item.Info;
+        if (item.Info.ItemEffect == ItemEffect.ItemPart && item.AddedStats != null && item.AddedStats[Stat.ItemIndex] > 0)
+        {
+            var partInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == item.AddedStats[Stat.ItemIndex]);
+            if (partInfo != null) displayInfo = partInfo;
+        }
+
+        var sb = new System.Text.StringBuilder();
+
+        // ---- Header: 名称 + [Part] ----
+        sb.Append(displayInfo.ItemName ?? item.Info.ItemName ?? string.Empty);
+        if (item.Info.ItemEffect == ItemEffect.ItemPart)
+            sb.Append(" - [Part]");
+
+        // ---- Metadata ----
+        if (displayInfo.ItemType != ItemType.Nothing)
+        {
+            var typeMember = typeof(ItemType).GetMember(displayInfo.ItemType.ToString()).FirstOrDefault();
+            var typeDesc = typeMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
+            sb.Append('\n').Append($"Type: {typeDesc ?? displayInfo.ItemType.ToString()}");
+        }
+
+        if (item.Info.Durability > 0)
+        {
+            switch (displayInfo.ItemType)
+            {
+                case ItemType.Book:
+                    sb.Append('\n').Append($"Pages: {item.CurrentDurability / 1000}/{item.MaxDurability / 1000}");
+                    break;
+                case ItemType.Meat:
+                    sb.Append('\n').Append($"Quality: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
+                    break;
+                case ItemType.Ore:
+                    sb.Append('\n').Append($"Purity: {Math.Round(item.CurrentDurability / 1000M)}");
+                    break;
+                case ItemType.SocketGem:
+                    sb.Append('\n').Append($"Gem Type: {GemTypeName(item.Info.Shape)}");
+                    sb.Append('\n').Append($"Purity: {GemPurityText(item)}");
+                    break;
+                default:
+                    if (item.Info.StackSize == 1)
+                        sb.Append('\n').Append($"Durability: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
+                    break;
+            }
+        }
+
+        if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
+            sb.Append('\n').Append($"Amount: {item.Count:#,##0}");
+        else if (item.Info.ItemEffect == ItemEffect.ItemPart)
+            sb.Append('\n').Append($"Parts: {item.Count}/{displayInfo.PartCount}.");
+        else if (item.Info.StackSize > 1)
+            sb.Append('\n').Append($"Count: {item.Count}/{item.Info.StackSize}");
+
+        if (item.Info.Weight > 0)
+            sb.Append('\n').Append($"Weight: {item.Info.Weight}");
+
+        // ---- 货币/经验物品：直接返回（旧版只显示描述）----
+        if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
+        {
+            AppendDescription(sb, displayInfo);
+            return sb.ToString();
+        }
+
+        // ---- 装备属性 ----
+        switch (displayInfo.ItemType)
+        {
+            case ItemType.Consumable:
+            case ItemType.Scroll:
+                if (displayInfo.ItemEffect == ItemEffect.StatExtractor || displayInfo.ItemEffect == ItemEffect.RefineExtractor)
+                    AppendEquipmentStats(sb, item, displayInfo);
+                else
+                    AppendPotionStats(sb, item);
+                break;
+            default:
+                AppendEquipmentStats(sb, item, displayInfo);
+                break;
+        }
+
+        // ---- 训练信息（武器/饰品等级）----
+        AppendTrainingInfo(sb, item, displayInfo);
+
+        // ---- 需求 ----
+        AppendRequirements(sb, item, displayInfo);
+
+        // ---- 插槽 ----
+        AppendSocketInfo(sb, item, displayInfo);
+
+        // ---- 交易状态 ----
+        AppendTradeState(sb, item, displayInfo);
+
+        // ---- 描述 ----
+        AppendDescription(sb, displayInfo);
+
+        // ---- 特殊修理 ----
+        if (item.Info.Durability > 0 && item.Info.CanRepair && item.Info.StackSize == 1)
+        {
+            switch (item.Info.ItemType)
+            {
+                case ItemType.Weapon:
+                case ItemType.Armour:
+                case ItemType.Helmet:
+                case ItemType.Necklace:
+                case ItemType.Bracelet:
+                case ItemType.Ring:
+                case ItemType.Shoes:
+                case ItemType.Shield:
+                    sb.Append('\n');
+                    if (Library.Time.Now >= item.NextSpecialRepair)
+                        sb.Append("Can Special Repair");
+                    else
+                        sb.Append($"Special Repair in {Functions.ToString(item.NextSpecialRepair - Library.Time.Now, true)}");
+                    break;
+            }
+        }
+
+        // ---- 过期 / 复活 ----
+        if ((item.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
+            sb.Append('\n').Append($"Expires in {Functions.ToString(item.ExpireTime, true)}");
+
+        if (item.AddedStats != null && item.AddedStats[Stat.ItemReviveTime] > 0)
+        {
+            DateTime value = item.Info.ItemEffect == ItemEffect.PillOfReincarnation
+                ? DateTimeOffset.FromUnixTimeMilliseconds((long)ReincarnationPillUntilMs).LocalDateTime
+                : DateTimeOffset.FromUnixTimeMilliseconds((long)ItemReviveUntilMs).LocalDateTime;
+            sb.Append('\n');
+            sb.Append(Library.Time.Now >= value
+                ? "Revival ready"
+                : $"Revival ready in {Functions.ToString(value - Library.Time.Now, true)}");
+        }
+
+        // ---- 套装 ----
+        if (item.Info.Set != null)
+            AppendSetInfo(sb, item, item.Info.Set);
+
+        // ---- 结婚 / GM ----
+        if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
+            sb.Append('\n').Append("Wedding Ring.");
+        if ((item.Flags & UserItemFlags.GameMaster) == UserItemFlags.GameMaster)
+            sb.Append('\n').Append("Created by a Game Master.");
+
+        // ---- 碎片 / 重置 / 锁定 ----
+        if (item.CanFragment())
+        {
+            sb.Append('\n').Append($"Fragment Cost: {item.FragmentCost():#,##0}");
+            sb.Append('\n').Append($"Fragments: {(item.Info.Rarity == Rarity.Common ? "Fragment" : "Fragment (II)")} x{item.FragmentCount():#,##0}");
+        }
+
+        if (Library.Time.Now < item.NextReset)
+            sb.Append('\n').Append($"Reset Available in {Functions.ToString(item.NextReset - Library.Time.Now, true)}");
+
+        if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked)
+            sb.Append('\n').Append("Locked: Prevents accidentally selling or throwing away\n[Middle Mouse Button] or [Scroll Lock] to Unlock.");
+
+        return sb.ToString();
+    }
+
+    private static string GemTypeName(int shape) => shape switch
+    {
+        0 => "Piercing",
+        1 => "Weapon",
+        2 => "Armour",
+        3 => "Curse",
+        4 => "Reset",
+        _ => "Unknown",
+    };
+
+    private static string GemPurityText(ClientUserItem item)
+    {
+        decimal purity = item.CurrentDurability / 1000M;
+        decimal max = Math.Max(0, Globals.MaxGemPurity);
+        string level = purity <= max * 0.2M ? "Lowest"
+            : purity <= max * 0.4M ? "Low"
+            : purity <= max * 0.6M ? "Medium"
+            : purity <= max * 0.8M ? "High"
+            : "Supreme";
+        return level;
+    }
+
+    private static bool IsCurrencyItem(ItemInfo info)
+        => Globals.CurrencyInfoList?.Binding.FirstOrDefault(x => x.DropItem == info) != null;
+
+    private void AppendEquipmentStats(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
+    {
+        Stats stats = new Stats();
+        stats.Add(displayInfo.Stats, displayInfo.ItemType != ItemType.Weapon);
+        stats.Add(item.AddedStats, item.Info.ItemType != ItemType.Weapon);
+
+        if (displayInfo.ItemType == ItemType.Weapon)
+        {
+            Stat element = item.AddedStats.GetWeaponElement();
+            if (element == Stat.None)
+                element = displayInfo.Stats.GetWeaponElement();
+
+            if (element != Stat.None)
+                stats[element] += item.AddedStats.GetWeaponElementValue() + displayInfo.Stats.GetWeaponElementValue();
+        }
+
+        foreach (KeyValuePair<Stat, int> pair in stats.Values)
+        {
+            string text = stats.GetDisplay(pair.Key);
+            if (text == null) continue;
+            string added = item.AddedStats.GetFormat(pair.Key);
+
+            switch (pair.Key)
+            {
+                case Stat.DropRate:
+                case Stat.ExperienceRate:
+                case Stat.SkillRate:
+                case Stat.GoldRate:
+                    if (added != null) text += $" ({added})";
+                    break;
+                default:
+                    if (item.AddedStats[pair.Key] != 0)
+                        text += $"   ({added})";
+                    break;
+            }
+
+            sb.Append('\n').Append(text);
+        }
+    }
+
+    private void AppendPotionStats(System.Text.StringBuilder sb, ClientUserItem item)
+    {
+        Stats stats = new Stats();
+        stats.Add(item.Info.Stats);
+
+        foreach (KeyValuePair<Stat, int> pair in stats.Values)
+        {
+            string text = stats.GetDisplay(pair.Key);
+            if (text == null) continue;
+            sb.Append('\n').Append(text);
+        }
+
+        if (item.Info.Durability > 0)
+            sb.Append('\n').Append($"Cooldown: {Functions.ToString(TimeSpan.FromMilliseconds(item.Info.Durability), true)}");
+    }
+
+    private void AppendTrainingInfo(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
+    {
+        switch (displayInfo.ItemType)
+        {
+            case ItemType.Weapon:
+                if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
+                sb.Append('\n').Append($"{displayInfo.ItemType} Level: " + (item.Level < Globals.WeaponExperienceList.Count ? item.Level.ToString() : "Max"));
+                if (item.Level >= Globals.WeaponExperienceList.Count) return;
+                sb.Append('\n').Append((item.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable
+                    ? "Ready for Refine"
+                    : $"{displayInfo.ItemType} Training Points: {item.Experience / Globals.WeaponExperienceList[item.Level]:0.##%}");
+                break;
+            case ItemType.Necklace:
+            case ItemType.Bracelet:
+            case ItemType.Ring:
+                if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable) return;
+                sb.Append('\n').Append($"{displayInfo.ItemType} Level: " + (item.Level < Globals.AccessoryExperienceList.Count ? item.Level.ToString() : "Max"));
+                if (item.Level >= Globals.AccessoryExperienceList.Count) return;
+                sb.Append('\n').Append((item.Flags & UserItemFlags.Refinable) == UserItemFlags.Refinable
+                    ? "Ready for Refine"
+                    : $"{displayInfo.ItemType} Training Points: {item.Experience / Globals.AccessoryExperienceList[item.Level]:0.##%}");
+                break;
+        }
+    }
+
+    private void AppendRequirements(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
+    {
+        if (displayInfo.RequiredGender != RequiredGender.None)
+            sb.Append('\n').Append($"Required Gender: {displayInfo.RequiredGender}");
+
+        if (displayInfo.RequiredClass != RequiredClass.All)
+        {
+            var clsMember = typeof(RequiredClass).GetMember(displayInfo.RequiredClass.ToString()).FirstOrDefault();
+            var clsDesc = clsMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
+            sb.Append('\n').Append($"Required Class: {clsDesc ?? displayInfo.RequiredClass.ToString()}");
+        }
+
+        if (displayInfo.RequiredAmount <= 0) return;
+
+        string text;
+        switch (displayInfo.RequiredType)
+        {
+            case RequiredType.Level: text = $"Required Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxLevel: text = $"Max Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.AC: text = $"Required AC: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MR: text = $"Required MR: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.DC: text = $"Required DC: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MC: text = $"Required MC: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.SC: text = $"Required SC: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.Health: text = $"Required Health: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.Mana: text = $"Required Mana: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.CompanionLevel: text = $"Companion Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxCompanionLevel: text = $"Max Companion Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.RebirthLevel: text = $"Rebirth Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxRebirthLevel: text = $"Max Rebirth Level: {displayInfo.RequiredAmount}"; break;
+            default: text = "Unknown Type Required"; break;
+        }
+        sb.Append('\n').Append(text);
+    }
+
+    private void AppendSocketInfo(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
+    {
+        if (displayInfo.ItemType != ItemType.Weapon && displayInfo.ItemType != ItemType.Armour) return;
+
+        foreach (ClientUserItemSocket socket in (item.Sockets ?? Enumerable.Empty<ClientUserItemSocket>()).OrderBy(x => x.Slot))
+        {
+            ClientUserItem gemItem = socket.Gem;
+            if (gemItem?.Info == null)
+            {
+                sb.Append('\n').Append("Empty Socket");
+                continue;
+            }
+
+            Stats gemStats = new Stats(gemItem.Info.Stats);
+            gemStats.Add(gemItem.AddedStats);
+            foreach (KeyValuePair<Stat, int> pair in gemStats.Values)
+            {
+                string text = gemStats.GetDisplay(pair.Key);
+                if (text == null) continue;
+                sb.Append('\n').Append(text);
+            }
+        }
+    }
+
+    private void AppendTradeState(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
+    {
+        long sale = item.Price(Math.Max(1, item.Count));
+        bool any = false;
+
+        if (sale > 0)
+        {
+            sb.Append('\n').Append($"Sell Value: {sale:#,##0}");
+            any = true;
+        }
+
+        if (item.Info.Durability > 0 && !item.Info.CanRepair && item.Info.StackSize == 1)
+        {
+            switch (item.Info.ItemType)
+            {
+                case ItemType.Weapon:
+                case ItemType.Armour:
+                case ItemType.Helmet:
+                case ItemType.Necklace:
+                case ItemType.Bracelet:
+                case ItemType.Ring:
+                case ItemType.Shoes:
+                case ItemType.Shield:
+                    sb.Append('\n').Append("Cannot be repaired.");
+                    any = true;
+                    break;
+            }
+        }
+
+        if (!item.Info.CanSell || (item.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless)
+        {
+            sb.Append('\n').Append("Cannot be sold.");
+            any = true;
+        }
+        if (!item.Info.CanStore)
+        {
+            sb.Append('\n').Append("Cannot be stored.");
+            any = true;
+        }
+        if (!item.Info.CanTrade || (item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+        {
+            sb.Append('\n').Append("Cannot be traded.");
+            any = true;
+        }
+        if (!item.Info.CanDrop)
+        {
+            sb.Append('\n').Append("Cannot be dropped.");
+            any = true;
+        }
+        if (!item.Info.CanDeathDrop || (item.Flags & UserItemFlags.Worthless) == UserItemFlags.Worthless || (item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+        {
+            sb.Append('\n').Append("Cannot be dropped on death.");
+            any = true;
+        }
+        if ((item.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+        {
+            sb.Append('\n').Append("Bound Item.");
+            any = true;
+        }
+        if ((item.Flags & UserItemFlags.NonRefinable) == UserItemFlags.NonRefinable)
+        {
+            sb.Append('\n').Append(item.Info.ItemType == ItemType.Book
+                ? "Does not contain Level 4 Pages."
+                : "Cannot be Refined or Upgraded.");
+            any = true;
+        }
+        else if (item.Info.ItemType == ItemType.Book)
+        {
+            sb.Append('\n').Append("Contains high level Pages.");
+            any = true;
+        }
+    }
+
+    private static void AppendDescription(System.Text.StringBuilder sb, ItemInfo displayInfo)
+    {
+        if (string.IsNullOrEmpty(displayInfo.Description)) return;
+        string desc = displayInfo.Description
+            .Replace("\\r\\n", "\n")
+            .Replace("\\n", "\n")
+            .Replace("\\r", "\r");
+        sb.Append('\n').Append(desc);
+    }
+
+    private void AppendSetInfo(System.Text.StringBuilder sb, ClientUserItem item, SetInfo set)
+    {
+        sb.Append('\n').Append("Item Set:");
+        sb.Append('\n').Append($"    {set.SetName}");
+        sb.Append('\n').Append("Parts:");
+
+        bool hasFullSet = true;
+        var counted = new List<int>();
+        Stats setBonus = new Stats();
+        int level = PlayerLevel;
+        MirClass userClass = StartInfo?.Class ?? MirClass.Warrior;
+
+        foreach (ItemInfo info in set.Items ?? Enumerable.Empty<ItemInfo>())
+        {
+            bool hasPart = false;
+            for (int i = 0; i < Equipment.Length; i++)
+            {
+                if (counted.Contains(i)) continue;
+                if (Equipment[i] == null || Equipment[i].Info != info) continue;
+                if (Equipment[i].CurrentDurability == 0 && Equipment[i].Info.Durability > 0) continue;
+                counted.Add(i);
+                hasPart = true;
+                break;
+            }
+
+            if (!hasPart)
+                hasFullSet = false;
+
+            sb.Append('\n').Append("    " + info.ItemName);
+        }
+
+        sb.Append('\n').Append("Set Bonus:");
+
+        foreach (SetInfoStat stat in set.SetStats ?? Enumerable.Empty<SetInfoStat>())
+        {
+            if (level < stat.Level) continue;
+            if (!ClassMatches(stat.Class, userClass)) continue;
+            setBonus[stat.Stat] += stat.Amount;
+        }
+
+        foreach (KeyValuePair<Stat, int> pair in setBonus.Values)
+        {
+            string text = setBonus.GetDisplay(pair.Key);
+            if (text == null) continue;
+            sb.Append('\n').Append("    " + text);
+        }
+    }
+
+    private static bool ClassMatches(RequiredClass required, MirClass cls)
+    {
+        return cls switch
+        {
+            MirClass.Warrior => (required & RequiredClass.Warrior) == RequiredClass.Warrior,
+            MirClass.Wizard => (required & RequiredClass.Wizard) == RequiredClass.Wizard,
+            MirClass.Taoist => (required & RequiredClass.Taoist) == RequiredClass.Taoist,
+            MirClass.Assassin => (required & RequiredClass.Assassin) == RequiredClass.Assassin,
+            _ => true,
+        };
     }
 
     /// <summary>原版 DXItemCell 中键/快捷键 ItemLock 的目标状态（反相当前锁定）。</summary>
@@ -7617,6 +8116,7 @@ public partial class GameScene : Control
         {
             _hoverLabel.Visible = true;
             _hoverLabel.Text = _combatController.MouseObject.DisplayName;
+            FitHoverLabelSize();
             var p = GetGlobalMousePosition() / UiScale;
             _hoverLabel.Position = new Vector2(p.X + 14, p.Y + 10);
         }

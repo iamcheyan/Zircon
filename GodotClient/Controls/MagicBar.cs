@@ -148,7 +148,7 @@ public partial class MagicBar : Control
             var font = MirSkin.GetFont();
             if (font != null)
                 DrawString(font, new Vector2(x + IconSize - 12, y + IconSize - 4),
-                    (i + 1).ToString(), HorizontalAlignment.Left, -1, 9, Colors.White);
+                    (i + 1).ToString(), HorizontalAlignment.Left, -1, MirSkin.ScaledSize(9), Colors.White);
 
             // 原版 MagicBarDialog 在技能图标上覆盖冷却层；不能只在施法时
             // 刷一次，否则倒计时会停在旧数字。
@@ -166,7 +166,7 @@ public partial class MagicBar : Control
                 var colour = remaining.TotalSeconds > 5 ? Colors.Gold : Colors.Red;
                 if (font != null)
                     DrawString(font, new Vector2(x + (frames ? 18 : 12), y + (frames ? 5 : 0) + IconSize / 2f + 4),
-                        $"{Math.Ceiling(remaining.TotalSeconds)}s", HorizontalAlignment.Left, -1, 10, colour);
+                        $"{Math.Ceiling(remaining.TotalSeconds)}s", HorizontalAlignment.Left, -1, MirSkin.ScaledSize(10), colour);
             }
         }
     }

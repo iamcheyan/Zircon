@@ -131,11 +131,26 @@ public static class MirSkin
         return null;
     }
 
+    /// <summary>
+    /// 全局字体缩放系数。旧版字号单位是 pt（96dpi 下 8pt ≈ 10.67px），
+    /// 新版是逻辑像素，直接沿用旧数值会小 ~25%；本系数把逻辑像素字号
+    /// 放大到与旧版视觉一致，并允许用户按 DPI/分辨率微调。
+    /// 与 UiScale 独立：UiScale 缩放整个 _uiLayer（含字体），这里只负责
+    /// 「基准字号本身」的适配，两者相乘才是最终屏幕字号。
+    /// </summary>
+    public static float FontScale = 4f / 3f;
+
+    /// <summary>应用全局缩放后的实际绘制字号（取整，保证布局测量一致）。</summary>
+    public static int ScaledSize(int size) => Mathf.Max(1, Mathf.RoundToInt(size * FontScale));
+
+    public static int ScaledSize(float size) => Mathf.Max(1, Mathf.RoundToInt(size * FontScale));
+
+
     public static Vector2 MeasureText(string text, int fontSize)
     {
         var font = GetFont();
         if (font == null || string.IsNullOrEmpty(text)) return Vector2.Zero;
-        return font.GetStringSize(text, HorizontalAlignment.Left, -1, fontSize);
+        return font.GetStringSize(text, HorizontalAlignment.Left, -1, ScaledSize(fontSize));
     }
 
     /// <summary>进程退出前调用: 释放所有静态资源, 消除 Godot 退出时的 RID 泄漏警告。

@@ -79,8 +79,8 @@ public sealed partial class GroupHealthRow : DXControl
     protected override void DrawControl()
     {
         string healthText = MaxHealth > 0 ? $"{Health}/{MaxHealth}" : string.Empty;
-        DrawString(MirSkin.GetFont(), new Vector2(15, 13), NameText, HorizontalAlignment.Left, 82, 10, Colors.White);
-        DrawString(MirSkin.GetFont(), new Vector2(98, 13), healthText, HorizontalAlignment.Right, 37, 9, Colors.White);
+        DrawString(MirSkin.GetFont(), new Vector2(15, 13), NameText, HorizontalAlignment.Left, 82, MirSkin.ScaledSize(10), Colors.White);
+        DrawString(MirSkin.GetFont(), new Vector2(98, 13), healthText, HorizontalAlignment.Right, 37, MirSkin.ScaledSize(9), Colors.White);
         var bar = new Rect2(15, 20, 120, 8);
         DrawRect(bar, new Color(.08f, .08f, .08f, .75f));
         DrawRect(new Rect2(bar.Position, new Vector2(bar.Size.X * Mathf.Clamp(HealthPercent, 0, 1), bar.Size.Y)), new Color(.18f, .78f, .22f, .9f));

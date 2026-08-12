@@ -481,12 +481,12 @@ public partial class MagicCellView : DXControl
             DrawTextureRect(tex, new Rect2(9, 9, 36, 36), false, new Color(1f, 1f, 1f, opacity));
 
         // 名称
-        DrawString(MirSkin.GetFont(), new Vector2(54, 18), _info.Name ?? "", fontSize: 13,
+        DrawString(MirSkin.GetFont(), new Vector2(54, 18), _info.Name ?? "", fontSize: MirSkin.ScaledSize(13),
             modulate: new Color(1f, 1f, 1f, opacity));
 
         // 等级 / 学习状态
         string levelText = _magic == null ? "Not\nLearned" : $"Level: {_magic.Level}";
-        DrawString(MirSkin.GetFont(), new Vector2(54, 36), levelText, fontSize: 11,
+        DrawString(MirSkin.GetFont(), new Vector2(54, 36), levelText, fontSize: MirSkin.ScaledSize(11),
             modulate: _magic == null ? new Color(1f, 0.35f, 0.35f, opacity) : new Color(0.8f, 0.8f, 0.8f, opacity));
 
         string experienceText;
@@ -507,7 +507,7 @@ public partial class MagicCellView : DXControl
             experienceText = MagicExperienceText(_magic);
         }
         DrawString(MirSkin.GetFont(), new Vector2(364, 31), experienceText,
-            HorizontalAlignment.Right, 205, 10, new Color(1f, 0.85f, 0.45f, opacity));
+            HorizontalAlignment.Right, 205, MirSkin.ScaledSize(10), new Color(1f, 0.85f, 0.45f, opacity));
 
         // 当前栏组键位
         if (game != null && _magic != null)
@@ -522,7 +522,7 @@ public partial class MagicCellView : DXControl
             };
             if (key != Library.SpellKey.None)
             {
-                DrawString(MirSkin.GetFont(), new Vector2(330, 18), SpellKeyText(key), fontSize: 13,
+                DrawString(MirSkin.GetFont(), new Vector2(330, 18), SpellKeyText(key), fontSize: MirSkin.ScaledSize(13),
                     modulate: new Color(1f, 0.85f, 0.3f, opacity));
             }
         }

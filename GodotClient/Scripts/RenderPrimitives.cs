@@ -128,11 +128,12 @@ internal static class RenderPrimitives
         if (string.IsNullOrWhiteSpace(text)) return;
         Font font = MirSkin.GetFont() ?? ThemeDB.FallbackFont;
         if (font == null) return;
-        Vector2 extent = font.GetStringSize(text, HorizontalAlignment.Left, -1, (int)size);
+        int drawSize = MirSkin.ScaledSize(size);
+        Vector2 extent = font.GetStringSize(text, HorizontalAlignment.Left, -1, drawSize);
         Vector2 p = baseline - new Vector2(extent.X * 0.5f, 0f);
         canvas.DrawString(font, p + new Vector2(1f, 1f), text,
-            HorizontalAlignment.Left, -1f, (int)size, new Color(0f, 0f, 0f, 0.85f));
-        canvas.DrawString(font, p, text, HorizontalAlignment.Left, -1f, (int)size, colour);
+            HorizontalAlignment.Left, -1f, drawSize, new Color(0f, 0f, 0f, 0.85f));
+        canvas.DrawString(font, p, text, HorizontalAlignment.Left, -1f, drawSize, colour);
     }
 
     /// <summary>
@@ -143,7 +144,8 @@ internal static class RenderPrimitives
     public static float OriginalNameBaseline(float size = 9f)
     {
         Font font = MirSkin.GetFont() ?? ThemeDB.FallbackFont;
-        float height = font?.GetHeight((int)size) ?? size;
+        float drawSize = MirSkin.ScaledSize(size);
+        float height = font?.GetHeight((int)drawSize) ?? drawSize;
         return -(32f - height) / 2f - 6f + height;
     }
 }

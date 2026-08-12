@@ -97,7 +97,8 @@ public partial class ChatLogPanel : Control
         var settings = _tabSettings[_selectedTab];
         bool transparent = settings.Transparent;
         bool faded = settings.FadeOut && transparent && _idleSeconds > 10.0;
-        // 无消息、透明设置或已淡出：不画背景底色，消除主面板上方悬浮的灰色块
+        // 透明聊天模式下背景由「每条消息的半透明黑底」承担（旧版 GetBackColour
+        // 的 FromArgb(100,0,0,0)），面板本身不再画整块底色，避免主面板上方悬浮灰色块。
         if (_lines.Count == 0 || faded || transparent) return;
         DrawRect(new Rect2(Vector2.Zero, Size), new Color(0f, 0f, 0f, 0.26f));
     }
@@ -407,7 +408,7 @@ public partial class ChatLogPanel : Control
                 Text = displayText,
                 FontSize = 10,
                 TextColour = message.Colour,
-                BackColour = message.BackColour,
+                BackColour = ResolveMessageBackColour(message.BackColour, _tabSettings[_selectedTab].Transparent),
                 DrawShadow = true,
                 IsControl = false,
                 Size = new Vector2I((int)_textArea.Size.X - 8, 16),
@@ -484,6 +485,18 @@ public partial class ChatLogPanel : Control
         };
     }
 
+    /// <summary>
+    /// 对齐旧版 ChatTab.GetBackColour：透明聊天模式下，原本全透明的消息背景
+    /// 换成半透明黑底 (FromArgb(100,0,0,0))，保证文字在任何画面下都可读；
+    /// 非透明模式保留配置的背景色（System/公告等白色高亮底）。
+    /// </summary>
+    private static Color ResolveMessageBackColour(Color backColour, bool transparent)
+    {
+        if (!transparent) return backColour;
+        if (backColour.A <= 0f) return new Color(0f, 0f, 0f, 100f / 255f);
+        return backColour;
+    }
+
     private static string NormalizeLinkedText(string text)
     {
         if (string.IsNullOrEmpty(text)) return string.Empty;
@@ -533,12 +546,25 @@ public partial class ChatLogPanel : Control
                 TextColour = new Color(1f, .9f, .25f),
                 DrawOutline = true,
                 OutlineColour = Colors.Black,
+                // 旧版 ProcessText 用 FontStyle.Underline 标记物品链接
+                DrawUnderline = true,
                 AutoSize = false,
                 Size = new Vector2I(Math.Max(1, (int)measured.X + 2), Math.Max(1, (int)measured.Y)),
                 Position = position,
             };
-            linked.MouseEnter += (sender, args) => GameScene.Game?.SetHoverItem(item);
-            linked.MouseLeave += (sender, args) => GameScene.Game?.SetHoverItem(null);
+            // 旧版悬停变红 + 显示物品悬浮提示；离开恢复黄色
+            linked.MouseEnter += (sender, args) =>
+            {
+                GameScene.Game?.SetHoverItem(item);
+                linked.TextColour = Colors.Red;
+                linked.QueueRedraw();
+            };
+            linked.MouseLeave += (sender, args) =>
+            {
+                GameScene.Game?.SetHoverItem(null);
+                linked.TextColour = new Color(1f, .9f, .25f);
+                linked.QueueRedraw();
+            };
             line.AddControl(linked);
             _linkedLabels.Add(linked);
         }

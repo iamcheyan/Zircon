@@ -45,7 +45,7 @@ public sealed partial class DXTextArea : DXControl
         set
         {
             _fontSize = Math.Max(1, value);
-            _edit.AddThemeFontSizeOverride("font_size", _fontSize);
+            _edit.AddThemeFontSizeOverride("font_size", MirSkin.ScaledSize(_fontSize));
         }
     }
 
@@ -64,7 +64,7 @@ public sealed partial class DXTextArea : DXControl
         };
         var font = MirSkin.GetFont();
         if (font != null) _edit.AddThemeFontOverride("font", font);
-        _edit.AddThemeFontSizeOverride("font_size", _fontSize);
+        _edit.AddThemeFontSizeOverride("font_size", MirSkin.ScaledSize(_fontSize));
         _edit.AddThemeColorOverride("font_color", Colors.White);
         _edit.AddThemeColorOverride("font_placeholder_color", new Color(1, 1, 1, .55f));
         _edit.AddThemeColorOverride("caret_color", new Color(1f, .85f, .3f));
