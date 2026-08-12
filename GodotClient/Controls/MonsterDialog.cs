@@ -19,6 +19,7 @@ public sealed partial class MonsterDialog : DXWindow
     private readonly DXLabel _mr;
     private readonly DXLabel _dc;
     private readonly DXLabel[] _resist = new DXLabel[8];
+    private readonly DXImageControl[] _resistIcons = new DXImageControl[8];
     private readonly DXImageControl _attackSpeedIcon;
     private readonly DXImageControl _movementSpeedIcon;
     private readonly DXImageControl _tamableIcon;
@@ -124,11 +125,45 @@ public sealed partial class MonsterDialog : DXWindow
         _resist[5].Text = Resistance(stats[Stat.DarkResistance]);
         _resist[6].Text = Resistance(stats[Stat.PhantomResistance]);
         _resist[7].Text = Resistance(stats[Stat.PhysicalResistance]);
+        ColourResist(_resist[0], stats[Stat.FireResistance]);
+        ColourResist(_resist[1], stats[Stat.IceResistance]);
+        ColourResist(_resist[2], stats[Stat.LightningResistance]);
+        ColourResist(_resist[3], stats[Stat.WindResistance]);
+        ColourResist(_resist[4], stats[Stat.HolyResistance]);
+        ColourResist(_resist[5], stats[Stat.DarkResistance]);
+        ColourResist(_resist[6], stats[Stat.PhantomResistance]);
+        ColourResist(_resist[7], stats[Stat.PhysicalResistance]);
         _attackSpeedIcon.Index = AttackSpeedIcon(info.AttackDelay);
         _movementSpeedIcon.Index = MovementSpeedIcon(info.MoveDelay);
         _tamableIcon.Index = info.CanTame ? 631 : 632;
         _undeadIcon.Index = info.Undead ? 635 : 634;
-        _growthIcon.Visible = false;
+
+        // 旧版 RefreshStats：GrowthLevel > 0 时显示成长图标（ProgUse 630）。
+        int growthLevel = _monster.Stats?[Stat.GrowthLevel] ?? 0;
+        _growthIcon.Visible = growthLevel > 0;
+        _growthIcon.TooltipText = growthLevel > 0 ? $"成长等级 {growthLevel}" : "成长";
+
+        // 旧版各图标的 Hint（悬停文字）：元素/抗性/速度/可驯服/亡灵。
+        _attackIcon.TooltipText = stats.GetAffinityElement() switch
+        {
+            Element.Fire => "火",
+            Element.Ice => "冰",
+            Element.Lightning => "闪电",
+            Element.Wind => "风",
+            Element.Holy => "神圣",
+            Element.Dark => "黑暗",
+            Element.Phantom => "幻影",
+            _ => "物理",
+        };
+        string[] resistNames = { "火", "冰", "闪电", "风", "神圣", "黑暗", "幻影", "物理" };
+        for (int i = 0; i < _resistIcons.Length && i < resistNames.Length; i++)
+        {
+            if (_resistIcons[i] != null) _resistIcons[i].TooltipText = $"{resistNames[i]}抗性";
+        }
+        _attackSpeedIcon.TooltipText = "攻击速度";
+        _movementSpeedIcon.TooltipText = "移动速度";
+        _tamableIcon.TooltipText = info.CanTame ? "可驯服" : "不可驯服";
+        _undeadIcon.TooltipText = info.Undead ? "亡灵" : "生者";
     }
 
     public bool AuditLayout(out string details)
@@ -186,6 +221,9 @@ public sealed partial class MonsterDialog : DXWindow
             MouseFilter = MouseFilterEnum.Ignore,
         };
         _detailsPanel.AddControl(icon);
+        // 记录图标引用，供 Refresh 设置悬停 Hint（旧版 DXImageControl.Hint）。
+        for (int i = 0; i < _resistIcons.Length; i++)
+            if (_resistIcons[i] == null) { _resistIcons[i] = icon; break; }
         var value = new DXLabel
         {
             FontSize = 8,
@@ -212,6 +250,20 @@ public sealed partial class MonsterDialog : DXWindow
     }
 
     private static string Resistance(int value) => $"x{Mathf.Abs(value):0}";
+
+    /// <summary>
+    /// 旧版 PopulateLabel 的抗性颜色：0 白、正数 Lime、负数 IndianRed。
+    /// </summary>
+    private static void ColourResist(DXLabel label, int value)
+    {
+        label.TextColour = value switch
+        {
+            > 0 => Colors.Lime,
+            < 0 => new Color(0.69f, 0.28f, 0.28f),
+            _ => Colors.White,
+        };
+        label.QueueRedraw();
+    }
 
     private static int AttackSpeedIcon(int delay) => delay switch
     {
