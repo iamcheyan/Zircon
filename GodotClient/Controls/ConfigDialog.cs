@@ -11,7 +11,6 @@ public partial class ConfigDialog : DXWindow
 {
     private readonly DXControl _page;
     private readonly DXButton[] _tabs;
-    private bool _english;
     private bool _allowObservable = true;
     private KeyBindDialog _keyBind;
 
@@ -177,10 +176,16 @@ public partial class ConfigDialog : DXWindow
         var language = new ConfigSelect();
         language.AddItem("中文");
         language.AddItem("English");
-        language.SelectedIndex = string.Equals(ClientSettings.Language, "ENGLISH", StringComparison.OrdinalIgnoreCase) ? 1 : 0;
+        language.AddItem("日本語");
+        language.SelectedIndex = ClientSettings.Language?.ToUpperInvariant() switch
+        {
+            "ENGLISH" => 1,
+            "JAPANESE" => 2,
+            _ => 0,
+        };
         language.SelectedChanged += (s, e) =>
         {
-            ClientSettings.Language = language.SelectedIndex == 1 ? "ENGLISH" : "CHINESE";
+            ClientSettings.Language = language.SelectedIndex switch { 1 => "ENGLISH", 2 => "JAPANESE", _ => "CHINESE" };
             ClientSettings.Save();
             Lang.Reload(); // UI 文本即时切换
             GameScene.Game?.SendSelectLanguage(ClientSettings.Language);
@@ -262,8 +267,6 @@ public partial class ConfigDialog : DXWindow
         var keyButton = new DXButton { Text = "快捷键设置", FontSize = 9, Size = new Vector2I(120, 18), LibraryFile = LibraryFile.Interface, Index = -1 };
         keyButton.MouseClick += (o, e) => { _keyBind ??= new KeyBindDialog(); WindowManager.Open(_keyBind, GetParent()); };
         ui.AddButton(keyButton);
-        var language = Check(_english ? "语言：English" : "语言：中文", false, _ => { _english = !_english; GameScene.Game?.SendSelectLanguage(_english ? "ENGLISH" : "CHINESE"); });
-        ui.AddOption(Lang.CommonControlConfigWindowGraphicsTabLanguageLabel, language);
         AddSection(ui, 0);
 
         var colours = new ConfigSectionPanel("Chat Colours", 13, 2);

@@ -1,0 +1,40 @@
+# 第二批：聊天/队伍/行会/邮件/交易核心窗口（中英日）
+CommunicationDialogTitle	聊天	Chat	チャット
+CommunicationDialogSendTabSubjectLabel	主题:	Subject:	件名：
+CommunicationDialogReadTabSubjectLabel	主题:	Subject:	件名：
+CommunicationDialogSendTabSendButtonLabel	发送	Send	送信
+CommunicationDialogFriendTabFriendAddButtonLabel	添加好友	Add Friend	フレンド追加
+CommunicationDialogFriendTabFriendAddButtonConfirmCaption	添加好友	Add Friend	フレンド追加
+CommunicationDialogReceivedTabCategoryLabel	分类	Category	分類
+GroupDialogTitle	编组	Group	パーティー
+GroupDialogAllowGroupLabel	允许组队	Allow Group	パーティー許可
+GroupDialogInviteLabel	邀请	Invite	招待
+GroupDialogAcceptLabel	接受	Accept	承諾
+GroupDialogDeclineLabel	拒绝	Decline	拒否
+GroupUnknownLabel	未知玩家	Unknown Player	不明なプレイヤー
+GuildDialogTitle	行会	Guild	ギルド
+GuildDialogHomeTabNoticeLabel	公告	Notice	告知
+GuildDialogCreateTabLabel	创建	Create	作成
+GuildDialogStorageTabLabel	仓库	Storage	倉庫
+GuildDialogMembersTabLabel	成员	Members	メンバー
+GuildMemberDialogMemberLabel	成员：	Member:	メンバー：
+GuildMemberRowOnlineLabel	在线	Online	オンライン
+RankingOfflineLabel	离线	Offline	オフライン
+RankingDialogOnlineOnlyLabel	仅在线	Online Only	オンラインのみ
+MenuDialogGuildButtonLabel	行会	Guild	ギルド
+MenuDialogStorageButtonLabel	仓库	Storage	倉庫
+MenuDialogRankingButtonLabel	排行	Ranking	ランキング
+MenuDialogLeaveButtonLabel	退出游戏	Exit Game	ゲーム終了
+MenuDialogHelpButtonLabel	帮助	Help	ヘルプ
+MenuDialogCompanionButtonLabel	宠物	Companion	ペット
+ExitDialogTitle	退出游戏	Exit Game	ゲーム終了
+ExitDialogExitButtonLabel	退出	Exit	終了
+ExitDialogToSelectButtonLabel	角色选择	Select Character	キャラクター選択
+SelectTitle	角色选择	Select Character	キャラクター選択
+SelectNameLabel	名称	Name	名前
+SelectLevelLabel	等级	Level	レベル
+SelectClassLabel	职业	Class	職業
+SelectCreateButtonLabel	创建	Create	作成
+LoginDialogOptionButtonLabel	选项	Options	オプション
+LoginDialogExitButtonLabel	退出	Exit	終了
+LoginDialogRankingButtonLabel	排行	Ranking	ランキング

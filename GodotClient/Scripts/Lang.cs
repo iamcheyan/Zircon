@@ -26,6 +26,10 @@ public static class Lang
             case "ENGLISH":
                 Current = new EnglishMessages();
                 break;
+            case "JAPANESE":
+            case "日本語":
+                Current = new JapaneseMessages();
+                break;
             default:
                 Current = new ChineseMessages();
                 break;

@@ -1,0 +1,35 @@
+# CommonControl 第一批：补全中文（原为英文原文）+ 新增日文
+CommonControlConfigWindowColoursTabGainsTextLabel	获得文字	Gains Text	獲得テキスト
+CommonControlConfigWindowGameSectionSettingsLabel	设置	Settings	設定
+CommonControlConfigWindowGameTabDamageNumbersLabel	伤害数字	Damage Numbers	ダメージ数値
+CommonControlConfigWindowGameTabObservableLabel	可观察	Observable	観察可能
+CommonControlConfigWindowGameTabShowTargetOutlineLabel	目标轮廓	Target Outline	ターゲット枠線
+CommonControlConfigWindowGraphicsSectionDisplayLabel	显示	Display	表示
+CommonControlConfigWindowGraphicsSectionEffectsLabel	特效	Effects	エフェクト
+CommonControlConfigWindowGraphicsSectionUsabilityLabel	操作	Usability	操作
+CommonControlConfigWindowGraphicsTabBorderlessLabel	无边框	Borderless	ボーダーレス
+CommonControlConfigWindowGraphicsTabClipMouseLabel	锁定鼠标	Clip Mouse	マウス固定
+CommonControlConfigWindowGraphicsTabDefaultMonitorLabel	显示器	Monitor	モニター
+CommonControlConfigWindowGraphicsTabDisplayHelmetLabel	显示头盔	Display Helmet	兜表示
+CommonControlConfigWindowGraphicsTabRenderingPipelineLabel	渲染模式	Render Mode	レンダーモード
+CommonControlConfigWindowGraphicsTabVSyncLabel	垂直同步	V-Sync	垂直同期
+CommonControlConfigWindowNetworkSectionSettingsLabel	设置	Settings	設定
+CommonControlConfigWindowSoundsSectionOptionsLabel	选项	Options	オプション
+CommonControlConfigWindowSoundsSectionVolumeLabel	音量	Volume	音量
+CommonControlConfigWindowTargetColoursTabMonsterFriendlyLabel	怪物（友好）	Monster (Friendly)	モンスター（友好）
+CommonControlConfigWindowTargetColoursTabMonsterHighLabel	怪物（高）	Monster (High)	モンスター（高）
+CommonControlConfigWindowTargetColoursTabMonsterLowLabel	怪物（低）	Monster (Low)	モンスター（低）
+CommonControlConfigWindowTargetColoursTabMonsterSameLabel	怪物（同级）	Monster (Same)	モンスター（同格）
+CommonControlConfigWindowTargetColoursTabNPCLabel	NPC	NPC	NPC
+CommonControlConfigWindowTargetColoursTabPlayerEnemyLabel	玩家（敌对）	Player (Enemy)	プレイヤー（敵対）
+CommonControlConfigWindowTargetColoursTabPlayerFriendlyLabel	玩家（友好）	Player (Friendly)	プレイヤー（友好）
+CommonControlConfigWindowUISectionColoursLabel	颜色	Colours	色
+CommonControlConfigWindowUISectionSettingsLabel	设置	Settings	設定
+CommonControlConfigWindowUISectionTargetColoursLabel	目标颜色	Outline Colours	ターゲット色
+CommonControlConfigWindowUITabLabel	界面	UI	UI
+CommonControlDXKeyBindWindowDefaultConfirmMessage	确定要将所有按键恢复为默认设置吗？	Are you sure you want to reset ALL keybinds back to the default settings?	全てのキーバインドを初期設定に戻しますか？
+CommonControlConfigWindowUITabShiftOpenChatHint	开启后按 Shift + 1 打开聊天，关闭则使用快捷栏 1	If turned on, Pressing Shift + 1 will open chat, if this is off you will use Quick Slot 1	オンにすると Shift+1 でチャットを開きます。オフの場合はクイックスロット1を使用します
+CommonControlConfigWindowGameTabRightClickDeTargetHint	开启后右键移动也会取消怪物锁定	If turned on, Right clicking to move away will also remove monster target.	オンにすると、右クリック移動でもモンスターのターゲットが外れます
+CommonStatusElementAttack	元素攻击	Element Attack	元素攻撃
+CommonStatusHealth	生命/魔法	Hp/Mp	HP/MP
+CommonStatusMana	魔法	Mana	マナ

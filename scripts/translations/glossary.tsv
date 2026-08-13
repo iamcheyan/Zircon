@@ -1,0 +1,147 @@
+# Zircon/Mir3 游戏术语对照表（翻译时必须统一使用）
+# 格式: 中文	英文	日文
+背包	Inventory	インベントリ
+仓库	Storage	倉庫
+行会	Guild	ギルド
+行会战	Guild War	ギルド戦
+编组	Group	パーティー
+组队	Group	パーティー
+宠物	Companion	ペット
+伙伴	Companion	ペット
+技能	Skill	スキル
+魔法	Magic	魔法
+攻击	Attack	攻撃
+防御	Defence	防御
+魔法防御	Magic Defence	魔法防御
+魔法攻击	Magic Attack	魔法攻撃
+道术	Tao	道術
+武器	Weapon	武器
+防具	Armour	防具
+头盔	Helmet	兜
+项链	Necklace	首飾り
+手镯	Bracelet	腕輪
+戒指	Ring	指輪
+鞋子	Shoes	靴
+护身符	Amulet	護符
+腰带	Belt	ベルト
+装备	Equipment	装備
+物品	Item	アイテム
+道具	Item	アイテム
+金币	Gold	ゴールド
+货币	Currency	通貨
+经验	Experience	経験値
+等级	Level	レベル
+负重	Weight	重量
+耐久	Durability	耐久度
+精炼	Refine	精錬
+镶嵌	Socket	ソケット
+制作	Craft	製作
+修理	Repair	修理
+强化	Upgrade	強化
+分解	Fragment	分解
+宝石	Gem	宝石
+药品	Potion	薬品
+卷轴	Scroll	巻物
+任务	Quest	クエスト
+任务日志	Quest Log	クエストログ
+奖励	Reward	報酬
+目标	Target	ターゲット
+怪物	Monster	モンスター
+BOSS	Boss	ボス
+掉落	Drop	ドロップ
+拾取	Pickup	拾得
+拍卖	Market	オークション
+寄售	Consignment	委託
+商城	Store	ショップ
+商店	Store	商店
+排行	Ranking	ランキング
+排行榜	Ranking	ランキング
+好友	Friend	フレンド
+邮件	Mail	メール
+聊天	Chat	チャット
+世界	World	ワールド
+公告	Announcement	告知
+设置	Settings	設定
+选项	Options	オプション
+确认	Confirm	確認
+确定	OK	決定
+取消	Cancel	キャンセル
+关闭	Close	閉じる
+保存	Save	保存
+重置	Reset	リセット
+退出	Exit	終了
+登录	Login	ログイン
+注册	Register	登録
+密码	Password	パスワード
+账号	Account	アカウント
+邮箱	E-mail	メールアドレス
+角色	Character	キャラクター
+职业	Class	職業
+战士	Warrior	戦士
+法师	Wizard	魔法使い
+道士	Taoist	道士
+刺客	Assassin	暗殺者
+在线	Online	オンライン
+离线	Offline	オフライン
+组队邀请	Invite	招待
+接受	Accept	承諾
+拒绝	Decline	拒否
+成员	Member	メンバー
+会长	Guild Leader	ギルドマスター
+公告	Notice	告知
+税率	Tax	税率
+仓库	Storage	倉庫
+贡献	Contribution	貢献
+贡献点	Contribution	貢献値
+战争	War	戦争
+安全区	Safe Zone	セーフゾーン
+攻城战	Castle War	攻城戦
+城堡	Castle	城
+地图	Map	マップ
+村庄	Village	村
+洞穴	Cave	洞窟
+地下城	Dungeon	ダンジョン
+副本	Instance	インスタンス
+钓鱼	Fishing	釣り
+驯兽	Taming	調教
+坐骑	Horse	乗騎
+交易	Trade	取引
+行会资金	Guild Funds	ギルド資金
+维修费用	Repair Cost	修理費
+购买	Buy	購入
+出售	Sell	売却
+全部出售	Sell All	全て売却
+上架	Listing	出品
+下架	Remove Listing	出品取消
+搜索	Search	検索
+排序	Sort	並び替え
+筛选	Filter	絞り込み
+名称	Name	名前
+数量	Quantity	数量
+价格	Price	価格
+总价	Total	合計
+最高价	Highest Price	最高価格
+最低价	Lowest Price	最低価格
+收藏	Favourite	お気に入り
+查看	View	表示
+发送	Send	送信
+收取	Receive	受取
+删除	Delete	削除
+清空	Clear	クリア
+全部	All	全て
+无	None	なし
+是	Yes	はい
+否	No	いいえ
+错误	Error	エラー
+成功	Success	成功
+失败	Failed	失敗
+正在加载	Loading	読み込み中
+等待	Waiting	待機中
+剩余	Remaining	残り
+已使用	Used	使用済み
+不可用	Unavailable	利用不可
+锁定	Locked	ロック
+已绑定	Bound	装着済み
+未绑定	Unbound	未装着
+装备中	Equipped	装備中
+战斗中	In Combat	戦闘中
