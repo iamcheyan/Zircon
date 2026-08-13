@@ -21,3 +21,4 @@ __pycache__/
 
 # Godot 导出产物 (deploy.sh 生成)
 /deploy-out/
+/milestones
