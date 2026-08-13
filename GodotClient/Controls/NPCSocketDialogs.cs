@@ -19,10 +19,10 @@ public sealed partial class NPCSocketDialog : DXWindow
         close.Location = new Vector2I(Mathf.RoundToInt(Size.X - close.Size.X - 3), 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        var closeDialog = new DXButton { Text = "Close", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(102, 280), Size = new Vector2I(70, 24) };
+        var closeDialog = new DXButton { Text = "关闭", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(102, 280), Size = new Vector2I(70, 24) };
         closeDialog.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(closeDialog);
-        AddControl(new DXLabel { Text = "Socket", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I(188, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "镶嵌", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I(188, 18), IsControl = false });
         Panel = new NPCSocketPanel { Location = Vector2I.Zero };
         AddControl(Panel);
     }
@@ -53,10 +53,10 @@ public sealed partial class NPCSocketCombineDialog : DXWindow
         close.Location = new Vector2I(Mathf.RoundToInt(Size.X - close.Size.X - 3), 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        var closeDialog = new DXButton { Text = "Close", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(105, 285), Size = new Vector2I(70, 24) };
+        var closeDialog = new DXButton { Text = "关闭", Type = DXButton.ButtonType.Default, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(105, 285), Size = new Vector2I(70, 24) };
         closeDialog.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(closeDialog);
-        AddControl(new DXLabel { Text = "Socket Combine", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I(192, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "镶嵌合成", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I(192, 18), IsControl = false });
         Panel = new NPCSocketCombinePanel { Location = Vector2I.Zero };
         AddControl(Panel);
     }

@@ -19,7 +19,7 @@ public sealed partial class AutoPotionDialog : DXWindow
 
     public AutoPotionDialog()
     {
-        Text = "Auto Potion";
+        Text = "自动药水";
         HasFooter = true;
         Size = new Vector2I(298, 498); // SetClientSize(280x398) + 原版边框
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true });

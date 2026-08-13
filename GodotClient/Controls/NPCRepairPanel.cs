@@ -33,13 +33,13 @@ public partial class NPCRepairPanel : DXControl
         Size = new Vector2I(404, 292);
         _frame = new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = false };
         AddControl(_frame);
-        AddControl(new DXLabel { Text = "Repair Items", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(404, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "修理物品", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(404, 18), IsControl = false });
         _grid = new DXItemGrid { GridSize = new Vector2I(11, 5), Location = new Vector2I(9, 37), GridType = GridType.Repair, ItemGrid = _items, GridPadding = 0, Border = false }; AddControl(_grid);
         foreach (var cell in _grid.Cells)
             cell.LinkChanged += (o) => RebuildLinks();
 
         int bottom = 224;
-        AddControl(new DXLabel { Text = "Repair Cost:", FontSize = 9, TextColour = Colors.White, Location = new Vector2I(9, bottom), Size = new Vector2I(79, 20), IsControl = false, Border = true, BorderColour = new Color(1f, .75f, .25f) });
+        AddControl(new DXLabel { Text = "修理费用：", FontSize = 9, TextColour = Colors.White, Location = new Vector2I(9, bottom), Size = new Vector2I(79, 20), IsControl = false, Border = true, BorderColour = new Color(1f, .75f, .25f) });
         _cost = new DXLabel { Text = "0", FontSize = 10, TextColour = Colors.White, Location = new Vector2I(88, bottom), Size = new Vector2I(248, 20), IsControl = false, Border = true, BorderColour = new Color(1f, .75f, .25f) }; AddControl(_cost);
         _special = new DXCheckButton("Special Repair") { Location = new Vector2I(210, bottom + 25), Size = new Vector2I(100, 19), FontSize = 9 };
         _special.Changed += (o, e) => { if (_special.Checked) ClearUnavailableSpecialItems(); RebuildLinks(); }; AddControl(_special);
@@ -48,7 +48,7 @@ public partial class NPCRepairPanel : DXControl
         int buttonY = bottom + 25;
         AddSourceButton("Inventory", 9, buttonY, () => ImportCells(GameScene.Game?.InventoryCells));
         AddSourceButton("Equipment", 93, buttonY, () => ImportCells(GameScene.Game?.EquipmentCells));
-        _repair = new DXButton { Text = "Repair", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(315, buttonY), Size = new Vector2I(79, 25), Enabled = false };
+        _repair = new DXButton { Text = "修理", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(315, buttonY), Size = new Vector2I(79, 25), Enabled = false };
         _repair.MouseClick += (o, e) => Submit(); AddControl(_repair);
         AddSourceButton("Storage", 9, buttonY + 30, () => ImportCells(GameScene.Game?.StorageCells));
         AddSourceButton("Guild Storage", 93, buttonY + 30, () => ImportCells(GameScene.Game?.GuildStorageCells));

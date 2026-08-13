@@ -16,7 +16,7 @@ public sealed partial class MilestoneDialog : DXWindow
 
     public MilestoneDialog()
     {
-        Text = "Milestone Achieved";
+        Text = "达成里程碑";
         Size = new Vector2I(380, 210);
         _title = new DXLabel { FontSize = 13, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(340, 28), Location = new Vector2I(20, 35), IsControl = false };
         _description = new DXLabel { FontSize = 10, Size = new Vector2I(340, 50), Location = new Vector2I(20, 72), IsControl = false };
@@ -32,7 +32,7 @@ public sealed partial class MilestoneDialog : DXWindow
         if (milestone == null) return;
         _index = milestone.Index;
         var info = milestone.Info ?? Globals.MilestoneInfoList?.Binding.FirstOrDefault(x => x.Index == milestone.InfoIndex);
-        _title.Text = info?.Title ?? "Milestone Achieved";
+        _title.Text = info?.Title ?? "达成里程碑";
         _description.Text = info?.Description ?? string.Empty;
         _task.Text = info?.Task ?? string.Empty;
         WindowManager.Open(this, GameScene.Game?.UILayer);

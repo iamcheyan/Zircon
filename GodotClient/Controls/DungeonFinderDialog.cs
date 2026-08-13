@@ -25,7 +25,7 @@ public sealed partial class DungeonFinderDialog : DXWindow
 
     public DungeonFinderDialog()
     {
-        Text = "Dungeon Finder";
+        Text = "地下城查找";
         Size = new Vector2I(578, 507);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = false });
         _dungeonTab = MakeTab("Dungeons", new Vector2I(9, 37), true);
@@ -42,14 +42,14 @@ public sealed partial class DungeonFinderDialog : DXWindow
             IsControl = false,
         };
         AddControl(filterPanel);
-        filterPanel.AddControl(new DXLabel { Text = "Name:", FontSize = 9, Location = new Vector2I(5, 5), IsControl = false });
+        filterPanel.AddControl(new DXLabel { Text = "名称：", FontSize = 9, Location = new Vector2I(5, 5), IsControl = false });
         _filter = new DXTextInput { Location = new Vector2I(47, 3), Size = new Vector2I(180, 20) };
         filterPanel.AddControl(_filter);
-        filterPanel.AddControl(new DXLabel { Text = "Sort:", FontSize = 9, Location = new Vector2I(237, 5), IsControl = false });
-        _sort = new DXButton { Text = "Name", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(272, 1), Size = new Vector2I(100, 24), Index = -1, LibraryFile = LibraryFile.Interface };
+        filterPanel.AddControl(new DXLabel { Text = "排序：", FontSize = 9, Location = new Vector2I(237, 5), IsControl = false });
+        _sort = new DXButton { Text = "名称", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(272, 1), Size = new Vector2I(100, 24), Index = -1, LibraryFile = LibraryFile.Interface };
         _sort.MouseClick += (s, e) => { _sortMode = (DungeonFinderSort)(((int)_sortMode + 1) % 3); _sort.Text = $"Sort: {_sortMode}"; Search(); };
         filterPanel.AddControl(_sort);
-        var search = new DXButton { Text = "Search", Type = DXButton.ButtonType.SmallButton, FontSize = 10, Location = new Vector2I(447, 1), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
+        var search = new DXButton { Text = "搜索", Type = DXButton.ButtonType.SmallButton, FontSize = 10, Location = new Vector2I(447, 1), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         search.MouseClick += (s, e) => Search(); filterPanel.AddControl(search);
         _filter.TextChanged += s => { if (s.EndsWith("\n")) Search(); };
         _scroll = new DXVScrollBar { Location = new Vector2I(542, 83), Size = new Vector2I(14, 402), VisibleSize = _rows.Length, Change = 3 };
@@ -62,7 +62,7 @@ public sealed partial class DungeonFinderDialog : DXWindow
             AddControl(_rows[i]);
         }
         // 原版 JoinButton 是根窗口按钮，位于页签标题右侧，而不是列表底部。
-        _join = new DXButton { Text = "Join Instance", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(490, 35), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface, Enabled = false };
+        _join = new DXButton { Text = "加入副本", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(490, 35), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface, Enabled = false };
         _join.MouseClick += (s, e) => JoinSelected(); AddControl(_join);
         _status = new DXLabel { Text = "", FontSize = 9, TextColour = Colors.Yellow, Location = new Vector2I(20, 482), IsControl = false };
         AddControl(_status);

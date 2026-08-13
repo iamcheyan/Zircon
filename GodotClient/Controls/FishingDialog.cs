@@ -107,9 +107,9 @@ public sealed partial class FishingCatchDialog : DXWindow
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 230, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(222, 3) };
         close.MouseClick += (s, e) => Cancel(); AddControl(close);
-        _autoCastCheckBox = new DXCheckButton("Auto Cast") { Location = new Vector2I(164, 47), Size = new Vector2I(18, 18), Checked = true };
+        _autoCastCheckBox = new DXCheckButton("自动抛竿") { Location = new Vector2I(164, 47), Size = new Vector2I(18, 18), Checked = true };
         AddControl(_autoCastCheckBox);
-        AddControl(new DXLabel { Text = "Auto Cast", FontSize = 9, Location = new Vector2I(184, 48), Size = new Vector2I(60, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "自动抛竿", FontSize = 9, Location = new Vector2I(184, 48), Size = new Vector2I(60, 18), IsControl = false });
 
         _catchBar = new DXControl { Location = new Vector2I(19, 76), Size = new Vector2I(216, 12), MouseFilter = MouseFilterEnum.Ignore };
         _catchInnerBar = new DXControl { Location = Vector2I.Zero, Size = new Vector2I(1, 12), Visible = false, MouseFilter = MouseFilterEnum.Ignore };

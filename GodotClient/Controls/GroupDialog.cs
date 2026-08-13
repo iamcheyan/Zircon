@@ -81,8 +81,8 @@ public partial class GroupDialog : DXWindow
         _optionsButton = new DXButton { Type = DXButton.ButtonType.OptionsButton, Size = new Vector2I(36, 36), Location = new Vector2I(173, 217), LibraryFile = LibraryFile.Interface, Enabled = false };
         AddControl(_optionsButton);
 
-        AddControl(new DXLabel { Text = "Group Name", FontSize = 9, TextColour = new Color(1f, 0.85f, 0.3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(101, 20), Location = new Vector2I(12, 272), IsControl = false });
-        AddControl(new DXLabel { Text = "Status", FontSize = 9, TextColour = new Color(1f, 0.85f, 0.3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(95, 20), Location = new Vector2I(114, 272), IsControl = false });
+        AddControl(new DXLabel { Text = "队伍名称", FontSize = 9, TextColour = new Color(1f, 0.85f, 0.3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(101, 20), Location = new Vector2I(12, 272), IsControl = false });
+        AddControl(new DXLabel { Text = "状态", FontSize = 9, TextColour = new Color(1f, 0.85f, 0.3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(95, 20), Location = new Vector2I(114, 272), IsControl = false });
         _lfgPanel = new DXControl { Location = Vector2I.Zero, Size = new Vector2I(240, 424), Clip = true, MouseFilter = MouseFilterEnum.Ignore };
         AddControl(_lfgPanel);
         _lfgScroll = new DXVScrollBar { Location = new Vector2I(210, 268), Size = new Vector2I(24, 140), VisibleSize = 5, Change = 1, Border = false, BackColour = Colors.Transparent };

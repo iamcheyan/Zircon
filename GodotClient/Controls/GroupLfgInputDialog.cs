@@ -16,7 +16,7 @@ public sealed partial class GroupLfgInputDialog : DXWindow
 
     public GroupLfgInputDialog(ClientLookingForGroup current, Action<bool, string, string, int> submit)
     {
-        Text = "Looking For Group";
+        Text = "寻找队伍";
         HasFooter = true;
         Size = new Vector2I(318, 196); // 原版 SetClientSize(300, 60 + wrapped label)
         _submit = submit;
@@ -27,7 +27,7 @@ public sealed partial class GroupLfgInputDialog : DXWindow
 
         AddControl(new DXLabel
         {
-            Text = "Enter the name, size and type of your desired group.\nGroup notifications will last for 1 hour or until you disable it.",
+            Text = "输入想要的队伍名称、规模和类型。\n队伍通知将保留 1 小时，或直到你取消它。",
             FontSize = 9,
             Align = HorizontalAlignment.Center,
             Location = new Vector2I(9, 38),
@@ -36,11 +36,11 @@ public sealed partial class GroupLfgInputDialog : DXWindow
         });
         _name = new DXTextInput { Text = current?.GroupName ?? string.Empty, Location = new Vector2I(59, 78), Size = new Vector2I(200, 20) };
         AddControl(_name);
-        AddControl(new DXLabel { Text = "Type", FontSize = 9, Location = new Vector2I(20, 108), IsControl = false });
+        AddControl(new DXLabel { Text = "类型", FontSize = 9, Location = new Vector2I(20, 108), IsControl = false });
         _type = new DXButton { Text = string.Equals(current?.GroupType, "PvP", StringComparison.OrdinalIgnoreCase) ? "PvP" : "PvE", FontSize = 9, Location = new Vector2I(59, 104), Size = new Vector2I(100, 20), LibraryFile = LibraryFile.Interface, Index = -1 };
         _type.MouseClick += (o, e) => _type.Text = _type.Text == "PvE" ? "PvP" : "PvE";
         AddControl(_type);
-        AddControl(new DXLabel { Text = "Max Count", FontSize = 9, Location = new Vector2I(177, 108), IsControl = false });
+        AddControl(new DXLabel { Text = "最大人数", FontSize = 9, Location = new Vector2I(177, 108), IsControl = false });
         _count = new DXTextInput { Text = Math.Clamp(current?.MaxCount ?? 4, 2, Globals.GroupLimit).ToString(), Location = new Vector2I(239, 104), Size = new Vector2I(55, 20) };
         AddControl(_count);
 

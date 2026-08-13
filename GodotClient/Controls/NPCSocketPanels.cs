@@ -45,7 +45,7 @@ public sealed partial class NPCSocketPanel : DXControl
         _gemLoop = Loop(130, 48);
         _target.LinkChanged += cell => { _target.QueueRedraw(); RefreshSockets(); };
         _gem.LinkChanged += cell => { _gem.QueueRedraw(); SetLoopAnimation(_gemLoop, _gem.Item?.Info); };
-        _start = new DXButton { Text = "Start", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(16, 280), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _start = new DXButton { Text = "开始", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(16, 280), LibraryFile = LibraryFile.Interface, Index = -1 };
         _start.MouseClick += (s, e) => Send();
         AddControl(_start);
     }
@@ -332,7 +332,7 @@ public sealed partial class NPCSocketCombinePanel : DXControl
             int slot = i;
             _gems[i].LinkChanged += cell => _gemLoops[slot].Visible = _gems[slot].LinkedSourceSlot >= 0;
         }
-        _start = new DXButton { Text = "Combine", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(17, 285), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _start = new DXButton { Text = "合成", Type = DXButton.ButtonType.Default, Size = new Vector2I(70, 24), Location = new Vector2I(17, 285), LibraryFile = LibraryFile.Interface, Index = -1 };
         _start.MouseClick += (s, e) => Send();
         AddControl(_start);
     }

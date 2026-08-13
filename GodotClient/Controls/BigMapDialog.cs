@@ -102,7 +102,7 @@ public partial class BigMapDialog : DXWindow
         RecenterButton = new DXButton
         {
             Type = DXButton.ButtonType.Default,
-            Text = "Recenter",
+            Text = "回到中心",
             Size = new Vector2I(80, 24),
         };
         RecenterButton.MouseClick += (o, e) => Recenter();

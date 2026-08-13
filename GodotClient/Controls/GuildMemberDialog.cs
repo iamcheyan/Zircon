@@ -15,7 +15,7 @@ public sealed partial class GuildMemberDialog : DXWindow
 
     public GuildMemberDialog()
     {
-        Text = "Guild Member";
+        Text = "行会成员";
         Size = new Vector2I(220, 250);
         _member = new DXLabel { Text = Lang.GuildMemberMemberLabel, FontSize = 10, Location = new Vector2I(18, 38), IsControl = false };
         AddControl(_member);

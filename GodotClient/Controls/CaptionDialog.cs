@@ -12,12 +12,12 @@ public sealed partial class CaptionDialog : DXWindow
 
     public CaptionDialog()
     {
-        Text = "Caption";
+        Text = "标题";
         Movable = true;
         HasFooter = true;
         Size = new Vector2I(343, 150);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true });
-        AddControl(new DXLabel { Text = "Caption:", FontSize = 10, Location = new Vector2I(9, 52), IsControl = false });
+        AddControl(new DXLabel { Text = "标题：", FontSize = 10, Location = new Vector2I(9, 52), IsControl = false });
         _input = new DXTextInput { Location = new Vector2I(73, 52), Size = new Vector2I(180, 20) };
         AddControl(_input);
         AddControl(new DXLabel
@@ -29,7 +29,7 @@ public sealed partial class CaptionDialog : DXWindow
             IsControl = false,
             TooltipText = $"Caption.\nAccepted characters: a-z A-Z 0-9.\nLength: {Globals.MinCaptionLength}-{Globals.MaxCaptionLength}.\nAvoid harmful and racist words.",
         });
-        _change = new DXButton { Text = "Change", Size = new Vector2I(60, 24), Location = new Vector2I(273, 50), Enabled = false };
+        _change = new DXButton { Text = "更换", Size = new Vector2I(60, 24), Location = new Vector2I(273, 50), Enabled = false };
         _change.MouseClick += (s, e) => Submit();
         AddControl(_change);
         _input.TextChanged += value => { _change.Enabled = CanSubmit(value); _input.BorderColour = _change.Enabled ? Colors.Green : new Color(.55f, .4f, .18f); };

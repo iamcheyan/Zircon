@@ -12,7 +12,7 @@ public sealed partial class FilterDropDialog : DXWindow
 
     public FilterDropDialog()
     {
-        Text = "Drop Filter";
+        Text = "掉落过滤";
         // 原版 SetClientSize(266, 371)：包含标题栏、边框和无底栏区域后
         // 的实际窗口尺寸为 284x429。
         Size = new Vector2I(284, 429);
@@ -29,7 +29,7 @@ public sealed partial class FilterDropDialog : DXWindow
         }
         var save = new DXButton
         {
-            Text = "Save",
+            Text = "保存",
             Type = DXButton.ButtonType.SmallButton,
             LibraryFile = LibraryFile.Interface,
             Index = -1,

@@ -31,21 +31,21 @@ public partial class NPCGoodsPanel : DXControl
         Size = new Vector2I(245, 402);
         _frame = new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = true };
         AddControl(_frame);
-        AddControl(new DXLabel { Text = "Goods", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(245, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "商品", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(245, 18), IsControl = false });
         _list = new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(227, 302), Clip = true }; AddControl(_list);
         _scroll = new DXVScrollBar { Location = new Vector2I(217, 38), Size = new Vector2I(19, 301), VisibleSize = 302, Change = 43, HideWhenNoScroll = true };
         _scroll.UpButton.LibraryFile = LibraryFile.Interface; _scroll.UpButton.Index = 61;
         _scroll.DownButton.LibraryFile = LibraryFile.Interface; _scroll.DownButton.Index = 62;
         _scroll.PositionBar.LibraryFile = LibraryFile.Interface; _scroll.PositionBar.Index = 60;
         _scroll.ValueChanged += (o, e) => RefreshRows(); AddControl(_scroll);
-        _buy = new DXButton { Text = "Buy", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(40, 359), Size = new Vector2I(80, 25), Enabled = false };
+        _buy = new DXButton { Text = "购买", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(40, 359), Size = new Vector2I(80, 25), Enabled = false };
         _buy.MouseClick += (o, e) => BuySelected(); AddControl(_buy);
         _guildFunds = new DXCheckButton("Use Guild Funds:") { Location = new Vector2I(120, 363), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
         // 原版 BuySell 页的出售状态由独立 InventoryDialog.SellMode 负责；
         // 这里保留内部链接逻辑作为旧调用兼容，但不在商品面板绘制出售按钮。
         _sell = new DXButton
         {
-            Text = "Sell Selected", FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1,
+            Text = "出售所选", FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1,
             Location = new Vector2I(150, 359), Size = new Vector2I(85, 25), Enabled = false, Visible = false
         };
         _sell.MouseClick += (o, e) => SellSelected();

@@ -279,13 +279,13 @@ public partial class CommunicationDialog : DXWindow
             return false;
         }
 
-        _recipient.Text = "receiver";
-        _subject.Text = "subject";
-        _message.Text = "body";
+        _recipient.Text = "收件人";
+        _subject.Text = "主题";
+        _message.Text = "正文";
         MailSendResult();
-        bool firstPacketRetains = _recipient.Text == "receiver" && _subject.Text == "subject" && _message.Text == "body";
+        bool firstPacketRetains = _recipient.Text == "收件人" && _subject.Text == "主题" && _message.Text == "正文";
         ItemsChanged(Array.Empty<CellLinkInfo>(), false);
-        bool failureRetains = _recipient.Text == "receiver" && _subject.Text == "subject" && _message.Text == "body";
+        bool failureRetains = _recipient.Text == "收件人" && _subject.Text == "主题" && _message.Text == "正文";
         ItemsChanged(Array.Empty<CellLinkInfo>(), true);
         bool successClears = _recipient.Text.Length == 0 && _subject.Text.Length == 0 && _message.Text.Length == 0;
         details = $"first={firstPacketRetains} failure={failureRetains} success={successClears}";
