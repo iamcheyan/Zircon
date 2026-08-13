@@ -12,11 +12,6 @@ public sealed class BotConfig
     public double WalkIntervalSeconds { get; set; } = 0.65;
     public double RunIntervalSeconds { get; set; } = 0.6;
     public int PatrolRadius { get; set; } = 12;
-    // 练级角色(野外打怪)的活动锚点。比奇县(0.map)北部 y5..117 是怪物
-    // 刷新区;锚点带半径抖动, 每个 bot 选一个自己的练级点。
-    public int FieldAnchorX { get; set; } = 175;
-    public int FieldAnchorY { get; set; } = 60;
-    public int FieldRadius { get; set; } = 40;
     // 所有角色以城中心出生点为活动主场: 各自在出生点周围选一个"家"角落。
     // 出生点是比奇县(地图索引 1), 登录时服务器返回的 SpawnMapIndex 是角色
     // 下线位置, 不是固定出生图, 因此这里显式配置家的地图与坐标。
@@ -24,14 +19,9 @@ public sealed class BotConfig
     public int HomeMapX { get; set; } = 159;
     public int HomeMapY { get; set; } = 233;
     public int HomeAnchorRadius { get; set; } = 15;
-    // 练级角色外出节奏: 在城驻留 HomeDwell 秒后去野外打 FieldTrip 秒再回城。
-    public int HomeDwellSecondsMin { get; set; } = 240;
-    public int HomeDwellSecondsMax { get; set; } = 480;
-    public int FieldTripIntervalSeconds { get; set; } = 420;
-    public int FieldTripDurationSeconds { get; set; } = 120;
-    // 城内"练技"表演间隔(全员, 挥刀/放技能制造热闹)。
-    public int TownCastMinSeconds { get; set; } = 30;
-    public int TownCastMaxSeconds { get; set; } = 70;
+    // 打怪行为外出节奏: 在城驻留 HomeDwell 秒 → 野外狩猎 150~360s → 回城。
+    public int HomeDwellSecondsMin { get; set; } = 90;
+    public int HomeDwellSecondsMax { get; set; } = 180;
     public bool VerboseNetworkLogging { get; set; } = false;
     public bool EnableBotPvP { get; set; } = true;
     public int PvPStartDelaySeconds { get; set; } = 35;
@@ -49,6 +39,25 @@ public sealed class BotConfig
     public string ClientHashPath { get; set; } = "";
     public string DatabasePath { get; set; } = "Debug/Server/Database";
     public string MapPath { get; set; } = "Debug/Client/Map";
+
+    // ==== 拟真行为系统 ====
+    public bool EnableSkillTraining { get; set; } = true;
+    public bool EnableGrouping { get; set; } = true;
+    public bool EnableGrinding { get; set; } = true;
+    public bool EnableEquipUpgrade { get; set; } = true;
+    public bool EnableChatCorpus { get; set; } = true;
+    // 人格分布权重(无需归一, 按比例抽取)
+    public PersonalityWeightsConfig PersonalityWeights { get; set; } = new();
+    // 行为调度的滞回参数
+    public double BehaviorSwitchRatio { get; set; } = 1.3;
+
+    public sealed class PersonalityWeightsConfig
+    {
+        public double Grinder { get; set; } = 0.50;
+        public double Social { get; set; } = 0.25;
+        public double Idle { get; set; } = 0.15;
+        public double Merchant { get; set; } = 0.10;
+    }
 
     public static BotConfig Load(string path)
     {

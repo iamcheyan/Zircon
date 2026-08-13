@@ -204,4 +204,26 @@ public sealed class BotWorld
         if (Monsters.TryGetValue(p.ObjectID, out var monster)) { monster.Dead = false; monster.Location = p.Location; }
     }
     public void Apply(S.LevelChanged p) { Level = p.Level; }
+
+    public void Apply(S.MagicLeveled p)
+    {
+        var magic = Magics.FirstOrDefault(x => x.Info != null && x.Info.Index == p.InfoIndex);
+        if (magic == null) return;
+        magic.Level = p.Level;
+        magic.Experience = p.Experience;
+    }
+
+    public void Apply(S.NewMagic p)
+    {
+        if (p.Magic?.Info != null)
+            Magics.Add(p.Magic);
+    }
+
+    public void Apply(S.MagicCooldown p)
+    {
+        var magic = Magics.FirstOrDefault(x => x.Info != null && x.Info.Index == p.InfoIndex);
+        if (magic == null) return;
+        magic.Cooldown = TimeSpan.FromMilliseconds(Math.Max(0, p.Delay));
+        magic.NextCast = DateTime.UtcNow + magic.Cooldown;
+    }
 }

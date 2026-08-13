@@ -23,15 +23,7 @@ public sealed class BotAgent
     private DateTime _nextChat;
     private DateTime _nextAttack;
     private DateTime _nextPotion;
-    private Point _patrolTarget;
-    private DateTime _arrivedPauseUntil;
-    private Point _fieldAnchor;
     private Point _homeAnchor;
-    private DateTime _nextFieldTrip;
-    private DateTime _fieldTripEnd;
-    private bool _fieldPathToField;
-    private bool _fieldPathHome;
-    private DateTime _nextTownCast;
     private DateTime _crossMapStuckSince = DateTime.MinValue;
     private DateTime _nextCrossMapDiag;
     private DateTime _nextSupplyDiag;
@@ -41,7 +33,6 @@ public sealed class BotAgent
     private int? _portalUseSlot;
     private uint _targetMonsterId;
     private DateTime _nextTargetScan;
-    private DateTime _nextGroupAction;
     private DateTime _nextTorchAction;
     private DateTime _nextRepairAction;
     private DateTime _nextQuestAction;
@@ -49,6 +40,8 @@ public sealed class BotAgent
     private DateTime _nextSellAction;
     private bool _supplyPurchasePending;
     private DateTime _supplyInteractionUntil = DateTime.MinValue;
+    private bool _sellAutopathBlocked;
+    private bool _supplyAutopathBlocked;
     private bool _npcCallPending;
     private bool _repairCallPending;
     // StartGame 已发出但迟迟未收到 S.StartGame 响应(服务器 Spawn 卡死等)时的显式失败。
@@ -67,29 +60,20 @@ public sealed class BotAgent
     private bool _resourcePathToMine;
     private bool _resourcePathHome;
     private bool _resourceSwapPending;
-    private bool _groupInviteAttempted;
-    private DateTime _nextTradeAction;
-    private bool _tradeRequestSent;
-    private bool _tradeActive;
-    private bool _tradePathRequested;
-    private bool _tradeAutoPathAllowed;
-    private bool _tradeFacingPrimed;
     private DateTime _nextGuildAction;
     private bool _starterGuildAttempted;
-    private DateTime _nextMountAction;
-    private DateTime _mountStarted;
     private DateTime _nextContainerAction;
     private int _containerSlot = -1;
     private DateTime _nextFishingAction;
     private bool _fishingActive;
     private Point _fishingPoint;
-    private DateTime _nextInstanceAction;
+    private bool _tradeActive;
     private DateTime _nextPvpAction;
     private DateTime _pvpRoundEnd;
     private Point _pvpStagingPoint;
     private int _pvpActions;
-    private DateTime _nextProfessionAction;
     private DateTime _nextActivityReport;
+    private const int ResourceMapIndex = 136;
     private int _moveActions;
     private int _attackActions;
     private int _magicActions;
@@ -97,10 +81,13 @@ public sealed class BotAgent
     private int _combatActions;
     private int _pickupRequests;
     private int _itemsGainedEvents;
-    private const int ResourceMapIndex = 136;
     private uint _npcObjectId;
     private bool _autoPathActive;
-    private DateTime _pullbackStuckSince = DateTime.MinValue;
+    private bool _travelActive;
+    private Point _travelDest;
+    private int _travelMapIndex;
+    private DateTime _travelSince = DateTime.MinValue;
+    private DateTime _nextTravelDebug;
     private int _crossMapFailCount;
     private DateTime _crossMapGraceUntil = DateTime.MinValue;
     private readonly int _index;
@@ -113,6 +100,47 @@ public sealed class BotAgent
     public BotStatus Status { get; private set; } = BotStatus.Created;
     public BotWorld World { get; } = new();
 
+    // ==== 拟真行为系统 ====
+    public BotProfile Profile { get; }
+    public BotConfig Config => _config;
+    public BotWorld WorldState => World;
+    public BotConnection Connection => _connection;
+    public Random Rng => _random;
+    public Point HomeAnchor => _homeAnchor;
+    private BotBehaviorScheduler _scheduler;
+    private SafeZoneTrainingBehavior _trainBehavior;
+    private GrindFarmingBehavior _grindBehavior;
+    private GroupPlayBehavior _groupBehavior;
+    private EquipUpgradeBehavior _equipBehavior;
+    private RestIdleBehavior _restBehavior;
+    private PatrolFallbackBehavior _patrolBehavior;
+    private BotPathfinder _pathfinder;
+    private Point _pathGoal = Point.Empty;
+    private DateTime _nextBehaviorLog = DateTime.MinValue;
+    private string _lastBehavior = "";
+    private Point _pendingStepGoal;
+    private Point _lastPathFailGoal;
+    private readonly HashSet<Point> _runtimeBlocked = new();
+    private Point _pendingStep;
+    private Point _pendingStepFrom;
+    private Point _pendingStepObserved;
+    private DateTime _surroundedSince = DateTime.MinValue;
+    private DateTime _pendingStepAt = DateTime.MinValue;
+    private readonly Dictionary<Point, (Point Step, Point From, DateTime At)> _rejectTracker = new();
+    private int _trainDeferCount;
+    private int _regionNpcIndex;
+    private Point _regionPointCache;
+    private DateTime _regionPointAt = DateTime.MinValue;
+    private DateTime _pathFailRetryAt;
+    private DateTime _nextEquipShopBuy = DateTime.MinValue;
+    private DateTime _nextChatCorpus = DateTime.MinValue;
+    private DateTime _lastPositionSample = DateTime.MinValue;
+    private Point _lastSampledPosition;
+    private int _positionStallTicks;
+    private int _stuckRecoveries;
+    private string _groupLeaderName = "";
+    private Point _lastPathPosition;
+
     public BotAgent(int index, BotConfig config)
     {
         _config = config;
@@ -121,6 +149,19 @@ public sealed class BotAgent
         Name = $"Bot{index:00}";
         _email = $"{config.AccountPrefix}{index:00}@bot.local";
         _password = config.Password;
+        Profile = BotProfile.Create(index, config);
+
+        _trainBehavior = new SafeZoneTrainingBehavior();
+        _grindBehavior = new GrindFarmingBehavior();
+        _groupBehavior = new GroupPlayBehavior();
+        _equipBehavior = new EquipUpgradeBehavior();
+        _restBehavior = new RestIdleBehavior();
+        _patrolBehavior = new PatrolFallbackBehavior();
+        _scheduler = new BotBehaviorScheduler(new IBotBehavior[]
+        {
+            _trainBehavior, _grindBehavior, _groupBehavior, _equipBehavior,
+            _restBehavior, _patrolBehavior,
+        }, config.BehaviorSwitchRatio);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -223,14 +264,17 @@ public sealed class BotAgent
                     QueueStartGame(login.Characters[0]);
                 else if (_config.AutoCreateAccount)
                 {
+                    // 职业按序号轮转(与 BotProvisioner 种子规则一致),
+                    // 保证 4 职业分布均匀: 战士/法师/道士/刺客。
+                    var cls = BotProfile.ClassForIndex(_index);
                     _connection.Enqueue(new C.NewCharacter
                     {
                         CharacterName = CharacterName,
-                        Class = MirClass.Warrior,
-                        Gender = MirGender.Male,
-                        HairType = 0,
-                        HairColour = Color.FromArgb(0, 0, 0, 0),
-                        ArmourColour = Color.White,
+                        Class = cls,
+                        Gender = (MirGender)(_index % 2),
+                        HairType = 1 + _index % 9,
+                        HairColour = Color.FromArgb(255, 60 + _index * 7 % 180, 40 + _index * 11 % 160, 30 + _index * 13 % 140),
+                        ArmourColour = cls == MirClass.Assassin ? Color.FromArgb(0, 0, 0, 0) : Color.White,
                         CheckSum = string.Empty
                     });
                 }
@@ -296,11 +340,25 @@ public sealed class BotAgent
             case S.GroupInvite p:
                 _connection.Enqueue(new C.GroupResponse { Name = p.Name, Accept = true });
                 break;
-            case S.GroupRequest p:
-                _connection.Enqueue(new C.GroupResponse { Name = p.Name, Accept = true });
+            case S.GroupMember p:
+                World.Apply(p);
+                // 第一个收到的成员即队长(服务端建队时先广播队长)
+                if (!string.IsNullOrWhiteSpace(p.Name) && World.GroupMembers.Count <= 1)
+                    _groupLeaderName = p.Name;
+                if (World.GroupMembers.Count >= 2 && _groupLeaderName == Name)
+                    Console.WriteLine($"[{Name}] group: formed, members={string.Join(",", World.GroupMembers)}");
                 break;
-            case S.GroupMember p: World.Apply(p); break;
-            case S.GroupRemove p: World.Apply(p); break;
+            case S.GroupRemove p:
+                World.Apply(p);
+                if (p.ObjectID == World.SelfObjectId) _groupLeaderName = "";
+                break;
+            case S.MagicLeveled p:
+                World.Apply(p);
+                if (p.Level > 0 && p.Level != World.Magics.FirstOrDefault(x => x.Info?.Index == p.InfoIndex)?.Level)
+                    Console.WriteLine($"[{Name}] skill: {p.Info?.Name} leveled to {p.Level}");
+                break;
+            case S.NewMagic p: World.Apply(p); break;
+            case S.MagicCooldown p: World.Apply(p); break;
             case S.TradeRequest p when p.Name?.Equals("Bot01", StringComparison.OrdinalIgnoreCase) == true:
                 Console.WriteLine($"[{Name}] trade: received request from {p.Name}");
                 _connection.Enqueue(new C.TradeRequestResponse { Accept = true });
@@ -316,26 +374,15 @@ public sealed class BotAgent
                 if (_tradeActive)
                     Console.WriteLine($"[{Name}] trade: closed");
                 _tradeActive = false;
-                _tradeRequestSent = false;
-                _tradeFacingPrimed = false;
-                _nextTradeAction = DateTime.UtcNow.AddMinutes(3 + _random.NextDouble() * 3);
                 break;
             case S.TradeUnlock:
                 _tradeActive = false;
-                _tradeRequestSent = false;
-                _tradeFacingPrimed = false;
-                _nextTradeAction = DateTime.UtcNow.AddMinutes(2);
                 break;
             case S.BundleOpen p:
                 HandleBundleOpen(p);
                 break;
-            case S.BundleClose:
-                _containerSlot = -1;
-                _nextContainerAction = DateTime.UtcNow.AddMinutes(2);
-                break;
             case S.JoinInstance p:
                 Console.WriteLine($"[{Name}] instance: {(p.Success ? "joined" : $"rejected ({p.Result})")}");
-                _nextInstanceAction = DateTime.UtcNow.AddMinutes(p.Success ? 10 : 3);
                 break;
             case S.AutoPathChanged p:
                 _autoPathActive = p.Routes?.Count > 0;
@@ -349,22 +396,22 @@ public sealed class BotAgent
             case S.Chat p when p.Text?.Length > 0:
                 if (p.Text.Contains("无法找到自动寻路路线", StringComparison.Ordinal))
                 {
+                    // 服务器寻路失败: 清状态让行为层换目标/走回城兜底链;
+                    // 同时给卖/买链退避, 改走手动寻路兜底(见 TrySell/Supply)。
                     _autoPathActive = false;
                     _resourcePathToMine = false;
                     _resourcePathHome = false;
-                    _tradePathRequested = false;
-                    _tradeAutoPathAllowed = false;
-                    _tradeRequestSent = false;
-                    _tradeFacingPrimed = false;
-                    _fieldPathToField = false;
-                    _fieldPathHome = false;
-                    _fieldTripEnd = DateTime.MinValue;
-                    _nextFieldTrip = DateTime.UtcNow.AddSeconds(300);
-                    _nextTradeAction = DateTime.UtcNow.AddSeconds(20);
+                    _pathGoal = Point.Empty;
+                    _pathfinder?.Reset();
                     _nextResourceAction = DateTime.UtcNow.AddMinutes(2 + _random.NextDouble() * 3);
+                    _sellAutopathBlocked = true;
+                    _supplyAutopathBlocked = true;
+                    var backoff = DateTime.UtcNow.AddSeconds(60 + _random.NextDouble() * 60);
+                    if (_nextSellAction < backoff) _nextSellAction = backoff;
+                    if (_nextSupplyAction < backoff) _nextSupplyAction = backoff;
                 }
                 // Chat is still sent to the server, but echoing every nearby
-                // player's line from all 20 clients hides the useful behavior
+                // player's line from all 8 clients hides the useful behavior
                 // telemetry. Keep only system/error-like messages here.
                 if (p.Text.StartsWith("你", StringComparison.Ordinal) || p.Text.Contains("无法", StringComparison.Ordinal))
                     Console.WriteLine($"[{Name}] chat: {p.Text}");
@@ -396,32 +443,25 @@ public sealed class BotAgent
         }
         if (Status != BotStatus.Running) return;
         var now = DateTime.UtcNow;
-        if (now >= _nextActivityReport)
-        {
-        Console.WriteLine($"[{Name}] active map={World.MapIndex} inst={World.InstanceIndex}:{World.Location} role={RoleName(_index)} class={World.Class} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} pvp={_pvpActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} targets={_targetSelections} pets={OwnedSummonCount()}");
-            foreach (var npc in World.Npcs.Values)
-            {
-                var info = Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == npc.NPCIndex);
-                if (info != null && SellsTownPortal(info))
-                {
-                    if (!_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var dict))
-                        _knownSupplyNpcLocations[World.MapIndex] = dict = new Dictionary<int, Point>();
-                    dict[info.Index] = npc.CurrentLocation;
-                }
-            }
-            _nextActivityReport = now.AddSeconds(45 + _random.NextDouble() * 15);
-        }
+
+        // ---- 背景反应层(与行为调度并行, 每 tick 都跑) ----
         if (World.Dead)
         {
             if (now >= _nextAttack) { _connection.Enqueue(new C.TownRevive()); _nextAttack = now.AddSeconds(5); }
             return;
         }
 
+        // ---- 破围层: 被静态怪(城镇动物等)围死时砍开一条路 ----
+        if (TryBreakout(now)) return;
+
+
+        // ---- 计划性优先层(保留原有可靠机制) ----
+        // PvP 回合(人格 PvP 角色) → 计划外跨图回城兜底 → 供给链(买药/修装/
+        // 卖垃圾) → 生活玩法(挖矿/钓鱼)。这些吃满一个 tick 就返回。
         if (TryPvPBehavior(now)) goto AfterMovement;
 
-        // 任何非主城地图滞留兜底: 连续 ~10 分钟回不去(无卷/副本/寻路无路/供给断)
-        // 就主动重登, 重登后 SetBindPoint 会把绑定点重选为主城, 出生即回城。
-        // 正常练级外出/矿洞/副本时长都远短于此阈值。
+        // 任何非主城地图滞留兜底: 连续 ~10 分钟回不去(无卷/副本/寻路无路/
+        // 供给断)就主动重登, 重登后 SetBindPoint 会把绑定点重选为主城。
         if (World.MapIndex != _config.HomeMapIndex)
         {
             if (_crossMapStuckSince == DateTime.MinValue) _crossMapStuckSince = now;
@@ -434,13 +474,32 @@ public sealed class BotAgent
             }
         }
 
-        // A PvP round takes priority over long-running life routes. Otherwise
-        // a mining/trade auto-path can starve the scheduled arena behavior.
-        // 跨图时 AutoPath 可能指向无效/不可达路线(如竞技场地图), 不短路,
-        // 让跨图检查的宽限逻辑接管(商店补给回城卷)。
+        // 服务端 AutoPath 走线中(跨图): 短路行为层, 等到达/失败。
         if (_autoPathActive && World.MapIndex == _config.HomeMapIndex) goto AfterMovement;
 
-        // 已回主城: 清除跨图滞留计时, 避免下次计划外跨图误判。
+        // 本图长距离行程(本地 A* 驱动): 每 tick 朝目的地走一步, 到达
+        // (≤8 格)/换图/超时(6 分钟, 商店区在城东南 250+ 格)后交还行为层。
+        if (_travelActive)
+        {
+            if (World.MapIndex != _travelMapIndex ||
+                DistanceTo(_travelDest) <= 8 ||
+                (now - _travelSince).TotalMinutes > 6)
+            {
+                _travelActive = false;
+                Log($"travel: done/abort (dist={DistanceTo(_travelDest)})");
+            }
+            else
+            {
+                if (now >= _nextTravelDebug)
+                {
+                    _nextTravelDebug = now.AddSeconds(10);
+                    Log($"travel: dist={DistanceTo(_travelDest)} nextMoveIn={(_nextMove - now).TotalSeconds:F1}s canMove={CanMove(now)} path={_pathfinder?.HasPath == true} goal={_pathGoal}");
+                }
+                if (CanMove(now)) MoveToDestination(_travelDest, now);
+                goto AfterMovement;
+            }
+        }
+
         if (World.MapIndex == _config.HomeMapIndex && _crossMapStuckSince != DateTime.MinValue)
             _crossMapStuckSince = DateTime.MinValue;
         if (World.MapIndex == _config.HomeMapIndex && _portalUseAt != DateTime.MinValue)
@@ -449,109 +508,7 @@ public sealed class BotAgent
             _portalUseSlot = null;
         }
 
-        if (TryResourceBehavior(now)) goto AfterMovement;
-
-        if (TryFishingBehavior(now)) goto AfterMovement;
-
-        if (TryFieldTripBehavior(now)) goto AfterMovement;
-
-        if (TryInstanceBehavior(now)) goto AfterMovement;
-
-        // 计划外跨图(重启前遗留其他地图等): 直接 AutoPath 回城, 不在陌生地图
-        // 执行交易/闲逛等本地行为。挖矿中(矿洞)、练级外出中、副本中由各自
-        // 行为驱动豁免; PvP 跨图已由 TryPvPBehavior 处理。
-        bool fieldTripActive = _fieldPathToField || _fieldPathHome ||
-            (_fieldTripEnd != DateTime.MinValue && now < _fieldTripEnd);
-        bool miningActive = _resourceTripEnd != DateTime.MinValue && now < _resourceTripEnd;
-        // 服务器非副本时 InstanceIndex 为 -1(CurrentMap.Instance?.Index ?? -1),
-        // 副本中才是实例索引(>=0)。旧判断 !=0 把 -1 误判成副本, 导致
-        // %5==2 的角色在地图 11(竞技场)被永久豁免跨图回城。
-        bool inInstance = _index % 5 == 2 && World.InstanceIndex >= 0;
-        if (World.MapIndex != _config.HomeMapIndex && !fieldTripActive && !miningActive && !inInstance)
-        {
-            if (now >= _crossMapGraceUntil)
-            {
-                if (now >= _nextMove)
-                {
-                    // ItemUse 回城卷后 ~30s 仍非家图: 卷传送无效(BindPoint 被
-                    // 职业安全区/红区改写, 如刺客巢穴 459 绑定后卷原地传送)。
-                    // 停止烧卷, 重登让 SetBindPoint 重选绑定; 存档侧另行净化。
-                    if (_portalUseAt != DateTime.MinValue && _portalUseSlot.HasValue &&
-                        (now - _portalUseAt).TotalSeconds >= 30)
-                    {
-                        Console.WriteLine($"[{Name}] town portal ineffective (bindpoint hijacked), map={World.MapIndex} relog");
-                        _portalUseAt = DateTime.MinValue;
-                        _portalUseSlot = null;
-                        _connection.TryDisconnect();
-                        return;
-                    }
-                    // 跨图 AutoPath 常无路线(如竞技场地图), 优先用回城卷轴传送
-                    // 到绑定点(出生城); 无卷轴再试 AutoPath, 连续失败则宽限补给。
-                    var scroll = World.Inventory.FirstOrDefault(x => x?.Info != null &&
-                        x.Info.ItemType == ItemType.Consumable && x.Info.Shape == 2 &&
-                        x.Info.ItemName.Contains("Town Portal", StringComparison.OrdinalIgnoreCase));
-                    if (now >= _nextCrossMapDiag)
-                    {
-                        _nextCrossMapDiag = now.AddSeconds(90);
-                        Console.WriteLine($"[{Name}] cross-map scroll: found={scroll != null} count={scroll?.Count ?? -1} slot={scroll?.Slot ?? -999} stale={scroll?.Slot < 0}");
-                    }
-                    if (scroll != null && scroll.Count > 0)
-                    {
-                        // 在线购买(合并)的新物品在 ItemsGained 里 slot 恒为 -1
-                        // (服务器在入背包前序列化), 缓存不可信时整理背包拿正确 slot。
-                        if (scroll.Slot < 0)
-                        {
-                            _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
-                            _nextMove = now.AddSeconds(10);
-                            Console.WriteLine($"[{Name}] stale inventory slot, refresh sort");
-                            return;
-                        }
-                        _connection.Enqueue(new C.ItemUse
-                        {
-                            Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = scroll.Slot, Count = 1 }
-                        });
-                        _portalUseAt = now;
-                        _portalUseSlot = scroll.Slot;
-                        _nextMove = now.AddSeconds(25);
-                        _supplyPurchasePending = false;
-                        Console.WriteLine($"[{Name}] away from home map, town portal home");
-                        return;
-                    }
-                    _crossMapFailCount++;
-                    if (_crossMapFailCount >= 4)
-                    {
-                        _crossMapFailCount = 0;
-                        _crossMapGraceUntil = now.AddSeconds(45);
-                        Console.WriteLine($"[{Name}] cross-map autopath failing, resupply grace");
-                        return;
-                    }
-                    // 竞技场等地图跨图 AutoPath 必失败: 优先朝缓存的卖卷 NPC 位置
-                    // 步行(进入视野后宽限期的 supply 会 approach 买卷回城)。
-                    if (_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var shopDict) && shopDict.Count > 0)
-                    {
-                        var shopPoint = shopDict.Values.First();
-                        MoveToward(shopPoint, 1, now);
-                        _nextMove = now.AddSeconds(5);
-                        Console.WriteLine($"[{Name}] away from home, walk to known shop {shopPoint}");
-                        return;
-                    }
-                    _connection.Enqueue(new C.AutoPathWaypoint
-                    {
-                        MapIndex = _config.HomeMapIndex,
-                        Location = _homeAnchor
-                    });
-                    _nextMove = now.AddSeconds(8);
-                    Console.WriteLine($"[{Name}] away from home map, autopath home");
-                }
-                return;
-            }
-            // 宽限期(now < _crossMapGraceUntil): 放行主链, 让商店补给买到回城卷轴
-        }
-        else if (World.MapIndex != _config.HomeMapIndex && now >= _nextCrossMapDiag)
-        {
-            _nextCrossMapDiag = now.AddSeconds(90);
-            Console.WriteLine($"[{Name}] cross-map exempt fieldTrip={fieldTripActive} mining={miningActive} inst={inInstance} tripEnd={(_fieldTripEnd == DateTime.MinValue ? "none" : _fieldTripEnd.ToString("HH:mm:ss"))} fail={_crossMapFailCount} grace={(_crossMapGraceUntil == DateTime.MinValue ? "none" : (_crossMapGraceUntil - now).TotalSeconds.ToString("F0") + "s")}");
-        }
+        if (TryCrossMapReturn(now)) return;
 
         if (!_starterGuildAttempted && now >= _nextGuildAction)
         {
@@ -560,61 +517,80 @@ public sealed class BotAgent
             Console.WriteLine($"[{Name}] social: join starter guild");
         }
 
-        if (_index % 4 == 0 && now >= _nextMountAction)
+        // 供给链(药水<30%/背包满/耐久低): 回城 → 商店 → 买/修/卖。保留
+        // 原有可靠的 NPCCall/AutoPathStart 实现, 作为行为系统的"补给"层。
+        if (TryTownServices(now)) goto AfterMovement;
+
+        // 生活玩法(悠闲型: 挖矿/钓鱼/开包)沿用原有实现
+        if (Profile.Lifestyle)
         {
-            var currentMap = Globals.MapInfoList?.Binding.FirstOrDefault(x => x.Index == World.MapIndex);
-            if (World.Horse == HorseType.None && currentMap?.CanHorse == true)
-            {
-                _connection.Enqueue(new C.Mount());
-                _mountStarted = now;
-                _nextMountAction = now.AddMinutes(2 + _random.NextDouble());
-                Console.WriteLine($"[{Name}] travel: mount");
-            }
-            else if (World.Horse != HorseType.None)
-            {
-                _connection.Enqueue(new C.Mount());
-                _nextMountAction = now.AddMinutes(1 + _random.NextDouble());
-                Console.WriteLine($"[{Name}] travel: dismount");
-            }
+            if (TryResourceBehavior(now)) goto AfterMovement;
+            if (TryFishingBehavior(now)) goto AfterMovement;
+        }
+        if (TryContainerBehavior(now)) goto AfterMovement;
+
+        // ---- 拟真行为调度层(utility) ----
+        var behavior = _scheduler.Pick(this, now);
+        behavior?.Execute(this, now);
+
+        // 行为切换观测日志(节流)
+        if (_scheduler.Current != _lastBehavior && now >= _nextBehaviorLog)
+        {
+            _nextBehaviorLog = now.AddSeconds(10);
+            _lastBehavior = _scheduler.Current;
         }
 
-        if (TryTradeBehavior(now)) goto AfterMovement;
+    AfterMovement:
+        // ---- 社交层: 组队广播(与行为层并行, 队长人格由 GroupPlay 发邀请) ----
 
-        // 防止无路径寻路时被障碍物或错误方向带离陪玩区域。
-        // 仅在同一张地图内做回拉(跨图坐标不可比);阈值比巡逻半径上限
-        // 宽裕, 避免"走向目标途中被拽回锚点"的边界拉锯。
-        // 练级角色外出(去程/打怪中/回程)是计划移动, 豁免回拉。
-        if (World.MapIndex == _config.HomeMapIndex && !fieldTripActive &&
-            Distance(World.Location, ActivityAnchor()) > _config.PatrolRadius + 8)
+        // ---- 聊天语料(模板+变量) ----
+        if (_config.EnableChatCorpus && now >= _nextChatCorpus)
         {
-            if (now >= _nextMove)
+            _connection.Enqueue(new C.Chat { Text = BotChatCorpus.Compose(this, _random) });
+            _nextChatCorpus = now.AddSeconds(Math.Max(30, _config.ChatIntervalSeconds) * (0.8 + _random.NextDouble() * 0.6));
+        }
+        else if (now >= _nextChat)
+        {
+            _connection.Enqueue(new C.Chat { Text = $"{_config.ChatPrefix}，我叫{Name}。" });
+            _nextChat = now.AddSeconds(Math.Max(30, _config.ChatIntervalSeconds) + _random.NextDouble() * 45);
+        }
+
+        // 附近(≤3 格)有掉落就走过去捡(真人打完怪顺手捡装备)
+        var item = World.Items.Values.OrderBy(x => Distance(World.Location, x.Location)).FirstOrDefault(x => Distance(World.Location, x.Location) <= 3);
+        if (item != null)
+        {
+            if (Distance(World.Location, item.Location) <= 1)
             {
-                double distBefore = Distance(World.Location, ActivityAnchor());
-                MoveToward(ActivityAnchor(), 1, now);
-                // 贪心逐格回拉可能被建筑/墙带卡住原地振荡, 连续几秒走
-                // 不近就改用服务端 AutoPath 绕行回锚点(与外出回程同一机制)。
-                if (Distance(World.Location, ActivityAnchor()) > distBefore - 1.5)
+                _connection.Enqueue(new C.PickUp());
+                _pickupRequests++;
+            }
+            else if (CanMove(now))
+            {
+                MoveToDestination(item.Location, now);
+            }
+        }
+    }
+
+    /// <summary>背景反应层: 喝药/低血道士治疗/职业准备(盾/召唤维持)/整理背包/火炬。</summary>
+    private void BackgroundReactions(DateTime now)
+    {
+        if (now >= _nextActivityReport)
+        {
+            Console.WriteLine($"[{Name}] active map={World.MapIndex}:{World.Location} role={Profile.Personality} class={World.Class} behavior={_scheduler.Current} safe={World.InSafeZone} gold={World.Gold} move={_moveActions} attack={_attackActions} magic={_magicActions} shop={_shopPurchases}/{_shopSales} pickup={_pickupRequests}/{_itemsGainedEvents} pets={OwnedSummonCount()} | train[{_trainBehavior.Stats}] grind[{_grindBehavior.Stats}] group[{_groupBehavior.Stats}] equip[{_equipBehavior.Stats}]");
+            foreach (var npc in World.Npcs.Values)
+            {
+                var info = Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == npc.NPCIndex);
+                if (info != null && SellsTownPortal(info))
                 {
-                    _pullbackStuckSince = _pullbackStuckSince == DateTime.MinValue ? now : _pullbackStuckSince;
-                    if ((now - _pullbackStuckSince).TotalSeconds > 6)
-                    {
-                        _pullbackStuckSince = DateTime.MinValue;
-                        _nextMove = now.AddSeconds(8);
-                        _connection.Enqueue(new C.AutoPathWaypoint
-                        {
-                            MapIndex = _config.HomeMapIndex,
-                            Location = ActivityAnchor()
-                        });
-                        Console.WriteLine($"[{Name}] pullback stuck, autopath home");
-                        return;
-                    }
-                }
-                else
-                {
-                    _pullbackStuckSince = DateTime.MinValue;
+                    if (!_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var dict))
+                        _knownSupplyNpcLocations[World.MapIndex] = dict = new Dictionary<int, Point>();
+                    dict[info.Index] = npc.CurrentLocation;
                 }
             }
-            return;
+            // 技能熟练度(只列有经验的, 验证练技能有效性)
+            foreach (var magic in World.Magics.Where(x => x.Info != null && !x.ItemRequired && x.Experience > 0))
+                Console.WriteLine($"[{Name}] magic: {magic.Info.Name} Lv{magic.Level} exp={magic.Experience}");
+            _nextActivityReport = now.AddSeconds(45 + _random.NextDouble() * 15);
         }
 
         if (now >= _nextPotion && ShouldUseConsumable())
@@ -627,39 +603,25 @@ public sealed class BotAgent
             {
                 if (potion.Slot < 0)
                 {
-                    // 在线购买的新物品 slot 缓存为 -1, 整理背包拿正确 slot
                     _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
                     _nextPotion = now.AddSeconds(8);
-                    return;
                 }
-                _connection.Enqueue(new C.ItemUse
+                else
                 {
-                    Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
-                });
-                _nextPotion = now.AddSeconds(1.0 + _random.NextDouble() * 1.5);
+                    _connection.Enqueue(new C.ItemUse
+                    {
+                        Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = potion.Slot, Count = 1 }
+                    });
+                    _nextPotion = now.AddSeconds(1.0 + _random.NextDouble() * 1.5);
+                }
             }
         }
 
+        // 低血队友治疗(道士反应, 与行为层并行)
         if (World.Class == MirClass.Taoist && now >= _nextSupport && TrySupportAlly(now))
-        {
             _nextSupport = now.AddSeconds(3 + _random.NextDouble() * 2);
-            goto AfterMovement;
-        }
 
-        if (now >= _nextProfessionAction && TryProfessionPreparation(now))
-        {
-            _nextProfessionAction = now.AddSeconds(12 + _random.NextDouble() * 8);
-            goto AfterMovement;
-        }
-
-        if (now >= _nextInventorySort && World.Inventory.Count >= Math.Max(10, Globals.InventorySize / 2))
-        {
-            _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
-            _nextInventorySort = now.AddMinutes(5);
-        }
-
-        if (TryContainerBehavior(now)) goto AfterMovement;
-
+        // 火炬: 夜间视野
         if (now >= _nextTorchAction && World.EquippedTorch == null && World.SpareTorch != null)
         {
             _connection.Enqueue(new C.ItemMove
@@ -672,7 +634,145 @@ public sealed class BotAgent
             });
             _nextTorchAction = now.AddSeconds(8);
         }
+        // 道士护身符: 装备到符槽(召唤必需, 装备评分不覆盖消耗品槽)
+        if (now >= _nextTorchAction)
+        {
+            TryEquipAmulet();
+            _nextTorchAction = now.AddSeconds(8);
+        }
 
+        // 定期整理背包
+        if (now >= _nextInventorySort && World.Inventory.Count >= Math.Max(10, Globals.InventorySize / 2))
+        {
+            _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+            _nextInventorySort = now.AddMinutes(5);
+        }
+
+        // 移动卡死检测(全局): 位置长期不变且不在 AutoPath/挖矿/钓鱼 → 自愈
+        UpdateStuckDetection(now);
+    }
+
+    /// <summary>全局卡死检测: 同图连续 ~12s 位置不变 → 重置寻路/取消 AutoPath。</summary>
+    private void UpdateStuckDetection(DateTime now)
+    {
+        if (_lastPositionSample == DateTime.MinValue)
+        {
+            _lastPositionSample = now;
+            _lastSampledPosition = World.Location;
+            return;
+        }
+        if (World.Location == _lastSampledPosition)
+        {
+            _positionStallTicks++;
+            if (_positionStallTicks >= (int)(12_000 / Math.Max(100, _config.TickMilliseconds)))
+            {
+                _positionStallTicks = 0;
+                if (_autoPathActive)
+                {
+                    _connection.Enqueue(new C.AutoPathCancel());
+                    _autoPathActive = false;
+                    _stuckRecoveries++;
+                    Console.WriteLine($"[{Name}] stuck: cancel autopath, resync (#{_stuckRecoveries})");
+                }
+                _pathfinder?.Reset();
+                _pathGoal = Point.Empty;
+                _nextMove = now.AddSeconds(1);
+            }
+        }
+        else
+        {
+            _positionStallTicks = 0;
+            _lastSampledPosition = World.Location;
+        }
+        _lastPositionSample = now;
+    }
+
+    /// <summary>计划外跨图回城(保留原逻辑: 回城卷 → AutoPath → 宽限补给)。</summary>
+    private bool TryCrossMapReturn(DateTime now)
+    {
+        bool grindTraveling = _grindBehavior.Traveling;
+        bool miningActive = _resourceTripEnd != DateTime.MinValue && now < _resourceTripEnd;
+        bool inInstance = World.InstanceIndex >= 0;
+        if (World.MapIndex == _config.HomeMapIndex || grindTraveling || miningActive || inInstance)
+        {
+            if (World.MapIndex != _config.HomeMapIndex && now >= _nextCrossMapDiag)
+            {
+                _nextCrossMapDiag = now.AddSeconds(90);
+                Console.WriteLine($"[{Name}] cross-map exempt grind={grindTraveling} mining={miningActive} inst={inInstance}");
+            }
+            return false;
+        }
+
+        if (now < _crossMapGraceUntil)
+            return false; // 宽限期: 放行主链让供给链买回城卷
+
+        if (now < _nextMove) return true;
+
+        // ItemUse 回城卷后 ~30s 仍非家图: 卷传送无效(BindPoint 被改写),
+        // 停止烧卷, 重登让 SetBindPoint 重选绑定。
+        if (_portalUseAt != DateTime.MinValue && _portalUseSlot.HasValue &&
+            (now - _portalUseAt).TotalSeconds >= 30)
+        {
+            Console.WriteLine($"[{Name}] town portal ineffective (bindpoint hijacked), map={World.MapIndex} relog");
+            _portalUseAt = DateTime.MinValue;
+            _portalUseSlot = null;
+            _connection.TryDisconnect();
+            return true;
+        }
+
+        var scroll = World.Inventory.FirstOrDefault(x => x?.Info != null &&
+            x.Info.ItemType == ItemType.Consumable && x.Info.Shape == 2 &&
+            x.Info.ItemName.Contains("Town Portal", StringComparison.OrdinalIgnoreCase));
+        if (scroll != null && scroll.Count > 0)
+        {
+            // 在线购买的新物品 slot 恒为 -1, 整理背包拿正确 slot
+            if (scroll.Slot < 0)
+            {
+                _connection.Enqueue(new C.ItemSort { Grid = GridType.Inventory });
+                _nextMove = now.AddSeconds(10);
+                return true;
+            }
+            _connection.Enqueue(new C.ItemUse
+            {
+                Link = new CellLinkInfo { GridType = GridType.Inventory, Slot = scroll.Slot, Count = 1 }
+            });
+            _portalUseAt = now;
+            _portalUseSlot = scroll.Slot;
+            _nextMove = now.AddSeconds(25);
+            _supplyPurchasePending = false;
+            Console.WriteLine($"[{Name}] away from home map, town portal home");
+            return true;
+        }
+        _crossMapFailCount++;
+        if (_crossMapFailCount >= 4)
+        {
+            _crossMapFailCount = 0;
+            _crossMapGraceUntil = now.AddSeconds(45);
+            Console.WriteLine($"[{Name}] cross-map autopath failing, resupply grace");
+            return true;
+        }
+        // 优先朝缓存的卖卷 NPC 步行(宽限期的供给链会买卷回城)
+        if (_knownSupplyNpcLocations.TryGetValue(World.MapIndex, out var shopDict) && shopDict.Count > 0)
+        {
+            var shopPoint = shopDict.Values.First();
+            MoveToward(shopPoint, 1, now);
+            _nextMove = now.AddSeconds(5);
+            Console.WriteLine($"[{Name}] away from home, walk to known shop {shopPoint}");
+            return true;
+        }
+        _connection.Enqueue(new C.AutoPathWaypoint
+        {
+            MapIndex = _config.HomeMapIndex,
+            Location = _homeAnchor
+        });
+        _nextMove = now.AddSeconds(8);
+        Console.WriteLine($"[{Name}] away from home map, autopath home");
+        return true;
+    }
+
+    /// <summary>城内服务链: 修装/任务 NPC 接近 + 卖垃圾 + 买补给(保留原实现)。</summary>
+    private bool TryTownServices(DateTime now)
+    {
         bool npcPriorityMove = false;
         if (now >= _nextRepairAction && now >= _supplyInteractionUntil && !_npcCallPending && NeedsRepair())
         {
@@ -694,13 +794,13 @@ public sealed class BotAgent
                 }
                 else if (now >= _nextMove)
                 {
-                    MoveToward(repairNpc.Object.CurrentLocation, 1, now);
+                    MoveToDestination(repairNpc.Object.CurrentLocation, now);
                     npcPriorityMove = true;
                 }
             }
         }
 
-        if (now >= _nextQuestAction && now >= _supplyInteractionUntil && !_npcCallPending)
+        if (!npcPriorityMove && now >= _nextQuestAction && now >= _supplyInteractionUntil && !_npcCallPending)
         {
             var questNpc = World.Npcs.Values
                 .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
@@ -717,144 +817,25 @@ public sealed class BotAgent
                     _npcCallPending = true;
                     _nextQuestAction = now.AddSeconds(10);
                 }
-                else if (!npcPriorityMove && now >= _nextMove)
+                else if (now >= _nextMove)
                 {
-                    MoveToward(questNpc.Object.CurrentLocation, 1, now);
+                    MoveToDestination(questNpc.Object.CurrentLocation, now);
                     npcPriorityMove = true;
                 }
             }
         }
 
-        if (npcPriorityMove) goto AfterMovement;
+        if (npcPriorityMove) return true;
 
-        if (TrySellBehavior(now)) goto AfterMovement;
+        // 商人人格逛街卖货更勤: 只缩短冷却, 绝不推到过去(否则失败的
+        // AutoPath 会每 tick 重发造成刷屏死循环)。
+        if (Profile.Personality == BotPersonality.Merchant &&
+            _nextSellAction - now > TimeSpan.FromSeconds(30))
+            _nextSellAction = now.AddSeconds(30);
 
-        if (TrySupplyBehavior(now)) goto AfterMovement;
-
-        var target = SelectTarget(now);
-        if (target != null)
-        {
-            int distance = Distance(World.Location, target.Location);
-            if (distance <= 2 && now >= _nextAttack)
-            {
-                var direction = DirectionTo(World.Location, target.Location);
-                var attackSkill = SelectAttackSkill();
-                var magic = SelectCombatMagic();
-                if (attackSkill != MagicType.None && World.Class is MirClass.Warrior or MirClass.Assassin && _random.Next(100) < 55)
-                {
-                    _connection.Enqueue(new C.Attack { Direction = direction, Action = MirAction.Attack, AttackMagic = attackSkill });
-                    _attackActions++;
-                }
-                else if (magic != MagicType.None && World.Class is MirClass.Wizard or MirClass.Taoist && _random.Next(100) < 65)
-                {
-                    _connection.Enqueue(new C.Magic
-                    {
-                        Direction = direction,
-                        Action = MirAction.Spell,
-                        Type = magic,
-                        Target = target.ObjectID,
-                        Location = target.Location
-                    });
-                    _magicActions++;
-                }
-                else
-                {
-                    _connection.Enqueue(new C.Attack { Direction = direction, Action = MirAction.Attack, AttackMagic = MagicType.None });
-                    _attackActions++;
-                }
-                _combatActions++;
-                // 物理职业按武器节奏连击(0.9~1.3s, 服务端 AttackTime 下限 800ms);
-                // 法师/道士施法受 MagicDelay=2000ms 节流, 2.2~3.2s 一次。
-                bool casting = World.Class is MirClass.Wizard or MirClass.Taoist;
-                _nextAttack = now.AddSeconds(casting
-                    ? 2.2 + _random.NextDouble()
-                    : 0.9 + _random.NextDouble() * 0.4);
-                // 真人连击会绕目标走位再打, 不是机械每 3 刀就巡逻走开。
-                if (_combatActions >= 3 && _random.NextDouble() < 0.25 && now >= _nextMove)
-                {
-                    _combatActions = 0;
-                    MoveToward(FlankPoint(target.Location), 1, now);
-                    goto AfterMovement;
-                }
-            }
-            else if (distance > 2 && now >= _nextMove)
-            {
-                MoveToward(target.Location, distance > 5 ? 2 : 1, now);
-            }
-        }
-        else if (now >= _nextMove)
-        {
-            var corpse = World.Monsters.Values
-                .Where(x => x.Dead)
-                .OrderBy(x => Distance(World.Location, x.Location))
-                .FirstOrDefault(x => Distance(World.Location, x.Location) <= 2);
-            if (corpse != null && now >= _nextHarvest)
-            {
-                _connection.Enqueue(new C.Harvest { Direction = DirectionTo(World.Location, corpse.Location) });
-                _nextHarvest = now.AddSeconds(0.3 + _random.NextDouble() * 0.5);
-                goto AfterMovement;
-            }
-
-            var leader = World.GroupMembers.Contains("Bot01")
-                ? World.Players.Values.FirstOrDefault(x => x.Name.Equals("Bot01", StringComparison.OrdinalIgnoreCase))
-                : null;
-            if (leader != null && Distance(World.Location, leader.Location) > 7)
-            {
-                // 跟队但别挤在同一点: 以队长为锚加随机偏移, 小队自然散开。
-                Point followPoint = new Point(
-                    leader.Location.X + _random.Next(-3, 4),
-                    leader.Location.Y + _random.Next(-3, 4));
-                if (CurrentMap()?.CanWalk(followPoint) != true)
-                    followPoint = leader.Location;
-                MoveToward(followPoint, 1, now);
-                goto AfterMovement;
-            }
-
-            var loot = World.Items.Values
-                .OrderBy(x => Distance(World.Location, x.Location))
-                .FirstOrDefault(x => Distance(World.Location, x.Location) <= 10);
-            if (loot != null)
-            {
-                if (Distance(World.Location, loot.Location) <= 1)
-                {
-                    _connection.Enqueue(new C.PickUp());
-                    _pickupRequests++;
-                }
-                else
-                    MoveToward(loot.Location, 1, now);
-            }
-            else
-            {
-                if (TryTownCastingBehavior(now)) goto AfterMovement;
-                Patrol(now);
-            }
-        }
-
-    AfterMovement:
-        if ((_index == 1 || _index == 9) && !_groupInviteAttempted && now >= _nextGroupAction)
-        {
-            // Two separate squads create visible team-vs-team behavior while
-            // retaining the server's normal group loot grace period.
-            int first = _index == 1 ? 2 : 10;
-            int last = _index == 1 ? 8 : 16;
-            for (int i = first; i <= last; i++)
-                _connection.Enqueue(new C.GroupInvite { Name = $"Bot{i:00}" });
-            _groupInviteAttempted = true;
-            _nextGroupAction = now.AddSeconds(45);
-        }
-
-        if (now >= _nextChat)
-        {
-            _connection.Enqueue(new C.Chat { Text = $"{_config.ChatPrefix}，我叫{Name}。" });
-            _nextChat = now.AddSeconds(Math.Max(30, _config.ChatIntervalSeconds) + _random.NextDouble() * 45);
-        }
-
-        var item = World.Items.Values.OrderBy(x => Distance(World.Location, x.Location)).FirstOrDefault(x => Distance(World.Location, x.Location) <= 1);
-        if (item != null)
-        {
-            _connection.Enqueue(new C.PickUp());
-            _pickupRequests++;
-        }
+        if (TrySellBehavior(now)) return true;
+        if (TrySupplyBehavior(now)) return true;
+        return false;
     }
 
     private S.ObjectMonster SelectTarget(DateTime now)
@@ -872,6 +853,553 @@ public sealed class BotAgent
         if (target != null) _targetSelections++;
         _nextTargetScan = now.AddSeconds(1);
         return target;
+    }
+
+    // ====================================================================
+    // 拟真行为系统辅助 API(供 IBotBehavior 调用)
+    // ====================================================================
+
+    /// <summary>日志(带 bot 名前缀, 供测试统计 grep)。</summary>
+    public void Log(string message) => Console.WriteLine($"[{Name}] {message}");
+
+    public bool CanMove(DateTime now) => now >= _nextMove && !World.Dead;
+
+    public int DistanceTo(Point p) => Distance(World.Location, p);
+
+    public bool NearHome(int radius) => World.MapIndex == _config.HomeMapIndex && DistanceTo(_homeAnchor) < radius;
+
+    /// <summary>在城镇活动区(安全区或城中心 45 格内——按地理中心判定,
+    /// 不用各自随机锚点, 否则走远一点就"不在城里"把行为层全封死)。</summary>
+    public bool InTownArea
+        => World.MapIndex == _config.HomeMapIndex &&
+           (World.InSafeZone || DistanceTo(new Point(_config.HomeMapX, _config.HomeMapY)) < 45);
+
+    /// <summary>需要补给(药水少/背包满)。城镇内走供给链, 野外触发回城。</summary>
+    public bool NeedsShopping => NeedsPotionSupply() || BagNearlyFull;
+
+    public bool BagNearlyFull
+        => World.Inventory.Count(x => x is { Slot: >= 0, Info: not null } &&
+                                      x.Slot < Globals.InventorySize) >= Globals.InventorySize - 4;
+
+    public bool PotionSupplyLow
+        => World.Inventory.Where(x => x.Info?.CanAutoPot == true).Sum(x => Math.Max(0, x.Count)) < 3;
+
+    public MapInfo MapInfoByIndex(int index)
+        => Globals.MapInfoList?.Binding.FirstOrDefault(x => x.Index == index);
+
+    /// <summary>地图像素宽(GetPoints 摊平 BitRegion 用)。</summary>
+    public int MapWidthOf(MapInfo info)
+    {
+        var map = CurrentMapOf(info);
+        return map?.Width ?? 1000;
+    }
+
+    private BotMap CurrentMapOf(MapInfo info)
+    {
+        if (info == null || string.IsNullOrWhiteSpace(info.FileName)) return null;
+        string path = Path.Combine(_config.MapPath, $"{info.FileName}.map");
+        return BotMap.Load(path);
+    }
+
+    /// <summary>找到已学技能中第一个匹配的类型(顺序优先)。</summary>
+    public ClientUserMagic FindMagic(params MagicType[] types)
+    {
+        foreach (var type in types)
+        {
+            var magic = World.Magics.FirstOrDefault(x => x.Info?.Magic == type && !x.ItemRequired);
+            if (magic != null) return magic;
+        }
+        return null;
+    }
+
+    /// <summary>施法(尊重服务端 CD 与本地节奏)。返回是否已发包。</summary>
+    public bool CastMagic(ClientUserMagic magic, uint targetId, Point location, MirDirection direction)
+    {
+        if (magic?.Info == null) return false;
+        if (DateTime.UtcNow < magic.NextCast) return false;
+        _connection.Enqueue(new C.Magic
+        {
+            Direction = direction,
+            Action = MirAction.Spell,
+            Type = magic.Info.Magic,
+            Target = targetId,
+            Location = location
+        });
+        _magicActions++;
+        // 服务端 MagicDelay=2s 硬节流; MagicCooldown 包会同步真实 CD
+        magic.NextCast = DateTime.UtcNow + magic.Cooldown;
+        return true;
+    }
+
+    /// <summary>挥武器技能(城内空练)。</summary>
+    public void SwingWeaponSkill()
+    {
+        _connection.Enqueue(new C.Attack
+        {
+            Direction = (MirDirection)_random.Next(8),
+            Action = MirAction.Attack,
+            AttackMagic = World.Class is MirClass.Warrior or MirClass.Assassin ? SelectAttackSkill() : MagicType.None
+        });
+        _attackActions++;
+    }
+
+    /// <summary>本图距自己最近的守卫(大刀)旁的可走格。</summary>
+    public Point NearestGuardSpot()
+    {
+        var info = MapInfoByIndex(World.MapIndex);
+        var guards = info?.Guards;
+        if (guards == null || guards.Count == 0) return Point.Empty;
+        GuardInfo best = null;
+        int bestDist = int.MaxValue;
+        foreach (var guard in guards)
+        {
+            int d = Distance(World.Location, new Point(guard.X, guard.Y));
+            if (d < bestDist) { bestDist = d; best = guard; }
+        }
+        if (best == null) return Point.Empty;
+        return RandomWalkableNear(new Point(best.X, best.Y), 3);
+    }
+
+    /// <summary>锚点附近随机可走格。</summary>
+    public Point RandomWalkableNear(Point anchor, int radius)
+    {
+        var map = CurrentMap();
+        for (int i = 0; i < 20; i++)
+        {
+            var point = new Point(anchor.X + _random.Next(-radius, radius + 1),
+                                  anchor.Y + _random.Next(-radius, radius + 1));
+            if (map == null || map.CanWalk(point)) return point;
+        }
+        return anchor;
+    }
+
+    public void MoveToDestination(Point goal, DateTime now)
+    {
+        if (!CanMove(now)) return;
+        if (DistanceTo(goal) <= 1) return;
+
+        var map = CurrentMap();
+        if (map == null)
+        {
+            MoveToward(goal, 1, now);
+            return;
+        }
+
+        // 服务端拒收检测(按目标追踪): 同一目标连续 >2.5s 位置不变
+        // → 该步格被服务端动态占位, 拉黑重算。多调用方(供给/跟随/行程)
+        // 交替换目标也不会互相重置计时。
+        if (_rejectTracker.TryGetValue(goal, out var track) &&
+            World.Location == track.From &&
+            (now - track.At).TotalSeconds > 2.5)
+        {
+            _runtimeBlocked.Add(track.Step);
+            if (_runtimeBlocked.Count > 40) _runtimeBlocked.Clear();
+            _pathGoal = Point.Empty;
+            _stuckRecoveries++;
+            Log($"path: server-blocked {track.Step}, blacklisted ({_runtimeBlocked.Count}), reroute");
+            if (_runtimeBlocked.Count % 3 == 1)
+            {
+                var around = World.Monsters.Values.Where(m => !m.Dead && Distance(World.Location, m.Location) <= 3)
+                    .Select(m => $"M@{m.Location}");
+                var players = World.Players.Values.Where(pl => Distance(World.Location, pl.Location) <= 3)
+                    .Select(pl => $"P@{pl.Location}");
+                var npcs = World.Npcs.Values.Where(n => Distance(World.Location, n.CurrentLocation) <= 3)
+                    .Select(n => $"N@{n.CurrentLocation}");
+                Log($"path: near=[{string.Join(",", around)}|{string.Join(",", players)}|{string.Join(",", npcs)}] self={World.Location}");
+            }
+            _rejectTracker.Remove(goal);
+        }
+
+
+
+        if (_pathfinder == null || _pathGoal != goal)
+        {
+            // 换目标时不清挂起步: 拒收检测按目标匹配, 交错调用(供给+跟随)
+            // 也能各自累计拒收时长。
+            // A* 失败(目的地太远/地形阻隔)后短期内不再重算, 期间贪心直走
+            if (_lastPathFailGoal == goal && now < _pathFailRetryAt)
+            {
+                MoveToward(goal, 1, now);
+                return;
+            }
+            _pathfinder = new BotPathfinder(map, _runtimeBlocked);
+            _pathfinder.SetDestination(World.Location, goal);
+            _pathGoal = goal;
+            if (!_pathfinder.HasPath)
+            {
+                _lastPathFailGoal = goal;
+                _pathFailRetryAt = now.AddSeconds(8);
+                Log($"path: A* fail to {goal} ({DistanceTo(goal)} cells), greedy fallback");
+                MoveToward(goal, 1, now);
+                return;
+            }
+            _lastPathFailGoal = Point.Empty;
+        }
+
+        if (!_pathfinder.TryGetStep(World.Location, out var step))
+        {
+            // 无路可走/已到: 直接贪心(服务端会纠正撞墙)
+            MoveToward(goal, 1, now);
+            _pathGoal = Point.Empty;
+            return;
+        }
+
+        // 位置由服务器回包异步更新: 与上次调用比位置变化判移动
+        bool moved = World.Location != _lastPathPosition;
+        _pendingStepObserved = step;
+        _pendingStepGoal = goal;
+        if (_rejectTracker.Count > 8) _rejectTracker.Clear();
+        if (World.Location != _pendingStepFrom)
+        {
+            _pendingStepFrom = World.Location;
+            _rejectTracker[goal] = (step, World.Location, now);
+        }
+        else if (!_rejectTracker.TryGetValue(goal, out var cur) || cur.Step != step)
+        {
+            _rejectTracker[goal] = (step, World.Location, now);
+        }
+        MoveToward(step, 1, now);
+        _pathfinder.Advance(World.Location, moved);
+    }
+
+    /// <summary>战斗步进: 距离>2 追击, ≤2 攻击(技能/普攻)。返回是否完成一次攻击。</summary>
+    public bool CombatStep(S.ObjectMonster target, DateTime now)
+    {
+        int distance = DistanceTo(target.Location);
+        if (distance > 2)
+        {
+            if (CanMove(now)) MoveToDestination(target.Location, now);
+            return false;
+        }
+        if (now < _nextAttack) return false;
+
+        var direction = DirectionTo(World.Location, target.Location);
+        var attackSkill = SelectAttackSkill();
+        var magic = SelectCombatMagic();
+        if (attackSkill != MagicType.None && World.Class is MirClass.Warrior or MirClass.Assassin && _random.Next(100) < 55)
+        {
+            _connection.Enqueue(new C.Attack { Direction = direction, Action = MirAction.Attack, AttackMagic = attackSkill });
+            _attackActions++;
+        }
+        else if (magic != MagicType.None && World.Class is MirClass.Wizard or MirClass.Taoist && _random.Next(100) < 65)
+        {
+            _connection.Enqueue(new C.Magic
+            {
+                Direction = direction,
+                Action = MirAction.Spell,
+                Type = magic,
+                Target = target.ObjectID,
+                Location = target.Location
+            });
+            _magicActions++;
+        }
+        else
+        {
+            _connection.Enqueue(new C.Attack { Direction = direction, Action = MirAction.Attack, AttackMagic = MagicType.None });
+            _attackActions++;
+        }
+        // 法师/道士施法受服务端 MagicDelay=2000ms 节流 → 慢节奏;
+        // 战士/刺客按武器节奏(AttackTime 下限 800ms)。
+        bool casting = World.Class is MirClass.Wizard or MirClass.Taoist;
+        _nextAttack = now.AddSeconds(casting ? 2.2 + _random.NextDouble() : 0.9 + _random.NextDouble() * 0.4);
+        // 真人连击会绕目标走位
+        if (_combatActions >= 3 && _random.NextDouble() < 0.25 && CanMove(now))
+        {
+            _combatActions = 0;
+            MoveToDestination(FlankPoint(target.Location), now);
+        }
+        return true;
+    }
+
+    /// <summary>选择狩猎目标(排除他人宠物/同伴, 12 格内最近)。</summary>
+    public S.ObjectMonster SelectHuntTarget(DateTime now) => SelectTarget(now);
+
+    /// <summary>附近(≤8 格)掉落: 走过去捡或直接拾取。返回是否消耗本 tick。</summary>
+    public bool TryLootStep(DateTime now)
+    {
+        var loot = World.Items.Values
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault(x => Distance(World.Location, x.Location) <= 8);
+        if (loot == null) return false;
+        if (Distance(World.Location, loot.Location) <= 1)
+        {
+            _connection.Enqueue(new C.PickUp());
+            _pickupRequests++;
+            return true;
+        }
+        if (CanMove(now)) MoveToDestination(loot.Location, now);
+        return true;
+    }
+
+    /// <summary>远离最近的威胁走一步(低血撤退)。</summary>
+    public void WalkStepAwayFromThreat(DateTime now)
+    {
+        var threat = World.Monsters.Values
+            .Where(x => !x.Dead && string.IsNullOrWhiteSpace(x.PetOwner))
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault(x => Distance(World.Location, x.Location) <= 6);
+        if (threat == null) return;
+        var away = new Point(
+            World.Location.X + Math.Sign(World.Location.X - threat.Location.X) * 4,
+            World.Location.Y + Math.Sign(World.Location.Y - threat.Location.Y) * 4);
+        MoveToDestination(RandomWalkableNear(away, 2), now);
+    }
+
+    // ---- 组队辅助 ----
+    /// <summary>已在队伍中。</summary>
+    public bool IsGroupMember => World.GroupMembers.Count > 0;
+
+    /// <summary>自己是队长(建队时捕获的第一名成员)。</summary>
+    public bool IsGroupLeader => IsGroupMember &&
+        _groupLeaderName.Equals(Name, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>队长在视野内。</summary>
+    public bool GroupLeaderNearby => GroupLeaderPlayer != null;
+
+    /// <summary>视野内的队长玩家对象。</summary>
+    public S.ObjectPlayer GroupLeaderPlayer
+    {
+        get
+        {
+            if (!IsGroupMember) return null;
+            string leader = _groupLeaderName;
+            if (string.IsNullOrEmpty(leader)) return null;
+            return World.Players.Values.FirstOrDefault(x =>
+                x.Name.Equals(leader, StringComparison.OrdinalIgnoreCase) && !x.Dead);
+        }
+    }
+
+    /// <summary>队长邀请的队友候选名单(同图玩家优先, 其次固定小队序号)。</summary>
+    public IEnumerable<string> SquadCandidateNames()
+    {
+        // 身边可见的其他 bot 优先(同图才能即时响应)
+        var visible = World.Players.Values
+            .Where(x => !x.Dead && !x.Name.Equals(Name, StringComparison.OrdinalIgnoreCase))
+            .Where(x => x.Name.StartsWith(_config.AccountPrefix, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .Select(x => x.Name)
+            .Take(3)
+            .ToList();
+        foreach (var name in visible) yield return name;
+        // 固定小队: 序号相邻的同人格段 bot(跨图邀请也合法, 上线即入队)
+        int squadStart = ((_index - 1) / 4) * 4 + 1;
+        for (int i = squadStart; i < squadStart + 4 && i <= _config.MaxBots; i++)
+        {
+            if (i == _index) continue;
+            yield return $"{_config.AccountPrefix}{i:00}";
+        }
+    }
+
+    /// <summary>视野内最近的非本人 bot 玩家。</summary>
+    public S.ObjectPlayer NearestOtherBot(int radius)
+        => World.Players.Values
+            .Where(x => !x.Dead && !x.Name.Equals(Name, StringComparison.OrdinalIgnoreCase))
+            .Where(x => x.Name.StartsWith(_config.AccountPrefix, StringComparison.OrdinalIgnoreCase))
+            .Where(x => Distance(World.Location, x.Location) <= radius)
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault();
+
+    /// <summary>某点附近最近的活怪(助攻用)。</summary>
+    public S.ObjectMonster NearestMonsterNear(Point center, int radius)
+        => World.Monsters.Values
+            .Where(x => !x.Dead && string.IsNullOrWhiteSpace(x.PetOwner) && x.CompanionObject == null)
+            .Where(x => Distance(center, x.Location) <= radius)
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault();
+
+    /// <summary>跟队散开点(队长位置 + 按自己序号的稳定偏移)。</summary>
+    public Point FollowPointNear(Point leader)
+    {
+        int angle = _index % 8;
+        var offset = new Point(((angle % 4) - 1) * 2, ((angle / 2) % 3 - 1) * 2);
+        var point = new Point(leader.X + offset.X, leader.Y + offset.Y);
+        var map = CurrentMap();
+        return map != null && !map.CanWalk(point) ? leader : point;
+    }
+
+    /// <summary>道士: 治疗附近受伤玩家(练治疗熟练度)。</summary>
+    public bool TryHealNearby(ClientUserMagic heal)
+    {
+        var ally = World.Players.Values
+            .Where(x => !x.Dead)
+            .Where(x => World.PlayerVitals.TryGetValue(x.ObjectID, out var vital) &&
+                        World.PlayerMaxVitals.TryGetValue(x.ObjectID, out var max) &&
+                        vital.Health * 100 < Math.Max(1, max.MaxHealth) * 80)
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault(x => Distance(World.Location, x.Location) <= 9);
+
+        // 没有受伤的玩家就给自己附近放(目标=自己也有效)
+        uint targetId = ally?.ObjectID ?? World.SelfObjectId;
+        Point targetLocation = ally?.Location ?? World.Location;
+        return CastMagic(heal, targetId, targetLocation, DirectionTo(World.Location, targetLocation));
+    }
+
+    /// <summary>寻路移动: 本图目标走本地 A*(服务端 AutoPath 在本数据集
+    /// 全部地图 CanAutoPath=false 不可用), 跨图仍发服务端寻路。</summary>
+    public void AutoPathTo(int mapIndex, Point location)
+    {
+        if (mapIndex == World.MapIndex)
+        {
+            if (location == Point.Empty) return; // 空目标: 不行程也不发寻路
+            _travelDest = location;
+            _travelMapIndex = mapIndex;
+            _travelActive = true;
+            _travelSince = DateTime.UtcNow;
+            return;
+        }
+        _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = mapIndex, Location = location });
+        _nextMove = DateTime.UtcNow.AddSeconds(8);
+        _autoPathActive = true;
+    }
+
+    /// <summary>本图服务端 AutoPath 是否可用(数据集 CanAutoPath 开关)。</summary>
+    public bool ServerAutoPathUsable => MapInfoByIndex(World.MapIndex)?.CanAutoPath == true;
+
+    // ---- 装备成长辅助 ----
+
+    /// <summary>物品综合评分(属性和 + 等级需求权重)。</summary>
+    private static int ItemScore(ItemInfo info)
+    {
+        if (info?.Stats == null) return -1;
+        int score = 0;
+        foreach (var pair in info.Stats.Values)
+        {
+            // 主属性权重更高
+            score += pair.Key switch
+            {
+                Stat.MaxDC or Stat.MaxMC or Stat.MaxSC => pair.Value * 3,
+                Stat.MinDC or Stat.MinMC or Stat.MinSC => pair.Value * 3,
+                Stat.Health or Stat.Mana => pair.Value,
+                Stat.Accuracy or Stat.Agility => pair.Value * 2,
+                _ => pair.Value,
+            };
+        }
+        score += info.RequiredType == RequiredType.Level ? info.RequiredAmount : 0;
+        return score;
+    }
+
+    /// <summary>物品类型 → 装备槽位(可穿的类型才返回值)。</summary>
+    private static int? EquipmentSlotOf(ItemInfo info)
+        => info.ItemType switch
+        {
+            ItemType.Weapon => (int)EquipmentSlot.Weapon,
+            ItemType.Armour => (int)EquipmentSlot.Armour,
+            ItemType.Helmet => (int)EquipmentSlot.Helmet,
+            ItemType.Torch => (int)EquipmentSlot.Torch,
+            ItemType.Necklace => (int)EquipmentSlot.Necklace,
+            ItemType.Bracelet => (int)EquipmentSlot.BraceletL,
+            ItemType.Ring => (int)EquipmentSlot.RingL,
+            ItemType.Shoes => (int)EquipmentSlot.Shoes,
+            ItemType.Amulet => (int)EquipmentSlot.Amulet,
+            ItemType.Shield => (int)EquipmentSlot.Shield,
+            _ => null,
+        };
+
+    /// <summary>背包里是否有比身上更好且职业/性别/等级匹配的装备。</summary>
+    public bool HasBetterUnequippedItem()
+    {
+        foreach (var candidate in World.Inventory.Where(x => x is { Slot: >= 0, Info: not null } && x.Slot < Globals.InventorySize))
+        {
+            var slot = EquipmentSlotOf(candidate.Info);
+            if (slot == null || !IsClassSuitable(candidate.Info)) continue;
+            var equipped = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + slot);
+            if (equipped == null) return ItemScore(candidate.Info) >= 0;
+            if (candidate.Info.ItemType == ItemType.Torch) continue; // 火炬由背景层管
+            if (ItemScore(candidate.Info) > ItemScore(equipped.Info) + 5)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>穿上背包里评分最高的可穿装备。返回是否穿了一件。</summary>
+    public bool EquipBestUpgrade()
+    {
+        ClientUserItem bestItem = null;
+        int bestSlot = 0, bestGain = 0;
+        foreach (var candidate in World.Inventory.Where(x => x is { Slot: >= 0, Info: not null } && x.Slot < Globals.InventorySize))
+        {
+            var slot = EquipmentSlotOf(candidate.Info);
+            if (slot == null || !IsClassSuitable(candidate.Info)) continue;
+            if (candidate.Info.ItemType == ItemType.Torch) continue;
+            if (candidate.Slot < 0) continue; // slot 缓存失效, 等整理
+            var equipped = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + slot);
+            int equippedScore = equipped?.Info == null ? -1 : ItemScore(equipped.Info);
+            int gain = ItemScore(candidate.Info) - equippedScore;
+            if (gain > bestGain && gain > 5)
+            {
+                bestGain = gain;
+                bestItem = candidate;
+                bestSlot = slot.Value;
+            }
+        }
+        if (bestItem == null) return false;
+
+        var equippedNow = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + bestSlot);
+        if (equippedNow != null)
+        {
+            // 服务端 ItemMove 在目标格有物品时执行原子交换: 一步
+            // Inventory↔Equipment 即完成换装。绝不能发第二个包(旧武器
+            // 会被穿回去, 造成无限来回震荡)。
+            _connection.Enqueue(new C.ItemMove
+            {
+                FromGrid = GridType.Inventory,
+                FromSlot = bestItem.Slot,
+                ToGrid = GridType.Equipment,
+                ToSlot = bestSlot,
+                MergeItem = false
+            });
+            Console.WriteLine($"[{Name}] equip: swap {bestItem.Info.ItemName} into slot {bestSlot} (was {equippedNow.Info.ItemName}, gain {bestGain})");
+        }
+        else
+        {
+            _connection.Enqueue(new C.ItemMove
+            {
+                FromGrid = GridType.Inventory,
+                FromSlot = bestItem.Slot,
+                ToGrid = GridType.Equipment,
+                ToSlot = bestSlot,
+                MergeItem = false
+            });
+            Console.WriteLine($"[{Name}] equip: wear {bestItem.Info.ItemName} slot {bestSlot} (gain {bestGain})");
+        }
+        return true;
+    }
+
+    /// <summary>道士把背包里的护身符(shape 0, 召唤用)装进符槽。
+    /// 装备评分不覆盖消耗品槽位, 这里独立处理。</summary>
+    public void TryEquipAmulet()
+    {
+        if (World.Class != MirClass.Taoist) return;
+        var amuletSlot = (int)EquipmentSlot.Amulet;
+        var equipped = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + amuletSlot);
+        if (equipped?.Info?.ItemType == ItemType.Amulet && equipped.Count > 5 && equipped.Info.Shape == 0) return;
+        var bag = World.Inventory.FirstOrDefault(x =>
+            x is { Slot: >= 0, Info: not null } && x.Slot < Globals.InventorySize &&
+            x.Info.ItemType == ItemType.Amulet && x.Info.Shape == 0 && x.Count > 0);
+        if (bag == null) return;
+        _connection.Enqueue(new C.ItemMove
+        {
+            FromGrid = GridType.Inventory,
+            FromSlot = bag.Slot,
+            ToGrid = GridType.Equipment,
+            ToSlot = amuletSlot,
+            MergeItem = false
+        });
+        Log($"equip: wear amulet {bag.Info.ItemName} x{bag.Count}");
+    }
+
+    /// <summary>聊天语料变量: (地图名, 最近怪名)。</summary>
+    public (string Map, string Monster) ChatContext()
+    {
+        string map = MapInfoByIndex(World.MapIndex)?.Description ?? "这边";
+        var monster = World.Monsters.Values
+            .Where(x => !x.Dead && string.IsNullOrWhiteSpace(x.PetOwner))
+            .OrderBy(x => Distance(World.Location, x.Location))
+            .FirstOrDefault(x => Distance(World.Location, x.Location) <= 18);
+        string monsterName = monster != null
+            ? Globals.MonsterInfoList?.Binding.FirstOrDefault(m => m.Index == monster.MonsterIndex)?.MonsterName ?? "怪"
+            : "怪";
+        return (map, monsterName);
     }
 
     private bool TryPvPBehavior(DateTime now)
@@ -944,7 +1472,7 @@ public sealed class BotAgent
         var target = SelectPlayerTarget();
         if (target == null)
         {
-            if (now >= _nextMove) Patrol(now);
+            if (now >= _nextMove) _patrolBehavior.Execute(this, now);
             _nextPvpAction = now.AddSeconds(1.5 + _random.NextDouble() * 2);
             return true;
         }
@@ -1032,7 +1560,10 @@ public sealed class BotAgent
     private void MoveToward(Point location, int distance, DateTime now)
     {
         int remaining = Distance(World.Location, location);
-        if (remaining <= 1) return; // 已在目标旁, 不空走一格
+        // remaining==0 才是"已到位"。A* 路径的下一格恒为 1 格之遥,
+        // 必须允许迈进去(此前 <=1 直接 return 造成寻路永久冻结)。
+        if (remaining <= 0) return;
+
 
         var direction = ChooseWalkDirection(location);
         // 目标较远且前方两格都可行走时跑步(distance=2), 否则步行。
@@ -1074,12 +1605,33 @@ public sealed class BotAgent
 
         var map = CurrentMap();
         if (map == null) return preferred;
+
+        // 第一轮: 静态可走 + 无活物占位(玩家/怪/NPC 站位服务端会拒);
+        // 第二轮: 仅静态可走(占位是瞬态的, 有空就钻)。
+        foreach (var candidate in candidates)
+        {
+            var cell = NextPoint(World.Location, candidate);
+            if (map.CanWalk(cell) && !CellOccupied(cell)) return candidate;
+        }
         foreach (var candidate in candidates)
         {
             if (map.CanWalk(NextPoint(World.Location, candidate))) return candidate;
         }
 
         return preferred;
+    }
+
+    /// <summary>该格是否有可见活物占位(服务端 IsBlocking 拒收移动)。
+    /// 死亡怪物(S.ObjectDied)仍留在字典里, 必须跳过, 否则尸体永远"占格"。</summary>
+    private bool CellOccupied(Point cell)
+    {
+        foreach (var m in World.Monsters.Values)
+            if (!m.Dead && m.Location == cell) return true;
+        foreach (var p in World.Players.Values)
+            if (p.Location == cell) return true;
+        foreach (var n in World.Npcs.Values)
+            if (n.CurrentLocation == cell) return true;
+        return false;
     }
 
     private BotMap CurrentMap()
@@ -1092,6 +1644,9 @@ public sealed class BotAgent
         _map = BotMap.Load(path);
         return _map;
     }
+
+    /// <summary>当前地图数据(行为层选可达狩猎区用)。</summary>
+    public BotMap CurrentMapData => CurrentMap();
 
     private static Point NextPoint(Point point, MirDirection direction)
         => direction switch
@@ -1110,22 +1665,8 @@ public sealed class BotAgent
     private static MirDirection Rotate(MirDirection direction, int steps)
         => (MirDirection)(((int)direction + steps + 8) % 8);
 
-    // 角色划分(按 index): %5==0 矿工, %5==1/2 野外练级, %5==3 PvP, %5==4 城中心社交。
-    // 让 bot 分布到各自的固定活动点, 而不是全部挤在出生地空地打转。
-    private bool IsPvpBot(int index) => index % 5 == 3;
-    private bool IsFieldBot(int index) => index % 5 == 1 || index % 5 == 2;
-    private string RoleName(int index)
-    {
-        if (index % 5 == 0) return "miner";
-        if (index % 5 == 1 || index % 5 == 2) return "field";
-        if (index % 5 == 3) return "pvp";
-        return "social";
-    }
-
-    // 当前地图内的活动锚点: 巡逻远足、回拉都以它为准。
-    // 所有角色(含 PvP)都锚在城中心自己的"家"角落, 让出生点长期有人;
-    // PvP 回合中由 TryPvPBehavior 直接接管, 不经过这里的锚点。
-    private Point ActivityAnchor() => _homeAnchor;
+    // PvP 角色由人格档案决定(BotProfile.PvpRole), 不再按序号硬划分。
+    private bool IsPvpBot(int index) => Profile.PvpRole;
 
     // 城中心出生点。登录时 SpawnMapIndex 是角色下线位置而非固定出生图,
     // 因此家在配置的 HomeMap(比奇县), 仅当登录位置就在出生图时用其坐标。
@@ -1137,7 +1678,7 @@ public sealed class BotAgent
     }
 
     // 每个 bot 在城中心出生点周围选一个可走点作为自己的"家",
-    // 带抖动让 20 人散在城中心不同角落而不是叠在同一点。
+    // 带抖动让众人散在城中心不同角落而不是叠在同一点。
     private Point ChooseHomeAnchor()
     {
         var home = HomeLocation();
@@ -1150,44 +1691,6 @@ public sealed class BotAgent
             if (map == null || map.CanWalk(point)) return point;
         }
         return home;
-    }
-
-    // 练级 bot 各自在野外怪区选一个可走锚点, 带抖动避免扎堆。
-    private Point ChooseFieldAnchor()
-    {
-        var map = CurrentMap();
-        for (int i = 0; i < 30; i++)
-        {
-            var point = new Point(
-                Math.Clamp(_config.FieldAnchorX + _random.Next(-_config.FieldRadius, _config.FieldRadius + 1), 0, 349),
-                Math.Clamp(_config.FieldAnchorY + _random.Next(-_config.FieldRadius, _config.FieldRadius + 1), 0, 349));
-            if (map == null || map.CanWalk(point)) return point;
-        }
-        return new Point(_config.FieldAnchorX, _config.FieldAnchorY);
-    }
-
-    private void Patrol(DateTime now)
-    {
-        // 真人闲逛会偶发驻足(看路/犹豫), 让节奏不像精确节拍器。
-        if (_random.NextDouble() < 0.12)
-        {
-            _nextMove = now.AddSeconds(0.5 + _random.NextDouble() * 1.2);
-            return;
-        }
-        bool arrived = _patrolTarget != Point.Empty && Distance(World.Location, _patrolTarget) <= 1;
-        // 到点后驻留 1.5~4s "看看路" 再挑下一个点, 否则会变成永动钟摆。
-        if (arrived && now < _arrivedPauseUntil)
-        {
-            _nextMove = now.AddSeconds(0.3);
-            return;
-        }
-        if (arrived || _patrolTarget == Point.Empty)
-        {
-            _patrolTarget = ChoosePatrolPoint();
-            if (arrived)
-                _arrivedPauseUntil = now.AddSeconds(1.5 + _random.NextDouble() * 2.5);
-        }
-        MoveToward(_patrolTarget, 1, now);
     }
 
     private Point FlankPoint(Point center)
@@ -1204,70 +1707,11 @@ public sealed class BotAgent
         return center;
     }
 
-    private Point ChoosePatrolPoint()
-    {
-        var map = CurrentMap();
-        // 锚点随当前位置漂移, 让闲逛轨迹自然蔓延, 而不是绕出生点钟摆折返。
-        // 大部分时候小范围漫步(2~6 格), 偶发以锚点为锚做一次远足(8~12 格)。
-        // 练级角色外出打怪中, 远足锚用怪区点而不是城中心, 避免往城漂。
-        bool tripActive = _fieldPathToField || _fieldPathHome || _fieldTripEnd != DateTime.MinValue;
-        Point anchor = _random.NextDouble() < 0.8
-            ? World.Location
-            : (tripActive ? _fieldAnchor : ActivityAnchor());
-        int radius = _random.NextDouble() < 0.8
-            ? 2 + _random.Next(0, 5)
-            : 8 + _random.Next(0, Math.Max(1, _config.PatrolRadius - 7));
-        for (int i = 0; i < 20; i++)
-        {
-            var point = new Point(anchor.X + _random.Next(-radius, radius + 1),
-                anchor.Y + _random.Next(-radius, radius + 1));
-            // 防折返: 新目标离刚走到的目标太近(<3 格)时重抽, 避免 A->B->B->A。
-            if (_patrolTarget != Point.Empty && Distance(point, _patrolTarget) <= 3) continue;
-            if (map == null || map.CanWalk(point)) return point;
-        }
-        return World.Location;
-    }
 
-    private bool TryProfessionPreparation(DateTime now)
-    {
-        var known = World.Magics.Where(x => x.Info != null && !x.ItemRequired).ToList();
-        if (World.Class is MirClass.Wizard or MirClass.Taoist)
-        {
-            var shield = known.FirstOrDefault(x => x.Info.Magic == MagicType.SuperiorMagicShield)
-                ?? known.FirstOrDefault(x => x.Info.Magic == MagicType.MagicShield);
-            if (shield != null)
-            {
-                _connection.Enqueue(new C.Magic { Direction = MirDirection.Down, Action = MirAction.Spell,
-                    Type = shield.Info.Magic, Target = World.SelfObjectId, Location = World.Location });
-                _magicActions++;
-                Console.WriteLine($"[{Name}] skill: maintain {shield.Info.Magic}");
-                // 真人护盾是持续时间型, 按护盾时长节奏补, 补完继续做自己的事,
-                // 不会被强制"补盾→立刻挪步"。
-                return true;
-            }
-        }
-
-        if (World.Class == MirClass.Taoist && OwnedSummonCount() == 0)
-        {
-            var summon = known.Where(x => x.Info.Magic is MagicType.SummonDemonicCreature or MagicType.SummonShinsu
-                or MagicType.SummonJinSkeleton or MagicType.SummonSkeleton)
-                .OrderByDescending(x => x.Info.NeedLevel1).FirstOrDefault();
-            if (summon != null)
-            {
-                _connection.Enqueue(new C.Magic { Direction = (MirDirection)_random.Next(8), Action = MirAction.Spell,
-                    Type = summon.Info.Magic, Target = 0, Location = World.Location });
-                _magicActions++;
-                Console.WriteLine($"[{Name}] skill: summon {summon.Info.Magic}");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int OwnedSummonCount()
+    public int OwnedSummonCount()
         => World.Monsters.Values.Count(x => x.PetOwner?.Equals(Name, StringComparison.OrdinalIgnoreCase) == true && x.CompanionObject == null);
 
-    private MagicType SelectAttackSkill()
+    public MagicType SelectAttackSkill()
     {
         var preferred = World.Class switch
         {
@@ -1307,18 +1751,10 @@ public sealed class BotAgent
         _nextMove = now.AddSeconds(0.5 + _random.NextDouble());
         _nextAttack = now.AddSeconds(1 + _random.NextDouble());
         _nextChat = now.AddSeconds(8 + _random.NextDouble() * 12);
+        _nextChatCorpus = now.AddSeconds(20 + _random.NextDouble() * 30);
         _nextPotion = now.AddSeconds(2 + _random.NextDouble());
-        _patrolTarget = Point.Empty;
-        _arrivedPauseUntil = DateTime.MinValue;
-        _fieldAnchor = ChooseFieldAnchor();
         _homeAnchor = ChooseHomeAnchor();
-        _nextFieldTrip = now.AddSeconds(120 + _random.NextDouble() * 120);
-        _fieldTripEnd = DateTime.MinValue;
-        _fieldPathToField = false;
-        _fieldPathHome = false;
-        _nextTownCast = now.AddSeconds(15 + _random.NextDouble() * 25);
         _targetMonsterId = 0;
-        _nextGroupAction = now.AddSeconds(8);
         _nextTorchAction = now.AddSeconds(4);
         _nextRepairAction = now.AddSeconds(15);
         _nextQuestAction = now.AddSeconds(20);
@@ -1335,65 +1771,44 @@ public sealed class BotAgent
         _resourcePathToMine = false;
         _resourcePathHome = false;
         _resourceSwapPending = false;
-        _groupInviteAttempted = false;
-        _nextTradeAction = now.AddSeconds(15 + _random.NextDouble() * 15);
-        _tradeRequestSent = false;
-        _tradeActive = false;
-        _tradePathRequested = false;
-        _tradeAutoPathAllowed = true;
-        _tradeFacingPrimed = false;
         _nextGuildAction = now.AddSeconds(15 + _random.NextDouble() * 20);
         _starterGuildAttempted = false;
-        _nextMountAction = now.AddSeconds(25 + _random.NextDouble() * 20);
-        _mountStarted = DateTime.MinValue;
         _nextContainerAction = now.AddSeconds(45 + _random.NextDouble() * 30);
         _containerSlot = -1;
         _nextFishingAction = now.AddSeconds(40 + _random.NextDouble() * 30);
         _fishingActive = false;
         _fishingPoint = Point.Empty;
-        _nextInstanceAction = now.AddSeconds(60 + _random.NextDouble() * 40);
-        _nextPvpAction = now.AddSeconds(Math.Max(5, _config.PvPStartDelaySeconds) + _random.NextDouble() * 15);
+        _nextPvpAction = Profile.PvpRole
+            ? now.AddSeconds(Math.Max(5, _config.PvPStartDelaySeconds) + _random.NextDouble() * 15)
+            : DateTime.MaxValue;
         _pvpRoundEnd = DateTime.MinValue;
         _pvpStagingPoint = Point.Empty;
         _pvpActions = 0;
-        _nextProfessionAction = now.AddSeconds(4 + _random.NextDouble() * 5);
         _nextActivityReport = now.AddSeconds(10 + _random.NextDouble() * 10);
         _moveActions = 0;
         _attackActions = 0;
         _magicActions = 0;
         _targetSelections = 0;
         _combatActions = 0;
+        // 重连后行为状态复位(行为对象按人格跨会话复用)
+        _lastBehavior = "";
+        _pathGoal = Point.Empty;
+        _pathfinder = null;
+        _groupLeaderName = "";
+        _lastPositionSample = DateTime.MinValue;
+        _positionStallTicks = 0;
+        _travelActive = false;
+        _travelDest = Point.Empty;
+        _sellAutopathBlocked = false;
+        _supplyAutopathBlocked = false;
+        Console.WriteLine($"[{Name}] profile {Profile}");
     }
 
-    private bool TryInstanceBehavior(DateTime now)
-    {
-        if (IsPvpBot(_index)) return false;
-        // Only a subset uses the dungeon finder, leaving the rest in the
-        // overworld so the test map still has ordinary social traffic.
-        if (_index % 5 != 2 || World.InstanceIndex != 0 || now < _nextInstanceAction)
-            return false;
-
-        var instance = Globals.InstanceInfoList?.Binding
-            .Where(x => x != null && x.ShowOnDungeonFinder)
-            .Where(x => (x.MinPlayerLevel == 0 || World.Level >= x.MinPlayerLevel) &&
-                        (x.MaxPlayerLevel == 0 || World.Level <= x.MaxPlayerLevel))
-            .OrderBy(x => x.MinPlayerLevel)
-            .FirstOrDefault();
-        if (instance == null) return false;
-
-        _connection.Enqueue(new C.JoinInstance { Index = instance.Index });
-        _nextInstanceAction = now.AddMinutes(5);
-        Console.WriteLine($"[{Name}] instance: join {instance.Name}");
-        return true;
-    }
 
     private bool TryFishingBehavior(DateTime now)
     {
-        if (IsPvpBot(_index)) return false;
-        // One specialist per five bots keeps the world varied. A fishing
-        // action is enabled only when both the real equipment and a server
-        // configured fishing region exist.
-        if (_index % 5 != 1) return false;
+        // 钓鱼仅悠闲型人格参与, 且需要真实装备(钓竿/钓鱼服)与服务器钓鱼区。
+        if (Profile.Personality != BotPersonality.Idle) return false;
 
         if (_fishingActive && now >= _nextFishingAction)
         {
@@ -1507,171 +1922,6 @@ public sealed class BotAgent
         Console.WriteLine($"[{Name}] item: confirm bundle slot {slot} choice {choice}");
     }
 
-    private bool TryTradeBehavior(DateTime now)
-    {
-        if (_tradeActive) return true;
-
-        var bot01 = World.Players.Values.FirstOrDefault(x =>
-            x.Name.Equals("Bot01", StringComparison.OrdinalIgnoreCase));
-
-        // The recipient keeps facing the initiator so the server's normal
-        // face-to-face trade validation can succeed.
-        if (_index == 2 && bot01 != null && Distance(World.Location, bot01.Location) <= 4)
-        {
-            int targetDistance = Distance(World.Location, bot01.Location);
-            if (targetDistance > 1)
-            {
-                if (now >= _nextMove)
-                    MoveToward(bot01.Location, 1, now);
-                return true;
-            }
-
-            var direction = DirectionTo(World.Location, bot01.Location);
-            _connection.Enqueue(new C.Turn { Direction = direction });
-            return false;
-        }
-
-        if (_index != 1) return false;
-        if (_tradeRequestSent && !_tradeActive && now >= _nextTradeAction)
-        {
-            _tradeRequestSent = false;
-            _tradePathRequested = false;
-            _nextTradeAction = now.AddSeconds(2);
-        }
-        if (_tradeRequestSent || now < _nextTradeAction) return false;
-
-        var target = World.Players.Values.FirstOrDefault(x =>
-            x.Name.Equals("Bot02", StringComparison.OrdinalIgnoreCase));
-        if (target == null)
-        {
-            _nextTradeAction = now.AddSeconds(15);
-            return false;
-        }
-
-        int distance = Distance(World.Location, target.Location);
-        if (distance > 1)
-        {
-            if (_tradeAutoPathAllowed && !_tradePathRequested)
-            {
-                _connection.Enqueue(new C.AutoPathWaypoint
-                {
-                    MapIndex = World.MapIndex,
-                    Location = target.Location
-                });
-                _tradePathRequested = true;
-            }
-            if (now >= _nextMove)
-                MoveToward(target.Location, 1, now);
-            return true;
-        }
-
-        var facing = DirectionTo(World.Location, target.Location);
-        if (!_tradeFacingPrimed || World.Direction != facing)
-        {
-            _connection.Enqueue(new C.Turn { Direction = facing });
-            _tradeFacingPrimed = true;
-            _nextTradeAction = now.AddSeconds(2);
-            return true;
-        }
-
-        _connection.Enqueue(new C.TradeRequest());
-        _tradeRequestSent = true;
-        _tradePathRequested = false;
-        _tradeFacingPrimed = false;
-        _nextTradeAction = now.AddSeconds(20);
-        Console.WriteLine($"[{Name}] trade: request Bot02");
-        return true;
-    }
-
-    // 练级角色(1/2)的外出循环: 大部分时间在城中心驻留/闲逛/练技,
-    // 每隔 FieldTripInterval 秒去北部怪区打 FieldTripDuration 秒怪再回城。
-    // 去程/回程由服务端 AutoPath 驱动(_autoPathActive 短路主链), 到达后
-    // 由战斗逻辑接管。返回 true 表示本 tick 已发出计划移动。
-    private bool TryFieldTripBehavior(DateTime now)
-    {
-        if (!IsFieldBot(_index)) return false;
-        if (World.MapIndex != _config.HomeMapIndex) return false; // 已在其他图, 由对应行为接管
-
-        // 回程中: 到家附近即驻留(距离判到达, 同图无 MapChanged 事件)。
-        if (_fieldPathHome)
-        {
-            if (Distance(World.Location, _homeAnchor) < 12)
-            {
-                _fieldPathHome = false;
-                _fieldTripEnd = DateTime.MinValue;
-                _nextFieldTrip = now.AddSeconds(_config.HomeDwellSecondsMin +
-                    _random.NextDouble() * (_config.HomeDwellSecondsMax - _config.HomeDwellSecondsMin));
-                Console.WriteLine($"[{Name}] field: back in town");
-            }
-            return false; // AutoPath 仍在走, 主链已短路
-        }
-
-        // 去程中: 到怪区锚点附近即开始打怪。
-        if (_fieldPathToField)
-        {
-            if (Distance(World.Location, _fieldAnchor) < 10)
-            {
-                _fieldPathToField = false;
-                _fieldTripEnd = now.AddSeconds(_config.FieldTripDurationSeconds + _random.NextDouble() * 60);
-                Console.WriteLine($"[{Name}] field: trip reached, hunting");
-            }
-            return false;
-        }
-
-        // 打怪中: 到点回城; 若已被怪引回城附近则直接驻留。
-        if (_fieldTripEnd != DateTime.MinValue)
-        {
-            if (now >= _fieldTripEnd)
-            {
-                if (Distance(World.Location, _homeAnchor) < 12)
-                {
-                    _fieldTripEnd = DateTime.MinValue;
-                    _nextFieldTrip = now.AddSeconds(_config.HomeDwellSecondsMin +
-                        _random.NextDouble() * (_config.HomeDwellSecondsMax - _config.HomeDwellSecondsMin));
-                }
-                else
-                {
-                    Console.WriteLine($"[{Name}] field: trip over, head home");
-                    _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = _config.HomeMapIndex, Location = _homeAnchor });
-                    _fieldPathHome = true;
-                    _nextMove = now.AddSeconds(8);
-                }
-            }
-            return false; // 打怪/寻路中, 战斗逻辑接管
-        }
-
-        // 在城驻留结束 → 出发去怪区。
-        if (now >= _nextFieldTrip)
-        {
-            Console.WriteLine($"[{Name}] field: trip to {_fieldAnchor}");
-            _connection.Enqueue(new C.AutoPathWaypoint { MapIndex = _config.HomeMapIndex, Location = _fieldAnchor });
-            _fieldPathToField = true;
-            _nextMove = now.AddSeconds(8);
-            return true;
-        }
-        return false;
-    }
-
-    // 城内"练技"表演: 在城中心随机挥刀/放技能, 制造真实玩家在城里
-    // 试招的热闹观感。法师/道士的护盾/召唤/治疗由职业准备与治疗逻辑覆盖,
-    // 这里统一做物理挥砍动作(C.Attack 无目标, 服务端按方向挥空, 安全)。
-    private bool TryTownCastingBehavior(DateTime now)
-    {
-        if (now < _nextTownCast) return false;
-        bool inTown = World.InSafeZone || Distance(World.Location, _homeAnchor) < 25;
-        if (!inTown) return false;
-
-        _connection.Enqueue(new C.Attack
-        {
-            Direction = (MirDirection)_random.Next(8),
-            Action = MirAction.Attack,
-            AttackMagic = World.Class is MirClass.Warrior or MirClass.Assassin ? SelectAttackSkill() : MagicType.None
-        });
-        _attackActions++;
-        _nextTownCast = now.AddSeconds(_config.TownCastMinSeconds +
-            _random.NextDouble() * (_config.TownCastMaxSeconds - _config.TownCastMinSeconds));
-        return true;
-    }
 
     private bool TrySupportAlly(DateTime now)
     {
@@ -1718,10 +1968,8 @@ public sealed class BotAgent
 
     private bool TryResourceBehavior(DateTime now)
     {
-        if (IsPvpBot(_index)) return false;
-        // Every fifth bot is a resource specialist. The provisioner gives these
-        // bots a real pickaxe; all other bots remain combat/social specialists.
-        if (_index % 5 != 0 || now < _nextResourceAction) return false;
+        // 挖矿仅悠闲型人格(Lifestyle)参与, 镐子由 BotProvisioner 配给。
+        if (!Profile.Lifestyle || now < _nextResourceAction) return false;
         if (_resourceSwapPending)
         {
             _nextResourceAction = now.AddSeconds(3);
@@ -1966,11 +2214,14 @@ public sealed class BotAgent
                 .OrderByDescending(x => needPortal && x.Item.ItemType == ItemType.Consumable && x.Item.Shape == 2 &&
                     x.Item.ItemName?.Contains("Town Portal", StringComparison.OrdinalIgnoreCase) == true)
                 .ThenByDescending(x => x.Item.CanAutoPot && NeedsPotionSupply())
+                .ThenByDescending(x => x.Item.ItemType == ItemType.Amulet && World.Class == MirClass.Taoist &&
+                    NeedsAmulets() && x.Item.Shape == 0)
                 .ThenBy(x => x.Index)
                 .FirstOrDefault();
             if (potion?.Item != null)
             {
-                long amount = potion.Item.CanAutoPot ? (_supplyPurchasePending ? 1 : 5)
+                long amount = potion.Item.CanAutoPot ? 20
+                    : potion.Item.ItemType == ItemType.Amulet ? 50
                     : potion.Item.ItemType == ItemType.Consumable && potion.Item.Shape == 2 ? 3 : 1;
                 _connection.Enqueue(new C.NPCBuy { Index = potion.Index, Amount = amount, GuildFunds = false });
                 _nextSupplyAction = DateTime.UtcNow.AddSeconds(90);
@@ -2000,6 +2251,29 @@ public sealed class BotAgent
                 _connection.Enqueue(new C.NPCSell { Links = sellLinks });
                 _shopSales++;
                 Console.WriteLine($"[{Name}] shop: sell {sellLinks.Count} item stacks");
+            }
+
+            // 逛到装备店顺手买升级件(真人行为: 卖完垃圾看武器)
+            if (DateTime.UtcNow >= _nextEquipShopBuy && page.Goods != null)
+            {
+                ItemInfo bestItemInfo = null; int bestGain = 0, bestIdx = 0;
+                foreach (var good in page.Goods.Where(g => g.Item != null))
+                {
+                    var info = good.Item;
+                    var slot = EquipmentSlotOf(info);
+                    if (slot == null || !IsClassSuitable(info) ||
+                        info.ItemType is not (ItemType.Weapon or ItemType.Armour or ItemType.Helmet)) continue;
+                    var equipped = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + slot);
+                    int gain = ItemScore(info) - (equipped?.Info == null ? -1 : ItemScore(equipped.Info));
+                    if (gain > bestGain && gain > 5) { bestGain = gain; bestIdx = good.Index; bestItemInfo = info; }
+                }
+                if (bestItemInfo != null && World.Gold > 50000)
+                {
+                    _connection.Enqueue(new C.NPCBuy { Index = bestIdx, Amount = 1, GuildFunds = false });
+                    _nextEquipShopBuy = DateTime.UtcNow.AddMinutes(3);
+                    _shopPurchases++;
+                    Console.WriteLine($"[{Name}] shop: buy upgrade {bestItemInfo.ItemName} (gain {bestGain}) gold={World.Gold}");
+                }
             }
         }
 
@@ -2039,17 +2313,76 @@ public sealed class BotAgent
             .Sum(x => Math.Max(0, x.Count)) < 3;
     }
 
+    /// <summary>低血/低蓝判断(药水使用与购买共享)。</summary>
     private bool ShouldUseConsumable()
-    {
-        bool lowHealth = World.MaxHealth > 0 && World.CurrentHealth * 100 < World.MaxHealth * 45;
-        bool lowMana = World.MaxMana > 0 && World.CurrentMana * 100 < World.MaxMana * 35;
-        return lowHealth || (lowMana && World.Class is MirClass.Wizard or MirClass.Taoist);
-    }
+        => World.MaxHealth > 0 && World.CurrentHealth * 100 < World.MaxHealth * 45 ||
+           (World.MaxMana > 0 && World.CurrentMana * 100 < World.MaxMana * 35 &&
+            World.Class is MirClass.Wizard or MirClass.Taoist);
+
 
     private bool NeedsManaPotion()
         => World.MaxMana > 0 && World.CurrentMana * 100 < World.MaxMana * 35 &&
            !(World.MaxHealth > 0 && World.CurrentHealth * 100 < World.MaxHealth * 45);
 
+
+    /// <summary>破围: 被攻击性怪围困时, 优先钻空格逃出; 8 邻全堵死
+    /// 才攻击最近怪开路(真人被野猪围住也是这么干的)。</summary>
+    private bool TryBreakout(DateTime now)
+    {
+        int monsterNeighbors = 0;
+        foreach (var m in World.Monsters.Values)
+            if (!m.Dead && Distance(World.Location, m.Location) <= 1) monsterNeighbors++;
+        if (monsterNeighbors < 1)
+        {
+            _surroundedSince = DateTime.MinValue;
+            return false;
+        }
+
+        var map = CurrentMap();
+        bool freeCell = false;
+        if (map != null)
+        {
+            for (int dx = -1; dx <= 1 && !freeCell; dx++)
+            for (int dy = -1; dy <= 1 && !freeCell; dy++)
+            {
+                if (dx == 0 && dy == 0) continue;
+                var cell = new Point(World.Location.X + dx, World.Location.Y + dy);
+                if (map.CanWalk(cell) && !CellOccupied(cell)) freeCell = true;
+            }
+        }
+        if (freeCell)
+        {
+            _surroundedSince = DateTime.MinValue;
+            return false; // 有空可钻交给正常移动
+        }
+
+        // 全堵死: 困住 >8s 开始砍最近怪开路。
+        if (_surroundedSince == DateTime.MinValue)
+        {
+            _surroundedSince = now;
+            return false;
+        }
+        if ((now - _surroundedSince).TotalSeconds < 8) return false;
+
+        S.ObjectMonster nearest = null;
+        int nearestDist = int.MaxValue;
+        foreach (var m in World.Monsters.Values)
+        {
+            if (m.Dead) continue;
+            int d = Distance(World.Location, m.Location);
+            if (d > 1 || d >= nearestDist) continue;
+            nearestDist = d;
+            nearest = m;
+        }
+        if (nearest != null)
+        {
+            var info = Globals.MonsterInfoList?.Binding.FirstOrDefault(m => m.Index == nearest.MonsterIndex);
+            Log($"breakout: walled by {monsterNeighbors} monsters ({info?.MonsterName ?? "?"}), cutting through");
+            CombatStep(nearest, now);
+            return true;
+        }
+        return false;
+    }
     private static bool IsManaPotion(ItemInfo info)
         => info.ItemEffect == ItemEffect.ManaElixir ||
            info.ItemName?.Contains("Mana", StringComparison.OrdinalIgnoreCase) == true ||
@@ -2073,34 +2406,38 @@ public sealed class BotAgent
     private bool TrySupplyBehavior(DateTime now)
     {
         if (now < _nextSupplyAction) return false;
+        // 道士在城内且想练召唤 → 推迟补给 60s 让行为层训练; 最多连缓 2 次
+        if (World.Class == MirClass.Taoist && InTownArea && !World.Dead &&
+            !NeedsClassSupplies() && _trainDeferCount < 2 && _trainBehavior.Score(this, now) > 0)
+        {
+            _trainDeferCount++;
+            _nextSupplyAction = now.AddSeconds(60);
+            return false;
+        }
+        _trainDeferCount = 0;
         if (now >= _nextSupplyDiag)
         {
             _nextSupplyDiag = now.AddSeconds(60);
-            var nearest = World.Npcs.Values
-                .Select(x => (Dist: Distance(World.Location, x.CurrentLocation),
-                              Name: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)?.NPCName ?? "?"))
-                .OrderBy(x => x.Dist).FirstOrDefault();
-            Console.WriteLine($"[{Name}] supply: called nextSupply={(_nextSupplyAction - now).TotalSeconds:F0}s npcs={World.Npcs.Count} nearest={nearest.Name}@{nearest.Dist} loc={World.Location}");
         }
-        // A failed/unfinished AutoPathStart must not permanently block the
-        // supply state machine. The server remains the authority; we simply
-        // retry at the next slow interval.
-        _supplyPurchasePending = false;
-
         var npc = World.Npcs.Values
             .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
             .Where(x => x.Info != null && HasSupplyShop(x.Info))
-            .OrderBy(x => SellsTownPortal(x.Info) ? 0 : 1)
+            .OrderByDescending(x => World.Class == MirClass.Taoist && NeedsAmulets() && NpcSellsAmulet(x.Info))
+            .ThenBy(x => SellsTownPortal(x.Info) ? 0 : 1)
             .ThenBy(x => Distance(World.Location, x.Object.CurrentLocation))
             .FirstOrDefault(x => Distance(World.Location, x.Object.CurrentLocation) <= Math.Max(20, _config.PatrolRadius * 2));
+        // retry at the next slow interval.
+        _supplyPurchasePending = false;
+
         if (npc.Object == null)
         {
-            var supplyNpc = Globals.NPCInfoList?.Binding.FirstOrDefault(HasSupplyShop);
+            var supplyNpc = Globals.NPCInfoList?.Binding
+                .Where(n => HasSupplyShop(n) && n.Region?.Map?.Index == World.MapIndex)
+                .OrderByDescending(n => World.Class == MirClass.Taoist && NeedsAmulets() && NpcSellsAmulet(n))
+                .FirstOrDefault()
+                ?? Globals.NPCInfoList?.Binding.FirstOrDefault(HasSupplyShop);
             if (supplyNpc == null) return false;
-            // 跨图时本地无供给 NPC。AutoPathWaypoint(跨图)必失败, 但
-            // AutoPathStart(卖卷 NPC) 的寻路目标是 NPC 的 Region——若该 NPC
-            // 就在本图(竞技场内的 Lavar)则同图寻路可行; 失败由服务器报错
-            // (chat: 无法找到自动寻路路线), BotRunner 下轮改用手动移动兜底。
+            // 跨图时本地无供给 NPC, 先朝卖卷 NPC 走(供给链会买卷回城)。
             if (World.MapIndex != _config.HomeMapIndex)
             {
                 var portalNpc = Globals.NPCInfoList?.Binding.FirstOrDefault(SellsTownPortal);
@@ -2124,6 +2461,22 @@ public sealed class BotAgent
                 }
                 return false;
             }
+            // AutoPath 失败过(或本图不可用): 本地 A* 走向供给 NPC 出生 region。
+            // 走路期间只设 ~1s 冷却(一步一冷却会让 NPC 永远到不了)。
+            if (_supplyAutopathBlocked || !ServerAutoPathUsable)
+            {
+                var dest = NpcRegionPoint(supplyNpc);
+                if (dest != Point.Empty)
+                {
+                    if (DistanceTo(dest) > 2 && CanMove(now))
+                    {
+                        MoveToDestination(dest, now);
+                        _nextSupplyAction = now.AddSeconds(1);
+                        return true;
+                    }
+                    return DistanceTo(dest) <= 10;
+                }
+            }
             _supplyPurchasePending = true;
             _supplyInteractionUntil = now.AddSeconds(30);
             _npcCallPending = true;
@@ -2132,11 +2485,13 @@ public sealed class BotAgent
             Console.WriteLine($"[{Name}] shop: auto-path supply NPC {supplyNpc.NPCName}");
             return true;
         }
+        _supplyAutopathBlocked = false;
+
 
         _npcObjectId = npc.Object.ObjectID;
         if (Distance(World.Location, npc.Object.CurrentLocation) > 2)
         {
-            if (now >= _nextMove) MoveToward(npc.Object.CurrentLocation, 1, now);
+            if (now >= _nextMove) MoveToDestination(npc.Object.CurrentLocation, now);
             return true;
         }
 
@@ -2155,7 +2510,6 @@ public sealed class BotAgent
         if (now < _nextSellAction) return false;
         // 跨图时先补给回城卷轴, 不卖东西(本地卖店可能太远触发跨图寻路失败)
         if (World.MapIndex != _config.HomeMapIndex) return false;
-
         var npc = World.Npcs.Values
             .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
             .Where(x => x.Info != null && HasSellShop(x.Info))
@@ -2163,13 +2517,42 @@ public sealed class BotAgent
             .FirstOrDefault(x => Distance(World.Location, x.Object.CurrentLocation) <= Math.Max(20, _config.PatrolRadius * 2));
         if (npc.Object == null)
         {
-            var sellNpc = Globals.NPCInfoList?.Binding.FirstOrDefault(HasSellShop);
+            var sellNpc = Globals.NPCInfoList?.Binding
+                .Where(n => HasSellShop(n) && n.Region?.Map?.Index == World.MapIndex)
+                .FirstOrDefault()
+                ?? Globals.NPCInfoList?.Binding.FirstOrDefault(HasSellShop);
             if (sellNpc == null) return false;
+
+            // 服务器 AutoPath 到不了(或本图 CanAutoPath=false): 用本地 A*
+            // 走向 NPC 出生 region。走路期间只设 ~1s 冷却。
+            if (_sellAutopathBlocked || !ServerAutoPathUsable)
+            {
+                var dest = NpcRegionPoint(sellNpc);
+                if (dest != Point.Empty)
+                {
+                    if (DistanceTo(dest) > 2 && CanMove(now))
+                    {
+                        MoveToDestination(dest, now);
+                        _nextSellAction = now.AddSeconds(1);
+                        return true;
+                    }
+                    if (DistanceTo(dest) <= 10)
+                    {
+                        _nextSellAction = now.AddSeconds(180 + _random.NextDouble() * 60);
+                        return false; // 已在店边但没看到 NPC, 放行其他行为
+                    }
+                    _nextSellAction = now.AddSeconds(5);
+                    return true;
+                }
+            }
             _nextSellAction = now.AddSeconds(180 + _random.NextDouble() * 60);
             _connection.Enqueue(new C.AutoPathStart { NPCIndex = sellNpc.Index });
             Console.WriteLine($"[{Name}] shop: auto-path sell NPC {sellNpc.NPCName}");
             return true;
         }
+        _sellAutopathBlocked = false;
+
+
 
         _npcObjectId = npc.Object.ObjectID;
         _nextSellAction = now.AddSeconds(180 + _random.NextDouble() * 60);
@@ -2183,6 +2566,30 @@ public sealed class BotAgent
         Console.WriteLine($"[{Name}] shop: sell visit NPC {npc.Info.NPCName}");
         return true;
     }
+
+    private bool NeedsAmulets()
+        => World.Class == MirClass.Taoist &&
+           World.Inventory.Where(x => x.Info?.ItemType == ItemType.Amulet).Sum(x => Math.Max(0, x.Count)) < 20;
+
+    /// <summary>NPC 是否卖护身符(沿入口页按钮链 BFS 找货架)。</summary>
+    private static bool NpcSellsAmulet(NPCInfo npc)
+    {
+        if (npc?.EntryPage == null) return false;
+        var seen = new HashSet<NPCPage> { npc.EntryPage };
+        var queue = new Queue<NPCPage>();
+        queue.Enqueue(npc.EntryPage);
+        for (int depth = 0; queue.Count > 0 && depth < 40; depth++)
+        {
+            var page = queue.Dequeue();
+            if (page.Goods != null && page.Goods.Any(g => g.Item?.ItemType == ItemType.Amulet))
+                return true;
+            foreach (var b in page.Buttons ?? Enumerable.Empty<NPCButton>())
+                if (b.DestinationPage != null && seen.Add(b.DestinationPage))
+                    queue.Enqueue(b.DestinationPage);
+        }
+        return false;
+    }
+
 
     private static bool HasSellShop(NPCInfo info)
     {
@@ -2207,9 +2614,34 @@ public sealed class BotAgent
         if (info?.EntryPage == null) return false;
         var pages = new[] { info.EntryPage }
             .Concat(info.EntryPage.Buttons?.Where(x => x.DestinationPage != null).Select(x => x.DestinationPage) ?? Enumerable.Empty<NPCPage>());
-        return pages.Any(x => x.DialogType == NPCDialogType.BuySell &&
-            x.Goods?.Any(g => g.Item?.CanAutoPot == true || g.Item?.ItemType is ItemType.Scroll or ItemType.Amulet ||
-                (g.Item?.ItemType == ItemType.Consumable && g.Item.Shape == 2)) == true);
+        return pages.Any(p => p.DialogType == NPCDialogType.BuySell);
+    }
+
+    private Point NpcRegionPoint(NPCInfo npcInfo)
+    {
+        if (npcInfo.Index == _regionNpcIndex && DateTime.UtcNow.Subtract(_regionPointAt).TotalSeconds < 60)
+            return _regionPointCache;
+        var region = npcInfo.Region;
+        if (region?.Map == null || region.Map.Index != World.MapIndex) return Point.Empty;
+        var points = region.GetPoints(MapWidthOf(region.Map));
+        if (points == null || points.Count == 0) return Point.Empty;
+        var arr = points.ToArray();
+        var map = CurrentMap();
+        var walkable = map == null ? arr : arr.Where(p => map.CanWalk(p)).ToArray();
+        Point dest;
+        if (walkable.Length == 0)
+        {
+            var near = RandomWalkableNear(arr[0], 10);
+            dest = map != null && !map.CanWalk(near) ? Point.Empty : near;
+        }
+        else dest = walkable[_random.Next(walkable.Length)];
+        if (dest != Point.Empty)
+        {
+            _regionNpcIndex = npcInfo.Index;
+            _regionPointCache = dest;
+            _regionPointAt = DateTime.UtcNow;
+        }
+        return dest;
     }
 
     private bool NeedsRepair() => World.Inventory.Any(x => x.Info != null && IsEquipped(x) &&
