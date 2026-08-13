@@ -509,8 +509,8 @@ public partial class LoginScene : Control
         _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, _uiLayer); };
         dialog.AddControl(_skinActivation);
 
-        // 状态提示 Label
-        _skinStatus = new DXLabel { Text = Lang.LoginUi492Label, FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 100) };
+        // 状态提示 Label（dialog 底框在 y≈633，此处底边 633+92+36=761 < 768 不溢出画布）
+        _skinStatus = new DXLabel { Text = Lang.LoginUi492Label, FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 92) };
         dialog.AddControl(_skinStatus);
 
         // 初始隐藏弹出的对话框（排行榜和选项配置）
