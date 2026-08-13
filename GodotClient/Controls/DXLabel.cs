@@ -53,9 +53,14 @@ public partial class DXLabel : DXControl
 
         Color colour = IsEnabled ? TextColour : new Color(TextColour, 0.5f);
 
+        // Godot DrawString 的 Y 是基线 (baseline)，旧版 GDI TextRenderer.DrawText
+        // 的 Y 是文本顶部。不补偿会让所有文字整体上移约一个 ascent（升部），
+        // 表现为文本偏高。这里把基线 Y 下移 ascent，使视觉位置与旧版一致。
+        float ascent = font.GetAscent(MirSkin.ScaledSize(FontSize));
+
         for (int i = 0; i < lines.Count; i++)
         {
-            Vector2 linePos = new(pos.X, pos.Y + i * lineHeight);
+            Vector2 linePos = new(pos.X, pos.Y + i * lineHeight + ascent);
             int drawSize = MirSkin.ScaledSize(FontSize);
             if (DrawOutline)
                 DrawStringOutline(font, linePos, lines[i], HorizontalAlignment.Left, -1, drawSize, 4, OutlineColour);
