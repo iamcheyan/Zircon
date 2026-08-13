@@ -10,7 +10,6 @@ licenses.licx
 /NuGet.Config
 /.dotnet/.dotnet
 /.codex/skills/*
-<<<<<<< HEAD
 /.godot/
 **/.godot/
 /Resource/
@@ -22,6 +21,5 @@ __pycache__/
 
 # Godot 导出产物 (deploy.sh 生成)
 /deploy-out/
-=======
+# 上游条目
 /milestones
->>>>>>> upstream/master
