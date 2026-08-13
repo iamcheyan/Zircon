@@ -122,6 +122,10 @@ public partial class GameStoreDialog : DXWindow
                 .Where(x => string.IsNullOrWhiteSpace(_search?.Text) || x.Item.ItemName.Contains(_search.Text, StringComparison.OrdinalIgnoreCase))
                 .OrderBy(x => SortKey(x)));
         }
+        // [dbeditor 验收诊断] 全量列表日志（含未翻页行）
+        foreach (var it in _items)
+            GD.Print($"[GameStore] 列表: {it.Index} {it.Item.ItemName} | 显示价: {(it.Available ? $"{EffectivePrice(it):#,##0}" : "Unavailable")}");
+        GD.Print($"[GameStore] 对话框屏幕区域: pos={GlobalPosition} size={Size} (搜索框相对 385,39; 搜索按钮 530,38)");
         foreach (var row in _rows) { _list.RemoveControl(row); row.QueueFree(); } _rows.Clear();
         _pageIndex = Math.Min(_pageIndex, PageCount - 1);
         for (int i = 0; i < 10; i++)
@@ -289,7 +293,8 @@ public partial class GameStoreDialog : DXWindow
         var itemGrid = new[] { CreateStoreItem(info) };
         var cell = new DXItemCell { Location = new Vector2I(19, 18), Size = new Vector2I(36, 36), ItemGrid = itemGrid, Slot = 0, ReadOnly = true, GridType = GridType.None, Border = false };
         row.AddControl(cell);
-        row.AddControl(new DXLabel { Text = info.Item.Local(), FontSize = 9, TextColour = Colors.White, Location = new Vector2I(65, 8), Size = new Vector2I(128, 17), IsControl = false });
+        // [dbeditor 验收诊断] 商城行渲染日志：物品名 + 实际显示价格（dbeditor 同步验收用）
+        GD.Print($"[GameStore] 行渲染: {info.Item.ItemName} | 显示价: {(info.Available ? $"{EffectivePrice(info):#,##0}" : "Unavailable")}");
         row.AddControl(new DXLabel { Text = info.Available ? $"{EffectivePrice(info):#,##0}" : "Unavailable", FontSize = 9, TextColour = info.Available ? new Color(1f, .55f, .1f) : new Color(.55f, .55f, .55f), Align = HorizontalAlignment.Center, Location = new Vector2I(7, 59), Size = new Vector2I(58, 16), IsControl = false });
         int quantityValue = 1;
         var quantity = new DXButton { Text = "1", Type = DXButton.ButtonType.SmallButton, FontSize = 8, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(72, 30), Size = new Vector2I(117, 20) };
