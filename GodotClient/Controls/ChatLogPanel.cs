@@ -27,7 +27,7 @@ public partial class ChatLogPanel : Control
 
     public sealed class ChatTabSettings
     {
-        public string Title = "主聊天";
+        public string Title = Lang.ChatLogPanelChatLabel;
         public bool Transparent;
         public bool Alert;
         public bool HideTab;
@@ -59,7 +59,7 @@ public partial class ChatLogPanel : Control
         _scroll.ValueChanged += (s, e) => UpdateLines();
         _textArea.MouseWheel += _scroll.DoMouseWheel;
         AddChild(_scroll);
-        AddTab("主聊天");
+        AddTab(Lang.ChatLogPanelChatLabel);
         var defaultSettings = GetTabSettings();
         defaultSettings.Transparent = true;
         defaultSettings.HideTab = true;
@@ -131,7 +131,7 @@ public partial class ChatLogPanel : Control
     public void AddTab(string title)
     {
         int index = _tabs.Count;
-        var settings = new ChatTabSettings { Title = string.IsNullOrWhiteSpace(title) ? $"聊天 {index + 1}" : title };
+        var settings = new ChatTabSettings { Title = string.IsNullOrWhiteSpace(title) ? string.Format(Lang.ChatLogPanelChatLabel3, index + 1) : title };
         var tab = new DXButton
         {
             Text = settings.Title,
@@ -168,7 +168,7 @@ public partial class ChatLogPanel : Control
         _tabs.Clear();
         _tabSettings.Clear();
         _selectedTab = 0;
-        AddTab("主聊天");
+        AddTab(Lang.ChatLogPanelChatLabel);
         var defaultSettings = GetTabSettings();
         defaultSettings.Transparent = true;
         defaultSettings.HideTab = true;
@@ -292,9 +292,9 @@ public partial class ChatLogPanel : Control
             return false;
         }
         var item = new ClientUserItem(info, 1) { Index = 9001 };
-        AddMessage("[Normal] 玩家: [测试物品:9001]", MessageType.Normal, Colors.White,
+        AddMessage(Lang.ChatLogPanelItemLabel, MessageType.Normal, Colors.White,
             new List<ClientUserItem> { item });
-        bool valid = _linkedLabels.Count == 1 && _linkedLabels[0].Text.Contains("测试物品")
+        bool valid = _linkedLabels.Count == 1 && _linkedLabels[0].Text.Contains(Lang.ChatLogPanelItemLabel2)
             && _tabSettings[0].AlertIcon != null;
         details = $"tabs={_tabs.Count} messages={_messages.Count} linkedLabels={_linkedLabels.Count} alertIcon={_tabSettings[0].AlertIcon != null}";
         return valid;
@@ -337,7 +337,7 @@ public partial class ChatLogPanel : Control
         for (int i = 0; i < count; i++)
         {
             string section = $"tab_{i}";
-            AddTab(config.GetValue(section, "title", $"聊天 {i + 1}").AsString());
+            AddTab(config.GetValue(section, "title", string.Format(Lang.ChatLogPanelChatLabel5, i + 1)).AsString());
             var settings = _tabSettings[i];
             settings.Transparent = config.GetValue(section, "transparent", false).AsBool();
             settings.Alert = config.GetValue(section, "alert", false).AsBool();
@@ -455,7 +455,7 @@ public partial class ChatLogPanel : Control
     {
         float lineWidth = 0;
         int lines = 1;
-        float lineHeight = MirSkin.MeasureText("字", fontSize).Y;
+        float lineHeight = MirSkin.MeasureText(Lang.ChatLogPanelUi114Label, fontSize).Y;
         foreach (char ch in text ?? string.Empty)
         {
             if (ch == '\n')
@@ -577,7 +577,7 @@ public partial class ChatLogPanel : Control
     private static Vector2 TextPosition(string text, int target, float width, int fontSize)
     {
         float x = 0, y = 0;
-        float lineHeight = MirSkin.MeasureText("字", fontSize).Y;
+        float lineHeight = MirSkin.MeasureText(Lang.ChatLogPanelUi114Label, fontSize).Y;
         for (int i = 0; i < target && i < text.Length; i++)
         {
             if (text[i] == '\n')

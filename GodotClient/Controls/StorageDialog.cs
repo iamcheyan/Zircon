@@ -28,7 +28,7 @@ public partial class StorageDialog : DXWindow
         // 原版 StorageDialog 直接使用 Interface 121 背景图。
         HasTitle = false;
         Movable = true;
-        Text = "仓库";
+        Text = Lang.StorageDialogTitle;
         Size = new Vector2I(410, 479);
 
         var bg = new DXImageControl
@@ -44,7 +44,7 @@ public partial class StorageDialog : DXWindow
         // 原版标题是背景图上的独立 DXLabel，不是 DXWindow 标题栏。
         AddControl(new DXLabel
         {
-            Text = "仓库",
+            Text = Lang.StorageDialogTitle,
             FontSize = 10,
             TextColour = new Color(1f, .85f, .3f),
             DrawOutline = true,
@@ -75,8 +75,8 @@ public partial class StorageDialog : DXWindow
         SortButton.MouseClick += SortStorage;
         AddControl(SortButton);
 
-        _storageTab = CreateTab("仓库", 10, false);
-        _partsTab = CreateTab("碎片", 72, true);
+        _storageTab = CreateTab(Lang.StorageDialogTitle, 10, false);
+        _partsTab = CreateTab(Lang.StorageUi116Label, 72, true);
 
         Grid = new DXItemGrid
         {
@@ -274,7 +274,7 @@ public partial class StorageDialog : DXWindow
 
     private void SortStorage(object sender, EventArgs e)
     {
-        var confirm = new ConfirmDialog("确定要整理当前仓库吗？", "确认整理", () =>
+        var confirm = new ConfirmDialog(Lang.StorageStorageLabel, Lang.StorageConfirmLabel, () =>
             GameScene.Game?.SendItemSort(_partsVisible ? GridType.PartsStorage : GridType.Storage));
         WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
     }

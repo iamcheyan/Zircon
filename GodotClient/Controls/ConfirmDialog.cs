@@ -51,10 +51,10 @@ public sealed partial class ConfirmDialog : DXWindow
             IsControl = false,
         });
 
-        var yes = new DXButton { Text = "确定", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(38, 93), Size = new Vector2I(76, 25) };
+        var yes = new DXButton { Text = Lang.LegacyLoginsOkLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(38, 93), Size = new Vector2I(76, 25) };
         yes.MouseClick += (o, e) => { _confirm?.Invoke(); WindowManager.Close(this); };
         AddControl(yes);
-        var no = new DXButton { Text = "取消", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(138, 93), Size = new Vector2I(76, 25) };
+        var no = new DXButton { Text = Lang.CommonControlCancel, Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(138, 93), Size = new Vector2I(76, 25) };
         no.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(no);
     }

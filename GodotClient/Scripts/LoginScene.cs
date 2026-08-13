@@ -42,15 +42,15 @@ public partial class LoginScene : Control
         _registerBtn = GetNode<Button>("VBox/RegisterBtn");
         _statusLabel = GetNode<Label>("VBox/StatusLabel");
         var vbox = GetNode<VBoxContainer>("VBox");
-        _keyEdit = new LineEdit { PlaceholderText = "激活码/重置码" };
-        _newPasswordEdit = new LineEdit { PlaceholderText = "新密码", Secret = true };
+        _keyEdit = new LineEdit { PlaceholderText = Lang.LoginResetLabel };
+        _newPasswordEdit = new LineEdit { PlaceholderText = Lang.LoginPasswordLabel, Secret = true };
         vbox.AddChild(_keyEdit);
         vbox.AddChild(_newPasswordEdit);
         AddAccountButton(vbox, Lang.LoginDialogChangePasswordButtonLabel, () => _net.Connection?.SendChangePassword(_emailEdit.Text, _passwordEdit.Text, _newPasswordEdit.Text));
-        AddAccountButton(vbox, "申请密码重置", () => _net.Connection?.SendRequestPasswordReset(_emailEdit.Text));
-        AddAccountButton(vbox, "重置密码", () => _net.Connection?.SendResetPassword(_keyEdit.Text, _newPasswordEdit.Text));
+        AddAccountButton(vbox, Lang.LoginPasswordLabel2, () => _net.Connection?.SendRequestPasswordReset(_emailEdit.Text));
+        AddAccountButton(vbox, Lang.LoginPasswordLabel3, () => _net.Connection?.SendResetPassword(_keyEdit.Text, _newPasswordEdit.Text));
         AddAccountButton(vbox, Lang.ActivationTitle, () => _net.Connection?.SendActivation(_keyEdit.Text));
-        AddAccountButton(vbox, "申请激活码", () => _net.Connection?.SendRequestActivationKey(_emailEdit.Text));
+        AddAccountButton(vbox, Lang.LoginUi446Label, () => _net.Connection?.SendRequestActivationKey(_emailEdit.Text));
 
         _loginBtn.Pressed += OnLoginPressed;
         _registerBtn.Pressed += OnRegisterPressed;
@@ -76,13 +76,13 @@ public partial class LoginScene : Control
             launcher.EnsureServerRunning(host, port);
             if (launcher.IsSpawned && !launcher.WaitForServer(host, port))
             {
-                SetStatus("单机服务端启动失败");
+                SetStatus(Lang.LoginUi447Label);
                 return;
             }
         }
         if (!_net.Connect(host, port))
         {
-            SetStatus("无法连接服务端");
+            SetStatus(Lang.LoginNoneLabel);
             return;
         }
 
@@ -141,7 +141,7 @@ public partial class LoginScene : Control
 
     private void ShowVersionOK(string version)
     {
-        SetStatus($"已连接服务端 (版本: {version})\n请登录或注册");
+        SetStatus(string.Format(Lang.LoginLoginLabel, version));
         if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = false;
         if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = false;
         if (_skinLogin != null) _skinLogin.Enabled = true;
@@ -163,7 +163,7 @@ public partial class LoginScene : Control
         if (_pendingLoginResult == LoginResult.Success)
         {
             SoundPlayback.Stop(SoundIndex.LoginScene);
-            SetStatus($"登录成功! 角色数: {_pendingCharacters.Count}");
+            SetStatus(string.Format(Lang.LoginCharacterLabel, _pendingCharacters.Count));
             GD.Print($"[Login] 登录成功, 角色数 {_pendingCharacters.Count}");
             var selectScene = ResourceLoader.Load<PackedScene>("res://Scenes/SelectScene.tscn");
             var selectScript = selectScene.Instantiate<SelectScene>();
@@ -173,7 +173,7 @@ public partial class LoginScene : Control
         }
         else
         {
-            SetStatus($"登录失败: {_pendingLoginResult}\n{_pendingLoginMessage}");
+            SetStatus(string.Format(Lang.LoginLoginLabel2, _pendingLoginResult, _pendingLoginMessage));
             if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = false;
         }
     }
@@ -195,24 +195,24 @@ public partial class LoginScene : Control
     }
 
     private void OnChangePasswordResult(ChangePasswordResult result)
-        => SetStatus($"修改密码结果: {result}");
+        => SetStatus(string.Format(Lang.LoginPasswordLabel4, result));
     private void OnRequestPasswordResetResult(RequestPasswordResetResult result)
-        => SetStatus($"申请重置结果: {result}");
+        => SetStatus(string.Format(Lang.LoginResetLabel2, result));
     private void OnResetPasswordResult(ResetPasswordResult result)
-        => SetStatus($"重置密码结果: {result}");
+        => SetStatus(string.Format(Lang.LoginPasswordLabel5, result));
     private void OnActivationResult(ActivationResult result)
-        => SetStatus($"激活结果: {result}");
+        => SetStatus(string.Format(Lang.LoginUi455Label, result));
     private void OnRequestActivationKeyResult(RequestActivationKeyResult result)
-        => SetStatus($"申请激活码结果: {result}");
+        => SetStatus(string.Format(Lang.LoginUi456Label, result));
     private void OnRankings(S.Rankings rankings)
         => _loginRanking?.ApplyRankings(rankings);
     private void ShowNewAccountResult(int resultInt)
     {
         var result = (NewAccountResult)resultInt;
         if (result == NewAccountResult.Success || result == NewAccountResult.AlreadyExists)
-            SetStatus($"注册成功 ({result}), 请登录");
+            SetStatus(string.Format(Lang.LoginLoginLabel3, result));
         else
-            SetStatus($"注册失败: {result}");
+            SetStatus(string.Format(Lang.LoginRegisterLabel, result));
         if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = false;
     }
 
@@ -222,7 +222,7 @@ public partial class LoginScene : Control
     }
     private void ShowDisconnected()
     {
-        SetStatus("连接已断开");
+        SetStatus(Lang.LoginUi459Label);
         if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = true;
         if (_registerBtn != null && IsInstanceValid(_registerBtn)) _registerBtn.Disabled = true;
     }
@@ -230,7 +230,7 @@ public partial class LoginScene : Control
     private void OnLoginPressed()
     {
         if (_loginBtn != null && IsInstanceValid(_loginBtn)) _loginBtn.Disabled = true;
-        SetStatus("登录中...");
+        SetStatus(Lang.LoginLoginLabel4);
         string email = _skinEmail?.Text ?? _emailEdit.Text;
         string password = _skinPassword?.Text ?? _passwordEdit.Text;
         if (_skinRemember?.Checked == true)
@@ -252,7 +252,7 @@ public partial class LoginScene : Control
     private void OnRegisterPressed()
     {
         _registerBtn.Disabled = true;
-        SetStatus("注册中...");
+        SetStatus(Lang.LoginRegisterLabel2);
         _net.Connection?.SendNewAccount(_skinEmail?.Text ?? _emailEdit.Text, _skinPassword?.Text ?? _passwordEdit.Text);
     }
 
@@ -289,12 +289,12 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateAccountDialog()
     {
-        var dialog = new LegacyLoginDialog("注册新账号", new Vector2I(300, 255),
-            new[] { "邮箱", "密码", "确认密码", "真实姓名", "出生日期", "推荐人" },
+        var dialog = new LegacyLoginDialog(Lang.LoginRegisterLabel3, new Vector2I(300, 255),
+            new[] { Lang.LoginEmailLabel, Lang.LoginPasswordLabel6, Lang.LoginConfirmLabel, Lang.LoginUi466Label, Lang.LoginDateLabel, Lang.LoginUi468Label },
             new[] { false, true, true, false, false, false });
         dialog.Submitted += values =>
         {
-            if (values[0].Length < 3 || values[1].Length < 1 || values[1] != values[2]) { SetStatus("注册信息不完整或两次密码不一致"); return; }
+            if (values[0].Length < 3 || values[1].Length < 1 || values[1] != values[2]) { SetStatus(Lang.LoginRegisterLabel4); return; }
             DateTime.TryParse(values[4], out var birth);
             if (birth == default) birth = new DateTime(1990, 1, 1);
             _net.Connection?.SendNewAccount(values[0], values[1], string.IsNullOrWhiteSpace(values[3]) ? "Player" : values[3], birth, values[5]);
@@ -306,10 +306,10 @@ public partial class LoginScene : Control
     private LegacyLoginDialog CreateChangeDialog()
     {
         var dialog = new LegacyLoginDialog(Lang.LoginDialogChangePasswordButtonLabel, new Vector2I(330, 205),
-            new[] { "邮箱", "当前密码", "新密码", "确认新密码" }, new[] { false, true, true, true });
+            new[] { Lang.LoginEmailLabel, Lang.LoginPasswordLabel7, Lang.LoginPasswordLabel, Lang.LoginConfirmLabel2 }, new[] { false, true, true, true });
         dialog.Submitted += values =>
         {
-            if (values[0].Length < 3 || values[2] != values[3]) { SetStatus("修改密码信息不完整"); return; }
+            if (values[0].Length < 3 || values[2] != values[3]) { SetStatus(Lang.LoginPasswordLabel9); return; }
             _net.Connection?.SendChangePassword(values[0], values[1], values[2]);
             WindowManager.Close(dialog);
         };
@@ -318,7 +318,7 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateRequestResetDialog()
     {
-        var dialog = new LegacyLoginDialog("申请密码重置", new Vector2I(330, 150), new[] { "邮箱" }, secondary: "已有重置码？");
+        var dialog = new LegacyLoginDialog(Lang.LoginPasswordLabel2, new Vector2I(330, 150), new[] { Lang.LoginEmailLabel }, secondary: Lang.LoginResetLabel3);
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendRequestPasswordReset(values[0]); };
         dialog.SecondaryClicked += () => { _resetDialog ??= CreateResetDialog(); WindowManager.Close(dialog); WindowManager.Open(_resetDialog, this); };
         return dialog;
@@ -326,10 +326,10 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateResetDialog()
     {
-        var dialog = new LegacyLoginDialog("重置密码", new Vector2I(330, 180), new[] { "重置码", "新密码", "确认密码" }, new[] { false, true, true });
+        var dialog = new LegacyLoginDialog(Lang.LoginPasswordLabel3, new Vector2I(330, 180), new[] { Lang.LoginResetLabel4, Lang.LoginPasswordLabel, Lang.LoginConfirmLabel }, new[] { false, true, true });
         dialog.Submitted += values =>
         {
-            if (values[1] != values[2]) { SetStatus("两次密码不一致"); return; }
+            if (values[1] != values[2]) { SetStatus(Lang.LoginPasswordLabel13); return; }
             _net.Connection?.SendResetPassword(values[0], values[1]);
             WindowManager.Close(dialog);
         };
@@ -338,7 +338,7 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateActivationDialog()
     {
-        var dialog = new LegacyLoginDialog(Lang.ActivationTitle, new Vector2I(330, 155), new[] { "激活码" }, secondary: "重新申请激活码");
+        var dialog = new LegacyLoginDialog(Lang.ActivationTitle, new Vector2I(330, 155), new[] { Lang.LoginUi483Label }, secondary: Lang.LoginUi484Label);
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendActivation(values[0]); };
         dialog.SecondaryClicked += () => { _requestActivationDialog ??= CreateRequestActivationDialog(); WindowManager.Close(dialog); WindowManager.Open(_requestActivationDialog, this); };
         return dialog;
@@ -346,7 +346,7 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateRequestActivationDialog()
     {
-        var dialog = new LegacyLoginDialog("申请激活码", new Vector2I(330, 150), new[] { "邮箱" });
+        var dialog = new LegacyLoginDialog(Lang.LoginUi446Label, new Vector2I(330, 150), new[] { Lang.LoginEmailLabel });
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendRequestActivationKey(values[0]); };
         return dialog;
     }
@@ -406,7 +406,7 @@ public partial class LoginScene : Control
         // 标题提示文字
         dialog.AddControl(new DXLabel
         {
-            Text = "请输入邮箱和密码",
+            Text = Lang.LoginPasswordLabel14,
             TextColour = new Color(214f / 255f, 190f / 255f, 148f / 255f),
             Location = new Vector2I(280, 38),
             Size = new Vector2I(220, 18),
@@ -454,9 +454,9 @@ public partial class LoginScene : Control
         _skinExit = new DXButton { Text = Lang.CommonControlExit, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(660, 60), Size = new Vector2I(100, defaultButtonHeight) };
 
         // 顶部功能页签按钮 (排行榜、选项、注册账号、修改密码)
-        _skinRanking = new DXButton { Text = "排行榜", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(20, 0), Size = new Vector2I(68, 32) };
-        _skinOptions = new DXButton { Text = "选项", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(93, 0), Size = new Vector2I(68, 32) };
-        _skinRegister = new DXButton { Text = "注册新账号", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(485, 0), Size = new Vector2I(136, 32), Enabled = false };
+        _skinRanking = new DXButton { Text = Lang.RankingRankingLabel, FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(20, 0), Size = new Vector2I(68, 32) };
+        _skinOptions = new DXButton { Text = Lang.LoginDialogOptionButtonLabel, FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(93, 0), Size = new Vector2I(68, 32) };
+        _skinRegister = new DXButton { Text = Lang.LoginRegisterLabel3, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(485, 0), Size = new Vector2I(136, 32), Enabled = false };
         _skinChange = new DXButton { Text = Lang.LoginDialogChangePasswordButtonLabel, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(625, 0), Size = new Vector2I(136, 32) };
 
         _skinLogin.MouseClick += (o, e) => OnLoginPressed();
@@ -478,7 +478,7 @@ public partial class LoginScene : Control
         dialog.AddControl(_skinExit);
 
         // 忘记密码 链接
-        _skinForgot = new DXLabel { Text = "忘记密码", FontSize = 9, TextColour = new Color(1f, .75f, .25f), Location = new Vector2I(640, 38), Size = new Vector2I(100, 16), IsControl = true };
+        _skinForgot = new DXLabel { Text = Lang.LoginPasswordLabel15, FontSize = 9, TextColour = new Color(1f, .75f, .25f), Location = new Vector2I(640, 38), Size = new Vector2I(100, 16), IsControl = true };
         _skinForgot.MouseEnter += (o, e) => _skinForgot.TextColour = Colors.White;
         _skinForgot.MouseLeave += (o, e) => _skinForgot.TextColour = new Color(1f, .75f, .25f);
         _skinForgot.MouseClick += (o, e) => OpenRequestResetDialog();
@@ -486,7 +486,7 @@ public partial class LoginScene : Control
 
         // 记住账号 复选框
         _skinRemember = new DXCheckBox { Location = new Vector2I(490, 38), LabelBoxPadding = 4, Checked = ClientSettings.RememberDetails };
-        _skinRemember.Label.Text = "记住账号";
+        _skinRemember.Label.Text = Lang.LoginAccountLabel;
         _skinRemember.Label.FontSize = 9;
         _skinRemember.Label.TextColour = new Color(1f, .75f, .25f);
         dialog.AddControl(_skinRemember);
@@ -497,7 +497,7 @@ public partial class LoginScene : Control
         dialog.AddControl(_skinActivation);
 
         // 状态提示 Label
-        _skinStatus = new DXLabel { Text = "正在连接服务端...", FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 100) };
+        _skinStatus = new DXLabel { Text = Lang.LoginUi492Label, FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 100) };
         dialog.AddControl(_skinStatus);
 
         // 初始隐藏弹出的对话框（排行榜和选项配置）

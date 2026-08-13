@@ -26,7 +26,7 @@ public sealed partial class BundleDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => Close(); AddControl(close);
-        AddControl(new DXLabel { Text = "物品包", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(180, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.BundleItemLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(180, 18), IsControl = false });
         Grid = new DXItemGrid { GridSize = new Vector2I(4, 4), Location = new Vector2I(15, 48), GridType = GridType.Bundle, GridPadding = 1, ItemGrid = _items, ReadOnly = true };
         AddControl(Grid);
         foreach (var cell in Grid.Cells) cell.MouseClick += (s, e) => SelectCell((DXItemCell)s);
@@ -43,7 +43,7 @@ public sealed partial class BundleDialog : DXWindow
         _slot = slot; _selectedIndex = -1; _selectedBundle = GameScene.Game?.InventoryCells?.ElementAtOrDefault(slot); _selectedBundleItem = item;
         _selectedBundle?.Locked = true; _selectedBundle?.UpdateBorder();
         ResetCells();
-        _confirm.Text = _info.Type switch { BundleType.AnyOf => "随机领取", BundleType.AllOf => "全部领取", BundleType.OneOf => "选择并领取", _ => Lang.CommonControlConfirm };
+        _confirm.Text = _info.Type switch { BundleType.AnyOf => Lang.BundleUi280Label, BundleType.AllOf => Lang.BundleAllLabel, BundleType.OneOf => Lang.BundleSelectLabel, _ => Lang.CommonControlConfirm };
         _confirm.Enabled = _info.Type != BundleType.OneOf;
         foreach (var entry in contents ?? new List<ClientBundleItemInfo>())
         {

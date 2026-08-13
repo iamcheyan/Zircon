@@ -491,10 +491,10 @@ public partial class MiniMapDialog : DXWindow
         // 旧版 TimeOfDayImage.Hint = TimeOfDayLabel：悬停显示当前时段文字。
         TimeOfDayImage.TooltipText = GameScene.Game?.TimeOfDay switch
         {
-            TimeOfDay.Dawn => "黎明",
-            TimeOfDay.Dusk => "黄昏",
-            TimeOfDay.Night => "夜晚",
-            TimeOfDay.Day => "白天",
+            TimeOfDay.Dawn => Lang.MiniMapDawnLabel,
+            TimeOfDay.Dusk => Lang.MiniMapDuskLabel,
+            TimeOfDay.Night => Lang.MiniMapNightLabel,
+            TimeOfDay.Day => Lang.MiniMapDayLabel,
             _ => string.Empty,
         };
     }

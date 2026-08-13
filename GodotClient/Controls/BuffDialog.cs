@@ -123,21 +123,21 @@ public partial class BuffDialog : DXWindow
         if (buff == null) return string.Empty;
         string name = buff.Type switch
         {
-            BuffType.ItemBuff => Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == buff.ItemIndex)?.ItemName ?? "物品增益",
-            BuffType.ItemBuffPermanent => "永久物品增益",
-            BuffType.HuntGold => "猎金",
-            BuffType.Observable => "允许被观察",
-            BuffType.Castle => "城堡领主",
-            BuffType.Guild => "行会",
+            BuffType.ItemBuff => Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == buff.ItemIndex)?.ItemName ?? Lang.BuffItemLabel,
+            BuffType.ItemBuffPermanent => Lang.BuffItemLabel2,
+            BuffType.HuntGold => Lang.BuffUi121Label,
+            BuffType.Observable => Lang.BuffAllowLabel,
+            BuffType.Castle => Lang.BuffUi123Label,
+            BuffType.Guild => Lang.CommonControlConfigWindowColoursTabGuildChatLabel,
             BuffType.Companion => Lang.CompanionDialogTitle,
-            BuffType.MapEffect => "地图效果",
-            BuffType.InstanceEffect => "副本效果",
-            BuffType.Fame => "声望",
+            BuffType.MapEffect => Lang.BuffEffectsLabel,
+            BuffType.InstanceEffect => Lang.BuffEffectsLabel2,
+            BuffType.Fame => Lang.BuffUi126Label,
             _ => buff.Type.ToString(),
         };
-        if (buff.Pause) name += "\n已暂停";
+        if (buff.Pause) name += Lang.BuffPauseLabel;
         if (buff.RemainingTime != TimeSpan.MaxValue)
-            name += $"\n剩余：{Math.Max(0, buff.RemainingTime.TotalSeconds):0}s";
+            name += string.Format(Lang.BuffUi128Label, Math.Max(0, buff.RemainingTime.TotalSeconds));
         return name;
     }
 

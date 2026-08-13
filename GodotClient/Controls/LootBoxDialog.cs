@@ -37,8 +37,8 @@ public sealed partial class LootBoxDialog : DXWindow
         _rerollButton = new DXButton { LibraryFile = LibraryFile.GameInter2, Index = 2926, PressedIndex = 2925, HoverIndex = 2927, Location = new Vector2I(15, 260), Size = new Vector2I(128, 20), Visible = false, FontSize = 8 };
         _rerollButton.MouseClick += (s, e) => Reroll();
         AddControl(_rerollCount); AddControl(_rerollButton);
-        _takeItemsButton = ActionButton("领取物品", 80, 245);
-        _confirmChoiceButton = ActionButton("确认选择", 145, 245);
+        _takeItemsButton = ActionButton(Lang.LootBoxItemLabel, 80, 245);
+        _confirmChoiceButton = ActionButton(Lang.LootBoxConfirmLabel, 145, 245);
         _takeItemsButton.MouseClick += (s, e) => TakeItems();
         _confirmChoiceButton.MouseClick += (s, e) => ConfirmChoice();
         AddControl(_takeItemsButton); AddControl(_confirmChoiceButton);
@@ -61,13 +61,13 @@ public sealed partial class LootBoxDialog : DXWindow
         _selectedIndex = -1;
         _state = item.AddedStats?[Stat.Counter2] ?? 0;
         int rerollCount = item.AddedStats?[Stat.Counter1] ?? 0;
-        string currency = _info.Currency?.Name ?? "游戏金币";
+        string currency = _info.Currency?.Name ?? Lang.LootBoxGoldLabel;
         int unlockedCount = LootBoxCountUnlocked(item.CurrentDurability);
         Message.Text = _state == 1
-            ? "请选择一个奖励并确认选择。"
-            : $"揭示一个奖励需要 {Globals.LootBoxRevealCost * unlockedCount} {currency}。";
+            ? Lang.LootBoxConfirmLabel2
+            : string.Format(Lang.LootBoxRewardLabel, Globals.LootBoxRevealCost * unlockedCount, currency);
 
-        _rerollCount.Text = $"剩余重抽：{rerollCount}";
+        _rerollCount.Text = string.Format(Lang.LootBoxUi376Label, rerollCount);
         _rerollButton.Text = $"重抽 ({Globals.LootBoxRerollCost} {(_info.Currency?.Abbreviation ?? "GG")})";
         _rerollCount.Visible = _state == 1;
         _rerollButton.Visible = _state == 1;
@@ -120,14 +120,14 @@ public sealed partial class LootBoxDialog : DXWindow
         foreach (var other in Grid.Cells) other.Selected = other == cell;
         if (_state == 2 && cell.Locked)
         {
-            var currency = _info?.Currency?.Name ?? "游戏金币";
+            var currency = _info?.Currency?.Name ?? Lang.LootBoxGoldLabel;
             int unlockedCount = LootBoxCountUnlocked(_selectedLootBox?.Item?.CurrentDurability ?? 0);
             if (unlockedCount <= 0)
             {
                 GameScene.Game?.SendLootBoxReveal(_selectedLootBox.Slot, _selectedIndex);
                 return;
             }
-            var confirm = new ConfirmDialog($"揭示该格需要 {Globals.LootBoxRevealCost * unlockedCount} {currency}。", "揭示奖励", () =>
+            var confirm = new ConfirmDialog(string.Format(Lang.LootBoxUi379Label, Globals.LootBoxRevealCost * unlockedCount, currency), Lang.LootBoxRewardLabel2, () =>
             {
                 if (!HasCurrency(_info?.Currency, Globals.LootBoxRevealCost * unlockedCount)) return;
                 GameScene.Game?.SendLootBoxReveal(_selectedLootBox.Slot, _selectedIndex);
@@ -142,8 +142,8 @@ public sealed partial class LootBoxDialog : DXWindow
     private void Reroll()
     {
         if (_selectedLootBox == null || !_rerollButton.Enabled) return;
-        string currency = _info?.Currency?.Name ?? "游戏金币";
-        var confirm = new ConfirmDialog($"确定消耗 {Globals.LootBoxRerollCost} {currency}重抽吗？", "确认重抽", () =>
+        string currency = _info?.Currency?.Name ?? Lang.LootBoxGoldLabel;
+        var confirm = new ConfirmDialog(string.Format(Lang.LootBoxOkLabel, Globals.LootBoxRerollCost, currency), Lang.LootBoxConfirmLabel3, () =>
         {
             if (!HasCurrency(_info?.Currency, Globals.LootBoxRerollCost)) return;
             _rerollButton.Enabled = false;
@@ -155,7 +155,7 @@ public sealed partial class LootBoxDialog : DXWindow
     private void TakeItems()
     {
         if (_selectedLootBox == null || !_takeItemsButton.Enabled) return;
-        var confirm = new ConfirmDialog("确定领取开箱物品吗？", "领取物品", () =>
+        var confirm = new ConfirmDialog(Lang.LootBoxOkLabel2, Lang.LootBoxItemLabel, () =>
         {
             _takeItemsButton.Enabled = false;
             GameScene.Game?.SendLootBoxTake(_selectedLootBox.Slot, _selectedIndex);
@@ -166,7 +166,7 @@ public sealed partial class LootBoxDialog : DXWindow
     private void ConfirmChoice()
     {
         if (_selectedLootBox == null || _state != 1 || !_confirmChoiceButton.Enabled) return;
-        var confirm = new ConfirmDialog("确定选择当前奖励吗？", "确认选择", () =>
+        var confirm = new ConfirmDialog(Lang.LootBoxOkLabel3, Lang.LootBoxConfirmLabel, () =>
         {
             _confirmChoiceButton.Enabled = false;
             GameScene.Game?.SendLootBoxConfirm(_selectedLootBox.Slot);

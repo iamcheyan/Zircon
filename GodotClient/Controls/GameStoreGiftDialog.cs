@@ -22,12 +22,12 @@ public sealed partial class GameStoreGiftDialog : DXWindow
 
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 281, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
         AddControl(new DXLabel { Text = Lang.GameStoreDialogGiftCaption, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(252, 18), IsControl = false });
-        AddControl(new DXLabel { Text = $"物品: {itemName}", FontSize = 9, Location = new Vector2I(16, 28), Size = new Vector2I(220, 18), IsControl = false });
-        AddControl(new DXLabel { Text = "角色名:", FontSize = 10, Location = new Vector2I(16, 55), Size = new Vector2I(60, 22), IsControl = false });
+        AddControl(new DXLabel { Text = string.Format(Lang.GameStoreGiftItemLabel, itemName), FontSize = 9, Location = new Vector2I(16, 28), Size = new Vector2I(220, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GameStoreGiftCharacterLabel, FontSize = 10, Location = new Vector2I(16, 55), Size = new Vector2I(60, 22), IsControl = false });
         _recipient = new DXTextInput { Location = new Vector2I(76, 53), Size = new Vector2I(160, 20) };
         _recipient.TextChanged += value => _confirm.Enabled = Globals.CharacterReg.IsMatch(value ?? string.Empty);
         AddControl(_recipient);
-        _confirm = new DXButton { Text = "确定赠送", Type = DXButton.ButtonType.SmallButton, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(24, 93), Size = new Vector2I(88, 25), Enabled = false };
+        _confirm = new DXButton { Text = Lang.GameStoreGiftOkLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(24, 93), Size = new Vector2I(88, 25), Enabled = false };
         _confirm.MouseClick += (o, e) =>
         {
             string recipient = _recipient.Text.Trim();
@@ -36,7 +36,7 @@ public sealed partial class GameStoreGiftDialog : DXWindow
             WindowManager.Close(this);
         };
         AddControl(_confirm);
-        var cancel = new DXButton { Text = "取消", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(142, 93), Size = new Vector2I(76, 25) };
+        var cancel = new DXButton { Text = Lang.CommonControlCancel, Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(142, 93), Size = new Vector2I(76, 25) };
         cancel.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(cancel);
     }

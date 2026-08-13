@@ -22,7 +22,7 @@ public sealed partial class MilestoneDialog : DXWindow
         _description = new DXLabel { FontSize = 10, Size = new Vector2I(340, 50), Location = new Vector2I(20, 72), IsControl = false };
         _task = new DXLabel { FontSize = 9, TextColour = new Color(.75f, .9f, 1f), Size = new Vector2I(340, 35), Location = new Vector2I(20, 126), IsControl = false };
         AddControl(_title); AddControl(_description); AddControl(_task);
-        var claim = new DXButton { Text = "领取", FontSize = 10, Size = new Vector2I(80, 25), Location = new Vector2I(150, 174), Index = -1, LibraryFile = LibraryFile.Interface };
+        var claim = new DXButton { Text = Lang.MilestoneUi231Label, FontSize = 10, Size = new Vector2I(80, 25), Location = new Vector2I(150, 174), Index = -1, LibraryFile = LibraryFile.Interface };
         claim.MouseClick += (s, e) => { GameScene.Game?.ClaimMilestone(_index); WindowManager.Close(this); };
         AddControl(claim);
     }

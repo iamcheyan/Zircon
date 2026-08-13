@@ -275,7 +275,7 @@ public partial class GameScene : Control
     {
         if (_net == null || string.IsNullOrWhiteSpace(_net.BuyAddress))
         {
-            ReceiveChat("当前服务器未提供充值地址", MessageType.System);
+            ReceiveChat(Lang.GameUi542Label, MessageType.System);
             return;
         }
         var address = _net.BuyAddress + Uri.EscapeDataString(StartInfo?.Name ?? string.Empty);
@@ -1372,11 +1372,11 @@ public partial class GameScene : Control
                 Companion = null;
                 _companionDialog?.ApplyCompanion(null);
                 _npcCompanionStorageDialog?.Refresh();
-                ReceiveChat("伙伴已收起", MessageType.System);
+                ReceiveChat(Lang.GameCompanionLabel, MessageType.System);
             });
         TrackEvent<S.CompanionUnlock>(h => _net.Connection.CompanionUnlockEvent += h,
             h => _net.Connection.CompanionUnlockEvent -= h,
-            p => ReceiveChat($"伙伴槽位 {p?.Index ?? 0} 已解锁", MessageType.System));
+            p => ReceiveChat(string.Format(Lang.GameCompanionLabel2, p?.Index ?? 0), MessageType.System));
         TrackEvent<S.GuildNewItem>(h => _net.Connection.GuildNewItemEvent += h,
             h => _net.Connection.GuildNewItemEvent -= h,
             p => _guildDialog?.SetGuildItem(p.Slot, p.Item));
@@ -1445,7 +1445,7 @@ public partial class GameScene : Control
         }
         else
         {
-            _statusLabel.Text = "等待进入游戏...";
+            _statusLabel.Text = Lang.GameGameLabel;
         }
     }
 
@@ -1752,7 +1752,7 @@ public partial class GameScene : Control
             TimeOfDay = _pendingStartInfo.TimeOfDay;
 
             GD.Print($"[Game] 进入游戏! 玩家: {_pendingStartInfo.Name}, 位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}), 方向: {_pendingStartInfo.Direction}, 地图: {_pendingStartInfo.MapIndex}");
-            _statusLabel.Text = $"进入游戏: {_pendingStartInfo.Name}\n位置: ({_pendingStartInfo.Location.X},{_pendingStartInfo.Location.Y}) 方向: {_pendingStartInfo.Direction}";
+            _statusLabel.Text = string.Format(Lang.GameLocationLabel, _pendingStartInfo.Name, _pendingStartInfo.Location.X, _pendingStartInfo.Location.Y, _pendingStartInfo.Direction);
 
             InitHudData(_pendingStartInfo);
             _startGameShown = true;
@@ -1775,7 +1775,7 @@ public partial class GameScene : Control
         }
         else
         {
-            _statusLabel.Text = $"进入游戏失败: {_pendingStartResult}";
+            _statusLabel.Text = string.Format(Lang.SelectGameLabel3, _pendingStartResult);
             GD.Print($"[Game] StartGame 失败: {_pendingStartResult}");
         }
     }
@@ -2228,7 +2228,7 @@ public partial class GameScene : Control
     {
         InSafeZone = packet?.InSafeZone == true;
         if (StartInfo != null) StartInfo.InSafeZone = InSafeZone;
-        ReceiveChat(InSafeZone ? "已进入安全区" : "已离开安全区", MessageType.System);
+        ReceiveChat(InSafeZone ? Lang.GameSafeZoneLabel : Lang.GameAwayLabel, MessageType.System);
     }
 
     private void OnCombatTime(S.CombatTime packet)
@@ -2260,25 +2260,25 @@ public partial class GameScene : Control
     {
         if (packet == null) return;
         _guildWars.Add(packet.GuildName ?? string.Empty);
-        ReceiveChat($"行会战开始：{packet.GuildName}", MessageType.System);
+        ReceiveChat(string.Format(Lang.GameGuildLabel, packet.GuildName), MessageType.System);
     }
 
     private void OnGuildWarFinished(S.GuildWarFinished packet)
     {
         if (packet == null) return;
         _guildWars.Remove(packet.GuildName ?? string.Empty);
-        ReceiveChat($"行会战结束：{packet.GuildName}", MessageType.System);
+        ReceiveChat(string.Format(Lang.GameGuildLabel2, packet.GuildName), MessageType.System);
     }
 
     private void OnGuildWar(S.GuildWar packet)
     {
-        if (packet != null) ReceiveChat(packet.Success ? "行会战请求成功" : "行会战请求失败", MessageType.System);
+        if (packet != null) ReceiveChat(packet.Success ? Lang.GameGuildLabel3 : Lang.GameGuildLabel4, MessageType.System);
     }
 
     private void OnMarriageInfo(S.MarriageInfo packet)
     {
         _characterDialog?.SetPartner(packet?.Partner?.Name);
-        if (packet?.Partner != null) ReceiveChat($"伴侣：{packet.Partner.Name}", MessageType.System);
+        if (packet?.Partner != null) ReceiveChat(string.Format(Lang.GameUi554Label, packet.Partner.Name), MessageType.System);
     }
 
     private void OnMarriageRemoveRing(S.MarriageRemoveRing packet)
@@ -2297,7 +2297,7 @@ public partial class GameScene : Control
 
     private void OnMarriageOnlineChanged(S.MarriageOnlineChanged packet)
     {
-        if (packet != null) ReceiveChat(packet.ObjectID == 0 ? "伴侣已离线" : "伴侣上线了", MessageType.System);
+        if (packet != null) ReceiveChat(packet.ObjectID == 0 ? Lang.GameOfflineLabel : Lang.GameUi556Label, MessageType.System);
     }
 
     private void OnMailSend(S.MailSend packet)
@@ -2306,12 +2306,12 @@ public partial class GameScene : Control
         // 原版 S.MailSend 只是请求阶段回包，真正结果随后由
         // ItemsChanged.Success 表示；不能在这里提前提示“发送完成”。
     }
-    private void OnMarketPlaceStoreBuy(S.MarketPlaceStoreBuy packet) => ReceiveChat("商城购买请求已处理", MessageType.System);
-    private void OnMountFailed(S.MountFailed packet) => ReceiveChat("无法使用当前坐骑", MessageType.System);
+    private void OnMarketPlaceStoreBuy(S.MarketPlaceStoreBuy packet) => ReceiveChat(Lang.GameBuyLabel, MessageType.System);
+    private void OnMountFailed(S.MountFailed packet) => ReceiveChat(Lang.GameNoneLabel, MessageType.System);
     private void OnTradeAddItem(S.TradeAddItem packet)
     {
         _tradeDialog?.ApplyTradeAddItem(packet);
-        if (packet != null && !packet.Success) ReceiveChat("交易物品添加失败", MessageType.System);
+        if (packet != null && !packet.Success) ReceiveChat(Lang.GameAddLabel, MessageType.System);
     }
     private void OnTradeAddGold(S.TradeAddGold packet)
     {
@@ -2373,7 +2373,7 @@ public partial class GameScene : Control
         _observer = true;
         StartInfo = packet.StartInformation;
         FillItems(packet.Items);
-        ReceiveChat("已进入观察模式", MessageType.System);
+        ReceiveChat(Lang.GameObserverLabel, MessageType.System);
     }
 
     private static Color ToGodotColour(System.Drawing.Color colour) =>
@@ -2520,8 +2520,8 @@ public partial class GameScene : Control
     private void OnChat(S.Chat p)
     {
         if (p == null || string.IsNullOrWhiteSpace(p.Text)) return;
-        string sender = p.ObjectID == _playerObjectID ? (StartInfo?.Name ?? "我") :
-            (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : "系统");
+        string sender = p.ObjectID == _playerObjectID ? (StartInfo?.Name ?? Lang.GameUi561Label) :
+            (_objects.TryGetValue(p.ObjectID, out var chatObject) ? chatObject.DisplayName : Lang.GameSystemLabel);
         _chatLog?.AddMessage($"[{p.Type}] {sender}: {p.Text}", p.Type, ChatColour(p.Type), p.LinkedItems);
         if (p.ObjectID == _playerObjectID) _player?.SetChat(p.Text);
         else if (_otherPlayers.TryGetValue(p.ObjectID, out var player)) player.SetChat(p.Text);
@@ -2542,7 +2542,7 @@ public partial class GameScene : Control
     }
     private void OnGroupLfg(S.GroupLFG packet) => _groupDialog?.SetLfg(packet?.List);
     private void OnGroupInvite(S.GroupInvite packet) => _groupDialog?.ShowInvite(packet?.Name);
-    private void OnGroupRequest(S.GroupRequest packet) => ReceiveChat($"{packet?.Name ?? "未知玩家"} 请求加入队伍（请在队伍界面处理）", MessageType.System);
+    private void OnGroupRequest(S.GroupRequest packet) => ReceiveChat($"{packet?.Name ?? Lang.GroupUnknownLabel} 请求加入队伍（请在队伍界面处理）", MessageType.System);
     private void OnGroupUpdate(S.GroupUpdate packet) => _groupDialog?.SetOwnLfg(packet?.Group);
     private void OnGroupSwitch(S.GroupSwitch packet) => _groupDialog?.SetAllow(packet?.Allow == true);
 
@@ -2567,7 +2567,7 @@ public partial class GameScene : Control
     private void OnGameStoreGift(S.GameStoreGift packet)
     {
         if (packet == null) return;
-        ReceiveChat($"商城赠送结果: {packet.Result}", packet.Result == GameStoreGiftResult.Success ? MessageType.Announcement : MessageType.System);
+        ReceiveChat(string.Format(Lang.GameMarketLabel, packet.Result), packet.Result == GameStoreGiftResult.Success ? MessageType.Announcement : MessageType.System);
     }
 
     private void OnGuildInfo(S.GuildInfo packet)
@@ -2677,21 +2677,21 @@ public partial class GameScene : Control
         if (packet == null) return;
         // 该包本身没有 Success；现行服务端通过后续 ItemsChanged 回包表达成功/失败。
         ConsumeNpcLinks(true, packet.IronOres, packet.SilverOres, packet.DiamondOres, packet.GoldOres, packet.Crystal);
-        ReceiveChat("精炼石制作完成", MessageType.System);
+        ReceiveChat(Lang.GameRefineLabel, MessageType.System);
     }
 
     private void OnNPCRefine(S.NPCRefine packet)
     {
         if (packet == null) return;
         ConsumeNpcLinks(packet.Success, packet.Ores, packet.Items, packet.Specials);
-        ReceiveChat(packet.Success ? "精炼成功" : "精炼失败", MessageType.System);
+        ReceiveChat(packet.Success ? Lang.GameRefineLabel2 : Lang.GameRefineLabel3, MessageType.System);
     }
 
     private void OnNPCMasterRefine(S.NPCMasterRefine packet)
     {
         if (packet == null) return;
         ConsumeNpcLinks(packet.Success, packet.Fragment1s, packet.Fragment2s, packet.Fragment3s, packet.Stones, packet.Specials);
-        ReceiveChat(packet.Success ? "高级精炼成功" : "高级精炼失败", MessageType.System);
+        ReceiveChat(packet.Success ? Lang.GameRefineLabel4 : Lang.GameRefineLabel5, MessageType.System);
     }
 
     private void OnNPCAccessoryLevelUp(S.NPCAccessoryLevelUp packet)
@@ -2703,7 +2703,7 @@ public partial class GameScene : Control
     }
 
     private void OnNPCAccessoryUpgrade(S.NPCAccessoryUpgrade packet)
-        => ReceiveChat(packet?.Success == true ? "饰品升级成功" : "饰品升级失败", MessageType.System);
+        => ReceiveChat(packet?.Success == true ? Lang.GameUpgradeLabel : Lang.GameUpgradeLabel2, MessageType.System);
 
     private void OnNPCAccessoryRefine(S.NPCAccessoryRefine packet)
     {
@@ -2712,21 +2712,21 @@ public partial class GameScene : Control
         if (packet.Target != null) links.Add(packet.Target);
         if (packet.OreTarget != null) links.Add(packet.OreTarget);
         ReleaseNpcLinksWithoutConsuming(links);
-        ReceiveChat(packet.Success ? "饰品精炼成功" : "饰品精炼失败", MessageType.System);
+        ReceiveChat(packet.Success ? Lang.GameRefineLabel6 : Lang.GameRefineLabel7, MessageType.System);
     }
 
     private void OnNPCWeaponCraft(S.NPCWeaponCraft packet)
     {
         if (packet == null) return;
         ConsumeNpcLinks(packet.Success, new[] { packet.Template, packet.Yellow, packet.Blue, packet.Red, packet.Purple, packet.Green, packet.Grey });
-        ReceiveChat(packet.Success ? "武器制作成功" : "武器制作失败", MessageType.System);
+        ReceiveChat(packet.Success ? Lang.GameWeaponLabel : Lang.GameWeaponLabel2, MessageType.System);
     }
 
     private void OnNPCRefineRetrieve(S.NPCRefineRetrieve packet)
     {
         if (packet == null) return;
         _npcDialog?.RemoveRefine(packet.Index);
-        ReceiveChat($"已取回精炼物品 #{packet.Index}", MessageType.System);
+        ReceiveChat(string.Format(Lang.GameRefineLabel8, packet.Index), MessageType.System);
     }
 
     private void OnItemAcessoryRefined(S.ItemAcessoryRefined packet)
@@ -2750,13 +2750,13 @@ public partial class GameScene : Control
         if (StartInfo != null) StartInfo.Observable = packet?.Allow == true;
     }
 
-    private void OnGuildCreate(S.GuildCreate packet) => ReceiveChat("行会创建请求已处理", MessageType.System);
-    private void OnGuildKick(S.GuildKick packet) => ReceiveChat("行会成员已更新", MessageType.System);
-    private void OnGuildTax(S.GuildTax packet) => ReceiveChat("行会税率设置已处理", MessageType.System);
-    private void OnGuildIncreaseMember(S.GuildIncreaseMember packet) => ReceiveChat("行会成员上限已更新", MessageType.System);
-    private void OnGuildIncreaseStorage(S.GuildIncreaseStorage packet) => ReceiveChat("行会仓库容量已更新", MessageType.System);
-    private void OnGuildInviteMember(S.GuildInviteMember packet) => ReceiveChat("行会邀请请求已处理", MessageType.System);
-    private void OnGuildDayReset(S.GuildDayReset packet) => ReceiveChat("行会每日贡献已重置", MessageType.System);
+    private void OnGuildCreate(S.GuildCreate packet) => ReceiveChat(Lang.GameGuildLabel5, MessageType.System);
+    private void OnGuildKick(S.GuildKick packet) => ReceiveChat(Lang.GameGuildLabel6, MessageType.System);
+    private void OnGuildTax(S.GuildTax packet) => ReceiveChat(Lang.GameSettingsLabel, MessageType.System);
+    private void OnGuildIncreaseMember(S.GuildIncreaseMember packet) => ReceiveChat(Lang.GameGuildLabel7, MessageType.System);
+    private void OnGuildIncreaseStorage(S.GuildIncreaseStorage packet) => ReceiveChat(Lang.GameGuildLabel8, MessageType.System);
+    private void OnGuildInviteMember(S.GuildInviteMember packet) => ReceiveChat(Lang.GameGuildLabel9, MessageType.System);
+    private void OnGuildDayReset(S.GuildDayReset packet) => ReceiveChat(Lang.GameGuildLabel10, MessageType.System);
     private void OnRefineList(S.RefineList packet) => _npcDialog?.SetRefineList(packet?.List);
     private void OnMailList(List<ClientMailInfo> mails)
     {
@@ -3302,7 +3302,7 @@ public partial class GameScene : Control
         {
             GD.PrintErr($"[Magic] 未迁移技能轨迹: type={type} source=({sourceX},{sourceY}) " +
                 $"targets={targets?.Count ?? 0} locations={destCells.Count}; " +
-                "请按 Mir3-Research/docs/notes/31-技能施法轨迹分类与Godot迁移.md 补齐");
+                Lang.GameSkillLabel);
             return;
         }
 
@@ -5470,7 +5470,7 @@ public partial class GameScene : Control
             var w = MirSkin.MeasureText(line, _hoverLabel.FontSize).X;
             if (w > maxW) maxW = w;
         }
-        float lineH = lines.Length == 0 ? 0f : MirSkin.MeasureText("字", _hoverLabel.FontSize).Y;
+        float lineH = lines.Length == 0 ? 0f : MirSkin.MeasureText(Lang.ChatLogPanelUi114Label, _hoverLabel.FontSize).Y;
         _hoverLabel.Size = new Vector2I(Mathf.RoundToInt(maxW + padding * 2f), Mathf.RoundToInt(lineH * lines.Length + padding * 2f));
     }
 
@@ -6199,7 +6199,7 @@ public partial class GameScene : Control
     private void OnJoinInstance(S.JoinInstance p)
     {
         if (p == null) return;
-        _statusLabel.Text = p.Success ? "副本加入成功" : $"副本加入失败: {p.Result}";
+        _statusLabel.Text = p.Success ? Lang.GameUi586Label : string.Format(Lang.GameUi587Label, p.Result);
     }
 
     private void ShowServerActionResult(string action, object packet)
@@ -6688,9 +6688,9 @@ public partial class GameScene : Control
             var displayInfo = GainedDisplayInfo(item);
             var name = displayInfo?.ItemName ?? item.Info.ItemName ?? string.Empty;
             var suffix = item.Count > 1 ? $" x{item.Count}" : string.Empty;
-            if (item.Flags.HasFlag(UserItemFlags.QuestItem)) suffix += " (任务)";
-            if (item.Info.ItemEffect == ItemEffect.ItemPart) suffix += " [部件]";
-            ReceiveChat($"{(companion ? "伙伴获得" : "获得")}: {name}{suffix}", MessageType.Combat);
+            if (item.Flags.HasFlag(UserItemFlags.QuestItem)) suffix += Lang.GameQuestLabel;
+            if (item.Info.ItemEffect == ItemEffect.ItemPart) suffix += Lang.GameUi589Label;
+            ReceiveChat($"{(companion ? Lang.GameUi591Label : Lang.GameUi591Label)}: {name}{suffix}", MessageType.Combat);
         }
     }
 
@@ -7284,7 +7284,7 @@ public partial class GameScene : Control
     public void SetDropFilters(string[] filters)
     {
         DropFilters = filters ?? Array.Empty<string>();
-        _chatLog?.AddMessage("掉落过滤设置已保存", new Color(1f, .85f, .45f));
+        _chatLog?.AddMessage(Lang.GameSettingsLabel2, new Color(1f, .85f, .45f));
     }
 
     // 负重变更
@@ -7671,7 +7671,7 @@ public partial class GameScene : Control
     private void OnMagicToggle(S.MagicToggle packet)
     {
         if (packet == null) return;
-        ReceiveChat($"{packet.Magic} {(packet.CanUse ? "已启用" : "已禁用")}", MessageType.System);
+        ReceiveChat($"{packet.Magic} {(packet.CanUse ? Lang.GameUi593Label : Lang.GameUi594Label)}", MessageType.System);
         _magicBar?.Refresh();
         _magicDialog?.Refresh();
     }
@@ -7719,7 +7719,7 @@ public partial class GameScene : Control
             if (AutoLoginArgs.RunningTest || AutoLoginArgs.RightRunTest)
                 GD.Print($"[{(AutoLoginArgs.RightRunTest ? "RightRunTest" : "RunningTest")}] APPLY(confirmed) distance={distance} animation={_player.Animation} " +
                          $"frameStart={_player.FrameIndex} location=({x},{y})");
-            _statusLabel.Text = $"位置: ({x},{y}) 方向: {dir}";
+            _statusLabel.Text = string.Format(Lang.GameLocationLabel2, x, y, dir);
             _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
             _bigMap?.UpdatePlayer(_player.CellX, _player.CellY);
             return;
@@ -7751,7 +7751,7 @@ public partial class GameScene : Control
         _moveFrameCount = 2;
 
         UpdatePlayerPosition();
-        _statusLabel.Text = $"位置: ({x},{y}) 方向: {dir}";
+        _statusLabel.Text = string.Format(Lang.GameLocationLabel2, x, y, dir);
 
         // M12: 地图玩家标记跟随
         _miniMap?.UpdatePlayer(_player.CellX, _player.CellY);
@@ -7932,7 +7932,7 @@ public partial class GameScene : Control
         if (mapInfo == null)
         {
             GD.PrintErr($"[Game] 找不到地图: MapIndex={_playerMapIndex}");
-            _statusLabel.Text = $"找不到地图: MapIndex={_playerMapIndex}";
+            _statusLabel.Text = string.Format(Lang.GameUi597Label, _playerMapIndex);
             return;
         }
 
@@ -9720,7 +9720,7 @@ public partial class GameScene : Control
         {
             if (Library.Time.Now < _magicTooFarAt) return;
             _magicTooFarAt = Library.Time.Now.AddSeconds(1);
-            ReceiveChat($"目标距离过远，无法施放 {magic.Info.Name}。", MessageType.Hint);
+            ReceiveChat(string.Format(Lang.GameNoneLabel2, magic.Info.Name), MessageType.Hint);
             return;
         }
 
@@ -9755,7 +9755,7 @@ public partial class GameScene : Control
         MirDirection dir = Functions.DirectionFromPoint(
             new System.Drawing.Point(pCell.X, pCell.Y), castCell);
         GD.Print($"[Magic] 发包 {magic.Info.Name} Magic={magic.Info.Magic} Set={MagicBarSpellSet} Slot={slot + 1} " +
-            $"目标={targetID} 玩家=({pCell.X},{pCell.Y}) 鼠标=({mouseCell.X},{mouseCell.Y}) 落点=({castCell.X},{castCell.Y}) 方向={dir}");
+            string.Format(Lang.GameTargetLabel, targetID, pCell.X, pCell.Y, mouseCell.X, mouseCell.Y, castCell.X, castCell.Y, dir));
         var packet = new C.Magic
         {
             Direction = dir,

@@ -14,7 +14,7 @@ public sealed partial class MarketHistoryDialog : DXWindow
 
     public MarketHistoryDialog()
     {
-        Text = "销售历史";
+        Text = Lang.MarketHistoryHistoryLabel;
         // 原版 SetClientSize(270,110)：复用通用标题窗口框架，总尺寸为 288x156。
         Size = new Vector2I(288, 156);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = false });
@@ -44,7 +44,7 @@ public sealed partial class MarketHistoryDialog : DXWindow
         if (item.Info.ItemEffect == ItemEffect.ItemPart && partIndex > 0)
             displayInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == partIndex) ?? displayInfo;
         _item.Text = displayInfo.ItemName;
-        _sales.Text = "销量：查询中……";
+        _sales.Text = Lang.MarketHistoryUi275Label;
         _last.Text = string.Empty;
         _average.Text = string.Empty;
         WindowManager.Open(this, GameScene.Game?.UILayer ?? GetParent());
@@ -54,8 +54,8 @@ public sealed partial class MarketHistoryDialog : DXWindow
     public void Apply(int index, int display, long saleCount, long lastPrice, long averagePrice)
     {
         if (index != _itemIndex || display != _display) return;
-        _sales.Text = $"销量：{saleCount:#,##0}";
-        _last.Text = $"最近成交：{lastPrice:#,##0}";
-        _average.Text = $"平均价格：{averagePrice:#,##0}";
+        _sales.Text = string.Format(Lang.MarketHistoryUi276Label, saleCount);
+        _last.Text = string.Format(Lang.MarketHistoryUi277Label, lastPrice);
+        _average.Text = string.Format(Lang.MarketHistoryPriceLabel, averagePrice);
     }
 }

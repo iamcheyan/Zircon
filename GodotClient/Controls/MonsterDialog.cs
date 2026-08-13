@@ -93,7 +93,7 @@ public sealed partial class MonsterDialog : DXWindow
         if (_monster == null) return;
         int max = Mathf.Max(1, _monster.MaxHealth);
         int hp = Mathf.Clamp(_monster.Health, 0, max);
-        _health.Text = _monster.MaxHealth > 0 ? $"{hp}/{max}" : "未知";
+        _health.Text = _monster.MaxHealth > 0 ? $"{hp}/{max}" : Lang.QuestUnknownLabel2;
         _healthFill.Size = new Vector2I(Mathf.Max(1, 118 * hp / max), 12);
         var info = _monster.MonsterInfo;
         if (info == null)
@@ -141,29 +141,29 @@ public sealed partial class MonsterDialog : DXWindow
         // 旧版 RefreshStats：GrowthLevel > 0 时显示成长图标（ProgUse 630）。
         int growthLevel = _monster.Stats?[Stat.GrowthLevel] ?? 0;
         _growthIcon.Visible = growthLevel > 0;
-        _growthIcon.TooltipText = growthLevel > 0 ? $"成长等级 {growthLevel}" : Lang.MonsterDialogGrowthIconDefaultHint;
+        _growthIcon.TooltipText = growthLevel > 0 ? string.Format(Lang.MonsterLevelLabel, growthLevel) : Lang.MonsterDialogGrowthIconDefaultHint;
 
         // 旧版各图标的 Hint（悬停文字）：元素/抗性/速度/可驯服/亡灵。
         _attackIcon.TooltipText = stats.GetAffinityElement() switch
         {
-            Element.Fire => "火",
-            Element.Ice => "冰",
-            Element.Lightning => "闪电",
-            Element.Wind => "风",
-            Element.Holy => "神圣",
-            Element.Dark => "黑暗",
-            Element.Phantom => "幻影",
+            Element.Fire => Lang.CharacterUi91Label,
+            Element.Ice => Lang.CharacterUi92Label,
+            Element.Lightning => Lang.MonsterUi214Label,
+            Element.Wind => Lang.CharacterUi94Label,
+            Element.Holy => Lang.CharacterUi95Label,
+            Element.Dark => Lang.MonsterUi217Label,
+            Element.Phantom => Lang.CharacterUi96Label,
             _ => Lang.CommonStatusPhysical,
         };
-        string[] resistNames = { "火", "冰", "闪电", "风", "神圣", "黑暗", "幻影", Lang.CommonStatusPhysical };
+        string[] resistNames = { Lang.CharacterUi91Label, Lang.CharacterUi92Label, Lang.MonsterUi214Label, Lang.CharacterUi94Label, Lang.CharacterUi95Label, Lang.MonsterUi217Label, Lang.CharacterUi96Label, Lang.CommonStatusPhysical };
         for (int i = 0; i < _resistIcons.Length && i < resistNames.Length; i++)
         {
-            if (_resistIcons[i] != null) _resistIcons[i].TooltipText = $"{resistNames[i]}抗性";
+            if (_resistIcons[i] != null) _resistIcons[i].TooltipText = string.Format(Lang.MonsterUi226Label, resistNames[i]);
         }
         _attackSpeedIcon.TooltipText = Lang.MonsterDialogAttackingIconDefaultHint;
         _movementSpeedIcon.TooltipText = Lang.MonsterDialogMovingIconDefaultHint;
-        _tamableIcon.TooltipText = info.CanTame ? "可驯服" : "不可驯服";
-        _undeadIcon.TooltipText = info.Undead ? "亡灵" : "生者";
+        _tamableIcon.TooltipText = info.CanTame ? Lang.MonsterUi227Label : Lang.MonsterUi228Label;
+        _undeadIcon.TooltipText = info.Undead ? Lang.MonsterUi229Label : Lang.MonsterUi230Label;
     }
 
     public bool AuditLayout(out string details)

@@ -161,14 +161,14 @@ public partial class ConfigDialog : DXWindow
         }));
         AddSection(display, 0);
         var usability = new ConfigSectionPanel("Usability", 4);
-        usability.AddOption("平滑移动", Check("平滑移动", ClientSettings.SmoothMove, value => { ClientSettings.SmoothMove = value; ClientSettings.Save(); }));
+        usability.AddOption(Lang.CommonControlConfigWindowGraphicsTabSmoothMoveLabel, Check(Lang.CommonControlConfigWindowGraphicsTabSmoothMoveLabel, ClientSettings.SmoothMove, value => { ClientSettings.SmoothMove = value; ClientSettings.Save(); }));
         usability.AddOption("限制鼠标", Check("限制鼠标", ClientSettings.ClipMouse, value =>
         {
             ClientSettings.ClipMouse = value;
             ClientSettings.Save();
             ClientSettings.ApplyDisplaySettings();
         }));
-        usability.AddOption("调试标签", Check("调试标签", ClientSettings.DebugLabel, value =>
+        usability.AddOption(Lang.CommonControlConfigWindowGraphicsTabDebugLabelLabel, Check(Lang.CommonControlConfigWindowGraphicsTabDebugLabelLabel, ClientSettings.DebugLabel, value =>
         {
             ClientSettings.DebugLabel = value;
             ClientSettings.Save();
@@ -185,7 +185,7 @@ public partial class ConfigDialog : DXWindow
             Lang.Reload(); // UI 文本即时切换
             GameScene.Game?.SendSelectLanguage(ClientSettings.Language);
         };
-        usability.AddSelect("语言", language);
+        usability.AddSelect(Lang.CommonControlConfigWindowGraphicsTabLanguageLabel, language);
         AddSection(usability, Mathf.RoundToInt(display.Size.Y) + 4);
         var effects = new ConfigSectionPanel("Effects", 4, 2);
         effects.AddOption("显示粒子", Check("显示粒子", ClientSettings.DrawParticles, value => { ClientSettings.DrawParticles = value; ClientSettings.Save(); }), 2);
@@ -201,11 +201,11 @@ public partial class ConfigDialog : DXWindow
         options.AddOption("后台播放声音", Check("后台播放声音", ClientSettings.SoundInBackground, value => { ClientSettings.SoundInBackground = value; ClientSettings.Save(); }));
         AddSection(options, 0);
         var volume = new ConfigSectionPanel("Volume", 5);
-        volume.AddSound("系统音量", SoundBar(() => ClientSettings.SystemVolume, value => ClientSettings.SystemVolume = value, () => ClientSettings.SystemVolumeMuted, value => ClientSettings.SystemVolumeMuted = value));
-        volume.AddSound("音乐音量", SoundBar(() => ClientSettings.MusicVolume, value => ClientSettings.MusicVolume = value, () => ClientSettings.MusicVolumeMuted, value => ClientSettings.MusicVolumeMuted = value));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabSystemVolumeLabel, SoundBar(() => ClientSettings.SystemVolume, value => ClientSettings.SystemVolume = value, () => ClientSettings.SystemVolumeMuted, value => ClientSettings.SystemVolumeMuted = value));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMusicVolumeLabel, SoundBar(() => ClientSettings.MusicVolume, value => ClientSettings.MusicVolume = value, () => ClientSettings.MusicVolumeMuted, value => ClientSettings.MusicVolumeMuted = value));
         volume.AddSound("人物音量", SoundBar(() => ClientSettings.PlayerVolume, value => ClientSettings.PlayerVolume = value, () => ClientSettings.PlayerVolumeMuted, value => ClientSettings.PlayerVolumeMuted = value));
-        volume.AddSound("怪物音量", SoundBar(() => ClientSettings.MonsterVolume, value => ClientSettings.MonsterVolume = value, () => ClientSettings.MonsterVolumeMuted, value => ClientSettings.MonsterVolumeMuted = value));
-        volume.AddSound("魔法音量", SoundBar(() => ClientSettings.MagicVolume, value => ClientSettings.MagicVolume = value, () => ClientSettings.MagicVolumeMuted, value => ClientSettings.MagicVolumeMuted = value));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMonsterVolumeLabel, SoundBar(() => ClientSettings.MonsterVolume, value => ClientSettings.MonsterVolume = value, () => ClientSettings.MonsterVolumeMuted, value => ClientSettings.MonsterVolumeMuted = value));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMagicVolumeLabel, SoundBar(() => ClientSettings.MagicVolume, value => ClientSettings.MagicVolume = value, () => ClientSettings.MagicVolumeMuted, value => ClientSettings.MagicVolumeMuted = value));
         AddSection(volume, Mathf.RoundToInt(options.Size.Y) + 4);
     }
 
@@ -218,7 +218,7 @@ public partial class ConfigDialog : DXWindow
         game.AddOption("显示生命条", Check("显示生命条", ClientSettings.ShowUserHealth, value => { ClientSettings.ShowUserHealth = value; ClientSettings.Save(); }), 2);
         game.AddOption("显示伤害数字", Check("显示伤害数字", ClientSettings.ShowDamageNumbers, value => { ClientSettings.ShowDamageNumbers = value; ClientSettings.Save(); }), 2);
         game.AddOption("右键取消目标", Check("右键取消目标", GameScene.Game?.RightClickDeTarget ?? true, value => GameScene.Game?.SetRightClickDeTarget(value)), 2);
-        game.AddOption("允许被观察", Check("允许被观察", _allowObservable, value => { _allowObservable = value; GameScene.Game?.SendObservable(value); }), 2);
+        game.AddOption(Lang.BuffAllowLabel, Check(Lang.BuffAllowLabel, _allowObservable, value => { _allowObservable = value; GameScene.Game?.SendObservable(value); }), 2);
         AddSection(game, 0);
 
         var targetColours = new ConfigSectionPanel("Target Colours", 7, 2);
@@ -263,11 +263,11 @@ public partial class ConfigDialog : DXWindow
         keyButton.MouseClick += (o, e) => { _keyBind ??= new KeyBindDialog(); WindowManager.Open(_keyBind, GetParent()); };
         ui.AddButton(keyButton);
         var language = Check(_english ? "语言：English" : "语言：中文", false, _ => { _english = !_english; GameScene.Game?.SendSelectLanguage(_english ? "ENGLISH" : "CHINESE"); });
-        ui.AddOption("语言", language);
+        ui.AddOption(Lang.CommonControlConfigWindowGraphicsTabLanguageLabel, language);
         AddSection(ui, 0);
 
         var colours = new ConfigSectionPanel("Chat Colours", 13, 2);
-        string[] colourNames = { "本地聊天", "GM 密语", "收到密语", "发送密语", "组队聊天", "行会聊天", "喊话", "世界聊天", "观察者", "提示", "系统", "获得", "公告" };
+        string[] colourNames = { Lang.CommonControlConfigWindowColoursTabLocalChatLabel, "GM 密语", "收到密语", "发送密语", "组队聊天", "行会聊天", "喊话", "世界聊天", "观察者", "提示", Lang.GameSystemLabel, Lang.GameUi591Label, Lang.CommonControlConfigWindowColoursTabAnnouncementsLabel };
         colours.AddColourPair(colourNames[0], ColourPair(() => ClientSettings.LocalTextForeColour, value => ClientSettings.LocalTextForeColour = value, () => ClientSettings.LocalTextBackColour, value => ClientSettings.LocalTextBackColour = value));
         colours.AddColourPair(colourNames[1], ColourPair(() => ClientSettings.GMWhisperInTextForeColour, value => ClientSettings.GMWhisperInTextForeColour = value, () => ClientSettings.GMWhisperInTextBackColour, value => ClientSettings.GMWhisperInTextBackColour = value));
         colours.AddColourPair(colourNames[2], ColourPair(() => ClientSettings.WhisperInTextForeColour, value => ClientSettings.WhisperInTextForeColour = value, () => ClientSettings.WhisperInTextBackColour, value => ClientSettings.WhisperInTextBackColour = value));

@@ -356,13 +356,13 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         Base("Fragment Items", 264, 202);
         var grid = AddGrid(GridType.ItemFragment, 9, 37, 7, 3, null);
-        var cost = Add(new DXLabel { Text = "碎片费用: 0", FontSize = 9, Location = new Vector2I(89, 154), Size = new Vector2I(157, 20), IsControl = false });
-        var selectAll = Button("全选", 9, 179, () =>
+        var cost = Add(new DXLabel { Text = Lang.NPCAdvancedPanelsUi232Label, FontSize = 9, Location = new Vector2I(89, 154), Size = new Vector2I(157, 20), IsControl = false });
+        var selectAll = Button(Lang.NPCAdvancedPanelsUi233Label, 9, 179, () =>
         {
             foreach (var cell in GameScene.Game?.InventoryCells ?? Array.Empty<DXItemCell>())
                 if (cell.Item?.CanFragment() == true) cell.MoveItem(grid);
         });
-        var submit = Button("碎片化", 175, 179, () =>
+        var submit = Button(Lang.NPCAdvancedPanelsUi234Label, 175, 179, () =>
         {
             var links = Links(GridType.ItemFragment);
             if (BeginSubmit(links).Count > 0) GameScene.Game?.SendNPCFragment(links);
@@ -371,7 +371,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         {
             long total = grid.Cells.Where(x => x.Item != null).Sum(x => (long)x.Item.FragmentCost());
             long balance = GameScene.Game?.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
-            cost.Text = $"碎片费用: {total:#,##0}";
+            cost.Text = string.Format(Lang.NPCAdvancedPanelsUi235Label, total);
             cost.TextColour = total > balance ? Colors.Red : Colors.White;
             submit.Enabled = total > 0 && total <= balance;
             selectAll.Enabled = GameScene.Game?.InventoryCells.Any(x => x.Item?.CanFragment() == true) == true;
@@ -414,10 +414,10 @@ public sealed partial class NPCAdvancedPanel : DXControl
             Add(check); checks.Add(check);
             Add(new DXLabel { Text = types[i].Item2, FontSize = 8, Location = new Vector2I(x + 18, y + 1), IsControl = false });
         }
-        Button("品质", 250, 58, () => CycleQuality());
-        Add(new DXLabel { Text = "品质: Quick", FontSize = 9, Location = new Vector2I(250, 80), IsControl = false, Name = "RefineQuality" });
-        Add(new DXLabel { Text = $"耗时: {FormatRefineTime(_quality)}", FontSize = 8, Location = new Vector2I(335, 80), IsControl = false, Name = "RefineDuration" });
-        submit = Button("开始精炼", 420, 153, () =>
+        Button(Lang.NPCAdvancedPanelsUi236Label, 250, 58, () => CycleQuality());
+        Add(new DXLabel { Text = Lang.NPCAdvancedPanelsUi237Label, FontSize = 9, Location = new Vector2I(250, 80), IsControl = false, Name = "RefineQuality" });
+        Add(new DXLabel { Text = string.Format(Lang.NPCAdvancedPanelsUi238Label, FormatRefineTime(_quality)), FontSize = 8, Location = new Vector2I(335, 80), IsControl = false, Name = "RefineDuration" });
+        submit = Button(Lang.NPCAdvancedPanelsStartLabel, 420, 153, () =>
         {
             if (_refineType == RefineType.None) return;
             var ores = Links(GridType.RefineBlackIronOre);
@@ -521,8 +521,8 @@ public sealed partial class NPCAdvancedPanel : DXControl
         _retrieveList = Add(new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(491, 302), Clip = true, PassThrough = false });
         _retrieveScroll = Add(new DXVScrollBar { Location = new Vector2I(484, 38), Size = new Vector2I(14, 300), VisibleSize = 302, Change = 43, HideWhenNoScroll = true });
         _retrieveScroll.ValueChanged += (s, e) => RebuildRetrieveRows();
-        Button("刷新", 110, 359, () => GameScene.Game?.RequestNPCRefineList());
-        _retrieveButton = Button("取回选中", 214, 359, RetrieveSelected, _refines.Count > 0);
+        Button(Lang.NPCAdvancedPanelsRefreshLabel, 110, 359, () => GameScene.Game?.RequestNPCRefineList());
+        _retrieveButton = Button(Lang.NPCAdvancedPanelsUi241Label, 214, 359, RetrieveSelected, _refines.Count > 0);
         RebuildRetrieveRows();
     }
 
@@ -598,7 +598,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
             var refine = _refines[i];
             var row = new DXButton
             {
-                Text = $"#{refine.Index}  {refine.Weapon?.Info?.ItemName ?? "未知物品"}  {refine.Type}/{refine.Quality}  成功率 {refine.Chance}/{refine.MaxChance}",
+                Text = $"#{refine.Index}  {refine.Weapon?.Info?.ItemName ?? Lang.NPCAdvancedPanelsItemLabel}  {refine.Type}/{refine.Quality}  成功率 {refine.Chance}/{refine.MaxChance}",
                 FontSize = 9,
                 TextColour = i == _retrieveSelected ? new Color(1f, .85f, .3f) : Colors.White,
                 Location = new Vector2I(2, i * 43 - (int)_retrieveScroll.Value),
@@ -621,14 +621,14 @@ public sealed partial class NPCAdvancedPanel : DXControl
     private void BuildSingleGrid(string title, GridType type, int columns, int rows, string action)
     {
         Base(title, Math.Max(280, columns * 39 + 20), rows > 1 ? 205 : 145);
-        AddGrid(type, 10, 48, columns, rows, "物品");
+        AddGrid(type, 10, 48, columns, rows, Lang.ConsignmentItemLabel);
         Button(action, (int)Size.X - 94, (int)Size.Y - 38, () => SubmitSingle(type));
     }
 
     private void BuildSingleTarget(string title, GridType type, string action)
     {
         Base(title, 180, 150);
-        AddGrid(type, 72, 48, 1, 1, "目标");
+        AddGrid(type, 72, 48, 1, 1, Lang.NPCAdvancedPanelsTargetLabel);
         Button(action, 49, 108, () => SubmitSingle(type));
     }
 
@@ -676,7 +676,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         Base("Accessory", 118, 130, false);
         var grid = AddGrid(GridType.AccessoryReset, 41, 41, 1, 1, null);
-        Add(new DXLabel { Text = $"费用: {Globals.AccessoryResetCost:#,##0}", FontSize = 9, Align = HorizontalAlignment.Center,
+        Add(new DXLabel { Text = string.Format(Lang.NPCAdvancedPanelsUi245Label, Globals.AccessoryResetCost), FontSize = 9, Align = HorizontalAlignment.Center,
             Size = new Vector2I(100, 20), Location = new Vector2I(9, 77), IsControl = false });
         var button = Add(new DXButton { Text = Lang.ResetPasswordResetButtonLabel, FontSize = 9, Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(34, 102), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false });
         button.MouseClick += (_, _) => SubmitSingle(GridType.AccessoryReset);
@@ -688,13 +688,13 @@ public sealed partial class NPCAdvancedPanel : DXControl
         Base("Accessory Leveling", 264, 262);
         var materials = AddGrid(GridType.AccessoryRefineLevelItems, 9, 97, 7, 3, null);
         var target = AddGrid(GridType.AccessoryRefineLevelTarget, 114, 58, 1, 1, "Accessory");
-        var cost = Add(new DXLabel { Text = "升级费用: 0", FontSize = 9, Location = new Vector2I(89, 177), Size = new Vector2I(157, 20), IsControl = false });
-        var selectAll = Button("全选", 9, 202, () =>
+        var cost = Add(new DXLabel { Text = Lang.NPCAdvancedPanelsUpgradeLabel, FontSize = 9, Location = new Vector2I(89, 177), Size = new Vector2I(157, 20), IsControl = false });
+        var selectAll = Button(Lang.NPCAdvancedPanelsUi233Label, 9, 202, () =>
         {
             foreach (var cell in GameScene.Game?.InventoryCells ?? Array.Empty<DXItemCell>())
                 if (cell.Item != null) cell.MoveItem(materials);
         });
-        var submit = Button("升级", 175, 202, () =>
+        var submit = Button(Lang.NPCAdvancedPanelsUpgradeLabel2, 175, 202, () =>
         {
             var targetLink = Link(GridType.AccessoryRefineLevelTarget);
             var materials = Links(GridType.AccessoryRefineLevelItems);
@@ -705,7 +705,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         {
             int count = materials.Cells.Count(x => x.Item != null);
             long gold = GameScene.Game?.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
-            cost.Text = $"升级费用: {count:#,##0}";
+            cost.Text = string.Format(Lang.NPCAdvancedPanelsUpgradeLabel3, count);
             cost.TextColour = count > gold ? Colors.Red : Colors.White;
             submit.Enabled = target.Cells[0].Item != null && count > 0;
             selectAll.Enabled = GameScene.Game?.InventoryCells.Any(x => x.Item != null) == true;
@@ -734,7 +734,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         };
         var checks = new List<DXCheckButton>();
         DXButton submit = null;
-        var cost = Add(new DXLabel { Text = "精炼费用: 50,000", FontSize = 9, Location = new Vector2I(89, 164), Size = new Vector2I(157, 20), IsControl = false });
+        var cost = Add(new DXLabel { Text = Lang.NPCAdvancedPanelsRefineLabel, FontSize = 9, Location = new Vector2I(89, 164), Size = new Vector2I(157, 20), IsControl = false });
         int[] columns = { 181, 265, 350, 420 };
         for (int i = 0; i < options.Length; i++)
         {
@@ -752,7 +752,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
             Add(check); checks.Add(check);
             Add(new DXLabel { Text = options[i].Item2, FontSize = 8, Location = new Vector2I(x + 17, y + 1), IsControl = false });
         }
-        submit = Button("精炼", 420, 189, () =>
+        submit = Button(Lang.NPCAdvancedPanelsRefineLabel2, 420, 189, () =>
         {
             if (_refineType == RefineType.None) return;
             var targetLink = Link(GridType.AccessoryRefineCombTarget);
@@ -776,7 +776,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         Base("Ring", 78, 110, false);
         var grid = AddGrid(GridType.WeddingRing, 30, 41, 1, 1, null);
-        var button = Add(new DXButton { Text = "绑定", FontSize = 9, Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(14, 85), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false });
+        var button = Add(new DXButton { Text = Lang.NPCAdvancedPanelsUi252Label, FontSize = 9, Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(14, 85), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false });
         button.MouseClick += (_, _) => SubmitSingle(GridType.WeddingRing);
         grid.Cells[0].LinkChanged += cell => button.Enabled = cell.Item != null;
     }
@@ -784,8 +784,8 @@ public sealed partial class NPCAdvancedPanel : DXControl
     private void BuildTargetAndMaterials(string title, GridType target, GridType materials, string action)
     {
         Base(title, 360, 235);
-        AddGrid(target, 162, 43, 1, 1, "目标饰品");
-        AddGrid(materials, 18, 118, 8, 1, "材料");
+        AddGrid(target, 162, 43, 1, 1, Lang.NPCAdvancedPanelsTargetLabel2);
+        AddGrid(materials, 18, 118, 8, 1, Lang.NPCAdvancedPanelsMaterialLabel);
         Button(action, 258, 171, () =>
         {
             var targetLink = Links(target);
@@ -809,10 +809,10 @@ public sealed partial class NPCAdvancedPanel : DXControl
         AddGrid(GridType.WeaponCraftGreen, 57, 164, 1, 1, "Green");
         AddGrid(GridType.WeaponCraftGrey, 96, 164, 1, 1, "Grey");
         _weaponPreview = Add(new DXImageControl { LibraryFile = LibraryFile.Equip, Index = 1110, Location = new Vector2I(20, 88), Border = true, Size = new Vector2I(60, 60) });
-        Button("职业", 18, 209, CycleClass);
-        Add(new DXLabel { Text = "职业: None", FontSize = 9, Location = new Vector2I(18, 236), IsControl = false, Name = "CraftClass" });
-        Add(new DXLabel { Text = $"费用: {Globals.CraftWeaponPercentCost:#,##0}", FontSize = 8, Location = new Vector2I(18, 259), IsControl = false, Name = "CraftCost" });
-        _weaponCraftButton = Button("制作", 154, 284, () =>
+        Button(Lang.MainPanelClassHint, 18, 209, CycleClass);
+        Add(new DXLabel { Text = Lang.NPCAdvancedPanelsClassLabel, FontSize = 9, Location = new Vector2I(18, 236), IsControl = false, Name = "CraftClass" });
+        Add(new DXLabel { Text = string.Format(Lang.NPCAdvancedPanelsUi256Label, Globals.CraftWeaponPercentCost), FontSize = 8, Location = new Vector2I(18, 259), IsControl = false, Name = "CraftCost" });
+        _weaponCraftButton = Button(Lang.NPCAdvancedPanelsCraftLabel, 154, 284, () =>
         {
             var template = Link(GridType.WeaponCraftTemplate);
             var yellow = Link(GridType.WeaponCraftYellow);
@@ -838,7 +838,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close
             .MouseClick += (s, e) => GameScene.Game?.CloseNPCDialog();
-        Add(new DXLabel { Text = "收服伙伴", FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
+        Add(new DXLabel { Text = Lang.NPCAdvancedPanelsCompanionLabel, FontSize = 11, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
             Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         var available = (Globals.CompanionInfoList?.Binding?.AsEnumerable() ?? Enumerable.Empty<CompanionInfo>())
@@ -883,9 +883,9 @@ public sealed partial class NPCAdvancedPanel : DXControl
                 _companionPreview.SetAnimation(MirAnimation.Standing);
                 AddChild(_companionPreview);
             }
-            nameLabel.Text = info?.MonsterInfo?.MonsterName ?? "暂无伙伴";
+            nameLabel.Text = info?.MonsterInfo?.MonsterName ?? Lang.NPCCompanionStorageCompanionLabel;
             description.Text = info?.Description ?? string.Empty;
-            price.Text = info == null ? string.Empty : $"价格：{info.Price:#,##0} {info.Currency?.Abbreviation ?? string.Empty}";
+            price.Text = info == null ? string.Empty : string.Format(Lang.NPCAdvancedPanelsPriceLabel, info.Price, info.Currency?.Abbreviation ?? string.Empty);
             if (info != null) index.Text = info.Index.ToString();
         }
 
@@ -893,8 +893,8 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var right = Add(new DXButton { LibraryFile = LibraryFile.GameInter, Index = 4117, Location = new Vector2I(200, 135) });
         left.MouseClick += (s, e) => { if (selected > 0) { selected--; RefreshCompanion(); } };
         right.MouseClick += (s, e) => { if (selected + 1 < available.Count) { selected++; RefreshCompanion(); } };
-        Button("解锁", 28, (int)Size.Y - 43, () => { if (int.TryParse(index.Text, out var value)) GameScene.Game?.SendCompanionUnlock(Math.Max(0, value)); });
-        Button("收服", (int)Size.X - 108, (int)Size.Y - 43, () => { if (int.TryParse(index.Text, out var value) && !string.IsNullOrWhiteSpace(name.Text)) GameScene.Game?.SendCompanionAdopt(Math.Max(0, value), name.Text.Trim()); });
+        Button(Lang.NPCAdvancedPanelsUi261Label, 28, (int)Size.Y - 43, () => { if (int.TryParse(index.Text, out var value)) GameScene.Game?.SendCompanionUnlock(Math.Max(0, value)); });
+        Button(Lang.NPCAdvancedPanelsUi262Label, (int)Size.X - 108, (int)Size.Y - 43, () => { if (int.TryParse(index.Text, out var value) && !string.IsNullOrWhiteSpace(name.Text)) GameScene.Game?.SendCompanionAdopt(Math.Max(0, value), name.Text.Trim()); });
         left.Enabled = selected > 0;
         right.Enabled = selected + 1 < available.Count;
         RefreshCompanion();
@@ -911,10 +911,10 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         if (_mode is not (NPCDialogType.RollDie or NPCDialogType.RollYut)) return;
         _rollResult ??= Add(new DXLabel { FontSize = 14, TextColour = Colors.Yellow, Location = new Vector2I(80, 105), Size = new Vector2I(160, 25), IsControl = false });
-        _rollResult.Text = $"结果：{result}";
+        _rollResult.Text = string.Format(Lang.NPCAdvancedPanelsUi263Label, result);
         if (_rollClaim == null)
         {
-            _rollClaim = Button("领取结果", 99, 158, () => GameScene.Game?.SendNPCRollResult());
+            _rollClaim = Button(Lang.NPCAdvancedPanelsUi264Label, 99, 158, () => GameScene.Game?.SendNPCRollResult());
         }
         _rollClaim.Visible = true;
     }
@@ -922,7 +922,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
     private void BuildQuestFallback()
     {
         Base("Quest List", 360, 150);
-        Add(new DXLabel { Text = "请从上方 NPC 对话选项中选择任务。", FontSize = 10, Location = new Vector2I(18, 52), IsControl = false });
+        Add(new DXLabel { Text = Lang.NPCAdvancedPanelsQuestLabel, FontSize = 10, Location = new Vector2I(18, 52), IsControl = false });
     }
 
     private void CycleRefineType()
@@ -930,7 +930,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var values = (RefineType[])Enum.GetValues(typeof(RefineType));
         _refineType = values[(Array.IndexOf(values, _refineType) + 1) % values.Length];
         foreach (var c in Controls)
-            if (c.Name == "RefineType") c.Text = $"属性: {_refineType}";
+            if (c.Name == "RefineType") c.Text = string.Format(Lang.NPCAdvancedPanelsUi266Label, _refineType);
     }
 
     private void CycleQuality()
@@ -939,8 +939,8 @@ public sealed partial class NPCAdvancedPanel : DXControl
         _quality = values[(Array.IndexOf(values, _quality) + 1) % values.Length];
         foreach (var c in Controls)
         {
-            if (c.Name == "RefineQuality") c.Text = $"品质: {_quality}";
-            if (c.Name == "RefineDuration") c.Text = $"耗时: {FormatRefineTime(_quality)}";
+            if (c.Name == "RefineQuality") c.Text = string.Format(Lang.NPCAdvancedPanelsUi267Label, _quality);
+            if (c.Name == "RefineDuration") c.Text = string.Format(Lang.NPCAdvancedPanelsUi238Label, FormatRefineTime(_quality));
         }
     }
 
@@ -948,9 +948,9 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         if (quality == RefineQuality.Rush) return string.Empty;
         if (!Globals.RefineTimes.TryGetValue(quality, out var time)) return string.Empty;
-        if (time.TotalDays >= 1) return $"{time.TotalDays:0.#}天";
-        if (time.TotalHours >= 1) return $"{time.TotalHours:0.#}小时";
-        return $"{time.TotalMinutes:0.#}分钟";
+        if (time.TotalDays >= 1) return string.Format(Lang.NPCAdvancedPanelsUi269Label, time.TotalDays);
+        if (time.TotalHours >= 1) return string.Format(Lang.NPCAdvancedPanelsUi270Label, time.TotalHours);
+        return string.Format(Lang.NPCAdvancedPanelsUi271Label, time.TotalMinutes);
     }
 
     private void CycleClass()
@@ -958,7 +958,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var values = new[] { RequiredClass.None, RequiredClass.Warrior, RequiredClass.Wizard, RequiredClass.Taoist, RequiredClass.Assassin };
         _class = values[(Array.IndexOf(values, _class) + 1) % values.Length];
         foreach (var c in Controls)
-            if (c.Name == "CraftClass") c.Text = $"职业: {_class}";
+            if (c.Name == "CraftClass") c.Text = string.Format(Lang.NPCAdvancedPanelsClassLabel2, _class);
         UpdateWeaponCraftState();
     }
 
@@ -991,7 +991,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
             } : item?.Info?.Image ?? 1110;
         }
         foreach (var c in Controls)
-            if (c.Name == "CraftCost") c.Text = $"费用: {cost:#,##0}";
+            if (c.Name == "CraftCost") c.Text = string.Format(Lang.NPCAdvancedPanelsUi273Label, cost);
     }
 
     private void SubmitSingle(GridType type)

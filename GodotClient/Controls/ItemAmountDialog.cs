@@ -22,7 +22,7 @@ public sealed partial class ItemAmountDialog : DXWindow
 
     public ItemAmountDialog(ClientUserItem item, Action<long> confirm)
         // 原版 DXItemAmountWindow 在打开时统一从 1 开始，而不是默认半堆。
-        : this(item?.Info?.ItemName ?? "物品", Math.Max(1, item?.Count ?? 1), 1, confirm, item)
+        : this(item?.Info?.ItemName ?? Lang.ConsignmentItemLabel, Math.Max(1, item?.Count ?? 1), 1, confirm, item)
     {
     }
 
@@ -33,7 +33,7 @@ public sealed partial class ItemAmountDialog : DXWindow
 
     public ItemAmountDialog(string title, long max, long initial, Action<long> confirm, ClientUserItem item)
     {
-        Text = "选择数量";
+        Text = Lang.ItemAmountSelectLabel;
         HasFooter = true;
         _confirm = confirm;
         // 原版 DXItemAmountWindow 的客户区为 200x46；这里保留物品格和数量
@@ -67,7 +67,7 @@ public sealed partial class ItemAmountDialog : DXWindow
         AddControl(down);
         // 原版 ConfirmButton.Enabled = Amount > 0：键入 0 时按钮灰置，
         // DXControl._GuiInput 对禁用控件直接 return，点击不会派发。
-        _ok = new DXButton { Text = "确定", Type = DXButton.ButtonType.Default, Location = new Vector2I(128, 103), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = Amount > 0 };
+        _ok = new DXButton { Text = Lang.LegacyLoginsOkLabel, Type = DXButton.ButtonType.Default, Location = new Vector2I(128, 103), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = Amount > 0 };
         _ok.MouseClick += (s, e) => Confirm();
         AddControl(_ok);
         // 原版 AmountBox_KeyPress：Enter 确认（各调用点还有 window.Amount<=0

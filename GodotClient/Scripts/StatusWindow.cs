@@ -16,7 +16,7 @@ public partial class StatusWindow : DXWindow
     public StatusWindow()
     {
         Name = "StatusWindow";
-        Text = "角色状态";
+        Text = Lang.StatusWindowCharacterLabel;
         Position = new Vector2(40, 80);
         Size = new Vector2(280, 230);
     }
@@ -34,7 +34,7 @@ public partial class StatusWindow : DXWindow
             MouseFilter = MouseFilterEnum.Ignore,
         });
 
-        string[] keys = { Lang.CharacterCharacterTabLabel, "职业", "生命", Lang.MagicDialogTitle, Lang.SelectLocationLabel, "方向", "地图", "周围物体" };
+        string[] keys = { Lang.CharacterCharacterTabLabel, Lang.MainPanelClassHint, Lang.StatusWindowUi494Label, Lang.MagicDialogTitle, Lang.SelectLocationLabel, Lang.StatusWindowUi495Label, Lang.StatusWindowUi496Label, Lang.StatusWindowUi497Label };
         float y = 36;
         foreach (string key in keys)
         {
@@ -58,13 +58,13 @@ public partial class StatusWindow : DXWindow
     {
         if (_rows.Count < 8) return;
         SetRow(0, Lang.CharacterCharacterTabLabel, name);
-        SetRow(1, "职业", className);
-        SetRow(2, "生命", maxHp > 0 ? $"{hp} / {maxHp}" : "-");
+        SetRow(1, Lang.MainPanelClassHint, className);
+        SetRow(2, Lang.StatusWindowUi494Label, maxHp > 0 ? $"{hp} / {maxHp}" : "-");
         SetRow(3, Lang.MagicDialogTitle, maxMana > 0 ? $"0 / {maxMana}" : "-");
         SetRow(4, Lang.SelectLocationLabel, $"({cellX}, {cellY})");
-        SetRow(5, "方向", DirectionName(dir));
-        SetRow(6, "地图", mapName);
-        SetRow(7, "周围物体", objCount.ToString());
+        SetRow(5, Lang.StatusWindowUi495Label, DirectionName(dir));
+        SetRow(6, Lang.StatusWindowUi496Label, mapName);
+        SetRow(7, Lang.StatusWindowUi497Label, objCount.ToString());
     }
 
     private void SetRow(int index, string key, string value)
@@ -78,14 +78,14 @@ public partial class StatusWindow : DXWindow
     {
         return dir switch
         {
-            MirDirection.Up => "上",
-            MirDirection.UpRight => "右上",
-            MirDirection.Right => "右",
-            MirDirection.DownRight => "右下",
-            MirDirection.Down => "下",
-            MirDirection.DownLeft => "左下",
-            MirDirection.Left => "左",
-            MirDirection.UpLeft => "左上",
+            MirDirection.Up => Lang.StatusWindowUi502Label,
+            MirDirection.UpRight => Lang.StatusWindowUi503Label,
+            MirDirection.Right => Lang.StatusWindowUi504Label,
+            MirDirection.DownRight => Lang.StatusWindowUi505Label,
+            MirDirection.Down => Lang.StatusWindowUi506Label,
+            MirDirection.DownLeft => Lang.StatusWindowUi507Label,
+            MirDirection.Left => Lang.StatusWindowUi508Label,
+            MirDirection.UpLeft => Lang.StatusWindowUi509Label,
             _ => dir.ToString(),
         };
     }

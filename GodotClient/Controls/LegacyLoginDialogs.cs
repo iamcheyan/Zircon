@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Library;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
@@ -39,10 +40,10 @@ public sealed partial class LegacyLoginDialog : DXWindow
             AddControl(link);
         }
 
-        var submit = new DXButton { Text = "确定", FontSize = 10, Size = new Vector2I(80, 28), Location = new Vector2I(size.X / 2 - 90, size.Y - 43), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var submit = new DXButton { Text = Lang.LegacyLoginsOkLabel, FontSize = 10, Size = new Vector2I(80, 28), Location = new Vector2I(size.X / 2 - 90, size.Y - 43), LibraryFile = LibraryFile.Interface, Index = -1 };
         submit.MouseClick += (o, e) => Submitted?.Invoke(ReadValues());
         AddControl(submit);
-        var cancel = new DXButton { Text = "取消", FontSize = 10, Size = new Vector2I(80, 28), Location = new Vector2I(size.X / 2 + 10, size.Y - 43), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var cancel = new DXButton { Text = Lang.CommonControlCancel, FontSize = 10, Size = new Vector2I(80, 28), Location = new Vector2I(size.X / 2 + 10, size.Y - 43), LibraryFile = LibraryFile.Interface, Index = -1 };
         cancel.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(cancel);
     }

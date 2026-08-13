@@ -47,19 +47,19 @@ public partial class GroupDialog : DXWindow
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => GameScene.Game?.CloseGroupDialog();
         AddControl(close);
-        AddControl(new DXLabel { Text = "队伍", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(240, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GroupGroupLabel, FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(240, 18), IsControl = false });
 
         _allowCheck = new DXCheckButton(string.Empty) { Location = new Vector2I(166, 40), Size = new Vector2I(18, 18) };
         _allowCheck.MouseClick += (o, e) => ToggleAllow();
         AddControl(_allowCheck);
-        AddControl(new DXLabel { Text = "允许组队", FontSize = 9, Location = new Vector2I(186, 40), Size = new Vector2I(48, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GroupAllowLabel, FontSize = 9, Location = new Vector2I(186, 40), Size = new Vector2I(48, 18), IsControl = false });
 
         _memberPanel = new DXControl { Location = new Vector2I(13, 60), Size = new Vector2I(194, 148), Clip = true };
         AddControl(_memberPanel);
 
         _inviteName = new DXTextInput { Location = new Vector2I(14, 260), Size = new Vector2I(130, 23), Visible = false };
         AddControl(_inviteName);
-        var invite = Button("邀请", new Vector2I(149, 260), new Vector2I(62, 23));
+        var invite = Button(Lang.GroupInviteLabel, new Vector2I(149, 260), new Vector2I(62, 23));
         invite.Visible = false;
         invite.MouseClick += (o, e) =>
         {
@@ -139,11 +139,11 @@ public partial class GroupDialog : DXWindow
     {
         _invitePanel?.QueueFree();
         _invitePanel = new DXControl { Location = new Vector2I(12, 165), Size = new Vector2I(216, 48), BackColour = new Color(0.05f, 0.03f, 0.02f, .96f), Border = true, BorderColour = new Color(1f, .75f, .25f) };
-        _invitePanel.AddControl(new DXLabel { Text = $"{name ?? "未知玩家"} 邀请你组队", FontSize = 9, Location = new Vector2I(6, 4), Size = new Vector2I(204, 18), IsControl = false });
-        var accept = new DXButton { Text = "接受", FontSize = 9, Size = new Vector2I(70, 20), Location = new Vector2I(24, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _invitePanel.AddControl(new DXLabel { Text = $"{name ?? Lang.GroupUnknownLabel} 邀请你组队", FontSize = 9, Location = new Vector2I(6, 4), Size = new Vector2I(204, 18), IsControl = false });
+        var accept = new DXButton { Text = Lang.GroupAcceptLabel, FontSize = 9, Size = new Vector2I(70, 20), Location = new Vector2I(24, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
         accept.MouseClick += (o, e) => { GameScene.Game?.SendGroupResponse(name, true); _invitePanel.QueueFree(); _invitePanel = null; };
         _invitePanel.AddControl(accept);
-        var reject = new DXButton { Text = "拒绝", FontSize = 9, Size = new Vector2I(70, 20), Location = new Vector2I(120, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var reject = new DXButton { Text = Lang.GroupDeclineLabel, FontSize = 9, Size = new Vector2I(70, 20), Location = new Vector2I(120, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
         reject.MouseClick += (o, e) => { GameScene.Game?.SendGroupResponse(name, false); _invitePanel.QueueFree(); _invitePanel = null; };
         _invitePanel.AddControl(reject);
         AddControl(_invitePanel);

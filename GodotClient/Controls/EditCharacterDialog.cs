@@ -51,7 +51,7 @@ public sealed partial class EditCharacterDialog : DXWindow
         _armourColour = ColourSwatch(new Color(.22f, .28f, .36f), new Vector2I(120, 215));
         AddControl(new DXControl { Location = new Vector2I(35, 240), Size = new Vector2I(190, 225), Border = true, BorderColour = new Color(1f, .75f, .25f), BackColour = new Color(.19f, .15f, .1f), IsControl = false });
         AddControl(new DXLabel { Text = "Preview", FontSize = 10, Align = HorizontalAlignment.Center, Location = new Vector2I(90, 240), Size = new Vector2I(80, 16), IsControl = false });
-        AddControl(new DXLabel { Text = "角色预览", FontSize = 10, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 338), Size = new Vector2I(140, 20), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.EditCharacterCharacterLabel, FontSize = 10, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 338), Size = new Vector2I(140, 20), IsControl = false });
         AddControl(new DXLabel { Text = "Name:", FontSize = 10, Location = new Vector2I(28, 482), IsControl = false });
         _name = new DXTextInput { Location = new Vector2I(75, 478), Size = new Vector2I(155, 20) }; AddControl(_name);
         var confirm = new DXButton { Text = Lang.CommonControlConfirm, FontSize = 10, Location = new Vector2I(90, 517), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
@@ -70,13 +70,13 @@ public sealed partial class EditCharacterDialog : DXWindow
         _armourColour.BackColour = ToGodotColour(info?.ArmourColour ?? System.Drawing.Color.White);
         SelectGender(info?.Gender ?? MirGender.Male);
         _change = EditCharacterChange.Gender;
-        _description.Text = $"当前: {info?.Gender} / {info?.Class}";
+        _description.Text = string.Format(Lang.EditCharacterUi287Label, info?.Gender, info?.Class);
     }
 
     public void SelectChange(EditCharacterChange change)
     {
         _change = change;
-        _description.Text = $"已选择: {change}";
+        _description.Text = string.Format(Lang.EditCharacterSelectLabel, change);
     }
 
     public bool AuditLayout(out string details)

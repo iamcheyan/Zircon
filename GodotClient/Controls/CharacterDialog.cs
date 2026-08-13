@@ -126,8 +126,8 @@ public partial class CharacterDialog : DXWindow
         AddControl(close);
 
         AddTab(Lang.CharacterCharacterTabLabel, 0, 110);
-        AddTab("修炼", 62, 112);
-        AddTab("隐士", 124, 111);
+        AddTab(Lang.CharacterUi70Label, 62, 112);
+        AddTab(Lang.CharacterUi71Label, 124, 111);
 
         _attributePanel = new DXControl
         {
@@ -419,9 +419,9 @@ public partial class CharacterDialog : DXWindow
             IsControl = false,
         };
         _attributePanel.AddControl(_disciplineExperienceLabel);
-        _disciplineLabel = new DXLabel { Text = "修炼：未学习", FontSize = 9, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(14, 358), Size = new Vector2I(150, 18), IsControl = false };
+        _disciplineLabel = new DXLabel { Text = Lang.CharacterUi72Label, FontSize = 9, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(14, 358), Size = new Vector2I(150, 18), IsControl = false };
         _attributePanel.AddControl(_disciplineLabel);
-        _disciplineButton = new DXButton { Text = "提升修炼", FontSize = 9, Size = new Vector2I(120, 27), Location = new Vector2I(182, 266), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _disciplineButton = new DXButton { Text = Lang.CharacterUi73Label, FontSize = 9, Size = new Vector2I(120, 27), Location = new Vector2I(182, 266), LibraryFile = LibraryFile.Interface, Index = -1 };
         _disciplineButton.MouseClick += (o, e) => GameScene.Game?.SendIncreaseDiscipline();
         _attributePanel.AddControl(_disciplineButton);
         RefreshDiscipline();
@@ -446,7 +446,7 @@ public partial class CharacterDialog : DXWindow
         for (int i = 0; i < hermitStats.Length; i++)
         {
             var stat = hermitStats[i];
-            var button = new DXButton { Text = $"隐士 {stat}", FontSize = 8, Size = new Vector2I(78, 23), Location = new Vector2I(18 + (i % 4) * 82, 225 + (i / 4) * 26), LibraryFile = LibraryFile.Interface, Index = -1 };
+            var button = new DXButton { Text = string.Format(Lang.CharacterUi74Label, stat), FontSize = 8, Size = new Vector2I(78, 23), Location = new Vector2I(18 + (i % 4) * 82, 225 + (i / 4) * 26), LibraryFile = LibraryFile.Interface, Index = -1 };
             button.MouseClick += (o, e) => GameScene.Game?.SendHermit(stat);
             _hermitPanel.AddControl(button);
         }
@@ -455,7 +455,7 @@ public partial class CharacterDialog : DXWindow
 
     private void BuildStatsPanel()
     {
-        string[] names = { "攻击", "防御", "负重", Lang.GameStoreDialogOtherLabel, "元素攻", "元素优", "元素劣" };
+        string[] names = { Lang.CharacterCharacterTabStatsAttackTabLabel, Lang.CharacterCharacterTabStatsDefenseTabLabel, Lang.CharacterCharacterTabStatsWeightTabLabel, Lang.GameStoreDialogOtherLabel, Lang.CharacterUi75Label, Lang.CharacterUi76Label, Lang.CharacterUi77Label };
         for (int i = 0; i < names.Length; i++)
         {
             int page = i;
@@ -480,44 +480,44 @@ public partial class CharacterDialog : DXWindow
             _statPages.Add(content);
         }
 
-        AddStatRow(0, "攻击", Stat.MaxDC, Stat.MinDC, 15, 6);
+        AddStatRow(0, Lang.CharacterCharacterTabStatsAttackTabLabel, Stat.MaxDC, Stat.MinDC, 15, 6);
         AddStatRow(0, Lang.MagicDialogTitle, Stat.MaxMC, Stat.MinMC, 15, 28);
-        AddStatRow(0, "道术", Stat.MaxSC, Stat.MinSC, 15, 50);
-        AddStatRow(0, "暴击伤害", Stat.CriticalDamage, null, 15, 72);
+        AddStatRow(0, Lang.CharacterTaoLabel, Stat.MaxSC, Stat.MinSC, 15, 50);
+        AddStatRow(0, Lang.CharacterUi79Label, Stat.CriticalDamage, null, 15, 72);
         AddStatRow(0, Lang.MainPanelAccuracyHint, Stat.Accuracy, null, 168, 6);
-        AddStatRow(0, "攻速", Stat.AttackSpeed, null, 168, 28);
+        AddStatRow(0, Lang.CharacterUi80Label, Stat.AttackSpeed, null, 168, 28);
         AddStatRow(0, Lang.CommonStatusHoly, Stat.Luck, null, 168, 50);
-        AddStatRow(0, "暴击率", Stat.CriticalChance, null, 168, 72);
+        AddStatRow(0, Lang.CharacterUi81Label, Stat.CriticalChance, null, 168, 72);
 
-        AddStatRow(1, "防御", Stat.MaxAC, Stat.MinAC, 15, 6);
+        AddStatRow(1, Lang.CharacterCharacterTabStatsDefenseTabLabel, Stat.MaxAC, Stat.MinAC, 15, 6);
         AddStatRow(1, Lang.CommonStatusMR, Stat.MaxMR, Stat.MinMR, 15, 28);
-        AddStatRow(1, "闪避", Stat.Agility, null, 168, 6);
-        AddStatRow(1, "吸血", Stat.LifeSteal, null, 168, 28);
+        AddStatRow(1, Lang.CharacterUi82Label, Stat.Agility, null, 168, 6);
+        AddStatRow(1, Lang.CharacterUi83Label, Stat.LifeSteal, null, 168, 28);
 
-        AddWeightRow(2, "穿戴负重", true, 15, 6);
-        AddWeightRow(2, "手持负重", false, 15, 28);
+        AddWeightRow(2, Lang.CharacterWeightLabel, true, 15, 6);
+        AddWeightRow(2, Lang.CharacterWeightLabel2, false, 15, 28);
 
-        AddStatRow(3, "舒适", Stat.Comfort, null, 15, 6);
-        AddStatRow(3, "拾取范围", Stat.PickUpRadius, null, 15, 28);
-        AddStatRow(3, "金币倍率", Stat.GoldRate, null, 168, 6);
-        AddStatRow(3, "掉落倍率", Stat.DropRate, null, 168, 28);
-        AddStatRow(3, "经验倍率", Stat.ExperienceRate, null, 168, 50);
+        AddStatRow(3, Lang.CharacterUi86Label, Stat.Comfort, null, 15, 6);
+        AddStatRow(3, Lang.CharacterUi87Label, Stat.PickUpRadius, null, 15, 28);
+        AddStatRow(3, Lang.CharacterGoldLabel, Stat.GoldRate, null, 168, 6);
+        AddStatRow(3, Lang.CharacterUi89Label, Stat.DropRate, null, 168, 28);
+        AddStatRow(3, Lang.CharacterExpLabel, Stat.ExperienceRate, null, 168, 50);
 
         (Stat stat, string name, int icon)[] elements =
         {
-            (Stat.FireAttack, "火", 600), (Stat.IceAttack, "冰", 601),
-            (Stat.LightningAttack, "雷", 602), (Stat.WindAttack, "风", 603),
-            (Stat.HolyAttack, "神圣", 604), (Stat.DarkAttack, Lang.CommonStatusDark, 605),
-            (Stat.PhantomAttack, "幻影", 606),
+            (Stat.FireAttack, Lang.CharacterUi91Label, 600), (Stat.IceAttack, Lang.CharacterUi92Label, 601),
+            (Stat.LightningAttack, Lang.CharacterUi93Label, 602), (Stat.WindAttack, Lang.CharacterUi94Label, 603),
+            (Stat.HolyAttack, Lang.CharacterUi95Label, 604), (Stat.DarkAttack, Lang.CommonStatusDark, 605),
+            (Stat.PhantomAttack, Lang.CharacterUi96Label, 606),
         };
         AddElementPage(4, elements, 1);
 
         (Stat stat, string name, int icon)[] resistances =
         {
-            (Stat.FireResistance, "火", 600), (Stat.IceResistance, "冰", 601),
-            (Stat.LightningResistance, "雷", 602), (Stat.WindResistance, "风", 603),
-            (Stat.HolyResistance, "神圣", 604), (Stat.DarkResistance, Lang.CommonStatusDark, 605),
-            (Stat.PhantomResistance, "幻影", 606), (Stat.PhysicalResistance, Lang.CommonStatusPhysical, 1517),
+            (Stat.FireResistance, Lang.CharacterUi91Label, 600), (Stat.IceResistance, Lang.CharacterUi92Label, 601),
+            (Stat.LightningResistance, Lang.CharacterUi93Label, 602), (Stat.WindResistance, Lang.CharacterUi94Label, 603),
+            (Stat.HolyResistance, Lang.CharacterUi95Label, 604), (Stat.DarkResistance, Lang.CommonStatusDark, 605),
+            (Stat.PhantomResistance, Lang.CharacterUi96Label, 606), (Stat.PhysicalResistance, Lang.CommonStatusPhysical, 1517),
         };
         AddElementPage(5, resistances, 2);
         AddElementPage(6, resistances, 3);
@@ -688,7 +688,7 @@ public partial class CharacterDialog : DXWindow
         var stats = GameScene.Game?.PlayerStats;
         int wearMax = stats?[Stat.WearWeight] ?? 0;
         int handMax = stats?[Stat.HandWeight] ?? 0;
-        WeightLabel.Text = $"负重 {wearWeight} / 手持 {handWeight}";
+        WeightLabel.Text = string.Format(Lang.CharacterWeightLabel3, wearWeight, handWeight);
         if (_wearWeightValue != null) _wearWeightValue.Text = $"{wearWeight} / {wearMax}";
         if (_handWeightValue != null) _handWeightValue.Text = $"{handWeight} / {handMax}";
     }
@@ -813,8 +813,8 @@ public partial class CharacterDialog : DXWindow
             ? $"{discipline?.Experience ?? 0}/Max"
             : $"{discipline?.Experience ?? 0}/{next.RequiredExperience}";
         _disciplineLabel.Text = next == null
-            ? (discipline == null ? "修炼：未学习" : $"修炼：{level}级\n经验：{discipline.Experience} / Max")
-            : $"修炼：{level}级\n经验：{discipline?.Experience ?? 0} / {next.RequiredExperience}\n金币：{next.RequiredGold}";
+            ? (discipline == null ? Lang.CharacterUi72Label : string.Format(Lang.CharacterExpLabel2, level, discipline.Experience))
+            : string.Format(Lang.CharacterGoldLabel2, level, discipline?.Experience ?? 0, next.RequiredExperience, next.RequiredGold);
         if (_disciplineButton != null) _disciplineButton.Enabled = next != null && (GameScene.Game?.StartInfo?.Level ?? 0) >= next.RequiredLevel;
         RefreshDisciplineMagicIcons();
     }

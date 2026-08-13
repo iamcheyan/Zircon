@@ -331,7 +331,7 @@ public partial class NPCGoodsPanel : DXControl
         if (good.Item.StackSize > 1 || good.IsCurrencyGood)
         {
             long initial = good.IsCurrencyGood ? good.NormaliseCurrencyPurchaseAmount(currency, 1) : 1;
-            var amount = new ItemAmountDialog("购买数量", maxAmount, Math.Min(maxAmount, Math.Max(1, initial)), count =>
+            var amount = new ItemAmountDialog(Lang.NPCGoodsPanelBuyLabel, maxAmount, Math.Min(maxAmount, Math.Max(1, initial)), count =>
             {
                 game.SendNPCBuy(good.Index, count, _guildFunds.Checked);
                 _guildFunds.Checked = false;

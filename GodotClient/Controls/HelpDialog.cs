@@ -65,7 +65,7 @@ public partial class HelpDialog : DXWindow
 
         AddControl(new DXLabel
         {
-            Text = "帮助",
+            Text = Lang.MenuHelpLabel,
             FontSize = 10,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,
@@ -114,7 +114,7 @@ public partial class HelpDialog : DXWindow
         var help = Globals.HelpInfoList?.Binding.OrderBy(x => x.Order).ToList();
         if (help == null || help.Count == 0)
         {
-            ShowPageContent(null, "帮助", "当前没有可用的帮助内容。");
+            ShowPageContent(null, Lang.MenuHelpLabel, Lang.HelpHelpLabel3);
             return;
         }
         for (int i = 0; i < help.Count; i++)
@@ -122,7 +122,7 @@ public partial class HelpDialog : DXWindow
             var info = help[i];
             var button = new DXButton
             {
-                Text = info.Title ?? "帮助",
+                Text = info.Title ?? Lang.MenuHelpLabel,
                 FontSize = 10,
                 TextColour = new Color(1f, 0.85f, 0.3f),
                 Size = new Vector2I(134, 21),
@@ -189,7 +189,7 @@ public partial class HelpDialog : DXWindow
                 var page = pages[i];
                 var pageButton = new DXButton
                 {
-                    Text = page.Title ?? $"第 {i + 1} 页",
+                    Text = page.Title ?? string.Format(Lang.HelpUi362Label, i + 1),
                     FontSize = 9,
                     TextColour = new Color(0.86f, 0.78f, 0.48f),
                     Size = new Vector2I(125, 22),
@@ -204,7 +204,7 @@ public partial class HelpDialog : DXWindow
             return;
         }
 
-        ShowPageContent(info, info.Title ?? "帮助", info.Description ?? string.Empty);
+        ShowPageContent(info, info.Title ?? Lang.MenuHelpLabel, info.Description ?? string.Empty);
     }
 
     private void ShowPage(HelpInfo info, HelpPageInfo page)

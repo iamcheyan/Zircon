@@ -76,9 +76,9 @@ public sealed partial class DXColourPicker : DXWindow
         _palette.ColourPicked += SetSelected;
         AddControl(_palette);
 
-        AddControl(new DXLabel { Text = "红", FontSize = 9, Location = new Vector2I(282, 44), IsControl = false });
-        AddControl(new DXLabel { Text = "绿", FontSize = 9, Location = new Vector2I(282, 69), IsControl = false });
-        AddControl(new DXLabel { Text = "蓝", FontSize = 9, Location = new Vector2I(282, 94), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.DXColourControlUi283Label, FontSize = 9, Location = new Vector2I(282, 44), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.DXColourControlUi284Label, FontSize = 9, Location = new Vector2I(282, 69), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.DXColourControlUi285Label, FontSize = 9, Location = new Vector2I(282, 94), IsControl = false });
         _red = AddChannel(303, 40);
         _green = AddChannel(303, 65);
         _blue = AddChannel(303, 90);
@@ -89,7 +89,7 @@ public sealed partial class DXColourPicker : DXWindow
         AddControl(new DXLabel { Text = Lang.CommonControlColourPickerColourLabel, FontSize = 9, Location = new Vector2I(282, 174), IsControl = false });
         _colourBox = new DXControl { Location = new Vector2I(303, 172), Size = new Vector2I(55, 20), Border = true, BorderColour = new Color(1f, .75f, .25f) };
         AddControl(_colourBox);
-        _noneLabel = new DXLabel { Text = "无", FontSize = 9, Location = new Vector2I(315, 174), Visible = previous.A <= 0, IsControl = false };
+        _noneLabel = new DXLabel { Text = Lang.CommonControlColourPickerNoneLabel, FontSize = 9, Location = new Vector2I(315, 174), Visible = previous.A <= 0, IsControl = false };
         AddControl(_noneLabel);
 
         var select = new DXButton { Text = Lang.CommonControlSelect, Type = DXButton.ButtonType.Default, FontSize = 9, Location = new Vector2I(105, 218), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };

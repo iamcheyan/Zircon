@@ -26,7 +26,7 @@ public partial class RankingDialog : DXWindow
     private DXLabel _inspectLevel;
     private readonly ClientUserItem[] _inspectItems = new ClientUserItem[17];
     private int _selected = -1;
-    private string _filter = "综合";
+    private string _filter = Lang.RankingUi132Label;
     private bool _onlineOnly;
     private string _selectedName;
     private readonly List<RankInfo> _ranks = new();
@@ -51,7 +51,7 @@ public partial class RankingDialog : DXWindow
         if (_detail == null || packet == null) return;
         _detail.Text = $"{packet.Name}\nLv. {packet.Level} · {packet.Class}\n\n" +
             $"行会：{packet.GuildName ?? "-"}\n职位：{packet.GuildRank ?? "-"}\n" +
-            $"装备：{packet.Items?.Count ?? 0} 件";
+            string.Format(Lang.RankingEquipmentLabel, packet.Items?.Count ?? 0);
 
         if (!_full || _inspectPanel == null) return;
 
@@ -106,18 +106,18 @@ public partial class RankingDialog : DXWindow
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "排行榜", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.RankingRankingLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         int listX = fullRanking ? 246 : 12;
-        AddControl(new DXLabel { Text = "名次       角色名                 等级       职业", FontSize = 10, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(listX + 8, 48), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.RankingCharacterLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(listX + 8, 48), IsControl = false });
         _search = new DXTextInput { Location = new Vector2I(listX + 13, 68), Size = new Vector2I(147, 18) };
         AddControl(_search);
-        var searchButton = new DXButton { Text = "搜索", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(60, 25), Location = new Vector2I(listX + 164, 66), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var searchButton = new DXButton { Text = Lang.RankingDialogSearchButtonLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(60, 25), Location = new Vector2I(listX + 164, 66), LibraryFile = LibraryFile.Interface, Index = -1 };
         searchButton.MouseClick += (o, e) => { if (!string.IsNullOrWhiteSpace(_search.Text)) GameScene.Game?.SendRankSearch(_search.Text.Trim()); };
         AddControl(searchButton);
         if (fullRanking)
         {
-            _observeButton = new DXButton { Text = "观察", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(60, 25), Location = new Vector2I(listX + 229, 66), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false };
+            _observeButton = new DXButton { Text = Lang.RankingDialogObserveButtonLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(60, 25), Location = new Vector2I(listX + 229, 66), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false };
             _observeButton.MouseClick += (o, e) =>
             {
                 if (_selected >= 0 && _selected < _ranks.Count)
@@ -126,11 +126,11 @@ public partial class RankingDialog : DXWindow
             AddControl(_observeButton);
         }
 
-        _classButton = new DXButton { Text = "全部职业", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(122, 25), Location = new Vector2I(listX + 12, 39), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _classButton = new DXButton { Text = Lang.RankingClassLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(122, 25), Location = new Vector2I(listX + 12, 39), LibraryFile = LibraryFile.Interface, Index = -1 };
         _classButton.MouseClick += (o, e) => CycleClassFilter();
         AddControl(_classButton);
-        var online = new DXButton { Text = "仅显示在线", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(96, 25), Location = new Vector2I(listX + 139, 39), LibraryFile = LibraryFile.Interface, Index = -1 };
-        online.MouseClick += (o, e) => { _onlineOnly = !_onlineOnly; online.Text = _onlineOnly ? "显示全部" : "仅显示在线"; _scroll.Value = 0; RefreshRows(); GameScene.Game?.RequestRankings(0, _onlineOnly, _classFilter); };
+        var online = new DXButton { Text = Lang.RankingOnlineLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, Size = new Vector2I(96, 25), Location = new Vector2I(listX + 139, 39), LibraryFile = LibraryFile.Interface, Index = -1 };
+        online.MouseClick += (o, e) => { _onlineOnly = !_onlineOnly; online.Text = _onlineOnly ? Lang.RankingAllLabel : Lang.RankingOnlineLabel; _scroll.Value = 0; RefreshRows(); GameScene.Game?.RequestRankings(0, _onlineOnly, _classFilter); };
         AddControl(online);
 
         _list = new DXControl { Location = new Vector2I(listX, 122), Size = new Vector2I(330, 286), Clip = true };
@@ -142,7 +142,7 @@ public partial class RankingDialog : DXWindow
 
         if (fullRanking)
         {
-            _detail = new DXLabel { Text = "选择一名角色查看信息", FontSize = 11, TextColour = Colors.White, DrawOutline = true, OutlineColour = Colors.Black, Location = new Vector2I(18, 72), Size = new Vector2I(212, 280), IsControl = false };
+            _detail = new DXLabel { Text = Lang.RankingCharacterLabel2, FontSize = 11, TextColour = Colors.White, DrawOutline = true, OutlineColour = Colors.Black, Location = new Vector2I(18, 72), Size = new Vector2I(212, 280), IsControl = false };
             _detail.Visible = false;
             AddControl(_detail);
             BuildInspectPanel();
@@ -284,7 +284,7 @@ public partial class RankingDialog : DXWindow
         if (_detail != null && _selected >= 0 && _selected < _ranks.Count)
         {
             var selectedRank = _ranks[_selected];
-            _detail.Text = $"第 {selectedRank.Rank} 名\n\n角色：{selectedRank.Name}\n等级：{selectedRank.Level}\n职业：{selectedRank.Class}\n状态：{(selectedRank.Online ? "在线" : "离线")}";
+            _detail.Text = $"第 {selectedRank.Rank} 名\n\n角色：{selectedRank.Name}\n等级：{selectedRank.Level}\n职业：{selectedRank.Class}\n状态：{(selectedRank.Online ? "在线" : Lang.GuildMemberRowOnlineLabel)}";
         }
         if (_observeButton != null)
             _observeButton.Enabled = _selected >= 0 && _selected < _ranks.Count
@@ -321,10 +321,10 @@ public partial class RankingDialog : DXWindow
         _classButton.Text = _classFilter switch
         {
             RequiredClass.Warrior => Lang.NewCharacterSelectedClassLabel,
-            RequiredClass.Wizard => "法师",
-            RequiredClass.Taoist => "道士",
-            RequiredClass.Assassin => "刺客",
-            _ => "全部职业",
+            RequiredClass.Wizard => Lang.RankingUi145Label,
+            RequiredClass.Taoist => Lang.RankingUi146Label,
+            RequiredClass.Assassin => Lang.RankingUi147Label,
+            _ => Lang.RankingClassLabel,
         };
         _selected = -1;
         _scroll.Value = 0;

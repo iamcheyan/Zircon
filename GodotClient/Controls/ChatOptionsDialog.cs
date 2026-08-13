@@ -28,7 +28,7 @@ public partial class ChatOptionsDialog : DXWindow
         (MessageType.Global, Lang.ChatOptionsPanelGlobalChatLabel),
         (MessageType.Hint, Lang.ChatOptionsPanelHintTextLabel),
         (MessageType.System, Lang.ChatOptionsPanelSystemTextLabel),
-        (MessageType.Combat, "战斗"),
+        (MessageType.Combat, Lang.ChatOptionsCombatLabel),
         (MessageType.ObserverChat, Lang.ChatOptionsPanelObserverChatLabel),
         (MessageType.Guild, Lang.ChatOptionsPanelGuildChatLabel),
     };
@@ -51,13 +51,13 @@ public partial class ChatOptionsDialog : DXWindow
 
         _list = new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(120, 220), Clip = true };
         AddControl(_list);
-        AddTab("主聊天");
+        AddTab(Lang.ChatLogPanelChatLabel);
 
         _filterPanel = new DXControl { Location = new Vector2I(134, 37), Size = new Vector2I(200, 250), Clip = true };
         AddControl(_filterPanel);
         _filterPanel.AddControl(new DXLabel
         {
-            Text = "窗口名:",
+            Text = Lang.ChatOptionsUi392Label,
             FontSize = 10,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,
@@ -77,7 +77,7 @@ public partial class ChatOptionsDialog : DXWindow
             }
         };
         _filterPanel.AddControl(_nameInput);
-        _removeTab = new DXButton { Text = "移除", FontSize = 9, Size = new Vector2I(55, 21), Location = new Vector2I(136, 0), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _removeTab = new DXButton { Text = Lang.ChatOptionsPanelRemoveLabel, FontSize = 9, Size = new Vector2I(55, 21), Location = new Vector2I(136, 0), LibraryFile = LibraryFile.Interface, Index = -1 };
         _removeTab.MouseClick += (o, e) =>
         {
             if (_tabButtons.Count <= 1) return;
@@ -86,12 +86,12 @@ public partial class ChatOptionsDialog : DXWindow
         };
         _filterPanel.AddControl(_removeTab);
 
-        AddOption("transparent", "透明", new Vector2I(0, 20));
-        AddOption("alert", "提醒", new Vector2I(65, 20));
-        AddOption("hideTab", "隐藏标签", new Vector2I(130, 20));
-        AddOption("reverse", "倒序", new Vector2I(0, 43));
-        AddOption("cleanup", "移除旧的", new Vector2I(65, 43));
-        AddOption("fade", "淡出", new Vector2I(130, 43));
+        AddOption("transparent", Lang.ChatOptionsUi393Label, new Vector2I(0, 20));
+        AddOption("alert", Lang.ChatOptionsUi394Label, new Vector2I(65, 20));
+        AddOption("hideTab", Lang.ChatOptionsUi395Label, new Vector2I(130, 20));
+        AddOption("reverse", Lang.ChatOptionsUi396Label, new Vector2I(0, 43));
+        AddOption("cleanup", Lang.ChatOptionsRemoveLabel, new Vector2I(65, 43));
+        AddOption("fade", Lang.ChatOptionsUi398Label, new Vector2I(130, 43));
 
         for (int i = 0; i < FilterTypes.Length; i++)
         {
@@ -113,12 +113,12 @@ public partial class ChatOptionsDialog : DXWindow
         var add = Button(Lang.ChatOptionsDialogButtonAdd, new Vector2I(79, 262), new Vector2I(50, 25), DXButton.ButtonType.SmallButton);
         add.MouseClick += (o, e) =>
         {
-            var title = $"聊天 {_count + 1}";
+            var title = string.Format(Lang.ChatOptionsChatLabel2, _count + 1);
             AddTab(title);
             GameScene.Game?.AddChatTab(title);
             SelectTab(_count - 1);
         };
-        var reset = Button("重置所有", new Vector2I(278, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
+        var reset = Button(Lang.ChatOptionsDialogButtonResetAll, new Vector2I(278, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
         reset.MouseClick += (o, e) =>
         {
             foreach (var button in _tabButtons)
@@ -128,7 +128,7 @@ public partial class ChatOptionsDialog : DXWindow
             }
             _tabButtons.Clear();
             _count = 0;
-            AddTab("主聊天");
+            AddTab(Lang.ChatLogPanelChatLabel);
             GameScene.Game?.ResetChatTabs();
             SelectTab(0);
         };
@@ -136,7 +136,7 @@ public partial class ChatOptionsDialog : DXWindow
         save.MouseClick += (o, e) =>
         {
             GameScene.Game?.SaveChatTabs();
-            GameScene.Game?.ReceiveChat("聊天布局已保存", MessageType.Announcement);
+            GameScene.Game?.ReceiveChat(Lang.ChatOptionsChatLabel4, MessageType.Announcement);
         };
         var reload = Button(Lang.ChatOptionsDialogButtonReloadAll, new Vector2I(94, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
         reload.MouseClick += (o, e) =>
@@ -169,7 +169,7 @@ public partial class ChatOptionsDialog : DXWindow
         _count = 0;
         int count = Math.Max(1, GameScene.Game?.ChatTabCount ?? 1);
         for (int i = 0; i < count; i++)
-            AddTab(GameScene.Game?.GetChatTabTitle(i) ?? $"聊天 {i + 1}");
+            AddTab(GameScene.Game?.GetChatTabTitle(i) ?? string.Format(Lang.ChatLogPanelChatLabel5, i + 1));
         SelectTab(Math.Clamp(GameScene.Game?.SelectedChatTab ?? 0, 0, _tabButtons.Count - 1));
     }
 
@@ -199,7 +199,7 @@ public partial class ChatOptionsDialog : DXWindow
     {
         if (!_optionButtons.TryGetValue(option, out var button)) return;
         bool enabled = GetChatOption(option);
-        button.Text = $"{(enabled ? "[开]" : "[关]")}{name}";
+        button.Text = $"{(enabled ? Lang.ChatOptionsUi403Label : Lang.ChatOptionsUi404Label)}{name}";
         button.TextColour = enabled ? Colors.White : new Color(0.45f, 0.45f, 0.45f);
     }
 
@@ -213,7 +213,7 @@ public partial class ChatOptionsDialog : DXWindow
         if (_nameInput != null)
             _nameInput.Text = GameScene.Game?.GetChatTabTitle(index) ?? _tabButtons[index].Text;
         foreach (var entry in FilterTypes) UpdateFilterButton(entry.Type, entry.Name);
-        foreach (var entry in new[] { ("transparent", "透明"), ("alert", "提醒"), ("hideTab", "隐藏标签"), ("reverse", "倒序"), ("cleanup", "移除旧的"), ("fade", "淡出") })
+        foreach (var entry in new[] { ("transparent", Lang.ChatOptionsUi393Label), ("alert", Lang.ChatOptionsUi394Label), ("hideTab", Lang.ChatOptionsUi395Label), ("reverse", Lang.ChatOptionsUi396Label), ("cleanup", Lang.ChatOptionsRemoveLabel), ("fade", Lang.ChatOptionsUi398Label) })
             UpdateOptionButton(entry.Item1, entry.Item2);
     }
 
@@ -227,7 +227,7 @@ public partial class ChatOptionsDialog : DXWindow
     private void UpdateFilterButton(MessageType type, string name)
     {
         if (!_filterButtons.TryGetValue(type, out var button)) return;
-        button.Text = $"{(GameScene.Game?.IsChatTypeEnabled(type) ?? true ? "[开]" : "[关]")}{name}";
+        button.Text = $"{(GameScene.Game?.IsChatTypeEnabled(type) ?? true ? Lang.ChatOptionsUi403Label : Lang.ChatOptionsUi404Label)}{name}";
         button.TextColour = GameScene.Game?.IsChatTypeEnabled(type) ?? true
             ? Colors.White
             : new Color(0.45f, 0.45f, 0.45f);

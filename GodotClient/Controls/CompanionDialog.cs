@@ -59,11 +59,11 @@ public partial class CompanionDialog : DXWindow
         AddControl(_companionTab);
 
         _body = new DXControl { Location = new Vector2I(0, 62), Size = new Vector2I(464, 300), Clip = true }; AddControl(_body);
-        AddMainLabel("名称", 10, 156, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
-        AddMainLabel("等级", 10, 178, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
+        AddMainLabel(Lang.CompanionDialogCompanionTabNameLabel, 10, 156, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
+        AddMainLabel(Lang.CompanionDialogCompanionTabLevelLabel, 10, 178, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
         AddMainLabel(Lang.CompanionDialogCompanionTabExpLabel, 10, 200, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
         AddMainLabel(Lang.CompanionDialogCompanionTabHungerLabel, 10, 222, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
-        _name = AddMainLabel("未召唤伙伴", 73, 156, Colors.White, HorizontalAlignment.Center, 152);
+        _name = AddMainLabel(Lang.CompanionNotSummonedLabel, 73, 156, Colors.White, HorizontalAlignment.Center, 152);
         _level = AddMainLabel("0", 73, 178, Colors.White, HorizontalAlignment.Center, 152);
         _experience = AddMainLabel("0%", 73, 200, Colors.White, HorizontalAlignment.Center, 152);
         _hunger = AddMainLabel("0 / 0", 73, 222, Colors.White, HorizontalAlignment.Center, 152);
@@ -79,9 +79,9 @@ public partial class CompanionDialog : DXWindow
         BuildFilterPanel();
         _bagWeightLabel = BuildBagPanel();
 
-        _bonusButton = AddBottomButton("加成", 10, () => ShowPage(1));
-        _filterButton = AddBottomButton("筛选", 90, () => ShowPage(2));
-        _bagButton = AddBottomButton("背包", 170, () => ShowPage(3));
+        _bonusButton = AddBottomButton(Lang.CompanionBonusLabel, 10, () => ShowPage(1));
+        _filterButton = AddBottomButton(Lang.CompanionFilterLabel, 90, () => ShowPage(2));
+        _bagButton = AddBottomButton(Lang.CompanionDialogCompanionTabBagButtonLabel, 170, () => ShowPage(3));
         _saveFilter = new DXButton { Text = Lang.FilterDialogSaveButtonLabel, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(370, 40), Size = new Vector2I(80, 24), Visible = false };
         _saveFilter.MouseClick += (o, e) => SaveFilters(); AddControl(_saveFilter);
         DrawEquipment();
@@ -136,7 +136,7 @@ public partial class CompanionDialog : DXWindow
         scroll.ValueChanged += (o, e) => RefreshBonusRows(); _bonusPanel.AddControl(scroll);
         foreach (int level in new[] { 3, 5, 7, 10, 11, 13, 15 })
         {
-            var row = new DXLabel { Text = $"Lv. {level}\n未获得", FontSize = 9, TextColour = Colors.White, DrawOutline = true, OutlineColour = Colors.Black, Size = new Vector2I(185, 52), Location = new Vector2I(4, 5 + _bonusRows.Count * 57), IsControl = false };
+            var row = new DXLabel { Text = string.Format(Lang.CompanionNotObtainedLabel, level), FontSize = 9, TextColour = Colors.White, DrawOutline = true, OutlineColour = Colors.Black, Size = new Vector2I(185, 52), Location = new Vector2I(4, 5 + _bonusRows.Count * 57), IsControl = false };
             row.SetMeta("level", level); _bonusPanel.AddControl(row); _bonusRows.Add(row);
         }
         scroll.MaxValue = _bonusRows.Count * 57 + 15; return scroll;
@@ -149,7 +149,7 @@ public partial class CompanionDialog : DXWindow
             int level = row.GetMeta("level").AsInt32();
             row.Position = new Vector2(4, 5 + _bonusRows.IndexOf(row) * 57 - _bonusScroll.Value);
             var stats = level switch { 3 => _companion?.Level3, 5 => _companion?.Level5, 7 => _companion?.Level7, 10 => _companion?.Level10, 11 => _companion?.Level11, 13 => _companion?.Level13, 15 => _companion?.Level15, _ => null };
-            string text = stats == null || stats.Values.Count == 0 ? "未获得" : string.Join("\n", stats.Values.Keys.Select(s => stats.GetDisplay(s)).Where(s => !string.IsNullOrWhiteSpace(s)).Take(2));
+            string text = stats == null || stats.Values.Count == 0 ? Lang.CompanionNotObtainedLabel2 : string.Join("\n", stats.Values.Keys.Select(s => stats.GetDisplay(s)).Where(s => !string.IsNullOrWhiteSpace(s)).Take(2));
             row.Text = $"Lv. {level}\n{text}";
         }
     }
@@ -157,7 +157,7 @@ public partial class CompanionDialog : DXWindow
     private void BuildFilterPanel()
     {
         AddFilterGroup(Lang.MainPanelClassHint, Enum.GetValues<MirClass>(), _classFilters, 10);
-        AddFilterGroup("稀有度", Enum.GetValues<Rarity>(), _rarityFilters, 70);
+        AddFilterGroup(Lang.CompanionRarityLabel, Enum.GetValues<Rarity>(), _rarityFilters, 70);
         var excluded = new HashSet<ItemType> { ItemType.Nothing, ItemType.Consumable, ItemType.Torch, ItemType.Poison, ItemType.Amulet, ItemType.Meat, ItemType.Ore, ItemType.Currency, ItemType.DarkStone, ItemType.RefineSpecial, ItemType.HorseArmour, ItemType.CompanionFood, ItemType.System, ItemType.ItemPart, ItemType.Hook, ItemType.Float, ItemType.Bait, ItemType.Finder, ItemType.Reel };
         AddFilterGroup(Lang.ConsignmentDialogItemTypesLabel, Enum.GetValues<ItemType>().Where(t => !excluded.Contains(t) && !t.ToString().Contains("Companion")), _typeFilters, 130);
     }
@@ -191,7 +191,7 @@ public partial class CompanionDialog : DXWindow
     public void RefreshCompanionStats(ClientUserCompanion companion)
     {
         if (companion == null) return;
-        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.MonsterName ?? $"伙伴 #{companion.CompanionIndex}" : companion.Name;
+        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.MonsterName ?? string.Format(Lang.CompanionCompanionLabel, companion.CompanionIndex) : companion.Name;
         _level.Text = $"Lv. {companion.Level}";
         var info = Globals.CompanionLevelInfoList?.Binding?.FirstOrDefault(x => x.Level == companion.Level);
         int maxExperience = Math.Max(1, info?.MaxExperience ?? 1), maxHunger = Math.Max(1, info?.MaxHunger ?? 100);
@@ -221,7 +221,7 @@ public partial class CompanionDialog : DXWindow
                 GameScene.Game.RefreshItemGrids();
             }
             RemovePreview();
-            _name.Text = "未召唤伙伴"; _level.Text = "0"; _experience.Text = "0%"; _hunger.Text = "0 / 0"; _health.Text = "0%";
+            _name.Text = Lang.CompanionNotSummonedLabel; _level.Text = "0"; _experience.Text = "0%"; _hunger.Text = "0 / 0"; _health.Text = "0%";
             SetBar(_healthFill, 128, 0); SetBar(_experienceFill, 152, 0); SetBar(_hungerFill, 152, 0); RefreshBonusRows(); return;
         }
         RefreshCompanionStats(companion);

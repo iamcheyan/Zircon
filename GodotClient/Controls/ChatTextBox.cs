@@ -53,7 +53,7 @@ public sealed partial class ChatTextBox : DXWindow
 
         _optionsButton = new DXButton
         {
-            Text = "选项", FontSize = 9, Type = DXButton.ButtonType.SmallButton, Location = new Vector2I(345, 0),
+            Text = Lang.ChatTextBoxOptionsButtonLabel, FontSize = 9, Type = DXButton.ButtonType.SmallButton, Location = new Vector2I(345, 0),
             Size = new Vector2I(50, 24), LibraryFile = LibraryFile.Interface, Index = -1,
         };
         _optionsButton.MouseClick += (s, e) => GameScene.Game?.OpenChatOptionsDialog();

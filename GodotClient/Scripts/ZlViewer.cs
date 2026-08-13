@@ -55,7 +55,7 @@ public partial class ZlViewer : Control
             }
             else
             {
-                _statusLabel.Text = $"文件不存在: {singleFile}";
+                _statusLabel.Text = string.Format(Lang.ZlViewerUi605Label, singleFile);
             }
             return;
         }
@@ -151,7 +151,7 @@ public partial class ZlViewer : Control
         _fileList.Clear();
         if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
         {
-            _statusLabel.Text = "找不到 Data 目录, 请用 --zl-dir 指定";
+            _statusLabel.Text = Lang.ZlViewerUi606Label;
             return;
         }
 
@@ -164,7 +164,7 @@ public partial class ZlViewer : Control
             _fileList.AddItem(Path.GetFileName(file));
             _fileList.SetItemMetadata(_fileList.ItemCount - 1, file);
         }
-        _statusLabel.Text = $"共 {files.Length} 个 .Zl 文件 ({Path.GetDirectoryName(dir)})";
+        _statusLabel.Text = string.Format(Lang.ZlViewerUi607Label, files.Length, Path.GetDirectoryName(dir));
     }
 
     private void OnFileSelected(long index)
@@ -188,17 +188,17 @@ public partial class ZlViewer : Control
             if (_lib.Images.Length == 0)
             {
                 // ZL2 或解析失败
-                _statusLabel.Text = $"{Path.GetFileName(path)}: 无法读取 (ZL2 压缩容器或损坏)";
+                _statusLabel.Text = string.Format(Lang.ZlViewerNoneLabel, Path.GetFileName(path));
             }
             else
             {
-                _statusLabel.Text = $"{Path.GetFileName(path)}: {count} 帧 (version {_lib.Version})";
+                _statusLabel.Text = string.Format(Lang.ZlViewerUi609Label, Path.GetFileName(path), count, _lib.Version);
             }
             BuildGrid();
         }
         catch (Exception ex)
         {
-            _statusLabel.Text = $"读取失败: {Path.GetFileName(path)} — {ex.Message}";
+            _statusLabel.Text = string.Format(Lang.ZlViewerUi610Label, Path.GetFileName(path), ex.Message);
         }
     }
 
@@ -254,7 +254,7 @@ public partial class ZlViewer : Control
         }
         catch (Exception ex)
         {
-            _metaLabel.Text = $"解码失败: {ex.Message}";
+            _metaLabel.Text = string.Format(Lang.ZlViewerUi611Label, ex.Message);
         }
     }
 

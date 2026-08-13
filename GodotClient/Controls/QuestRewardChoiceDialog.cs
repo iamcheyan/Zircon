@@ -10,7 +10,7 @@ public sealed partial class QuestRewardChoiceDialog : DXWindow
 {
     public QuestRewardChoiceDialog()
     {
-        Text = "选择任务奖励";
+        Text = Lang.QuestRewardChoiceQuestLabel;
         Size = new Vector2I(360, 250);
     }
 
@@ -19,7 +19,7 @@ public sealed partial class QuestRewardChoiceDialog : DXWindow
         foreach (var child in GetChildren())
             if (child is Node node) node.QueueFree();
 
-        var title = new DXLabel { Text = "请选择一个奖励：", FontSize = 11, Location = new Vector2I(20, 35), Size = new Vector2I(300, 25) };
+        var title = new DXLabel { Text = Lang.QuestRewardChoiceSelectLabel, FontSize = 11, Location = new Vector2I(20, 35), Size = new Vector2I(300, 25) };
         AddControl(title);
         var y = 70;
         foreach (var reward in rewards)

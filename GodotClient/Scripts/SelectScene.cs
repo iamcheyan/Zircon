@@ -56,7 +56,7 @@ public partial class SelectScene : Control
         _genderBtn = GetNode<OptionButton>("VBox/CreateRow/GenderBtn");
         _createBtn = GetNode<Button>("VBox/CreateBtn");
         _startBtn = GetNode<Button>("VBox/StartBtn");
-        _deleteBtn = new Button { Text = "删除角色", Disabled = true };
+        _deleteBtn = new Button { Text = Lang.SelectCharacterLabel, Disabled = true };
         GetNode<Control>("VBox").AddChild(_deleteBtn);
         _statusLabel = GetNode<Label>("VBox/StatusLabel");
         BuildLegacySelectUi();
@@ -103,7 +103,7 @@ public partial class SelectScene : Control
                 else
                 {
                     GD.Print($"[Select] 指定角色 {wantChar} 不存在, 现有: [{string.Join(", ", _characters.ConvertAll(c => c.CharacterName))}]");
-                    _statusLabel.Text = $"未找到角色 {wantChar}";
+                    _statusLabel.Text = string.Format(Lang.SelectCharacterLabel2, wantChar);
                 }
             }
             else if (_characters.Count == 0)
@@ -208,26 +208,26 @@ public partial class SelectScene : Control
                     Location = new Vector2I(6, 4),
                     IsControl = false,
                 });
-                button.AddControl(new DXLabel { Text = "名称", FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 7), IsControl = false });
+                button.AddControl(new DXLabel { Text = Lang.SelectNameLabel, FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 7), IsControl = false });
                 button.AddControl(new DXLabel { Text = c.CharacterName, FontSize = 10, TextColour = Colors.White, Border = true, BorderColour = new Color(.5f, .35f, .18f), BackColour = new Color(.04f, .02f, .02f, .75f), Location = new Vector2I(135, 8), Size = new Vector2I(130, 15), IsControl = false });
-                button.AddControl(new DXLabel { Text = "职业", FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 29), IsControl = false });
+                button.AddControl(new DXLabel { Text = Lang.SelectClassLabel, FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 29), IsControl = false });
                 button.AddControl(new DXLabel { Text = c.Class.ToString(), FontSize = 9, TextColour = Colors.White, Border = true, BorderColour = new Color(.5f, .35f, .18f), BackColour = new Color(.04f, .02f, .02f, .75f), Location = new Vector2I(135, 28), Size = new Vector2I(53, 15), IsControl = false });
                 button.AddControl(new DXLabel { Text = c.Level.ToString(), FontSize = 9, TextColour = Colors.White, Border = true, BorderColour = new Color(.5f, .35f, .18f), BackColour = new Color(.04f, .02f, .02f, .75f), Location = new Vector2I(235, 28), Size = new Vector2I(30, 15), IsControl = false });
-                button.AddControl(new DXLabel { Text = "地图", FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 51), IsControl = false });
+                button.AddControl(new DXLabel { Text = Lang.StatusWindowUi496Label, FontSize = 8, TextColour = new Color(.8f, .7f, .5f), Location = new Vector2I(77, 51), IsControl = false });
                 button.AddControl(new DXLabel { Text = GetLocationName(c.Location), FontSize = 8, TextColour = Colors.White, Location = new Vector2I(135, 48), Size = new Vector2I(130, 15), IsControl = false });
                 _skinPanel.AddControl(button); _skinCharacters.Add(button);
             }
         }
         if (_characters.Count == 0)
         {
-            _statusLabel.Text = "没有角色, 请创建";
+            _statusLabel.Text = Lang.SelectCharacterLabel3;
             _characterAnimation.Visible = false;
             _skinStart.Enabled = false;
             _skinDelete.Enabled = false;
         }
         else
         {
-            _statusLabel.Text = $"选择角色后点进入游戏";
+            _statusLabel.Text = Lang.SelectCharacterLabel4;
             SelectSkinCharacter(0);
         }
         _skinCreate.Enabled = _characters.Count < 4;
@@ -341,7 +341,7 @@ public partial class SelectScene : Control
     {
         if (_skinCreateName == null || string.IsNullOrWhiteSpace(_skinCreateName.Text)) return;
         _skinCreateConfirm.Enabled = false;
-        _statusLabel.Text = "创建中...";
+        _statusLabel.Text = Lang.SelectCreateLabel;
         _net.Connection?.SendNewCharacter(_skinCreateName.Text.Trim(), _skinCreateClass, _skinCreateGender, _skinHairType, _skinHairColour, _skinArmourColour);
     }
 
@@ -428,12 +428,12 @@ public partial class SelectScene : Control
             HasTitle = true,
             HasFooter = true,
         });
-        _skinPanel.AddControl(new DXLabel { Text = "选择角色", FontSize = 12, TextColour = new Color(1f, .85f, .35f), DrawOutline = true, Size = new Vector2I(320, 28), Align = HorizontalAlignment.Center, IsControl = false });
+        _skinPanel.AddControl(new DXLabel { Text = Lang.SelectCharacterLabel5, FontSize = 12, TextColour = new Color(1f, .85f, .35f), DrawOutline = true, Size = new Vector2I(320, 28), Align = HorizontalAlignment.Center, IsControl = false });
         int defaultButtonHeight = MirSkin.GetSize(LibraryFile.Interface, 16).Y;
         if (defaultButtonHeight <= 0) defaultButtonHeight = 21;
-        _skinStart = new DXButton { Text = "进入游戏", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(25, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
+        _skinStart = new DXButton { Text = Lang.SelectGameLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(25, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
         _skinCreate = new DXButton { Text = Lang.NewCharacterTitle, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(120, 382), Size = new Vector2I(80, defaultButtonHeight) };
-        _skinDelete = new DXButton { Text = "删除角色", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(215, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
+        _skinDelete = new DXButton { Text = Lang.SelectCharacterLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(215, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
         _skinStart.MouseClick += (o, e) => OnStartPressed();
         _skinDelete.MouseClick += (o, e) => OnDeletePressed();
         _skinCreate.MouseClick += (o, e) => { if (_characters.Count < 4) ShowCreateCharacterPanel(); };
@@ -455,31 +455,31 @@ public partial class SelectScene : Control
         });
         _skinCreatePanel.AddControl(new DXLabel { Text = Lang.NewCharacterTitle, FontSize = 12, TextColour = new Color(1f, .85f, .35f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(260, 30), IsControl = false });
 
-        var classBox = CreateOptionBox("选择职业", new Vector2I(30, 40));
+        var classBox = CreateOptionBox(Lang.SelectClassLabel2, new Vector2I(30, 40));
         _selectedClassLabel = new DXLabel { Text = "Warrior", FontSize = 8, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 65), Size = new Vector2I(80, 15), IsControl = false };
         classBox.AddControl(_selectedClassLabel);
         _createClassButtons.Add(AddCreateOption(classBox, 0, Lang.NewCharacterSelectedClassLabel, 120, () => SelectCreateClass(MirClass.Warrior)));
-        _createClassButtons.Add(AddCreateOption(classBox, 1, "法师", 126, () => SelectCreateClass(MirClass.Wizard)));
-        _createClassButtons.Add(AddCreateOption(classBox, 2, "道士", 131, () => SelectCreateClass(MirClass.Taoist)));
-        _createClassButtons.Add(AddCreateOption(classBox, 3, "刺客", 136, () => SelectCreateClass(MirClass.Assassin)));
+        _createClassButtons.Add(AddCreateOption(classBox, 1, Lang.RankingUi145Label, 126, () => SelectCreateClass(MirClass.Wizard)));
+        _createClassButtons.Add(AddCreateOption(classBox, 2, Lang.RankingUi146Label, 131, () => SelectCreateClass(MirClass.Taoist)));
+        _createClassButtons.Add(AddCreateOption(classBox, 3, Lang.RankingUi147Label, 136, () => SelectCreateClass(MirClass.Assassin)));
 
-        var genderBox = CreateOptionBox("选择性别", new Vector2I(30, 135));
+        var genderBox = CreateOptionBox(Lang.SelectGenderLabel, new Vector2I(30, 135));
         _selectedGenderLabel = new DXLabel { Text = "Male", FontSize = 8, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 65), Size = new Vector2I(80, 15), IsControl = false };
         genderBox.AddControl(_selectedGenderLabel);
         _createGenderButtons.Add(AddCreateOption(genderBox, 1, Lang.NewCharacterSelectedGenderLabel, 115, () => SelectCreateGender(MirGender.Male)));
-        _createGenderButtons.Add(AddCreateOption(genderBox, 2, "女", 111, () => SelectCreateGender(MirGender.Female)));
+        _createGenderButtons.Add(AddCreateOption(genderBox, 2, Lang.SelectUi524Label, 111, () => SelectCreateGender(MirGender.Female)));
 
         var appearance = new DXControl { Size = new Vector2I(200, 330), Location = new Vector2I(30, 230), BackColour = new Color(.28f, .14f, .14f), Border = true, BorderColour = new Color(.75f, .55f, .2f) };
         _skinCreatePanel.AddControl(appearance);
-        appearance.AddControl(new DXLabel { Text = "角色外观", FontSize = 9, TextColour = new Color(1f, .85f, .55f), Align = HorizontalAlignment.Center, Size = new Vector2I(200, 22), IsControl = false });
-        appearance.AddControl(new DXLabel { Text = "发型", FontSize = 9, Location = new Vector2I(35, 28), IsControl = false });
+        appearance.AddControl(new DXLabel { Text = Lang.SelectCharacterLabel7, FontSize = 9, TextColour = new Color(1f, .85f, .55f), Align = HorizontalAlignment.Center, Size = new Vector2I(200, 22), IsControl = false });
+        appearance.AddControl(new DXLabel { Text = Lang.SelectUi526Label, FontSize = 9, Location = new Vector2I(35, 28), IsControl = false });
         _skinHairNumber = new DXNumberField("", 0, 11) { Location = new Vector2I(90, 25) };
         _skinHairNumber.Value = 1;
         _skinHairNumber.ValueChanged += (o, e) => { _skinHairType = _skinHairNumber.Value; UpdateCreatePreview(); };
         appearance.AddControl(_skinHairNumber);
-        appearance.AddControl(new DXLabel { Text = "发色", FontSize = 9, Location = new Vector2I(35, 53), IsControl = false });
+        appearance.AddControl(new DXLabel { Text = Lang.SelectUi527Label, FontSize = 9, Location = new Vector2I(35, 53), IsControl = false });
         AddColourChoice(appearance, new Vector2I(90, 50), DrawingColor.Black, false);
-        appearance.AddControl(new DXLabel { Text = "盔甲颜色", FontSize = 9, Location = new Vector2I(18, 78), IsControl = false });
+        appearance.AddControl(new DXLabel { Text = Lang.SelectColoursLabel, FontSize = 9, Location = new Vector2I(18, 78), IsControl = false });
         AddColourChoice(appearance, new Vector2I(90, 75), DrawingColor.White, true);
         var previewPanel = new DXControl { Size = new Vector2I(190, 225), Location = new Vector2I(5, 100), BackColour = new Color(.19f, .16f, .09f), Border = true, BorderColour = new Color(.75f, .55f, .2f) };
         appearance.AddControl(previewPanel);
@@ -489,9 +489,9 @@ public partial class SelectScene : Control
         _skinCreateName = new DXTextInput { Location = new Vector2I(75, 570), Size = new Vector2I(155, 20), Text = "TestHero" };
         _skinCreateName.TextChanged += value => UpdateCreateButtonStates();
         _skinCreatePanel.AddControl(_skinCreateName);
-        _skinCreatePanel.AddControl(new DXLabel { Text = "角色名称", FontSize = 9, Location = new Vector2I(20, 572), IsControl = false });
+        _skinCreatePanel.AddControl(new DXLabel { Text = Lang.SelectCharacterLabel8, FontSize = 9, Location = new Vector2I(20, 572), IsControl = false });
 
-        _skinCreateConfirm = new DXButton { Text = "创建", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(90, 607), Size = new Vector2I(80, defaultButtonHeight), Enabled = true };
+        _skinCreateConfirm = new DXButton { Text = Lang.SelectCreateButtonLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(90, 607), Size = new Vector2I(80, defaultButtonHeight), Enabled = true };
         _skinCreateCancel = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(230, 3) };
         _skinCreateConfirm.MouseClick += (o, e) => SubmitSkinCharacter();
         _skinCreateCancel.MouseClick += (o, e) => HideCreateCharacterPanel();
@@ -562,11 +562,11 @@ public partial class SelectScene : Control
     {
         if (string.IsNullOrEmpty(_nameEdit.Text))
         {
-            _statusLabel.Text = "请输入角色名";
+            _statusLabel.Text = Lang.SelectCharacterLabel9;
             return;
         }
         _createBtn.Disabled = true;
-        _statusLabel.Text = "创建中...";
+        _statusLabel.Text = Lang.SelectCreateLabel;
         _net.Connection?.SendNewCharacter(
             _nameEdit.Text,
             (MirClass)_classBtn.Selected,
@@ -591,7 +591,7 @@ public partial class SelectScene : Control
             if (_pendingNewCharInfo != null)
                 _characters.Add(_pendingNewCharInfo);
             RefreshList();
-            _statusLabel.Text = "创建成功! 选择角色后进入游戏";
+            _statusLabel.Text = Lang.SelectCharacterLabel10;
             // headless 自动测试: 建完直接进游戏
             if (AutoLoginArgs.AutoLogin && _characters.Count > 0)
             {
@@ -602,7 +602,7 @@ public partial class SelectScene : Control
         else
         {
             GD.Print($"[Select] 建角色失败: {_pendingNewCharResult}");
-            _statusLabel.Text = $"创建失败: {_pendingNewCharResult}";
+            _statusLabel.Text = string.Format(Lang.SelectCreateLabel3, _pendingNewCharResult);
         }
     }
 
@@ -613,7 +613,7 @@ public partial class SelectScene : Control
         if (idx >= _characters.Count) return;
         _startBtn.Disabled = true;
         _skinStart.Enabled = false;
-        _statusLabel.Text = "进入游戏...";
+        _statusLabel.Text = Lang.SelectGameLabel2;
         _lastStartIndex = _characters[idx].CharacterIndex;
         _net.Connection?.SendStartGame(_characters[idx].CharacterIndex);
     }
@@ -624,13 +624,13 @@ public partial class SelectScene : Control
         if (selected.Length == 0 || selected[0] >= _characters.Count) return;
         int listIndex = selected[0];
         var character = _characters[listIndex];
-        var confirm = new ConfirmationDialog { Title = "删除角色", DialogText = $"确定删除角色 {character.CharacterName}？\n旧版客户端要求等待 5 秒后确认。" };
+        var confirm = new ConfirmationDialog { Title = Lang.SelectCharacterLabel, DialogText = string.Format(Lang.SelectCharacterLabel12, character.CharacterName) };
         AddChild(confirm);
         confirm.Confirmed += () =>
         {
             _deleteBtn.Disabled = true;
             _skinDelete.Enabled = false;
-            _statusLabel.Text = "删除中...";
+            _statusLabel.Text = Lang.SelectDeleteLabel;
             _net.Connection?.SendDeleteCharacter(character.CharacterIndex);
             confirm.QueueFree();
         };
@@ -646,12 +646,12 @@ public partial class SelectScene : Control
             RefreshList();
             _startBtn.Disabled = true;
             _deleteBtn.Disabled = true;
-            _statusLabel.Text = "删除成功";
+            _statusLabel.Text = Lang.SelectDeleteLabel2;
         }
         else
         {
             _deleteBtn.Disabled = false;
-            _statusLabel.Text = $"删除失败: {result}";
+            _statusLabel.Text = string.Format(Lang.SelectDeleteLabel3, result);
         }
     }
 
@@ -678,7 +678,7 @@ public partial class SelectScene : Control
         else if (_pendingStartResult == StartGameResult.Delayed)
         {
             GD.Print("[Select] StartGame 冷却中, 3秒后重试...");
-            _statusLabel.Text = "冷却中, 3秒后重试...";
+            _statusLabel.Text = Lang.SelectUi540Label;
             var timer = new Timer();
             timer.WaitTime = 3.0;
             timer.OneShot = true;
@@ -694,7 +694,7 @@ public partial class SelectScene : Control
         }
         else
         {
-            _statusLabel.Text = $"进入游戏失败: {_pendingStartResult}";
+            _statusLabel.Text = string.Format(Lang.SelectGameLabel3, _pendingStartResult);
             GD.Print($"[Select] StartGame 失败: {_pendingStartResult}");
             _startBtn.Disabled = false;
         }

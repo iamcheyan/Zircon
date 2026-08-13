@@ -36,7 +36,7 @@ public partial class MagicDialog : DXWindow
         // 重叠并把技能页签整体视觉上推高。
         HasTitle = false;
         Movable = true;
-        Text = "技能";
+        Text = Lang.MagicSkillLabel;
         Clip = true;
         // 原版固定 419x511；技能按 MagicSchool 分页，每页内部滚动。
         Size = new Vector2I(419, 511);

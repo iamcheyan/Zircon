@@ -33,7 +33,7 @@ public partial class ExitDialog : DXWindow
 
         AddControl(new DXLabel
         {
-            Text = "退出游戏",
+            Text = Lang.ExitDialogExitButtonLabel,
             FontSize = 11,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,
@@ -46,9 +46,9 @@ public partial class ExitDialog : DXWindow
             IsControl = false,
         });
 
-        var select = CreateButton("返回角色选择", 48);
+        var select = CreateButton(Lang.ExitCharacterLabel, 48);
         select.MouseClick += (o, e) => GameScene.Game?.LeaveGame();
-        var exit = CreateButton("退出客户端", 78);
+        var exit = CreateButton(Lang.ExitExitLabel, 78);
         exit.MouseClick += (o, e) => GameScene.Game?.ExitClient();
     }
 

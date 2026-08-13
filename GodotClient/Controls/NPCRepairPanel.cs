@@ -65,7 +65,7 @@ public partial class NPCRepairPanel : DXControl
                 _grid.Cells[i].LinkedSourceSlot = -1;
             }
         }
-        _links.Clear(); _grid.RefreshGrid(); _cost.Text = "维修费用: 0"; _repair.Enabled = false;
+        _links.Clear(); _grid.RefreshGrid(); _cost.Text = Lang.NPCRepairPanelUi129Label; _repair.Enabled = false;
     }
 
     public List<CellLinkInfo> CancelDisplayedLinks()
@@ -205,7 +205,7 @@ public partial class NPCRepairPanel : DXControl
         }
         _links.Clear();
         _grid.RefreshGrid();
-        _cost.Text = "维修费用: 0";
+        _cost.Text = Lang.NPCRepairPanelUi129Label;
         _repair.Enabled = false;
         // 原版提交后复位 GuildCheckBox（Special 不复位）。
         _guildFunds.Checked = false;
@@ -241,7 +241,7 @@ public partial class NPCRepairPanel : DXControl
                 _links.Add(new CellLinkInfo { GridType = cell.LinkedSourceGrid, Slot = cell.LinkedSourceSlot, Count = cell.Item.Count });
                 cost += cell.Item.RepairCost(_special.Checked);
             }
-        _cost.Text = $"维修费用: {cost:#,##0}";
+        _cost.Text = string.Format(Lang.NPCRepairPanelUi131Label, cost);
         _guildFunds.Enabled = GameScene.Game?.HasGuild == true;
         if (_guildFunds.Checked && cost > (GameScene.Game?.GuildFunds ?? 0))
             _cost.TextColour = Colors.Red;

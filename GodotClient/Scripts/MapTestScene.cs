@@ -157,7 +157,7 @@ public partial class MapTestScene : Control
 
             // 渲染 20x20 区域
             RenderArea(map, 0, 0, 20, 20);
-            _statusLabel.Text = $"地图 0.map: {map.Width}x{map.Height}\n渲染 20x20 区域完成";
+            _statusLabel.Text = string.Format(Lang.MapTestUi600Label, map.Width, map.Height);
             GD.Print("[MapTest] 渲染完成");
             if (_renderAudit) CallDeferred(nameof(RenderObjectAudit));
             if (_actionAudit) CallDeferred(nameof(BeginActionAudit));
@@ -191,7 +191,7 @@ public partial class MapTestScene : Control
         }
         catch (Exception ex)
         {
-            _statusLabel.Text = $"失败: {ex.Message}";
+            _statusLabel.Text = string.Format(Lang.MapTestUi601Label, ex.Message);
             GD.PrintErr($"[MapTest] {ex}");
         }
     }
@@ -2067,7 +2067,7 @@ public partial class MapTestScene : Control
         // 奇偶判定只统计三种生产 blend 材质（Kind<=2），探针与判别 kind 仅作记录
         if (!isProbe && kind <= 2 && origHit) _blendAuditParityHits++;
         GD.Print($"[BlendAudit] case={i} texel={texel} colour={modulate} got={got} " +
-                 $"broken(修复前)={expectCurrent} original(原版)={expectOriginal} " +
+                 string.Format(Lang.MapTestUi602Label, expectCurrent, expectOriginal) +
                  (curHit || origHit ? (origHit ? "PASS(original)" : "PASS(current)") : "FAIL"));
         int total = BlendAuditCases.Length + BlendAuditMixProbes.Length;
         if (++_blendAuditCase < total)
@@ -2084,8 +2084,8 @@ public partial class MapTestScene : Control
         int materialCases = BlendAuditCases.Count(c => c.Kind <= 2);
         GD.Print($"[BlendAudit] 判定: original命中={_blendAuditOriginalHits} current命中={_blendAuditCurrentHits} 材质案例命中original={_blendAuditParityHits}/{materialCases} cases={total}");
         GD.Print(_blendAuditParityHits == materialCases && backdropOk
-            ? $"[BlendAudit] PASS 所有 blend 材质与原始公式一致 截图 {path}"
-            : $"[BlendAudit] FAIL 未命中原始公式，截图 {path}");
+            ? string.Format(Lang.MapTestUi603Label, path)
+            : string.Format(Lang.MapTestUi604Label, path));
         GetTree().Quit();
     }
 

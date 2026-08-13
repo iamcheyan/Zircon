@@ -25,7 +25,7 @@ public partial class TradeDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => CloseTrade(); AddControl(close);
-        AddControl(new DXLabel { Text = "交易", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(428, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.TradeUi349Label, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(428, 18), IsControl = false });
         AddControl(new DXLabel { Text = Lang.TradeDialogUserLabel, FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(186, 20), Location = new Vector2I(15, 38), IsControl = false });
         AddControl(new DXLabel { Text = Lang.TradeDialogPlayerLabel, FontSize = 11, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(186, 20), Location = new Vector2I(226, 38), IsControl = false });
         _userGrid = new DXItemGrid { GridSize = new Vector2I(5, 2), Location = new Vector2I(15, 73), GridType = GridType.TradeUser, Linked = true, GridPadding = 1, Border = false }; AddControl(_userGrid);
@@ -41,8 +41,8 @@ public partial class TradeDialog : DXWindow
                 }
             };
         _playerGrid = new DXItemGrid { GridSize = new Vector2I(5, 2), Location = new Vector2I(226, 73), GridType = GridType.TradePlayer, ItemGrid = _playerItems, ReadOnly = true, GridPadding = 1, Border = false }; AddControl(_playerGrid);
-        AddControl(new DXLabel { Text = "金币", FontSize = 8, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(11, 168), Size = new Vector2I(58, 16), IsControl = false });
-        AddControl(new DXLabel { Text = "金币", FontSize = 8, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(222, 168), Size = new Vector2I(58, 16), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.TradeDialogGoldLabel, FontSize = 8, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(11, 168), Size = new Vector2I(58, 16), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.TradeDialogGoldLabel, FontSize = 8, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(222, 168), Size = new Vector2I(58, 16), IsControl = false });
         _userGold = AddValue("0", 75, 168); _playerGold = AddValue("0", 286, 168);
         _userGold.IsControl = true;
         _userGold.MouseClick += (o, e) =>
@@ -50,7 +50,7 @@ public partial class TradeDialog : DXWindow
             if (GameScene.Game?.IsObserver == true) return;
             long available = GameScene.Game?.Currencies?.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
             if (!CanOfferGold(available)) return;
-            var dialog = new ItemAmountDialog("交易金币", available, 1, amount =>
+            var dialog = new ItemAmountDialog(Lang.TradeGoldLabel, available, 1, amount =>
             {
                 long current = GameScene.Game?.Currencies?.FirstOrDefault(x => x?.Info?.Type == CurrencyType.Gold)?.Amount ?? 0;
                 if (CanOfferGold(current) && amount <= current)
@@ -58,7 +58,7 @@ public partial class TradeDialog : DXWindow
             });
             WindowManager.Open(dialog, GameScene.Game?.UILayer ?? GetParent());
         };
-        _confirm = new DXButton { Text = "确认交易", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(126, 203), Size = new Vector2I(80, 25) };
+        _confirm = new DXButton { Text = Lang.TradeConfirmLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(126, 203), Size = new Vector2I(80, 25) };
         _confirm.MouseClick += (o, e) =>
         {
             if (GameScene.Game?.IsObserver == true) return;
@@ -75,10 +75,10 @@ public partial class TradeDialog : DXWindow
     public void ShowRequest(string name)
     {
         var panel = new DXControl { Location = new Vector2I(12, 36), Size = new Vector2I(300, 72), BackColour = new Color(.05f, .03f, .02f, .98f), Border = true, BorderColour = new Color(1f, .75f, .25f) };
-        panel.AddControl(new DXLabel { Text = $"{name ?? "未知玩家"} 请求交易", Location = new Vector2I(8, 7), Size = new Vector2I(280, 20), IsControl = false });
-        var yes = new DXButton { Text = "接受", Location = new Vector2I(60, 38), Size = new Vector2I(70, 24), Index = -1 };
+        panel.AddControl(new DXLabel { Text = $"{name ?? Lang.GroupUnknownLabel} 请求交易", Location = new Vector2I(8, 7), Size = new Vector2I(280, 20), IsControl = false });
+        var yes = new DXButton { Text = Lang.GroupAcceptLabel, Location = new Vector2I(60, 38), Size = new Vector2I(70, 24), Index = -1 };
         yes.MouseClick += (o, e) => { GameScene.Game?.SendTradeRequestResponse(true); panel.QueueFree(); };
-        var no = new DXButton { Text = "拒绝", Location = new Vector2I(170, 38), Size = new Vector2I(70, 24), Index = -1 };
+        var no = new DXButton { Text = Lang.GroupDeclineLabel, Location = new Vector2I(170, 38), Size = new Vector2I(70, 24), Index = -1 };
         no.MouseClick += (o, e) => { GameScene.Game?.SendTradeRequestResponse(false); panel.QueueFree(); };
         panel.AddControl(yes); panel.AddControl(no); AddControl(panel);
     }
@@ -102,8 +102,8 @@ public partial class TradeDialog : DXWindow
         SetOtherGold(5678);
         details = $"player={_userGold.Text} other={_playerGold.Text}";
         bool valid = _userGold.Text == "1,234" && _playerGold.Text == "5,678";
-        _userGold.Text = "金币: 0";
-        _playerGold.Text = "金币: 0";
+        _userGold.Text = Lang.TradeGoldLabel2;
+        _playerGold.Text = Lang.TradeGoldLabel2;
         return valid;
     }
     public static bool CanOfferGold(long amount) => amount > 0;

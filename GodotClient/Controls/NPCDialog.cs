@@ -70,7 +70,7 @@ public partial class NPCDialog : DXWindow
         int y = 151;
         if (buttonMatches.Count == 0 && _page.Buttons != null) foreach (var option in _page.Buttons)
         {
-            var button = new DXButton { Text = $"选项 {option.ButtonID}", FontSize = 10, TextColour = new Color(1f, .85f, .3f), LibraryFile = LibraryFile.GameInter, Index = -1, Location = new Vector2I(18, y), Size = new Vector2I(330, 20) };
+            var button = new DXButton { Text = string.Format(Lang.NPCUi357Label, option.ButtonID), FontSize = 10, TextColour = new Color(1f, .85f, .3f), LibraryFile = LibraryFile.GameInter, Index = -1, Location = new Vector2I(18, y), Size = new Vector2I(330, 20) };
             int id = option.ButtonID; button.MouseClick += (o, e) => GameScene.Game?.SendNPCButton(id); AddControl(button); _buttons.Add(button); y += 22;
         }
         // 原版 SetSize：文字超出 140+64 客户区时，每 20px 增加一张

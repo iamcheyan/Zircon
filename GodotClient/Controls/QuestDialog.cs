@@ -62,10 +62,10 @@ public partial class QuestDialog : DXWindow
             IsControl = false,
         });
 
-        AddTab("当前任务", 18, 25, 0);
-        AddTab("可接任务", 118, 25, 1);
+        AddTab(Lang.QuestQuestLabel, 18, 25, 0);
+        AddTab(Lang.QuestQuestLabel2, 118, 25, 1);
         // 原版已完成页签默认隐藏；保留数据页但不把它错误显示在主页签栏。
-        AddTab("里程碑", 218, 25, 3);
+        AddTab(Lang.QuestUi151Label, 218, 25, 3);
         _content = new DXControl
         {
             Location = new Vector2I(18, 58),
@@ -206,8 +206,8 @@ public partial class QuestDialog : DXWindow
             foreach (var milestone in GameScene.Game?.Milestones ?? Enumerable.Empty<ClientUserMilestone>())
             {
                 var info = milestone.Info ?? Globals.MilestoneInfoList?.Binding.FirstOrDefault(x => x.Index == milestone.InfoIndex);
-                string state = milestone.IsComplete ? "完成" : Lang.GuildCastlePanelInProgressText;
-                var title = AddLine($"{info?.Title ?? "里程碑"} [{state}]", 12, new Color(1f, 0.85f, 0.3f), 8, milestoneY);
+                string state = milestone.IsComplete ? Lang.QuestUi152Label : Lang.GuildCastlePanelInProgressText;
+                var title = AddLine($"{info?.Title ?? Lang.QuestUi151Label} [{state}]", 12, new Color(1f, 0.85f, 0.3f), 8, milestoneY);
                 title.MouseFilter = Control.MouseFilterEnum.Stop;
                 int index = milestone.Index;
                 title.GuiInput += e =>
@@ -221,7 +221,7 @@ public partial class QuestDialog : DXWindow
                 milestoneY += 20;
                 if (milestone.IsComplete && !milestone.Claimed)
                 {
-                    var claim = AddLine("  [点击领取]", 10, new Color(0.5f, 1f, 0.5f), 18, milestoneY);
+                    var claim = AddLine(Lang.QuestUi154Label, 10, new Color(0.5f, 1f, 0.5f), 18, milestoneY);
                     claim.MouseFilter = Control.MouseFilterEnum.Stop;
                     claim.GuiInput += e =>
                     {
@@ -255,7 +255,7 @@ public partial class QuestDialog : DXWindow
                 availableY += 22;
                 foreach (var quest in group)
                 {
-                    var questTitle = AddLine($"[{quest.QuestType}] {quest.QuestName}  [点击接受]", 12, new Color(1f, 0.85f, 0.3f), 18, availableY);
+                    var questTitle = AddLine(string.Format(Lang.QuestAcceptLabel, quest.QuestType, quest.QuestName), 12, new Color(1f, 0.85f, 0.3f), 18, availableY);
                     questTitle.MouseFilter = Control.MouseFilterEnum.Stop;
                     questTitle.GuiInput += e =>
                     {
@@ -293,7 +293,7 @@ public partial class QuestDialog : DXWindow
             y += 22;
             foreach (var userQuest in group)
             {
-                var questTitle = AddLine($"[{userQuest.Quest.QuestType}] {userQuest.Quest.QuestName}" + (userQuest.IsComplete ? " (完成，点击提交)" : " (左键追踪，右键放弃)"), 12, new Color(1f, 0.85f, 0.3f), 18, y);
+                var questTitle = AddLine($"[{userQuest.Quest.QuestType}] {userQuest.Quest.QuestName}" + (userQuest.IsComplete ? Lang.QuestUi156Label : Lang.QuestUi157Label), 12, new Color(1f, 0.85f, 0.3f), 18, y);
                 questTitle.MouseFilter = Control.MouseFilterEnum.Stop;
                 int questIndex = userQuest.Quest.Index;
                 bool complete = userQuest.IsComplete;
@@ -367,45 +367,45 @@ public partial class QuestDialog : DXWindow
         var tracker = new DXCheckButton(string.Empty) { Location = new Vector2I(255, 8), Size = new Vector2I(18, 18), Checked = GameScene.Game?.QuestTrackerVisible ?? true };
         tracker.Changed += (s, e) => GameScene.Game?.SetQuestTrackerVisible(tracker.Checked);
         _detailPanel.AddControl(tracker);
-        AddDetailText("显示任务追踪", 178, 8, 9, Colors.White, 75, 18);
+        AddDetailText(Lang.QuestQuestLabel3, 178, 8, 9, Colors.White, 75, 18);
         QuestInfo quest = _selectedQuest?.Quest ?? _selectedAvailable;
         if (quest == null)
         {
-            _detailPanel.AddControl(new DXLabel { Text = "选择左侧任务查看详情", FontSize = 11, TextColour = Colors.Gray, Location = new Vector2I(12, 42), IsControl = false });
+            _detailPanel.AddControl(new DXLabel { Text = Lang.QuestQuestLabel4, FontSize = 11, TextColour = Colors.Gray, Location = new Vector2I(12, 42), IsControl = false });
             return;
         }
 
         AddDetailText(quest.QuestName, 10, 38, 12, new Color(1f, .85f, .3f));
-        AddDetailText("任务详情", 10, 64, 10, new Color(1f, .85f, .3f));
+        AddDetailText(Lang.QuestQuestLabel5, 10, 64, 10, new Color(1f, .85f, .3f));
         string description = GameScene.Game?.GetQuestText(quest, _selectedQuest, true) ?? quest.AcceptText ?? string.Empty;
         AddDetailText(description, 10, 84, 10, Colors.White, 285, 62);
-        AddDetailText("任务目标", 10, 152, 10, new Color(1f, .85f, .3f));
+        AddDetailText(Lang.QuestQuestLabel6, 10, 152, 10, new Color(1f, .85f, .3f));
         AddDetailText(GameScene.Game?.GetTaskText(quest, _selectedQuest) ?? string.Join("\n", quest.Tasks?.Select(t => t?.Task.ToString()) ?? Enumerable.Empty<string>()), 10, 172, 10, Colors.White, 285, 48);
         AddDetailText(Lang.QuestTabRewardsLabel, 10, 230, 10, new Color(1f, .85f, .3f));
         var rewards = quest.Rewards?.Where(r => r?.Item != null && !r.Choice).Take(5).ToList() ?? new List<QuestReward>();
-        if (rewards.Count == 0) AddDetailText("无固定物品奖励", 10, 250, 9, Colors.Gray);
+        if (rewards.Count == 0) AddDetailText(Lang.QuestNoneLabel, 10, 250, 9, Colors.Gray);
         else
         {
             var items = rewards.Select(r => new ClientUserItem(r.Item, r.Amount)).ToArray();
             var grid = new DXItemGrid { GridSize = new Vector2I(Math.Max(1, items.Length), 1), ItemGrid = items, GridType = GridType.Inspect, Location = new Vector2I(10, 250), ReadOnly = true };
             _detailPanel.AddControl(grid);
         }
-        AddDetailText("选择奖励", 150, 230, 10, new Color(1f, .85f, .3f));
+        AddDetailText(Lang.QuestSelectLabel, 150, 230, 10, new Color(1f, .85f, .3f));
         var choices = quest.Rewards?.Where(r => r?.Item != null && r.Choice).Take(4).ToList() ?? new List<QuestReward>();
         if (choices.Count > 0)
         {
             var items = choices.Select(r => new ClientUserItem(r.Item, r.Amount)).ToArray();
             _detailPanel.AddControl(new DXItemGrid { GridSize = new Vector2I(Math.Max(1, items.Length), 1), ItemGrid = items, GridType = GridType.Inspect, Location = new Vector2I(150, 250), ReadOnly = true });
         }
-        AddDetailText("开始：", 10, 300, 9, Colors.White, 42, 18);
+        AddDetailText(Lang.QuestStartLabel, 10, 300, 9, Colors.White, 42, 18);
         AddLocationLink(quest.StartNPC, 52, 300);
-        AddDetailText("结束：", 10, 320, 9, Colors.White, 42, 18);
+        AddDetailText(Lang.QuestEndLabel, 10, 320, 9, Colors.White, 42, 18);
         AddLocationLink(quest.FinishNPC, 52, 320);
         if (_selectedQuest != null || _selectedAvailable != null)
         {
             var action = new DXButton
             {
-                Text = _selectedAvailable != null ? "接受任务" : _selectedQuest.IsComplete ? "提交任务" : "放弃任务",
+                Text = _selectedAvailable != null ? Lang.QuestQuestLabel7 : _selectedQuest.IsComplete ? Lang.QuestQuestLabel8 : Lang.QuestQuestLabel9,
                 FontSize = 9,
                 LibraryFile = LibraryFile.Interface,
                 Index = -1,
@@ -426,7 +426,7 @@ public partial class QuestDialog : DXWindow
     private void ConfirmAbandon(int questIndex)
     {
         if (GameScene.Game?.IsObserver == true || !GameScene.CanSendQuestOperation(false, questIndex)) return;
-        var dialog = new ConfirmDialog("确定要放弃这个任务吗？", "放弃任务", () =>
+        var dialog = new ConfirmDialog(Lang.QuestQuestLabel10, Lang.QuestQuestLabel9, () =>
         {
             if (GameScene.Game?.IsObserver == true) return;
             GameScene.Game?.SendQuestAbandon(questIndex);
@@ -446,13 +446,13 @@ public partial class QuestDialog : DXWindow
     };
 
     private static string MapName(QuestInfo quest)
-        => quest?.StartNPC?.Region?.Map?.Description ?? "未知地图";
+        => quest?.StartNPC?.Region?.Map?.Description ?? Lang.QuestUnknownLabel;
 
     private void AddLocationLink(NPCInfo npc, int x, int y)
     {
         var label = new DXLabel
         {
-            Text = npc?.RegionName ?? "未知",
+            Text = npc?.RegionName ?? Lang.QuestUnknownLabel2,
             FontSize = 9,
             TextColour = new Color(.7f, .9f, 1f),
             DrawOutline = true,

@@ -29,13 +29,13 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "伙伴仓库", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
+        AddControl(new DXLabel { Text = Lang.NPCCompanionStorageStorageLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true,
             Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
-        AddControl(new DXLabel { Text = "名称", FontSize = 9, Location = new Vector2I(50, 52), IsControl = false });
-        AddControl(new DXLabel { Text = "等级", FontSize = 9, Location = new Vector2I(50, 74), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CompanionDialogCompanionTabNameLabel, FontSize = 9, Location = new Vector2I(50, 52), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CompanionDialogCompanionTabLevelLabel, FontSize = 9, Location = new Vector2I(50, 74), IsControl = false });
         AddControl(new DXLabel { Text = Lang.CompanionDialogCompanionTabExpLabel, FontSize = 9, Location = new Vector2I(50, 96), IsControl = false });
-        AddControl(new DXLabel { Text = "饱食度", FontSize = 9, Location = new Vector2I(50, 118), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.NPCCompanionStorageHungerLabel, FontSize = 9, Location = new Vector2I(50, 118), IsControl = false });
         _name = ValueLabel(52); _level = ValueLabel(74); _experience = ValueLabel(96); _hunger = ValueLabel(118);
         _experienceBar = AddBar(196, 98, 4310);
         _hungerBar = AddBar(196, 120, 4311);
@@ -48,16 +48,16 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
         _right.MouseClick += (s, e) => Select(_selected + 1);
         AddControl(_left); AddControl(_right);
 
-        _store = Button("收起", 30, (int)Size.Y - 43);
-        _retrieve = Button("召回", 30, (int)Size.Y - 43);
-        _release = Button("释放", 145, (int)Size.Y - 43);
+        _store = Button(Lang.NPCCompanionStorageStoreLabel, 30, (int)Size.Y - 43);
+        _retrieve = Button(Lang.NPCCompanionStorageRetrieveLabel, 30, (int)Size.Y - 43);
+        _release = Button(Lang.NPCCompanionStorageReleaseLabel, 145, (int)Size.Y - 43);
         _store.MouseClick += (s, e) => GameScene.Game?.SendCompanionStore(SelectedCompanionIndex);
         _retrieve.MouseClick += (s, e) => GameScene.Game?.SendCompanionRetrieve(SelectedCompanionIndex);
         _release.MouseClick += (s, e) =>
         {
             int index = SelectedCompanionIndex;
             if (index < 0) return;
-            var confirm = new ConfirmDialog("确定要释放当前伙伴吗？此操作不可撤销。", "确认释放伙伴", () => GameScene.Game?.SendCompanionRelease(index));
+            var confirm = new ConfirmDialog(Lang.NPCCompanionStorageOkLabel, Lang.NPCCompanionStorageConfirmLabel, () => GameScene.Game?.SendCompanionRelease(index));
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         };
     }
@@ -126,7 +126,7 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
         }
         if (_companions.Count == 0 || index < 0 || index >= _companions.Count)
         {
-            _selected = -1; _name.Text = "暂无伙伴"; _level.Text = string.Empty; _experience.Text = string.Empty; _hunger.Text = string.Empty; _index.Text = string.Empty; SetBar(_experienceBar, 0); SetBar(_hungerBar, 0);
+            _selected = -1; _name.Text = Lang.NPCCompanionStorageCompanionLabel; _level.Text = string.Empty; _experience.Text = string.Empty; _hunger.Text = string.Empty; _index.Text = string.Empty; SetBar(_experienceBar, 0); SetBar(_hungerBar, 0);
             _left.Enabled = _right.Enabled = _store.Enabled = _retrieve.Enabled = _release.Enabled = false;
             _store.Visible = false; _retrieve.Visible = true;
             return;

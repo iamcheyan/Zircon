@@ -23,14 +23,14 @@ public sealed partial class NPCQuestListDialog : DXWindow
         var background = new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 209, MouseFilter = MouseFilterEnum.Ignore };
         AddControl(background);
         Size = (Vector2I)background.Size;
-        AddControl(new DXLabel { Text = "任务列表", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.NPCQuestsQuestLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
         int panelWidth = Math.Max(210, (int)Size.X - 25);
         _list = new DXControl { Location = new Vector2I(8, 37), Size = new Vector2I(panelWidth, 134), Clip = true }; AddControl(_list);
-        AddControl(new DXLabel { Text = "可接任务", FontSize = 9, Size = new Vector2I(170, 18), Location = new Vector2I(15, 185), IsControl = false, Align = HorizontalAlignment.Center });
-        AddControl(new DXLabel { Text = "数量", FontSize = 9, Size = new Vector2I(50, 18), Location = new Vector2I(205, 185), IsControl = false, Align = HorizontalAlignment.Center });
+        AddControl(new DXLabel { Text = Lang.QuestQuestLabel2, FontSize = 9, Size = new Vector2I(170, 18), Location = new Vector2I(15, 185), IsControl = false, Align = HorizontalAlignment.Center });
+        AddControl(new DXLabel { Text = Lang.NPCQuestsCountLabel, FontSize = 9, Size = new Vector2I(50, 18), Location = new Vector2I(205, 185), IsControl = false, Align = HorizontalAlignment.Center });
         _scroll = new DXVScrollBar { Location = new Vector2I(panelWidth - 20, 37), Size = new Vector2I(22, 139), VisibleSize = 134, Change = 22, HideWhenNoScroll = true };
         _scroll.UpButton.LibraryFile = LibraryFile.Interface; _scroll.UpButton.Index = 61;
         _scroll.DownButton.LibraryFile = LibraryFile.Interface; _scroll.DownButton.Index = 62;
@@ -73,7 +73,7 @@ public sealed partial class NPCQuestListDialog : DXWindow
             var quest = _quests[i];
             var row = new DXButton
             {
-                Text = quest?.QuestName ?? "未知任务", FontSize = 9,
+                Text = quest?.QuestName ?? Lang.NPCQuestsQuestLabel3, FontSize = 9,
                 TextColour = new Color(1f, .85f, .3f), LibraryFile = LibraryFile.Interface, Index = -1,
                 Location = new Vector2I(0, (i - first) * 22), Size = new Vector2I(Math.Max(190, (int)_list.Size.X - 25), 21),
             };
@@ -113,7 +113,7 @@ public sealed partial class NPCQuestDialog : DXWindow
         _tasks = new DXLabel { FontSize = 10, TextColour = Colors.White, Size = new Vector2I(334, 61), Location = new Vector2I(13, 185), IsControl = false }; AddControl(_tasks);
         AddControl(new DXLabel { Text = Lang.QuestTabRewardsLabel, FontSize = 10, DrawOutline = true, Location = new Vector2I(10, 270), IsControl = false });
         _rewardGrid = new DXItemGrid { GridSize = new Vector2I(5, 1), GridType = GridType.None, ItemGrid = _rewards, ReadOnly = true, Location = new Vector2I(12, 292) }; AddControl(_rewardGrid);
-        AddControl(new DXLabel { Text = "可选奖励", FontSize = 10, DrawOutline = true, Location = new Vector2I(215, 270), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.NPCQuestsRewardLabel, FontSize = 10, DrawOutline = true, Location = new Vector2I(215, 270), IsControl = false });
         _choiceGrid = new DXItemGrid { GridSize = new Vector2I(4, 1), GridType = GridType.None, ItemGrid = _choices, ReadOnly = true, Location = new Vector2I(217, 292) }; AddControl(_choiceGrid);
         for (int i = 0; i < _choiceGrid.Cells.Length; i++)
         {
@@ -125,14 +125,14 @@ public sealed partial class NPCQuestDialog : DXWindow
                 for (int j = 0; j < _choiceGrid.Cells.Length; j++) _choiceGrid.Cells[j].Border = j == choice;
             };
         }
-        _accept = new DXButton { Text = "接受任务", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25) };
+        _accept = new DXButton { Text = Lang.QuestQuestLabel7, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25) };
         _accept.MouseClick += (s, e) =>
         {
             if (_quest == null || GameScene.Game?.IsObserver == true) return;
             GameScene.Game.SendQuestAccept(_quest.Index);
             WindowManager.Close(this);
         }; AddControl(_accept);
-        _complete = new DXButton { Text = "完成任务", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25), Visible = false };
+        _complete = new DXButton { Text = Lang.NPCQuestsQuestLabel5, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(250, (int)Size.Y - 43), Size = new Vector2I(80, 25), Visible = false };
         _complete.MouseClick += (s, e) =>
         {
             if (_quest == null || GameScene.Game?.IsObserver == true) return;

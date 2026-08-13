@@ -52,12 +52,12 @@ public partial class MenuDialog : DXWindow
         AddControl(title);
 
         SettingsButton = AddMenuButton(Lang.MenuDialogSettingsButtonLabel, 40);
-        HelpButton = AddMenuButton("帮助", 70);
-        GuildButton = AddMenuButton("行会", 100);
-        StorageButton = AddMenuButton("仓库", 130);
-        RankingButton = AddMenuButton("排行", 160);
+        HelpButton = AddMenuButton(Lang.MenuHelpLabel, 70);
+        GuildButton = AddMenuButton(Lang.MenuDialogGuildButtonLabel, 100);
+        StorageButton = AddMenuButton(Lang.MenuDialogStorageButtonLabel, 130);
+        RankingButton = AddMenuButton(Lang.MenuDialogRankingButtonLabel, 160);
         CompanionButton = AddMenuButton(Lang.CompanionDialogTitle, 190);
-        LeaveButton = AddMenuButton("退出游戏", 220);
+        LeaveButton = AddMenuButton(Lang.MenuDialogLeaveButtonLabel, 220);
 
         StorageButton.MouseClick += (o, e) => GameScene.Game?.ToggleStorageWindow();
         SettingsButton.MouseClick += (o, e) => GameScene.Game?.OpenConfigDialog();

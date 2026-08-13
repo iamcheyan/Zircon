@@ -115,7 +115,7 @@ public partial class UITestScene : Control
         {
             Position = new Vector2(160, 120),
             Size = new Vector2(420, 300),
-            Text = "背包 (测试窗口)",
+            Text = Lang.UITestBagLabel,
         };
         win.ShowWindow(uiParent);
 
@@ -133,7 +133,7 @@ public partial class UITestScene : Control
         // 窗口里的标签
         win.AddControl(new DXLabel
         {
-            Text = "这是中文标签: 攻击 12-25 · 防御 5",
+            Text = Lang.UITestDefenseLabel,
             FontSize = 14,
             Location = new Vector2I(30, 40),
             TextColour = new Color(0.9f, 0.85f, 0.7f),
@@ -142,7 +142,7 @@ public partial class UITestScene : Control
         // 2. 按钮区 (窗口下方, 直接放根节点)
         var btn1 = new DXButton
         {
-            Text = "普通按钮",
+            Text = Lang.UITestUi440Label,
             Index = 210,
             HoverIndex = 211,
             PressedIndex = 212,
@@ -154,7 +154,7 @@ public partial class UITestScene : Control
 
         var btn2 = new DXButton
         {
-            Text = "红方块按钮(无贴图兜底)",
+            Text = Lang.UITestNoneLabel,
             Position = new Vector2(160, 530),
             Size = new Vector2(160, 36),
             FixedSize = true,

@@ -48,8 +48,8 @@ public partial class GameStoreDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "商城", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(800, 18), IsControl = false });
-        AddControl(new DXLabel { Text = "商品分类", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(20, 20), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GameStoreMarketLabel, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(800, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GameStoreUi414Label, FontSize = 11, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(20, 20), IsControl = false });
         var categoryPanel = new DXControl { Location = new Vector2I(10, 38), Size = new Vector2I(170, 305), Clip = true };
         _categoryContent = new DXControl { Size = new Vector2I(168, 305) };
         categoryPanel.AddControl(_categoryContent);
@@ -57,13 +57,13 @@ public partial class GameStoreDialog : DXWindow
         _categoryScroll = new DXVScrollBar { Location = new Vector2I(181, 38), Size = new Vector2I(14, 305), VisibleSize = 305, Change = 20, HideWhenNoScroll = true };
         _categoryScroll.ValueChanged += (o, e) => _categoryContent.Location = new Vector2I(0, -_categoryScroll.Value);
         AddControl(_categoryScroll);
-        AddControl(new DXLabel { Text = "当前货币", FontSize = 9, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Location = new Vector2I(10, 354), Size = new Vector2I(172, 20), IsControl = false });
-        _currency = new DXLabel { Text = "游戏金币: 0", FontSize = 10, TextColour = Colors.White, Align = HorizontalAlignment.Center, AutoSize = false, Location = new Vector2I(14, 375), Size = new Vector2I(164, 18), IsControl = false };
+        AddControl(new DXLabel { Text = Lang.GameStoreUi415Label, FontSize = 9, TextColour = new Color(1f, .85f, .3f), Align = HorizontalAlignment.Center, AutoSize = false, Location = new Vector2I(10, 354), Size = new Vector2I(172, 20), IsControl = false });
+        _currency = new DXLabel { Text = Lang.GameStoreGoldLabel, FontSize = 10, TextColour = Colors.White, Align = HorizontalAlignment.Center, AutoSize = false, Location = new Vector2I(14, 375), Size = new Vector2I(164, 18), IsControl = false };
         AddControl(_currency);
-        var recharge = new DXButton { Text = "充值", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(10, 410), Size = new Vector2I(172, 27) };
+        var recharge = new DXButton { Text = Lang.GameStoreUi417Label, Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(10, 410), Size = new Vector2I(172, 27) };
         recharge.MouseClick += (o, e) => GameScene.Game?.OpenRechargePage();
         AddControl(recharge);
-        var currency = new DXButton { Text = "切换货币", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(10, 438), Size = new Vector2I(172, 27) };
+        var currency = new DXButton { Text = Lang.GameStoreUi418Label, Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(10, 438), Size = new Vector2I(172, 27) };
         currency.MouseClick += (o, e) => { _useHuntGold = !_useHuntGold; BuildCategoryTree(); Refresh(); };
         AddControl(currency);
 
@@ -92,13 +92,13 @@ public partial class GameStoreDialog : DXWindow
         AddControl(_sort);
         _search = new DXTextInput { Location = new Vector2I(385, 39), Size = new Vector2I(132, 20) };
         AddControl(_search);
-        var search = new DXButton { Text = "搜索", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(530, 38), Size = new Vector2I(68, 25) };
+        var search = new DXButton { Text = Lang.GameStoreDialogSearchButtonLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(530, 38), Size = new Vector2I(68, 25) };
         search.MouseClick += (o, e) => { _pageIndex = 0; Refresh(); };
         AddControl(search);
 
         _list = new DXControl { Location = new Vector2I(199, 67), Size = new Vector2I(409, 432), Clip = true };
         AddControl(_list);
-        AddControl(new DXLabel { Text = "热销商品", FontSize = 11, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(614, 37), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GameStoreUi419Label, FontSize = 11, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(614, 37), IsControl = false });
         _topPanel = new DXControl { Location = new Vector2I(614, 65), Size = new Vector2I(174, 425), Clip = true };
         AddControl(_topPanel);
         _previousButton = new DXButton { LibraryFile = LibraryFile.GameInter, Index = 4840, Location = new Vector2I(321, 477) };
@@ -138,7 +138,7 @@ public partial class GameStoreDialog : DXWindow
         long amount = _useHuntGold
             ? GameScene.Game?.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.HuntGold)?.Amount ?? 0
             : GameScene.Game?.Currencies.FirstOrDefault(x => x.Info?.Type == CurrencyType.GameGold)?.Amount ?? 0;
-        _currency.Text = $"{(_useHuntGold ? "狩猎金币" : "游戏金币")}: {amount:#,##0}";
+        _currency.Text = $"{(_useHuntGold ? Lang.GameStoreGoldLabel2 : Lang.LootBoxGoldLabel)}: {amount:#,##0}";
     }
 
     private bool MatchesCategory(StoreInfo info)
@@ -175,9 +175,9 @@ public partial class GameStoreDialog : DXWindow
 
     private string SortName() => _sortMode switch
     {
-        (int)MarketPlaceStoreSort.HighestPrice => "最高价",
-        (int)MarketPlaceStoreSort.LowestPrice => "最低价",
-        (int)MarketPlaceStoreSort.Favourite => "收藏",
+        (int)MarketPlaceStoreSort.HighestPrice => Lang.GameStoreHighestPriceLabel,
+        (int)MarketPlaceStoreSort.LowestPrice => Lang.ConsignmentLowestPriceLabel,
+        (int)MarketPlaceStoreSort.Favourite => Lang.GameStoreDialogSortFavouritesLabel,
         _ => Lang.GameStoreDialogSortNameLabel,
     };
 
@@ -210,7 +210,7 @@ public partial class GameStoreDialog : DXWindow
             y += 21;
         }
 
-        if (_favourites.Count > 0) Add("收藏", () => SetFilter(GameStoreCategory.Favourites));
+        if (_favourites.Count > 0) Add(Lang.GameStoreDialogSortFavouritesLabel, () => SetFilter(GameStoreCategory.Favourites));
         var filters = Globals.StoreInfoList?.Binding.Where(x => x?.Item != null)
             .SelectMany(x => (x.Filter ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries))
             .Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase)
@@ -219,12 +219,12 @@ public partial class GameStoreDialog : DXWindow
 
         if (Globals.StoreInfoList?.Binding.Any(x => x?.Item != null) == true) Add(Lang.GameStoreDialogNewItemsLabel, () => SetFilter(GameStoreCategory.NewItems));
 
-        Add("全部商品", () => SetFilter(GameStoreCategory.All));
+        Add(Lang.GameStoreAllLabel, () => SetFilter(GameStoreCategory.All));
         Add(Lang.GameStoreDialogEquipmentLabel, () => SetFilter(GameStoreCategory.Equipment));
         AddTypeFilters(type => IsEquipment(type), y, Add);
         Add(Lang.GameStoreDialogConsumablesLabel, () => SetFilter(GameStoreCategory.Consumables));
         AddTypeFilters(type => IsConsumable(type), y, Add);
-        Add("时装", () => SetFilter(GameStoreCategory.Cosmetics));
+        Add(Lang.GameStoreUi425Label, () => SetFilter(GameStoreCategory.Cosmetics));
         AddTypeFilters(type => IsCosmetic(type), y, Add);
         Add(Lang.GameStoreDialogOtherLabel, () => SetFilter(GameStoreCategory.Other));
 
@@ -300,8 +300,8 @@ public partial class GameStoreDialog : DXWindow
             if (!info.Available) return;
             int count = quantityValue;
             long total = (long)EffectivePrice(info) * count;
-            string currency = _useHuntGold ? "狩猎金币" : "游戏金币";
-            var confirm = new ConfirmDialog($"{info.Item.ItemName} x{count}\n单价: {EffectivePrice(info):#,##0} {currency}\n总价: {total:#,##0}", "确认购买", () => GameScene.Game?.SendGameStoreBuy(info.Index, count, _useHuntGold));
+            string currency = _useHuntGold ? Lang.GameStoreGoldLabel2 : Lang.LootBoxGoldLabel;
+            var confirm = new ConfirmDialog(string.Format(Lang.GameStoreTotalLabel, info.Item.ItemName, count, EffectivePrice(info), currency, total), Lang.GameStoreDialogPurchaseConfirmCaption, () => GameScene.Game?.SendGameStoreBuy(info.Index, count, _useHuntGold));
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         };
         row.AddControl(buy);
@@ -316,7 +316,7 @@ public partial class GameStoreDialog : DXWindow
         row.AddControl(gift);
         var favourite = new DXButton { LibraryFile = LibraryFile.GameInter, Index = _favourites.Contains(info.Index) ? 4857 : 4855, Location = new Vector2I(151, 51) };
         // 旧版 RefreshFavourite 的 Hint：收藏/取消收藏悬停提示。
-        favourite.TooltipText = _favourites.Contains(info.Index) ? "取消收藏" : "收藏";
+        favourite.TooltipText = _favourites.Contains(info.Index) ? Lang.GameStoreCancelLabel : Lang.GameStoreDialogSortFavouritesLabel;
         // 原版只发送切换请求，图标/收藏集合由
         // S.GameStoreFavouriteChanged 回包确认；不能乐观修改，否则服务端
         // 拒绝请求时客户端会永久显示错误收藏状态。
@@ -400,7 +400,7 @@ public partial class GameStoreDialog : DXWindow
             }
         if (infos.Count == 0)
         {
-            _topPanel.AddControl(new DXLabel { Text = "暂无热销商品", FontSize = 10, TextColour = Colors.White, Size = new Vector2I(174, 50), Align = HorizontalAlignment.Center, IsControl = false });
+            _topPanel.AddControl(new DXLabel { Text = Lang.GameStoreNoneLabel, FontSize = 10, TextColour = Colors.White, Size = new Vector2I(174, 50), Align = HorizontalAlignment.Center, IsControl = false });
             return;
         }
         for (int i = 0; i < infos.Count; i++)
@@ -465,9 +465,9 @@ public sealed partial class GameStoreSortMenu : DXControl
         Clip = true;
         IsControl = true;
         AddItem(MarketPlaceStoreSort.Alphabetical, Lang.GameStoreDialogSortNameLabel);
-        AddItem(MarketPlaceStoreSort.HighestPrice, "最高价");
-        AddItem(MarketPlaceStoreSort.LowestPrice, "最低价");
-        AddItem(MarketPlaceStoreSort.Favourite, "收藏");
+        AddItem(MarketPlaceStoreSort.HighestPrice, Lang.GameStoreHighestPriceLabel);
+        AddItem(MarketPlaceStoreSort.LowestPrice, Lang.ConsignmentLowestPriceLabel);
+        AddItem(MarketPlaceStoreSort.Favourite, Lang.GameStoreDialogSortFavouritesLabel);
     }
 
     private void AddItem(MarketPlaceStoreSort value, string text)
@@ -532,11 +532,11 @@ public sealed partial class GameStoreTopItemRow : DXControl
 
     private static string RankText(int rank) => rank switch
     {
-        1 => "第一名",
-        2 => "第二名",
-        3 => "第三名",
-        4 => "第四名",
-        _ => "第五名",
+        1 => Lang.GameStoreUi433Label,
+        2 => Lang.GameStoreUi434Label,
+        3 => Lang.GameStoreUi435Label,
+        4 => Lang.GameStoreUi436Label,
+        _ => Lang.GameStoreUi437Label,
     };
 
     private static ClientUserItem CreateStoreItem(StoreInfo info)

@@ -141,7 +141,7 @@ public sealed partial class DungeonFinderDialog : DXWindow
     {
         if (_selected < 0 || _selected >= _items.Count) return;
         GameScene.Game?.SendJoinInstance(_items[_selected].Index);
-        _status.Text = $"正在加入: {_items[_selected].Name}";
+        _status.Text = string.Format(Lang.DungeonFinderUi8Label, _items[_selected].Name);
     }
 
     public bool AuditLayout(out string details)

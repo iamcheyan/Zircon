@@ -55,8 +55,8 @@ public partial class GuildDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "行会", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(456, 18), IsControl = false });
-        string[] tabs = { "创建/主页", Lang.GuildDialogMembersTabLabel, "仓库", Lang.GuildDialogWarTabLabel, "风格", Lang.GuildDialogCastleTabLabel };
+        AddControl(new DXLabel { Text = Lang.GuildDialogTitle, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(456, 18), IsControl = false });
+        string[] tabs = { Lang.GuildCreateLabel, Lang.GuildDialogMembersTabLabel, Lang.GuildDialogStorageTabLabel, Lang.GuildDialogWarTabLabel, Lang.GuildUi292Label, Lang.GuildDialogCastleTabLabel };
         for (int i = 0; i < tabs.Length; i++) AddTab(tabs[i], 14 + i * 76, i);
         _content = new DXControl { Location = new Vector2I(12, 68), Size = new Vector2I(410, 415), Clip = true }; AddControl(_content);
         _scroll = new DXVScrollBar { Location = new Vector2I(424, 68), Size = new Vector2I(16, 415), VisibleSize = 415, Change = 1 }; _scroll.ValueChanged += (o, e) => RefreshRows(); AddControl(_scroll);
@@ -65,11 +65,11 @@ public partial class GuildDialog : DXWindow
         _inviteButton = new DXButton { Text = Lang.GuildDialogManageTabMembershipAddButtonLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(190, 468), Size = new Vector2I(100, 28) };
         _inviteButton.MouseClick += (o, e) => { if (!string.IsNullOrWhiteSpace(_inviteName.Text)) GameScene.Game?.SendGuildInviteMember(_inviteName.Text.Trim()); };
         AddControl(_inviteButton);
-        _increaseMemberButton = new DXButton { Text = "升级成员上限", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(18, 500), Size = new Vector2I(120, 28) };
+        _increaseMemberButton = new DXButton { Text = Lang.GuildMemberLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(18, 500), Size = new Vector2I(120, 28) };
         _increaseMemberButton.MouseClick += (o, e) => GameScene.Game?.SendGuildIncreaseMember(); AddControl(_increaseMemberButton);
-        _increaseStorageButton = new DXButton { Text = "升级仓库", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(146, 500), Size = new Vector2I(100, 28) };
+        _increaseStorageButton = new DXButton { Text = Lang.GuildStorageLabel, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(146, 500), Size = new Vector2I(100, 28) };
         _increaseStorageButton.MouseClick += (o, e) => GameScene.Game?.SendGuildIncreaseStorage(); AddControl(_increaseStorageButton);
-        _manageButton = new DXButton { Text = "成员管理", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(362, 500), Size = new Vector2I(80, 28) };
+        _manageButton = new DXButton { Text = Lang.GuildMemberLabel2, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(362, 500), Size = new Vector2I(80, 28) };
         _manageButton.MouseClick += (o, e) => GameScene.Game?.OpenGuildMemberDialog(0, Lang.GuildDialogMembersTabLabel, Lang.GuildDialogMembersTabLabel, GuildPermission.None);
         AddControl(_manageButton);
         UpdateTabVisibility();
@@ -117,7 +117,7 @@ public partial class GuildDialog : DXWindow
         else if (_tab == 1)
         {
             AddText(Lang.GuildDialogMembersTabLabel, 18, 7);
-            AddText("名称                         职位                 状态        贡献", 18, 28);
+            AddText(Lang.GuildNameLabel, 18, 28);
             for (int i = 0; i < members.Count; i++)
             {
                 var member = members[i];
@@ -132,7 +132,7 @@ public partial class GuildDialog : DXWindow
                 };
                 row.AddControl(new DXLabel
                 {
-                    Text = $"{i + 1,2}  {member.Name,-16} {member.Rank,-8} {(online ? Lang.GuildMemberRowOnlineLabel : "离线")}  贡献 {member.TotalContribution:#,##0}",
+                    Text = $"{i + 1,2}  {member.Name,-16} {member.Rank,-8} {(online ? Lang.GuildMemberRowOnlineLabel : Lang.RankingOfflineLabel)}  贡献 {member.TotalContribution:#,##0}",
                     FontSize = 9,
                     Location = Vector2I.Zero,
                     IsControl = false,
@@ -143,7 +143,7 @@ public partial class GuildDialog : DXWindow
         }
         else if (_tab == 2)
         {
-            AddText("仓库", 18, 5);
+            AddText(Lang.GuildDialogStorageTabLabel, 18, 5);
             AddText(Lang.GuildDialogStorageTabNameLabel, 18, 28);
             _storageFilter = new DXTextInput { Location = new Vector2I(62, 25), Size = new Vector2I(110, 20) };
             _content.AddControl(_storageFilter);
@@ -178,29 +178,29 @@ public partial class GuildDialog : DXWindow
     private void BuildCreatePage()
     {
         AddText(Lang.GuildDialogCreateTabCreateButtonLabel, 18, 16);
-        AddText("步骤 1：行会名称", 18, 48);
+        AddText(Lang.GuildGuildLabel, 18, 48);
         _createName = new DXTextInput { Location = new Vector2I(150, 43), Size = new Vector2I(190, 20) };
         _content.AddControl(_createName);
 
-        AddText("步骤 2：创建费用", 18, 82);
+        AddText(Lang.GuildCreateLabel2, 18, 82);
         var useGold = new DXCheckButton(string.Empty) { Location = new Vector2I(150, 76), Size = new Vector2I(18, 18), Checked = true };
         var useHorn = new DXCheckButton(string.Empty) { Location = new Vector2I(150, 98), Size = new Vector2I(18, 18) };
         _content.AddControl(useGold);
         _content.AddControl(useHorn);
-        AddText("金币 7,500,000", 174, 76);
-        AddText("行会号角", 174, 98);
+        AddText(Lang.GuildGoldLabel, 174, 76);
+        AddText(Lang.GuildGuildLabel2, 174, 98);
         useGold.Changed += (o, e) => { if (useGold.Checked) useHorn.Checked = false; if (!useGold.Checked && !useHorn.Checked) useGold.Checked = true; };
         useHorn.Changed += (o, e) => { if (useHorn.Checked) useGold.Checked = false; if (!useGold.Checked && !useHorn.Checked) useGold.Checked = true; };
 
-        AddText("步骤 3：扩展容量", 18, 132);
-        AddText("额外成员", 18, 162);
+        AddText(Lang.GuildUi302Label, 18, 132);
+        AddText(Lang.GuildMemberLabel3, 18, 162);
         _createMembers = new DXTextInput { Text = "0", Location = new Vector2I(150, 157), Size = new Vector2I(80, 20) };
         _content.AddControl(_createMembers);
-        AddText("额外仓库", 18, 188);
+        AddText(Lang.GuildStorageLabel2, 18, 188);
         _createStorage = new DXTextInput { Text = "0", Location = new Vector2I(150, 183), Size = new Vector2I(80, 20) };
         _content.AddControl(_createStorage);
 
-        AddText("步骤 4：总费用", 18, 224);
+        AddText(Lang.GuildUi305Label, 18, 224);
         var cost = new DXLabel { Text = "7,500,000", FontSize = 10, TextColour = new Color(1f, .8f, .3f), Location = new Vector2I(150, 224), Size = new Vector2I(150, 20), IsControl = false };
         _content.AddControl(cost);
         void RefreshCreateCost()
@@ -222,7 +222,7 @@ public partial class GuildDialog : DXWindow
             GameScene.Game?.SendGuildCreate(_createName.Text.Trim(), useGold.Checked, ParseInput(_createMembers.Text), ParseInput(_createStorage.Text));
         };
         _content.AddControl(create);
-        var starter = new DXButton { Text = "加入新手行会", FontSize = 10, Size = new Vector2I(125, 27), Location = new Vector2I(18, 258), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var starter = new DXButton { Text = Lang.GuildGuildLabel3, FontSize = 10, Size = new Vector2I(125, 27), Location = new Vector2I(18, 258), LibraryFile = LibraryFile.Interface, Index = -1 };
         starter.MouseClick += (o, e) => GameScene.Game?.SendJoinStarterGuild();
         _content.AddControl(starter);
     }
@@ -233,11 +233,11 @@ public partial class GuildDialog : DXWindow
     {
         _guildInvitePanel?.QueueFree();
         _guildInvitePanel = new DXControl { Location = new Vector2I(45, 185), Size = new Vector2I(350, 70), BackColour = new Color(0.04f, .025f, .02f, .98f), Border = true, BorderColour = new Color(1f, .75f, .25f) };
-        _guildInvitePanel.AddControl(new DXLabel { Text = $"{name ?? "未知玩家"} 邀请你加入行会：{guildName ?? "未知行会"}", FontSize = 10, Location = new Vector2I(8, 7), Size = new Vector2I(334, 22), IsControl = false });
-        var accept = new DXButton { Text = "接受", FontSize = 9, Size = new Vector2I(80, 23), Location = new Vector2I(82, 38), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _guildInvitePanel.AddControl(new DXLabel { Text = $"{name ?? Lang.GroupUnknownLabel} 邀请你加入行会：{guildName ?? Lang.GroupUnknownLabel}", FontSize = 10, Location = new Vector2I(8, 7), Size = new Vector2I(334, 22), IsControl = false });
+        var accept = new DXButton { Text = Lang.GroupAcceptLabel, FontSize = 9, Size = new Vector2I(80, 23), Location = new Vector2I(82, 38), LibraryFile = LibraryFile.Interface, Index = -1 };
         accept.MouseClick += (o, e) => { GameScene.Game?.SendGuildResponse(guildName, true); _guildInvitePanel.QueueFree(); _guildInvitePanel = null; };
         _guildInvitePanel.AddControl(accept);
-        var reject = new DXButton { Text = "拒绝", FontSize = 9, Size = new Vector2I(80, 23), Location = new Vector2I(188, 38), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var reject = new DXButton { Text = Lang.GroupDeclineLabel, FontSize = 9, Size = new Vector2I(80, 23), Location = new Vector2I(188, 38), LibraryFile = LibraryFile.Interface, Index = -1 };
         reject.MouseClick += (o, e) => { GameScene.Game?.SendGuildResponse(guildName, false); _guildInvitePanel.QueueFree(); _guildInvitePanel = null; };
         _guildInvitePanel.AddControl(reject);
         AddControl(_guildInvitePanel);
@@ -246,7 +246,7 @@ public partial class GuildDialog : DXWindow
     private void BuildHomePage(List<ClientGuildMemberInfo> members)
     {
         // 原版 HomeTab：公告区 403x252，右侧独立滚动条；统计面板从公告区下方开始。
-        AddText("行会公告", 8, 0);
+        AddText(Lang.GuildGuildLabel5, 8, 0);
         _noticeArea = new DXTextArea
         {
             Text = _guild.Notice ?? string.Empty,
@@ -273,44 +273,44 @@ public partial class GuildDialog : DXWindow
         save.MouseClick += (o, e) => { if (_noticeArea != null) { _noticeArea.ReadOnly = true; GameScene.Game?.SendGuildEditNotice(_noticeArea.Text); } };
         _content.AddControl(save);
 
-        AddText("行会统计", 8, 287);
+        AddText(Lang.GuildGuildLabel6, 8, 287);
         AddText(Lang.GuildDialogMembersTabLabel, 18, 317);
         AddText($"{members.Count} / {_guild.MemberLimit}", 120, 317);
-        AddText("行会资金", 18, 337);
+        AddText(Lang.ConsignmentGuildLabel, 18, 337);
         AddText($"{_guild.GuildFunds:#,##0}", 120, 337);
-        AddText("今日增长", 18, 357);
+        AddText(Lang.GuildUi314Label, 18, 357);
         AddText($"{_guild.DailyGrowth:#,##0}", 120, 357);
-        AddText("总贡献", 218, 337);
+        AddText(Lang.GuildContributionLabel, 218, 337);
         AddText($"{_guild.TotalContribution:#,##0}", 320, 337);
-        AddText("今日贡献", 218, 357);
+        AddText(Lang.GuildContributionLabel2, 218, 357);
         AddText($"{_guild.DailyContribution:#,##0}", 320, 357);
-        AddText("税率", 18, 377);
+        AddText(Lang.GuildUi317Label, 18, 377);
         AddText($"{_guild.Tax}%", 120, 377);
         var taxInput = new DXTextInput { Text = _guild.Tax.ToString(), Location = new Vector2I(18, 394), Size = new Vector2I(80, 20) };
         _content.AddControl(taxInput);
-        var tax = new DXButton { Text = "设置税率", FontSize = 9, Size = new Vector2I(82, 24), Location = new Vector2I(105, 392), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var tax = new DXButton { Text = Lang.GuildSettingsLabel, FontSize = 9, Size = new Vector2I(82, 24), Location = new Vector2I(105, 392), LibraryFile = LibraryFile.Interface, Index = -1 };
         tax.MouseClick += (o, e) => { if (long.TryParse(taxInput.Text, out var value)) GameScene.Game?.SendGuildTax(Math.Max(0, value)); };
         _content.AddControl(tax);
     }
 
     private void BuildStylePage()
     {
-        AddText("行会风格", 18, 16);
-        AddText("旗帜", 18, 58);
+        AddText(Lang.GuildGuildLabel8, 18, 16);
+        AddText(Lang.GuildUi320Label, 18, 58);
         _previewFlag = _guild?.Flag ?? 0;
         _flagBase = new DXImageControl { LibraryFile = LibraryFile.CastleFlag, Index = _previewFlag * 100, Location = new Vector2I(18, 85), FixedSize = true, Size = new Vector2I(100, 100), MouseFilter = MouseFilterEnum.Ignore };
         var guildColour = _guild?.Colour is System.Drawing.Color value ? value : System.Drawing.Color.White;
         _flagColour = new DXImageControl { LibraryFile = LibraryFile.CastleFlag, Index = _previewFlag * 100, Location = new Vector2I(18, 85), FixedSize = true, Size = new Vector2I(100, 100), MouseFilter = MouseFilterEnum.Ignore, Modulate = ToGodotColor(guildColour) };
         _content.AddControl(_flagBase);
         _content.AddControl(_flagColour);
-        var previous = new DXButton { Text = "上一面", FontSize = 9, Size = new Vector2I(70, 25), Location = new Vector2I(8, 195), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var previous = new DXButton { Text = Lang.GuildUi321Label, FontSize = 9, Size = new Vector2I(70, 25), Location = new Vector2I(8, 195), LibraryFile = LibraryFile.Interface, Index = -1 };
         previous.MouseClick += (o, e) => ChangeFlag(-1);
         _content.AddControl(previous);
-        var next = new DXButton { Text = "下一面", FontSize = 9, Size = new Vector2I(70, 25), Location = new Vector2I(84, 195), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var next = new DXButton { Text = Lang.GuildUi322Label, FontSize = 9, Size = new Vector2I(70, 25), Location = new Vector2I(84, 195), LibraryFile = LibraryFile.Interface, Index = -1 };
         next.MouseClick += (o, e) => ChangeFlag(1);
         _content.AddControl(next);
         AddText(Lang.CommonControlColourPickerColourLabel, 230, 58);
-        _colourPicker = new DXButton { Text = "选择颜色", FontSize = 9, BackColour = ToGodotColor(guildColour), Location = new Vector2I(230, 85), Size = new Vector2I(110, 20), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _colourPicker = new DXButton { Text = Lang.GuildSelectLabel, FontSize = 9, BackColour = ToGodotColor(guildColour), Location = new Vector2I(230, 85), Size = new Vector2I(110, 20), LibraryFile = LibraryFile.Interface, Index = -1 };
         _colourPicker.MouseClick += (o, e) =>
         {
             var palette = new[] { Colors.White, new Color(.85f, .2f, .2f), new Color(.2f, .75f, .3f), new Color(.25f, .45f, .95f), new Color(.8f, .65f, .2f) };
@@ -319,18 +319,18 @@ public partial class GuildDialog : DXWindow
             if (_flagColour != null) _flagColour.Modulate = _colourPicker.BackColour;
         };
         _content.AddControl(_colourPicker);
-        var save = new DXButton { Text = "保存颜色", FontSize = 9, Size = new Vector2I(90, 25), Location = new Vector2I(230, 125), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var save = new DXButton { Text = Lang.GuildSaveLabel, FontSize = 9, Size = new Vector2I(90, 25), Location = new Vector2I(230, 125), LibraryFile = LibraryFile.Interface, Index = -1 };
         save.MouseClick += (o, e) => GameScene.Game?.SendGuildColour(_colourPicker.BackColour);
         _content.AddControl(save);
     }
 
     private void BuildWarPage()
     {
-        AddText("城堡与攻城战", 18, 16);
-        AddText("敌对行会：", 18, 38);
+        AddText(Lang.GuildUi325Label, 18, 16);
+        AddText(Lang.GuildGuildLabel9, 18, 38);
         var enemy = new DXTextInput { Location = new Vector2I(85, 34), Size = new Vector2I(170, 24) };
         _content.AddControl(enemy);
-        var war = new DXButton { Text = "发起行会战", FontSize = 9, Size = new Vector2I(92, 24), Location = new Vector2I(265, 34), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var war = new DXButton { Text = Lang.GuildGuildLabel10, FontSize = 9, Size = new Vector2I(92, 24), Location = new Vector2I(265, 34), LibraryFile = LibraryFile.Interface, Index = -1 };
         war.MouseClick += (o, e) => { if (!string.IsNullOrWhiteSpace(enemy.Text)) GameScene.Game?.SendGuildWar(enemy.Text.Trim()); };
         _content.AddControl(war);
         var castles = new List<CastleInfo>();
@@ -339,30 +339,30 @@ public partial class GuildDialog : DXWindow
                 if (map?.Castles != null) castles.AddRange(map.Castles.Where(x => x != null));
         if (castles.Count == 0)
         {
-            AddText("当前没有可用城堡。", 18, 58);
+            AddText(Lang.GuildUi328Label, 18, 58);
             return;
         }
         for (int i = 0; i < castles.Count; i++)
         {
             var castle = castles[i];
             int castleIndex = castle.Index;
-            string owner = GameScene.Game?.CastleOwners.TryGetValue(castleIndex, out var value) == true && !string.IsNullOrWhiteSpace(value) ? value : "无主";
+            string owner = GameScene.Game?.CastleOwners.TryGetValue(castleIndex, out var value) == true && !string.IsNullOrWhiteSpace(value) ? value : Lang.GuildNoneLabel;
             DateTime warDate = GameScene.Game?.GetCastleWarDate(castleIndex) ?? DateTime.MinValue;
-            string schedule = warDate == DateTime.MinValue ? "未安排" : warDate <= DateTime.Now ? Lang.GuildCastlePanelInProgressText : warDate.ToString("yyyy-MM-dd HH:mm");
+            string schedule = warDate == DateTime.MinValue ? Lang.GuildUi330Label : warDate <= DateTime.Now ? Lang.GuildCastlePanelInProgressText : warDate.ToString("yyyy-MM-dd HH:mm");
             int rowY = 78 + i * 92;
-            AddText($"{castle.Name}\n领主：{owner}    攻城：{schedule}", 18, rowY);
-            var request = new DXButton { Text = "申请攻城", FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(315, rowY + 10), LibraryFile = LibraryFile.Interface, Index = -1 };
+            AddText(string.Format(Lang.GuildUi331Label, castle.Name, owner, schedule), 18, rowY);
+            var request = new DXButton { Text = Lang.GuildUi332Label, FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(315, rowY + 10), LibraryFile = LibraryFile.Interface, Index = -1 };
             int index = castleIndex;
             request.MouseClick += (o, e) => GameScene.Game?.SendGuildRequestConquest(index);
             _content.AddControl(request);
         }
-        var gates = new DXButton { Text = "开关城门", FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(18, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var gates = new DXButton { Text = Lang.GuildUi333Label, FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(18, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
         gates.MouseClick += (o, e) => GameScene.Game?.SendGuildToggleCastleGates();
         _content.AddControl(gates);
-        var repairGates = new DXButton { Text = "修理城门", FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(112, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var repairGates = new DXButton { Text = Lang.GuildRepairLabel, FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(112, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
         repairGates.MouseClick += (o, e) => GameScene.Game?.SendGuildRepairCastleGates();
         _content.AddControl(repairGates);
-        var repairGuards = new DXButton { Text = "修理守卫", FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(206, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var repairGuards = new DXButton { Text = Lang.GuildRepairLabel2, FontSize = 9, Size = new Vector2I(85, 24), Location = new Vector2I(206, 360), LibraryFile = LibraryFile.Interface, Index = -1 };
         repairGuards.MouseClick += (o, e) => GameScene.Game?.SendGuildRepairCastleGuards();
         _content.AddControl(repairGuards);
     }
@@ -440,7 +440,7 @@ public partial class GuildDialog : DXWindow
         for (int i = 0; i < _tabButtons.Count; i++)
             _tabButtons[i].Visible = _guild != null || i == 0;
         if (_tabButtons.Count > 0)
-            _tabButtons[0].Text = _guild == null ? "创建" : Lang.GuildDialogHomeTabLabel;
+            _tabButtons[0].Text = _guild == null ? Lang.GuildDialogCreateTabLabel : Lang.GuildDialogHomeTabLabel;
     }
 
     public bool AuditLayout(out string details)
@@ -468,7 +468,7 @@ public partial class GuildDialog : DXWindow
         var guild = new ClientGuildInfo
         {
             GuildName = "Audit Guild",
-            Notice = "原版行会公告\n第二行",
+            Notice = Lang.GuildGuildLabel11,
             MemberLimit = 20,
             StorageLimit = 22,
             GuildFunds = 123456,
@@ -496,22 +496,22 @@ public partial class GuildDialog : DXWindow
 
     private void BuildCastlePage()
     {
-        AddText("城堡管理", 18, 18);
-        AddText("城门与守卫维护", 18, 62);
-        var gates = new DXButton { Text = "开关城门", FontSize = 9, Size = new Vector2I(120, 27), Location = new Vector2I(18, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
+        AddText(Lang.GuildUi337Label, 18, 18);
+        AddText(Lang.GuildUi338Label, 18, 62);
+        var gates = new DXButton { Text = Lang.GuildUi333Label, FontSize = 9, Size = new Vector2I(120, 27), Location = new Vector2I(18, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
         gates.MouseClick += (o, e) => GameScene.Game?.SendGuildToggleCastleGates();
         _content.AddControl(gates);
-        var repairGates = new DXButton { Text = "修理城门", FontSize = 9, Size = new Vector2I(100, 27), Location = new Vector2I(148, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var repairGates = new DXButton { Text = Lang.GuildRepairLabel, FontSize = 9, Size = new Vector2I(100, 27), Location = new Vector2I(148, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
         repairGates.MouseClick += (o, e) =>
         {
-            var confirm = new ConfirmDialog("确定修理城门吗？", "确认修理", () => GameScene.Game?.SendGuildRepairCastleGates());
+            var confirm = new ConfirmDialog(Lang.GuildOkLabel, Lang.GuildConfirmLabel, () => GameScene.Game?.SendGuildRepairCastleGates());
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         };
         _content.AddControl(repairGates);
-        var repairGuards = new DXButton { Text = "修理守卫", FontSize = 9, Size = new Vector2I(100, 27), Location = new Vector2I(258, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var repairGuards = new DXButton { Text = Lang.GuildRepairLabel2, FontSize = 9, Size = new Vector2I(100, 27), Location = new Vector2I(258, 105), LibraryFile = LibraryFile.Interface, Index = -1 };
         repairGuards.MouseClick += (o, e) =>
         {
-            var confirm = new ConfirmDialog("确定修理守卫吗？", "确认修理", () => GameScene.Game?.SendGuildRepairCastleGuards());
+            var confirm = new ConfirmDialog(Lang.GuildOkLabel2, Lang.GuildConfirmLabel, () => GameScene.Game?.SendGuildRepairCastleGuards());
             WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
         };
         _content.AddControl(repairGuards);
@@ -520,10 +520,10 @@ public partial class GuildDialog : DXWindow
     public void ShowMarriageInvite(string name)
     {
         var panel = new DXControl { Location = new Vector2I(45, 185), Size = new Vector2I(350, 70), BackColour = new Color(0.04f, .025f, .02f, .98f), Border = true, BorderColour = new Color(1f, .75f, .25f) };
-        panel.AddControl(new DXLabel { Text = $"{name ?? "未知玩家"} 向你求婚", FontSize = 10, Location = new Vector2I(8, 7), Size = new Vector2I(334, 22), IsControl = false });
-        var yes = new DXButton { Text = "接受", Size = new Vector2I(70, 24), Location = new Vector2I(80, 38), Index = -1 };
+        panel.AddControl(new DXLabel { Text = $"{name ?? Lang.GroupUnknownLabel} 向你求婚", FontSize = 10, Location = new Vector2I(8, 7), Size = new Vector2I(334, 22), IsControl = false });
+        var yes = new DXButton { Text = Lang.GroupAcceptLabel, Size = new Vector2I(70, 24), Location = new Vector2I(80, 38), Index = -1 };
         yes.MouseClick += (o, e) => { GameScene.Game?.SendMarriageResponse(true); panel.QueueFree(); };
-        var no = new DXButton { Text = "拒绝", Size = new Vector2I(70, 24), Location = new Vector2I(190, 38), Index = -1 };
+        var no = new DXButton { Text = Lang.GroupDeclineLabel, Size = new Vector2I(70, 24), Location = new Vector2I(190, 38), Index = -1 };
         no.MouseClick += (o, e) => { GameScene.Game?.SendMarriageResponse(false); panel.QueueFree(); };
         panel.AddControl(yes); panel.AddControl(no); AddControl(panel);
     }
