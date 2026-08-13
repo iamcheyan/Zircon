@@ -126,7 +126,18 @@ public partial class GameStoreDialog : DXWindow
         // [dbeditor 验收诊断] 全量列表日志（含未翻页行）
         foreach (var it in _items)
             GD.Print($"[GameStore] 列表: {it.Index} {it.Item.ItemName} | 显示价: {(it.Available ? $"{EffectivePrice(it):#,##0}" : "Unavailable")}");
-        GD.Print($"[GameStore] 对话框屏幕区域: pos={GlobalPosition} size={Size} (搜索框相对 385,39; 搜索按钮 530,38)");
+        // [dbeditor 验收钩子] DBEDITOR_VERIFY_ITEM=<名称子串> 时自动跳到含该商品的页（便于无头截图验证价格）
+        string verify = System.Environment.GetEnvironmentVariable("DBEDITOR_VERIFY_ITEM");
+        if (!string.IsNullOrWhiteSpace(verify))
+        {
+            int vi = _items.FindIndex(x => x.Item.ItemName.Contains(verify, StringComparison.OrdinalIgnoreCase));
+            if (vi >= 0 && vi / 10 != _pageIndex)
+            {
+                GD.Print($"[GameStore] 验收钩子: '{verify}' 在第 {vi / 10 + 1} 页, 自动翻页");
+                _pageIndex = vi / 10;
+                _search.Text = "";
+            }
+        }
         foreach (var row in _rows) { _list.RemoveControl(row); row.QueueFree(); } _rows.Clear();
         _pageIndex = Math.Min(_pageIndex, PageCount - 1);
         for (int i = 0; i < 10; i++)
