@@ -29,6 +29,9 @@ public partial class SinglePlayerLauncher : Node
     /// <summary>本启动器拉起的 ServerCore 进程（退出时只杀它）。</summary>
     private Process _spawnedServer;
 
+    /// <summary>本启动器拉起的 BotRunner 进程（单机模式机器人玩家，退出时一并关闭）。</summary>
+    private Process _spawnedBots;
+
     /// <summary>本启动器是否拉起了服务端（LoginScene 据此决定是否等待就绪）。</summary>
     public bool IsSpawned => _spawnedServer != null;
 
@@ -87,11 +90,65 @@ public partial class SinglePlayerLauncher : Node
             _spawnedServer.ErrorDataReceived += (_, e) => { if (e.Data != null) GD.PrintErr($"[Srv] {e.Data}"); };
             _spawnedServer.BeginOutputReadLine();
             _spawnedServer.BeginErrorReadLine();
+
+            // 服务端就绪后拉起机器人玩家（BotRunner，自动注册 bot01..botN 进城巡逻聊天）
+            _ = StartBotsAsync(root);
         }
         catch (Exception ex)
         {
             GD.PrintErr($"[Single] 启动 ServerCore 失败: {ex.Message}");
             _spawnedServer = null;
+        }
+    }
+
+    /// <summary>
+    /// 服务端端口就绪后拉起 BotRunner（机器人玩家）。找不到 dll/配置则静默跳过，
+    /// 不影响单机主流程。机器人数量由 BotRunner.single.json 的 MaxBots 控制（默认 5）。
+    /// </summary>
+    private async System.Threading.Tasks.Task StartBotsAsync(string serverRoot)
+    {
+        try
+        {
+            // 等服务端端口就绪（复用 15s 预算内的一段）
+            var deadline = System.Environment.TickCount64 + 12000;
+            while (System.Environment.TickCount64 < deadline)
+            {
+                if (IsPortOpen("127.0.0.1", 7000)) break;
+                if (_spawnedServer is { HasExited: true }) return;
+                await System.Threading.Tasks.Task.Delay(300);
+            }
+
+            // BotRunner 与配置都在仓库 BotRunner/ 下（配置路径相对 ServerCore 运行目录）
+            string repoBotDir = Path.GetFullPath(Path.Combine(serverRoot, "..", "..", "BotRunner"));
+            string dll = Path.Combine(repoBotDir, "bin", "Debug", "net10.0", "BotRunner.dll");
+            string cfg = Path.Combine(serverRoot, "BotRunner.single.json");
+            if (!File.Exists(dll) || !File.Exists(cfg))
+            {
+                GD.Print($"[Single] BotRunner 未就绪,跳过机器人 (dll={File.Exists(dll)} cfg={File.Exists(cfg)})");
+                return;
+            }
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = "dotnet",
+                Arguments = $"\"{dll}\" \"{cfg}\"",
+                WorkingDirectory = serverRoot, // 配置里的 Database/Map 相对路径基于 ServerCore
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            _spawnedBots = Process.Start(psi);
+            _spawnedBots.OutputDataReceived += (_, e) => { if (e.Data != null) GD.Print($"[Bot] {e.Data}"); };
+            _spawnedBots.ErrorDataReceived += (_, e) => { if (e.Data != null) GD.PrintErr($"[Bot] {e.Data}"); };
+            _spawnedBots.BeginOutputReadLine();
+            _spawnedBots.BeginErrorReadLine();
+            GD.Print($"[Single] BotRunner 已启动 PID={_spawnedBots.Id}（机器人玩家）");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[Single] BotRunner 启动失败(不影响单机): {ex.Message}");
+            _spawnedBots = null;
         }
     }
 
@@ -113,9 +170,18 @@ public partial class SinglePlayerLauncher : Node
         return false;
     }
 
-    /// <summary>客户端退出时调用：只杀本启动器拉起的 ServerCore。</summary>
+    /// <summary>客户端退出时调用：只杀本启动器拉起的 ServerCore 与 BotRunner。</summary>
     public void Shutdown()
     {
+        var bots = _spawnedBots;
+        _spawnedBots = null;
+        if (bots != null && !bots.HasExited)
+        {
+            GD.Print($"[Single] 关闭机器人 PID={bots.Id}");
+            try { bots.Kill(entireProcessTree: true); } catch { /* 已退出 */ }
+            bots.Dispose();
+        }
+
         var p = _spawnedServer;
         _spawnedServer = null;
         if (p == null || p.HasExited) return;
