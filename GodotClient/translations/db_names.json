@@ -502,11 +502,11 @@
   },
   "Commoner Outfit (M)": {
    "zh": "平民布衣（男）",
-   "ja": "クオムモネルの衣装（男）"
+   "ja": "平民の衣装（男）"
   },
   "Commoner Outfit (F)": {
    "zh": "平民布衣（女）",
-   "ja": "クオムモネルの衣装（女）"
+   "ja": "平民の衣装（女）"
   },
   "Trainee's Glaive": {
    "zh": "见习长刀",
@@ -530,19 +530,19 @@
   },
   "Healing Potion (II)": {
    "zh": "金创药（中）",
-   "ja": "ヘアルイングのポーション（II）"
+   "ja": "回復ポーション（II）"
   },
   "Healing Potion (III)": {
    "zh": "金创药（大）",
-   "ja": "ヘアルイングのポーション（III）"
+   "ja": "回復ポーション（III）"
   },
   "Healing Potion (IV)": {
    "zh": "强效金创药",
-   "ja": "ヘアルイングのポーション（IV）"
+   "ja": "回復ポーション（IV）"
   },
   "Healing Potion (V)": {
    "zh": "特效金创药",
-   "ja": "ヘアルイングのポーション（V）"
+   "ja": "回復ポーション（V）"
   },
   "Life Pill": {
    "zh": "金创丸（小）",
@@ -550,19 +550,19 @@
   },
   "Life Pill (II)": {
    "zh": "金创丸（中）",
-   "ja": "生命の丸薬（II）"
+   "ja": "命の丸薬（II）"
   },
   "Life Pill (III)": {
    "zh": "金创丸（大）",
-   "ja": "生命の丸薬（III）"
+   "ja": "命の丸薬（III）"
   },
   "Life Pill (IV)": {
    "zh": "强效金创丸",
-   "ja": "生命の丸薬（IV）"
+   "ja": "命の丸薬（IV）"
   },
   "Life Pill (V)": {
    "zh": "特效金创丸",
-   "ja": "生命の丸薬（V）"
+   "ja": "命の丸薬（V）"
   },
   "Mana Potion": {
    "zh": "魔法药（小）",
@@ -570,19 +570,19 @@
   },
   "Mana Potion (II)": {
    "zh": "魔法药（中）",
-   "ja": "マナのポーション（II）"
+   "ja": "魔力ポーション（II）"
   },
   "Mana Potion (III)": {
    "zh": "魔法药（大）",
-   "ja": "マナのポーション（III）"
+   "ja": "魔力ポーション（III）"
   },
   "Mana Potion (IV)": {
    "zh": "强效魔法药",
-   "ja": "マナのポーション（IV）"
+   "ja": "魔力ポーション（IV）"
   },
   "!Mana Potion (V)": {
    "zh": "特效魔法药",
-   "ja": "マナのポーション（V）"
+   "ja": "魔力ポーション（V）"
   },
   "Mana Pill": {
    "zh": "魔法丸（小）",
@@ -590,19 +590,19 @@
   },
   "Mana Pill (II)": {
    "zh": "魔法丸（中）",
-   "ja": "マナの丸薬（II）"
+   "ja": "魔力丸薬（II）"
   },
   "Mana Pill (III)": {
    "zh": "魔法丸（大）",
-   "ja": "マナの丸薬（III）"
+   "ja": "魔力丸薬（III）"
   },
   "Mana Pill (IV)": {
    "zh": "强效魔法丸",
-   "ja": "マナの丸薬（IV）"
+   "ja": "魔力丸薬（IV）"
   },
   "!Mana Pill (V)": {
    "zh": "特效魔法丸",
-   "ja": "マナの丸薬（V）"
+   "ja": "魔力丸薬（V）"
   },
   "Rejuvenation Potion": {
    "zh": "太阳水",
@@ -634,7 +634,7 @@
   },
   "Plain Ring": {
    "zh": "素戒",
-   "ja": "プルアインの指輪"
+   "ja": "無地の指輪"
   },
   "Iron Bracer": {
    "zh": "铁护腕",
@@ -654,11 +654,11 @@
   },
   "Horned Ring": {
    "zh": "角戒",
-   "ja": "ホルネドの指輪"
+   "ja": "角の指輪"
   },
   "Glass Ring": {
    "zh": "玻璃戒指",
-   "ja": "グルアススの指輪"
+   "ja": "ガラスの指輪"
   },
   "Leather Glove": {
    "zh": "皮手套",
@@ -726,7 +726,7 @@
   },
   "Claw Of Horror": {
    "zh": "恐怖之爪",
-   "ja": "ホルロルの爪"
+   "ja": "恐怖の爪"
   },
   "Trident": {
    "zh": "三叉戟",
@@ -738,11 +738,11 @@
   },
   "Light Armour (M)": {
    "zh": "轻型铠甲（男）",
-   "ja": "光の鎧（男）"
+   "ja": "軽装鎧（男）"
   },
   "Light Armour (F)": {
    "zh": "轻型铠甲（女）",
-   "ja": "光の鎧（女）"
+   "ja": "軽装鎧（女）"
   },
   "Shroud Of Stealth (M)": {
    "zh": "潜行罩袍（男）",
@@ -754,11 +754,11 @@
   },
   "Medium Armour (M)": {
    "zh": "中型铠甲（男）",
-   "ja": "メディウムの鎧（男）"
+   "ja": "中装鎧（男）"
   },
   "Medium Armour (F)": {
    "zh": "中型铠甲（女）",
-   "ja": "メディウムの鎧（女）"
+   "ja": "中装鎧（女）"
   },
   "Flame Robe (M)": {
    "zh": "火焰法袍（男）",
@@ -786,15 +786,15 @@
   },
   "Hexagon Blade": {
    "zh": "六角刃",
-   "ja": "ヘクスアゴンの刃"
+   "ja": "六角の刃"
   },
   "War Spear": {
    "zh": "战矛",
-   "ja": "ワルの槍"
+   "ja": "戦槍"
   },
   "War Blade": {
    "zh": "战刃",
-   "ja": "ワルの刃"
+   "ja": "戦刃"
   },
   "Master's Glaive": {
    "zh": "宗师长刀",
@@ -814,7 +814,7 @@
   },
   "White Tiger Tooth Necklace": {
    "zh": "白虎牙项链",
-   "ja": "白の虎の歯の首飾り"
+   "ja": "白虎の牙の首飾り"
   },
   "Coral Ring": {
    "zh": "珊瑚戒指",
@@ -822,7 +822,7 @@
   },
   "White Serpent Ring": {
    "zh": "白蛇戒指",
-   "ja": "白の蛇の指輪"
+   "ja": "白蛇の指輪"
   },
   "Gauntlet Of Deathbringer": {
    "zh": "死亡使者护手",
@@ -922,7 +922,7 @@
   },
   "Magic Bronze Helmet": {
    "zh": "魔法青铜头盔",
-   "ja": "魔法青銅の兜"
+   "ja": "魔法の青銅の兜"
   },
   "Straw Sandles": {
    "zh": "草鞋",
@@ -1058,19 +1058,19 @@
   },
   "Elixir Of Haste (II)": {
    "zh": "急速灵药（二）",
-   "ja": "ハステのエリクサー（II）"
+   "ja": "急速のエリクサー（II）"
   },
   "Elixir Of Haste (III)": {
    "zh": "急速灵药（三）",
-   "ja": "ハステのエリクサー（III）"
+   "ja": "急速のエリクサー（III）"
   },
   "Elixir Of Haste (IV)": {
    "zh": "急速灵药（四）",
-   "ja": "ハステのエリクサー（IV）"
+   "ja": "急速のエリクサー（IV）"
   },
   "Elixir Of Haste (V)": {
    "zh": "急速灵药（五）",
-   "ja": "ハステのエリクサー（V）"
+   "ja": "急速のエリクサー（V）"
   },
   "Elixir Of Life": {
    "zh": "生命灵药",
@@ -1098,19 +1098,19 @@
   },
   "Elixir Of Mana (II)": {
    "zh": "魔法灵药（二）",
-   "ja": "マナのエリクサー（II）"
+   "ja": "魔力のエリクサー（II）"
   },
   "Elixir Of Mana (III)": {
    "zh": "魔法灵药（三）",
-   "ja": "マナのエリクサー（III）"
+   "ja": "魔力のエリクサー（III）"
   },
   "Elixir Of Mana (IV)": {
    "zh": "魔法灵药（四）",
-   "ja": "マナのエリクサー（IV）"
+   "ja": "魔力のエリクサー（IV）"
   },
   "Elixir Of Mana (V)": {
    "zh": "魔法灵药（五）",
-   "ja": "マナのエリクサー（V）"
+   "ja": "魔力のエリクサー（V）"
   },
   "Elixir Of Nature": {
    "zh": "自然灵药",
@@ -1118,19 +1118,19 @@
   },
   "Elixir Of Nature (II)": {
    "zh": "自然灵药（二）",
-   "ja": "ナトゥレのエリクサー（II）"
+   "ja": "自然のエリクサー（II）"
   },
   "Elixir Of Nature (III)": {
    "zh": "自然灵药（三）",
-   "ja": "ナトゥレのエリクサー（III）"
+   "ja": "自然のエリクサー（III）"
   },
   "Elixir Of Nature (IV)": {
    "zh": "自然灵药（四）",
-   "ja": "ナトゥレのエリクサー（IV）"
+   "ja": "自然のエリクサー（IV）"
   },
   "Elixir Of Nature (V)": {
    "zh": "自然灵药（五）",
-   "ja": "ナトゥレのエリクサー（V）"
+   "ja": "自然のエリクサー（V）"
   },
   "Rugged Leather Gauntlet": {
    "zh": "粗犷皮护手",
@@ -1162,7 +1162,7 @@
   },
   "Loop Of Paralysis": {
    "zh": "麻痹之环",
-   "ja": "パラルイシスの環"
+   "ja": "麻痺の環"
   },
   "Choker Of Learning": {
    "zh": "学识项圈",
@@ -1170,7 +1170,7 @@
   },
   "Loop Of Ressurection": {
    "zh": "复活之环",
-   "ja": "レススレクティオンの環"
+   "ja": "復活の環"
   },
   "Loop Of Protection": {
    "zh": "守护之环",
@@ -1202,7 +1202,7 @@
   },
   "Pendant Of Image": {
    "zh": "镜像吊坠",
-   "ja": "イマゲのペンダント"
+   "ja": "鏡像のペンダント"
   },
   "Helmet Of Shaman": {
    "zh": "萨满头盔",
@@ -1230,7 +1230,7 @@
   },
   "White Skull Helmet": {
    "zh": "白色骷髅头盔",
-   "ja": "白のスクルルの兜"
+   "ja": "白髑髏の兜"
   },
   "Boots Of Crimson Steed": {
    "zh": "绯红骏马之靴",
@@ -1238,15 +1238,15 @@
   },
   "Disguise Of The Master": {
    "zh": "宗师伪装",
-   "ja": "マスターのディスグイセ"
+   "ja": "マスターの変装"
   },
   "Blood Prophet's Cowl": {
    "zh": "血先知头巾帽",
-   "ja": "血預言者のの頭巾"
+   "ja": "血の預言者の頭巾"
   },
   "Assassination Mask": {
    "zh": "暗杀面罩",
-   "ja": "アスサスシナティオンの仮面"
+   "ja": "暗殺の仮面"
   },
   "Husk": {
    "zh": "壳",
@@ -1282,7 +1282,7 @@
   },
   "Serpent Sword": {
    "zh": "蛇纹剑",
-   "ja": "蛇の剣"
+   "ja": "蛇紋剣"
   },
   "Glaive Of Manes": {
    "zh": "亡灵长刀",
@@ -1326,11 +1326,11 @@
   },
   "Shadow Armour Of Deviation (M)": {
    "zh": "偏斜暗影铠甲（男）",
-   "ja": "デヴイアティオンの影鎧（男）"
+   "ja": "偏斜の影鎧（男）"
   },
   "Shadow Armour Of Deviation (F)": {
    "zh": "偏斜暗影铠甲（女）",
-   "ja": "デヴイアティオンの影鎧（女）"
+   "ja": "偏斜の影鎧（女）"
   },
   "Tri Stone Necklace": {
    "zh": "三石项链",
@@ -1342,7 +1342,7 @@
   },
   "Puple Crystal Pendant": {
    "zh": "紫水晶吊坠",
-   "ja": "紫の結晶のペンダント"
+   "ja": "紫水晶のペンダント"
   },
   "Wyvern Armour (M)": {
    "zh": "飞龙铠甲（男）",
@@ -1370,19 +1370,19 @@
   },
   "Demon Hunter's Shroud (M)": {
    "zh": "猎魔罩袍（男）",
-   "ja": "悪魔狩人のの外套（男）"
+   "ja": "悪魔狩人の外套（男）"
   },
   "Demon Hunter's Shroud (F)": {
    "zh": "猎魔罩袍（女）",
-   "ja": "悪魔狩人のの外套（女）"
+   "ja": "悪魔狩人の外套（女）"
   },
   "Gale Ring": {
    "zh": "狂风之戒",
-   "ja": "ガルエの指輪"
+   "ja": "疾風の指輪"
   },
   "Gale Necklace": {
    "zh": "狂风项链",
-   "ja": "ガルエの首飾り"
+   "ja": "疾風の首飾り"
   },
   "Horn": {
    "zh": "角",
@@ -1410,7 +1410,7 @@
   },
   "Head-Guard Of Summoning": {
    "zh": "召唤护额",
-   "ja": "召喚のヘアドの守衛"
+   "ja": "召喚の額当て"
   },
   "Enchanted Blade": {
    "zh": "附魔之刃",
@@ -1422,7 +1422,7 @@
   },
   "Arm Wrap Of Vigor": {
    "zh": "活力臂带",
-   "ja": "活力の腕の腕帯"
+   "ja": "活力の腕帯"
   },
   "Pendant Of Vigor": {
    "zh": "活力吊坠",
@@ -1446,7 +1446,7 @@
   },
   "Anti Evil Necklace": {
    "zh": "辟邪项链",
-   "ja": "アンティのエヴイルの首飾り"
+   "ja": "厄除けの首飾り"
   },
   "Ring Of Life Stealing": {
    "zh": "吸血之戒",
@@ -1454,7 +1454,7 @@
   },
   "Wrist Guard Of Life Stealing": {
    "zh": "吸血护腕",
-   "ja": "吸血の手首の守衛"
+   "ja": "吸血の腕当て"
   },
   "Pendant Of Life Stealing": {
    "zh": "吸血吊坠",
@@ -1466,11 +1466,11 @@
   },
   "Dark Iron Gauntlet": {
    "zh": "黑铁护手",
-   "ja": "闇の鉄の篭手"
+   "ja": "黒鉄の篭手"
   },
   "Tainted Bracelet": {
    "zh": "污秽手镯",
-   "ja": "タインテドの腕輪"
+   "ja": "汚染の腕輪"
   },
   "Claw": {
    "zh": "爪子",
@@ -1482,7 +1482,7 @@
   },
   "Gold Plated Bracelet": {
    "zh": "镀金手镯",
-   "ja": "金の金張りの腕輪"
+   "ja": "金張りの腕輪"
   },
   "Bamboo Hat": {
    "zh": "竹笠",
@@ -1498,7 +1498,7 @@
   },
   "Battle Necklace": {
    "zh": "战斗项链",
-   "ja": "バトトルエの首飾り"
+   "ja": "戦闘の首飾り"
   },
   "Phantom Choker": {
    "zh": "幽灵项圈",
@@ -1526,11 +1526,11 @@
   },
   "White Lotus Disguise": {
    "zh": "白莲伪装",
-   "ja": "白の蓮のディスグイセ"
+   "ja": "白蓮の変装"
   },
   "Red Lotus Disguise": {
    "zh": "红莲伪装",
-   "ja": "赤の蓮のディスグイセ"
+   "ja": "紅蓮の変装"
   },
   "Fragment Of Zuma King": {
    "zh": "祖玛教主碎片",
@@ -1558,7 +1558,7 @@
   },
   "Meteorite Pendant": {
    "zh": "陨石吊坠",
-   "ja": "メテオリテのペンダント"
+   "ja": "隕石のペンダント"
   },
   "Blessed Ring Of Exorcism": {
    "zh": "祝福驱魔戒指",
@@ -1586,7 +1586,7 @@
   },
   "Laurel Mask": {
    "zh": "月桂面罩",
-   "ja": "ルアウレルの仮面"
+   "ja": "月桂樹の仮面"
   },
   "Burning Dark Stone": {
    "zh": "燃烧黑铁石",
@@ -1670,7 +1670,7 @@
   },
   "Great Axe": {
    "zh": "巨斧",
-   "ja": "グレアトの斧"
+   "ja": "大斧"
   },
   "Mage Sword": {
    "zh": "法师之剑",
@@ -1682,7 +1682,7 @@
   },
   "White Lotus Glaive": {
    "zh": "白莲长刀",
-   "ja": "白の蓮の長刀"
+   "ja": "白蓮の長刀"
   },
   "Amulet Of Ancient Kingdom": {
    "zh": "古王国护符",
@@ -1690,7 +1690,7 @@
   },
   "Nature Band Of Ancient Kingdom": {
    "zh": "古王国自然之环",
-   "ja": "古代王国のナトゥレの指輪"
+   "ja": "古代王国の自然の指輪"
   },
   "Spirit Band Of Ancient Kingdom": {
    "zh": "古王国灵魂之环",
@@ -1698,11 +1698,11 @@
   },
   "Armoured Bracer Of Ancient Kingdom": {
    "zh": "古王国装甲护腕",
-   "ja": "古代王国のアルモウレドの腕輪"
+   "ja": "古代王国の装甲の腕輪"
   },
   "Holy Bracer Of Ancient Kingdom": {
    "zh": "古王国圣护腕",
-   "ja": "古代王国の聖なるの腕輪"
+   "ja": "古代王国の聖なる腕輪"
   },
   "Sanyum Bead": {
    "zh": "三阴珠",
@@ -1726,7 +1726,7 @@
   },
   "Hexagonal Ring": {
    "zh": "六角戒指",
-   "ja": "ヘクスアゴナルの指輪"
+   "ja": "六角の指輪"
   },
   "Steel Bracelet": {
    "zh": "钢手镯",
@@ -1762,7 +1762,7 @@
   },
   "Serpent Ring": {
    "zh": "蛇纹戒指",
-   "ja": "蛇の指輪"
+   "ja": "蛇紋の指輪"
   },
   "Amber Necklace": {
    "zh": "琥珀项链",
@@ -1810,15 +1810,15 @@
   },
   "Assassin's Ripper": {
    "zh": "刺客撕裂者",
-   "ja": "暗殺者のリプペル"
+   "ja": "暗殺者の裂傷刃"
   },
   "Choker Of Ashes": {
    "zh": "灰烬项圈",
-   "ja": "アシェスのチョーカー"
+   "ja": "灰のチョーカー"
   },
   "Necklace Of Nature": {
    "zh": "自然项链",
-   "ja": "ナトゥレの首飾り"
+   "ja": "自然の首飾り"
   },
   "Band Of Magic": {
    "zh": "魔法之环",
@@ -1842,7 +1842,7 @@
   },
   "Amulet Of Chaos": {
    "zh": "混沌护符",
-   "ja": "カオスの護符"
+   "ja": "混沌の護符"
   },
   "Pendant Of Destruction": {
    "zh": "毁灭吊坠",
@@ -1866,7 +1866,7 @@
   },
   "Spiked Ring": {
    "zh": "尖刺戒指",
-   "ja": "スピケドの指輪"
+   "ja": "棘の指輪"
   },
   "Opal Ring": {
    "zh": "蛋白石戒指",
@@ -1874,11 +1874,11 @@
   },
   "Hieroglyphic Ring": {
    "zh": "象形文字戒指",
-   "ja": "ヒエログルイフイクの指輪"
+   "ja": "象形文字の指輪"
   },
   "Red Maple Ring": {
    "zh": "红枫戒指",
-   "ja": "赤の楓の指輪"
+   "ja": "紅葉の指輪"
   },
   "Jewel": {
    "zh": "宝石",
@@ -1898,7 +1898,7 @@
   },
   "Cursed Serpent Sword": {
    "zh": "诅咒蛇纹剑",
-   "ja": "呪われた蛇の剣"
+   "ja": "呪われた蛇紋剣"
   },
   "Ambitious Sword Of Abyss": {
    "zh": "雄心深渊之刃",
@@ -1918,7 +1918,7 @@
   },
   "Lance Of Obedience": {
    "zh": "服从之矛",
-   "ja": "オベディエンクエの槍"
+   "ja": "従順の槍"
   },
   "Hero's Bracelet": {
    "zh": "英雄手镯",
@@ -1926,7 +1926,7 @@
   },
   "Holy Bracer": {
    "zh": "圣护腕",
-   "ja": "聖なるの腕輪"
+   "ja": "聖なる腕輪"
   },
   "Wyvern Bracelet": {
    "zh": "双足飞龙手镯",
@@ -1954,11 +1954,11 @@
   },
   "Glaive Of Frozen Heart": {
    "zh": "冰封之心长刀",
-   "ja": "フロゼンのヘアルトの長刀"
+   "ja": "氷結の心の長刀"
   },
   "Red Lotus Glaive": {
    "zh": "红莲长刀",
-   "ja": "赤の蓮の長刀"
+   "ja": "紅蓮の長刀"
   },
   "Conqueror's Talon": {
    "zh": "征服者之爪",
@@ -1966,7 +1966,7 @@
   },
   "Amulet Of The Cult Leader": {
    "zh": "邪教首领护符",
-   "ja": "邪教の教主の護符"
+   "ja": "邪教教主の護符"
   },
   "Amulet Of Five Elements": {
    "zh": "五行护符",
@@ -1990,7 +1990,7 @@
   },
   "Blue Sword Of Purification": {
    "zh": "蓝色净化之剑",
-   "ja": "浄化の青の剣"
+   "ja": "浄化の青色の剣"
   },
   "Serpent Sword Of Banya": {
    "zh": "潘夜蛇纹剑",
@@ -2034,7 +2034,7 @@
   },
   "Gold Dragon Ring": {
    "zh": "金龙戒指",
-   "ja": "金の竜の指輪"
+   "ja": "金竜の指輪"
   },
   "Potion Of Forgetfulness": {
    "zh": "遗忘药水",
@@ -2042,7 +2042,7 @@
   },
   "Enraged Demon's Hood": {
    "zh": "暴怒恶魔兜帽",
-   "ja": "暴怒の悪魔のの頭巾"
+   "ja": "暴怒の悪魔の頭巾"
   },
   "Loop Of Secrets": {
    "zh": "秘密之环",
@@ -2086,23 +2086,23 @@
   },
   "Forged Scimitar": {
    "zh": "锻造弯刀",
-   "ja": "フオルゲドのシミター"
+   "ja": "鍛造シミター"
   },
   "Runed Staff": {
    "zh": "符文法杖",
-   "ja": "ルネドの杖"
+   "ja": "ルーンの杖"
   },
   "Judgement Mace": {
    "zh": "裁决之锤",
-   "ja": "ジュドゲメントの杖"
+   "ja": "裁決の杖"
   },
   "Dragon Bone Staff": {
    "zh": "龙骨法杖",
-   "ja": "竜の骨の杖"
+   "ja": "龍骨の杖"
   },
   "Runed Emblem": {
    "zh": "符文徽章",
-   "ja": "ルネドの紋章"
+   "ja": "ルーンの紋章"
   },
   "Death Steel Claw": {
    "zh": "死亡钢爪",
@@ -2138,7 +2138,7 @@
   },
   "Turban Of Discipline": {
    "zh": "戒律头巾",
-   "ja": "戒律のトゥルバン"
+   "ja": "戒律のターバン"
   },
   "Helmet Of The Conqueror": {
    "zh": "征服者头盔",
@@ -2182,19 +2182,19 @@
   },
   "Raiment Of Arch Mage (M)": {
    "zh": "大法师法衣（男）",
-   "ja": "大の魔導士の法衣（男）"
+   "ja": "大魔導士の法衣（男）"
   },
   "Raiment Of Arch Mage (F)": {
    "zh": "大法师法衣（女）",
-   "ja": "大の魔導士の法衣（女）"
+   "ja": "大魔導士の法衣（女）"
   },
   "Raiment Of High Priest (M)": {
    "zh": "大祭司法衣（男）",
-   "ja": "大の神官の法衣（男）"
+   "ja": "大神官の法衣（男）"
   },
   "Raiment Of High Priest (F)": {
    "zh": "大祭司法衣（女）",
-   "ja": "大の神官の法衣（女）"
+   "ja": "大神官の法衣（女）"
   },
   "Tunic Of Annihilation (M)": {
    "zh": "湮灭长袍（男）",
@@ -2210,7 +2210,7 @@
   },
   "Enraged Falcon's Mask": {
    "zh": "暴怒猎鹰面罩",
-   "ja": "暴怒のハヤブサのの仮面"
+   "ja": "暴怒のハヤブサの仮面"
   },
   "Skeleton Ring": {
    "zh": "骷髅戒指",
@@ -2238,7 +2238,7 @@
   },
   "Shadow Chaser": {
    "zh": "追影靴",
-   "ja": "影のチャセル"
+   "ja": "影追いの靴"
   },
   "Ice Rain": {
    "zh": "冰雨",
@@ -2294,7 +2294,7 @@
   },
   "Soul Trapped Necklace": {
    "zh": "缚魂项链",
-   "ja": "霊魂の縛りの首飾り"
+   "ja": "魂縛りの首飾り"
   },
   "Celestial Blade": {
    "zh": "天界之刃",
@@ -2322,7 +2322,7 @@
   },
   "Divine Command": {
    "zh": "神谕之令",
-   "ja": "神聖なる令"
+   "ja": "神託の令"
   },
   "Relic": {
    "zh": "遗物",
@@ -2362,7 +2362,7 @@
   },
   "Rusty Bracelet Of Ascension": {
    "zh": "锈蚀飞升手镯",
-   "ja": "錆びたアスクエンシオンの腕輪"
+   "ja": "錆びた飛昇の腕輪"
   },
   "Courage Of Kelsar": {
    "zh": "凯尔萨之勇气",
@@ -2394,7 +2394,7 @@
   },
   "Shamal's Staff Of Retribution": {
    "zh": "沙马尔的惩戒法杖",
-   "ja": "シャマルのレトリブティオンの杖"
+   "ja": "シャマルの報復の杖"
   },
   "Falcon Glaive": {
    "zh": "猎鹰长刀",
@@ -2434,7 +2434,7 @@
   },
   "Bracelet Of Ascension": {
    "zh": "飞升手镯",
-   "ja": "アスクエンシオンの腕輪"
+   "ja": "飛昇の腕輪"
   },
   "Relic Fragment": {
    "zh": "遗物碎片",
@@ -2458,11 +2458,11 @@
   },
   "Bracelet Of Canopus": {
    "zh": "老人星手镯",
-   "ja": "クアノプスの腕輪"
+   "ja": "カノープスの腕輪"
   },
   "Ring Of Alpha Centauri": {
    "zh": "南门二之戒",
-   "ja": "アルファのクエンタウリの指輪"
+   "ja": "アルファ・ケンタウリの指輪"
   },
   "Celestial Necklace Of Eternity": {
    "zh": "永恒天界项链",
@@ -2478,19 +2478,19 @@
   },
   "The Master's Pendant": {
    "zh": "大师吊坠",
-   "ja": "マスターののペンダント"
+   "ja": "マスターのペンダント"
   },
   "The Master's Bracelet": {
    "zh": "大师手镯",
-   "ja": "マスターのの腕輪"
+   "ja": "マスターの腕輪"
   },
   "The Master's Ring": {
    "zh": "大师之戒",
-   "ja": "マスターのの指輪"
+   "ja": "マスターの指輪"
   },
   "Claw Of The Demon God": {
    "zh": "魔神之爪",
-   "ja": "悪魔の神の爪"
+   "ja": "魔神の爪"
   },
   "Hero's Band Of Supremacy": {
    "zh": "至高英雄之环",
@@ -2542,11 +2542,11 @@
   },
   "Raiment Of Spectral Energy (M)": {
    "zh": "幽能法衣（男）",
-   "ja": "霊体のエネルギーの法衣（男）"
+   "ja": "霊体エネルギーの法衣（男）"
   },
   "Raiment Of Spectral Energy (F)": {
    "zh": "幽能法衣（女）",
-   "ja": "霊体のエネルギーの法衣（女）"
+   "ja": "霊体エネルギーの法衣（女）"
   },
   "Band Of Azure Sky": {
    "zh": "蔚蓝天空之环",
@@ -2554,7 +2554,7 @@
   },
   "Aged Gold Band Of Mystic": {
    "zh": "古旧神秘金环",
-   "ja": "古びたムイスティクの金の指輪"
+   "ja": "古びた神秘の金の指輪"
   },
   "Channeler's Signet Of Wizardry": {
    "zh": "通灵者的巫术印章戒",
@@ -3074,7 +3074,7 @@
   },
   "Ascension Bracelet": {
    "zh": "飞升手镯",
-   "ja": "アスクエンシオンの腕輪"
+   "ja": "飛昇の腕輪"
   },
   "Band Of Unstable Energy": {
    "zh": "不稳定能量之环",
@@ -3162,47 +3162,47 @@
   },
   "Holy Bracer Of Grace": {
    "zh": "恩典圣护腕",
-   "ja": "恩寵の聖なるの腕輪"
+   "ja": "恩寵の聖なる腕輪"
   },
   "Rusty Seal Of Overlord": {
    "zh": "生锈的霸主封印",
-   "ja": "錆びたオヴエルルオルドの封印"
+   "ja": "錆びた覇王の封印"
   },
   "Cracked Seal Of Overlord": {
    "zh": "龟裂的霸主封印",
-   "ja": "ひび割れたオヴエルルオルドの封印"
+   "ja": "ひび割れた覇王の封印"
   },
   "Worn Seal Of Overlord": {
    "zh": "磨损的霸主封印",
-   "ja": "摩耗したオヴエルルオルドの封印"
+   "ja": "摩耗した覇王の封印"
   },
   "Rusty Bracelet Of Overlord": {
    "zh": "生锈的霸主手镯",
-   "ja": "錆びたオヴエルルオルドの腕輪"
+   "ja": "錆びた覇王の腕輪"
   },
   "Cracked Bracelet Of Overlord": {
    "zh": "龟裂的霸主手镯",
-   "ja": "ひび割れたオヴエルルオルドの腕輪"
+   "ja": "ひび割れた覇王の腕輪"
   },
   "Worn Bracelet Of Overlord": {
    "zh": "磨损的霸主手镯",
-   "ja": "摩耗したオヴエルルオルドの腕輪"
+   "ja": "摩耗した覇王の腕輪"
   },
   "Scratched Bracelet Of Overlord": {
    "zh": "刮花的霸主手镯",
-   "ja": "擦り傷のあるオヴエルルオルドの腕輪"
+   "ja": "擦り傷のある覇王の腕輪"
   },
   "Rusty Medallion Of Overlord": {
    "zh": "生锈的霸主勋章",
-   "ja": "錆びたオヴエルルオルドのメダル"
+   "ja": "錆びた覇王のメダル"
   },
   "Cracked Medallion Of Overlord": {
    "zh": "龟裂的霸主勋章",
-   "ja": "ひび割れたオヴエルルオルドのメダル"
+   "ja": "ひび割れた覇王のメダル"
   },
   "Worn Medallion Of Overlord": {
    "zh": "磨损的霸主勋章",
-   "ja": "摩耗したオヴエルルオルドのメダル"
+   "ja": "摩耗した覇王のメダル"
   },
   "Rusty Signet Of Moon": {
    "zh": "生锈的月之印章戒",
@@ -3322,19 +3322,19 @@
   },
   "Argent Battleplate Of Might (M)": {
    "zh": "威能白银战甲（男）",
-   "ja": "力のアルゲントの戦鎧（男）"
+   "ja": "力の銀の戦鎧（男）"
   },
   "Argent Battleplate Of Might (F)": {
    "zh": "威能白银战甲（女）",
-   "ja": "力のアルゲントの戦鎧（女）"
+   "ja": "力の銀の戦鎧（女）"
   },
   "Sacred Warplate Of Mastery (M)": {
    "zh": "神圣精通战甲（男）",
-   "ja": "熟練のサクレドの戦鎧（男）"
+   "ja": "熟練の神聖な戦鎧（男）"
   },
   "Sacred Warplate Of Mastery (F)": {
    "zh": "神圣精通战甲（女）",
-   "ja": "熟練のサクレドの戦鎧（女）"
+   "ja": "熟練の神聖な戦鎧（女）"
   },
   "Blazing Raiment Of Phoenix (M)": {
    "zh": "凤凰炽焰法衣（男）",
@@ -3354,11 +3354,11 @@
   },
   "Wyvern Scale Armour (M)": {
    "zh": "飞龙鳞甲（男）",
-   "ja": "ワイバーンの鱗の鎧（男）"
+   "ja": "ワイバーンの鱗鎧（男）"
   },
   "Wyvern Scale Armour (F)": {
    "zh": "飞龙鳞甲（女）",
-   "ja": "ワイバーンの鱗の鎧（女）"
+   "ja": "ワイバーンの鱗鎧（女）"
   },
   "Armour Of Demonic Wrath (M)": {
    "zh": "恶魔之怒铠甲（男）",
@@ -3370,11 +3370,11 @@
   },
   "Blazing Raiment Of Embers (M)": {
    "zh": "余烬炽焰法衣（男）",
-   "ja": "燃え盛るエンブエルスの法衣（男）"
+   "ja": "燃え盛る残り火の法衣（男）"
   },
   "Blazing Raiment Of Embers (F)": {
    "zh": "余烬炽焰法衣（女）",
-   "ja": "燃え盛るエンブエルスの法衣（女）"
+   "ja": "燃え盛る残り火の法衣（女）"
   },
   "Demonic Raiment Of Illusion (M)": {
    "zh": "恶魔幻象法衣（男）",
@@ -3386,15 +3386,15 @@
   },
   "Seal Of Overlord": {
    "zh": "霸主封印",
-   "ja": "オヴエルルオルドの封印"
+   "ja": "覇王の封印"
   },
   "Bracelet Of Overlord": {
    "zh": "霸主手镯",
-   "ja": "オヴエルルオルドの腕輪"
+   "ja": "覇王の腕輪"
   },
   "Medallion Of Overlord": {
    "zh": "霸主勋章",
-   "ja": "オヴエルルオルドのメダル"
+   "ja": "覇王のメダル"
   },
   "Arcanist's Band Of Dignity": {
    "zh": "秘法师的尊严之环",
@@ -3434,7 +3434,7 @@
   },
   "Helmet Of Dragon Abyss": {
    "zh": "龙渊头盔",
-   "ja": "竜の深淵の兜"
+   "ja": "竜淵の兜"
   },
   "Armour Of Abyss (M)": {
    "zh": "深渊铠甲（男）",
@@ -3446,19 +3446,19 @@
   },
   "Pendant Of Dragon Abyss": {
    "zh": "龙渊吊坠",
-   "ja": "竜の深淵のペンダント"
+   "ja": "竜淵のペンダント"
   },
   "Armguard Of Dragon Abyss": {
    "zh": "龙渊护腕",
-   "ja": "竜の深淵の腕当て"
+   "ja": "竜淵の腕当て"
   },
   "Band Of Dragon Abyss": {
    "zh": "龙渊之环",
-   "ja": "竜の深淵の指輪"
+   "ja": "竜淵の指輪"
   },
   "Greaves Of Dragon Abyss": {
    "zh": "龙渊胫甲",
-   "ja": "竜の深淵の脛当て"
+   "ja": "竜淵の脛当て"
   },
   "Jade Choker Of Purity": {
    "zh": "纯净玉项圈",
@@ -3566,91 +3566,91 @@
   },
   "Warrior's Edge": {
    "zh": "战士之刃",
-   "ja": "戦士のエドゲ"
+   "ja": "戦士の刃"
   },
   "Wizard's Edge": {
    "zh": "法师之刃",
-   "ja": "魔法使いのエドゲ"
+   "ja": "魔法使いの刃"
   },
   "Taoist's Edge": {
    "zh": "道士之刃",
-   "ja": "道士のエドゲ"
+   "ja": "道士の刃"
   },
   "Assassin's Edge": {
    "zh": "刺客之刃",
-   "ja": "暗殺者のエドゲ"
+   "ja": "暗殺者の刃"
   },
   "Yellow Cube": {
    "zh": "黄色立方体",
-   "ja": "黄の立方体"
+   "ja": "黄色の立方体"
   },
   "Blue Cube": {
    "zh": "蓝色立方体",
-   "ja": "青の立方体"
+   "ja": "青色の立方体"
   },
   "Red Cube": {
    "zh": "红色立方体",
-   "ja": "赤の立方体"
+   "ja": "赤色の立方体"
   },
   "Purple Cube": {
    "zh": "紫色立方体",
-   "ja": "紫の立方体"
+   "ja": "紫色の立方体"
   },
   "Green Cube": {
    "zh": "绿色立方体",
-   "ja": "緑の立方体"
+   "ja": "緑色の立方体"
   },
   "Grey Cube": {
    "zh": "灰色立方体",
-   "ja": "灰の立方体"
+   "ja": "灰色の立方体"
   },
   "Yellow Orb": {
    "zh": "黄色宝珠",
-   "ja": "黄の宝珠"
+   "ja": "黄色の宝珠"
   },
   "Blue Orb": {
    "zh": "蓝色宝珠",
-   "ja": "青の宝珠"
+   "ja": "青色の宝珠"
   },
   "Red Orb": {
    "zh": "红色宝珠",
-   "ja": "赤の宝珠"
+   "ja": "赤色の宝珠"
   },
   "Purple Orb": {
    "zh": "紫色宝珠",
-   "ja": "紫の宝珠"
+   "ja": "紫色の宝珠"
   },
   "Green Orb": {
    "zh": "绿色宝珠",
-   "ja": "緑の宝珠"
+   "ja": "緑色の宝珠"
   },
   "Grey Orb": {
    "zh": "灰色宝珠",
-   "ja": "灰の宝珠"
+   "ja": "灰色の宝珠"
   },
   "Yellow Trinket": {
    "zh": "黄色小饰品",
-   "ja": "黄の装身具"
+   "ja": "黄色の装身具"
   },
   "Blue Trinket": {
    "zh": "蓝色小饰品",
-   "ja": "青の装身具"
+   "ja": "青色の装身具"
   },
   "Red Trinket": {
    "zh": "红色小饰品",
-   "ja": "赤の装身具"
+   "ja": "赤色の装身具"
   },
   "Purple Trinket": {
    "zh": "紫色小饰品",
-   "ja": "紫の装身具"
+   "ja": "紫色の装身具"
   },
   "Green Trinket": {
    "zh": "绿色小饰品",
-   "ja": "緑の装身具"
+   "ja": "緑色の装身具"
   },
   "Grey Trinket": {
    "zh": "灰色小饰品",
-   "ja": "灰の装身具"
+   "ja": "灰色の装身具"
   },
   "Carrot": {
    "zh": "胡萝卜",
@@ -3662,15 +3662,15 @@
   },
   "Novice Emblem": {
    "zh": "新手徽章",
-   "ja": "ノヴイクエの紋章"
+   "ja": "初心者の紋章"
   },
   "Expert Emblem": {
    "zh": "专家徽章",
-   "ja": "エクスペルトの紋章"
+   "ja": "熟練者の紋章"
   },
   "Elite Emblem": {
    "zh": "精英徽章",
-   "ja": "エルイテの紋章"
+   "ja": "精鋭の紋章"
   },
   "Heavy Boots": {
    "zh": "重靴",
@@ -3746,7 +3746,7 @@
   },
   "Lapis Lazuli Ring": {
    "zh": "青金石戒指",
-   "ja": "ルアピスのルアズルイの指輪"
+   "ja": "ラピスラズリの指輪"
   },
   "Malachite Ring": {
    "zh": "孔雀石戒指",
@@ -3758,7 +3758,7 @@
   },
   "Lapis Lazuli Bracelet": {
    "zh": "青金石手镯",
-   "ja": "ルアピスのルアズルイの腕輪"
+   "ja": "ラピスラズリの腕輪"
   },
   "Malachite Bracelet": {
    "zh": "孔雀石手镯",
@@ -3770,7 +3770,7 @@
   },
   "Lapis Lazuli Necklace": {
    "zh": "青金石项链",
-   "ja": "ルアピスのルアズルイの首飾り"
+   "ja": "ラピスラズリの首飾り"
   },
   "Malachite Necklace": {
    "zh": "孔雀石项链",
@@ -3826,19 +3826,19 @@
   },
   "Armour of Eternal Rest (M)": {
    "zh": "永恒安息铠甲（男）",
-   "ja": "永遠のレストの鎧（男）"
+   "ja": "永遠の安息の鎧（男）"
   },
   "Armour of Eternal Rest (F)": {
    "zh": "永恒安息铠甲（女）",
-   "ja": "永遠のレストの鎧（女）"
+   "ja": "永遠の安息の鎧（女）"
   },
   "Tunic of Whispers (M)": {
    "zh": "低语长袍（男）",
-   "ja": "ホイスペルスのチュニック（男）"
+   "ja": "囁きのチュニック（男）"
   },
   "Tunic of Whispers (F)": {
    "zh": "低语长袍（女）",
-   "ja": "ホイスペルスのチュニック（女）"
+   "ja": "囁きのチュニック（女）"
   },
   "Kingsguard Helmet": {
    "zh": "王庭卫士头盔",
@@ -3870,19 +3870,19 @@
   },
   "Zirconian Emblem": {
    "zh": "锆石徽章",
-   "ja": "ジルクオニアンの紋章"
+   "ja": "ジルコニアの紋章"
   },
   "Striking Boots": {
    "zh": "突击之靴",
-   "ja": "ストリキングの靴"
+   "ja": "突撃の靴"
   },
   "Swiftcaster Boots": {
    "zh": "迅捷施法靴",
-   "ja": "スワイフトクアステルの靴"
+   "ja": "高速詠唱の靴"
   },
   "Lifeseeker Boots": {
    "zh": "觅命之靴",
-   "ja": "ルイフエセエケルの靴"
+   "ja": "命探しの靴"
   },
   "Obsidian Ring": {
    "zh": "黑曜石戒指",
@@ -3930,7 +3930,7 @@
   },
   "Crushing Bracelet": {
    "zh": "粉碎手镯",
-   "ja": "クルシングの腕輪"
+   "ja": "粉砕の腕輪"
   },
   "Odyn Son": {
    "zh": "奥丁之子",
@@ -3946,7 +3946,7 @@
   },
   "Crushing Ring": {
    "zh": "粉碎戒指",
-   "ja": "クルシングの指輪"
+   "ja": "粉砕の指輪"
   },
   "Occult Ring": {
    "zh": "秘术戒指",
@@ -3954,7 +3954,7 @@
   },
   "Radiant Ring": {
    "zh": "光辉戒指",
-   "ja": "ラディアントの指輪"
+   "ja": "光輝の指輪"
   },
   "Occult Bracelet": {
    "zh": "秘术手镯",
@@ -3962,7 +3962,7 @@
   },
   "Radiant Bracelet": {
    "zh": "光辉手镯",
-   "ja": "ラディアントの腕輪"
+   "ja": "光輝の腕輪"
   },
   "Dusk Ring": {
    "zh": "黄昏戒指",
@@ -3974,7 +3974,7 @@
   },
   "Radiant Necklace": {
    "zh": "光辉项链",
-   "ja": "ラディアントの首飾り"
+   "ja": "光輝の首飾り"
   },
   "Occult Necklace": {
    "zh": "秘术项链",
@@ -3982,7 +3982,7 @@
   },
   "Crushing Necklace": {
    "zh": "粉碎项链",
-   "ja": "クルシングの首飾り"
+   "ja": "粉砕の首飾り"
   },
   "Dusk Necklace": {
    "zh": "黄昏项链",
@@ -4062,11 +4062,11 @@
   },
   "Rainments of the Blazing Comet (M)": {
    "zh": "炽焰彗星法衣（男）",
-   "ja": "ブルアジングのクオメトの法衣（男）"
+   "ja": "燃え盛る彗星の法衣（男）"
   },
   "Rainments of the Blazing Comet (F)": {
    "zh": "炽焰彗星法衣（女）",
-   "ja": "ブルアジングのクオメトの法衣（女）"
+   "ja": "燃え盛る彗星の法衣（女）"
   },
   "Robes of the Titan Slayer (M)": {
    "zh": "泰坦屠戮者法袍（男）",
@@ -4270,11 +4270,11 @@
   },
   "Penance Thurible": {
    "zh": "赎罪香炉",
-   "ja": "ペナンクエの香炉"
+   "ja": "贖罪の香炉"
   },
   "Censorship Thurible": {
    "zh": "审查香炉",
-   "ja": "クエンソルシプの香炉"
+   "ja": "検閲の香炉"
   },
   "Petrichor Thurible": {
    "zh": "雨后泥土香炉",
