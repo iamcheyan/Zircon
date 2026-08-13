@@ -9,6 +9,8 @@ namespace ZirconClient.Scripts;
 
 public partial class SelectScene : Control
 {
+    private Control _uiRoot;
+    private CanvasLayer _uiLayer;
     private Network.NetworkManager _net;
     private List<SelectInfo> _characters = new();
     private ItemList _charList;
@@ -59,15 +61,21 @@ public partial class SelectScene : Control
         _deleteBtn = new Button { Text = Lang.SelectCharacterLabel, Disabled = true };
         GetNode<Control>("VBox").AddChild(_deleteBtn);
         _statusLabel = GetNode<Label>("VBox/StatusLabel");
+        // 2 倍 UI 缩放：DX 旧版 UI 挂到缩放层，窗口放大时跟随缩放。
+        _uiRoot = new Control { Name = "UiRoot", MouseFilter = Control.MouseFilterEnum.Ignore };
+        AddChild(_uiRoot);
+        _uiLayer = UiScaler.CreateLayer(_uiRoot, this);
         BuildLegacySelectUi();
+        UiScaler.UpdateScale(_uiLayer, GetViewport());
+        Resized += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
 
         // 填充职业/性别选项
         _classBtn.AddItem("战士", (int)MirClass.Warrior);
-        _classBtn.AddItem("Wizard", (int)MirClass.Wizard);
-        _classBtn.AddItem("Taoist", (int)MirClass.Taoist);
-        _classBtn.AddItem("Assassin", (int)MirClass.Assassin);
+        _classBtn.AddItem("法师", (int)MirClass.Wizard);
+        _classBtn.AddItem("道士", (int)MirClass.Taoist);
+        _classBtn.AddItem("刺客", (int)MirClass.Assassin);
         _genderBtn.AddItem("男", (int)MirGender.Male);
-        _genderBtn.AddItem("Female", (int)MirGender.Female);
+        _genderBtn.AddItem("女", (int)MirGender.Female);
 
         if (_createBtn != null) _createBtn.Pressed += OnCreatePressed;
         if (_startBtn != null) _startBtn.Pressed += OnStartPressed;
@@ -357,7 +365,7 @@ public partial class SelectScene : Control
             MouseFilter = MouseFilterEnum.Ignore,
             Position = (viewport - new Vector2(1024, 768)) / 2f,
         };
-        AddChild(background);
+        _uiRoot.AddChild(background);
 
         _skinConfigButton = new DXButton
         {
@@ -371,7 +379,7 @@ public partial class SelectScene : Control
             _selectConfig ??= new ConfigDialog { Position = new Vector2((viewport.X - 380) / 2f, (viewport.Y - 430) / 2f) };
             WindowManager.Toggle(_selectConfig, this);
         };
-        AddChild(_skinConfigButton);
+        _uiRoot.AddChild(_skinConfigButton);
 
         var leftGlow = new DXAnimatedControl
         {

@@ -11,6 +11,8 @@ namespace ZirconClient.Scripts;
 public partial class LoginScene : Control
 {
     private Network.NetworkManager _net;
+    private Control _uiRoot;
+    private CanvasLayer _uiLayer;
     private LineEdit _emailEdit;
     private LineEdit _passwordEdit;
     private Button _loginBtn;
@@ -54,7 +56,14 @@ public partial class LoginScene : Control
 
         _loginBtn.Pressed += OnLoginPressed;
         _registerBtn.Pressed += OnRegisterPressed;
+        // 2 倍 UI 缩放：DX 旧版 UI 按 1024x768 逻辑坐标布局，挂到缩放根
+        // 下并应用 UiScale Transform，窗口放大时跟随缩放（与 GameScene 一致）。
+        _uiRoot = new Control { Name = "UiRoot", MouseFilter = Control.MouseFilterEnum.Ignore };
+        AddChild(_uiRoot);
+        _uiLayer = UiScaler.CreateLayer(_uiRoot, this);
         BuildLegacyLoginUi();
+        UiScaler.UpdateScale(_uiLayer, GetViewport());
+        Resized += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
 
         // 连接服务端
         _net.Log += OnNetLog;
@@ -363,7 +372,7 @@ public partial class LoginScene : Control
             MouseFilter = Control.MouseFilterEnum.Ignore,
             Position = Vector2.Zero,
         };
-        AddChild(background);
+        _uiRoot.AddChild(background);
 
         AddLoginAnimation(background, 2200, 100, 10, true, true, false);
         AddLoginAnimation(background, 2400, 30, 5, true, true, false);
@@ -377,7 +386,7 @@ public partial class LoginScene : Control
             Position = new Vector2((viewport.X - 564) / 2f, 25),
             MouseFilter = Control.MouseFilterEnum.Ignore,
         };
-        AddChild(logoBackground);
+        _uiRoot.AddChild(logoBackground);
         var logo = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface1c,
@@ -396,7 +405,7 @@ public partial class LoginScene : Control
             LibraryFile = LibraryFile.Interface,
             Index = 151,
         };
-        AddChild(dialog);
+        _uiRoot.AddChild(dialog);
 
         // 原版 LoginDialog 的底框位置 (居中偏下)
         Vector2I dialogSize = MirSkin.GetSize(LibraryFile.Interface, 151);
