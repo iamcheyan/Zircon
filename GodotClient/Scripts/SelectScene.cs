@@ -9,7 +9,6 @@ namespace ZirconClient.Scripts;
 
 public partial class SelectScene : Control
 {
-    private Control _uiRoot;
     private CanvasLayer _uiLayer;
     private Network.NetworkManager _net;
     private List<SelectInfo> _characters = new();
@@ -62,12 +61,12 @@ public partial class SelectScene : Control
         GetNode<Control>("VBox").AddChild(_deleteBtn);
         _statusLabel = GetNode<Label>("VBox/StatusLabel");
         // 2 倍 UI 缩放：DX 旧版 UI 挂到缩放层，窗口放大时跟随缩放。
-        _uiRoot = new Control { Name = "UiRoot", MouseFilter = Control.MouseFilterEnum.Ignore };
-        AddChild(_uiRoot);
-        _uiLayer = UiScaler.CreateLayer(_uiRoot, this);
+        _uiLayer = new CanvasLayer { Name = "UiScaleLayer" };
+        AddChild(_uiLayer);
         BuildLegacySelectUi();
         UiScaler.UpdateScale(_uiLayer, GetViewport());
-        Resized += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
+        // 窗口大小变化后视口才更新，用 Viewport.SizeChanged 确保缩放跟随。
+        GetViewport().SizeChanged += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
 
         // 填充职业/性别选项
         _classBtn.AddItem("战士", (int)MirClass.Warrior);
@@ -355,7 +354,8 @@ public partial class SelectScene : Control
 
     private void BuildLegacySelectUi()
     {
-        var viewport = GetViewport().GetVisibleRect().Size;
+        // 布局基准 = 逻辑画布 1024x768，UiScaler 负责缩放 + 居中（同 LoginScene）。
+        var viewport = new Vector2(UiScaler.BaseWidth, UiScaler.BaseHeight);
         var background = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface1c,
@@ -365,7 +365,7 @@ public partial class SelectScene : Control
             MouseFilter = MouseFilterEnum.Ignore,
             Position = (viewport - new Vector2(1024, 768)) / 2f,
         };
-        _uiRoot.AddChild(background);
+        _uiLayer.AddChild(background);
 
         _skinConfigButton = new DXButton
         {
@@ -377,9 +377,9 @@ public partial class SelectScene : Control
         _skinConfigButton.MouseClick += (o, e) =>
         {
             _selectConfig ??= new ConfigDialog { Position = new Vector2((viewport.X - 380) / 2f, (viewport.Y - 430) / 2f) };
-            WindowManager.Toggle(_selectConfig, this);
+            WindowManager.Toggle(_selectConfig, _uiLayer);
         };
-        _uiRoot.AddChild(_skinConfigButton);
+        _uiLayer.AddChild(_skinConfigButton);
 
         var leftGlow = new DXAnimatedControl
         {
@@ -429,7 +429,8 @@ public partial class SelectScene : Control
             Size = new Vector2I(320, 425),
             Position = new Vector2((viewport.X / 2f - 320f) / 2f, (viewport.Y - 425) / 2f),
         };
-        AddChild(_skinPanel);
+        // 角色列表面板也要挂到缩放层，否则窗口放大时它不跟随缩放。
+        _uiLayer.AddChild(_skinPanel);
         _skinPanel.AddControl(new LegacyWindowFrame
         {
             Size = new Vector2I(320, 425),
@@ -454,7 +455,7 @@ public partial class SelectScene : Control
             Position = new Vector2((viewport.X - 260) / 2f, (viewport.Y - 650) / 2f),
             Visible = false,
         };
-        AddChild(_skinCreatePanel);
+        _uiLayer.AddChild(_skinCreatePanel);
         _skinCreatePanel.AddControl(new LegacyWindowFrame
         {
             Size = new Vector2I(260, 650),

@@ -11,7 +11,6 @@ namespace ZirconClient.Scripts;
 public partial class LoginScene : Control
 {
     private Network.NetworkManager _net;
-    private Control _uiRoot;
     private CanvasLayer _uiLayer;
     private LineEdit _emailEdit;
     private LineEdit _passwordEdit;
@@ -56,14 +55,16 @@ public partial class LoginScene : Control
 
         _loginBtn.Pressed += OnLoginPressed;
         _registerBtn.Pressed += OnRegisterPressed;
-        // 2 倍 UI 缩放：DX 旧版 UI 按 1024x768 逻辑坐标布局，挂到缩放根
-        // 下并应用 UiScale Transform，窗口放大时跟随缩放（与 GameScene 一致）。
-        _uiRoot = new Control { Name = "UiRoot", MouseFilter = Control.MouseFilterEnum.Ignore };
-        AddChild(_uiRoot);
-        _uiLayer = UiScaler.CreateLayer(_uiRoot, this);
+        // 2 倍 UI 缩放：DX 旧版 UI 按 1024x768 逻辑坐标布局，直接挂到
+        // CanvasLayer 缩放层（与 GameScene 的 _uiLayer 一致），窗口放大时
+        // 跟随缩放。不用 Control 中转——Control 的 anchors 会干扰 Transform。
+        _uiLayer = new CanvasLayer { Name = "UiScaleLayer" };
+        AddChild(_uiLayer);
         BuildLegacyLoginUi();
         UiScaler.UpdateScale(_uiLayer, GetViewport());
-        Resized += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
+        // 窗口大小变化后视口才更新，Resized（Control）可能错过时序，
+        // 用 Viewport.SizeChanged 确保窗口变化时重新应用缩放。
+        GetViewport().SizeChanged += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
 
         // 连接服务端
         _net.Log += OnNetLog;
@@ -268,32 +269,32 @@ public partial class LoginScene : Control
     private void ToggleLoginConfig()
     {
         if (_loginConfig == null) return;
-        WindowManager.Toggle(_loginConfig, this);
+        WindowManager.Toggle(_loginConfig, _uiLayer);
     }
 
     private void ToggleLoginRanking()
     {
         if (_loginRanking == null) return;
-        WindowManager.Toggle(_loginRanking, this);
+        WindowManager.Toggle(_loginRanking, _uiLayer);
         if (_loginRanking.Visible) _net.Connection?.SendRankings();
     }
 
     private void OpenAccountDialog()
     {
         _accountDialog ??= CreateAccountDialog();
-        WindowManager.Open(_accountDialog, this);
+        WindowManager.Open(_accountDialog, _uiLayer);
     }
 
     private void OpenChangeDialog()
     {
         _changeDialog ??= CreateChangeDialog();
-        WindowManager.Open(_changeDialog, this);
+        WindowManager.Open(_changeDialog, _uiLayer);
     }
 
     private void OpenRequestResetDialog()
     {
         _requestResetDialog ??= CreateRequestResetDialog();
-        WindowManager.Open(_requestResetDialog, this);
+        WindowManager.Open(_requestResetDialog, _uiLayer);
     }
 
     private LegacyLoginDialog CreateAccountDialog()
@@ -329,7 +330,7 @@ public partial class LoginScene : Control
     {
         var dialog = new LegacyLoginDialog(Lang.LoginPasswordLabel2, new Vector2I(330, 150), new[] { Lang.LoginEmailLabel }, secondary: Lang.LoginResetLabel3);
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendRequestPasswordReset(values[0]); };
-        dialog.SecondaryClicked += () => { _resetDialog ??= CreateResetDialog(); WindowManager.Close(dialog); WindowManager.Open(_resetDialog, this); };
+        dialog.SecondaryClicked += () => { _resetDialog ??= CreateResetDialog(); WindowManager.Close(dialog); WindowManager.Open(_resetDialog, _uiLayer); };
         return dialog;
     }
 
@@ -349,7 +350,7 @@ public partial class LoginScene : Control
     {
         var dialog = new LegacyLoginDialog(Lang.ActivationTitle, new Vector2I(330, 155), new[] { Lang.LoginUi483Label }, secondary: Lang.LoginUi484Label);
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendActivation(values[0]); };
-        dialog.SecondaryClicked += () => { _requestActivationDialog ??= CreateRequestActivationDialog(); WindowManager.Close(dialog); WindowManager.Open(_requestActivationDialog, this); };
+        dialog.SecondaryClicked += () => { _requestActivationDialog ??= CreateRequestActivationDialog(); WindowManager.Close(dialog); WindowManager.Open(_requestActivationDialog, _uiLayer); };
         return dialog;
     }
 
@@ -362,7 +363,10 @@ public partial class LoginScene : Control
 
     private void BuildLegacyLoginUi()
     {
-        Vector2 viewport = new Vector2(1024, 768);
+        // 布局基准 = 逻辑画布 1024x768（与 GameScene HUD 同机制）。
+        // 不要用真实视口尺寸定位：UiScaler 会把整个画布缩放并居中到视口，
+        // 若按真实视口坐标布局再叠加缩放 Transform，4K 下元素会超出屏幕。
+        Vector2 viewport = new Vector2(UiScaler.BaseWidth, UiScaler.BaseHeight);
         var background = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface1c,
@@ -372,7 +376,7 @@ public partial class LoginScene : Control
             MouseFilter = Control.MouseFilterEnum.Ignore,
             Position = Vector2.Zero,
         };
-        _uiRoot.AddChild(background);
+        _uiLayer.AddChild(background);
 
         AddLoginAnimation(background, 2200, 100, 10, true, true, false);
         AddLoginAnimation(background, 2400, 30, 5, true, true, false);
@@ -386,7 +390,7 @@ public partial class LoginScene : Control
             Position = new Vector2((viewport.X - 564) / 2f, 25),
             MouseFilter = Control.MouseFilterEnum.Ignore,
         };
-        _uiRoot.AddChild(logoBackground);
+        _uiLayer.AddChild(logoBackground);
         var logo = new DXImageControl
         {
             LibraryFile = LibraryFile.Interface1c,
@@ -405,7 +409,7 @@ public partial class LoginScene : Control
             LibraryFile = LibraryFile.Interface,
             Index = 151,
         };
-        _uiRoot.AddChild(dialog);
+        _uiLayer.AddChild(dialog);
 
         // 原版 LoginDialog 的底框位置 (居中偏下)
         Vector2I dialogSize = MirSkin.GetSize(LibraryFile.Interface, 151);
@@ -502,7 +506,7 @@ public partial class LoginScene : Control
 
         // 激活账号 按钮
         _skinActivation = new DXButton { Text = Lang.ActivationTitle, FontSize = 9, TextColour = new Color(1f, .75f, .25f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(20, 36), Size = new Vector2I(72, 20) };
-        _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, this); };
+        _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, _uiLayer); };
         dialog.AddControl(_skinActivation);
 
         // 状态提示 Label
