@@ -1,0 +1,9860 @@
+{
+ "items": {
+  "Gold": {
+   "zh": "Gold",
+   "ja": "金貨"
+  },
+  "Swordsmanship": {
+   "zh": "基本剑术",
+   "ja": "基本剣術"
+  },
+  "Potion Mastery": {
+   "zh": "药水精通",
+   "ja": "ポーション熟練"
+  },
+  "Slaying": {
+   "zh": "攻杀剑术",
+   "ja": "攻殺剣術"
+  },
+  "Thrusting": {
+   "zh": "刺杀剑术",
+   "ja": "刺殺剣術"
+  },
+  "Half Moon": {
+   "zh": "半月弯刀",
+   "ja": "半月刀法"
+  },
+  "Shoulder Dash": {
+   "zh": "野蛮冲撞",
+   "ja": "野蛮突進"
+  },
+  "Flaming Sword": {
+   "zh": "烈火剑法",
+   "ja": "烈火剣法"
+  },
+  "Dragon Rise": {
+   "zh": "龙影剑法",
+   "ja": "龍影剣法"
+  },
+  "Blade Storm": {
+   "zh": "莲月剑法",
+   "ja": "蓮月剣法"
+  },
+  "Destructive Surge": {
+   "zh": "破血狂杀",
+   "ja": "破血狂殺"
+  },
+  "Interchange": {
+   "zh": "乾坤大挪移",
+   "ja": "乾坤大挪移"
+  },
+  "Defiance": {
+   "zh": "铁布衫",
+   "ja": "鉄布衫"
+  },
+  "Beckon": {
+   "zh": "召唤",
+   "ja": "召喚"
+  },
+  "Might": {
+   "zh": "蛮力",
+   "ja": "蛮力"
+  },
+  "Swift Blade": {
+   "zh": "疾风剑法",
+   "ja": "疾風剣法"
+  },
+  "Assault": {
+   "zh": "突袭",
+   "ja": "突襲"
+  },
+  "Endurance": {
+   "zh": "金钟罩",
+   "ja": "金鐘罩"
+  },
+  "Reflect Damage": {
+   "zh": "移花接玉",
+   "ja": "移花接玉"
+  },
+  "Fetter": {
+   "zh": "束缚",
+   "ja": "束縛"
+  },
+  "Advanced Destructive Surge": {
+   "zh": "高级破血狂杀",
+   "ja": "上級破血狂殺"
+  },
+  "Advanced Defiance": {
+   "zh": "高级铁布衫",
+   "ja": "上級鉄布衫"
+  },
+  "Advanced Reflect Damage": {
+   "zh": "高级移花接玉",
+   "ja": "上級移花接玉"
+  },
+  "Fire Ball": {
+   "zh": "火球术",
+   "ja": "火球術"
+  },
+  "Lightning Ball": {
+   "zh": "雷电术",
+   "ja": "雷撃術"
+  },
+  "Ice Bolt": {
+   "zh": "冰箭术",
+   "ja": "氷矢"
+  },
+  "Gust Blast": {
+   "zh": "风震天",
+   "ja": "突風衝撃"
+  },
+  "Repulsion": {
+   "zh": "抗拒火环",
+   "ja": "抗拒火環"
+  },
+  "Electric Shock": {
+   "zh": "诱惑之光",
+   "ja": "魅惑の光"
+  },
+  "Teleportation": {
+   "zh": "瞬息移动",
+   "ja": "瞬間移動"
+  },
+  "Adamantine Fire Ball": {
+   "zh": "大火球",
+   "ja": "金剛火球"
+  },
+  "Thunder Bolt": {
+   "zh": "雷光术",
+   "ja": "雷霆電撃"
+  },
+  "Ice Blades": {
+   "zh": "冰咆哮",
+   "ja": "氷刃術"
+  },
+  "Cyclone": {
+   "zh": "龙卷风",
+   "ja": "竜巻"
+  },
+  "Scorched Earth": {
+   "zh": "焰天火雨",
+   "ja": "焦土の炎"
+  },
+  "Lightning Beam": {
+   "zh": "疾光电影",
+   "ja": "雷光光線"
+  },
+  "Frozen Earth": {
+   "zh": "冰震大地",
+   "ja": "氷結大地"
+  },
+  "Blow Earth": {
+   "zh": "狂风术",
+   "ja": "大地崩裂"
+  },
+  "Fire Wall": {
+   "zh": "火墙",
+   "ja": "火炎壁"
+  },
+  "Expel Undead": {
+   "zh": "超度亡灵",
+   "ja": "亡霊退散"
+  },
+  "Geo Manipulation": {
+   "zh": "缩地术",
+   "ja": "地脈操作"
+  },
+  "Magic Shield": {
+   "zh": "魔法盾",
+   "ja": "魔法盾"
+  },
+  "Fire Storm": {
+   "zh": "火焰风暴",
+   "ja": "火炎嵐"
+  },
+  "Lightning Wave": {
+   "zh": "雷电风暴",
+   "ja": "雷撃波"
+  },
+  "Ice Storm": {
+   "zh": "冰风暴",
+   "ja": "氷嵐"
+  },
+  "Dragon Tornado": {
+   "zh": "神龙风暴",
+   "ja": "龍巻嵐"
+  },
+  "Greater Frozen Earth": {
+   "zh": "强化冰震大地",
+   "ja": "大氷結大地"
+  },
+  "Chain Lightning": {
+   "zh": "连环闪电",
+   "ja": "連鎖雷撃"
+  },
+  "Meteor Shower": {
+   "zh": "流星火雨",
+   "ja": "流星火雨"
+  },
+  "Renounce": {
+   "zh": "迷魂咒",
+   "ja": "捨身"
+  },
+  "Tempest": {
+   "zh": "暴风术",
+   "ja": "大嵐"
+  },
+  "Judgement Of Heaven": {
+   "zh": "天罡气",
+   "ja": "天罰"
+  },
+  "Thunder Storm": {
+   "zh": "雷霆风暴",
+   "ja": "疾光電影"
+  },
+  "Elemental Hurricane": {
+   "zh": "元素飓风",
+   "ja": "元素大嵐"
+  },
+  "Superior Magic Shield": {
+   "zh": "高级魔法盾",
+   "ja": "卓越魔法盾"
+  },
+  "Burning": {
+   "zh": "灼烧",
+   "ja": "燃焼"
+  },
+  "Shock": {
+   "zh": "震慑",
+   "ja": "電撃"
+  },
+  "Lightning Strike": {
+   "zh": "雷击术",
+   "ja": "落雷"
+  },
+  "Mirror Image": {
+   "zh": "魔法分身",
+   "ja": "鏡像"
+  },
+  "Heal": {
+   "zh": "治愈术",
+   "ja": "治癒術"
+  },
+  "Spirit Sword": {
+   "zh": "精神力战法",
+   "ja": "霊剣術"
+  },
+  "Poison Dust": {
+   "zh": "施毒术",
+   "ja": "毒術"
+  },
+  "Explosive Talisman": {
+   "zh": "灵魂火符",
+   "ja": "霊魂火符"
+  },
+  "Evil Slayer": {
+   "zh": "召唤骷髅",
+   "ja": "スケルトン召喚"
+  },
+  "Invisibility": {
+   "zh": "隐身术",
+   "ja": "隠身術"
+  },
+  "Magic Resistance": {
+   "zh": "魔法防御",
+   "ja": "魔法抵抗"
+  },
+  "Mass Invisibility": {
+   "zh": "集体隐身",
+   "ja": "群体隠身"
+  },
+  "Greater Evil Slayer": {
+   "zh": "超强召唤骷髅",
+   "ja": "大スケルトン召喚"
+  },
+  "Resilience": {
+   "zh": "护体术",
+   "ja": "堅忍"
+  },
+  "Trap Octagon": {
+   "zh": "困魔咒",
+   "ja": "困魔呪"
+  },
+  "Taoist Combat Kick": {
+   "zh": "气功波（技能书）",
+   "ja": "気功波"
+  },
+  "Elemental Superiority": {
+   "zh": "幽灵盾",
+   "ja": "元素支配"
+  },
+  "Mass Heal": {
+   "zh": "群体治愈",
+   "ja": "群体治癒"
+  },
+  "Blood Lust": {
+   "zh": "嗜血术",
+   "ja": "嗜血術"
+  },
+  "Resurrection": {
+   "zh": "复活术",
+   "ja": "復活術"
+  },
+  "Purification": {
+   "zh": "净化术",
+   "ja": "浄化術"
+  },
+  "Transparency": {
+   "zh": "透明术",
+   "ja": "透明化"
+  },
+  "Celestial Light": {
+   "zh": "圣言术",
+   "ja": "聖光術"
+  },
+  "Empowered Healing": {
+   "zh": "强化治愈术",
+   "ja": "強化治癒術"
+  },
+  "Life Steal": {
+   "zh": "吸血",
+   "ja": "生命吸収"
+  },
+  "Improved Explosive Talisman": {
+   "zh": "超强灵魂火符",
+   "ja": "超強化霊魂火符"
+  },
+  "Empowered Poison Dust": {
+   "zh": "强化施毒术",
+   "ja": "強化毒術"
+  },
+  "Cursed Doll": {
+   "zh": "诅咒娃娃",
+   "ja": "呪い人形"
+  },
+  "Thunder Kick": {
+   "zh": "雷震踢",
+   "ja": "雷光蹴り"
+  },
+  "Soul Resonance": {
+   "zh": "魔魂附体",
+   "ja": "霊魂共鳴"
+  },
+  "Parasite": {
+   "zh": "寄生术",
+   "ja": "寄生"
+  },
+  "Spiritualism": {
+   "zh": "通灵",
+   "ja": "降霊術"
+  },
+  "Willow Dance": {
+   "zh": "柳叶舞",
+   "ja": "柳の舞"
+  },
+  "Vine Tree Dance": {
+   "zh": "柳枝舞",
+   "ja": "蔦の舞"
+  },
+  "Discipline": {
+   "zh": "修炼",
+   "ja": "戒律"
+  },
+  "Poisonous Cloud": {
+   "zh": "毒雾",
+   "ja": "毒雲"
+  },
+  "Full Bloom": {
+   "zh": "盛放",
+   "ja": "満開"
+  },
+  "Cloak": {
+   "zh": "隐身",
+   "ja": "隠れ蓑"
+  },
+  "White Lotus": {
+   "zh": "白莲",
+   "ja": "白蓮"
+  },
+  "Calamity Of Full Moon": {
+   "zh": "月华",
+   "ja": "満月の災厄"
+  },
+  "Wraith Grip": {
+   "zh": "幽灵之握",
+   "ja": "亡霊の掌握"
+  },
+  "Red Lotus": {
+   "zh": "红莲",
+   "ja": "紅蓮"
+  },
+  "Hell Fire": {
+   "zh": "地狱火",
+   "ja": "地獄火"
+  },
+  "Pledge Of Blood": {
+   "zh": "血誓",
+   "ja": "血の誓約"
+  },
+  "Rake": {
+   "zh": "爪袭",
+   "ja": "引裂き"
+  },
+  "Sweetbrier": {
+   "zh": "蔷薇",
+   "ja": "野薔薇"
+  },
+  "Summon Puppet": {
+   "zh": "召唤傀儡",
+   "ja": "傀儡召喚"
+  },
+  "Karma": {
+   "zh": "业报",
+   "ja": "業報"
+  },
+  "Touch Of The Departed": {
+   "zh": "归魂术",
+   "ja": "亡者の触れ"
+  },
+  "Waning Moon": {
+   "zh": "残月",
+   "ja": "欠月"
+  },
+  "Ghost Walk": {
+   "zh": "幽灵步",
+   "ja": "亡霊歩"
+  },
+  "Elemental Puppet": {
+   "zh": "元素傀儡",
+   "ja": "元素傀儡"
+  },
+  "Rejuvenation": {
+   "zh": "复苏",
+   "ja": "若返り"
+  },
+  "Resolution": {
+   "zh": "决意",
+   "ja": "決意"
+  },
+  "Change Of Seasons": {
+   "zh": "换季",
+   "ja": "四季の移ろい"
+  },
+  "Release": {
+   "zh": "解放",
+   "ja": "解放"
+  },
+  "Flame Splash": {
+   "zh": "烈焰溅射",
+   "ja": "火炎飛散"
+  },
+  "Bloody Flower": {
+   "zh": "血花",
+   "ja": "血の花"
+  },
+  "The New Beginning": {
+   "zh": "新生",
+   "ja": "新たな始まり"
+  },
+  "Dance Of Swallow": {
+   "zh": "燕子舞",
+   "ja": "燕の舞"
+  },
+  "Dark Conversion": {
+   "zh": "黑暗转化",
+   "ja": "闇の転換"
+  },
+  "Dragon Repulse": {
+   "zh": "龙威震退",
+   "ja": "龍の撃退"
+  },
+  "Advent Of Demon": {
+   "zh": "恶魔降临",
+   "ja": "悪魔降臨"
+  },
+  "Advent Of Devil": {
+   "zh": "魔尊降临",
+   "ja": "魔王降臨"
+  },
+  "Abyss": {
+   "zh": "深渊",
+   "ja": "深淵"
+  },
+  "Flash Of Light": {
+   "zh": "闪光",
+   "ja": "閃光"
+  },
+  "Stealth": {
+   "zh": "潜行",
+   "ja": "潜伏"
+  },
+  "Evasion": {
+   "zh": "闪避",
+   "ja": "回避"
+  },
+  "Raging Wind": {
+   "zh": "怒风",
+   "ja": "怒風"
+  },
+  "Wood Sword": {
+   "zh": "木剑",
+   "ja": "木の剣"
+  },
+  "Commoner Outfit (M)": {
+   "zh": "平民布衣（男）",
+   "ja": "クオムモネルの衣装（男）"
+  },
+  "Commoner Outfit (F)": {
+   "zh": "平民布衣（女）",
+   "ja": "クオムモネルの衣装（女）"
+  },
+  "Trainee's Glaive": {
+   "zh": "见习长刀",
+   "ja": "見習いの長刀"
+  },
+  "Trainee's Armour (M)": {
+   "zh": "学徒铠甲（男）",
+   "ja": "見習いの鎧（男）"
+  },
+  "Trainee's Armour (F)": {
+   "zh": "学徒铠甲（女）",
+   "ja": "見習いの鎧（女）"
+  },
+  "Candle": {
+   "zh": "蜡烛",
+   "ja": "ろうそく"
+  },
+  "Healing Potion": {
+   "zh": "金创药（小）",
+   "ja": "回復ポーション"
+  },
+  "Healing Potion (II)": {
+   "zh": "金创药（中）",
+   "ja": "ヘアルイングのポーション（II）"
+  },
+  "Healing Potion (III)": {
+   "zh": "金创药（大）",
+   "ja": "ヘアルイングのポーション（III）"
+  },
+  "Healing Potion (IV)": {
+   "zh": "强效金创药",
+   "ja": "ヘアルイングのポーション（IV）"
+  },
+  "Healing Potion (V)": {
+   "zh": "特效金创药",
+   "ja": "ヘアルイングのポーション（V）"
+  },
+  "Life Pill": {
+   "zh": "金创丸（小）",
+   "ja": "命の丸薬"
+  },
+  "Life Pill (II)": {
+   "zh": "金创丸（中）",
+   "ja": "生命の丸薬（II）"
+  },
+  "Life Pill (III)": {
+   "zh": "金创丸（大）",
+   "ja": "生命の丸薬（III）"
+  },
+  "Life Pill (IV)": {
+   "zh": "强效金创丸",
+   "ja": "生命の丸薬（IV）"
+  },
+  "Life Pill (V)": {
+   "zh": "特效金创丸",
+   "ja": "生命の丸薬（V）"
+  },
+  "Mana Potion": {
+   "zh": "魔法药（小）",
+   "ja": "魔力ポーション"
+  },
+  "Mana Potion (II)": {
+   "zh": "魔法药（中）",
+   "ja": "マナのポーション（II）"
+  },
+  "Mana Potion (III)": {
+   "zh": "魔法药（大）",
+   "ja": "マナのポーション（III）"
+  },
+  "Mana Potion (IV)": {
+   "zh": "强效魔法药",
+   "ja": "マナのポーション（IV）"
+  },
+  "!Mana Potion (V)": {
+   "zh": "特效魔法药",
+   "ja": "マナのポーション（V）"
+  },
+  "Mana Pill": {
+   "zh": "魔法丸（小）",
+   "ja": "魔力丸薬"
+  },
+  "Mana Pill (II)": {
+   "zh": "魔法丸（中）",
+   "ja": "マナの丸薬（II）"
+  },
+  "Mana Pill (III)": {
+   "zh": "魔法丸（大）",
+   "ja": "マナの丸薬（III）"
+  },
+  "Mana Pill (IV)": {
+   "zh": "强效魔法丸",
+   "ja": "マナの丸薬（IV）"
+  },
+  "!Mana Pill (V)": {
+   "zh": "特效魔法丸",
+   "ja": "マナの丸薬（V）"
+  },
+  "Rejuvenation Potion": {
+   "zh": "太阳水",
+   "ja": "太陽水"
+  },
+  "Rejuvenation Potion (II)": {
+   "zh": "强效太阳水",
+   "ja": "太陽水（II）"
+  },
+  "Scroll Of Random Teleport": {
+   "zh": "随机传送卷",
+   "ja": "ランダムテレポートの巻物"
+  },
+  "Scroll Of Town Portal": {
+   "zh": "回城卷",
+   "ja": "帰還の巻物"
+  },
+  "Bright Candle": {
+   "zh": "明亮蜡烛",
+   "ja": "明るいろうそく"
+  },
+  "Torch": {
+   "zh": "火把",
+   "ja": "松明"
+  },
+  "Bright Torch": {
+   "zh": "明亮火把",
+   "ja": "明るい松明"
+  },
+  "Plain Ring": {
+   "zh": "素戒",
+   "ja": "プルアインの指輪"
+  },
+  "Iron Bracer": {
+   "zh": "铁护腕",
+   "ja": "鉄の腕輪"
+  },
+  "Necklace Of Tranquility": {
+   "zh": "宁静项链",
+   "ja": "静寂の首飾り"
+  },
+  "Silver Bracelet": {
+   "zh": "银手镯",
+   "ja": "銀の腕輪"
+  },
+  "Gold Necklace": {
+   "zh": "金项链",
+   "ja": "金の首飾り"
+  },
+  "Horned Ring": {
+   "zh": "角戒",
+   "ja": "ホルネドの指輪"
+  },
+  "Glass Ring": {
+   "zh": "玻璃戒指",
+   "ja": "グルアススの指輪"
+  },
+  "Leather Glove": {
+   "zh": "皮手套",
+   "ja": "革の手袋"
+  },
+  "Golden Bracelet": {
+   "zh": "金手镯",
+   "ja": "黄金の腕輪"
+  },
+  "Magic Bracelet": {
+   "zh": "魔法手镯",
+   "ja": "魔法の腕輪"
+  },
+  "Arisu Bracelet": {
+   "zh": "爱丽丝手镯",
+   "ja": "アリスの腕輪"
+  },
+  "Bracelet Of Exertion": {
+   "zh": "蛮力手镯",
+   "ja": "蛮力の腕輪"
+  },
+  "Black Crystal Ring": {
+   "zh": "黑水晶戒指",
+   "ja": "黒水晶の指輪"
+  },
+  "Pearl Ring": {
+   "zh": "珍珠戒指",
+   "ja": "真珠の指輪"
+  },
+  "Dagger": {
+   "zh": "匕首",
+   "ja": "短剣"
+  },
+  "Iron Sword": {
+   "zh": "铁剑",
+   "ja": "鉄の剣"
+  },
+  "Arisu Wood Sword": {
+   "zh": "阿里斯木剑",
+   "ja": "アリスの木剣"
+  },
+  "Chicken Meat": {
+   "zh": "鸡肉",
+   "ja": "鶏肉"
+  },
+  "Pork": {
+   "zh": "猪肉",
+   "ja": "豚肉"
+  },
+  "Beef": {
+   "zh": "牛肉",
+   "ja": "牛肉"
+  },
+  "Deer Meat": {
+   "zh": "鹿肉",
+   "ja": "鹿肉"
+  },
+  "Wolf Meat": {
+   "zh": "狼肉",
+   "ja": "狼肉"
+  },
+  "Bronze Axe": {
+   "zh": "青铜斧",
+   "ja": "青銅の斧"
+  },
+  "Claw Of Horror": {
+   "zh": "恐怖之爪",
+   "ja": "ホルロルの爪"
+  },
+  "Trident": {
+   "zh": "三叉戟",
+   "ja": "トライデント"
+  },
+  "Scimitar": {
+   "zh": "弯刀",
+   "ja": "シミター"
+  },
+  "Light Armour (M)": {
+   "zh": "轻型铠甲（男）",
+   "ja": "光の鎧（男）"
+  },
+  "Light Armour (F)": {
+   "zh": "轻型铠甲（女）",
+   "ja": "光の鎧（女）"
+  },
+  "Shroud Of Stealth (M)": {
+   "zh": "潜行罩袍（男）",
+   "ja": "潜伏の外套（男）"
+  },
+  "Shroud Of Stealth (F)": {
+   "zh": "潜行罩袍（女）",
+   "ja": "潜伏の外套（女）"
+  },
+  "Medium Armour (M)": {
+   "zh": "中型铠甲（男）",
+   "ja": "メディウムの鎧（男）"
+  },
+  "Medium Armour (F)": {
+   "zh": "中型铠甲（女）",
+   "ja": "メディウムの鎧（女）"
+  },
+  "Flame Robe (M)": {
+   "zh": "火焰法袍（男）",
+   "ja": "火炎の法衣（男）"
+  },
+  "Flame Robe (F)": {
+   "zh": "火焰法袍（女）",
+   "ja": "火炎の法衣（女）"
+  },
+  "Faith Robe (M)": {
+   "zh": "信仰法袍（男）",
+   "ja": "信仰の法衣（男）"
+  },
+  "Faith Robe (F)": {
+   "zh": "信仰法袍（女）",
+   "ja": "信仰の法衣（女）"
+  },
+  "Tunic Of Velocity (M)": {
+   "zh": "迅捷长袍（男）",
+   "ja": "疾速のチュニック（男）"
+  },
+  "Tunic Of Velocity (F)": {
+   "zh": "迅捷长袍（女）",
+   "ja": "疾速のチュニック（女）"
+  },
+  "Hexagon Blade": {
+   "zh": "六角刃",
+   "ja": "ヘクスアゴンの刃"
+  },
+  "War Spear": {
+   "zh": "战矛",
+   "ja": "ワルの槍"
+  },
+  "War Blade": {
+   "zh": "战刃",
+   "ja": "ワルの刃"
+  },
+  "Master's Glaive": {
+   "zh": "宗师长刀",
+   "ja": "マスターの長刀"
+  },
+  "Naga Necklace": {
+   "zh": "娜迦项链",
+   "ja": "ナーガの首飾り"
+  },
+  "Necklace Of Lantern": {
+   "zh": "灯笼项链",
+   "ja": "提灯の首飾り"
+  },
+  "Necklace Of Meditation": {
+   "zh": "冥想项链",
+   "ja": "瞑想の首飾り"
+  },
+  "White Tiger Tooth Necklace": {
+   "zh": "白虎牙项链",
+   "ja": "白の虎の歯の首飾り"
+  },
+  "Coral Ring": {
+   "zh": "珊瑚戒指",
+   "ja": "珊瑚の指輪"
+  },
+  "White Serpent Ring": {
+   "zh": "白蛇戒指",
+   "ja": "白の蛇の指輪"
+  },
+  "Gauntlet Of Deathbringer": {
+   "zh": "死亡使者护手",
+   "ja": "死神の篭手"
+  },
+  "Bracelet Of Sorcery": {
+   "zh": "巫术手镯",
+   "ja": "魔術の腕輪"
+  },
+  "Black Crystal Necklace": {
+   "zh": "黑水晶项链",
+   "ja": "黒水晶の首飾り"
+  },
+  "Arisu Necklace": {
+   "zh": "爱丽丝项链",
+   "ja": "アリスの首飾り"
+  },
+  "Empowered Explosive Talisman": {
+   "zh": "强化灵魂火符",
+   "ja": "強化霊魂火符"
+  },
+  "Empowered Evil Slayer": {
+   "zh": "强化召唤骷髅",
+   "ja": "強化スケルトン召喚"
+  },
+  "Summon Jin Skeleton": {
+   "zh": "金甲骷髅",
+   "ja": "金スケルトン召喚"
+  },
+  "Summon Demonic Creature": {
+   "zh": "召唤恶魔",
+   "ja": "魔獣召喚"
+  },
+  "Demon Explosion": {
+   "zh": "恶魔爆破",
+   "ja": "悪魔爆裂"
+  },
+  "Strength Of Faith": {
+   "zh": "信仰之力",
+   "ja": "信仰の力"
+  },
+  "Talisman": {
+   "zh": "护身符",
+   "ja": "護符"
+  },
+  "Talisman Of Darkness": {
+   "zh": "黑暗护身符",
+   "ja": "闇の護符"
+  },
+  "Talisman Of Fire": {
+   "zh": "火焰护身符",
+   "ja": "火炎の護符"
+  },
+  "Talisman Of Holiness": {
+   "zh": "圣洁护身符",
+   "ja": "神聖の護符"
+  },
+  "Talisman Of Ice": {
+   "zh": "寒冰护身符",
+   "ja": "氷の護符"
+  },
+  "Talisman Of Illusions": {
+   "zh": "幻象护身符",
+   "ja": "幻影の護符"
+  },
+  "Talisman Of Lightning": {
+   "zh": "雷电护身符",
+   "ja": "雷撃の護符"
+  },
+  "Talisman Of Wind Storm": {
+   "zh": "风暴护身符",
+   "ja": "嵐の護符"
+  },
+  "Talisman Of Soul": {
+   "zh": "灵魂护身符",
+   "ja": "霊魂の護符"
+  },
+  "Green Poison": {
+   "zh": "绿毒",
+   "ja": "緑毒"
+  },
+  "Red Poison": {
+   "zh": "红毒",
+   "ja": "赤毒"
+  },
+  "Bronze Helmet": {
+   "zh": "青铜头盔",
+   "ja": "青銅の兜"
+  },
+  "Trainee's Mask": {
+   "zh": "受训者面罩",
+   "ja": "見習いの仮面"
+  },
+  "Apprentice's Mask": {
+   "zh": "学徒面罩",
+   "ja": "弟子の仮面"
+  },
+  "Magic Bronze Helmet": {
+   "zh": "魔法青铜头盔",
+   "ja": "魔法青銅の兜"
+  },
+  "Straw Sandles": {
+   "zh": "草鞋",
+   "ja": "草鞋"
+  },
+  "Leather Shoes": {
+   "zh": "皮鞋",
+   "ja": "革の靴"
+  },
+  "Brown Chestnut": {
+   "zh": "棕栗子",
+   "ja": "茶色の栗"
+  },
+  "Bronze Chestnut": {
+   "zh": "青铜栗子",
+   "ja": "青銅の栗"
+  },
+  "Silver Chestnut": {
+   "zh": "银栗子",
+   "ja": "銀の栗"
+  },
+  "Gold Chestnut": {
+   "zh": "金栗子",
+   "ja": "金の栗"
+  },
+  "Carnivorous Plant Leaf": {
+   "zh": "食人花叶",
+   "ja": "食人花の葉"
+  },
+  "Carnivorous Plant Fruit": {
+   "zh": "食人花果",
+   "ja": "食人花の果実"
+  },
+  "Snake Gall": {
+   "zh": "蛇胆",
+   "ja": "蛇の胆"
+  },
+  "Spitting Spider Tooth": {
+   "zh": "毒蛛牙齿",
+   "ja": "毒蜘蛛の牙"
+  },
+  "Tooth": {
+   "zh": "牙齿",
+   "ja": "歯"
+  },
+  "!Cat's Claw": {
+   "zh": "猫爪",
+   "ja": "猫の爪"
+  },
+  "!Tuft of Fur": {
+   "zh": "毛簇",
+   "ja": "毛皮の房"
+  },
+  "!Trinket": {
+   "zh": "小饰品",
+   "ja": "装身具"
+  },
+  "!Rejuvenation Potion (III)": {
+   "zh": "特效太阳水",
+   "ja": "太陽水（III）"
+  },
+  "!Rejuvenation Potion (IV)": {
+   "zh": "超级太阳水",
+   "ja": "太陽水（IV）"
+  },
+  "!Rejuvenation Potion (V)": {
+   "zh": "终极太阳水",
+   "ja": "太陽水（V）"
+  },
+  "Mutton": {
+   "zh": "羊肉",
+   "ja": "羊肉"
+  },
+  "!Shell Fragment": {
+   "zh": "贝壳碎片",
+   "ja": "貝殻の欠片"
+  },
+  "!Worm Guts": {
+   "zh": "虫内脏",
+   "ja": "虫の内臓"
+  },
+  "!Bat Fang (OLD)": {
+   "zh": "蝙蝠獠牙（旧）",
+   "ja": "コウモリの牙（旧）"
+  },
+  "Skeleton Bone": {
+   "zh": "骷髅骨",
+   "ja": "スケルトンの骨"
+  },
+  "Scorpion Tail": {
+   "zh": "蝎尾",
+   "ja": "サソリの尾"
+  },
+  "Zombie Bone": {
+   "zh": "僵尸骨",
+   "ja": "ゾンビの骨"
+  },
+  "Maggot Pill": {
+   "zh": "蛆虫丸",
+   "ja": "蛆虫の丸薬"
+  },
+  "Ant Egg": {
+   "zh": "蚁卵",
+   "ja": "蟻の卵"
+  },
+  "Flea Husk": {
+   "zh": "跳蚤壳",
+   "ja": "ノミの殻"
+  },
+  "Elixir Of Destruction": {
+   "zh": "破坏灵药",
+   "ja": "破壊のエリクサー"
+  },
+  "Elixir Of Destruction (II)": {
+   "zh": "破坏灵药（二）",
+   "ja": "破壊のエリクサー（II）"
+  },
+  "Elixir Of Destruction (III)": {
+   "zh": "破坏灵药（三）",
+   "ja": "破壊のエリクサー（III）"
+  },
+  "Elixir Of Destruction (IV)": {
+   "zh": "破坏灵药（四）",
+   "ja": "破壊のエリクサー（IV）"
+  },
+  "Elixir Of Destruction (V)": {
+   "zh": "破坏灵药（五）",
+   "ja": "破壊のエリクサー（V）"
+  },
+  "Elixir Of Haste": {
+   "zh": "急速灵药",
+   "ja": "急速のエリクサー"
+  },
+  "Elixir Of Haste (II)": {
+   "zh": "急速灵药（二）",
+   "ja": "ハステのエリクサー（II）"
+  },
+  "Elixir Of Haste (III)": {
+   "zh": "急速灵药（三）",
+   "ja": "ハステのエリクサー（III）"
+  },
+  "Elixir Of Haste (IV)": {
+   "zh": "急速灵药（四）",
+   "ja": "ハステのエリクサー（IV）"
+  },
+  "Elixir Of Haste (V)": {
+   "zh": "急速灵药（五）",
+   "ja": "ハステのエリクサー（V）"
+  },
+  "Elixir Of Life": {
+   "zh": "生命灵药",
+   "ja": "生命のエリクサー"
+  },
+  "Elixir Of Life (II)": {
+   "zh": "生命灵药（二）",
+   "ja": "生命のエリクサー（II）"
+  },
+  "Elixir Of Life (III)": {
+   "zh": "生命灵药（三）",
+   "ja": "生命のエリクサー（III）"
+  },
+  "Elixir Of Life (IV)": {
+   "zh": "生命灵药（四）",
+   "ja": "生命のエリクサー（IV）"
+  },
+  "Elixir Of Life (V)": {
+   "zh": "生命灵药（五）",
+   "ja": "生命のエリクサー（V）"
+  },
+  "Elixir Of Mana": {
+   "zh": "魔法灵药",
+   "ja": "魔力のエリクサー"
+  },
+  "Elixir Of Mana (II)": {
+   "zh": "魔法灵药（二）",
+   "ja": "マナのエリクサー（II）"
+  },
+  "Elixir Of Mana (III)": {
+   "zh": "魔法灵药（三）",
+   "ja": "マナのエリクサー（III）"
+  },
+  "Elixir Of Mana (IV)": {
+   "zh": "魔法灵药（四）",
+   "ja": "マナのエリクサー（IV）"
+  },
+  "Elixir Of Mana (V)": {
+   "zh": "魔法灵药（五）",
+   "ja": "マナのエリクサー（V）"
+  },
+  "Elixir Of Nature": {
+   "zh": "自然灵药",
+   "ja": "自然のエリクサー"
+  },
+  "Elixir Of Nature (II)": {
+   "zh": "自然灵药（二）",
+   "ja": "ナトゥレのエリクサー（II）"
+  },
+  "Elixir Of Nature (III)": {
+   "zh": "自然灵药（三）",
+   "ja": "ナトゥレのエリクサー（III）"
+  },
+  "Elixir Of Nature (IV)": {
+   "zh": "自然灵药（四）",
+   "ja": "ナトゥレのエリクサー（IV）"
+  },
+  "Elixir Of Nature (V)": {
+   "zh": "自然灵药（五）",
+   "ja": "ナトゥレのエリクサー（V）"
+  },
+  "Rugged Leather Gauntlet": {
+   "zh": "粗犷皮护手",
+   "ja": "頑丈な革の篭手"
+  },
+  "!Balanced Bracelet (OLD)": {
+   "zh": "平衡手镯（旧版）",
+   "ja": "均衡の腕輪（旧）"
+  },
+  "Platinum Necklace": {
+   "zh": "铂金项链",
+   "ja": "白金の首飾り"
+  },
+  "Oil Of Benediction": {
+   "zh": "祝福之油",
+   "ja": "祝福の油"
+  },
+  "Oil Of Conservation": {
+   "zh": "保养之油",
+   "ja": "保存の油"
+  },
+  "Oil Of The War God": {
+   "zh": "战神之油",
+   "ja": "戦神の油"
+  },
+  "Loop Of Teleportation": {
+   "zh": "传送之环",
+   "ja": "テレポートの環"
+  },
+  "Loop Of Paralysis": {
+   "zh": "麻痹之环",
+   "ja": "パラルイシスの環"
+  },
+  "Choker Of Learning": {
+   "zh": "学识项圈",
+   "ja": "学識のチョーカー"
+  },
+  "Loop Of Ressurection": {
+   "zh": "复活之环",
+   "ja": "レススレクティオンの環"
+  },
+  "Loop Of Protection": {
+   "zh": "守护之环",
+   "ja": "守護の環"
+  },
+  "Loop Of Invisibility": {
+   "zh": "隐身之环",
+   "ja": "隠身の環"
+  },
+  "Pendant Of Tracking": {
+   "zh": "追踪吊坠",
+   "ja": "追跡のペンダント"
+  },
+  "Power Axe": {
+   "zh": "力量之斧",
+   "ja": "力の斧"
+  },
+  "Gold Ring": {
+   "zh": "金戒指",
+   "ja": "金の指輪"
+  },
+  "Band Of Sorcery": {
+   "zh": "巫术之环",
+   "ja": "魔術の指輪"
+  },
+  "Blue Jade Necklace": {
+   "zh": "蓝玉项链",
+   "ja": "青玉の首飾り"
+  },
+  "Pendant Of Image": {
+   "zh": "镜像吊坠",
+   "ja": "イマゲのペンダント"
+  },
+  "Helmet Of Shaman": {
+   "zh": "萨满头盔",
+   "ja": "シャーマンの兜"
+  },
+  "Blade Of Spirit Caller": {
+   "zh": "唤灵之刃",
+   "ja": "霊喚びの刃"
+  },
+  "Helmet Of Spirit Caller": {
+   "zh": "唤灵者头盔",
+   "ja": "霊喚びの兜"
+  },
+  "Necklace Of Spirit Caller": {
+   "zh": "通灵者项链",
+   "ja": "霊喚びの首飾り"
+  },
+  "Bracelet Of Spirit Caller": {
+   "zh": "通灵者手镯",
+   "ja": "霊喚びの腕輪"
+  },
+  "Ring Of Spirit Caller": {
+   "zh": "通灵者之戒",
+   "ja": "霊喚びの指輪"
+  },
+  "White Skull Helmet": {
+   "zh": "白色骷髅头盔",
+   "ja": "白のスクルルの兜"
+  },
+  "Boots Of Crimson Steed": {
+   "zh": "绯红骏马之靴",
+   "ja": "深紅の駿馬の靴"
+  },
+  "Disguise Of The Master": {
+   "zh": "宗师伪装",
+   "ja": "マスターのディスグイセ"
+  },
+  "Blood Prophet's Cowl": {
+   "zh": "血先知头巾帽",
+   "ja": "血預言者のの頭巾"
+  },
+  "Assassination Mask": {
+   "zh": "暗杀面罩",
+   "ja": "アスサスシナティオンの仮面"
+  },
+  "Husk": {
+   "zh": "壳",
+   "ja": "殻"
+  },
+  "Ginseng Of Eternity": {
+   "zh": "万年人参",
+   "ja": "永遠の人蔘"
+  },
+  "Helmet Of The War God": {
+   "zh": "战神头盔",
+   "ja": "戦神の兜"
+  },
+  "Crown Of Feral Lord": {
+   "zh": "狂野领主皇冠",
+   "ja": "野獣王の王冠"
+  },
+  "Glowing Diamond Band": {
+   "zh": "发光钻石环",
+   "ja": "輝くダイヤの指輪"
+  },
+  "Crystal": {
+   "zh": "水晶",
+   "ja": "結晶"
+  },
+  "Bone Claymore": {
+   "zh": "骨制大剑",
+   "ja": "骨の大剣"
+  },
+  "Mage Staff": {
+   "zh": "法师法杖",
+   "ja": "魔導士の杖"
+  },
+  "Serpent Sword": {
+   "zh": "蛇纹剑",
+   "ja": "蛇の剣"
+  },
+  "Glaive Of Manes": {
+   "zh": "亡灵长刀",
+   "ja": "亡霊の長刀"
+  },
+  "Banya Gem Stone": {
+   "zh": "潘夜宝石",
+   "ja": "パンヤの宝石"
+  },
+  "Ring Of Exorcism": {
+   "zh": "驱魔戒指",
+   "ja": "祓魔の指輪"
+  },
+  "Claw Necklace": {
+   "zh": "利爪项链",
+   "ja": "爪の首飾り"
+  },
+  "Iron Plate Armour (M)": {
+   "zh": "铁板甲（男）",
+   "ja": "鉄板の鎧（男）"
+  },
+  "Iron Plate Armour (F)": {
+   "zh": "铁板甲（女）",
+   "ja": "鉄板の鎧（女）"
+  },
+  "Robe Of Dark Flame (M)": {
+   "zh": "暗焰法袍（男）",
+   "ja": "暗黒炎の法衣（男）"
+  },
+  "Robe Of Dark Flame (F)": {
+   "zh": "暗焰法袍（女）",
+   "ja": "暗黒炎の法衣（女）"
+  },
+  "Robe Of Balance (M)": {
+   "zh": "平衡法袍（男）",
+   "ja": "均衡の法衣（男）"
+  },
+  "Robe Of Balance (F)": {
+   "zh": "平衡法袍（女）",
+   "ja": "均衡の法衣（女）"
+  },
+  "Shadow Armour Of Deviation (M)": {
+   "zh": "偏斜暗影铠甲（男）",
+   "ja": "デヴイアティオンの影鎧（男）"
+  },
+  "Shadow Armour Of Deviation (F)": {
+   "zh": "偏斜暗影铠甲（女）",
+   "ja": "デヴイアティオンの影鎧（女）"
+  },
+  "Tri Stone Necklace": {
+   "zh": "三石项链",
+   "ja": "三石の首飾り"
+  },
+  "Butcher's Necklace": {
+   "zh": "屠夫项链",
+   "ja": "屠殺者の首飾り"
+  },
+  "Puple Crystal Pendant": {
+   "zh": "紫水晶吊坠",
+   "ja": "紫の結晶のペンダント"
+  },
+  "Wyvern Armour (M)": {
+   "zh": "飞龙铠甲（男）",
+   "ja": "ワイバーンの鎧（男）"
+  },
+  "Wyvern Armour (F)": {
+   "zh": "飞龙铠甲（女）",
+   "ja": "ワイバーンの鎧（女）"
+  },
+  "Nephrite Armour (M)": {
+   "zh": "软玉铠甲（男）",
+   "ja": "軟玉の鎧（男）"
+  },
+  "Nephrite Armour (F)": {
+   "zh": "软玉铠甲（女）",
+   "ja": "軟玉の鎧（女）"
+  },
+  "Wyvern Armour Of Protection (M)": {
+   "zh": "防护飞龙铠甲（男）",
+   "ja": "守護のワイバーンの鎧（男）"
+  },
+  "Wyvern Armour Of Protection (F)": {
+   "zh": "防护飞龙铠甲（女）",
+   "ja": "守護のワイバーンの鎧（女）"
+  },
+  "Demon Hunter's Shroud (M)": {
+   "zh": "猎魔罩袍（男）",
+   "ja": "悪魔狩人のの外套（男）"
+  },
+  "Demon Hunter's Shroud (F)": {
+   "zh": "猎魔罩袍（女）",
+   "ja": "悪魔狩人のの外套（女）"
+  },
+  "Gale Ring": {
+   "zh": "狂风之戒",
+   "ja": "ガルエの指輪"
+  },
+  "Gale Necklace": {
+   "zh": "狂风项链",
+   "ja": "ガルエの首飾り"
+  },
+  "Horn": {
+   "zh": "角",
+   "ja": "角"
+  },
+  "Sword Of Purification": {
+   "zh": "净化之剑",
+   "ja": "浄化の剣"
+  },
+  "Horn Of Uma King": {
+   "zh": "沃玛教主之角",
+   "ja": "オマ教主の角"
+  },
+  "Signet Of Summoning": {
+   "zh": "召唤印章戒",
+   "ja": "召喚の印章"
+  },
+  "Amulet Of Summoning": {
+   "zh": "召唤护符",
+   "ja": "召喚の護符"
+  },
+  "Bracelet Of Summoning": {
+   "zh": "召唤手镯",
+   "ja": "召喚の腕輪"
+  },
+  "Head-Guard Of Summoning": {
+   "zh": "召唤护额",
+   "ja": "召喚のヘアドの守衛"
+  },
+  "Enchanted Blade": {
+   "zh": "附魔之刃",
+   "ja": "魔力付与の刃"
+  },
+  "Signet Of Vigor": {
+   "zh": "活力印章戒",
+   "ja": "活力の印章"
+  },
+  "Arm Wrap Of Vigor": {
+   "zh": "活力臂带",
+   "ja": "活力の腕の腕帯"
+  },
+  "Pendant Of Vigor": {
+   "zh": "活力吊坠",
+   "ja": "活力のペンダント"
+  },
+  "Pendant Of Luminary": {
+   "zh": "光耀吊坠",
+   "ja": "光輝のペンダント"
+  },
+  "Pendant Of Courage": {
+   "zh": "勇气吊坠",
+   "ja": "勇気のペンダント"
+  },
+  "Spider Web Thread": {
+   "zh": "蛛丝",
+   "ja": "蜘蛛の糸"
+  },
+  "Green Bead Necklace": {
+   "zh": "绿珠项链",
+   "ja": "緑玉の首飾り"
+  },
+  "Anti Evil Necklace": {
+   "zh": "辟邪项链",
+   "ja": "アンティのエヴイルの首飾り"
+  },
+  "Ring Of Life Stealing": {
+   "zh": "吸血之戒",
+   "ja": "吸血の指輪"
+  },
+  "Wrist Guard Of Life Stealing": {
+   "zh": "吸血护腕",
+   "ja": "吸血の手首の守衛"
+  },
+  "Pendant Of Life Stealing": {
+   "zh": "吸血吊坠",
+   "ja": "吸血のペンダント"
+  },
+  "Bracer Of Artisan": {
+   "zh": "工匠护腕",
+   "ja": "職人の腕輪"
+  },
+  "Dark Iron Gauntlet": {
+   "zh": "黑铁护手",
+   "ja": "闇の鉄の篭手"
+  },
+  "Tainted Bracelet": {
+   "zh": "污秽手镯",
+   "ja": "タインテドの腕輪"
+  },
+  "Claw": {
+   "zh": "爪子",
+   "ja": "爪"
+  },
+  "Bronze Gauntlet": {
+   "zh": "青铜护手",
+   "ja": "青銅の篭手"
+  },
+  "Gold Plated Bracelet": {
+   "zh": "镀金手镯",
+   "ja": "金の金張りの腕輪"
+  },
+  "Bamboo Hat": {
+   "zh": "竹笠",
+   "ja": "竹の笠"
+  },
+  "Fierce Dragon Ring": {
+   "zh": "猛龙戒指",
+   "ja": "猛る竜の指輪"
+  },
+  "Ring Of Dawn": {
+   "zh": "黎明之戒",
+   "ja": "夜明けの指輪"
+  },
+  "Battle Necklace": {
+   "zh": "战斗项链",
+   "ja": "バトトルエの首飾り"
+  },
+  "Phantom Choker": {
+   "zh": "幽灵项圈",
+   "ja": "幻影のチョーカー"
+  },
+  "Amulet Of Empowerment": {
+   "zh": "强化护符",
+   "ja": "強化の護符"
+  },
+  "Gloves Of Black Guard": {
+   "zh": "黑卫手套",
+   "ja": "黒衛兵の手袋"
+  },
+  "Gauntlet Of Hero": {
+   "zh": "英雄护手",
+   "ja": "英雄の篭手"
+  },
+  "Brightly Coloured Shoes": {
+   "zh": "鲜艳彩鞋",
+   "ja": "鮮やかな靴"
+  },
+  "Iron Wood Helmet": {
+   "zh": "铁木头盔",
+   "ja": "鉄木の兜"
+  },
+  "White Lotus Disguise": {
+   "zh": "白莲伪装",
+   "ja": "白の蓮のディスグイセ"
+  },
+  "Red Lotus Disguise": {
+   "zh": "红莲伪装",
+   "ja": "赤の蓮のディスグイセ"
+  },
+  "Fragment Of Zuma King": {
+   "zh": "祖玛教主碎片",
+   "ja": "ズマ教主の欠片"
+  },
+  "Amulet Of Vanquishment": {
+   "zh": "征服护符",
+   "ja": "征服の護符"
+  },
+  "Ring Of Endless Circle": {
+   "zh": "无尽轮回之戒",
+   "ja": "無限輪廻の指輪"
+  },
+  "Ancient Myrmidon Band": {
+   "zh": "远古密尔弥冬之环",
+   "ja": "古代ミュルミドンの指輪"
+  },
+  "Loop Of Endless Combat": {
+   "zh": "无尽战斗之环",
+   "ja": "無限戦闘の環"
+  },
+  "Loop Of Seven Gems": {
+   "zh": "七宝石之环",
+   "ja": "七つの宝石の環"
+  },
+  "Meteorite Pendant": {
+   "zh": "陨石吊坠",
+   "ja": "メテオリテのペンダント"
+  },
+  "Blessed Ring Of Exorcism": {
+   "zh": "祝福驱魔戒指",
+   "ja": "祝福されし祓魔の指輪"
+  },
+  "Zuma Judgement Mace": {
+   "zh": "祖玛裁决之锤",
+   "ja": "ズマ裁決の杖"
+  },
+  "Zuma Runed Staff": {
+   "zh": "祖玛符文法杖",
+   "ja": "ズマのルーン杖"
+  },
+  "Zuma Dragon Bone Staff": {
+   "zh": "祖玛龙骨法杖",
+   "ja": "ズマの龍骨の杖"
+  },
+  "Statue Fragment": {
+   "zh": "雕像碎片",
+   "ja": "彫像の欠片"
+  },
+  "Claw Of Black Tortoise": {
+   "zh": "玄武之爪",
+   "ja": "玄武の爪"
+  },
+  "Laurel Mask": {
+   "zh": "月桂面罩",
+   "ja": "ルアウレルの仮面"
+  },
+  "Burning Dark Stone": {
+   "zh": "燃烧黑铁石",
+   "ja": "燃える黒鉄石"
+  },
+  "Burning Dark Stone (II)": {
+   "zh": "燃烧黑铁石（二）",
+   "ja": "燃える黒鉄石（II）"
+  },
+  "Burning Dark Stone (III)": {
+   "zh": "燃烧黑铁石（三）",
+   "ja": "燃える黒鉄石（III）"
+  },
+  "Burning Dark Stone (IV)": {
+   "zh": "燃烧黑铁石（四）",
+   "ja": "燃える黒鉄石（IV）"
+  },
+  "Burning Dark Stone (V)": {
+   "zh": "燃烧黑铁石（五）",
+   "ja": "燃える黒鉄石（V）"
+  },
+  "Frozen Dark Stone": {
+   "zh": "冰冻黑铁石",
+   "ja": "氷結の黒鉄石"
+  },
+  "Frozen Dark Stone (II)": {
+   "zh": "冰冻黑铁石（二）",
+   "ja": "氷結の黒鉄石（II）"
+  },
+  "Frozen Dark Stone (III)": {
+   "zh": "冰冻黑铁石（三）",
+   "ja": "氷結の黒鉄石（III）"
+  },
+  "Frozen Dark Stone (IV)": {
+   "zh": "冰冻黑铁石（四）",
+   "ja": "氷結の黒鉄石（IV）"
+  },
+  "Frozen Dark Stone (V)": {
+   "zh": "冰冻黑铁石（五）",
+   "ja": "氷結の黒鉄石（V）"
+  },
+  "Shocking Dark Stone": {
+   "zh": "电击黑铁石",
+   "ja": "電撃の黒鉄石"
+  },
+  "Shocking Dark Stone (II)": {
+   "zh": "电击黑铁石（二）",
+   "ja": "電撃の黒鉄石（II）"
+  },
+  "Shocking Dark Stone (III)": {
+   "zh": "电击黑铁石（三）",
+   "ja": "電撃の黒鉄石（III）"
+  },
+  "Shocking Dark Stone (IV)": {
+   "zh": "电击黑铁石（四）",
+   "ja": "電撃の黒鉄石（IV）"
+  },
+  "Shocking Dark Stone (V)": {
+   "zh": "电击黑铁石（五）",
+   "ja": "電撃の黒鉄石（V）"
+  },
+  "Gusting Dark Stone": {
+   "zh": "劲风黑铁石",
+   "ja": "突風の黒鉄石"
+  },
+  "Gusting Dark Stone (II)": {
+   "zh": "劲风黑铁石（二）",
+   "ja": "突風の黒鉄石（II）"
+  },
+  "Gusting Dark Stone (III)": {
+   "zh": "劲风黑铁石（三）",
+   "ja": "突風の黒鉄石（III）"
+  },
+  "Gusting Dark Stone (IV)": {
+   "zh": "劲风黑铁石（四）",
+   "ja": "突風の黒鉄石（IV）"
+  },
+  "Gusting Dark Stone (V)": {
+   "zh": "劲风黑铁石（五）",
+   "ja": "突風の黒鉄石（V）"
+  },
+  "Great Axe": {
+   "zh": "巨斧",
+   "ja": "グレアトの斧"
+  },
+  "Mage Sword": {
+   "zh": "法师之剑",
+   "ja": "魔導士の剣"
+  },
+  "Valor Blade": {
+   "zh": "英勇之刃",
+   "ja": "武勇の刃"
+  },
+  "White Lotus Glaive": {
+   "zh": "白莲长刀",
+   "ja": "白の蓮の長刀"
+  },
+  "Amulet Of Ancient Kingdom": {
+   "zh": "古王国护符",
+   "ja": "古代王国の護符"
+  },
+  "Nature Band Of Ancient Kingdom": {
+   "zh": "古王国自然之环",
+   "ja": "古代王国のナトゥレの指輪"
+  },
+  "Spirit Band Of Ancient Kingdom": {
+   "zh": "古王国灵魂之环",
+   "ja": "古代王国の霊魂の指輪"
+  },
+  "Armoured Bracer Of Ancient Kingdom": {
+   "zh": "古王国装甲护腕",
+   "ja": "古代王国のアルモウレドの腕輪"
+  },
+  "Holy Bracer Of Ancient Kingdom": {
+   "zh": "古王国圣护腕",
+   "ja": "古代王国の聖なるの腕輪"
+  },
+  "Sanyum Bead": {
+   "zh": "三阴珠",
+   "ja": "三陰珠"
+  },
+  "Chicken Blood": {
+   "zh": "鸡血",
+   "ja": "鶏の血"
+  },
+  "Bronze Sword": {
+   "zh": "青铜剑",
+   "ja": "青銅の剣"
+  },
+  "Copper Ring": {
+   "zh": "铜戒指",
+   "ja": "銅の指輪"
+  },
+  "Blue Crystal Ring": {
+   "zh": "蓝水晶戒指",
+   "ja": "青水晶の指輪"
+  },
+  "Hexagonal Ring": {
+   "zh": "六角戒指",
+   "ja": "ヘクスアゴナルの指輪"
+  },
+  "Steel Bracelet": {
+   "zh": "钢手镯",
+   "ja": "鋼の腕輪"
+  },
+  "Gold-Plated Bracelet": {
+   "zh": "镀金手镯",
+   "ja": "金張りの腕輪"
+  },
+  "Apprentice's Hand Blade": {
+   "zh": "学徒手刃",
+   "ja": "弟子の手刀"
+  },
+  "Expert's Hand Blade": {
+   "zh": "熟练者手刃",
+   "ja": "熟練者の手刀"
+  },
+  "Big Skeleton Bone": {
+   "zh": "巨型骷髅骨",
+   "ja": "巨大スケルトンの骨"
+  },
+  "Razor Sharp Hand Blade": {
+   "zh": "锋利手刃",
+   "ja": "鋭利な手刀"
+  },
+  "Yellow Crystal Necklace": {
+   "zh": "黄水晶项链",
+   "ja": "黄水晶の首飾り"
+  },
+  "Bracer Of Magic": {
+   "zh": "魔法护腕",
+   "ja": "魔法の腕輪"
+  },
+  "Serpent Ring": {
+   "zh": "蛇纹戒指",
+   "ja": "蛇の指輪"
+  },
+  "Amber Necklace": {
+   "zh": "琥珀项链",
+   "ja": "琥珀の首飾り"
+  },
+  "Seal Of Titans": {
+   "zh": "泰坦封印",
+   "ja": "タイタンの封印"
+  },
+  "Deathblow Talon": {
+   "zh": "致命之爪",
+   "ja": "必殺の爪"
+  },
+  "Elixir Of Spirit": {
+   "zh": "灵魂灵药",
+   "ja": "霊魂のエリクサー"
+  },
+  "Elixir Of Spirit (II)": {
+   "zh": "灵魂灵药（二）",
+   "ja": "霊魂のエリクサー（II）"
+  },
+  "Elixir Of Spirit (III)": {
+   "zh": "灵魂灵药（三）",
+   "ja": "霊魂のエリクサー（III）"
+  },
+  "Elixir Of Spirit (IV)": {
+   "zh": "灵魂灵药（四）",
+   "ja": "霊魂のエリクサー（IV）"
+  },
+  "Elixir Of Spirit (V)": {
+   "zh": "灵魂灵药（五）",
+   "ja": "霊魂のエリクサー（V）"
+  },
+  "Ring Of Discipline": {
+   "zh": "戒律之戒",
+   "ja": "戒律の指輪"
+  },
+  "Bamboo Necklace": {
+   "zh": "竹项链",
+   "ja": "竹の首飾り"
+  },
+  "Bracelet Of Three Eyes": {
+   "zh": "三眼手镯",
+   "ja": "三眼の腕輪"
+  },
+  "Assassin's Ripper": {
+   "zh": "刺客撕裂者",
+   "ja": "暗殺者のリプペル"
+  },
+  "Choker Of Ashes": {
+   "zh": "灰烬项圈",
+   "ja": "アシェスのチョーカー"
+  },
+  "Necklace Of Nature": {
+   "zh": "自然项链",
+   "ja": "ナトゥレの首飾り"
+  },
+  "Band Of Magic": {
+   "zh": "魔法之环",
+   "ja": "魔法の指輪"
+  },
+  "Pendant Of Wrath": {
+   "zh": "怒火吊坠",
+   "ja": "怒りのペンダント"
+  },
+  "Amulet Of Wisdom": {
+   "zh": "智慧护符",
+   "ja": "知恵の護符"
+  },
+  "Pendent Of Holy Spirit": {
+   "zh": "圣灵吊坠",
+   "ja": "聖霊のペンダント"
+  },
+  "Ring Of Destruction": {
+   "zh": "毁灭之戒",
+   "ja": "破壊の指輪"
+  },
+  "Amulet Of Chaos": {
+   "zh": "混沌护符",
+   "ja": "カオスの護符"
+  },
+  "Pendant Of Destruction": {
+   "zh": "毁灭吊坠",
+   "ja": "破壊のペンダント"
+  },
+  "Freedom Pass": {
+   "zh": "自由通行证",
+   "ja": "自由通行証"
+  },
+  "Necklace Of Evasion": {
+   "zh": "闪避项链",
+   "ja": "回避の首飾り"
+  },
+  "Dark Blade": {
+   "zh": "暗刃",
+   "ja": "闇の刃"
+  },
+  "Bracelet Of Evasion": {
+   "zh": "闪避手镯",
+   "ja": "回避の腕輪"
+  },
+  "Spiked Ring": {
+   "zh": "尖刺戒指",
+   "ja": "スピケドの指輪"
+  },
+  "Opal Ring": {
+   "zh": "蛋白石戒指",
+   "ja": "オパールの指輪"
+  },
+  "Hieroglyphic Ring": {
+   "zh": "象形文字戒指",
+   "ja": "ヒエログルイフイクの指輪"
+  },
+  "Red Maple Ring": {
+   "zh": "红枫戒指",
+   "ja": "赤の楓の指輪"
+  },
+  "Jewel": {
+   "zh": "宝石",
+   "ja": "宝石"
+  },
+  "Numa Power Axe": {
+   "zh": "诺马力量之斧",
+   "ja": "ヌマの力の斧"
+  },
+  "Numa Mage Staff": {
+   "zh": "诺马法师法杖",
+   "ja": "ヌマの魔導士の杖"
+  },
+  "Rogue's Render": {
+   "zh": "游荡者之刃",
+   "ja": "ローグの刃"
+  },
+  "Cursed Serpent Sword": {
+   "zh": "诅咒蛇纹剑",
+   "ja": "呪われた蛇の剣"
+  },
+  "Ambitious Sword Of Abyss": {
+   "zh": "雄心深渊之刃",
+   "ja": "野望の深淵の剣"
+  },
+  "Ambitious Warden's Fan Of Obedience": {
+   "zh": "雄心道士扇",
+   "ja": "野望の守護者の従順の扇"
+  },
+  "Ambitious Glaive Of Doom": {
+   "zh": "雄心毁灭之刃",
+   "ja": "野望の破滅の長刀"
+  },
+  "Crystallized Dark Ore": {
+   "zh": "结晶暗矿",
+   "ja": "結晶化した暗鉱石"
+  },
+  "Lance Of Obedience": {
+   "zh": "服从之矛",
+   "ja": "オベディエンクエの槍"
+  },
+  "Hero's Bracelet": {
+   "zh": "英雄手镯",
+   "ja": "英雄の腕輪"
+  },
+  "Holy Bracer": {
+   "zh": "圣护腕",
+   "ja": "聖なるの腕輪"
+  },
+  "Wyvern Bracelet": {
+   "zh": "双足飞龙手镯",
+   "ja": "ワイバーンの腕輪"
+  },
+  "Enchanted Blade Of Banya": {
+   "zh": "潘夜附魔之刃",
+   "ja": "パンヤの魔力付与の刃"
+  },
+  "Dark Banya Gem Stone": {
+   "zh": "潘夜暗宝石",
+   "ja": "パンヤの暗黒宝石"
+  },
+  "Mage Sword Of Banya": {
+   "zh": "潘夜法师之剑",
+   "ja": "パンヤの魔導士の剣"
+  },
+  "Runed Staff Of Banya": {
+   "zh": "潘夜符文法杖",
+   "ja": "パンヤのルーン杖"
+  },
+  "Forged Scimitar Of Banya": {
+   "zh": "潘夜锻造弯刀",
+   "ja": "パンヤの鍛造シミター"
+  },
+  "Glaive Of Frozen Heart": {
+   "zh": "冰封之心长刀",
+   "ja": "フロゼンのヘアルトの長刀"
+  },
+  "Red Lotus Glaive": {
+   "zh": "红莲长刀",
+   "ja": "赤の蓮の長刀"
+  },
+  "Conqueror's Talon": {
+   "zh": "征服者之爪",
+   "ja": "征服者の爪"
+  },
+  "Amulet Of The Cult Leader": {
+   "zh": "邪教首领护符",
+   "ja": "邪教の教主の護符"
+  },
+  "Amulet Of Five Elements": {
+   "zh": "五行护符",
+   "ja": "五行の護符"
+  },
+  "Amulet Of The Enlightened": {
+   "zh": "觉悟者护符",
+   "ja": "悟りし者の護符"
+  },
+  "Boots Of Despair": {
+   "zh": "绝望之靴",
+   "ja": "絶望の靴"
+  },
+  "Boots Of Swiftness": {
+   "zh": "迅捷之靴",
+   "ja": "疾風の靴"
+  },
+  "Boots Of Levitation": {
+   "zh": "漂浮之靴",
+   "ja": "浮遊の靴"
+  },
+  "Blue Sword Of Purification": {
+   "zh": "蓝色净化之剑",
+   "ja": "浄化の青の剣"
+  },
+  "Serpent Sword Of Banya": {
+   "zh": "潘夜蛇纹剑",
+   "ja": "パンヤの蛇紋剣"
+  },
+  "Banya Mage Staff": {
+   "zh": "潘夜法师法杖",
+   "ja": "パンヤの魔導士の杖"
+  },
+  "Rugged Leather Boots": {
+   "zh": "粗犷皮靴",
+   "ja": "頑丈な革靴"
+  },
+  "Boots Of Black Tortoise": {
+   "zh": "玄武之靴",
+   "ja": "玄武の靴"
+  },
+  "Silk Boots": {
+   "zh": "丝绸靴",
+   "ja": "絹の靴"
+  },
+  "Tears Of Banya": {
+   "zh": "潘夜之泪",
+   "ja": "パンヤの涙"
+  },
+  "Death Glaive": {
+   "zh": "死亡长刀",
+   "ja": "死の長刀"
+  },
+  "Ring Of Unification": {
+   "zh": "统一之戒",
+   "ja": "統一の指輪"
+  },
+  "Ruby Ring": {
+   "zh": "红宝石戒指",
+   "ja": "ルビーの指輪"
+  },
+  "Platinum Ring": {
+   "zh": "铂金戒指",
+   "ja": "白金の指輪"
+  },
+  "Gold Dragon Ring": {
+   "zh": "金龙戒指",
+   "ja": "金の竜の指輪"
+  },
+  "Potion Of Forgetfulness": {
+   "zh": "遗忘药水",
+   "ja": "忘却のポーション"
+  },
+  "Enraged Demon's Hood": {
+   "zh": "暴怒恶魔兜帽",
+   "ja": "暴怒の悪魔のの頭巾"
+  },
+  "Loop Of Secrets": {
+   "zh": "秘密之环",
+   "ja": "秘密の環"
+  },
+  "Copper Ore": {
+   "zh": "铜矿石",
+   "ja": "銅鉱石"
+  },
+  "Iron Ore": {
+   "zh": "铁矿石",
+   "ja": "鉄鉱石"
+  },
+  "Silver Ore": {
+   "zh": "银矿石",
+   "ja": "銀鉱石"
+  },
+  "Gold Ore": {
+   "zh": "金矿石",
+   "ja": "金鉱石"
+  },
+  "Black Iron Ore": {
+   "zh": "黑铁矿石",
+   "ja": "黒鉄鉱石"
+  },
+  "Amethyst": {
+   "zh": "紫水晶",
+   "ja": "アメジスト"
+  },
+  "Garnet": {
+   "zh": "石榴石",
+   "ja": "ガーネット"
+  },
+  "Diamond": {
+   "zh": "钻石",
+   "ja": "ダイヤ"
+  },
+  "Corundum": {
+   "zh": "刚玉",
+   "ja": "コランダム"
+  },
+  "Forged Scimitar": {
+   "zh": "锻造弯刀",
+   "ja": "フオルゲドのシミター"
+  },
+  "Runed Staff": {
+   "zh": "符文法杖",
+   "ja": "ルネドの杖"
+  },
+  "Judgement Mace": {
+   "zh": "裁决之锤",
+   "ja": "ジュドゲメントの杖"
+  },
+  "Dragon Bone Staff": {
+   "zh": "龙骨法杖",
+   "ja": "竜の骨の杖"
+  },
+  "Runed Emblem": {
+   "zh": "符文徽章",
+   "ja": "ルネドの紋章"
+  },
+  "Death Steel Claw": {
+   "zh": "死亡钢爪",
+   "ja": "死の鋼爪"
+  },
+  "Carmine Claw Determination": {
+   "zh": "Carmine Claw Determination",
+   "ja": "深紅の爪の決意"
+  },
+  "Raiment Of Executioner(M)": {
+   "zh": "刽子手法衣（男）",
+   "ja": "処刑人の法衣（男）"
+  },
+  "Raiment Of Executioner(F)": {
+   "zh": "刽子手法衣（女）",
+   "ja": "処刑人の法衣（女）"
+  },
+  "Augmented Bronze Gauntlet": {
+   "zh": "强化青铜护手",
+   "ja": "増強された青銅の篭手"
+  },
+  "Crown Of Dark Crusader": {
+   "zh": "黑暗十字军皇冠",
+   "ja": "暗黒十字軍の王冠"
+  },
+  "Blue Jade Signet": {
+   "zh": "蓝玉印章戒",
+   "ja": "青玉の印章"
+  },
+  "Loop Of Reincarnation": {
+   "zh": "轮回之环",
+   "ja": "輪廻の環"
+  },
+  "Turban Of Discipline": {
+   "zh": "戒律头巾",
+   "ja": "戒律のトゥルバン"
+  },
+  "Helmet Of The Conqueror": {
+   "zh": "征服者头盔",
+   "ja": "征服者の兜"
+  },
+  "Enchanted Iron Plate Armour (M)": {
+   "zh": "附魔铁板甲（男）",
+   "ja": "魔力付与の鉄板の鎧（男）"
+  },
+  "Enchanted Iron Plate Armour (F)": {
+   "zh": "附魔铁板甲（女）",
+   "ja": "魔力付与の鉄板の鎧（女）"
+  },
+  "Robe Of Conjurer (M)": {
+   "zh": "咒术师法袍（男）",
+   "ja": "呪術師の法衣（男）"
+  },
+  "Robe Of Conjurer (F)": {
+   "zh": "咒术师法袍（女）",
+   "ja": "呪術師の法衣（女）"
+  },
+  "Robe Of Preserver (M)": {
+   "zh": "守护者法袍（男）",
+   "ja": "守護者の法衣（男）"
+  },
+  "Robe Of Preserver (F)": {
+   "zh": "守护者法袍（女）",
+   "ja": "守護者の法衣（女）"
+  },
+  "Ring Of Sovereignty": {
+   "zh": "王权之戒",
+   "ja": "王権の指輪"
+  },
+  "Armour Of Condemned (M)": {
+   "zh": "罪罚者铠甲（男）",
+   "ja": "有罪者の鎧（男）"
+  },
+  "Armour Of Condemned (F)": {
+   "zh": "罪罚者铠甲（女）",
+   "ja": "有罪者の鎧（女）"
+  },
+  "Raiment Of Arch Mage (M)": {
+   "zh": "大法师法衣（男）",
+   "ja": "大の魔導士の法衣（男）"
+  },
+  "Raiment Of Arch Mage (F)": {
+   "zh": "大法师法衣（女）",
+   "ja": "大の魔導士の法衣（女）"
+  },
+  "Raiment Of High Priest (M)": {
+   "zh": "大祭司法衣（男）",
+   "ja": "大の神官の法衣（男）"
+  },
+  "Raiment Of High Priest (F)": {
+   "zh": "大祭司法衣（女）",
+   "ja": "大の神官の法衣（女）"
+  },
+  "Tunic Of Annihilation (M)": {
+   "zh": "湮灭长袍（男）",
+   "ja": "殲滅のチュニック（男）"
+  },
+  "Tunic Of Annihilation (F)": {
+   "zh": "湮灭长袍（女）",
+   "ja": "殲滅のチュニック（女）"
+  },
+  "Hood Of Nemesis": {
+   "zh": "复仇女神兜帽",
+   "ja": "ネメシスの頭巾"
+  },
+  "Enraged Falcon's Mask": {
+   "zh": "暴怒猎鹰面罩",
+   "ja": "暴怒のハヤブサのの仮面"
+  },
+  "Skeleton Ring": {
+   "zh": "骷髅戒指",
+   "ja": "スケルトンの指輪"
+  },
+  "Iron Ring": {
+   "zh": "铁戒指",
+   "ja": "鉄の指輪"
+  },
+  "Potion Of Repentance": {
+   "zh": "忏悔药水",
+   "ja": "懺悔のポーション"
+  },
+  "Redemption Key Stone": {
+   "zh": "救赎钥石",
+   "ja": "贖罪の要石"
+  },
+  "Summon Skeleton": {
+   "zh": "召唤骷髅",
+   "ja": "スケルトン召喚"
+  },
+  "Summon Shinsu": {
+   "zh": "召唤神兽",
+   "ja": "神獣召喚"
+  },
+  "Shadow Chaser": {
+   "zh": "追影靴",
+   "ja": "影のチャセル"
+  },
+  "Ice Rain": {
+   "zh": "冰雨",
+   "ja": "氷雨"
+  },
+  "Empowered Purification": {
+   "zh": "强化净化术",
+   "ja": "強化浄化術"
+  },
+  "Empowered Resurrection": {
+   "zh": "强化复活术",
+   "ja": "強化復活術"
+  },
+  "Fury Blade": {
+   "zh": "狂暴之刃",
+   "ja": "狂乱の刃"
+  },
+  "Twisted Blade Of Souls": {
+   "zh": "扭曲灵魂之刃",
+   "ja": "歪んだ霊魂の刃"
+  },
+  "Yun Wine": {
+   "zh": "云酒",
+   "ja": "雲酒"
+  },
+  "Band Of Netherworld": {
+   "zh": "冥界之环",
+   "ja": "冥界の指輪"
+  },
+  "Diamond Encrusted Band": {
+   "zh": "镶钻之环",
+   "ja": "ダイヤ散りばめの指輪"
+  },
+  "Perfection Ring": {
+   "zh": "完美之戒",
+   "ja": "完璧の指輪"
+  },
+  "Universe Ring": {
+   "zh": "宇宙之戒",
+   "ja": "宇宙の指輪"
+  },
+  "Iron Plate Necklace": {
+   "zh": "铁板项链",
+   "ja": "鉄板の首飾り"
+  },
+  "Amulet Of Absorption": {
+   "zh": "吸收护符",
+   "ja": "吸収の護符"
+  },
+  "Pendant Of Wind Elemental": {
+   "zh": "风元素吊坠",
+   "ja": "風の精霊のペンダント"
+  },
+  "Soul Trapped Necklace": {
+   "zh": "缚魂项链",
+   "ja": "霊魂の縛りの首飾り"
+  },
+  "Celestial Blade": {
+   "zh": "天界之刃",
+   "ja": "天界の刃"
+  },
+  "Halberd Of Integrity": {
+   "zh": "正直之戟",
+   "ja": "誠実の鉾"
+  },
+  "Potion Of Oblivion": {
+   "zh": "湮灭药水",
+   "ja": "忘却のポーション"
+  },
+  "Sword Of Abyss": {
+   "zh": "深渊之刃",
+   "ja": "深淵の剣"
+  },
+  "Glaive Of Doom": {
+   "zh": "毁灭之刃",
+   "ja": "破滅の長刀"
+  },
+  "Warden's Fan Of Obedience": {
+   "zh": "道士扇",
+   "ja": "守護者の従順の扇"
+  },
+  "Divine Command": {
+   "zh": "神谕之令",
+   "ja": "神聖なる令"
+  },
+  "Relic": {
+   "zh": "遗物",
+   "ja": "遺物"
+  },
+  "Rusty Signet Of Myrmidon": {
+   "zh": "锈蚀勇士徽戒",
+   "ja": "錆びたミュルミドンの印章"
+  },
+  "Rusty Signet Of Evoker": {
+   "zh": "锈蚀唤灵师徽戒",
+   "ja": "錆びた喚霊師の印章"
+  },
+  "Rusty Signet Of Vicar": {
+   "zh": "锈蚀牧师徽戒",
+   "ja": "錆びた牧師の印章"
+  },
+  "Rusty Charm Of The Destroyer": {
+   "zh": "锈蚀毁灭者护符",
+   "ja": "錆びた破壊者のお守り"
+  },
+  "Rusty Amulet Of Dark Sorcery": {
+   "zh": "锈蚀黑暗巫术护身符",
+   "ja": "錆びた暗黒魔術の護符"
+  },
+  "Rusty Pendant Of Purification": {
+   "zh": "锈蚀净化吊坠",
+   "ja": "錆びた浄化のペンダント"
+  },
+  "Rusty Bracer Of Revelation": {
+   "zh": "锈蚀启示护腕",
+   "ja": "錆びた啓示の腕輪"
+  },
+  "Rusty Ring Of Enlightenment": {
+   "zh": "锈蚀启迪之戒",
+   "ja": "錆びた啓蒙の指輪"
+  },
+  "Rusty Bracelet Of Ascension": {
+   "zh": "锈蚀飞升手镯",
+   "ja": "錆びたアスクエンシオンの腕輪"
+  },
+  "Courage Of Kelsar": {
+   "zh": "凯尔萨之勇气",
+   "ja": "ケルサーの勇気"
+  },
+  "Temperance Of Hunta": {
+   "zh": "亨塔之节制",
+   "ja": "フンタの節制"
+  },
+  "Determination Of Tanguere": {
+   "zh": "坦格雷之决心",
+   "ja": "タンゲールの決意"
+  },
+  "Wisdom Of Dumachi": {
+   "zh": "杜玛奇之智慧",
+   "ja": "デュマチの知恵"
+  },
+  "Justice Of Natura": {
+   "zh": "娜图拉之正义",
+   "ja": "ナトゥラの正義"
+  },
+  "Shamal's Obsidian Giant Blade": {
+   "zh": "沙马尔的黑曜巨刃",
+   "ja": "シャマルの黒曜の巨刃"
+  },
+  "Shamal's Divine Blade Of Judgment": {
+   "zh": "Shamal&#x27;s Divine Blade Of Judgment",
+   "ja": "シャマルの神聖なる裁きの刃"
+  },
+  "Shamal's Staff Of Retribution": {
+   "zh": "沙马尔的惩戒法杖",
+   "ja": "シャマルのレトリブティオンの杖"
+  },
+  "Falcon Glaive": {
+   "zh": "猎鹰长刀",
+   "ja": "ハヤブサの長刀"
+  },
+  "Signet Of Myrmidon": {
+   "zh": "密尔弥冬印章戒",
+   "ja": "ミュルミドンの印章"
+  },
+  "Signet Of Evoker": {
+   "zh": "唤魔师印章戒",
+   "ja": "喚霊師の印章"
+  },
+  "Signet Of Vicar": {
+   "zh": "牧师印章戒",
+   "ja": "牧師の印章"
+  },
+  "Charm Of The Destroyer": {
+   "zh": "毁灭者护符",
+   "ja": "破壊者のお守り"
+  },
+  "Amulet Of Dark Sorcery": {
+   "zh": "黑暗巫术护符",
+   "ja": "暗黒魔術の護符"
+  },
+  "Pendant Of Purification": {
+   "zh": "净化吊坠",
+   "ja": "浄化のペンダント"
+  },
+  "Bracer Of Revelation": {
+   "zh": "启示护腕",
+   "ja": "啓示の腕輪"
+  },
+  "Ring Of Enlightenment": {
+   "zh": "启迪之戒",
+   "ja": "啓蒙の指輪"
+  },
+  "Bracelet Of Ascension": {
+   "zh": "飞升手镯",
+   "ja": "アスクエンシオンの腕輪"
+  },
+  "Relic Fragment": {
+   "zh": "遗物碎片",
+   "ja": "遺物の欠片"
+  },
+  "Heavenly Blade Of Tranquility": {
+   "zh": "宁静天刃",
+   "ja": "静寂の天界の刃"
+  },
+  "Talon Staff Of A'Ryong": {
+   "zh": "阿龙爪杖",
+   "ja": "アリョンの爪の杖"
+  },
+  "Calamity": {
+   "zh": "灾厄",
+   "ja": "災厄"
+  },
+  "Amulet Of Sirius": {
+   "zh": "天狼星护符",
+   "ja": "シリウスの護符"
+  },
+  "Bracelet Of Canopus": {
+   "zh": "老人星手镯",
+   "ja": "クアノプスの腕輪"
+  },
+  "Ring Of Alpha Centauri": {
+   "zh": "南门二之戒",
+   "ja": "アルファのクエンタウリの指輪"
+  },
+  "Celestial Necklace Of Eternity": {
+   "zh": "永恒天界项链",
+   "ja": "永遠の天界の首飾り"
+  },
+  "Dazzling Bracelet Of Earth": {
+   "zh": "大地炫光手镯",
+   "ja": "眩惑の大地の腕輪"
+  },
+  "Brilliant Band Of Harmony": {
+   "zh": "和谐璀璨之环",
+   "ja": "輝かしい調和の指輪"
+  },
+  "The Master's Pendant": {
+   "zh": "大师吊坠",
+   "ja": "マスターののペンダント"
+  },
+  "The Master's Bracelet": {
+   "zh": "大师手镯",
+   "ja": "マスターのの腕輪"
+  },
+  "The Master's Ring": {
+   "zh": "大师之戒",
+   "ja": "マスターのの指輪"
+  },
+  "Claw Of The Demon God": {
+   "zh": "魔神之爪",
+   "ja": "悪魔の神の爪"
+  },
+  "Hero's Band Of Supremacy": {
+   "zh": "至高英雄之环",
+   "ja": "英雄の至高の指輪"
+  },
+  "Apocalypse": {
+   "zh": "天启",
+   "ja": "黙示録"
+  },
+  "Heavenly Staff Of Immortality": {
+   "zh": "永生天杖",
+   "ja": "不死の天界の杖"
+  },
+  "Afterlife": {
+   "zh": "来世",
+   "ja": "来世"
+  },
+  "Phoenix Glaive Of Havoc": {
+   "zh": "凤凰浩劫长刀",
+   "ja": "災厄のフェニックスの長刀"
+  },
+  "Chrome Armguard Of Earth": {
+   "zh": "大地铬护腕",
+   "ja": "大地のクロムの腕当て"
+  },
+  "Jade Armguard Of Purity": {
+   "zh": "纯净玉护腕",
+   "ja": "純粋の翡翠の腕当て"
+  },
+  "Glowing Armguard Of Crescent": {
+   "zh": "新月发光护腕",
+   "ja": "輝く三日月の腕当て"
+  },
+  "Wind Walkers": {
+   "zh": "御风行靴",
+   "ja": "風渡りの靴"
+  },
+  "Medallion Of Black Magic": {
+   "zh": "黑魔法勋章",
+   "ja": "黒魔術のメダル"
+  },
+  "Ghost Armour (M)": {
+   "zh": "幽灵铠甲（男）",
+   "ja": "亡霊の鎧（男）"
+  },
+  "Ghost Armour (F)": {
+   "zh": "幽灵铠甲（女）",
+   "ja": "亡霊の鎧（女）"
+  },
+  "Raiment Of Spectral Energy (M)": {
+   "zh": "幽能法衣（男）",
+   "ja": "霊体のエネルギーの法衣（男）"
+  },
+  "Raiment Of Spectral Energy (F)": {
+   "zh": "幽能法衣（女）",
+   "ja": "霊体のエネルギーの法衣（女）"
+  },
+  "Band Of Azure Sky": {
+   "zh": "蔚蓝天空之环",
+   "ja": "紺碧の空の指輪"
+  },
+  "Aged Gold Band Of Mystic": {
+   "zh": "古旧神秘金环",
+   "ja": "古びたムイスティクの金の指輪"
+  },
+  "Channeler's Signet Of Wizardry": {
+   "zh": "通灵者的巫术印章戒",
+   "ja": "霊媒師の魔術の印章"
+  },
+  "Cobalt Armguard Of Earth": {
+   "zh": "大地钴蓝护腕",
+   "ja": "大地のコバルトの腕当て"
+  },
+  "Azure Armguard Of Purity": {
+   "zh": "纯净天青护腕",
+   "ja": "純粋の紺碧の腕当て"
+  },
+  "Blazing Armguard Of Crescent": {
+   "zh": "新月炽焰护腕",
+   "ja": "燃え盛る三日月の腕当て"
+  },
+  "Mark Of Destruction [T]": {
+   "zh": "毁灭印记（限时）",
+   "ja": "破壊の印（期間限定）"
+  },
+  "Mark Of Nature [T]": {
+   "zh": "自然印记（限时）",
+   "ja": "自然の印（期間限定）"
+  },
+  "Mark Of Spirit [T]": {
+   "zh": "灵魂印记（限时）",
+   "ja": "霊魂の印（期間限定）"
+  },
+  "Mark Of Fire [T]": {
+   "zh": "火焰印记（限时）",
+   "ja": "火炎の印（期間限定）"
+  },
+  "Mark Of Ice [T]": {
+   "zh": "寒冰印记（限时）",
+   "ja": "氷の印（期間限定）"
+  },
+  "Mark Of Lightning [T]": {
+   "zh": "雷电印记（限时）",
+   "ja": "雷撃の印（期間限定）"
+  },
+  "Mark Of Wind [T]": {
+   "zh": "疾风印记（限时）",
+   "ja": "疾風の印（期間限定）"
+  },
+  "Mark Of Holy [T]": {
+   "zh": "神圣印记（限时）",
+   "ja": "聖なる印（期間限定）"
+  },
+  "Mark Of Dark [T]": {
+   "zh": "黑暗印记（限时）",
+   "ja": "闇の印（期間限定）"
+  },
+  "Mark Of Phantom [T]": {
+   "zh": "幽灵印记（限时）",
+   "ja": "幻影の印（期間限定）"
+  },
+  "Mark Of Destruction [P]": {
+   "zh": "毁灭印记（永久）",
+   "ja": "破壊の印（永久）"
+  },
+  "Mark Of Nature [P]": {
+   "zh": "自然印记（永久）",
+   "ja": "自然の印（永久）"
+  },
+  "Mark Of Spirit [P]": {
+   "zh": "灵魂印记（永久）",
+   "ja": "霊魂の印（永久）"
+  },
+  "Mark Of Fire [P]": {
+   "zh": "火焰印记（永久）",
+   "ja": "火炎の印（永久）"
+  },
+  "Mark Of Ice [P]": {
+   "zh": "寒冰印记（永久）",
+   "ja": "氷の印（永久）"
+  },
+  "Mark Of Lightning [P]": {
+   "zh": "雷电印记（永久）",
+   "ja": "雷撃の印（永久）"
+  },
+  "Mark Of Wind [P]": {
+   "zh": "疾风印记（永久）",
+   "ja": "疾風の印（永久）"
+  },
+  "Mark Of Holy [P]": {
+   "zh": "神圣印记（永久）",
+   "ja": "聖なる印（永久）"
+  },
+  "Mark Of Dark [P]": {
+   "zh": "黑暗印记（永久）",
+   "ja": "闇の印（永久）"
+  },
+  "Mark Of Phantom [P]": {
+   "zh": "幽灵印记（永久）",
+   "ja": "幻影の印（永久）"
+  },
+  "Mir Package [T]": {
+   "zh": "传奇礼包（限时）",
+   "ja": "ミールパック（期間限定）"
+  },
+  "Tonic Of Experience [T]": {
+   "zh": "经验秘药（限时）",
+   "ja": "経験の秘薬（期間限定）"
+  },
+  "Tonic Of Treasure [T]": {
+   "zh": "珍宝秘药（限时）",
+   "ja": "宝の秘薬（期間限定）"
+  },
+  "Tonic Of Wealth [T]": {
+   "zh": "财富秘药（限时）",
+   "ja": "富の秘薬（期間限定）"
+  },
+  "Tonic Of Spelunking [T]": {
+   "zh": "探险秘药（限时）",
+   "ja": "探検の秘薬（期間限定）"
+  },
+  "Tonic Of Destruction [T]": {
+   "zh": "破坏秘药（限时）",
+   "ja": "破壊の秘薬（期間限定）"
+  },
+  "Tonic Of Nature [T]": {
+   "zh": "自然秘药（限时）",
+   "ja": "自然の秘薬（期間限定）"
+  },
+  "Tonic Of Spirit [T]": {
+   "zh": "灵魂秘药（限时）",
+   "ja": "霊魂の秘薬（期間限定）"
+  },
+  "Tonic Of Life [T]": {
+   "zh": "生命秘药（限时）",
+   "ja": "生命の秘薬（期間限定）"
+  },
+  "Tonic Of Mana [T]": {
+   "zh": "魔法秘药（限时）",
+   "ja": "魔力の秘薬（期間限定）"
+  },
+  "Tonic Of Velocity [T]": {
+   "zh": "极速秘药（限时）",
+   "ja": "疾速の秘薬（期間限定）"
+  },
+  "Tonic Of Dexterity [T]": {
+   "zh": "敏捷秘药（限时）",
+   "ja": "敏捷の秘薬（期間限定）"
+  },
+  "Tonic Of Knowledge [T]": {
+   "zh": "知识秘药（限时）",
+   "ja": "知識の秘薬（期間限定）"
+  },
+  "Tonic Of Luck [T]": {
+   "zh": "幸运秘药（限时）",
+   "ja": "幸運の秘薬（期間限定）"
+  },
+  "Mir Package [P]": {
+   "zh": "传奇礼包（永久）",
+   "ja": "ミールパック（永久）"
+  },
+  "Tonic Of Experience [P]": {
+   "zh": "经验秘药（永久）",
+   "ja": "経験の秘薬（永久）"
+  },
+  "Tonic Of Treasure [P]": {
+   "zh": "珍宝秘药（永久）",
+   "ja": "宝の秘薬（永久）"
+  },
+  "Tonic Of Wealth [P]": {
+   "zh": "财富秘药（永久）",
+   "ja": "富の秘薬（永久）"
+  },
+  "Tonic Of Spelunking [P]": {
+   "zh": "探险秘药（永久）",
+   "ja": "探検の秘薬（永久）"
+  },
+  "Tonic Of Destruction [P]": {
+   "zh": "破坏秘药（永久）",
+   "ja": "破壊の秘薬（永久）"
+  },
+  "Tonic Of Nature [P]": {
+   "zh": "自然秘药（永久）",
+   "ja": "自然の秘薬（永久）"
+  },
+  "Tonic Of Spirit [P]": {
+   "zh": "灵魂秘药（永久）",
+   "ja": "霊魂の秘薬（永久）"
+  },
+  "Tonic Of Life [P]": {
+   "zh": "生命秘药（永久）",
+   "ja": "生命の秘薬（永久）"
+  },
+  "Tonic Of Mana [P]": {
+   "zh": "魔法秘药（永久）",
+   "ja": "魔力の秘薬（永久）"
+  },
+  "Tonic Of Velocity [P]": {
+   "zh": "极速秘药（永久）",
+   "ja": "疾速の秘薬（永久）"
+  },
+  "Tonic Of Dexterity [P]": {
+   "zh": "敏捷秘药（永久）",
+   "ja": "敏捷の秘薬（永久）"
+  },
+  "Tonic Of Knowledge [P]": {
+   "zh": "知识秘药（永久）",
+   "ja": "知識の秘薬（永久）"
+  },
+  "Megaphone [P]": {
+   "zh": "大喇叭（永久）",
+   "ja": "メガホン（永久）"
+  },
+  "Hair Change": {
+   "zh": "换发型",
+   "ja": "髪型変更"
+  },
+  "Gender Change": {
+   "zh": "性别变更",
+   "ja": "性別変更"
+  },
+  "Armour Dye": {
+   "zh": "护甲染色",
+   "ja": "鎧の染色"
+  },
+  "Additional Vault": {
+   "zh": "扩展仓库",
+   "ja": "追加倉庫"
+  },
+  "Crafting Vault": {
+   "zh": "制作仓库",
+   "ja": "製作倉庫"
+  },
+  "Name Change": {
+   "zh": "改名",
+   "ja": "改名"
+  },
+  "Scroll Of Boss Tracking": {
+   "zh": "BOSS追踪卷轴",
+   "ja": "BOSS追跡の巻物"
+  },
+  "Scroll Of Player Tracking": {
+   "zh": "玩家追踪卷轴",
+   "ja": "プレイヤー追跡の巻物"
+  },
+  "Scroll Of Teleportation": {
+   "zh": "传送卷轴",
+   "ja": "テレポートの巻物"
+  },
+  "Scroll Of Greater Teleportation": {
+   "zh": "高阶传送卷轴",
+   "ja": "大テレポートの巻物"
+  },
+  "Elixir Of Regret Lv 3": {
+   "zh": "悔悟灵药（3级）",
+   "ja": "悔悟のエリクサー（Lv.3）"
+  },
+  "Elixir Of Regret Lv 5": {
+   "zh": "悔悟灵药（5级）",
+   "ja": "悔悟のエリクサー（Lv.5）"
+  },
+  "Elixir Of Regret Lv 7": {
+   "zh": "悔悟灵药（7级）",
+   "ja": "悔悟のエリクサー（Lv.7）"
+  },
+  "Elixir Of Regret Lv 10": {
+   "zh": "悔悟灵药（10级）",
+   "ja": "悔悟のエリクサー（Lv.10）"
+  },
+  "Potion Of Awareness": {
+   "zh": "警觉药水",
+   "ja": "警戒のポーション"
+  },
+  "Green Apple": {
+   "zh": "青苹果",
+   "ja": "青りんご"
+  },
+  "Chestnut Rice Ball": {
+   "zh": "栗子饭团",
+   "ja": "栗おにぎり"
+  },
+  "Meat Dumpling": {
+   "zh": "肉饺子",
+   "ja": "肉ギョーザ"
+  },
+  "Fresh Meat": {
+   "zh": "鲜肉",
+   "ja": "新鮮な肉"
+  },
+  "Basic Worn Bag": {
+   "zh": "破旧背包",
+   "ja": "古びた鞄"
+  },
+  "Fantastic Wool Bag": {
+   "zh": "优质羊毛背包",
+   "ja": "上質な羊毛の鞄"
+  },
+  "Luxury Silk Box": {
+   "zh": "豪华丝绸盒",
+   "ja": "豪華な絹の箱"
+  },
+  "Angel Wings": {
+   "zh": "天使之翼",
+   "ja": "天使の翼"
+  },
+  "Angel Head Band": {
+   "zh": "天使头带",
+   "ja": "天使のヘッドバンド"
+  },
+  "Rabbit Head Band": {
+   "zh": "兔头带",
+   "ja": "うさぎのヘッドバンド"
+  },
+  "Refiner's Ore (Weapon)": {
+   "zh": "精炼矿石（武器）",
+   "ja": "精錬鉱石（武器）"
+  },
+  "Refiner's Ore (Reset)": {
+   "zh": "精炼矿石（重置）",
+   "ja": "精錬鉱石（リセット）"
+  },
+  "Refiner's Ore (Safe Master)": {
+   "zh": "精炼矿石（安全大师）",
+   "ja": "精錬鉱石（セーフマスター）"
+  },
+  "Refiner's Ore (Armour)": {
+   "zh": "精炼矿石（防具）",
+   "ja": "精錬鉱石（防具）"
+  },
+  "Refiner's Ore (Master)": {
+   "zh": "精炼矿石（大师）",
+   "ja": "精錬鉱石（マスター）"
+  },
+  "Superior Repair Oil": {
+   "zh": "高级修理油",
+   "ja": "卓越の修理油"
+  },
+  "Accessory Repair Oil": {
+   "zh": "饰品修理油",
+   "ja": "装飾品修理油"
+  },
+  "Armour Repair Oil": {
+   "zh": "防具修理油",
+   "ja": "防具修理油"
+  },
+  "Pill Of Reincarnation": {
+   "zh": "重生丹",
+   "ja": "輪廻の丸薬"
+  },
+  "Elixir Of Purification": {
+   "zh": "净化灵药",
+   "ja": "浄化のエリクサー"
+  },
+  "Potion Of Repentence (II)": {
+   "zh": "忏悔药水（二）",
+   "ja": "懺悔のポーション（II）"
+  },
+  "Thorned Rose": {
+   "zh": "荆棘玫瑰",
+   "ja": "棘のバラ"
+  },
+  "Guardian Angel's Flower": {
+   "zh": "守护天使之花",
+   "ja": "守護天使の花"
+  },
+  "Iron Horse Armour": {
+   "zh": "铁马甲",
+   "ja": "鉄の馬鎧"
+  },
+  "Silver Horse Armour": {
+   "zh": "银马甲",
+   "ja": "銀の馬鎧"
+  },
+  "Gold Horse Armour": {
+   "zh": "金马甲",
+   "ja": "金の馬鎧"
+  },
+  "Blue Horse Armour": {
+   "zh": "蓝马甲",
+   "ja": "青の馬鎧"
+  },
+  "Dark Horse Armour": {
+   "zh": "黑暗马甲",
+   "ja": "闇の馬鎧"
+  },
+  "Experience": {
+   "zh": "经验",
+   "ja": "経験"
+  },
+  "Wool": {
+   "zh": "羊毛",
+   "ja": "羊毛"
+  },
+  "Venom": {
+   "zh": "毒液",
+   "ja": "毒液"
+  },
+  "Arachnid Teeth": {
+   "zh": "蛛类牙齿",
+   "ja": "蜘蛛の歯"
+  },
+  "Spider Curare": {
+   "zh": "蜘蛛箭毒",
+   "ja": "蜘蛛の毒"
+  },
+  "Edible Chestnut": {
+   "zh": "可食用栗子",
+   "ja": "食用栗"
+  },
+  "Skeletal Spine": {
+   "zh": "骷髅脊柱",
+   "ja": "スケルトンの脊椎"
+  },
+  "Henry's Journal": {
+   "zh": "亨利的日记",
+   "ja": "ヘンリーの日記"
+  },
+  "David's Key": {
+   "zh": "大卫的钥匙",
+   "ja": "デビッドの鍵"
+  },
+  "Haylee's Key": {
+   "zh": "海莉的钥匙",
+   "ja": "ヘイリーの鍵"
+  },
+  "Kacy's Key": {
+   "zh": "凯西的钥匙",
+   "ja": "ケイシーの鍵"
+  },
+  "Zombie Flesh": {
+   "zh": "僵尸肉",
+   "ja": "ゾンビの肉"
+  },
+  "Gresham's Journal": {
+   "zh": "格雷沙姆的日记",
+   "ja": "グレシャムの日記"
+  },
+  "Isaac's Journal": {
+   "zh": "艾萨克的日记",
+   "ja": "アイザックの日記"
+  },
+  "Companion Ticket": {
+   "zh": "伙伴解锁券",
+   "ja": "仲間チケット"
+  },
+  "Pick Axe": {
+   "zh": "鹤嘴锄",
+   "ja": "つるはし"
+  },
+  "Pick Axe Of Wind": {
+   "zh": "风之鹤嘴锄",
+   "ja": "風のつるはし"
+  },
+  "Pick Axe Of Storm": {
+   "zh": "风暴之鹤嘴锄",
+   "ja": "嵐のつるはし"
+  },
+  "Obsidian Giant Blade": {
+   "zh": "黑曜巨刃",
+   "ja": "黒曜の巨刃"
+  },
+  "Divine Blade Of Judgement": {
+   "zh": "神圣裁决之刃",
+   "ja": "神聖なる裁きの刃"
+  },
+  "Staff Of Retribution": {
+   "zh": "惩戒法杖",
+   "ja": "報復の杖"
+  },
+  "Ruination": {
+   "zh": "覆灭",
+   "ja": "破滅"
+  },
+  "Muk's Obsidian Giant Blade": {
+   "zh": "穆克的黑曜巨刃",
+   "ja": "ムクの黒曜の巨刃"
+  },
+  "Muk's Divine Blade Of Judgement": {
+   "zh": "穆克的神圣裁决之刃",
+   "ja": "ムクの神聖なる裁きの刃"
+  },
+  "Muk's Staff Of Retribution": {
+   "zh": "穆克的惩戒法杖",
+   "ja": "ムクの報復の杖"
+  },
+  "Muk's Unparalleled Polearm": {
+   "zh": "穆克的无双长柄武器",
+   "ja": "ムクの無双の長柄武器"
+  },
+  "Pure Quartz": {
+   "zh": "纯净石英",
+   "ja": "純粋な石英"
+  },
+  "Refinement Stone": {
+   "zh": "精炼石",
+   "ja": "精錬石"
+  },
+  "Fragment": {
+   "zh": "碎片",
+   "ja": "欠片"
+  },
+  "Fragment (II)": {
+   "zh": "碎片（二）",
+   "ja": "欠片（II）"
+  },
+  "Fragment (III)": {
+   "zh": "碎片（三）",
+   "ja": "欠片（III）"
+  },
+  "Fragment (IV)": {
+   "zh": "碎片（四）",
+   "ja": "欠片（IV）"
+  },
+  "The Sun Raiser": {
+   "zh": "唤日之戒",
+   "ja": "太陽召喚の指輪"
+  },
+  "Medallion Of The Eight Kings": {
+   "zh": "八王勋章",
+   "ja": "八王のメダル"
+  },
+  "Ascension Bracelet": {
+   "zh": "飞升手镯",
+   "ja": "アスクエンシオンの腕輪"
+  },
+  "Band Of Unstable Energy": {
+   "zh": "不稳定能量之环",
+   "ja": "不安定エネルギーの指輪"
+  },
+  "Pendant Of The Full Moon": {
+   "zh": "满月吊坠",
+   "ja": "満月のペンダント"
+  },
+  "Dragon Bracelet Of Supremacy": {
+   "zh": "至高龙手镯",
+   "ja": "至高の竜の腕輪"
+  },
+  "Gift Of Aquatic Guardian": {
+   "zh": "水之守护者之礼",
+   "ja": "水の守護者の贈り物"
+  },
+  "Medallion Of Underworld": {
+   "zh": "冥界勋章",
+   "ja": "冥界のメダル"
+  },
+  "Keeper's Bracelet Of Insight": {
+   "zh": "洞悉守护者手镯",
+   "ja": "守護者の洞察の腕輪"
+  },
+  "Argent Sabatons Of Comet": {
+   "zh": "彗星白银足甲",
+   "ja": "彗星の銀の足甲"
+  },
+  "Lupine Headgear": {
+   "zh": "狼族头饰",
+   "ja": "狼族の頭飾り"
+  },
+  "Lupine Greaves": {
+   "zh": "狼族胫甲",
+   "ja": "狼族の脛当て"
+  },
+  "Raven Hood Of Covertness": {
+   "zh": "隐秘渡鸦兜帽",
+   "ja": "隠密のワタリガラスの頭巾"
+  },
+  "Advanced Bloody Flower": {
+   "zh": "高级血花（技能书）",
+   "ja": "上級血の花"
+  },
+  "Bloodthirsty Signet Of Carnage": {
+   "zh": "屠戮嗜血印章戒",
+   "ja": "血に飢えた殺戮の印章"
+  },
+  "Celestial Loop Of The Stars": {
+   "zh": "星辰天界之环",
+   "ja": "星々の天界の環"
+  },
+  "Oracle's Loop Of Serenity": {
+   "zh": "宁静先知之环",
+   "ja": "予言者の静寂の環"
+  },
+  "Bloodthirsty Bracelet Of Carnage": {
+   "zh": "屠戮嗜血手镯",
+   "ja": "血に飢えた殺戮の腕輪"
+  },
+  "Celestial Bracelet Of The Stars": {
+   "zh": "星辰天界手镯",
+   "ja": "星々の天界の腕輪"
+  },
+  "Oracle's Bracer Of Serenity": {
+   "zh": "宁静先知护腕",
+   "ja": "予言者の静寂の腕輪"
+  },
+  "Bloodthirsty Pendant Of Carnage": {
+   "zh": "屠戮嗜血吊坠",
+   "ja": "血に飢えた殺戮のペンダント"
+  },
+  "Celestial Amulet Of The Stars": {
+   "zh": "星辰天界护符",
+   "ja": "星々の天界の護符"
+  },
+  "Oracle's Locket Of Serenity": {
+   "zh": "宁静先知吊坠",
+   "ja": "予言者の静寂のロケット"
+  },
+  "Symbol Of Holy Grounds": {
+   "zh": "圣地徽记",
+   "ja": "聖地の象徴"
+  },
+  "Holy Bracer Of Grace": {
+   "zh": "恩典圣护腕",
+   "ja": "恩寵の聖なるの腕輪"
+  },
+  "Rusty Seal Of Overlord": {
+   "zh": "生锈的霸主封印",
+   "ja": "錆びたオヴエルルオルドの封印"
+  },
+  "Cracked Seal Of Overlord": {
+   "zh": "龟裂的霸主封印",
+   "ja": "ひび割れたオヴエルルオルドの封印"
+  },
+  "Worn Seal Of Overlord": {
+   "zh": "磨损的霸主封印",
+   "ja": "摩耗したオヴエルルオルドの封印"
+  },
+  "Rusty Bracelet Of Overlord": {
+   "zh": "生锈的霸主手镯",
+   "ja": "錆びたオヴエルルオルドの腕輪"
+  },
+  "Cracked Bracelet Of Overlord": {
+   "zh": "龟裂的霸主手镯",
+   "ja": "ひび割れたオヴエルルオルドの腕輪"
+  },
+  "Worn Bracelet Of Overlord": {
+   "zh": "磨损的霸主手镯",
+   "ja": "摩耗したオヴエルルオルドの腕輪"
+  },
+  "Scratched Bracelet Of Overlord": {
+   "zh": "刮花的霸主手镯",
+   "ja": "擦り傷のあるオヴエルルオルドの腕輪"
+  },
+  "Rusty Medallion Of Overlord": {
+   "zh": "生锈的霸主勋章",
+   "ja": "錆びたオヴエルルオルドのメダル"
+  },
+  "Cracked Medallion Of Overlord": {
+   "zh": "龟裂的霸主勋章",
+   "ja": "ひび割れたオヴエルルオルドのメダル"
+  },
+  "Worn Medallion Of Overlord": {
+   "zh": "磨损的霸主勋章",
+   "ja": "摩耗したオヴエルルオルドのメダル"
+  },
+  "Rusty Signet Of Moon": {
+   "zh": "生锈的月之印章戒",
+   "ja": "錆びた月の印章"
+  },
+  "Cracked Signet Of Moon": {
+   "zh": "龟裂的月之印章戒",
+   "ja": "ひび割れた月の印章"
+  },
+  "Worn Signet Of Moon": {
+   "zh": "磨损的月之印章戒",
+   "ja": "摩耗した月の印章"
+  },
+  "Rusty Bracer Of Moon": {
+   "zh": "生锈的月之护腕",
+   "ja": "錆びた月の腕輪"
+  },
+  "Cracked Bracer Of Moon": {
+   "zh": "龟裂的月之护腕",
+   "ja": "ひび割れた月の腕輪"
+  },
+  "Worn Bracer Of Moon": {
+   "zh": "磨损的月之护腕",
+   "ja": "摩耗した月の腕輪"
+  },
+  "Scratched Bracer Of Moon": {
+   "zh": "刮花的月之护腕",
+   "ja": "擦り傷のある月の腕輪"
+  },
+  "Rusty Pendant Of Moon": {
+   "zh": "生锈的月之吊坠",
+   "ja": "錆びた月のペンダント"
+  },
+  "Cracked Pendant Of Moon": {
+   "zh": "龟裂的月之吊坠",
+   "ja": "ひび割れた月のペンダント"
+  },
+  "Worn Pendant Of Moon": {
+   "zh": "磨损的月之吊坠",
+   "ja": "摩耗した月のペンダント"
+  },
+  "Rusty Band Of Dignity": {
+   "zh": "生锈的尊严之环",
+   "ja": "錆びた尊厳の指輪"
+  },
+  "Cracked Band Of Dignity": {
+   "zh": "龟裂的尊严之环",
+   "ja": "ひび割れた尊厳の指輪"
+  },
+  "Worn Band Of Dignity": {
+   "zh": "磨损的尊严之环",
+   "ja": "摩耗した尊厳の指輪"
+  },
+  "Rusty Bracelet Of Dignity": {
+   "zh": "生锈的尊严手镯",
+   "ja": "錆びた尊厳の腕輪"
+  },
+  "Cracked Bracelet Of Dignity": {
+   "zh": "龟裂的尊严手镯",
+   "ja": "ひび割れた尊厳の腕輪"
+  },
+  "Worn Bracelet Of Dignity": {
+   "zh": "磨损的尊严手镯",
+   "ja": "摩耗した尊厳の腕輪"
+  },
+  "Scratched Bracelet Of Dignity": {
+   "zh": "刮花的尊严手镯",
+   "ja": "擦り傷のある尊厳の腕輪"
+  },
+  "Rusty Amulet Of Dignity": {
+   "zh": "生锈的尊严护符",
+   "ja": "錆びた尊厳の護符"
+  },
+  "Cracked Amulet Of Dignity": {
+   "zh": "龟裂的尊严护符",
+   "ja": "ひび割れた尊厳の護符"
+  },
+  "Worn Amulet Of Dignity": {
+   "zh": "磨损的尊严护符",
+   "ja": "摩耗した尊厳の護符"
+  },
+  "East Chiwoo Iron": {
+   "zh": "东赤乌铁",
+   "ja": "東チウー鉄"
+  },
+  "West Chiwoo Iron": {
+   "zh": "西赤乌铁",
+   "ja": "西チウー鉄"
+  },
+  "Blade Of The Dragon Lord": {
+   "zh": "龙帝之刃",
+   "ja": "ドラゴンロードの刃"
+  },
+  "Loop Of The Dragon Lord": {
+   "zh": "龙帝之环",
+   "ja": "ドラゴンロードの環"
+  },
+  "Armband Of The Dragon Lord": {
+   "zh": "龙帝护腕",
+   "ja": "ドラゴンロードの腕帯"
+  },
+  "Amulet Of The Dragon Lord": {
+   "zh": "龙帝护符",
+   "ja": "ドラゴンロードの護符"
+  },
+  "Greaves Of The Dragon Lord": {
+   "zh": "龙帝胫甲",
+   "ja": "ドラゴンロードの脛当て"
+  },
+  "Headcover Of The Dragon Lord": {
+   "zh": "龙帝头冠",
+   "ja": "ドラゴンロードの頭冠"
+  },
+  "Frost Bite": {
+   "zh": "霜寒",
+   "ja": "凍傷"
+  },
+  "Argent Battleplate Of Might (M)": {
+   "zh": "威能白银战甲（男）",
+   "ja": "力のアルゲントの戦鎧（男）"
+  },
+  "Argent Battleplate Of Might (F)": {
+   "zh": "威能白银战甲（女）",
+   "ja": "力のアルゲントの戦鎧（女）"
+  },
+  "Sacred Warplate Of Mastery (M)": {
+   "zh": "神圣精通战甲（男）",
+   "ja": "熟練のサクレドの戦鎧（男）"
+  },
+  "Sacred Warplate Of Mastery (F)": {
+   "zh": "神圣精通战甲（女）",
+   "ja": "熟練のサクレドの戦鎧（女）"
+  },
+  "Blazing Raiment Of Phoenix (M)": {
+   "zh": "凤凰炽焰法衣（男）",
+   "ja": "燃え盛るフェニックスの法衣（男）"
+  },
+  "Blazing Raiment Of Phoenix (F)": {
+   "zh": "凤凰炽焰法衣（女）",
+   "ja": "燃え盛るフェニックスの法衣（女）"
+  },
+  "Azure Raiment Of Illusion (M)": {
+   "zh": "蔚蓝幻象法衣（男）",
+   "ja": "幻影の紺碧の法衣（男）"
+  },
+  "Azure Raiment Of Illusion (F)": {
+   "zh": "蔚蓝幻象法衣（女）",
+   "ja": "幻影の紺碧の法衣（女）"
+  },
+  "Wyvern Scale Armour (M)": {
+   "zh": "飞龙鳞甲（男）",
+   "ja": "ワイバーンの鱗の鎧（男）"
+  },
+  "Wyvern Scale Armour (F)": {
+   "zh": "飞龙鳞甲（女）",
+   "ja": "ワイバーンの鱗の鎧（女）"
+  },
+  "Armour Of Demonic Wrath (M)": {
+   "zh": "恶魔之怒铠甲（男）",
+   "ja": "悪魔の怒りの鎧（男）"
+  },
+  "Armour Of Demonic Wrath (F)": {
+   "zh": "恶魔之怒铠甲（女）",
+   "ja": "悪魔の怒りの鎧（女）"
+  },
+  "Blazing Raiment Of Embers (M)": {
+   "zh": "余烬炽焰法衣（男）",
+   "ja": "燃え盛るエンブエルスの法衣（男）"
+  },
+  "Blazing Raiment Of Embers (F)": {
+   "zh": "余烬炽焰法衣（女）",
+   "ja": "燃え盛るエンブエルスの法衣（女）"
+  },
+  "Demonic Raiment Of Illusion (M)": {
+   "zh": "恶魔幻象法衣（男）",
+   "ja": "幻影の悪魔の法衣（男）"
+  },
+  "Demonic Raiment Of Illusion (F)": {
+   "zh": "恶魔幻象法衣（女）",
+   "ja": "幻影の悪魔の法衣（女）"
+  },
+  "Seal Of Overlord": {
+   "zh": "霸主封印",
+   "ja": "オヴエルルオルドの封印"
+  },
+  "Bracelet Of Overlord": {
+   "zh": "霸主手镯",
+   "ja": "オヴエルルオルドの腕輪"
+  },
+  "Medallion Of Overlord": {
+   "zh": "霸主勋章",
+   "ja": "オヴエルルオルドのメダル"
+  },
+  "Arcanist's Band Of Dignity": {
+   "zh": "秘法师的尊严之环",
+   "ja": "秘術師の尊厳の指輪"
+  },
+  "Arcanist's Bracelet Of Dignity": {
+   "zh": "秘法师的尊严手镯",
+   "ja": "秘術師の尊厳の腕輪"
+  },
+  "Arcanist's Amulet Of Dignity": {
+   "zh": "秘法师的尊严护符",
+   "ja": "秘術師の尊厳の護符"
+  },
+  "Hierophant's Signet Of Moon": {
+   "zh": "祭司的月之印章戒",
+   "ja": "祭司の月の印章"
+  },
+  "Hierophant's Bracer Of Moon": {
+   "zh": "祭司的月之护腕",
+   "ja": "祭司の月の腕輪"
+  },
+  "Hierophant's Pendant Of Moon": {
+   "zh": "祭司的月之吊坠",
+   "ja": "祭司の月のペンダント"
+  },
+  "Fortune Checker": {
+   "zh": "运势检测器",
+   "ja": "運勢チェッカー"
+  },
+  "[Part]": {
+   "zh": "部件",
+   "ja": "部品"
+  },
+  "Tonic of Comfort [T]": {
+   "zh": "舒适秘药（限时）",
+   "ja": "安らぎの秘薬（期間限定）"
+  },
+  "Helmet Of Dragon Abyss": {
+   "zh": "龙渊头盔",
+   "ja": "竜の深淵の兜"
+  },
+  "Armour Of Abyss (M)": {
+   "zh": "深渊铠甲（男）",
+   "ja": "深淵の鎧（男）"
+  },
+  "Armour Of Abyss (F)": {
+   "zh": "深渊铠甲（女）",
+   "ja": "深淵の鎧（女）"
+  },
+  "Pendant Of Dragon Abyss": {
+   "zh": "龙渊吊坠",
+   "ja": "竜の深淵のペンダント"
+  },
+  "Armguard Of Dragon Abyss": {
+   "zh": "龙渊护腕",
+   "ja": "竜の深淵の腕当て"
+  },
+  "Band Of Dragon Abyss": {
+   "zh": "龙渊之环",
+   "ja": "竜の深淵の指輪"
+  },
+  "Greaves Of Dragon Abyss": {
+   "zh": "龙渊胫甲",
+   "ja": "竜の深淵の脛当て"
+  },
+  "Jade Choker Of Purity": {
+   "zh": "纯净玉项圈",
+   "ja": "純粋の翡翠のチョーカー"
+  },
+  "Amulet Of Redemption": {
+   "zh": "救赎护符",
+   "ja": "贖罪の護符"
+  },
+  "Jade Bracelet Of Purity": {
+   "zh": "纯净玉手镯",
+   "ja": "純粋の翡翠の腕輪"
+  },
+  "Bracelet Of Redemption": {
+   "zh": "救赎手镯",
+   "ja": "贖罪の腕輪"
+  },
+  "Jade Band Of Purity": {
+   "zh": "纯净玉环",
+   "ja": "純粋の翡翠の指輪"
+  },
+  "Signet Of Redemption": {
+   "zh": "救赎印章戒",
+   "ja": "贖罪の印章"
+  },
+  "Overlord's Battleplate (M)": {
+   "zh": "霸主战甲（男）",
+   "ja": "覇王の戦鎧（男）"
+  },
+  "Overlord's Battleplate (F)": {
+   "zh": "霸主战甲（女）",
+   "ja": "覇王の戦鎧（女）"
+  },
+  "Dragon Necklace Of Revival": {
+   "zh": "复苏龙项链",
+   "ja": "復活の竜の首飾り"
+  },
+  "Dragon Bracelet Of Revival": {
+   "zh": "复苏龙手镯",
+   "ja": "復活の竜の腕輪"
+  },
+  "Dragon Ring Of Revival": {
+   "zh": "复苏龙戒",
+   "ja": "復活の竜の指輪"
+  },
+  "Wraith Blade Of Sama": {
+   "zh": "萨玛幽魂之刃",
+   "ja": "サマの亡霊の刃"
+  },
+  "Ancestral Tablet Of Sama Mage": {
+   "zh": "萨玛法师先祖牌位",
+   "ja": "サマ魔導士の祖先の位牌"
+  },
+  "Elementalist's Battleplate (M)": {
+   "zh": "元素师战甲（男）",
+   "ja": "元素使いの戦鎧（男）"
+  },
+  "Elementalist's Battleplate (F)": {
+   "zh": "元素师战甲（女）",
+   "ja": "元素使いの戦鎧（女）"
+  },
+  "Archon's Battleplate (M)": {
+   "zh": "执政官战甲（男）",
+   "ja": "執政官の戦鎧（男）"
+  },
+  "Archon's Battleplate (F)": {
+   "zh": "执政官战甲（女）",
+   "ja": "執政官の戦鎧（女）"
+  },
+  "Burning Blade Of Sama": {
+   "zh": "萨玛烈焰之刃",
+   "ja": "サマの燃える刃"
+  },
+  "Unholy Blade Of Sama": {
+   "zh": "萨玛邪刃",
+   "ja": "サマの不浄の刃"
+  },
+  "Blades Of Sama": {
+   "zh": "萨玛双刃",
+   "ja": "サマの双刃"
+  },
+  "Old Carrot": {
+   "zh": "陈年胡萝卜",
+   "ja": "古いにんじん"
+  },
+  "Mass Beckon": {
+   "zh": "群体召唤",
+   "ja": "群体召喚"
+  },
+  "Asteroid": {
+   "zh": "陨石术",
+   "ja": "隕石"
+  },
+  "Infection": {
+   "zh": "感染",
+   "ja": "感染"
+  },
+  "Massacre": {
+   "zh": "大屠杀",
+   "ja": "虐殺"
+  },
+  "Weapon Template": {
+   "zh": "武器模板",
+   "ja": "武器テンプレート"
+  },
+  "Warrior's Edge": {
+   "zh": "战士之刃",
+   "ja": "戦士のエドゲ"
+  },
+  "Wizard's Edge": {
+   "zh": "法师之刃",
+   "ja": "魔法使いのエドゲ"
+  },
+  "Taoist's Edge": {
+   "zh": "道士之刃",
+   "ja": "道士のエドゲ"
+  },
+  "Assassin's Edge": {
+   "zh": "刺客之刃",
+   "ja": "暗殺者のエドゲ"
+  },
+  "Yellow Cube": {
+   "zh": "黄色立方体",
+   "ja": "黄の立方体"
+  },
+  "Blue Cube": {
+   "zh": "蓝色立方体",
+   "ja": "青の立方体"
+  },
+  "Red Cube": {
+   "zh": "红色立方体",
+   "ja": "赤の立方体"
+  },
+  "Purple Cube": {
+   "zh": "紫色立方体",
+   "ja": "紫の立方体"
+  },
+  "Green Cube": {
+   "zh": "绿色立方体",
+   "ja": "緑の立方体"
+  },
+  "Grey Cube": {
+   "zh": "灰色立方体",
+   "ja": "灰の立方体"
+  },
+  "Yellow Orb": {
+   "zh": "黄色宝珠",
+   "ja": "黄の宝珠"
+  },
+  "Blue Orb": {
+   "zh": "蓝色宝珠",
+   "ja": "青の宝珠"
+  },
+  "Red Orb": {
+   "zh": "红色宝珠",
+   "ja": "赤の宝珠"
+  },
+  "Purple Orb": {
+   "zh": "紫色宝珠",
+   "ja": "紫の宝珠"
+  },
+  "Green Orb": {
+   "zh": "绿色宝珠",
+   "ja": "緑の宝珠"
+  },
+  "Grey Orb": {
+   "zh": "灰色宝珠",
+   "ja": "灰の宝珠"
+  },
+  "Yellow Trinket": {
+   "zh": "黄色小饰品",
+   "ja": "黄の装身具"
+  },
+  "Blue Trinket": {
+   "zh": "蓝色小饰品",
+   "ja": "青の装身具"
+  },
+  "Red Trinket": {
+   "zh": "红色小饰品",
+   "ja": "赤の装身具"
+  },
+  "Purple Trinket": {
+   "zh": "紫色小饰品",
+   "ja": "紫の装身具"
+  },
+  "Green Trinket": {
+   "zh": "绿色小饰品",
+   "ja": "緑の装身具"
+  },
+  "Grey Trinket": {
+   "zh": "灰色小饰品",
+   "ja": "灰の装身具"
+  },
+  "Carrot": {
+   "zh": "胡萝卜",
+   "ja": "にんじん"
+  },
+  "Potion of Greed": {
+   "zh": "贪婪药水",
+   "ja": "貪欲のポーション"
+  },
+  "Novice Emblem": {
+   "zh": "新手徽章",
+   "ja": "ノヴイクエの紋章"
+  },
+  "Expert Emblem": {
+   "zh": "专家徽章",
+   "ja": "エクスペルトの紋章"
+  },
+  "Elite Emblem": {
+   "zh": "精英徽章",
+   "ja": "エルイテの紋章"
+  },
+  "Heavy Boots": {
+   "zh": "重靴",
+   "ja": "重い靴"
+  },
+  "Old Whistle": {
+   "zh": "旧哨子",
+   "ja": "古い笛"
+  },
+  "White Whistle": {
+   "zh": "白哨子",
+   "ja": "白い笛"
+  },
+  "FootBall Kit (M)": {
+   "zh": "足球套装（男）",
+   "ja": "サッカーセット（男）"
+  },
+  "FootBall Kit (F)": {
+   "zh": "足球套装（女）",
+   "ja": "サッカーセット（女）"
+  },
+  "Tunic of the Blood God (M)": {
+   "zh": "血神长袍（男）",
+   "ja": "血神のチュニック（男）"
+  },
+  "Tunic of the Blood God (F)": {
+   "zh": "血神长袍（女）",
+   "ja": "血神のチュニック（女）"
+  },
+  "Armour of the Blessed King": {
+   "zh": "祝福王铠甲",
+   "ja": "祝福されし王の鎧"
+  },
+  "Armour of the Blessed Queen": {
+   "zh": "祝福后铠甲",
+   "ja": "祝福されし女王の鎧"
+  },
+  "Vestment of Shattered Souls (M)": {
+   "zh": "破碎灵魂法衣（男）",
+   "ja": "砕けた魂の法衣（男）"
+  },
+  "Vestment of Shattered Souls (F)": {
+   "zh": "破碎灵魂法衣（女）",
+   "ja": "砕けた魂の法衣（女）"
+  },
+  "Robes of the Blessed One (M)": {
+   "zh": "祝福者法袍（男）",
+   "ja": "祝福されし者の法衣（男）"
+  },
+  "Robes of the Blessed One (F)": {
+   "zh": "祝福者法袍（女）",
+   "ja": "祝福されし者の法衣（女）"
+  },
+  "Valhalla, The Last Hope": {
+   "zh": "Valhalla, The Last Hope",
+   "ja": "ヴァルハラ、最後の希望"
+  },
+  "Spellkeeper, Knowledge of the Ancients": {
+   "zh": "Spellkeeper, Knowledge of the Ancients",
+   "ja": "スペルキーパー、古代の知識"
+  },
+  "Moonlight, Light in the Darkness": {
+   "zh": "Moonlight, Light in the Darkness",
+   "ja": "ムーンライト、闇の中の光"
+  },
+  "Echo, Blades of Torment": {
+   "zh": "Echo, Blades of Torment",
+   "ja": "エコー、苦痛の双刃"
+  },
+  "Garnet Ring": {
+   "zh": "石榴石戒指",
+   "ja": "ガーネットの指輪"
+  },
+  "Lapis Lazuli Ring": {
+   "zh": "青金石戒指",
+   "ja": "ルアピスのルアズルイの指輪"
+  },
+  "Malachite Ring": {
+   "zh": "孔雀石戒指",
+   "ja": "マラカイトの指輪"
+  },
+  "Garnet Bracelet": {
+   "zh": "石榴石手镯",
+   "ja": "ガーネットの腕輪"
+  },
+  "Lapis Lazuli Bracelet": {
+   "zh": "青金石手镯",
+   "ja": "ルアピスのルアズルイの腕輪"
+  },
+  "Malachite Bracelet": {
+   "zh": "孔雀石手镯",
+   "ja": "マラカイトの腕輪"
+  },
+  "Garnet Necklace": {
+   "zh": "石榴石项链",
+   "ja": "ガーネットの首飾り"
+  },
+  "Lapis Lazuli Necklace": {
+   "zh": "青金石项链",
+   "ja": "ルアピスのルアズルイの首飾り"
+  },
+  "Malachite Necklace": {
+   "zh": "孔雀石项链",
+   "ja": "マラカイトの首飾り"
+  },
+  "Alpha, Hammer of Cruelty": {
+   "zh": "Alpha, Hammer of Cruelty",
+   "ja": "アルファ、残酷のハンマー"
+  },
+  "Sunshard, Elements Fury": {
+   "zh": "Sunshard, Elements Fury",
+   "ja": "サンシャード、元素の怒り"
+  },
+  "Dawnseeker,  Lights Vengeance": {
+   "zh": "Dawnseeker,  Lights Vengeance",
+   "ja": "ドーンシーカー、光の復讐"
+  },
+  "Reaper, The Tri-blade": {
+   "zh": "Reaper, The Tri-blade",
+   "ja": "リーパー、三刃の刃"
+  },
+  "Nemesis, The Blade of Betrayal": {
+   "zh": "Nemesis, The Blade of Betrayal",
+   "ja": "ネメシス、裏切りの刃"
+  },
+  "Deluge, Winter's Might": {
+   "zh": "Deluge, Winter's Might",
+   "ja": "デリュージュ、冬の力"
+  },
+  "Celestia, Fan of the Heavens": {
+   "zh": "Celestia, Fan of the Heavens",
+   "ja": "セレスティア、天界の扇"
+  },
+  "Chaos, The Spiral Death": {
+   "zh": "Chaos, The Spiral Death",
+   "ja": "カオス、螺旋の死"
+  },
+  "Armour of the Sun Keeper (M)": {
+   "zh": "太阳守护者铠甲（男）",
+   "ja": "太陽の守護者の鎧（男）"
+  },
+  "Armour of the Sun Keeper (F)": {
+   "zh": "太阳守护者铠甲（女）",
+   "ja": "太陽の守護者の鎧（女）"
+  },
+  "Armour of Arcane Fury (M)": {
+   "zh": "秘法之怒铠甲（男）",
+   "ja": "秘術の怒りの鎧（男）"
+  },
+  "Armour of Arcane Fury (F)": {
+   "zh": "秘法之怒铠甲（女）",
+   "ja": "秘術の怒りの鎧（女）"
+  },
+  "Armour of Eternal Rest (M)": {
+   "zh": "永恒安息铠甲（男）",
+   "ja": "永遠のレストの鎧（男）"
+  },
+  "Armour of Eternal Rest (F)": {
+   "zh": "永恒安息铠甲（女）",
+   "ja": "永遠のレストの鎧（女）"
+  },
+  "Tunic of Whispers (M)": {
+   "zh": "低语长袍（男）",
+   "ja": "ホイスペルスのチュニック（男）"
+  },
+  "Tunic of Whispers (F)": {
+   "zh": "低语长袍（女）",
+   "ja": "ホイスペルスのチュニック（女）"
+  },
+  "Kingsguard Helmet": {
+   "zh": "王庭卫士头盔",
+   "ja": "王庭衛士の兜"
+  },
+  "Shimmering Light Crown": {
+   "zh": "微光皇冠",
+   "ja": "揺らめく光の王冠"
+  },
+  "Half Moon Hood": {
+   "zh": "半月兜帽",
+   "ja": "半月の頭巾"
+  },
+  "Nightstalkers Cowl": {
+   "zh": "夜行者头巾帽",
+   "ja": "夜行者の頭巾"
+  },
+  "Masters Emblem": {
+   "zh": "大师徽章",
+   "ja": "マスターの紋章"
+  },
+  "Champions Emblem": {
+   "zh": "冠军徽章",
+   "ja": "チャンピオンの紋章"
+  },
+  "Kings Emblem": {
+   "zh": "王者徽章",
+   "ja": "王の紋章"
+  },
+  "Zirconian Emblem": {
+   "zh": "锆石徽章",
+   "ja": "ジルクオニアンの紋章"
+  },
+  "Striking Boots": {
+   "zh": "突击之靴",
+   "ja": "ストリキングの靴"
+  },
+  "Swiftcaster Boots": {
+   "zh": "迅捷施法靴",
+   "ja": "スワイフトクアステルの靴"
+  },
+  "Lifeseeker Boots": {
+   "zh": "觅命之靴",
+   "ja": "ルイフエセエケルの靴"
+  },
+  "Obsidian Ring": {
+   "zh": "黑曜石戒指",
+   "ja": "黒曜石の指輪"
+  },
+  "Sapphire Ring": {
+   "zh": "蓝宝石戒指",
+   "ja": "サファイアの指輪"
+  },
+  "Alexandrite Ring": {
+   "zh": "变石戒指",
+   "ja": "アレキサンドライトの指輪"
+  },
+  "Obsidian Bracelet": {
+   "zh": "黑曜石手镯",
+   "ja": "黒曜石の腕輪"
+  },
+  "Sapphire Bracelet": {
+   "zh": "蓝宝石手镯",
+   "ja": "サファイアの腕輪"
+  },
+  "Alexandrite Bracelet": {
+   "zh": "变石手镯",
+   "ja": "アレキサンドライトの腕輪"
+  },
+  "Obsidian Necklace": {
+   "zh": "黑曜石项链",
+   "ja": "黒曜石の首飾り"
+  },
+  "Sapphire Necklace": {
+   "zh": "蓝宝石项链",
+   "ja": "サファイアの首飾り"
+  },
+  "Alexandrite Necklace": {
+   "zh": "变石项链",
+   "ja": "アレキサンドライトの首飾り"
+  },
+  "Tonic of Collection [T]": {
+   "zh": "收集秘药（限时）",
+   "ja": "収集の秘薬（期間限定）"
+  },
+  "Dusk Bracelet": {
+   "zh": "黄昏手镯",
+   "ja": "黄昏の腕輪"
+  },
+  "Crushing Bracelet": {
+   "zh": "粉碎手镯",
+   "ja": "クルシングの腕輪"
+  },
+  "Odyn Son": {
+   "zh": "奥丁之子",
+   "ja": "オーディンの子"
+  },
+  "Odyn Mythical": {
+   "zh": "奥丁神话",
+   "ja": "オーディンの神話"
+  },
+  "Odyn Elemental": {
+   "zh": "奥丁元素",
+   "ja": "オーディンの元素"
+  },
+  "Crushing Ring": {
+   "zh": "粉碎戒指",
+   "ja": "クルシングの指輪"
+  },
+  "Occult Ring": {
+   "zh": "秘术戒指",
+   "ja": "オカルトの指輪"
+  },
+  "Radiant Ring": {
+   "zh": "光辉戒指",
+   "ja": "ラディアントの指輪"
+  },
+  "Occult Bracelet": {
+   "zh": "秘术手镯",
+   "ja": "オカルトの腕輪"
+  },
+  "Radiant Bracelet": {
+   "zh": "光辉手镯",
+   "ja": "ラディアントの腕輪"
+  },
+  "Dusk Ring": {
+   "zh": "黄昏戒指",
+   "ja": "黄昏の指輪"
+  },
+  "Odyn Sin": {
+   "zh": "奥丁之罪",
+   "ja": "オーディンの罪"
+  },
+  "Radiant Necklace": {
+   "zh": "光辉项链",
+   "ja": "ラディアントの首飾り"
+  },
+  "Occult Necklace": {
+   "zh": "秘术项链",
+   "ja": "オカルトの首飾り"
+  },
+  "Crushing Necklace": {
+   "zh": "粉碎项链",
+   "ja": "クルシングの首飾り"
+  },
+  "Dusk Necklace": {
+   "zh": "黄昏项链",
+   "ja": "黄昏の首飾り"
+  },
+  "Seismic Slam": {
+   "zh": "震地重击",
+   "ja": "地震衝撃"
+  },
+  "Demonic Recovery": {
+   "zh": "恶魔恢复",
+   "ja": "悪魔の回復"
+  },
+  "Storm": {
+   "zh": "风暴",
+   "ja": "嵐"
+  },
+  "Art of Shadows": {
+   "zh": "暗影术",
+   "ja": "影の技"
+  },
+  "Worm Squashers": {
+   "zh": "碾虫靴",
+   "ja": "虫潰しの靴"
+  },
+  "PVP Champion": {
+   "zh": "PVP 冠军徽章",
+   "ja": "PVPチャンピオン"
+  },
+  "PVP Apprentice": {
+   "zh": "PVP 学徒徽章",
+   "ja": "PVP見習い"
+  },
+  "Stat Extractor": {
+   "zh": "属性提取器",
+   "ja": "ステータス抽出器"
+  },
+  "Elixir Of Regret Lv 11": {
+   "zh": "悔悟灵药（11级）",
+   "ja": "悔悟のエリクサー（Lv.11）"
+  },
+  "Elixir Of Regret Lv 13": {
+   "zh": "悔悟灵药（13级）",
+   "ja": "悔悟のエリクサー（Lv.13）"
+  },
+  "Elixir Of Regret Lv 15": {
+   "zh": "悔悟灵药（15级）",
+   "ja": "悔悟のエリクサー（Lv.15）"
+  },
+  "Gold Chest": {
+   "zh": "金宝箱",
+   "ja": "金の宝箱"
+  },
+  "Item Polisher": {
+   "zh": "物品打磨石",
+   "ja": "アイテム研磨石"
+  },
+  "Armour Polisher": {
+   "zh": "护甲打磨石",
+   "ja": "防具研磨石"
+  },
+  "Tunic of Vengence (F)": {
+   "zh": "复仇长袍（女）",
+   "ja": "復讐のチュニック（女）"
+  },
+  "Tunic of Vengence (M)": {
+   "zh": "复仇长袍（男）",
+   "ja": "復讐のチュニック（男）"
+  },
+  "Armour of the Titan Slayer (M)": {
+   "zh": "泰坦屠戮者铠甲（男）",
+   "ja": "タイタン殺しの鎧（男）"
+  },
+  "Armour of the Titan Slayer (F)": {
+   "zh": "泰坦屠戮者铠甲（女）",
+   "ja": "タイタン殺しの鎧（女）"
+  },
+  "Rainments of the Blazing Comet (M)": {
+   "zh": "炽焰彗星法衣（男）",
+   "ja": "ブルアジングのクオメトの法衣（男）"
+  },
+  "Rainments of the Blazing Comet (F)": {
+   "zh": "炽焰彗星法衣（女）",
+   "ja": "ブルアジングのクオメトの法衣（女）"
+  },
+  "Robes of the Titan Slayer (M)": {
+   "zh": "泰坦屠戮者法袍（男）",
+   "ja": "タイタン殺しの法衣（男）"
+  },
+  "Robes of the Titan Slayer (F)": {
+   "zh": "泰坦屠戮者法袍（女）",
+   "ja": "タイタン殺しの法衣（女）"
+  },
+  "Refine Extractor": {
+   "zh": "精炼提取器",
+   "ja": "精錬抽出器"
+  },
+  "Wooden Shield": {
+   "zh": "木盾",
+   "ja": "木の盾"
+  },
+  "Bronze Shield": {
+   "zh": "青铜盾",
+   "ja": "青銅の盾"
+  },
+  "Iron Shield": {
+   "zh": "铁盾",
+   "ja": "鉄の盾"
+  },
+  "Ice Spike Shield": {
+   "zh": "冰刺盾",
+   "ja": "氷棘の盾"
+  },
+  "Defenders Embrace": {
+   "zh": "守护者之拥",
+   "ja": "守護者の抱擁"
+  },
+  "Reflection Mirror Shield": {
+   "zh": "反射镜盾",
+   "ja": "反射鏡の盾"
+  },
+  "Maple Guard Adamantine Shield": {
+   "zh": "枫木守卫玄铁盾",
+   "ja": "楓の衛士の金剛盾"
+  },
+  "Barrage breaker Phoenix Shield": {
+   "zh": "破弹幕凤凰盾",
+   "ja": "弾幕破りのフェニックス盾"
+  },
+  "Santa Outfit (F)": {
+   "zh": "圣诞装（女）",
+   "ja": "サンタ衣装（女）"
+  },
+  "Santa Outfit (M)": {
+   "zh": "圣诞装（男）",
+   "ja": "サンタ衣装（男）"
+  },
+  "Valkyrie Blade of Reckoning": {
+   "zh": "Valkyrie Blade of Reckoning",
+   "ja": "ヴァルキリーの報復の刃"
+  },
+  "Lifebinder The Ancient Healer": {
+   "zh": "Lifebinder The Ancient Healer",
+   "ja": "ライフバインダー、古代の治療者"
+  },
+  "Crescent Moon Cry of the Fallen": {
+   "zh": "Crescent Moon Cry of the Fallen",
+   "ja": "三日月、堕ちた者の叫び"
+  },
+  "StormCaller The Sky Blade": {
+   "zh": "StormCaller The Sky Blade",
+   "ja": "ストームコーラー、天空の刃"
+  },
+  "Companion Experience Tonic [T]": {
+   "zh": "伙伴经验秘药（限时）",
+   "ja": "仲間の経験の秘薬（期間限定）"
+  },
+  "Fame Point": {
+   "zh": "Fame Point",
+   "ja": "名声ポイント"
+  },
+  "Contribution Point": {
+   "zh": "Contribution Point",
+   "ja": "貢献ポイント"
+  },
+  "Advanced Potion Mastery": {
+   "zh": "高级药水精通",
+   "ja": "上級ポーション熟練"
+  },
+  "Invincibility": {
+   "zh": "无敌",
+   "ja": "無敵化"
+  },
+  "Crushing Wave": {
+   "zh": "碎浪斩",
+   "ja": "粉砕の波"
+  },
+  "Defensive Mastery": {
+   "zh": "防御精通",
+   "ja": "防御熟練"
+  },
+  "Physical Immunity": {
+   "zh": "物理免疫",
+   "ja": "物理免疫"
+  },
+  "Magic Immunity": {
+   "zh": "魔法免疫",
+   "ja": "魔法免疫"
+  },
+  "Defensive Blow": {
+   "zh": "破防击",
+   "ja": "防御打撃"
+  },
+  "Elemental Swords": {
+   "zh": "元素飞剑",
+   "ja": "元素の剣"
+  },
+  "Tornado": {
+   "zh": "龙卷风暴",
+   "ja": "竜巻"
+  },
+  "Neutralize": {
+   "zh": "压制",
+   "ja": "中和"
+  },
+  "Empowered Neutralize": {
+   "zh": "强化压制",
+   "ja": "強化中和"
+  },
+  "Dark Soul Prison": {
+   "zh": "暗魂囚牢",
+   "ja": "闇魂の牢獄"
+  },
+  "Searing Light": {
+   "zh": "灼热圣光",
+   "ja": "灼熱の光"
+  },
+  "Empowered Celestial Light": {
+   "zh": "强化圣言术",
+   "ja": "強化聖光術"
+  },
+  "Corpse Exploder": {
+   "zh": "爆裂尸",
+   "ja": "死体爆発"
+  },
+  "Summon Dead": {
+   "zh": "召唤死灵",
+   "ja": "死者召喚"
+  },
+  "Dragon Blood": {
+   "zh": "龙血",
+   "ja": "竜血"
+  },
+  "Fatal Blow": {
+   "zh": "致命一击",
+   "ja": "必殺の一撃"
+  },
+  "Last Stand": {
+   "zh": "背水一战",
+   "ja": "最後の抵抗"
+  },
+  "Magic Combustion": {
+   "zh": "魔法燃烧",
+   "ja": "魔力燃焼"
+  },
+  "Vitality": {
+   "zh": "活力",
+   "ja": "活力"
+  },
+  "Chain": {
+   "zh": "锁链",
+   "ja": "連鎖"
+  },
+  "Concentration": {
+   "zh": "专注",
+   "ja": "集中"
+  },
+  "Dual Weapon Skills": {
+   "zh": "双持",
+   "ja": "二刀流"
+  },
+  "Containment": {
+   "zh": "禁锢",
+   "ja": "封鎖"
+  },
+  "Dragon Wave": {
+   "zh": "龙波",
+   "ja": "竜の波"
+  },
+  "Hemorrhage": {
+   "zh": "大出血",
+   "ja": "大量出血"
+  },
+  "Burning Fire": {
+   "zh": "烈焰陷阱",
+   "ja": "燃焼の炎"
+  },
+  "Chain Of Fire": {
+   "zh": "火焰锁链",
+   "ja": "火炎連鎖"
+  },
+  "War Thurible": {
+   "zh": "战争香炉",
+   "ja": "戦争の香炉"
+  },
+  "Penance Thurible": {
+   "zh": "赎罪香炉",
+   "ja": "ペナンクエの香炉"
+  },
+  "Censorship Thurible": {
+   "zh": "审查香炉",
+   "ja": "クエンソルシプの香炉"
+  },
+  "Petrichor Thurible": {
+   "zh": "雨后泥土香炉",
+   "ja": "ペトリコールの香炉"
+  },
+  "Chaotic Heaven Blade": {
+   "zh": "混沌天刃",
+   "ja": "混沌天刃"
+  },
+  "Janitors Scimitar": {
+   "zh": "门卫弯刀",
+   "ja": "門番のシミター"
+  },
+  "Janitors Dual Blade": {
+   "zh": "门卫双刃",
+   "ja": "門番の双刃"
+  },
+  "Chaotic Heaven Blade 2": {
+   "zh": "Chaotic Heaven Blade 2",
+   "ja": "混沌天刃II"
+  },
+  "Royal Horse Armour": {
+   "zh": "皇家马甲",
+   "ja": "王家の馬鎧"
+  },
+  "Blue Dragon Armour": {
+   "zh": "蓝龙马甲",
+   "ja": "青竜の馬鎧"
+  }
+ },
+ "monsters": {
+  "Guard": {
+   "zh": "卫士",
+   "ja": "衛士"
+  },
+  "Chicken": {
+   "zh": "鸡",
+   "ja": "ニワトリ"
+  },
+  "Pig": {
+   "zh": "猪",
+   "ja": "ブタ"
+  },
+  "Deer": {
+   "zh": "鹿",
+   "ja": "シカ"
+  },
+  "Cow": {
+   "zh": "牛",
+   "ja": "ウシ"
+  },
+  "Sheep": {
+   "zh": "羊",
+   "ja": "ヒツジ"
+  },
+  "Claw Cat": {
+   "zh": "爪猫",
+   "ja": "クローキャット"
+  },
+  "Wolf": {
+   "zh": "狼",
+   "ja": "オオカミ"
+  },
+  "Forest Yeti": {
+   "zh": "森林雪人",
+   "ja": "フォレストイエティ"
+  },
+  "Chestnut Tree": {
+   "zh": "栗子树",
+   "ja": "クリの木"
+  },
+  "Carnivorous Plant": {
+   "zh": "食人花",
+   "ja": "肉食植物"
+  },
+  "Oma Warrior": {
+   "zh": "祖玛卫士",
+   "ja": "ズマ戦士"
+  },
+  "Tiger Snake": {
+   "zh": "虎蛇",
+   "ja": "タイガースネーク"
+  },
+  "Spitting Spider": {
+   "zh": "喷毒蜘蛛",
+   "ja": "スピッティングスパイダー"
+  },
+  "Scarecrow": {
+   "zh": "稻草人",
+   "ja": "カカシ"
+  },
+  "Oma": {
+   "zh": "祖玛",
+   "ja": "ズマ"
+  },
+  "Oma Hero": {
+   "zh": "祖玛英雄",
+   "ja": "ズマヒーロー"
+  },
+  "Cave Bat": {
+   "zh": "洞穴蝙蝠",
+   "ja": "洞窟コウモリ"
+  },
+  "Scorpion": {
+   "zh": "蝎子",
+   "ja": "サソリ"
+  },
+  "Skeleton Axeman": {
+   "zh": "骷髅斧手",
+   "ja": "スケルトンアックスマン"
+  },
+  "Skeleton": {
+   "zh": "骷髅",
+   "ja": "スケルトン"
+  },
+  "Skeleton Axe Thrower": {
+   "zh": "骷髅掷斧手",
+   "ja": "スケルトンアックススロワー"
+  },
+  "Skeleton Warrior": {
+   "zh": "骷髅战士",
+   "ja": "スケルトン戦士"
+  },
+  "Skeleton Lord": {
+   "zh": "骷髅王",
+   "ja": "スケルトンロード"
+  },
+  "Cave Maggot": {
+   "zh": "洞穴蛆虫",
+   "ja": "洞窟マゴット"
+  },
+  "GhostSorcerer": {
+   "zh": "幽灵巫师",
+   "ja": "ゴーストソーサラー"
+  },
+  "Ghost Mage": {
+   "zh": "幽灵法师",
+   "ja": "ゴーストメイジ"
+  },
+  "Voracious Ghost": {
+   "zh": "贪婪幽灵",
+   "ja": "貪欲ゴースト"
+  },
+  "Devouring Ghost": {
+   "zh": "吞噬幽灵",
+   "ja": "貪食ゴースト"
+  },
+  "Corpse Raising Ghost": {
+   "zh": "起尸鬼",
+   "ja": "屍起ゴースト"
+  },
+  "Ghoul Champion": {
+   "zh": "食尸鬼冠军",
+   "ja": "グールチャンピオン"
+  },
+  "Ant Soldier": {
+   "zh": "蚂蚁士兵",
+   "ja": "蟻兵士"
+  },
+  "Ant Healer": {
+   "zh": "蚂蚁治疗师",
+   "ja": "蟻ヒーラー"
+  },
+  "Ant Needler": {
+   "zh": "蚂蚁针刺者",
+   "ja": "蟻ニードラー"
+  },
+  "Armoured Ant": {
+   "zh": "装甲蚂蚁",
+   "ja": "装甲蟻"
+  },
+  "Ant Commander": {
+   "zh": "蚂蚁指挥官",
+   "ja": "蟻指揮官"
+  },
+  "Beetle": {
+   "zh": "甲虫",
+   "ja": "ビートル"
+  },
+  "Corpse Devourer": {
+   "zh": "食尸者",
+   "ja": "屍喰い"
+  },
+  "Visceral Worm": {
+   "zh": "内脏虫",
+   "ja": "内臓虫"
+  },
+  "Mutant Flea": {
+   "zh": "变异跳蚤",
+   "ja": "ミュータントノミ"
+  },
+  "Poisonous Mutant Flea": {
+   "zh": "剧毒变异跳蚤",
+   "ja": "毒ミュータントノミ"
+  },
+  "Blaster Mutant Flea": {
+   "zh": "爆裂变异跳蚤",
+   "ja": "ブラスターミュータントノミ"
+  },
+  "Terror Spike": {
+   "zh": "恐怖尖刺",
+   "ja": "テラースパイク"
+  },
+  "Wasp Hatchling": {
+   "zh": "黄蜂幼虫",
+   "ja": "スズメバチ幼体"
+  },
+  "Centipede": {
+   "zh": "蜈蚣",
+   "ja": "ムカデ"
+  },
+  "Butterfly Worm": {
+   "zh": "蝴蝶虫",
+   "ja": "バタフライワーム"
+  },
+  "Mutant Maggot": {
+   "zh": "变异蛆虫",
+   "ja": "ミュータントマゴット"
+  },
+  "Earwig": {
+   "zh": "剪刀虫",
+   "ja": "ハサミムシ"
+  },
+  "Iron Lance": {
+   "zh": "铁枪",
+   "ja": "アイアンランス"
+  },
+  "Lord Ji'Nae": {
+   "zh": "领主吉奈",
+   "ja": "ロード・ジネ"
+  },
+  "Rotting Ghoul": {
+   "zh": "腐烂食尸鬼",
+   "ja": "腐敗グール"
+  },
+  "Decaying Ghoul": {
+   "zh": "腐朽食尸鬼",
+   "ja": "朽ちたグール"
+  },
+  "Blood Thristy Ghoul": {
+   "zh": "嗜血食尸鬼",
+   "ja": "血に飢えたグール"
+  },
+  "Blood Thristy Zombie": {
+   "zh": "嗜血僵尸",
+   "ja": "血に飢えたゾンビ"
+  },
+  "Spined Dark Lizard": {
+   "zh": "棘背暗蜥蜴",
+   "ja": "トゲ背ダークリザード"
+  },
+  "Uma Infidel": {
+   "zh": "祖玛异教徒",
+   "ja": "ズマ異端者"
+  },
+  "Uma Flame Thrower": {
+   "zh": "祖玛喷火者",
+   "ja": "ズマ火炎放射者"
+  },
+  "Uma Anguisher": {
+   "zh": "祖玛折磨者",
+   "ja": "ズマアングイッシャー"
+  },
+  "Uma King": {
+   "zh": "祖玛王",
+   "ja": "ズマ王"
+  },
+  "Spider Bat": {
+   "zh": "蜘蛛蝙蝠",
+   "ja": "スパイダーバット"
+  },
+  "Arachnid Gazer": {
+   "zh": "凝视蛛魔",
+   "ja": "アラクニッドゲイザー"
+  },
+  "Larva": {
+   "zh": "幼虫",
+   "ja": "幼虫"
+  },
+  "Red Moon Guardian": {
+   "zh": "赤月守护者",
+   "ja": "赤月守護者"
+  },
+  "Red Moon Protector": {
+   "zh": "赤月保卫者",
+   "ja": "赤月プロテクター"
+  },
+  "Venomous Arachnid": {
+   "zh": "毒蛛魔",
+   "ja": "毒アラクニッド"
+  },
+  "Dark Arachnid": {
+   "zh": "暗蛛魔",
+   "ja": "ダークアラクニッド"
+  },
+  "Arachnid Broodmother": {
+   "zh": "蛛魔巢母",
+   "ja": "アラクニッドブルードマザー"
+  },
+  "Red Moon Royal Guard": {
+   "zh": "赤月皇家卫士",
+   "ja": "赤月近衛兵"
+  },
+  "Red Moon The Fallen": {
+   "zh": "赤月堕落者",
+   "ja": "赤月の堕ちた者"
+  },
+  "Zuma Sharpshooter": {
+   "zh": "祖玛神射手",
+   "ja": "ズマ狙撃手"
+  },
+  "Zuma Fanatic": {
+   "zh": "祖玛狂热者",
+   "ja": "ズマ狂信者"
+  },
+  "Zuma Guardian": {
+   "zh": "祖玛守护者",
+   "ja": "ズマ守護者"
+  },
+  "Vicious Rat": {
+   "zh": "凶恶老鼠",
+   "ja": "凶暴ネズミ"
+  },
+  "Zuma Keeper": {
+   "zh": "祖玛看守",
+   "ja": "ズマキーパー"
+  },
+  "Zuma King": {
+   "zh": "祖玛王",
+   "ja": "ズマ王"
+  },
+  "Evil Fanatic": {
+   "zh": "邪恶狂热者",
+   "ja": "邪悪な狂信者"
+  },
+  "Monkey": {
+   "zh": "猴子",
+   "ja": "サル"
+  },
+  "Evil Monkey": {
+   "zh": "邪猴",
+   "ja": "邪悪な猿"
+  },
+  "Evil Elephant": {
+   "zh": "邪象",
+   "ja": "邪悪な象"
+  },
+  "Cannibal Fanatic": {
+   "zh": "食人狂热者",
+   "ja": "人食い狂信者"
+  },
+  "Crazed Warrior": {
+   "zh": "疯狂战士",
+   "ja": "狂乱戦士"
+  },
+  "Spiked Beetle": {
+   "zh": "尖刺甲虫",
+   "ja": "トゲビートル"
+  },
+  "Numa Grunt": {
+   "zh": "诺玛步兵",
+   "ja": "ヌマグラント"
+  },
+  "Numa Mage": {
+   "zh": "诺玛法师",
+   "ja": "ヌマ魔導士"
+  },
+  "Numa Elite": {
+   "zh": "诺玛精英",
+   "ja": "ヌマエリート"
+  },
+  "Sand Shark": {
+   "zh": "沙鲨",
+   "ja": "サンドシャーク"
+  },
+  "Stone Golem": {
+   "zh": "石魔像",
+   "ja": "ストーンゴーレム"
+  },
+  "Windfury Sorceress": {
+   "zh": "风怒女巫",
+   "ja": "ウィンドフューリーソーサレス"
+  },
+  "Cursed Cactus": {
+   "zh": "诅咒仙人掌",
+   "ja": "呪いのサボテン"
+  },
+  "Netherworld Gate": {
+   "zh": "冥界之门",
+   "ja": "冥界の門"
+  },
+  "Raging Lizard": {
+   "zh": "暴怒蜥蜴",
+   "ja": "猛るリザード"
+  },
+  "Numa Elder Shaman": {
+   "zh": "诺玛长老萨满",
+   "ja": "ヌマ古老シャーマン"
+  },
+  "Saw Tooth Lizard": {
+   "zh": "锯齿蜥蜴",
+   "ja": "ノコギリリザード"
+  },
+  "Venom Spitter": {
+   "zh": "毒液喷吐者",
+   "ja": "毒吐き"
+  },
+  "Sonic Lizard": {
+   "zh": "音速蜥蜴",
+   "ja": "ソニックリザード"
+  },
+  "Giant Lizard": {
+   "zh": "巨型蜥蜴",
+   "ja": "ジャイアントリザード"
+  },
+  "Crazed Lizard": {
+   "zh": "疯狂蜥蜴",
+   "ja": "狂乱リザード"
+  },
+  "Tainted Terror": {
+   "zh": "腐化魔物",
+   "ja": "テインテッドテラー"
+  },
+  "Death Lord Jichon": {
+   "zh": "死亡领主吉村",
+   "ja": "デスロード・ジチョン"
+  },
+  "Mutant Lizard": {
+   "zh": "变异蜥蜴",
+   "ja": "ミュータントリザード"
+  },
+  "Minotaur": {
+   "zh": "牛头人",
+   "ja": "ミノタウロス"
+  },
+  "Frost Minotaur": {
+   "zh": "冰霜牛头人",
+   "ja": "フロストミノタウロス"
+  },
+  "Banya Right Guard": {
+   "zh": "潘夜右卫士",
+   "ja": "パンヤ右衛士"
+  },
+  "Shock Minotaur": {
+   "zh": "电击牛头人",
+   "ja": "ショックミノタウロス"
+  },
+  "Banya Left Guard": {
+   "zh": "潘夜左卫士",
+   "ja": "パンヤ左衛士"
+  },
+  "Fury Minotaur": {
+   "zh": "狂怒牛头人",
+   "ja": "フューリーミノタウロス"
+  },
+  "Flame Minotaur": {
+   "zh": "烈焰牛头人",
+   "ja": "フレイムミノタウロス"
+  },
+  "Banya Guardian": {
+   "zh": "潘夜守护者",
+   "ja": "パンヤ守護者"
+  },
+  "Emperor Sa'Woo": {
+   "zh": "皇帝萨乌",
+   "ja": "皇帝サウー"
+  },
+  "Bone Archer": {
+   "zh": "骨弓手",
+   "ja": "ボーンアーチャー"
+  },
+  "Bone Bladesman": {
+   "zh": "骨刀手",
+   "ja": "ボーンブレードマン"
+  },
+  "Bone Captain": {
+   "zh": "骨队长",
+   "ja": "ボーンキャプテン"
+  },
+  "Bone Soldier": {
+   "zh": "骨士兵",
+   "ja": "ボーンソルジャー"
+  },
+  "Skeleton Enforcer": {
+   "zh": "骷髅执法者",
+   "ja": "スケルトンエンフォーサー"
+  },
+  "Arch Lich Taedu": {
+   "zh": "大巫妖泰度",
+   "ja": "アークリッチ・テドゥ"
+  },
+  "Wedge Moth Larva": {
+   "zh": "楔蛾幼虫",
+   "ja": "ウェッジモス幼虫"
+  },
+  "Lesser Wedge Moth": {
+   "zh": "小楔蛾",
+   "ja": "小ウェッジモス"
+  },
+  "Wedge Moth": {
+   "zh": "楔蛾",
+   "ja": "ウェッジモス"
+  },
+  "Red Boar": {
+   "zh": "红野猪",
+   "ja": "赤イノシシ"
+  },
+  "Claw Serpent": {
+   "zh": "爪蛇",
+   "ja": "クローサーペント"
+  },
+  "Black Boar": {
+   "zh": "黑野猪",
+   "ja": "黒イノシシ"
+  },
+  "Tusk Lord": {
+   "zh": "獠牙王",
+   "ja": "タスクロード"
+  },
+  "Razor Tusk": {
+   "zh": "剃刀獠牙",
+   "ja": "レイザータスク"
+  },
+  "Pink Goddess Of Black Palace": {
+   "zh": "黑宫粉衣女神",
+   "ja": "黒宮のピンク女神"
+  },
+  "Green Goddess Of Black Palace": {
+   "zh": "黑宫绿衣女神",
+   "ja": "黒宮の緑女神"
+  },
+  "Mutant Captain": {
+   "zh": "变异队长",
+   "ja": "ミュータントキャプテン"
+  },
+  "Stone Griffin": {
+   "zh": "石狮鹫",
+   "ja": "ストーングリフォン"
+  },
+  "Flame Griffin": {
+   "zh": "烈焰狮鹫",
+   "ja": "フレイムグリフォン"
+  },
+  "Black Palace Warlord": {
+   "zh": "黑宫战将",
+   "ja": "黒宮武将"
+  },
+  "Pink Goddess Of Underground": {
+   "zh": "地下粉衣女神",
+   "ja": "地下のピンク女神"
+  },
+  "Vicious Mutant Captain": {
+   "zh": "凶恶变异队长",
+   "ja": "凶暴ミュータントキャプテン"
+  },
+  "Green Goddess Of Underground": {
+   "zh": "地下绿衣女神",
+   "ja": "地下の緑女神"
+  },
+  "Jinchon Warlord": {
+   "zh": "金村战将",
+   "ja": "ジンチョン武将"
+  },
+  "SummonPuppet": {
+   "zh": "召唤傀儡",
+   "ja": "召喚パペット"
+  },
+  "Apparition Archer": {
+   "zh": "幻影弓手",
+   "ja": "アパリションアーチャー"
+  },
+  "Apparition Bladesman": {
+   "zh": "幻影刀手",
+   "ja": "アパリションブレードマン"
+  },
+  "Apparition Soldier": {
+   "zh": "幻影士兵",
+   "ja": "アパリションソルジャー"
+  },
+  "Jin Skeleton": {
+   "zh": "金骷髅",
+   "ja": "ジンスケルトン"
+  },
+  "Shinsu": {
+   "zh": "神兽",
+   "ja": "神獣"
+  },
+  "Infernal Soldier": {
+   "zh": "地狱士兵",
+   "ja": "インファーナルソルジャー"
+  },
+  "MirrorImage": {
+   "zh": "镜像",
+   "ja": "ミラーイメージ"
+  },
+  "Corpse Stalker": {
+   "zh": "尸行者",
+   "ja": "コープスストーカー"
+  },
+  "Light Armed Soldier": {
+   "zh": "轻装士兵",
+   "ja": "軽装兵士"
+  },
+  "Corrosive Poison Spitter": {
+   "zh": "腐蚀毒液喷吐者",
+   "ja": "腐食毒吐き"
+  },
+  "Phantom Soldier": {
+   "zh": "幽灵士兵",
+   "ja": "ファントムソルジャー"
+  },
+  "Mutated Octopus": {
+   "zh": "变异章鱼",
+   "ja": "ミュータントオクトパス"
+  },
+  "Aqua Lizard": {
+   "zh": "水蜥蜴",
+   "ja": "アクアリザード"
+  },
+  "Stomper": {
+   "zh": "践踏者",
+   "ja": "ストンパー"
+  },
+  "Crimson Necromancer": {
+   "zh": "深红死灵法师",
+   "ja": "クリムゾンネクロマンサー"
+  },
+  "Chaos Knight": {
+   "zh": "混沌骑士",
+   "ja": "カオスナイト"
+  },
+  "Pachon The Chaos bringer": {
+   "zh": "混沌使者帕琼",
+   "ja": "混沌の使徒パチョン"
+  },
+  "Numa Cavalry": {
+   "zh": "诺玛骑兵",
+   "ja": "ヌマ騎兵"
+  },
+  "Numa High Mage": {
+   "zh": "诺玛大法师",
+   "ja": "ヌマ上級魔導士"
+  },
+  "Numa Stone Thrower": {
+   "zh": "诺玛投石者",
+   "ja": "ヌマ石投げ"
+  },
+  "Numa Royal Guard": {
+   "zh": "诺玛皇家卫士",
+   "ja": "ヌマ近衛兵"
+  },
+  "Numa Armored Soldier": {
+   "zh": "诺玛甲兵",
+   "ja": "ヌマ装甲兵"
+  },
+  "Numa Assault Captain": {
+   "zh": "诺玛突袭队长",
+   "ja": "ヌマ突撃隊長"
+  },
+  "Icy Ranger": {
+   "zh": "寒冰游侠",
+   "ja": "アイシーレンジャー"
+  },
+  "Icy Goddess": {
+   "zh": "寒冰女神",
+   "ja": "アイシーゴッデス"
+  },
+  "Icy Spirit Warrior": {
+   "zh": "寒冰魂战士",
+   "ja": "アイシースピリット戦士"
+  },
+  "Icy Spirit General": {
+   "zh": "寒冰魂将军",
+   "ja": "アイシースピリット将軍"
+  },
+  "Ghost Knight": {
+   "zh": "幽灵骑士",
+   "ja": "ゴーストナイト"
+  },
+  "Icy Spirit Spearman": {
+   "zh": "寒冰魂枪兵",
+   "ja": "アイシースピリット槍兵"
+  },
+  "Werewolf": {
+   "zh": "狼人",
+   "ja": "ウェアウルフ"
+  },
+  "Whitefang": {
+   "zh": "白牙",
+   "ja": "ホワイトファング"
+  },
+  "Icy Spirit Solider": {
+   "zh": "寒冰魂士兵",
+   "ja": "アイシースピリット兵士"
+  },
+  "Wild Boar": {
+   "zh": "野猪",
+   "ja": "イノシシ"
+  },
+  "Jinam Stone Gate": {
+   "zh": "吉南石门",
+   "ja": "ジナムの石門"
+  },
+  "Frost Lord Hwa": {
+   "zh": "冰霜领主华",
+   "ja": "フロストロード・ファ"
+  },
+  "Bloody Armed Beetle": {
+   "zh": "血武装甲虫",
+   "ja": "ブラッディアームドビートル"
+  },
+  "Golden Armored Beetle": {
+   "zh": "黄金甲虫",
+   "ja": "ゴールデンアーマードビートル"
+  },
+  "Earwig King": {
+   "zh": "剪刀虫王",
+   "ja": "ハサミムシ王"
+  },
+  "Mature Earwig": {
+   "zh": "成熟剪刀虫",
+   "ja": "成熟ハサミムシ"
+  },
+  "Millipede": {
+   "zh": "千足虫",
+   "ja": "ヤスデ"
+  },
+  "Enraged Lord Ji'Nae": {
+   "zh": "暴怒领主吉奈",
+   "ja": "激怒のロード・ジネ"
+  },
+  "Banyo Soldier": {
+   "zh": "潘夜士兵",
+   "ja": "パンヤ兵士"
+  },
+  "Banyo Warrior": {
+   "zh": "潘夜战士",
+   "ja": "パンヤ戦士"
+  },
+  "Banyo Captain": {
+   "zh": "潘夜队长",
+   "ja": "パンヤ隊長"
+  },
+  "Banyo Lord Guzak": {
+   "zh": "潘夜领主古扎克",
+   "ja": "パンヤの領主グザク"
+  },
+  "Griffin": {
+   "zh": "狮鹫",
+   "ja": "グリフォン"
+  },
+  "Dragon": {
+   "zh": "龙",
+   "ja": "ドラゴン"
+  },
+  "Donkey": {
+   "zh": "驴",
+   "ja": "ロバ"
+  },
+  "Pachon": {
+   "zh": "帕琼",
+   "ja": "パチョン"
+  },
+  "Panda": {
+   "zh": "熊猫",
+   "ja": "パンダ"
+  },
+  "Rabbit": {
+   "zh": "兔子",
+   "ja": "ウサギ"
+  },
+  "Jinchon Devil": {
+   "zh": "金村恶魔",
+   "ja": "ジンチョンデーモン"
+  },
+  "Black Palace Demon": {
+   "zh": "黑宫恶魔",
+   "ja": "黒宮デーモン"
+  },
+  "Brass Feral Warrior": {
+   "zh": "黄铜野性战士",
+   "ja": "真鍮フェラル戦士"
+  },
+  "Obsidian Feral Warrior": {
+   "zh": "黑曜石野性战士",
+   "ja": "オブシディアンフェラル戦士"
+  },
+  "Sun Feral Warrior": {
+   "zh": "太阳野性战士",
+   "ja": "サンフェラル戦士"
+  },
+  "Moon Feral Warrior": {
+   "zh": "月亮野性战士",
+   "ja": "ムーンフェラル戦士"
+  },
+  "Ox Feral General": {
+   "zh": "蛮牛野性将军",
+   "ja": "オックスフェラル将軍"
+  },
+  "Flame Demon": {
+   "zh": "烈焰恶魔",
+   "ja": "フレイムデーモン"
+  },
+  "Winged Horror": {
+   "zh": "有翼魔物",
+   "ja": "ウィングドホラー"
+  },
+  "Enraged Emperor Sa'Woo": {
+   "zh": "暴怒皇帝萨乌",
+   "ja": "激怒の皇帝サウー"
+  },
+  "Ferocious Flame Demon": {
+   "zh": "凶猛烈焰恶魔",
+   "ja": "凶暴フレイムデーモン"
+  },
+  "Oma Warlord": {
+   "zh": "祖玛战将",
+   "ja": "ズマ武将"
+  },
+  "Goru Spearman": {
+   "zh": "戈鲁枪兵",
+   "ja": "ゴル槍兵"
+  },
+  "Goru Archer": {
+   "zh": "戈鲁弓手",
+   "ja": "ゴルアーチャー"
+  },
+  "Goru General": {
+   "zh": "戈鲁将军",
+   "ja": "ゴル将軍"
+  },
+  "Enraged Arch Lich Taedu": {
+   "zh": "暴怒大巫妖泰度",
+   "ja": "激怒のアークリッチ・テドゥ"
+  },
+  "Escort Commander": {
+   "zh": "护卫指挥官",
+   "ja": "護衛指揮官"
+  },
+  "Fiery Dancer": {
+   "zh": "火焰舞者",
+   "ja": "ファイアリーダンサー"
+  },
+  "Emerald Dancer": {
+   "zh": "翡翠舞者",
+   "ja": "エメラルドダンサー"
+  },
+  "Queen Of Dawn": {
+   "zh": "黎明女王",
+   "ja": "夜明けの女王"
+  },
+  "Sabuk Lord": {
+   "zh": "沙巴克王",
+   "ja": "サブク王"
+  },
+  "Oyoung Beast": {
+   "zh": "奥扬野兽",
+   "ja": "オヤングビースト"
+  },
+  "Yumgon Witch": {
+   "zh": "云贡女巫",
+   "ja": "ユムゴン魔女"
+  },
+  "Ma Warden": {
+   "zh": "魔看守",
+   "ja": "マワーデン"
+  },
+  "Ma Warlord": {
+   "zh": "魔战将",
+   "ja": "マウォーロード"
+  },
+  "Jinhwan Spirit": {
+   "zh": "金焕之灵",
+   "ja": "ジンファンスピリット"
+  },
+  "Jinhwan Guardian": {
+   "zh": "金焕守护者",
+   "ja": "ジンファン守護者"
+  },
+  "Oyoung General": {
+   "zh": "奥扬将军",
+   "ja": "オヤング将軍"
+  },
+  "Yumgon General": {
+   "zh": "云贡将军",
+   "ja": "ユムゴン将軍"
+  },
+  "Chiwoo General Of East": {
+   "zh": "赤月东将军",
+   "ja": "チウー東将軍"
+  },
+  "Chiwoo General Of West": {
+   "zh": "赤月西将军",
+   "ja": "チウー西将軍"
+  },
+  "Dragon Queen Jin'Ru": {
+   "zh": "龙后金如",
+   "ja": "ドラゴンクイーン・ジンルー"
+  },
+  "Dragon Lord Jin'Ryung": {
+   "zh": "龙王金玲",
+   "ja": "ドラゴンロード・ジンリョン"
+  },
+  "Ferocious Ice Tiger": {
+   "zh": "凶猛冰虎",
+   "ja": "凶暴アイスタイガー"
+  },
+  "Sama Cursed Bladesman": {
+   "zh": "沙玛诅咒刀手",
+   "ja": "サマ呪いのブレードマン"
+  },
+  "Sama Cursed Flame Mage": {
+   "zh": "沙玛诅咒火法师",
+   "ja": "サマ呪いの火魔導士"
+  },
+  "Sama Cursed Slave": {
+   "zh": "沙玛诅咒奴隶",
+   "ja": "サマ呪いの奴隷"
+  },
+  "Sama Fire Guardian": {
+   "zh": "沙玛火守护者",
+   "ja": "サマ火の守護者"
+  },
+  "Sama Ice Guardian": {
+   "zh": "沙玛冰守护者",
+   "ja": "サマ氷の守護者"
+  },
+  "Sama Lightning Guardian": {
+   "zh": "沙玛雷守护者",
+   "ja": "サマ雷の守護者"
+  },
+  "Sama Wind Guardian": {
+   "zh": "沙玛风守护者",
+   "ja": "サマ風の守護者"
+  },
+  "Black Sama": {
+   "zh": "黑沙玛",
+   "ja": "ブラックサマ"
+  },
+  "Blue Sama": {
+   "zh": "蓝沙玛",
+   "ja": "ブルーサマ"
+  },
+  "Phoenix Sama": {
+   "zh": "凤凰沙玛",
+   "ja": "フェニックスサマ"
+  },
+  "White Tiger Sama": {
+   "zh": "白虎沙玛",
+   "ja": "白虎サマ"
+  },
+  "Enshrinement Box": {
+   "zh": "供奉箱",
+   "ja": "奉納箱"
+  },
+  "Sama Prophet": {
+   "zh": "沙玛先知",
+   "ja": "サマ預言者"
+  },
+  "Sama Sorcerer": {
+   "zh": "沙玛巫师",
+   "ja": "サマソーサラー"
+  },
+  "Blood Stone": {
+   "zh": "血石",
+   "ja": "ブラッドストーン"
+  },
+  "Life Stone": {
+   "zh": "生命石",
+   "ja": "ライフストーン"
+  },
+  "Dark Stone": {
+   "zh": "暗石",
+   "ja": "ダークストーン"
+  },
+  "Young Tiger": {
+   "zh": "幼虎",
+   "ja": "子虎"
+  },
+  "Tiger": {
+   "zh": "老虎",
+   "ja": "タイガー"
+  },
+  "Blood Tiger": {
+   "zh": "血虎",
+   "ja": "ブラッドタイガー"
+  },
+  "Blizzard Tiger": {
+   "zh": "暴雪虎",
+   "ja": "ブリザードタイガー"
+  },
+  "Dark Tiger": {
+   "zh": "暗虎",
+   "ja": "ダークタイガー"
+  },
+  "Elder Dark Tiger": {
+   "zh": "暗虎长老",
+   "ja": "エルダーダークタイガー"
+  },
+  "Elder White Tiger": {
+   "zh": "白虎长老",
+   "ja": "エルダーホワイトタイガー"
+  },
+  "Tiger General": {
+   "zh": "虎将军",
+   "ja": "タイガー将軍"
+  },
+  "Tiger War Lord": {
+   "zh": "虎战将",
+   "ja": "タイガーウォーロード"
+  },
+  "Wild Elephant": {
+   "zh": "野象",
+   "ja": "野生の象"
+  },
+  "Wild Monkey": {
+   "zh": "野猴",
+   "ja": "野生の猿"
+  },
+  "Wild Fanatic": {
+   "zh": "野生狂热者",
+   "ja": "野生の狂信者"
+  },
+  "Frost Yeti": {
+   "zh": "冰霜雪人",
+   "ja": "フロストイエティ"
+  },
+  "Evil Snake": {
+   "zh": "邪蛇",
+   "ja": "邪悪な蛇"
+  },
+  "Salamander": {
+   "zh": "火蜥蜴",
+   "ja": "サラマンダー"
+  },
+  "Sand Golem": {
+   "zh": "沙魔像",
+   "ja": "サンドゴーレム"
+  },
+  "Oma Mage": {
+   "zh": "祖玛法师",
+   "ja": "ズマ魔導士"
+  },
+  "Crystal Golem": {
+   "zh": "水晶魔像",
+   "ja": "クリスタルゴーレム"
+  },
+  "Dust Devil": {
+   "zh": "沙尘魔",
+   "ja": "ダストデビル"
+  },
+  "Twin Tail Scorpion": {
+   "zh": "双尾蝎",
+   "ja": "双尾サソリ"
+  },
+  "Bloody Mole": {
+   "zh": "血鼹鼠",
+   "ja": "血モグラ"
+  },
+  "Imp": {
+   "zh": "小恶魔",
+   "ja": "インプ"
+  },
+  "Ettin": {
+   "zh": "双头巨人",
+   "ja": "エティン"
+  },
+  "Centurion": {
+   "zh": "百夫长",
+   "ja": "百人隊長"
+  },
+  "Rot Wraith": {
+   "zh": "腐烂幽魂",
+   "ja": "腐敗レイス"
+  },
+  "Cotoblepas": {
+   "zh": "卡托布莱帕斯",
+   "ja": "カトブレパス"
+  },
+  "Azog": {
+   "zh": "阿佐格",
+   "ja": "アゾグ"
+  },
+  "Urukhia": {
+   "zh": "乌鲁克亚",
+   "ja": "ウルキア"
+  },
+  "Gang Spider": {
+   "zh": "群居蜘蛛",
+   "ja": "ギャングスパイダー"
+  },
+  "Venom Spider": {
+   "zh": "毒蜘蛛",
+   "ja": "ベノムスパイダー"
+  },
+  "Chubarak": {
+   "zh": "丘巴拉克",
+   "ja": "チュバラク"
+  },
+  "Doom Claw": {
+   "zh": "厄运之爪",
+   "ja": "ドゥームクロウ"
+  },
+  "Zauhk Spawn": {
+   "zh": "扎乌克幼体",
+   "ja": "ザウクの幼生"
+  },
+  "Shell Spliter": {
+   "zh": "裂壳者",
+   "ja": "シェルスプリッター"
+  },
+  "Ember Mage": {
+   "zh": "余烬法师",
+   "ja": "エンバーメイジ"
+  },
+  "Bobbit Worm": {
+   "zh": "博比特虫",
+   "ja": "ボビットワーム"
+  },
+  "Cobalt Golum": {
+   "zh": "钴蓝魔像",
+   "ja": "コバルトゴーレム"
+  },
+  "Shimmer Wings": {
+   "zh": "微光翼",
+   "ja": "シマーウィング"
+  },
+  "Vex Wings": {
+   "zh": "怨翼",
+   "ja": "ヴェックスウィング"
+  },
+  "Ember SpearMan": {
+   "zh": "余烬枪兵",
+   "ja": "エンバー槍兵"
+  },
+  "Kongeegen": {
+   "zh": "康格根",
+   "ja": "コンゲエーゲン"
+  },
+  "Adamantoise": {
+   "zh": "金刚龟",
+   "ja": "アダマンタス"
+  },
+  "Zauhk": {
+   "zh": "扎乌克",
+   "ja": "ザウク"
+  },
+  "MonasteryRaisingGhost": {
+   "zh": "寺庙起尸鬼",
+   "ja": "寺院屍起ゴースト"
+  },
+  "MonasteryGhoul": {
+   "zh": "寺庙食尸鬼",
+   "ja": "寺院グール"
+  },
+  "MonasterySorcer": {
+   "zh": "寺庙巫师",
+   "ja": "寺院ソーサラー"
+  },
+  "MonasteryVoracious": {
+   "zh": "寺庙贪婪幽灵",
+   "ja": "寺院貪欲ゴースト"
+  },
+  "MonasteryDevour": {
+   "zh": "寺庙吞噬幽灵",
+   "ja": "寺院貪食ゴースト"
+  },
+  "Sumerian": {
+   "zh": "苏美尔人",
+   "ja": "シュメール人"
+  },
+  "Sacrifice": {
+   "zh": "祭品",
+   "ja": "生贄"
+  },
+  "Enheduanna": {
+   "zh": "恩赫杜安娜",
+   "ja": "エンヘドゥアンナ"
+  },
+  "Quadishtu": {
+   "zh": "卡迪什图",
+   "ja": "カディシュトゥ"
+  },
+  "Sumerian King": {
+   "zh": "苏美尔王",
+   "ja": "シュメール王"
+  },
+  "Puabi": {
+   "zh": "普阿比",
+   "ja": "プアビ"
+  },
+  "Bobbit Bobbit": {
+   "zh": "博比特虫王",
+   "ja": "ボビットボビット"
+  },
+  "Sabuk Flag": {
+   "zh": "沙巴克旗帜",
+   "ja": "サブク旗"
+  },
+  "Tornado": {
+   "zh": "龙卷风",
+   "ja": "トルネード"
+  },
+  "Undead Soul": {
+   "zh": "亡灵之魂",
+   "ja": "アンデッドソウル"
+  },
+  "Cursed Doll": {
+   "zh": "诅咒人偶",
+   "ja": "呪いの人形"
+  },
+  "Terracotta1": {
+   "zh": "兵马俑1",
+   "ja": "兵馬俑1"
+  },
+  "Terracotta2": {
+   "zh": "兵马俑2",
+   "ja": "兵馬俑2"
+  },
+  "Terracotta3": {
+   "zh": "兵马俑3",
+   "ja": "兵馬俑3"
+  },
+  "Terracotta4": {
+   "zh": "兵马俑4",
+   "ja": "兵馬俑4"
+  },
+  "TerracottaSub": {
+   "zh": "兵马俑精英",
+   "ja": "兵馬俑エリート"
+  },
+  "TerracottaBoss": {
+   "zh": "兵马俑首领",
+   "ja": "兵馬俑ボス"
+  },
+  "Dharma Protector": {
+   "zh": "护法金刚",
+   "ja": "ダルマ守護者"
+  },
+  "Jungle Mammoth": {
+   "zh": "丛林猛犸",
+   "ja": "ジャングルマンモス"
+  },
+  "Centaur Warrior": {
+   "zh": "半人马战士",
+   "ja": "ケンタウロス戦士"
+  },
+  "Wounded Soul Corpse": {
+   "zh": "伤魂尸",
+   "ja": "傷魂屍"
+  },
+  "Xiuluo Warrior": {
+   "zh": "修罗战士",
+   "ja": "シュラ戦士"
+  },
+  "Xiuluo Mage": {
+   "zh": "修罗法师",
+   "ja": "シュラ魔導士"
+  },
+  "Xiuluo Taoist": {
+   "zh": "修罗道士",
+   "ja": "シュラ道士"
+  },
+  "Ice Plain Wolf King": {
+   "zh": "冰原狼王",
+   "ja": "氷原の狼王"
+  },
+  "Ice Plain Boar": {
+   "zh": "冰原野猪",
+   "ja": "氷原のイノシシ"
+  },
+  "Ice Plain Snow Wolf": {
+   "zh": "冰原雪狼",
+   "ja": "氷原の雪狼"
+  },
+  "Ice City Emperor": {
+   "zh": "冰城皇帝",
+   "ja": "氷城皇帝"
+  },
+  "Ice Palace Guard": {
+   "zh": "冰宫卫士",
+   "ja": "氷宮の衛士"
+  },
+  "Ice Palace Archer": {
+   "zh": "冰宫弓手",
+   "ja": "氷宮アーチャー"
+  },
+  "Ice Palace Wizard": {
+   "zh": "冰宫法师",
+   "ja": "氷宮の魔法使い"
+  },
+  "Ice Palace Mage": {
+   "zh": "冰宫魔导士",
+   "ja": "氷宮の魔導士"
+  },
+  "Ice Palace Knight": {
+   "zh": "冰宫骑士",
+   "ja": "氷宮の騎士"
+  },
+  "Ice Soul Warrior": {
+   "zh": "冰魂战士",
+   "ja": "氷魂の戦士"
+  },
+  "Ice Soul General": {
+   "zh": "冰魂将军",
+   "ja": "氷魂の将軍"
+  },
+  "Fierce Monk": {
+   "zh": "狂暴僧侣",
+   "ja": "狂暴僧"
+  },
+  "Fierce Centipede": {
+   "zh": "狂暴蜈蚣",
+   "ja": "狂暴ムカデ"
+  },
+  "Fierce Corpse King": {
+   "zh": "狂暴尸王",
+   "ja": "狂暴屍王"
+  },
+  "Fierce Demon": {
+   "zh": "狂暴恶魔",
+   "ja": "狂暴デーモン"
+  },
+  "Fierce Tree Demon": {
+   "zh": "狂暴树魔",
+   "ja": "狂暴樹魔"
+  },
+  "Fierce Poison Dragon": {
+   "zh": "狂暴毒龙",
+   "ja": "狂暴毒竜"
+  },
+  "Fierce Woma": {
+   "zh": "狂暴祖玛",
+   "ja": "狂暴ズマ"
+  },
+  "Fierce Mad Bull": {
+   "zh": "狂暴疯牛",
+   "ja": "狂暴猛牛"
+  },
+  "Fierce Falcon": {
+   "zh": "狂暴猎鹰",
+   "ja": "狂暴隼"
+  },
+  "Fierce Stone Man": {
+   "zh": "狂暴石人",
+   "ja": "狂暴ストーンマン"
+  },
+  "Fierce Wind Demon": {
+   "zh": "狂暴风魔",
+   "ja": "狂暴風魔"
+  },
+  "Fierce Skeleton": {
+   "zh": "狂暴骷髅",
+   "ja": "狂暴スケルトン"
+  },
+  "Fierce Demon God": {
+   "zh": "狂暴魔神",
+   "ja": "狂暴魔神"
+  },
+  "Fierce Fish Demon": {
+   "zh": "狂暴鱼魔",
+   "ja": "狂暴魚魔"
+  },
+  "Fierce Black Boar": {
+   "zh": "狂暴黑猪",
+   "ja": "狂暴黒猪"
+  },
+  "Dungeon Goddess 1": {
+   "zh": "地宫女神1",
+   "ja": "ダンジョン女神1"
+  },
+  "Dungeon Goddess 2": {
+   "zh": "地宫女神2",
+   "ja": "ダンジョン女神2"
+  },
+  "Dungeon Goddess 3": {
+   "zh": "地宫女神3",
+   "ja": "ダンジョン女神3"
+  },
+  "Dungeon Goddess 4": {
+   "zh": "地宫女神4",
+   "ja": "ダンジョン女神4"
+  },
+  "Great Pharaoh": {
+   "zh": "大法老",
+   "ja": "大ファラオ"
+  },
+  "Guardian Sword Disciple": {
+   "zh": "守护剑弟子",
+   "ja": "守護剣弟子"
+  },
+  "Guardian Spell Disciple": {
+   "zh": "守护咒术弟子",
+   "ja": "守護呪術弟子"
+  },
+  "Guardian Fire Disciple": {
+   "zh": "守护火术弟子",
+   "ja": "守護火術弟子"
+  },
+  "Frost Guardian God": {
+   "zh": "冰霜守护神",
+   "ja": "フロスト守護神"
+  },
+  "Corpse Bone Spirit": {
+   "zh": "尸骨之灵",
+   "ja": "屍骨霊"
+  },
+  "Otherworld Guardian": {
+   "zh": "异界守护者",
+   "ja": "異界の守護者"
+  },
+  "Otherworld Guardian 1": {
+   "zh": "异界守护者1",
+   "ja": "異界の守護者1"
+  },
+  "Otherworld Guardian 2": {
+   "zh": "异界守护者2",
+   "ja": "異界の守護者2"
+  },
+  "Otherworld Guardian 3": {
+   "zh": "异界守护者3",
+   "ja": "異界の守護者3"
+  },
+  "Otherworld Sea General": {
+   "zh": "异界海将",
+   "ja": "異界の海将"
+  },
+  "Otherworld Sea General 1": {
+   "zh": "异界海将1",
+   "ja": "異界の海将1"
+  },
+  "Otherworld Sea General 3": {
+   "zh": "异界海将3",
+   "ja": "異界の海将3"
+  },
+  "Otherworld Poison Demon": {
+   "zh": "异界毒魔",
+   "ja": "異界の毒魔"
+  },
+  "Otherworld Poison Demon 1": {
+   "zh": "异界毒魔1",
+   "ja": "異界の毒魔1"
+  },
+  "Otherworld Poison Demon 2": {
+   "zh": "异界毒魔2",
+   "ja": "異界の毒魔2"
+  },
+  "Otherworld Poison Demon 3": {
+   "zh": "异界毒魔3",
+   "ja": "異界の毒魔3"
+  },
+  "Otherworld Ship Guard": {
+   "zh": "异界船卫士",
+   "ja": "異界の船守衛"
+  },
+  "Otherworld Ship Guard 1": {
+   "zh": "异界船卫士1",
+   "ja": "異界の船守衛1"
+  },
+  "Otherworld Red Mage": {
+   "zh": "异界红法师",
+   "ja": "異界の赤魔導士"
+  },
+  "Otherworld Red Mage 1": {
+   "zh": "异界红法师1",
+   "ja": "異界の赤魔導士1"
+  },
+  "Otherworld Red Mage 2": {
+   "zh": "异界红法师2",
+   "ja": "異界の赤魔導士2"
+  },
+  "Otherworld Tentacle Demon": {
+   "zh": "异界触手魔",
+   "ja": "異界の触手魔"
+  },
+  "Otherworld Tentacle Demon 1": {
+   "zh": "异界触手魔1",
+   "ja": "異界の触手魔1"
+  },
+  "Otherworld Tentacle Demon 2": {
+   "zh": "异界触手魔2",
+   "ja": "異界の触手魔2"
+  },
+  "Otherworld Tentacle Demon 3": {
+   "zh": "异界触手魔3",
+   "ja": "異界の触手魔3"
+  },
+  "Otherworld Light Guard": {
+   "zh": "异界光卫士",
+   "ja": "異界の光守衛"
+  },
+  "Otherworld Light Guard 1": {
+   "zh": "异界光卫士1",
+   "ja": "異界の光守衛1"
+  },
+  "Otherworld Light Guard 3": {
+   "zh": "异界光卫士3",
+   "ja": "異界の光守衛3"
+  },
+  "Evil Spirit Soldier": {
+   "zh": "恶灵士兵",
+   "ja": "悪霊兵士"
+  },
+  "Evil Spirit Archer": {
+   "zh": "恶灵弓手",
+   "ja": "悪霊アーチャー"
+  },
+  "Evil Spirit Warrior": {
+   "zh": "恶灵战士",
+   "ja": "悪霊戦士"
+  },
+  "War Horse General": {
+   "zh": "战马将军",
+   "ja": "軍馬将軍"
+  },
+  "Whirlwind Demon Soldier": {
+   "zh": "旋风魔兵",
+   "ja": "旋風デーモン兵士"
+  },
+  "Moon River Ghost": {
+   "zh": "月河幽灵",
+   "ja": "月河ゴースト"
+  },
+  "Moon River Phantom": {
+   "zh": "月河幻影",
+   "ja": "月河ファントム"
+  },
+  "Moon River Arhat": {
+   "zh": "月河罗汉",
+   "ja": "月河羅漢"
+  },
+  "Moon River Rat Immortal": {
+   "zh": "月河鼠仙",
+   "ja": "月河鼠仙人"
+  },
+  "Suzaku Heavenly King": {
+   "zh": "朱雀天王",
+   "ja": "朱雀天王"
+  },
+  "Tree Elf": {
+   "zh": "树精灵",
+   "ja": "樹エルフ"
+  },
+  "Taoyuan Ice Phoenix": {
+   "zh": "桃源冰凤凰",
+   "ja": "桃源の氷鳳凰"
+  },
+  "Taoyuan Ice Flower": {
+   "zh": "桃源冰花",
+   "ja": "桃源の氷花"
+  },
+  "Taoyuan Infantry": {
+   "zh": "桃源步兵",
+   "ja": "桃源歩兵"
+  },
+  "Taoyuan Fire Phoenix": {
+   "zh": "桃源火凤凰",
+   "ja": "桃源の火鳳凰"
+  },
+  "Taoyuan Fire Flower": {
+   "zh": "桃源火花",
+   "ja": "桃源の火花"
+  },
+  "Taoyuan Cavalry": {
+   "zh": "桃源骑兵",
+   "ja": "桃源騎兵"
+  },
+  "Force God General 1": {
+   "zh": "力神将军1",
+   "ja": "力神将軍1"
+  },
+  "Force God General 2": {
+   "zh": "力神将军2",
+   "ja": "力神将軍2"
+  },
+  "Deep Mud Man": {
+   "zh": "深泥人",
+   "ja": "ディープマッドマン"
+  },
+  "Flame Lion": {
+   "zh": "烈焰狮",
+   "ja": "フレイムライオン"
+  },
+  "Flame Demon Soldier": {
+   "zh": "烈焰魔兵",
+   "ja": "フレイムデーモン兵士"
+  },
+  "Unicorn Rhino": {
+   "zh": "独角犀牛",
+   "ja": "ユニコーンサイ"
+  },
+  "Xuanwu Heavenly King": {
+   "zh": "玄武天王",
+   "ja": "玄武天王"
+  },
+  "Mafa General": {
+   "zh": "玛法将军",
+   "ja": "マファ将軍"
+  },
+  "Mafa Wizard": {
+   "zh": "玛法法师",
+   "ja": "マファ魔法使い"
+  },
+  "Mafa Warrior": {
+   "zh": "玛法战士",
+   "ja": "マファ戦士"
+  },
+  "Mafa Mage": {
+   "zh": "玛法魔导士",
+   "ja": "マファ魔導士"
+  },
+  "Mafa Taoist": {
+   "zh": "玛法道士",
+   "ja": "マファ道士"
+  },
+  "Baihu Heavenly King": {
+   "zh": "白虎天王",
+   "ja": "白虎天王"
+  },
+  "Ice Break Demon Soldier": {
+   "zh": "破冰魔兵",
+   "ja": "破氷デーモン兵士"
+  },
+  "Qin Sword Infantry": {
+   "zh": "秦剑步兵",
+   "ja": "秦剣歩兵"
+  },
+  "Qin Spear Infantry": {
+   "zh": "秦枪步兵",
+   "ja": "秦槍歩兵"
+  },
+  "Qin Sword Cavalry": {
+   "zh": "秦剑骑兵",
+   "ja": "秦剣騎兵"
+  },
+  "Qin Spear Cavalry": {
+   "zh": "秦枪骑兵",
+   "ja": "秦槍騎兵"
+  },
+  "Desolation Corpse": {
+   "zh": "荒芜之尸",
+   "ja": "荒廃の屍"
+  },
+  "Heartless Guard": {
+   "zh": "无情卫士",
+   "ja": "無情の衛士"
+  },
+  "Heartless Palace Master": {
+   "zh": "无情宫主",
+   "ja": "無情宮主"
+  },
+  "Heartless Red Lady": {
+   "zh": "无情红衣女",
+   "ja": "無情の紅衣女"
+  },
+  "Heartless Green Lady": {
+   "zh": "无情绿衣女",
+   "ja": "無情の緑衣女"
+  },
+  "Demon Horde Cook": {
+   "zh": "魔军厨师",
+   "ja": "魔軍料理人"
+  },
+  "Demon Horde Warrior": {
+   "zh": "魔军战士",
+   "ja": "魔軍戦士"
+  },
+  "Demon Horde Healer": {
+   "zh": "魔军治疗师",
+   "ja": "魔軍ヒーラー"
+  },
+  "Demon Horde Overlord": {
+   "zh": "魔军霸主",
+   "ja": "魔軍オーバーロード"
+  },
+  "Fly": {
+   "zh": "苍蝇",
+   "ja": "ハエ"
+  },
+  "Evil Thunderer": {
+   "zh": "邪雷者",
+   "ja": "イービルサンダラー"
+  },
+  "Evil Fallen": {
+   "zh": "邪堕者",
+   "ja": "イービルフォールン"
+  },
+  "Evil Avenger": {
+   "zh": "邪复仇者",
+   "ja": "イービルアベンジャー"
+  },
+  "Evil Judge": {
+   "zh": "邪审判者",
+   "ja": "イービルジャッジ"
+  },
+  "Evil Punisher": {
+   "zh": "邪惩罚者",
+   "ja": "イービルパニッシャー"
+  },
+  "Evil Soul Sealer": {
+   "zh": "邪魂封印者",
+   "ja": "イービルソウルシーラー"
+  },
+  "Zuan Ka Tree": {
+   "zh": "祖安卡树",
+   "ja": "ズアンカの樹"
+  },
+  "Thunder Demon Soldier": {
+   "zh": "雷魔兵",
+   "ja": "サンダーデーモン兵士"
+  },
+  "Frost Stone Beast": {
+   "zh": "霜石兽",
+   "ja": "フロストストーンビースト"
+  },
+  "Qinglong Heavenly King": {
+   "zh": "青龙天王",
+   "ja": "青龍天王"
+  },
+  "Otherworld Light Guard 2": {
+   "zh": "异界光卫士2",
+   "ja": "異界の光守衛2"
+  },
+  "Stone Lion": {
+   "zh": "石狮",
+   "ja": "ストーンライオン"
+  },
+  "Ice Plain Warrior": {
+   "zh": "冰原战士",
+   "ja": "氷原の戦士"
+  },
+  "Ice Plain Soldier": {
+   "zh": "冰原士兵",
+   "ja": "氷原の兵士"
+  }
+ },
+ "npcs": {
+  "Mr. Kang": {
+   "zh": "康先生",
+   "ja": "カンさん"
+  },
+  "Isaac": {
+   "zh": "艾萨克",
+   "ja": "アイザック"
+  },
+  "David": {
+   "zh": "大卫",
+   "ja": "デビッド"
+  },
+  "Lennard": {
+   "zh": "伦纳德",
+   "ja": "レナード"
+  },
+  "Amy": {
+   "zh": "艾米",
+   "ja": "エイミー"
+  },
+  "Loy": {
+   "zh": "洛伊",
+   "ja": "ロイ"
+  },
+  "Linda": {
+   "zh": "琳达",
+   "ja": "リンダ"
+  },
+  "Murphy": {
+   "zh": "墨菲",
+   "ja": "マーフィー"
+  },
+  "Hardy": {
+   "zh": "哈迪",
+   "ja": "ハーディ"
+  },
+  "Gresham": {
+   "zh": "格雷沙姆",
+   "ja": "グレシャム"
+  },
+  "Haylee": {
+   "zh": "海莉",
+   "ja": "ヘイリー"
+  },
+  "Cory": {
+   "zh": "科里",
+   "ja": "コリー"
+  },
+  "Flora": {
+   "zh": "弗洛拉",
+   "ja": "フローラ"
+  },
+  "Max": {
+   "zh": "马克斯",
+   "ja": "マックス"
+  },
+  "Melisa": {
+   "zh": "梅丽莎",
+   "ja": "メリッサ"
+  },
+  "Rainier": {
+   "zh": "雷尼尔",
+   "ja": "レニエ"
+  },
+  "Mr. Kim": {
+   "zh": "金先生",
+   "ja": "キムさん"
+  },
+  "Henry": {
+   "zh": "亨利",
+   "ja": "ヘンリー"
+  },
+  "Kacy": {
+   "zh": "凯西",
+   "ja": "ケイシー"
+  },
+  "Seven": {
+   "zh": "塞文",
+   "ja": "セブン"
+  },
+  "Dakota": {
+   "zh": "达科塔",
+   "ja": "ダコタ"
+  },
+  "Murray": {
+   "zh": "默里",
+   "ja": "マレー"
+  },
+  "Sara": {
+   "zh": "萨拉",
+   "ja": "サラ"
+  },
+  "Parker": {
+   "zh": "帕克",
+   "ja": "パーカー"
+  },
+  "Hexa Holy Stone": {
+   "zh": "六角圣石",
+   "ja": "六角聖石"
+  },
+  "Jack": {
+   "zh": "杰克",
+   "ja": "ジャック"
+  },
+  "Tasha": {
+   "zh": "塔莎",
+   "ja": "ターシャ"
+  },
+  "Clinton": {
+   "zh": "克林顿",
+   "ja": "クリントン"
+  },
+  "Glenn": {
+   "zh": "格伦",
+   "ja": "グレン"
+  },
+  "Grace": {
+   "zh": "格蕾丝",
+   "ja": "グレース"
+  },
+  "Marshal": {
+   "zh": "马歇尔",
+   "ja": "マーシャル"
+  },
+  "Mandie": {
+   "zh": "曼迪",
+   "ja": "マンディ"
+  },
+  "Tumur": {
+   "zh": "图穆尔",
+   "ja": "トゥムル"
+  },
+  "Imari": {
+   "zh": "伊马里",
+   "ja": "イマリ"
+  },
+  "Solonga": {
+   "zh": "索隆加",
+   "ja": "ソロンガ"
+  },
+  "Wooshas": {
+   "zh": "乌沙斯",
+   "ja": "ウーシャス"
+  },
+  "Wooroy": {
+   "zh": "沃罗伊",
+   "ja": "ウーロイ"
+  },
+  "Pat": {
+   "zh": "帕特",
+   "ja": "パット"
+  },
+  "Mr. Matt": {
+   "zh": "马特先生",
+   "ja": "マットさん"
+  },
+  "Dr. Park": {
+   "zh": "朴博士",
+   "ja": "パーク博士"
+  },
+  "Lafayette": {
+   "zh": "拉斐特",
+   "ja": "ラファイエット"
+  },
+  "Cherrill": {
+   "zh": "谢里尔",
+   "ja": "チェリル"
+  },
+  "Mindy": {
+   "zh": "明迪",
+   "ja": "ミンディ"
+  },
+  "Warren": {
+   "zh": "沃伦",
+   "ja": "ウォーレン"
+  },
+  "Norman": {
+   "zh": "诺曼",
+   "ja": "ノーマン"
+  },
+  "Lawrence": {
+   "zh": "劳伦斯",
+   "ja": "ローレンス"
+  },
+  "Nancy": {
+   "zh": "南希",
+   "ja": "ナンシー"
+  },
+  "Livingston": {
+   "zh": "利文斯顿",
+   "ja": "リビングストン"
+  },
+  "Calla": {
+   "zh": "卡拉",
+   "ja": "カーラ"
+  },
+  "Russ": {
+   "zh": "拉斯",
+   "ja": "ラス"
+  },
+  "Notice Board": {
+   "zh": "公告板",
+   "ja": "掲示板"
+  },
+  "Warrior Trainer": {
+   "zh": "战士教官",
+   "ja": "戦士教官"
+  },
+  "Taoist Mentor": {
+   "zh": "道士导师",
+   "ja": "道士師範"
+  },
+  "Wizard Teacher": {
+   "zh": "法师导师",
+   "ja": "魔法使い師範"
+  },
+  "Village Elder": {
+   "zh": "村长",
+   "ja": "村長"
+  },
+  "Dock Manager": {
+   "zh": "码头管理员",
+   "ja": "埠頭管理者"
+  },
+  "Companion Manager": {
+   "zh": "宠物管理员",
+   "ja": "ペット管理者"
+  },
+  "Administrator": {
+   "zh": "管理员",
+   "ja": "管理者"
+  },
+  "Mike": {
+   "zh": "迈克",
+   "ja": "マイク"
+  },
+  "Payton": {
+   "zh": "佩顿",
+   "ja": "ペイトン"
+  },
+  "Chief Yonghyeon": {
+   "zh": "酋长勇贤",
+   "ja": "酋長ヨンヒョン"
+  },
+  "14Quest_Bichon": {
+   "zh": "石母",
+   "ja": "石母"
+  },
+  "01Meet_Kugkyung": {
+   "zh": "肉店金老板",
+   "ja": "肉屋のキムさん"
+  },
+  "02Weapon_Kugkyung": {
+   "zh": "德秀",
+   "ja": "徳秀"
+  },
+  "03Armor_Kugkyung": {
+   "zh": "顺子",
+   "ja": "順子"
+  },
+  "04Potion_Kugkyung": {
+   "zh": "尹老人",
+   "ja": "尹老人"
+  },
+  "05Book_Kugkyung": {
+   "zh": "老余",
+   "ja": "老余"
+  },
+  "06Inn_Kugkyung": {
+   "zh": "赵老头",
+   "ja": "趙じいさん"
+  },
+  "07Grocery_Kugkyung": {
+   "zh": "地摊商人",
+   "ja": "露天商人"
+  },
+  "08Accessory_Kugkyung": {
+   "zh": "晓丽",
+   "ja": "曉麗"
+  },
+  "10Material_Kugkyung": {
+   "zh": "啊辉",
+   "ja": "ホイ"
+  },
+  "10ChestnutMarket_Kugkyung": {
+   "zh": "栗子商人",
+   "ja": "栗商人"
+  },
+  "13Move_Kugkyung1": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "13Move_Kugkyung2": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "13Move_Kugkyung3": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "14Doctor_Kugkyung": {
+   "zh": "万事通",
+   "ja": "物知り"
+  },
+  "14Quest_KugKyung1": {
+   "zh": "上官小姐",
+   "ja": "上官お嬢様"
+  },
+  "14Quest_KugKyung2": {
+   "zh": "智善",
+   "ja": "智善"
+  },
+  "14Quest_Kugkyung3": {
+   "zh": "无名商人",
+   "ja": "名無しの商人"
+  },
+  "14Quest_KugKyung": {
+   "zh": "云发",
+   "ja": "雲発"
+  },
+  "15Magic_Kugkyung1": {
+   "zh": "龙血先生",
+   "ja": "龍血先生"
+  },
+  "15Magic_KugKyung": {
+   "zh": "龙血先生",
+   "ja": "龍血先生"
+  },
+  "15Magic_Kugkyung2": {
+   "zh": "黄河大侠",
+   "ja": "黄河大侠"
+  },
+  "17MobRush_kugkyung": {
+   "zh": "满多",
+   "ja": "満多"
+  },
+  "09CancleWeapon": {
+   "zh": "啊彬",
+   "ja": "ビン"
+  },
+  "01Meet_Eunhang": {
+   "zh": "许氏",
+   "ja": "キョさん"
+  },
+  "02Weapon_Eunhang": {
+   "zh": "铁匠师傅",
+   "ja": "鍛冶師"
+  },
+  "03Armor_Eunhang": {
+   "zh": "布店晓芙",
+   "ja": "布店の曉芙"
+  },
+  "04Potion_Eunhang": {
+   "zh": "许中医",
+   "ja": "許中医"
+  },
+  "04PotionMake_Euhang": {
+   "zh": "药剂师",
+   "ja": "薬剤師"
+  },
+  "05Book_Eunhang": {
+   "zh": "才石",
+   "ja": "才石"
+  },
+  "06Inn_Eunhang": {
+   "zh": "啊雯",
+   "ja": "ウェン"
+  },
+  "07Grocery_Eunhang": {
+   "zh": "地摊老周",
+   "ja": "露天商の老周"
+  },
+  "08Accessory_Eunhang": {
+   "zh": "晓兰",
+   "ja": "曉蘭"
+  },
+  "10Material_Eunhang": {
+   "zh": "啊勋",
+   "ja": "シュン"
+  },
+  "10ChestnutMarket_Eunhang": {
+   "zh": "栗子商人",
+   "ja": "栗商人"
+  },
+  "13Move_Eunhang": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "14Doctor_Eunhang": {
+   "zh": "万事通",
+   "ja": "物知り"
+  },
+  "14Quest_Euhang": {
+   "zh": "南宫小姐",
+   "ja": "南宮お嬢様"
+  },
+  "15Magic_Eunhang1": {
+   "zh": "霹雳尊者",
+   "ja": "霹靂尊者"
+  },
+  "15Magic_Eunhang2": {
+   "zh": "化天先生",
+   "ja": "化天先生"
+  },
+  "15Magic_Euhang": {
+   "zh": "霹雳尊者",
+   "ja": "霹靂尊者"
+  },
+  "09Repair_Euhang": {
+   "zh": "光秀",
+   "ja": "光秀"
+  },
+  "09Bonus_Euhang": {
+   "zh": "智善大师",
+   "ja": "智善大師"
+  },
+  "02Weapon_DoGwan": {
+   "zh": "啊潘",
+   "ja": "パン"
+  },
+  "03Armor_DoGwan": {
+   "zh": "啊浩",
+   "ja": "ハオ"
+  },
+  "04PotionMake_DoGwan": {
+   "zh": "禄英",
+   "ja": "禄英"
+  },
+  "04Potion_DoGwan": {
+   "zh": "老药",
+   "ja": "老薬"
+  },
+  "05Book_DoGwan": {
+   "zh": "书神",
+   "ja": "書神"
+  },
+  "07Grocery_DoGwan": {
+   "zh": "大老板",
+   "ja": "大旦那"
+  },
+  "08Accessory_DoGwan": {
+   "zh": "峰儿",
+   "ja": "峰児"
+  },
+  "14Quest_DoGwan": {
+   "zh": "无名老人",
+   "ja": "名無しの老人"
+  },
+  "15Magic_DoGwan": {
+   "zh": "清明子",
+   "ja": "清明子"
+  },
+  "15Magic_DoGwan0": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan1": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan2": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan3": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan4": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan5": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan6": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "15Magic_DoGwan7": {
+   "zh": "变异骷髅",
+   "ja": "変異スケルトン"
+  },
+  "02Weapon_Oasis": {
+   "zh": "王铁匠",
+   "ja": "王鍛冶"
+  },
+  "03Armor_Oasis": {
+   "zh": "织女",
+   "ja": "織女"
+  },
+  "04Potion_Oasis": {
+   "zh": "白老中医",
+   "ja": "白老中医"
+  },
+  "06Inn_Oasis": {
+   "zh": "绿洲仓库管家",
+   "ja": "オアシス倉庫管理人"
+  },
+  "08Astrologist_Oasis": {
+   "zh": "梅山侠",
+   "ja": "梅山侠"
+  },
+  "10Material_Oasis": {
+   "zh": "石宇",
+   "ja": "石宇"
+  },
+  "02Weapon_Samak1": {
+   "zh": "勇汉",
+   "ja": "勇漢"
+  },
+  "02Weapon_Samak2": {
+   "zh": "忠云",
+   "ja": "忠雲"
+  },
+  "03Armor_Samak": {
+   "zh": "晓敏",
+   "ja": "曉敏"
+  },
+  "04Potion_Samak": {
+   "zh": "医神",
+   "ja": "医神"
+  },
+  "06Inn_Samak": {
+   "zh": "沙漠仓库管家",
+   "ja": "砂漠倉庫管理人"
+  },
+  "08Accessory_Samak": {
+   "zh": "雪儿",
+   "ja": "雪児"
+  },
+  "09ChangeMoney_Samak": {
+   "zh": "啊俊",
+   "ja": "ジュン"
+  },
+  "07Grocery_Ant": {
+   "zh": "啊全",
+   "ja": "チュエン"
+  },
+  "13Move_Ant": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "02Weapon_Mongchon": {
+   "zh": "英龙",
+   "ja": "英龍"
+  },
+  "03Armor_Mongchon": {
+   "zh": "晓薇",
+   "ja": "曉薇"
+  },
+  "04Potion_Mongchon": {
+   "zh": "凌峰",
+   "ja": "凌峰"
+  },
+  "06Inn_Mongchon": {
+   "zh": "丘叔",
+   "ja": "丘のおじさん"
+  },
+  "07Grocery_Mongchon": {
+   "zh": "龙叔",
+   "ja": "龍のおじさん"
+  },
+  "08Accessory_Mongchon": {
+   "zh": "善颖",
+   "ja": "善穎"
+  },
+  "10Material_Mongchon": {
+   "zh": "啊贵",
+   "ja": "グイ"
+  },
+  "13Move_Mongchon1": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "13Move_Mongchon2": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "15Magic_Mongchon1": {
+   "zh": "武术教头",
+   "ja": "武術師範"
+  },
+  "15Magic_Mongchon2": {
+   "zh": "雷翁断珠",
+   "ja": "雷翁断珠"
+  },
+  "15Magic_Mongchon3": {
+   "zh": "盟重道长",
+   "ja": "盟重道長"
+  },
+  "15Magic_Mongchon4": {
+   "zh": "泼皮路白",
+   "ja": "ごろつき路白"
+  },
+  "13Move_SukGak": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "04Potion_RedZone": {
+   "zh": "次庸",
+   "ja": "次庸"
+  },
+  "09Lucky_RedZone": {
+   "zh": "小望",
+   "ja": "小望"
+  },
+  "13Move_RedZone": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "07Grocery_SkeletonCave": {
+   "zh": "奸商欧阳",
+   "ja": "悪徳商人・欧陽"
+  },
+  "14Quest_SkeletonCave": {
+   "zh": "云发",
+   "ja": "雲発"
+  },
+  "09NotBlocker_ZombieCave": {
+   "zh": "矿山老人",
+   "ja": "鉱山の老人"
+  },
+  "14Quest_ZombieCave": {
+   "zh": "署箭",
+   "ja": "署箭"
+  },
+  "14Quest_WoomaPalace": {
+   "zh": "牛老道",
+   "ja": "牛老道"
+  },
+  "04Potion_Zuma": {
+   "zh": "魂滴",
+   "ja": "魂滴"
+  },
+  "02Weapon_HalfTemple": {
+   "zh": "司马云天",
+   "ja": "司馬雲天"
+  },
+  "09WideUse_HalfTemple": {
+   "zh": "司马武林",
+   "ja": "司馬武林"
+  },
+  "09Repair_HalfTemple": {
+   "zh": "司马化林",
+   "ja": "司馬化林"
+  },
+  "13Move_HalfTemple1": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "13Move_HalfTemple2": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "13Move_HalfTemple": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "04Potion_SinGiSun": {
+   "zh": "花仙",
+   "ja": "花仙"
+  },
+  "14Quest_SinGiSun": {
+   "zh": "霸王幽灵",
+   "ja": "覇王の亡霊"
+  },
+  "01Meet_NuMa": {
+   "zh": "瓦慈",
+   "ja": "ガジ"
+  },
+  "02Weapon_Numa": {
+   "zh": "图木勒",
+   "ja": "トムレ"
+  },
+  "03Armor_Numa": {
+   "zh": "儒帕",
+   "ja": "ジュパ"
+  },
+  "04Potion_Numa": {
+   "zh": "啊莫",
+   "ja": "モー"
+  },
+  "06Inn_Numa": {
+   "zh": "啊勒",
+   "ja": "ラー"
+  },
+  "07Grocery_Numa": {
+   "zh": "肃良佳",
+   "ja": "粛良佳"
+  },
+  "08Accessory_Numa": {
+   "zh": "羽霞",
+   "ja": "羽霞"
+  },
+  "10Material_Numa": {
+   "zh": "禹老",
+   "ja": "禹老"
+  },
+  "09HorseMarket_Numa": {
+   "zh": "牢牲",
+   "ja": "牢牲"
+  },
+  "13Move_Numa": {
+   "zh": "六面神石",
+   "ja": "六面神石"
+  },
+  "17NuMaSahaka_Numa": {
+   "zh": "夏柯",
+   "ja": "夏柯"
+  },
+  "17Zaha_Numa": {
+   "zh": "紫霞神女",
+   "ja": "紫霞神女"
+  },
+  "20Gmatch": {
+   "zh": "云中子",
+   "ja": "雲中子"
+  },
+  "Maddox": {
+   "zh": "马多克斯",
+   "ja": "マドックス"
+  },
+  "Perry": {
+   "zh": "佩里",
+   "ja": "ペリー"
+  },
+  "Kellen": {
+   "zh": "凯伦",
+   "ja": "ケレン"
+  },
+  "Denise": {
+   "zh": "丹妮丝",
+   "ja": "デニス"
+  },
+  "Mark": {
+   "zh": "马克",
+   "ja": "マーク"
+  },
+  "Kimberly": {
+   "zh": "金伯利",
+   "ja": "キンバリー"
+  },
+  "Jarvis": {
+   "zh": "贾维斯",
+   "ja": "ジャービス"
+  },
+  "内测NPC": {
+   "zh": "内测NPC",
+   "ja": "βテストNPC"
+  },
+  "泡点系统": {
+   "zh": "泡点系统",
+   "ja": "滞在ポイントシステム"
+  },
+  "VIP": {
+   "zh": "VIP",
+   "ja": "VIP"
+  },
+  "名望系统": {
+   "zh": "名望系统",
+   "ja": "名声システム"
+  },
+  "功能NPC": {
+   "zh": "功能NPC",
+   "ja": "機能NPC"
+  },
+  "钓鱼系统": {
+   "zh": "钓鱼系统",
+   "ja": "釣りシステム"
+  },
+  "钻石抽奖": {
+   "zh": "钻石抽奖",
+   "ja": "ダイヤガチャ"
+  },
+  "天降宝箱": {
+   "zh": "天降宝箱",
+   "ja": "降臨宝箱"
+  },
+  "仓库系统": {
+   "zh": "仓库系统",
+   "ja": "倉庫システム"
+  },
+  "买卖商人": {
+   "zh": "买卖商人",
+   "ja": "売買商人"
+  },
+  "天下第一战": {
+   "zh": "天下第一战",
+   "ja": "天下第一の戦士"
+  },
+  "天下第一法": {
+   "zh": "天下第一法",
+   "ja": "天下第一の魔法使い"
+  },
+  "天下第一道": {
+   "zh": "天下第一道",
+   "ja": "天下第一の道士"
+  },
+  "道观公告": {
+   "zh": "道观公告",
+   "ja": "道観掲示板"
+  },
+  "合成大师": {
+   "zh": "合成大师",
+   "ja": "合成マスター"
+  },
+  "活动管理": {
+   "zh": "活动管理",
+   "ja": "イベント管理"
+  },
+  "沙城管家": {
+   "zh": "沙城管家",
+   "ja": "サブク城執事"
+  },
+  "化废为宝": {
+   "zh": "化废为宝",
+   "ja": "廃品再生"
+  },
+  "经验化废": {
+   "zh": "经验化废",
+   "ja": "経験値変換"
+  },
+  "升级加点": {
+   "zh": "升级加点",
+   "ja": "ステータス加点"
+  },
+  "结婚司仪": {
+   "zh": "结婚司仪",
+   "ja": "結婚司会"
+  },
+  "买马商人": {
+   "zh": "买马商人",
+   "ja": "馬商人"
+  },
+  "美发专家": {
+   "zh": "美发专家",
+   "ja": "美容師"
+  },
+  "比奇官吏": {
+   "zh": "比奇官吏",
+   "ja": "ビチョン役人"
+  },
+  "行会旗帜": {
+   "zh": "行会旗帜",
+   "ja": "ギルド旗"
+  },
+  "比赛评判": {
+   "zh": "比赛评判",
+   "ja": "大会審判"
+  },
+  "My00DefaultNpc": {
+   "zh": "默认NPC",
+   "ja": "デフォルトNPC"
+  },
+  "道观传送": {
+   "zh": "道观传送",
+   "ja": "道観転送"
+  },
+  "传送银杏": {
+   "zh": "传送银杏",
+   "ja": "銀杏転送"
+  },
+  "传送比奇": {
+   "zh": "传送比奇",
+   "ja": "ビチョン転送"
+  },
+  "传送土城": {
+   "zh": "传送土城",
+   "ja": "土城転送"
+  },
+  "传送流放": {
+   "zh": "传送流放",
+   "ja": "流刑地転送"
+  },
+  "潘业传送3": {
+   "zh": "潘夜传送3",
+   "ja": "パンヤ転送3"
+  },
+  "潘业传送4": {
+   "zh": "潘夜传送4",
+   "ja": "パンヤ転送4"
+  },
+  "绿洲沙漠": {
+   "zh": "绿洲沙漠",
+   "ja": "オアシス砂漠"
+  },
+  "进进出出": {
+   "zh": "进进出出",
+   "ja": "出入り"
+  },
+  "神舰接待": {
+   "zh": "神舰接待",
+   "ja": "神艦受付"
+  },
+  "诺玛接待1": {
+   "zh": "诺玛接待1",
+   "ja": "ヌマ受付1"
+  },
+  "诺玛接待2": {
+   "zh": "诺玛接待2",
+   "ja": "ヌマ受付2"
+  },
+  "诺玛接待3": {
+   "zh": "诺玛接待3",
+   "ja": "ヌマ受付3"
+  },
+  "诺玛接待4": {
+   "zh": "诺玛接待4",
+   "ja": "ヌマ受付4"
+  },
+  "西沙接待": {
+   "zh": "西沙接待",
+   "ja": "西沙受付"
+  },
+  "冰城接待": {
+   "zh": "冰城接待",
+   "ja": "氷城受付"
+  },
+  "绝情接待1": {
+   "zh": "绝情接待1",
+   "ja": "絶情受付1"
+  },
+  "绝情接待2": {
+   "zh": "绝情接待2",
+   "ja": "絶情受付2"
+  },
+  "魔界接待": {
+   "zh": "魔界接待",
+   "ja": "魔界受付"
+  },
+  "魔界接待1": {
+   "zh": "魔界接待1",
+   "ja": "魔界受付1"
+  },
+  "群魔接待1": {
+   "zh": "群魔接待1",
+   "ja": "群魔受付1"
+  },
+  "群魔接待2": {
+   "zh": "群魔接待2",
+   "ja": "群魔受付2"
+  },
+  "群魔接待3": {
+   "zh": "群魔接待3",
+   "ja": "群魔受付3"
+  },
+  "群魔接待4": {
+   "zh": "群魔接待4",
+   "ja": "群魔受付4"
+  },
+  "异界接待1": {
+   "zh": "异界接待1",
+   "ja": "異界受付1"
+  },
+  "异界接待2": {
+   "zh": "异界接待2",
+   "ja": "異界受付2"
+  },
+  "异界接待3": {
+   "zh": "异界接待3",
+   "ja": "異界受付3"
+  },
+  "异界接待4": {
+   "zh": "异界接待4",
+   "ja": "異界受付4"
+  },
+  "邪恶之地": {
+   "zh": "邪恶之地",
+   "ja": "邪悪の地"
+  },
+  "邪恶接待1": {
+   "zh": "邪恶接待1",
+   "ja": "邪悪受付1"
+  },
+  "邪恶接待2": {
+   "zh": "邪恶接待2",
+   "ja": "邪悪受付2"
+  },
+  "龙穴接待1": {
+   "zh": "龙穴接待1",
+   "ja": "竜穴受付1"
+  },
+  "龙穴接待2": {
+   "zh": "龙穴接待2",
+   "ja": "竜穴受付2"
+  },
+  "黑暗巢穴": {
+   "zh": "黑暗巢穴",
+   "ja": "暗黒の巣窟"
+  },
+  "青青草原": {
+   "zh": "青青草原",
+   "ja": "青い草原"
+  },
+  "幽暗森林": {
+   "zh": "幽暗森林",
+   "ja": "薄暗い森"
+  },
+  "钓鱼岛": {
+   "zh": "钓鱼岛",
+   "ja": "釣り島"
+  },
+  "血案接待": {
+   "zh": "血案接待",
+   "ja": "血案受付"
+  },
+  "骑兵接待": {
+   "zh": "骑兵接待",
+   "ja": "騎兵受付"
+  },
+  "尊者接待": {
+   "zh": "尊者接待",
+   "ja": "尊者受付"
+  },
+  "杀人掠夺": {
+   "zh": "杀人掠夺",
+   "ja": "殺人略奪"
+  }
+ },
+ "magics": {
+  "Swordsmanship": {
+   "zh": "基本剑术",
+   "ja": "基本剣術"
+  },
+  "Potion Mastery": {
+   "zh": "药剂精通",
+   "ja": "ポーション熟練"
+  },
+  "Slaying": {
+   "zh": "攻杀剑术",
+   "ja": "攻殺剣術"
+  },
+  "Thrusting": {
+   "zh": "刺杀剑术",
+   "ja": "刺殺剣術"
+  },
+  "Half Moon": {
+   "zh": "半月弯刀",
+   "ja": "半月刀法"
+  },
+  "Shoulder Dash": {
+   "zh": "野蛮冲撞",
+   "ja": "野蛮突進"
+  },
+  "Flaming Sword": {
+   "zh": "烈火剑法",
+   "ja": "烈火剣法"
+  },
+  "Dragon Rise": {
+   "zh": "龙影剑法",
+   "ja": "龍影剣法"
+  },
+  "Blade Storm": {
+   "zh": "莲月剑法",
+   "ja": "蓮月剣法"
+  },
+  "Destructive Surge": {
+   "zh": "破血狂杀",
+   "ja": "破血狂殺"
+  },
+  "Interchange": {
+   "zh": "乾坤大挪移",
+   "ja": "乾坤大挪移"
+  },
+  "Defiance": {
+   "zh": "铁布衫",
+   "ja": "鉄布衫"
+  },
+  "Beckon": {
+   "zh": "召唤",
+   "ja": "召喚"
+  },
+  "Might": {
+   "zh": "蛮力",
+   "ja": "蛮力"
+  },
+  "Swift Blade": {
+   "zh": "疾风剑法",
+   "ja": "疾風剣法"
+  },
+  "Assault": {
+   "zh": "突袭",
+   "ja": "突襲"
+  },
+  "Endurance": {
+   "zh": "金钟罩",
+   "ja": "金鐘罩"
+  },
+  "Reflect Damage": {
+   "zh": "移花接玉",
+   "ja": "移花接玉"
+  },
+  "Fetter": {
+   "zh": "束缚",
+   "ja": "束縛"
+  },
+  "Advanced Destructive Surge": {
+   "zh": "高级破血狂杀",
+   "ja": "上級破血狂殺"
+  },
+  "Advanced Defiance": {
+   "zh": "高级铁布衫",
+   "ja": "上級鉄布衫"
+  },
+  "Advanced Reflect Damage": {
+   "zh": "高级移花接玉",
+   "ja": "上級移花接玉"
+  },
+  "Fire Ball": {
+   "zh": "火球术",
+   "ja": "火球術"
+  },
+  "Lightning Ball": {
+   "zh": "雷电术",
+   "ja": "雷撃術"
+  },
+  "Ice Bolt": {
+   "zh": "冰箭术",
+   "ja": "氷矢"
+  },
+  "Gust Blast": {
+   "zh": "狂风冲击",
+   "ja": "突風衝撃"
+  },
+  "Repulsion": {
+   "zh": "抗拒火环",
+   "ja": "抗拒火環"
+  },
+  "Electric Shock": {
+   "zh": "诱惑之光",
+   "ja": "魅惑の光"
+  },
+  "Teleportation": {
+   "zh": "瞬息移动",
+   "ja": "瞬間移動"
+  },
+  "Adamantine Fire Ball": {
+   "zh": "金刚火球",
+   "ja": "金剛火球"
+  },
+  "Thunder Bolt": {
+   "zh": "雷霆电击",
+   "ja": "雷霆電撃"
+  },
+  "Ice Blades": {
+   "zh": "冰刃术",
+   "ja": "氷刃術"
+  },
+  "Cyclone": {
+   "zh": "龙卷风",
+   "ja": "竜巻"
+  },
+  "Scorched Earth": {
+   "zh": "焦土烈焰",
+   "ja": "焦土の炎"
+  },
+  "Lightning Beam": {
+   "zh": "雷电光柱",
+   "ja": "雷光光線"
+  },
+  "Frozen Earth": {
+   "zh": "寒冰大地",
+   "ja": "氷結大地"
+  },
+  "Blow Earth": {
+   "zh": "大地崩裂",
+   "ja": "大地崩裂"
+  },
+  "Fire Wall": {
+   "zh": "火墙",
+   "ja": "火炎壁"
+  },
+  "Expel Undead": {
+   "zh": "驱逐亡灵",
+   "ja": "亡霊退散"
+  },
+  "Geo Manipulation": {
+   "zh": "地脉操纵",
+   "ja": "地脈操作"
+  },
+  "Magic Shield": {
+   "zh": "魔法盾",
+   "ja": "魔法盾"
+  },
+  "Fire Storm": {
+   "zh": "火焰风暴",
+   "ja": "火炎嵐"
+  },
+  "Lightning Wave": {
+   "zh": "雷电波",
+   "ja": "雷撃波"
+  },
+  "Ice Storm": {
+   "zh": "寒冰风暴",
+   "ja": "氷嵐"
+  },
+  "Dragon Tornado": {
+   "zh": "龙卷风暴",
+   "ja": "龍巻嵐"
+  },
+  "Greater Frozen Earth": {
+   "zh": "强寒冰大地",
+   "ja": "大氷結大地"
+  },
+  "Chain Lightning": {
+   "zh": "连环闪电",
+   "ja": "連鎖雷撃"
+  },
+  "Meteor Shower": {
+   "zh": "流星火雨",
+   "ja": "流星火雨"
+  },
+  "Renounce": {
+   "zh": "舍身",
+   "ja": "捨身"
+  },
+  "Tempest": {
+   "zh": "风暴术",
+   "ja": "大嵐"
+  },
+  "Judgement Of Heaven": {
+   "zh": "天罚",
+   "ja": "天罰"
+  },
+  "Thunder Storm": {
+   "zh": "疾光电影",
+   "ja": "疾光電影"
+  },
+  "Fire Bounce": {
+   "zh": "火焰弹射",
+   "ja": "火炎跳弾"
+  },
+  "Elemental Hurricane": {
+   "zh": "元素飓风",
+   "ja": "元素大嵐"
+  },
+  "Superior Magic Shield": {
+   "zh": "卓越魔法盾",
+   "ja": "卓越魔法盾"
+  },
+  "Burning": {
+   "zh": "燃烧",
+   "ja": "燃焼"
+  },
+  "Shock": {
+   "zh": "电击",
+   "ja": "電撃"
+  },
+  "Lightning Strike": {
+   "zh": "落雷",
+   "ja": "落雷"
+  },
+  "Heal": {
+   "zh": "治愈术",
+   "ja": "治癒術"
+  },
+  "Spirit Sword": {
+   "zh": "灵剑术",
+   "ja": "霊剣術"
+  },
+  "Poison Dust": {
+   "zh": "施毒术",
+   "ja": "毒術"
+  },
+  "Explosive Talisman": {
+   "zh": "灵魂火符",
+   "ja": "霊魂火符"
+  },
+  "Evil Slayer": {
+   "zh": "召唤骷髅",
+   "ja": "スケルトン召喚"
+  },
+  "Invisibility": {
+   "zh": "隐身术",
+   "ja": "隠身術"
+  },
+  "Magic Resistance": {
+   "zh": "魔法抵抗",
+   "ja": "魔法抵抗"
+  },
+  "Mass Invisibility": {
+   "zh": "群体隐身",
+   "ja": "群体隠身"
+  },
+  "Greater Evil Slayer": {
+   "zh": "强召唤骷髅",
+   "ja": "大スケルトン召喚"
+  },
+  "Resilience": {
+   "zh": "坚韧",
+   "ja": "堅忍"
+  },
+  "Trap Octagon": {
+   "zh": "困魔咒",
+   "ja": "困魔呪"
+  },
+  "Combat Kick": {
+   "zh": "气功波",
+   "ja": "気功波"
+  },
+  "Elemental Superiority": {
+   "zh": "元素压制",
+   "ja": "元素支配"
+  },
+  "Mass Heal": {
+   "zh": "群体治愈",
+   "ja": "群体治癒"
+  },
+  "Blood Lust": {
+   "zh": "嗜血术",
+   "ja": "嗜血術"
+  },
+  "Resurrection": {
+   "zh": "复活术",
+   "ja": "復活術"
+  },
+  "Purification": {
+   "zh": "净化术",
+   "ja": "浄化術"
+  },
+  "Transparency": {
+   "zh": "透明术",
+   "ja": "透明化"
+  },
+  "Celestial Light": {
+   "zh": "圣光术",
+   "ja": "聖光術"
+  },
+  "Empowered Healing": {
+   "zh": "强化治愈术",
+   "ja": "強化治癒術"
+  },
+  "Life Steal": {
+   "zh": "生命汲取",
+   "ja": "生命吸収"
+  },
+  "Improved Explosive Talisman": {
+   "zh": "超强灵魂火符",
+   "ja": "超強化霊魂火符"
+  },
+  "Empowered Poison Dust": {
+   "zh": "强化施毒术",
+   "ja": "強化毒術"
+  },
+  "Cursed Doll": {
+   "zh": "诅咒人偶",
+   "ja": "呪い人形"
+  },
+  "Thunder Kick": {
+   "zh": "雷光踢",
+   "ja": "雷光蹴り"
+  },
+  "Soul Resonance": {
+   "zh": "灵魂共振",
+   "ja": "霊魂共鳴"
+  },
+  "Parasite": {
+   "zh": "寄生术",
+   "ja": "寄生"
+  },
+  "Spiritualism": {
+   "zh": "通灵术",
+   "ja": "降霊術"
+  },
+  "Willow Dance": {
+   "zh": "杨柳舞",
+   "ja": "柳の舞"
+  },
+  "Vine Tree Dance": {
+   "zh": "藤蔓舞",
+   "ja": "蔦の舞"
+  },
+  "Discipline": {
+   "zh": "戒律",
+   "ja": "戒律"
+  },
+  "Poisonous Cloud": {
+   "zh": "毒云",
+   "ja": "毒雲"
+  },
+  "Full Bloom": {
+   "zh": "盛开",
+   "ja": "満開"
+  },
+  "Cloak": {
+   "zh": "隐身斗篷",
+   "ja": "隠れ蓑"
+  },
+  "White Lotus": {
+   "zh": "白莲",
+   "ja": "白蓮"
+  },
+  "Calamity Of Full Moon": {
+   "zh": "满月之灾",
+   "ja": "満月の災厄"
+  },
+  "Wraith Grip": {
+   "zh": "怨灵之握",
+   "ja": "亡霊の掌握"
+  },
+  "Red Lotus": {
+   "zh": "红莲",
+   "ja": "紅蓮"
+  },
+  "Hell Fire": {
+   "zh": "地狱火",
+   "ja": "地獄火"
+  },
+  "Pledge Of Blood": {
+   "zh": "血之誓约",
+   "ja": "血の誓約"
+  },
+  "Rake": {
+   "zh": "撕裂",
+   "ja": "引裂き"
+  },
+  "Sweetbrier": {
+   "zh": "野蔷薇",
+   "ja": "野薔薇"
+  },
+  "Summon Puppet": {
+   "zh": "召唤傀儡",
+   "ja": "傀儡召喚"
+  },
+  "Karma": {
+   "zh": "业报",
+   "ja": "業報"
+  },
+  "Touch Of The Departed": {
+   "zh": "亡者之触",
+   "ja": "亡者の触れ"
+  },
+  "Waning Moon": {
+   "zh": "残月",
+   "ja": "欠月"
+  },
+  "Ghost Walk": {
+   "zh": "幽灵步",
+   "ja": "亡霊歩"
+  },
+  "Elemental Puppet": {
+   "zh": "元素傀儡",
+   "ja": "元素傀儡"
+  },
+  "Rejuvenation": {
+   "zh": "回春术",
+   "ja": "若返り"
+  },
+  "Resolution": {
+   "zh": "决意",
+   "ja": "決意"
+  },
+  "Change Of Seasons": {
+   "zh": "四季流转",
+   "ja": "四季の移ろい"
+  },
+  "Release": {
+   "zh": "释放",
+   "ja": "解放"
+  },
+  "Flame Splash": {
+   "zh": "火焰溅射",
+   "ja": "火炎飛散"
+  },
+  "Bloody Flower": {
+   "zh": "血花",
+   "ja": "血の花"
+  },
+  "The New Beginning": {
+   "zh": "新生",
+   "ja": "新たな始まり"
+  },
+  "Dance Of Swallow": {
+   "zh": "燕舞",
+   "ja": "燕の舞"
+  },
+  "Dark Conversion": {
+   "zh": "黑暗转化",
+   "ja": "闇の転換"
+  },
+  "Dragon Repulse": {
+   "zh": "龙之击退",
+   "ja": "龍の撃退"
+  },
+  "Advent Of Demon": {
+   "zh": "恶魔降临",
+   "ja": "悪魔降臨"
+  },
+  "Advent Of Devil": {
+   "zh": "魔鬼降临",
+   "ja": "魔王降臨"
+  },
+  "Abyss": {
+   "zh": "深渊",
+   "ja": "深淵"
+  },
+  "Flash Of Light": {
+   "zh": "闪光",
+   "ja": "閃光"
+  },
+  "Stealth": {
+   "zh": "潜行",
+   "ja": "潜伏"
+  },
+  "Evasion": {
+   "zh": "闪避",
+   "ja": "回避"
+  },
+  "Raging Wind": {
+   "zh": "狂风",
+   "ja": "怒風"
+  },
+  "Empowered Explosive Talisman": {
+   "zh": "强化灵魂火符",
+   "ja": "強化霊魂火符"
+  },
+  "Empowered Evil Slayer": {
+   "zh": "强化召唤骷髅",
+   "ja": "強化スケルトン召喚"
+  },
+  "Empowered Purification": {
+   "zh": "强化净化术",
+   "ja": "強化浄化術"
+  },
+  "Empowered Resurrection": {
+   "zh": "强化复活术",
+   "ja": "強化復活術"
+  },
+  "Demon Explosion": {
+   "zh": "恶魔爆裂",
+   "ja": "悪魔爆裂"
+  },
+  "Strength Of Faith": {
+   "zh": "信仰之力",
+   "ja": "信仰の力"
+  },
+  "Summon Skeleton": {
+   "zh": "召唤骷髅",
+   "ja": "スケルトン召喚"
+  },
+  "Mirror Image": {
+   "zh": "镜像分身",
+   "ja": "鏡像"
+  },
+  "Summon Jin Skeleton": {
+   "zh": "召唤金骷髅",
+   "ja": "金スケルトン召喚"
+  },
+  "Summon Shinsu": {
+   "zh": "召唤神兽",
+   "ja": "神獣召喚"
+  },
+  "Summon Demonic Creature": {
+   "zh": "召唤魔物",
+   "ja": "魔獣召喚"
+  },
+  "Advanced Potion Mastery": {
+   "zh": "高级药剂精通",
+   "ja": "上級ポーション熟練"
+  },
+  "_Blank_": {
+   "zh": "空白",
+   "ja": "ブランク"
+  },
+  "Ice Rain": {
+   "zh": "冰雨",
+   "ja": "氷雨"
+  },
+  "Mass Beckon": {
+   "zh": "群体召唤",
+   "ja": "群体召喚"
+  },
+  "Frost Bite": {
+   "zh": "冻伤",
+   "ja": "凍傷"
+  },
+  "Infection": {
+   "zh": "感染",
+   "ja": "感染"
+  },
+  "Massacre": {
+   "zh": "屠杀",
+   "ja": "虐殺"
+  },
+  "Seismic Slam": {
+   "zh": "大地震击",
+   "ja": "地震衝撃"
+  },
+  "Demonic Recovery": {
+   "zh": "魔性再生",
+   "ja": "悪魔の回復"
+  },
+  "Asteroid": {
+   "zh": "陨石",
+   "ja": "隕石"
+  },
+  "Art of Shadows": {
+   "zh": "影术",
+   "ja": "影の技"
+  },
+  "Invincibility": {
+   "zh": "无敌术",
+   "ja": "無敵化"
+  },
+  "Crushing Wave": {
+   "zh": "粉碎波",
+   "ja": "粉砕の波"
+  },
+  "Neutralize": {
+   "zh": "中和",
+   "ja": "中和"
+  },
+  "Empowered Neutralize": {
+   "zh": "强化中和",
+   "ja": "強化中和"
+  },
+  "Dark Soul Prison": {
+   "zh": "暗魂囚笼",
+   "ja": "闇魂の牢獄"
+  },
+  "Searing Light": {
+   "zh": "灼热之光",
+   "ja": "灼熱の光"
+  },
+  "Defensive Mastery": {
+   "zh": "防御精通",
+   "ja": "防御熟練"
+  },
+  "Physical Immunity": {
+   "zh": "物理免疫",
+   "ja": "物理免疫"
+  },
+  "Magic Immunity": {
+   "zh": "魔法免疫",
+   "ja": "魔法免疫"
+  },
+  "Defensive Blow": {
+   "zh": "防御打击",
+   "ja": "防御打撃"
+  },
+  "Elemental Swords": {
+   "zh": "元素之剑",
+   "ja": "元素の剣"
+  },
+  "Storm": {
+   "zh": "风暴",
+   "ja": "嵐"
+  },
+  "Tornado": {
+   "zh": "龙卷风",
+   "ja": "竜巻"
+  },
+  "Empowered Celestial Light": {
+   "zh": "强化圣光术",
+   "ja": "強化聖光術"
+  },
+  "Corpse Exploder": {
+   "zh": "尸爆术",
+   "ja": "死体爆発"
+  },
+  "Summon Dead": {
+   "zh": "召唤亡者",
+   "ja": "死者召喚"
+  },
+  "Dragon Blood": {
+   "zh": "龙之血",
+   "ja": "竜血"
+  },
+  "Fatal Blow": {
+   "zh": "致命一击",
+   "ja": "必殺の一撃"
+  },
+  "Last Stand": {
+   "zh": "背水一战",
+   "ja": "最後の抵抗"
+  },
+  "Magic Combustion": {
+   "zh": "魔力燃烧",
+   "ja": "魔力燃焼"
+  },
+  "Vitality": {
+   "zh": "活力",
+   "ja": "活力"
+  },
+  "Chain": {
+   "zh": "连锁",
+   "ja": "連鎖"
+  },
+  "Concentration": {
+   "zh": "专注",
+   "ja": "集中"
+  },
+  "Dual Weapon Skills": {
+   "zh": "双持武器",
+   "ja": "二刀流"
+  },
+  "Containment": {
+   "zh": "封锁",
+   "ja": "封鎖"
+  },
+  "Dragon Wave": {
+   "zh": "龙之波",
+   "ja": "竜の波"
+  },
+  "Hemorrhage": {
+   "zh": "大出血",
+   "ja": "大量出血"
+  },
+  "Burning Fire": {
+   "zh": "燃烧火焰",
+   "ja": "燃焼の炎"
+  },
+  "Chain Of Fire": {
+   "zh": "火焰连锁",
+   "ja": "火炎連鎖"
+  }
+ },
+ "maps": {
+  "Bichon Town": {
+   "zh": "比奇县",
+   "ja": "ビチョン町"
+  },
+  "Town Hall": {
+   "zh": "市政厅",
+   "ja": "市庁舎"
+  },
+  "Left Wing": {
+   "zh": "左翼",
+   "ja": "左翼"
+  },
+  "Right Wing": {
+   "zh": "右翼",
+   "ja": "右翼"
+  },
+  "Lost Paradise": {
+   "zh": "失乐园",
+   "ja": "ロストパラダイス"
+  },
+  "Banya Village": {
+   "zh": "潘夜村",
+   "ja": "パンヤ村"
+  },
+  "Sabuk Keep": {
+   "zh": "沙巴克城",
+   "ja": "サブク城"
+  },
+  "Numa Village": {
+   "zh": "诺玛村",
+   "ja": "ヌマ村"
+  },
+  "Desert Mud Fortress": {
+   "zh": "沙漠土城",
+   "ja": "砂漠土城"
+  },
+  "Phantom Forest": {
+   "zh": "幽灵森林",
+   "ja": "幻影の森"
+  },
+  "Desert": {
+   "zh": "沙漠",
+   "ja": "砂漠"
+  },
+  "Lost Paradise Forest": {
+   "zh": "失乐园森林",
+   "ja": "ロストパラダイスの森"
+  },
+  "Banya Temple Lv 1": {
+   "zh": "潘夜神殿1层",
+   "ja": "パンヤ神殿1階"
+  },
+  "Banya Temple Lv 2": {
+   "zh": "潘夜神殿2层",
+   "ja": "パンヤ神殿2階"
+  },
+  "Banya Temple Lv 3-W": {
+   "zh": "潘夜神殿3层西部",
+   "ja": "パンヤ神殿3階西"
+  },
+  "Banya Temple Lv 3-E": {
+   "zh": "潘夜神殿3层东部",
+   "ja": "パンヤ神殿3階東"
+  },
+  "Banya Temple Lv 4": {
+   "zh": "潘夜神殿4层",
+   "ja": "パンヤ神殿4階"
+  },
+  "Banya Temple Lv 10": {
+   "zh": "潘夜神殿10层",
+   "ja": "パンヤ神殿10階"
+  },
+  "Banya Temple": {
+   "zh": "潘夜神殿",
+   "ja": "パンヤ神殿"
+  },
+  "Zuma Temple Lv 1": {
+   "zh": "祖玛神殿1层",
+   "ja": "ズマ神殿1階"
+  },
+  "Zuma Temple Lv 2": {
+   "zh": "祖玛神殿2层",
+   "ja": "ズマ神殿2階"
+  },
+  "Zuma Temple Lv 4": {
+   "zh": "祖玛神殿4层",
+   "ja": "ズマ神殿4階"
+  },
+  "Zuma Temple Lv 5": {
+   "zh": "祖玛神殿5层",
+   "ja": "ズマ神殿5階"
+  },
+  "Jinchon Palace Lv 4-S": {
+   "zh": "真天宫4层南部",
+   "ja": "真天宮4階南"
+  },
+  "Jinchon Palace Lv 4-E": {
+   "zh": "真天宫4层东部",
+   "ja": "真天宮4階東"
+  },
+  "Jinchon Palace Lv 6": {
+   "zh": "真天宫6层",
+   "ja": "真天宮6階"
+  },
+  "Black Palace Lv 1": {
+   "zh": "黑宫1层",
+   "ja": "黒宮1階"
+  },
+  "Black Palace Lv 3": {
+   "zh": "黑宫3层",
+   "ja": "黒宮3階"
+  },
+  "Black Palace Lv 4": {
+   "zh": "黑宫4层",
+   "ja": "黒宮4階"
+  },
+  "Black Palace": {
+   "zh": "黑宫",
+   "ja": "黒宮"
+  },
+  "Phantom Ship Ent": {
+   "zh": "神舰入口",
+   "ja": "神艦入口"
+  },
+  "Phantom Ship Lv 4": {
+   "zh": "神舰4层",
+   "ja": "神艦4階"
+  },
+  "Phantom Ship Lv 3": {
+   "zh": "神舰3层",
+   "ja": "神艦3階"
+  },
+  "Phantom Ship Lv 2": {
+   "zh": "神舰2层",
+   "ja": "神艦2階"
+  },
+  "Phantom Ship Lv 1": {
+   "zh": "神舰1层",
+   "ja": "神艦1階"
+  },
+  "Deserted Mine Lv 2": {
+   "zh": "废矿山2层",
+   "ja": "廃鉱山2階"
+  },
+  "Deserted Mine Lv 3": {
+   "zh": "废矿山3层",
+   "ja": "廃鉱山3階"
+  },
+  "Ant Cave North": {
+   "zh": "蚂蚁洞北",
+   "ja": "蟻の洞窟・北"
+  },
+  "Ant Cave South": {
+   "zh": "蚂蚁洞南",
+   "ja": "蟻の洞窟・南"
+  },
+  "Ant Cave West": {
+   "zh": "蚂蚁洞西",
+   "ja": "蟻の洞窟・西"
+  },
+  "Ant Cave East": {
+   "zh": "蚂蚁洞东",
+   "ja": "蟻の洞窟・東"
+  },
+  "Uma Temple Lv 1": {
+   "zh": "沃玛神殿1层",
+   "ja": "オマ神殿1階"
+  },
+  "Uma Temple Lv 2": {
+   "zh": "沃玛神殿2层",
+   "ja": "オマ神殿2階"
+  },
+  "Uma Temple Lv 3": {
+   "zh": "沃玛神殿3层",
+   "ja": "オマ神殿3階"
+  },
+  "Uma Temple": {
+   "zh": "沃玛神殿",
+   "ja": "オマ神殿"
+  },
+  "Banya Stone Cave Lv 1": {
+   "zh": "潘夜石窟1层",
+   "ja": "パンヤ石窟1階"
+  },
+  "Banya Stone Cave Lv 2": {
+   "zh": "潘夜石窟2层",
+   "ja": "パンヤ石窟2階"
+  },
+  "Banya Stone Cave Lv 3": {
+   "zh": "潘夜石窟3层",
+   "ja": "パンヤ石窟3階"
+  },
+  "Banya Stone Cave Lv 4": {
+   "zh": "潘夜石窟4层",
+   "ja": "パンヤ石窟4階"
+  },
+  "Banya Stone Cave Lv 5": {
+   "zh": "潘夜石窟5层",
+   "ja": "パンヤ石窟5階"
+  },
+  "Carved Stone Tomb Lv 1": {
+   "zh": "石刻墓1层",
+   "ja": "石刻墓1階"
+  },
+  "Despair Valley Lv 1": {
+   "zh": "绝望谷1层",
+   "ja": "絶望の谷1階"
+  },
+  "Despair Valley Lv 2": {
+   "zh": "绝望谷2层",
+   "ja": "絶望の谷2階"
+  },
+  "Despair Valley Lv 3": {
+   "zh": "绝望谷3层",
+   "ja": "絶望の谷3階"
+  },
+  "Despair Valley Lv 4": {
+   "zh": "绝望谷4层",
+   "ja": "絶望の谷4階"
+  },
+  "Life Death Hall": {
+   "zh": "生死殿",
+   "ja": "生死殿"
+  },
+  "Red Moon Valley Lv 1": {
+   "zh": "赤月山谷1层",
+   "ja": "赤月の谷1階"
+  },
+  "Frost Village": {
+   "zh": "冰雪村",
+   "ja": "氷雪村"
+  },
+  "Banya Island": {
+   "zh": "潘夜岛",
+   "ja": "パンヤ島"
+  },
+  "边境城市": {
+   "zh": "边境城市",
+   "ja": "辺境都市"
+  },
+  "沙巴克城堡": {
+   "zh": "沙巴克城堡",
+   "ja": "サブク城"
+  },
+  "祖玛神殿大厅": {
+   "zh": "祖玛神殿大厅",
+   "ja": "ズマ神殿大広間"
+  },
+  "志善屋": {
+   "zh": "志善屋",
+   "ja": "志善屋"
+  },
+  "EI 01_002": {
+   "zh": "边境城市·内室",
+   "ja": "辺境都市・内室"
+  },
+  "试练场": {
+   "zh": "试练场",
+   "ja": "試練場"
+  },
+  "银杏山谷": {
+   "zh": "银杏山谷",
+   "ja": "銀杏の谷"
+  },
+  "EI 0_0011": {
+   "zh": "左翼内室",
+   "ja": "左翼の内室"
+  },
+  "EI 0_0021": {
+   "zh": "右翼内室",
+   "ja": "右翼の内室"
+  },
+  "比奇县": {
+   "zh": "比奇县",
+   "ja": "ビチョン町"
+  },
+  "EI 0_0031": {
+   "zh": "比奇县内室1",
+   "ja": "ビチョン町内室1"
+  },
+  "EI 0_0032": {
+   "zh": "比奇县内室2",
+   "ja": "ビチョン町内室2"
+  },
+  "EI 0_0033": {
+   "zh": "比奇县内室3",
+   "ja": "ビチョン町内室3"
+  },
+  "EI 121": {
+   "zh": "灌木林",
+   "ja": "灌木林"
+  },
+  "灌木林": {
+   "zh": "灌木林",
+   "ja": "灌木林"
+  },
+  "EI 123": {
+   "zh": "灌木林",
+   "ja": "灌木林"
+  },
+  "EI 124": {
+   "zh": "灌木林",
+   "ja": "灌木林"
+  },
+  "武器仓库": {
+   "zh": "武器仓库",
+   "ja": "武器倉庫"
+  },
+  "本馆": {
+   "zh": "本馆",
+   "ja": "本館"
+  },
+  "洗衣住居": {
+   "zh": "洗衣住居",
+   "ja": "洗濯の家"
+  },
+  "书房": {
+   "zh": "书房",
+   "ja": "書斎"
+  },
+  "物品研究所": {
+   "zh": "物品研究所",
+   "ja": "物品研究所"
+  },
+  "药剂师住居": {
+   "zh": "药剂师住居",
+   "ja": "薬剤師の住居"
+  },
+  "仓库": {
+   "zh": "仓库",
+   "ja": "倉庫"
+  },
+  "无名老人隐居地": {
+   "zh": "无名老人隐居地",
+   "ja": "無名老人の隠居地"
+  },
+  "困魔咒空间": {
+   "zh": "困魔咒空间",
+   "ja": "困魔呪空間"
+  },
+  "蜈蚣洞穴": {
+   "zh": "蜈蚣洞穴",
+   "ja": "ムカデ洞窟"
+  },
+  "祖玛神殿": {
+   "zh": "祖玛神殿",
+   "ja": "ズマ神殿"
+  },
+  "诺玛沙漠": {
+   "zh": "诺玛沙漠",
+   "ja": "ヌマ砂漠"
+  },
+  "沙漠": {
+   "zh": "沙漠",
+   "ja": "砂漠"
+  },
+  "武器店": {
+   "zh": "武器店",
+   "ja": "武器屋"
+  },
+  "民家": {
+   "zh": "民家",
+   "ja": "民家"
+  },
+  "中药商": {
+   "zh": "中药商",
+   "ja": "漢方薬屋"
+  },
+  "布匹店": {
+   "zh": "布匹店",
+   "ja": "布屋"
+  },
+  "占卜屋": {
+   "zh": "占卜屋",
+   "ja": "占い屋"
+  },
+  "EI 50": {
+   "zh": "沙漠区域",
+   "ja": "砂漠区域"
+  },
+  "EI 50_001": {
+   "zh": "沙漠区域·内室",
+   "ja": "砂漠区域・内室"
+  },
+  "贵族屋": {
+   "zh": "贵族屋",
+   "ja": "貴族の屋敷"
+  },
+  "武器商": {
+   "zh": "武器商",
+   "ja": "武器商人"
+  },
+  "药房": {
+   "zh": "药房",
+   "ja": "薬局"
+  },
+  "服饰店": {
+   "zh": "服饰店",
+   "ja": "服飾店"
+  },
+  "饰品店": {
+   "zh": "饰品店",
+   "ja": "装飾品店"
+  },
+  "盟重县": {
+   "zh": "盟重县",
+   "ja": "盟重県"
+  },
+  "石阁庙": {
+   "zh": "石阁庙",
+   "ja": "石閣廟"
+  },
+  "流放岛": {
+   "zh": "流放岛",
+   "ja": "流刑島"
+  },
+  "EI B010": {
+   "zh": "暗黑封印入口",
+   "ja": "暗黒封印入口"
+  },
+  "EI B011": {
+   "zh": "暗黑封印·传送间",
+   "ja": "暗黒封印・転送間"
+  },
+  "EI B101": {
+   "zh": "暗黑封印101",
+   "ja": "暗黒封印101"
+  },
+  "EI B102": {
+   "zh": "暗黑封印102",
+   "ja": "暗黒封印102"
+  },
+  "EI B103": {
+   "zh": "暗黑封印103",
+   "ja": "暗黒封印103"
+  },
+  "NPC休息室": {
+   "zh": "NPC休息室",
+   "ja": "NPC休憩室"
+  },
+  "EI B104": {
+   "zh": "暗黑封印104",
+   "ja": "暗黒封印104"
+  },
+  "EI B105": {
+   "zh": "暗黑封印105",
+   "ja": "暗黒封印105"
+  },
+  "EI B105_001": {
+   "zh": "暗黑封印105·分室1",
+   "ja": "暗黒封印105・分室1"
+  },
+  "EI B106": {
+   "zh": "暗黑封印106",
+   "ja": "暗黒封印106"
+  },
+  "EI B106_001": {
+   "zh": "暗黑封印106·分室1",
+   "ja": "暗黒封印106・分室1"
+  },
+  "EI B106_002": {
+   "zh": "暗黑封印106·分室2",
+   "ja": "暗黒封印106・分室2"
+  },
+  "EI B106_003": {
+   "zh": "暗黑封印106·分室3",
+   "ja": "暗黒封印106・分室3"
+  },
+  "EI B107": {
+   "zh": "暗黑封印107",
+   "ja": "暗黒封印107"
+  },
+  "EI B108": {
+   "zh": "暗黑封印108",
+   "ja": "暗黒封印108"
+  },
+  "EI B109": {
+   "zh": "暗黑封印109",
+   "ja": "暗黒封印109"
+  },
+  "EI B109_001": {
+   "zh": "暗黑封印109·分室1",
+   "ja": "暗黒封印109・分室1"
+  },
+  "EI B110": {
+   "zh": "暗黑封印110",
+   "ja": "暗黒封印110"
+  },
+  "EI B111": {
+   "zh": "暗黑封印111",
+   "ja": "暗黒封印111"
+  },
+  "EI B112": {
+   "zh": "暗黑封印112",
+   "ja": "暗黒封印112"
+  },
+  "EI B113": {
+   "zh": "暗黑封印113",
+   "ja": "暗黒封印113"
+  },
+  "EI B114": {
+   "zh": "暗黑封印114",
+   "ja": "暗黒封印114"
+  },
+  "EI B115": {
+   "zh": "暗黑封印115",
+   "ja": "暗黒封印115"
+  },
+  "矿石空间": {
+   "zh": "矿石空间",
+   "ja": "鉱石空間"
+  },
+  "EI B116": {
+   "zh": "暗黑封印116",
+   "ja": "暗黒封印116"
+  },
+  "EI B117": {
+   "zh": "暗黑封印117",
+   "ja": "暗黒封印117"
+  },
+  "EI B118": {
+   "zh": "暗黑封印118",
+   "ja": "暗黒封印118"
+  },
+  "EI B118_001": {
+   "zh": "暗黑封印118·分室1",
+   "ja": "暗黒封印118・分室1"
+  },
+  "EI B119": {
+   "zh": "暗黑封印119",
+   "ja": "暗黒封印119"
+  },
+  "EI B119_001": {
+   "zh": "暗黑封印119·分室1",
+   "ja": "暗黒封印119・分室1"
+  },
+  "EI B120": {
+   "zh": "暗黑封印120",
+   "ja": "暗黒封印120"
+  },
+  "EI B121": {
+   "zh": "暗黑封印121",
+   "ja": "暗黒封印121"
+  },
+  "EI B122": {
+   "zh": "暗黑封印122",
+   "ja": "暗黒封印122"
+  },
+  "EI B123": {
+   "zh": "暗黑封印123",
+   "ja": "暗黒封印123"
+  },
+  "EI B124": {
+   "zh": "暗黑封印124",
+   "ja": "暗黒封印124"
+  },
+  "EI B125": {
+   "zh": "暗黑封印125",
+   "ja": "暗黒封印125"
+  },
+  "EI B125_001": {
+   "zh": "暗黑封印125·分室1",
+   "ja": "暗黒封印125・分室1"
+  },
+  "EI B126": {
+   "zh": "暗黑封印126",
+   "ja": "暗黒封印126"
+  },
+  "EI B127": {
+   "zh": "暗黑封印127",
+   "ja": "暗黒封印127"
+  },
+  "EI B128": {
+   "zh": "暗黑封印128",
+   "ja": "暗黒封印128"
+  },
+  "EI B129": {
+   "zh": "暗黑封印129",
+   "ja": "暗黒封印129"
+  },
+  "EI B130": {
+   "zh": "暗黑封印130",
+   "ja": "暗黒封印130"
+  },
+  "EI B131": {
+   "zh": "暗黑封印131",
+   "ja": "暗黒封印131"
+  },
+  "EI B131_001": {
+   "zh": "暗黑封印131·分室1",
+   "ja": "暗黒封印131・分室1"
+  },
+  "EI B132": {
+   "zh": "暗黑封印132",
+   "ja": "暗黒封印132"
+  },
+  "GM活动室": {
+   "zh": "GM活动室",
+   "ja": "GM活動室"
+  },
+  "EI B133": {
+   "zh": "暗黑封印133",
+   "ja": "暗黒封印133"
+  },
+  "EI B134": {
+   "zh": "暗黑封印134",
+   "ja": "暗黒封印134"
+  },
+  "EI B134_001": {
+   "zh": "暗黑封印134·分室1",
+   "ja": "暗黒封印134・分室1"
+  },
+  "EI B135": {
+   "zh": "暗黑封印135",
+   "ja": "暗黒封印135"
+  },
+  "EI B136": {
+   "zh": "暗黑封印136",
+   "ja": "暗黒封印136"
+  },
+  "EI B136_001": {
+   "zh": "暗黑封印136·分室1",
+   "ja": "暗黒封印136・分室1"
+  },
+  "EI B136_002": {
+   "zh": "暗黑封印136·分室2",
+   "ja": "暗黒封印136・分室2"
+  },
+  "EI B136_003": {
+   "zh": "暗黑封印136·分室3",
+   "ja": "暗黒封印136・分室3"
+  },
+  "EI B137": {
+   "zh": "暗黑封印137",
+   "ja": "暗黒封印137"
+  },
+  "EI B138": {
+   "zh": "暗黑封印138",
+   "ja": "暗黒封印138"
+  },
+  "EI B138_001": {
+   "zh": "暗黑封印138·分室1",
+   "ja": "暗黒封印138・分室1"
+  },
+  "EI B139": {
+   "zh": "暗黑封印·前厅",
+   "ja": "暗黒封印・前室"
+  },
+  "暗黑封印": {
+   "zh": "暗黑封印",
+   "ja": "暗黒封印"
+  },
+  "EI B140": {
+   "zh": "暗黑封印140",
+   "ja": "暗黒封印140"
+  },
+  "EI B140_001": {
+   "zh": "暗黑封印140·分室1",
+   "ja": "暗黒封印140・分室1"
+  },
+  "半兽勇士洞": {
+   "zh": "半兽勇士洞",
+   "ja": "半獣勇士洞窟"
+  },
+  "骷髅精灵洞": {
+   "zh": "骷髅精灵洞",
+   "ja": "スケルトン精霊の洞窟"
+  },
+  "天然洞穴1层": {
+   "zh": "天然洞穴1层",
+   "ja": "天然洞窟1階"
+  },
+  "天然洞穴2层": {
+   "zh": "天然洞穴2层",
+   "ja": "天然洞窟2階"
+  },
+  "沃玛神殿入口": {
+   "zh": "沃玛神殿入口",
+   "ja": "オマ神殿入口"
+  },
+  "沃玛神殿1层": {
+   "zh": "沃玛神殿1层",
+   "ja": "オマ神殿1階"
+  },
+  "沃玛神殿2层": {
+   "zh": "沃玛神殿2层",
+   "ja": "オマ神殿2階"
+  },
+  "沃玛神殿师徒关": {
+   "zh": "沃玛神殿师徒关",
+   "ja": "オマ神殿師弟関"
+  },
+  "沃玛神殿": {
+   "zh": "沃玛神殿",
+   "ja": "オマ神殿"
+  },
+  "EI D10011": {
+   "zh": "赤月山谷1层",
+   "ja": "赤月の谷1階"
+  },
+  "EI D10012": {
+   "zh": "赤月山谷1层",
+   "ja": "赤月の谷1階"
+  },
+  "EI D10013": {
+   "zh": "赤月山谷1层",
+   "ja": "赤月の谷1階"
+  },
+  "赤月山谷5层": {
+   "zh": "赤月山谷5层",
+   "ja": "赤月の谷5階"
+  },
+  "EI D10053": {
+   "zh": "赤月山谷5层",
+   "ja": "赤月の谷5階"
+  },
+  "EI D10054": {
+   "zh": "赤月山谷5层",
+   "ja": "赤月の谷5階"
+  },
+  "EI D10061": {
+   "zh": "赤月山谷6层",
+   "ja": "赤月の谷6階"
+  },
+  "EI D10062": {
+   "zh": "赤月山谷6层",
+   "ja": "赤月の谷6階"
+  },
+  "EI D10071": {
+   "zh": "赤月山谷7层",
+   "ja": "赤月の谷7階"
+  },
+  "赤月山谷3层": {
+   "zh": "赤月山谷3层",
+   "ja": "赤月の谷3階"
+  },
+  "赤月山谷4层": {
+   "zh": "赤月山谷4层",
+   "ja": "赤月の谷4階"
+  },
+  "赤月恶魔洞穴": {
+   "zh": "赤月恶魔洞穴",
+   "ja": "赤月悪魔の洞窟"
+  },
+  "赤月山谷1层": {
+   "zh": "赤月山谷1层",
+   "ja": "赤月の谷1階"
+  },
+  "赤月山谷2层": {
+   "zh": "赤月山谷2层",
+   "ja": "赤月の谷2階"
+  },
+  "EI D10261": {
+   "zh": "赤月山谷6层",
+   "ja": "赤月の谷6階"
+  },
+  "EI D10262": {
+   "zh": "赤月山谷6层",
+   "ja": "赤月の谷6階"
+  },
+  "EI D10271": {
+   "zh": "赤月山谷7层",
+   "ja": "赤月の谷7階"
+  },
+  "潘夜神殿3层西部": {
+   "zh": "潘夜神殿3层西部",
+   "ja": "パンヤ神殿3階西"
+  },
+  "潘夜神殿3层东部": {
+   "zh": "潘夜神殿3层东部",
+   "ja": "パンヤ神殿3階東"
+  },
+  "潘夜神殿大厅": {
+   "zh": "潘夜神殿大厅",
+   "ja": "パンヤ神殿大広間"
+  },
+  "潘夜神殿4层": {
+   "zh": "潘夜神殿4层",
+   "ja": "パンヤ神殿4階"
+  },
+  "潘夜神殿5层": {
+   "zh": "潘夜神殿5层",
+   "ja": "パンヤ神殿5階"
+  },
+  "潘夜神殿6层": {
+   "zh": "潘夜神殿6层",
+   "ja": "パンヤ神殿6階"
+  },
+  "潘夜神殿7层西部": {
+   "zh": "潘夜神殿7层西部",
+   "ja": "パンヤ神殿7階西"
+  },
+  "潘夜神殿7层东部": {
+   "zh": "潘夜神殿7层东部",
+   "ja": "パンヤ神殿7階東"
+  },
+  "潘夜神殿8层": {
+   "zh": "潘夜神殿8层",
+   "ja": "パンヤ神殿8階"
+  },
+  "潘夜神殿": {
+   "zh": "潘夜神殿",
+   "ja": "パンヤ神殿"
+  },
+  "罪孽洞穴1层": {
+   "zh": "罪孽洞穴1层",
+   "ja": "罪の洞窟1階"
+  },
+  "罪孽洞穴2层": {
+   "zh": "罪孽洞穴2层",
+   "ja": "罪の洞窟2階"
+  },
+  "罪孽洞穴4层": {
+   "zh": "罪孽洞穴4层",
+   "ja": "罪の洞窟4階"
+  },
+  "潘夜石窟1层": {
+   "zh": "潘夜石窟1层",
+   "ja": "パンヤ石窟1階"
+  },
+  "潘夜石窟2层西部": {
+   "zh": "潘夜石窟2层西部",
+   "ja": "パンヤ石窟2階西"
+  },
+  "EI D12122": {
+   "zh": "潘夜石窟2层东部",
+   "ja": "パンヤ石窟2階東"
+  },
+  "潘夜石窟3层": {
+   "zh": "潘夜石窟3层",
+   "ja": "パンヤ石窟3階"
+  },
+  "潘夜石窟4层": {
+   "zh": "潘夜石窟4层",
+   "ja": "パンヤ石窟4階"
+  },
+  "潘夜石窟5层": {
+   "zh": "潘夜石窟5层",
+   "ja": "パンヤ石窟5階"
+  },
+  "东部银杏废矿2层": {
+   "zh": "东部银杏废矿2层",
+   "ja": "東部銀杏廃鉱山2階"
+  },
+  "北部银杏废矿1层": {
+   "zh": "北部银杏废矿1层",
+   "ja": "北部銀杏廃鉱山1階"
+  },
+  "北部银杏废矿2层": {
+   "zh": "北部银杏废矿2层",
+   "ja": "北部銀杏廃鉱山2階"
+  },
+  "北部银杏废矿3层": {
+   "zh": "北部银杏废矿3层",
+   "ja": "北部銀杏廃鉱山3階"
+  },
+  "北部银杏废矿4层": {
+   "zh": "北部银杏废矿4层",
+   "ja": "北部銀杏廃鉱山4階"
+  },
+  "北部银杏废矿5层": {
+   "zh": "北部银杏废矿5层",
+   "ja": "北部銀杏廃鉱山5階"
+  },
+  "西部银杏废矿1层": {
+   "zh": "西部银杏废矿1层",
+   "ja": "西部銀杏廃鉱山1階"
+  },
+  "西部银杏废矿2层": {
+   "zh": "西部银杏废矿2层",
+   "ja": "西部銀杏廃鉱山2階"
+  },
+  "西部银杏废矿3层": {
+   "zh": "西部银杏废矿3层",
+   "ja": "西部銀杏廃鉱山3階"
+  },
+  "西部银杏废矿4层": {
+   "zh": "西部银杏废矿4层",
+   "ja": "西部銀杏廃鉱山4階"
+  },
+  "西部银杏废矿5层": {
+   "zh": "西部银杏废矿5层",
+   "ja": "西部銀杏廃鉱山5階"
+  },
+  "北部石矿1层": {
+   "zh": "北部石矿1层",
+   "ja": "北部石鉱山1階"
+  },
+  "北部石矿2层": {
+   "zh": "北部石矿2层",
+   "ja": "北部石鉱山2階"
+  },
+  "北部石矿3层": {
+   "zh": "北部石矿3层",
+   "ja": "北部石鉱山3階"
+  },
+  "北部石矿4层": {
+   "zh": "北部石矿4层",
+   "ja": "北部石鉱山4階"
+  },
+  "北部石矿5层": {
+   "zh": "北部石矿5层",
+   "ja": "北部石鉱山5階"
+  },
+  "西部石矿1层": {
+   "zh": "西部石矿1层",
+   "ja": "西部石鉱山1階"
+  },
+  "西部石矿2层": {
+   "zh": "西部石矿2层",
+   "ja": "西部石鉱山2階"
+  },
+  "西部石矿3层": {
+   "zh": "西部石矿3层",
+   "ja": "西部石鉱山3階"
+  },
+  "西部石矿4层": {
+   "zh": "西部石矿4层",
+   "ja": "西部石鉱山4階"
+  },
+  "西部石矿5层": {
+   "zh": "西部石矿5层",
+   "ja": "西部石鉱山5階"
+  },
+  "EI D2011": {
+   "zh": "西沙漠地洞1层",
+   "ja": "西砂漠地洞1階"
+  },
+  "EI D2012": {
+   "zh": "西沙漠地洞2层",
+   "ja": "西砂漠地洞2階"
+  },
+  "神圣战甲术空间": {
+   "zh": "神圣战甲术空间",
+   "ja": "神聖戦甲術空間"
+  },
+  "尸王房": {
+   "zh": "尸王房",
+   "ja": "尸王の間"
+  },
+  "废矿矿山地下2层": {
+   "zh": "废矿矿山地下2层",
+   "ja": "廃鉱山地下2階"
+  },
+  "矿石储藏所": {
+   "zh": "矿石储藏所",
+   "ja": "鉱石貯蔵所"
+  },
+  "废矿南部洞穴": {
+   "zh": "废矿南部洞穴",
+   "ja": "廃鉱山南部洞窟"
+  },
+  "地下1层第一间房": {
+   "zh": "地下1层第一间房",
+   "ja": "地下1階第一の間"
+  },
+  "天桥2": {
+   "zh": "天桥2",
+   "ja": "天橋2"
+  },
+  "地下1层第二间房": {
+   "zh": "地下1层第二间房",
+   "ja": "地下1階第二の間"
+  },
+  "地下1层第三间房": {
+   "zh": "地下1层第三间房",
+   "ja": "地下1階第三の間"
+  },
+  "天桥1": {
+   "zh": "天桥1",
+   "ja": "天橋1"
+  },
+  "天桥3": {
+   "zh": "天桥3",
+   "ja": "天橋3"
+  },
+  "矿山1层": {
+   "zh": "矿山1层",
+   "ja": "鉱山1階"
+  },
+  "EI D421_001": {
+   "zh": "矿山1层·分室",
+   "ja": "鉱山1階・分室"
+  },
+  "矿山2层": {
+   "zh": "矿山2层",
+   "ja": "鉱山2階"
+  },
+  "EI D422_001": {
+   "zh": "矿山2层·分室",
+   "ja": "鉱山2階・分室"
+  },
+  "EI D423": {
+   "zh": "矿山3层",
+   "ja": "鉱山3階"
+  },
+  "北部矿山入口": {
+   "zh": "北部矿山入口",
+   "ja": "北部鉱山入口"
+  },
+  "北部矿山东面洞穴": {
+   "zh": "北部矿山东面洞穴",
+   "ja": "北部鉱山東側洞窟"
+  },
+  "北部地下1层采矿所": {
+   "zh": "北部地下1层采矿所",
+   "ja": "北部地下1階採掘所"
+  },
+  "北部地下2层采矿所": {
+   "zh": "北部地下2层采矿所",
+   "ja": "北部地下2階採掘所"
+  },
+  "EI D434_002": {
+   "zh": "北部地下2层采矿所·分室",
+   "ja": "北部地下2階採掘所・分室"
+  },
+  "北部矿石储藏所": {
+   "zh": "北部矿石储藏所",
+   "ja": "北部鉱石貯蔵所"
+  },
+  "北部废矿南面洞穴": {
+   "zh": "北部废矿南面洞穴",
+   "ja": "北部廃鉱山南側洞窟"
+  },
+  "北部地下1层第一间房": {
+   "zh": "北部地下1层第一间房",
+   "ja": "北部地下1階第一の間"
+  },
+  "北部天桥2": {
+   "zh": "北部天桥2",
+   "ja": "北部天橋2"
+  },
+  "北部地下1层第二间房": {
+   "zh": "北部地下1层第二间房",
+   "ja": "北部地下1階第二の間"
+  },
+  "北部地下1层第三间房": {
+   "zh": "北部地下1层第三间房",
+   "ja": "北部地下1階第三の間"
+  },
+  "北部天桥1": {
+   "zh": "北部天桥1",
+   "ja": "北部天橋1"
+  },
+  "北部天桥3": {
+   "zh": "北部天桥3",
+   "ja": "北部天橋3"
+  },
+  "南部矿山1层": {
+   "zh": "南部矿山1层",
+   "ja": "南部鉱山1階"
+  },
+  "南部矿山2层": {
+   "zh": "南部矿山2层",
+   "ja": "南部鉱山2階"
+  },
+  "祖玛神殿5层": {
+   "zh": "祖玛神殿5层",
+   "ja": "ズマ神殿5階"
+  },
+  "祖玛阁": {
+   "zh": "祖玛阁",
+   "ja": "ズマ閣"
+  },
+  "EI D5062": {
+   "zh": "祖玛阁2",
+   "ja": "ズマ閣2"
+  },
+  "EI D5063": {
+   "zh": "祖玛阁3",
+   "ja": "ズマ閣3"
+  },
+  "EI D5064": {
+   "zh": "祖玛阁4",
+   "ja": "ズマ閣4"
+  },
+  "EI D5065": {
+   "zh": "祖玛阁5",
+   "ja": "ズマ閣5"
+  },
+  "EI D5066": {
+   "zh": "祖玛阁6",
+   "ja": "ズマ閣6"
+  },
+  "EI D5067": {
+   "zh": "祖玛阁7",
+   "ja": "ズマ閣7"
+  },
+  "EI D5068": {
+   "zh": "祖玛阁8",
+   "ja": "ズマ閣8"
+  },
+  "EI D5069": {
+   "zh": "祖玛阁9",
+   "ja": "ズマ閣9"
+  },
+  "祖玛神殿7层大厅": {
+   "zh": "祖玛神殿7层大厅",
+   "ja": "ズマ神殿7階大広間"
+  },
+  "祖玛神殿7层": {
+   "zh": "祖玛神殿7层",
+   "ja": "ズマ神殿7階"
+  },
+  "祖玛教主宫廷": {
+   "zh": "祖玛教主宫廷",
+   "ja": "ズマ教主宮廷"
+  },
+  "绝命谷1层南部": {
+   "zh": "绝命谷1层南部",
+   "ja": "絶命の谷1階南"
+  },
+  "绝命谷1层西部": {
+   "zh": "绝命谷1层西部",
+   "ja": "絶命の谷1階西"
+  },
+  "绝命谷1层北部": {
+   "zh": "绝命谷1层北部",
+   "ja": "絶命の谷1階北"
+  },
+  "绝命谷2层西部": {
+   "zh": "绝命谷2层西部",
+   "ja": "絶命の谷2階西"
+  },
+  "绝命谷2层北部": {
+   "zh": "绝命谷2层北部",
+   "ja": "絶命の谷2階北"
+  },
+  "EI d6003": {
+   "zh": "绝命谷2层东部",
+   "ja": "絶命の谷2階東"
+  },
+  "绝命谷3层": {
+   "zh": "绝命谷3层",
+   "ja": "絶命の谷3階"
+  },
+  "万年谷": {
+   "zh": "万年谷",
+   "ja": "万年谷"
+  },
+  "万年原谷": {
+   "zh": "万年原谷",
+   "ja": "万年原谷"
+  },
+  "万年谷中部": {
+   "zh": "万年谷中部",
+   "ja": "万年谷中央"
+  },
+  "万年谷南部": {
+   "zh": "万年谷南部",
+   "ja": "万年谷南"
+  },
+  "万年谷西部": {
+   "zh": "万年谷西部",
+   "ja": "万年谷西"
+  },
+  "万年谷北部": {
+   "zh": "万年谷北部",
+   "ja": "万年谷北"
+  },
+  "万年谷东部": {
+   "zh": "万年谷东部",
+   "ja": "万年谷東"
+  },
+  "万年独孤关": {
+   "zh": "万年独孤关",
+   "ja": "万年独孤関"
+  },
+  "生死关": {
+   "zh": "生死关",
+   "ja": "生死関"
+  },
+  "虫峡谷1层": {
+   "zh": "虫峡谷1层",
+   "ja": "虫峡谷1階"
+  },
+  "虫峡谷2层": {
+   "zh": "虫峡谷2层",
+   "ja": "虫峡谷2階"
+  },
+  "虫峡谷3层": {
+   "zh": "虫峡谷3层",
+   "ja": "虫峡谷3階"
+  },
+  "虫峡谷4层": {
+   "zh": "虫峡谷4层",
+   "ja": "虫峡谷4階"
+  },
+  "虫峡谷5层": {
+   "zh": "虫峡谷5层",
+   "ja": "虫峡谷5階"
+  },
+  "奇岩石屋": {
+   "zh": "奇岩石屋",
+   "ja": "奇岩石屋"
+  },
+  "奇岩通路": {
+   "zh": "奇岩通路",
+   "ja": "奇岩通路"
+  },
+  "EI d608": {
+   "zh": "奇岩洞窟1",
+   "ja": "奇岩洞窟1"
+  },
+  "EI d609": {
+   "zh": "奇岩洞窟2",
+   "ja": "奇岩洞窟2"
+  },
+  "EI d610": {
+   "zh": "奇岩洞窟3",
+   "ja": "奇岩洞窟3"
+  },
+  "EI d611": {
+   "zh": "奇岩洞窟4",
+   "ja": "奇岩洞窟4"
+  },
+  "EI D612": {
+   "zh": "奇岩洞窟5",
+   "ja": "奇岩洞窟5"
+  },
+  "EI D613": {
+   "zh": "奇岩洞窟6",
+   "ja": "奇岩洞窟6"
+  },
+  "EI D614": {
+   "zh": "奇岩洞窟7",
+   "ja": "奇岩洞窟7"
+  },
+  "EI D615": {
+   "zh": "奇岩洞窟8",
+   "ja": "奇岩洞窟8"
+  },
+  "EI D616": {
+   "zh": "奇岩洞窟9",
+   "ja": "奇岩洞窟9"
+  },
+  "EI D617": {
+   "zh": "奇岩洞窟10",
+   "ja": "奇岩洞窟10"
+  },
+  "EI D618": {
+   "zh": "奇岩洞窟11",
+   "ja": "奇岩洞窟11"
+  },
+  "EI D619": {
+   "zh": "奇岩洞窟12",
+   "ja": "奇岩洞窟12"
+  },
+  "石阁入口": {
+   "zh": "石阁入口",
+   "ja": "石閣入口"
+  },
+  "石阁1层": {
+   "zh": "石阁1层",
+   "ja": "石閣1階"
+  },
+  "石阁2层": {
+   "zh": "石阁2层",
+   "ja": "石閣2階"
+  },
+  "石阁3层": {
+   "zh": "石阁3层",
+   "ja": "石閣3階"
+  },
+  "石阁4层": {
+   "zh": "石阁4层",
+   "ja": "石閣4階"
+  },
+  "石阁5层": {
+   "zh": "石阁5层",
+   "ja": "石閣5階"
+  },
+  "石阁6层": {
+   "zh": "石阁6层",
+   "ja": "石閣6階"
+  },
+  "EI D71601": {
+   "zh": "石阁6层·分室1",
+   "ja": "石閣6階・分室1"
+  },
+  "EI D71602": {
+   "zh": "石阁6层·分室2",
+   "ja": "石閣6階・分室2"
+  },
+  "EI D71603": {
+   "zh": "石阁6层·分室3",
+   "ja": "石閣6階・分室3"
+  },
+  "EI D71604": {
+   "zh": "石阁6层·分室4",
+   "ja": "石閣6階・分室4"
+  },
+  "EI D71605": {
+   "zh": "石阁6层·分室5",
+   "ja": "石閣6階・分室5"
+  },
+  "EI D71606": {
+   "zh": "石阁6层·分室6",
+   "ja": "石閣6階・分室6"
+  },
+  "EI D71607": {
+   "zh": "石阁6层·分室7",
+   "ja": "石閣6階・分室7"
+  },
+  "EI D71608": {
+   "zh": "石阁6层·分室8",
+   "ja": "石閣6階・分室8"
+  },
+  "EI D71609": {
+   "zh": "石阁6层·分室9",
+   "ja": "石閣6階・分室9"
+  },
+  "EI D71610": {
+   "zh": "石阁6层·分室10",
+   "ja": "石閣6階・分室10"
+  },
+  "EI D71611": {
+   "zh": "石阁6层·分室11",
+   "ja": "石閣6階・分室11"
+  },
+  "EI D71612": {
+   "zh": "石阁6层·分室12",
+   "ja": "石閣6階・分室12"
+  },
+  "EI D71613": {
+   "zh": "石阁6层·分室13",
+   "ja": "石閣6階・分室13"
+  },
+  "EI D71614": {
+   "zh": "石阁6层·分室14",
+   "ja": "石閣6階・分室14"
+  },
+  "EI D71615": {
+   "zh": "石阁6层·分室15",
+   "ja": "石閣6階・分室15"
+  },
+  "EI D71616": {
+   "zh": "石阁6层·分室16",
+   "ja": "石閣6階・分室16"
+  },
+  "EI D71617": {
+   "zh": "石阁6层·分室17",
+   "ja": "石閣6階・分室17"
+  },
+  "EI D71618": {
+   "zh": "石阁6层·分室18",
+   "ja": "石閣6階・分室18"
+  },
+  "EI D71619": {
+   "zh": "石阁6层·分室19",
+   "ja": "石閣6階・分室19"
+  },
+  "EI D71620": {
+   "zh": "石阁6层·分室20",
+   "ja": "石閣6階・分室20"
+  },
+  "EI D71621": {
+   "zh": "石阁6层·分室21",
+   "ja": "石閣6階・分室21"
+  },
+  "EI D71622": {
+   "zh": "石阁6层·分室22",
+   "ja": "石閣6階・分室22"
+  },
+  "EI D71623": {
+   "zh": "石阁6层·分室23",
+   "ja": "石閣6階・分室23"
+  },
+  "EI D71624": {
+   "zh": "石阁6层·分室24",
+   "ja": "石閣6階・分室24"
+  },
+  "EI D71625": {
+   "zh": "石阁6层·分室25",
+   "ja": "石閣6階・分室25"
+  },
+  "EI D71650": {
+   "zh": "石阁6层·分室50",
+   "ja": "石閣6階・分室50"
+  },
+  "EI D71651": {
+   "zh": "石阁6层·分室51",
+   "ja": "石閣6階・分室51"
+  },
+  "EI D71652": {
+   "zh": "石阁6层·分室52",
+   "ja": "石閣6階・分室52"
+  },
+  "EI D71653": {
+   "zh": "石阁6层·分室53",
+   "ja": "石閣6階・分室53"
+  },
+  "石阁7层": {
+   "zh": "石阁7层",
+   "ja": "石閣7階"
+  },
+  "南部蚂蚁洞4层": {
+   "zh": "南部蚂蚁洞4层",
+   "ja": "南部蟻の洞窟4階"
+  },
+  "南部蚂蚁洞1层": {
+   "zh": "南部蚂蚁洞1层",
+   "ja": "南部蟻の洞窟1階"
+  },
+  "南部蚂蚁洞2层": {
+   "zh": "南部蚂蚁洞2层",
+   "ja": "南部蟻の洞窟2階"
+  },
+  "南部蚂蚁洞3层": {
+   "zh": "南部蚂蚁洞3层",
+   "ja": "南部蟻の洞窟3階"
+  },
+  "南部蚂蚁洞穴": {
+   "zh": "南部蚂蚁洞穴",
+   "ja": "南部蟻の洞窟"
+  },
+  "EI d8051": {
+   "zh": "南部蚂蚁洞穴3层1",
+   "ja": "南部蟻の洞窟3階1"
+  },
+  "南部蚂蚁洞穴3层2": {
+   "zh": "南部蚂蚁洞穴3层2",
+   "ja": "南部蟻の洞窟3階2"
+  },
+  "南部蚂蚁洞穴3层3": {
+   "zh": "南部蚂蚁洞穴3层3",
+   "ja": "南部蟻の洞窟3階3"
+  },
+  "南部蚂蚁洞穴3层4": {
+   "zh": "南部蚂蚁洞穴3层4",
+   "ja": "南部蟻の洞窟3階4"
+  },
+  "北部蚂蚁洞穴1层4": {
+   "zh": "北部蚂蚁洞穴1层4",
+   "ja": "北部蟻の洞窟1階4"
+  },
+  "北部蚂蚁洞穴1层1": {
+   "zh": "北部蚂蚁洞穴1层1",
+   "ja": "北部蟻の洞窟1階1"
+  },
+  "北部蚂蚁洞穴1层2": {
+   "zh": "北部蚂蚁洞穴1层2",
+   "ja": "北部蟻の洞窟1階2"
+  },
+  "北部蚂蚁洞穴1层3": {
+   "zh": "北部蚂蚁洞穴1层3",
+   "ja": "北部蟻の洞窟1階3"
+  },
+  "EI D811": {
+   "zh": "北部蚂蚁洞穴·分室1",
+   "ja": "北部蟻の洞窟・分室1"
+  },
+  "EI d812": {
+   "zh": "北部蚂蚁洞穴·分室2",
+   "ja": "北部蟻の洞窟・分室2"
+  },
+  "EI D8121": {
+   "zh": "北部蚂蚁洞穴·分室3",
+   "ja": "北部蟻の洞窟・分室3"
+  },
+  "EI d8122": {
+   "zh": "北部蚂蚁洞穴·分室4",
+   "ja": "北部蟻の洞窟・分室4"
+  },
+  "EI d813": {
+   "zh": "北部蚂蚁洞穴·分室5",
+   "ja": "北部蟻の洞窟・分室5"
+  },
+  "EI D8131": {
+   "zh": "北部蚂蚁洞穴·分室6",
+   "ja": "北部蟻の洞窟・分室6"
+  },
+  "EI D8132": {
+   "zh": "北部蚂蚁洞穴·分室7",
+   "ja": "北部蟻の洞窟・分室7"
+  },
+  "EI d8133": {
+   "zh": "北部蚂蚁洞穴·分室8",
+   "ja": "北部蟻の洞窟・分室8"
+  },
+  "EI D814": {
+   "zh": "北部蚂蚁洞穴·分室9",
+   "ja": "北部蟻の洞窟・分室9"
+  },
+  "EI D8141": {
+   "zh": "北部蚂蚁洞穴·分室10",
+   "ja": "北部蟻の洞窟・分室10"
+  },
+  "EI D815": {
+   "zh": "北部蚂蚁洞穴·分室11",
+   "ja": "北部蟻の洞窟・分室11"
+  },
+  "EI d8151": {
+   "zh": "北部蚂蚁洞穴·分室12",
+   "ja": "北部蟻の洞窟・分室12"
+  },
+  "EI D816": {
+   "zh": "北部蚂蚁洞穴·分室13",
+   "ja": "北部蟻の洞窟・分室13"
+  },
+  "EI D8161": {
+   "zh": "北部蚂蚁洞穴·分室14",
+   "ja": "北部蟻の洞窟・分室14"
+  },
+  "EI d8162": {
+   "zh": "北部蚂蚁洞穴·分室15",
+   "ja": "北部蟻の洞窟・分室15"
+  },
+  "EI d817": {
+   "zh": "北部蚂蚁洞穴·分室16",
+   "ja": "北部蟻の洞窟・分室16"
+  },
+  "EI d8171": {
+   "zh": "北部蚂蚁洞穴·分室17",
+   "ja": "北部蟻の洞窟・分室17"
+  },
+  "EI d8172": {
+   "zh": "北部蚂蚁洞穴·分室18",
+   "ja": "北部蟻の洞窟・分室18"
+  },
+  "EI d818": {
+   "zh": "北部蚂蚁洞穴·分室19",
+   "ja": "北部蟻の洞窟・分室19"
+  },
+  "东部蚂蚁洞穴1层4": {
+   "zh": "东部蚂蚁洞穴1层4",
+   "ja": "東部蟻の洞窟1階4"
+  },
+  "东部蚂蚁洞穴1层1": {
+   "zh": "东部蚂蚁洞穴1层1",
+   "ja": "東部蟻の洞窟1階1"
+  },
+  "东部蚂蚁洞穴1层2": {
+   "zh": "东部蚂蚁洞穴1层2",
+   "ja": "東部蟻の洞窟1階2"
+  },
+  "东部蚂蚁洞穴1层3": {
+   "zh": "东部蚂蚁洞穴1层3",
+   "ja": "東部蟻の洞窟1階3"
+  },
+  "EI D821": {
+   "zh": "东部蚂蚁洞穴·分室1",
+   "ja": "東部蟻の洞窟・分室1"
+  },
+  "EI d822": {
+   "zh": "东部蚂蚁洞穴·分室2",
+   "ja": "東部蟻の洞窟・分室2"
+  },
+  "EI D8221": {
+   "zh": "东部蚂蚁洞穴·分室3",
+   "ja": "東部蟻の洞窟・分室3"
+  },
+  "EI d8222": {
+   "zh": "东部蚂蚁洞穴·分室4",
+   "ja": "東部蟻の洞窟・分室4"
+  },
+  "EI d823": {
+   "zh": "东部蚂蚁洞穴·分室5",
+   "ja": "東部蟻の洞窟・分室5"
+  },
+  "EI D8231": {
+   "zh": "东部蚂蚁洞穴·分室6",
+   "ja": "東部蟻の洞窟・分室6"
+  },
+  "EI D8232": {
+   "zh": "东部蚂蚁洞穴·分室7",
+   "ja": "東部蟻の洞窟・分室7"
+  },
+  "EI d8233": {
+   "zh": "东部蚂蚁洞穴·分室8",
+   "ja": "東部蟻の洞窟・分室8"
+  },
+  "EI D824": {
+   "zh": "东部蚂蚁洞穴·分室9",
+   "ja": "東部蟻の洞窟・分室9"
+  },
+  "EI D8241": {
+   "zh": "东部蚂蚁洞穴·分室10",
+   "ja": "東部蟻の洞窟・分室10"
+  },
+  "EI D825": {
+   "zh": "东部蚂蚁洞穴·分室11",
+   "ja": "東部蟻の洞窟・分室11"
+  },
+  "EI d8251": {
+   "zh": "东部蚂蚁洞穴·分室12",
+   "ja": "東部蟻の洞窟・分室12"
+  },
+  "EI D826": {
+   "zh": "东部蚂蚁洞穴·分室13",
+   "ja": "東部蟻の洞窟・分室13"
+  },
+  "EI D8261": {
+   "zh": "东部蚂蚁洞穴·分室14",
+   "ja": "東部蟻の洞窟・分室14"
+  },
+  "EI d8262": {
+   "zh": "东部蚂蚁洞穴·分室15",
+   "ja": "東部蟻の洞窟・分室15"
+  },
+  "EI d827": {
+   "zh": "东部蚂蚁洞穴·分室16",
+   "ja": "東部蟻の洞窟・分室16"
+  },
+  "EI d8271": {
+   "zh": "东部蚂蚁洞穴·分室17",
+   "ja": "東部蟻の洞窟・分室17"
+  },
+  "EI d8272": {
+   "zh": "东部蚂蚁洞穴·分室18",
+   "ja": "東部蟻の洞窟・分室18"
+  },
+  "EI d828": {
+   "zh": "东部蚂蚁洞穴·分室19",
+   "ja": "東部蟻の洞窟・分室19"
+  },
+  "神舰入口": {
+   "zh": "神舰入口",
+   "ja": "神艦入口"
+  },
+  "神舰地下2层": {
+   "zh": "神舰地下2层",
+   "ja": "神艦地下2階"
+  },
+  "医务室": {
+   "zh": "医务室",
+   "ja": "医務室"
+  },
+  "机械室": {
+   "zh": "机械室",
+   "ja": "機械室"
+  },
+  "EI D90213": {
+   "zh": "神舰地下2层·舱室13",
+   "ja": "神艦地下2階・船室13"
+  },
+  "EI D90214": {
+   "zh": "神舰地下2层·舱室14",
+   "ja": "神艦地下2階・船室14"
+  },
+  "EI D90216": {
+   "zh": "神舰地下2层·舱室16",
+   "ja": "神艦地下2階・船室16"
+  },
+  "厨房": {
+   "zh": "厨房",
+   "ja": "厨房"
+  },
+  "士兵食堂": {
+   "zh": "士兵食堂",
+   "ja": "兵士食堂"
+  },
+  "EI D90224": {
+   "zh": "神舰地下2层·舱室24",
+   "ja": "神艦地下2階・船室24"
+  },
+  "参谋室": {
+   "zh": "参谋室",
+   "ja": "参謀室"
+  },
+  "长官食堂": {
+   "zh": "长官食堂",
+   "ja": "士官食堂"
+  },
+  "EI D90321": {
+   "zh": "神舰地下1层·舱室1",
+   "ja": "神艦地下1階・船室1"
+  },
+  "EI D90322": {
+   "zh": "神舰地下1层·舱室2",
+   "ja": "神艦地下1階・船室2"
+  },
+  "海图室": {
+   "zh": "海图室",
+   "ja": "海図室"
+  },
+  "奸商": {
+   "zh": "奸商",
+   "ja": "悪徳商人"
+  },
+  "王陵": {
+   "zh": "王陵",
+   "ja": "王陵"
+  },
+  "洞穴奸商": {
+   "zh": "洞穴奸商",
+   "ja": "洞窟の悪徳商人"
+  },
+  "行会大战": {
+   "zh": "行会大战",
+   "ja": "ギルド大戦"
+  },
+  "半兽天然洞穴": {
+   "zh": "半兽天然洞穴",
+   "ja": "半獣の天然洞窟"
+  },
+  "连接通路": {
+   "zh": "连接通路",
+   "ja": "連絡通路"
+  },
+  "竞技场": {
+   "zh": "竞技场",
+   "ja": "闘技場"
+  },
+  "废矿秘密通路": {
+   "zh": "废矿秘密通路",
+   "ja": "廃鉱山の秘密通路"
+  },
+  "EI kt0000": {
+   "zh": "PK赛场",
+   "ja": "PK戦場"
+  },
+  "混乱PK赛场": {
+   "zh": "混乱PK赛场",
+   "ja": "混乱PK戦場"
+  },
+  "EI kt0002": {
+   "zh": "PK赛场2",
+   "ja": "PK戦場2"
+  },
+  "EI kt0003": {
+   "zh": "PK赛场3",
+   "ja": "PK戦場3"
+  },
+  "EI kt0004": {
+   "zh": "PK赛场4",
+   "ja": "PK戦場4"
+  },
+  "EI kt0005": {
+   "zh": "PK赛场5",
+   "ja": "PK戦場5"
+  },
+  "EI kt0006": {
+   "zh": "PK赛场6",
+   "ja": "PK戦場6"
+  },
+  "EI kt0007": {
+   "zh": "PK赛场7",
+   "ja": "PK戦場7"
+  },
+  "EI kt0008": {
+   "zh": "PK赛场8",
+   "ja": "PK戦場8"
+  },
+  "EI kt0009": {
+   "zh": "PK赛场9",
+   "ja": "PK戦場9"
+  },
+  "EI kt0010": {
+   "zh": "PK赛场10",
+   "ja": "PK戦場10"
+  },
+  "EI kt0011": {
+   "zh": "PK赛场11",
+   "ja": "PK戦場11"
+  },
+  "EI kt0012": {
+   "zh": "PK赛场12",
+   "ja": "PK戦場12"
+  },
+  "EI kt0013": {
+   "zh": "PK赛场13",
+   "ja": "PK戦場13"
+  },
+  "EI kt0014": {
+   "zh": "PK赛场14",
+   "ja": "PK戦場14"
+  },
+  "EI kt0015": {
+   "zh": "PK赛场15",
+   "ja": "PK戦場15"
+  },
+  "EI kt0016": {
+   "zh": "PK赛场16",
+   "ja": "PK戦場16"
+  },
+  "EI kt00161": {
+   "zh": "PK赛场16·1",
+   "ja": "PK戦場16・1"
+  },
+  "EI kt0017": {
+   "zh": "PK赛场17",
+   "ja": "PK戦場17"
+  },
+  "EI kt0018": {
+   "zh": "PK赛场18",
+   "ja": "PK戦場18"
+  },
+  "EI kt00181": {
+   "zh": "PK赛场18·1",
+   "ja": "PK戦場18・1"
+  },
+  "销售房间": {
+   "zh": "销售房间",
+   "ja": "販売室"
+  },
+  "监狱": {
+   "zh": "监狱",
+   "ja": "監獄"
+  },
+  "法师职业PK场": {
+   "zh": "法师职业PK场",
+   "ja": "魔法使いPK戦場"
+  },
+  "PK赛场": {
+   "zh": "PK赛场",
+   "ja": "PK戦場"
+  },
+  "真天宫1层": {
+   "zh": "真天宫1层",
+   "ja": "真天宮1階"
+  },
+  "真天宫2层": {
+   "zh": "真天宫2层",
+   "ja": "真天宮2階"
+  },
+  "真天宫3层": {
+   "zh": "真天宫3层",
+   "ja": "真天宮3階"
+  },
+  "真天宫": {
+   "zh": "真天宫",
+   "ja": "真天宮"
+  },
+  "黑度宫1层": {
+   "zh": "黑度宫1层",
+   "ja": "黒度宮1階"
+  },
+  "黑度宫2层": {
+   "zh": "黑度宫2层",
+   "ja": "黒度宮2階"
+  },
+  "黑度宫3层": {
+   "zh": "黑度宫3层",
+   "ja": "黒度宮3階"
+  },
+  "黑度宫4层": {
+   "zh": "黑度宫4层",
+   "ja": "黒度宮4階"
+  },
+  "神舰地下1层": {
+   "zh": "神舰地下1层",
+   "ja": "神艦地下1階"
+  },
+  "调控室": {
+   "zh": "调控室",
+   "ja": "制御室"
+  },
+  "诺玛遗址": {
+   "zh": "诺玛遗址",
+   "ja": "ヌマ遺跡"
+  },
+  "诺玛墓穴": {
+   "zh": "诺玛墓穴",
+   "ja": "ヌマ墓穴"
+  },
+  "西沙漠1层": {
+   "zh": "西沙漠1层",
+   "ja": "西砂漠1階"
+  },
+  "西沙漠2层": {
+   "zh": "西沙漠2层",
+   "ja": "西砂漠2階"
+  },
+  "地下魔宫": {
+   "zh": "地下魔宫",
+   "ja": "地下魔宮"
+  },
+  "地底宫殿": {
+   "zh": "地底宫殿",
+   "ja": "地底宮殿"
+  },
+  "冰原雪城": {
+   "zh": "冰原雪城",
+   "ja": "氷原雪城"
+  },
+  "冰天雪地": {
+   "zh": "冰天雪地",
+   "ja": "氷天雪地"
+  },
+  "冰原地下1层": {
+   "zh": "冰原地下1层",
+   "ja": "氷原地下1階"
+  },
+  "冰原地下2层": {
+   "zh": "冰原地下2层",
+   "ja": "氷原地下2階"
+  },
+  "冰原通道": {
+   "zh": "冰原通道",
+   "ja": "氷原の通路"
+  },
+  "冰宫之颠": {
+   "zh": "冰宫之颠",
+   "ja": "氷宮の頂"
+  },
+  "天空之城": {
+   "zh": "天空之城",
+   "ja": "天空の城"
+  },
+  "绝情塔口": {
+   "zh": "绝情塔口",
+   "ja": "絶情塔入口"
+  },
+  "绝情塔1层": {
+   "zh": "绝情塔1层",
+   "ja": "絶情塔1階"
+  },
+  "绝情塔2层": {
+   "zh": "绝情塔2层",
+   "ja": "絶情塔2階"
+  },
+  "绝情宫殿": {
+   "zh": "绝情宫殿",
+   "ja": "絶情宮殿"
+  },
+  "飞天武术馆": {
+   "zh": "飞天武术馆",
+   "ja": "飛天武術館"
+  },
+  "魔界·虚幻": {
+   "zh": "魔界·虚幻",
+   "ja": "魔界・幻影"
+  },
+  "魔界·暗影": {
+   "zh": "魔界·暗影",
+   "ja": "魔界・暗影"
+  },
+  "魔界·终极决斗": {
+   "zh": "魔界·终极决斗",
+   "ja": "魔界・究極決闘"
+  },
+  "群魔终结路①": {
+   "zh": "群魔终结路①",
+   "ja": "群魔終結の路①"
+  },
+  "群魔终结路②": {
+   "zh": "群魔终结路②",
+   "ja": "群魔終結の路②"
+  },
+  "群魔王陵": {
+   "zh": "群魔王陵",
+   "ja": "群魔王陵"
+  },
+  "异界地下3层": {
+   "zh": "异界地下3层",
+   "ja": "異界地下3階"
+  },
+  "异界地下2层": {
+   "zh": "异界地下2层",
+   "ja": "異界地下2階"
+  },
+  "异界地下1层": {
+   "zh": "异界地下1层",
+   "ja": "異界地下1階"
+  },
+  "异界神灵之地": {
+   "zh": "异界神灵之地",
+   "ja": "異界の神霊の地"
+  },
+  "异界神灵": {
+   "zh": "异界神灵",
+   "ja": "異界の神霊"
+  },
+  "邪恶之地①": {
+   "zh": "邪恶之地①",
+   "ja": "邪悪の地①"
+  },
+  "邪恶之地②": {
+   "zh": "邪恶之地②",
+   "ja": "邪悪の地②"
+  },
+  "邪恶之地": {
+   "zh": "邪恶之地",
+   "ja": "邪悪の地"
+  },
+  "BOSS集中营": {
+   "zh": "BOSS集中营",
+   "ja": "BOSS集中キャンプ"
+  },
+  "玛法.四象": {
+   "zh": "玛法.四象",
+   "ja": "ミール・四象"
+  },
+  "经验.之地": {
+   "zh": "经验.之地",
+   "ja": "経験の地"
+  },
+  "玛法.之地": {
+   "zh": "玛法.之地",
+   "ja": "ミールの地"
+  },
+  "深度雪原": {
+   "zh": "深度雪原",
+   "ja": "深層雪原"
+  },
+  "龙穴溪谷①": {
+   "zh": "龙穴溪谷①",
+   "ja": "竜穴の渓谷①"
+  },
+  "龙穴溪谷②": {
+   "zh": "龙穴溪谷②",
+   "ja": "竜穴の渓谷②"
+  },
+  "龙穴生死堂": {
+   "zh": "龙穴生死堂",
+   "ja": "竜穴生死堂"
+  },
+  "月河城": {
+   "zh": "月河城",
+   "ja": "月河城"
+  },
+  "月河渊": {
+   "zh": "月河渊",
+   "ja": "月河淵"
+  },
+  "卧龙寺": {
+   "zh": "卧龙寺",
+   "ja": "臥竜寺"
+  },
+  "卧龙宫": {
+   "zh": "卧龙宫",
+   "ja": "臥竜宮"
+  },
+  "鬼域林": {
+   "zh": "鬼域林",
+   "ja": "鬼域の林"
+  },
+  "黑暗巢穴": {
+   "zh": "黑暗巢穴",
+   "ja": "暗黒の巣"
+  },
+  "青青草原": {
+   "zh": "青青草原",
+   "ja": "青青草原"
+  },
+  "幽暗森林": {
+   "zh": "幽暗森林",
+   "ja": "幽暗の森"
+  },
+  "钓鱼岛": {
+   "zh": "钓鱼岛",
+   "ja": "釣魚島"
+  },
+  "会员练级": {
+   "zh": "会员练级",
+   "ja": "会員レベリング"
+  },
+  "桃园小路": {
+   "zh": "桃园小路",
+   "ja": "桃園の小道"
+  },
+  "桃园歧路": {
+   "zh": "桃园歧路",
+   "ja": "桃園の岐路"
+  },
+  "桃园广场": {
+   "zh": "桃园广场",
+   "ja": "桃園広場"
+  },
+  "桃园仙境1层": {
+   "zh": "桃园仙境1层",
+   "ja": "桃園仙境1階"
+  },
+  "桃园仙境2层": {
+   "zh": "桃园仙境2层",
+   "ja": "桃園仙境2階"
+  },
+  "桃园大厅": {
+   "zh": "桃园大厅",
+   "ja": "桃園大広間"
+  },
+  "竞技骑兵": {
+   "zh": "竞技骑兵",
+   "ja": "競技騎兵"
+  },
+  "唯我独尊": {
+   "zh": "唯我独尊",
+   "ja": "唯我独尊"
+  },
+  "双倍经验": {
+   "zh": "双倍经验",
+   "ja": "経験値2倍"
+  },
+  "双倍暴率": {
+   "zh": "双倍暴率",
+   "ja": "ドロップ率2倍"
+  },
+  "修罗密道1": {
+   "zh": "修罗密道1",
+   "ja": "修羅の密道1"
+  },
+  "修罗密道2": {
+   "zh": "修罗密道2",
+   "ja": "修羅の密道2"
+  },
+  "修罗密道3": {
+   "zh": "修罗密道3",
+   "ja": "修羅の密道3"
+  },
+  "修罗密道4": {
+   "zh": "修罗密道4",
+   "ja": "修羅の密道4"
+  },
+  "修罗禁地": {
+   "zh": "修罗禁地",
+   "ja": "修羅の禁地"
+  },
+  "兵马佣通道": {
+   "zh": "兵马佣通道",
+   "ja": "兵馬俑の通路"
+  },
+  "兵马佣广场": {
+   "zh": "兵马佣广场",
+   "ja": "兵馬俑広場"
+  },
+  "兵马佣兵场": {
+   "zh": "兵马佣兵场",
+   "ja": "兵馬俑兵場"
+  },
+  "兵马佣禁地": {
+   "zh": "兵马佣禁地",
+   "ja": "兵馬俑の禁地"
+  }
+ }
+}

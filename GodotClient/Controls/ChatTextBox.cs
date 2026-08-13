@@ -79,7 +79,7 @@ public sealed partial class ChatTextBox : DXWindow
     public void LinkItem(ClientUserItem item)
     {
         if (item?.Info == null || _linkedItemIndexes.Count >= Globals.MaxChatItemLinks) return;
-        _input.Text += $"[{item.Info.ItemName}]";
+        _input.Text += $"[{item.Info.Local()}]";
         _linkedItemIndexes.Add(item.Index);
         _input.CaretColumn = _input.Text.Length;
         _input.GrabFocus();

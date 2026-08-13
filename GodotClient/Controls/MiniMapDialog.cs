@@ -234,7 +234,7 @@ public partial class MiniMapDialog : DXWindow
             (int)(ScaleY * c.Value.Y) - (int)marker.Size.Y / 2);
         // 旧版 GameScene.GetNPCControl 的 control.Hint = name：悬停标记显示 NPC 名。
         if (marker.TooltipText.Length == 0 && !string.IsNullOrWhiteSpace(npc.NPCName))
-            marker.TooltipText = npc.NPCName;
+            marker.TooltipText = npc.Local();
         Image.AddControl(marker);
         _staticMarkers.Add(marker);
     }

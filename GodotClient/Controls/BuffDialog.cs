@@ -123,7 +123,7 @@ public partial class BuffDialog : DXWindow
         if (buff == null) return string.Empty;
         string name = buff.Type switch
         {
-            BuffType.ItemBuff => Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == buff.ItemIndex)?.ItemName ?? Lang.BuffItemLabel,
+            BuffType.ItemBuff => Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == buff.ItemIndex)?.Local() ?? Lang.BuffItemLabel,
             BuffType.ItemBuffPermanent => Lang.BuffItemLabel2,
             BuffType.HuntGold => Lang.BuffUi121Label,
             BuffType.Observable => Lang.BuffAllowLabel,

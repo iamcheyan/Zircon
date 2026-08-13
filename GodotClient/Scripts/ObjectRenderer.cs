@@ -63,7 +63,7 @@ public partial class ObjectRenderer : MapObjectNode
             return null;
         }
 
-        string monsterName = string.IsNullOrWhiteSpace(p.CustomName) ? mi.MonsterName : p.CustomName;
+        string monsterName = string.IsNullOrWhiteSpace(p.CustomName) ? mi.Local() : p.CustomName;
         if (string.IsNullOrWhiteSpace(monsterName)) monsterName = $"Monster {p.MonsterIndex}";
 
         var r = new ObjectRenderer

@@ -5424,7 +5424,7 @@ public partial class GameScene : Control
         if (dragged != null)
         {
             _mouseItemLabel.Visible = true;
-            _mouseItemLabel.Text = $"{dragged.Info?.ItemName}" + (dragged.Count > 1 ? $" x{dragged.Count}" : "");
+            _mouseItemLabel.Text = $"{dragged.Info?.Local()}" + (dragged.Count > 1 ? $" x{dragged.Count}" : "");
         }
         else
         {
@@ -5505,7 +5505,7 @@ public partial class GameScene : Control
             if (partInfo != null) displayInfo = partInfo;
         }
 
-        var sb = new System.Text.StringBuilder(displayInfo.ItemName ?? item.Info.ItemName ?? string.Empty);
+        var sb = new System.Text.StringBuilder(displayInfo.Local() ?? item.Info.Local() ?? string.Empty);
         if (item.Info.ItemEffect == ItemEffect.ItemPart)
             sb.Append(" - [Part]");
 
@@ -5544,7 +5544,7 @@ public partial class GameScene : Control
         var sb = new System.Text.StringBuilder();
 
         // ---- Header: 名称 + [Part] ----
-        sb.Append(displayInfo.ItemName ?? item.Info.ItemName ?? string.Empty);
+        sb.Append(displayInfo.Local() ?? item.Info.Local() ?? string.Empty);
         if (item.Info.ItemEffect == ItemEffect.ItemPart)
             sb.Append(" - [Part]");
 
@@ -6686,7 +6686,7 @@ public partial class GameScene : Control
             // 原版获得提示对部件显示其 AddedStats.ItemIndex 对应的真实物品名，
             // 而不是显示通用的“物品部件”壳信息。
             var displayInfo = GainedDisplayInfo(item);
-            var name = displayInfo?.ItemName ?? item.Info.ItemName ?? string.Empty;
+            var name = displayInfo?.Local() ?? item.Info.Local() ?? string.Empty;
             var suffix = item.Count > 1 ? $" x{item.Count}" : string.Empty;
             if (item.Flags.HasFlag(UserItemFlags.QuestItem)) suffix += Lang.GameQuestLabel;
             if (item.Info.ItemEffect == ItemEffect.ItemPart) suffix += Lang.GameUi589Label;

@@ -443,8 +443,8 @@ public sealed partial class ConsignmentDialog : DXWindow
             labels[i].Visible = slotExists;
             cells[i].Visible = info?.Item != null;
             labels[i].Text = info?.Item == null ? Lang.ConsignmentDialogLoadingLabel : search
-                ? $"{info.Item.Info.ItemName} x{info.Item.Count:#,##0}    {info.Price:#,##0} 金币    {info.Seller ?? "未知"}\n{info.Message ?? ""}"
-                : string.Format(Lang.ConsignmentGoldLabel2, info.Item.Info.ItemName, info.Item.Count, info.Price, info.ConsignDate);
+                ? $"{info.Item.Info.Local()} x{info.Item.Count:#,##0}    {info.Price:#,##0} 金币    {info.Seller ?? "未知"}\n{info.Message ?? ""}"
+                : string.Format(Lang.ConsignmentGoldLabel2, info.Item.Info.Local(), info.Item.Count, info.Price, info.ConsignDate);
             labels[i].TextColour = index == selected ? Colors.Yellow : Colors.White;
             cells[i].ItemGrid[0] = info?.Item;
             cells[i].RefreshItem();
@@ -459,10 +459,10 @@ public sealed partial class ConsignmentDialog : DXWindow
         if (_results[_selectedSearch] == null) return;
         var info = _results[_selectedSearch];
         if (info.Item == null) return;
-        var amount = new ItemAmountDialog($"购买 {info.Item.Info?.ItemName ?? "物品"}", Math.Max(1, info.Item.Count), 1, count =>
+        var amount = new ItemAmountDialog($"购买 {info.Item.Info?.Local() ?? "物品"}", Math.Max(1, info.Item.Count), 1, count =>
         {
             long total = count * info.Price;
-            var confirm = new ConfirmDialog($"{info.Item.Info?.ItemName ?? Lang.CommunicationDialogSendTabItemsLabel} x{count}\n单价: {info.Price:#,##0}\n总价: {total:#,##0}", Lang.ConsignmentDialogBuyConfirmCaption, () =>
+            var confirm = new ConfirmDialog($"{info.Item.Info?.Local() ?? Lang.CommunicationDialogSendTabItemsLabel} x{count}\n单价: {info.Price:#,##0}\n总价: {total:#,##0}", Lang.ConsignmentDialogBuyConfirmCaption, () =>
             {
                 if (!CanConfirmBuy(GameScene.Game?.IsObserver == true, count, info.Item?.Count ?? 0)) return;
                 _buyButton.Enabled = false;
@@ -507,9 +507,9 @@ public sealed partial class ConsignmentDialog : DXWindow
         if (_selectedConsign < 0 || _selectedConsign >= _consignments.Count || _consignments[_selectedConsign] == null) return;
         var info = _consignments[_selectedConsign];
         if (info.Item == null) return;
-        var amount = new ItemAmountDialog($"下架 {info.Item.Info?.ItemName ?? "物品"}", Math.Max(1, info.Item.Count), 1, count =>
+        var amount = new ItemAmountDialog($"下架 {info.Item.Info?.Local() ?? "物品"}", Math.Max(1, info.Item.Count), 1, count =>
         {
-            var confirm = new ConfirmDialog($"确定下架 {info.Item.Info?.ItemName ?? "物品"} x{count}？", Lang.ConsignmentDialogRemoveListingButtonLabel, () =>
+            var confirm = new ConfirmDialog($"确定下架 {info.Item.Info?.Local() ?? "物品"} x{count}？", Lang.ConsignmentDialogRemoveListingButtonLabel, () =>
             {
                 if (GameScene.Game?.IsObserver == true || info.Item == null || count <= 0 || count > info.Item.Count) return;
                 GameScene.Game.SendMarketCancel(info.Index, count);
@@ -563,7 +563,7 @@ public sealed partial class ConsignItemDialog : DXWindow
         confirmButton.MouseClick += (s, e) => Confirm(); AddControl(confirmButton);
         var cancel = new DXButton { Text = Lang.CommonControlCancel, FontSize = 9, Location = new Vector2I(173, 178), Size = new Vector2I(80, 27), Index = -1 };
         cancel.MouseClick += (s, e) => WindowManager.Close(this); AddControl(cancel);
-        ItemCell.ItemChanged += (s, e) => _itemName.Text = ItemCell.Item?.Info?.ItemName ?? string.Empty;
+        ItemCell.ItemChanged += (s, e) => _itemName.Text = ItemCell.Item?.Info?.Local() ?? string.Empty;
     }
 
     private int ParsePrice() => int.TryParse(_price.Text.Trim(), out int value) ? Math.Max(0, value) : 0;
