@@ -56,8 +56,13 @@ public partial class DXButton : DXImageControl
                 TextColour = TextColour,
             };
             AddChild(_label);
+            // 自绘控件不走 Godot 布局管线，FullRect 锚点不会随 Size 更新而
+            // 重算子标签尺寸；必须显式同步 Size，否则 VAlign=Center 的居中
+            // 计算用了错误尺寸，文字会整体偏移（下拉框值左移/按钮文字偏上）。
             _label.SetAnchorsPreset(Control.LayoutPreset.FullRect);
             _label.MouseFilter = MouseFilterEnum.Ignore;
+            _label.Size = Size;
+            Resized += () => _label.Size = Size;
         }
     }
 
