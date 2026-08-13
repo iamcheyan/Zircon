@@ -9720,7 +9720,7 @@ public partial class GameScene : Control
         {
             if (Library.Time.Now < _magicTooFarAt) return;
             _magicTooFarAt = Library.Time.Now.AddSeconds(1);
-            ReceiveChat(string.Format(Lang.GameNoneLabel2, magic.Info.Name), MessageType.Hint);
+            ReceiveChat(string.Format(Lang.GameNoneLabel2, magic.Info.Local()), MessageType.Hint);
             return;
         }
 

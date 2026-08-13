@@ -481,7 +481,7 @@ public partial class MagicCellView : DXControl
             DrawTextureRect(tex, new Rect2(9, 9, 36, 36), false, new Color(1f, 1f, 1f, opacity));
 
         // 名称
-        DrawString(MirSkin.GetFont(), new Vector2(54, 18), _info.Name ?? "", fontSize: MirSkin.ScaledSize(13),
+        DrawString(MirSkin.GetFont(), new Vector2(54, 18), _info.Local() ?? "", fontSize: MirSkin.ScaledSize(13),
             modulate: new Color(1f, 1f, 1f, opacity));
 
         // 等级 / 学习状态

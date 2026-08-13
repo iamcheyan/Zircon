@@ -93,7 +93,7 @@ public partial class ConfigDialog : DXWindow
 
     private void BuildGraphicsPage()
     {
-        var display = new ConfigSectionPanel("Display", 7);
+        var display = new ConfigSectionPanel("显示", 7);
         display.AddOption("全屏显示", Check("全屏显示", ClientSettings.FullScreen, value =>
         {
             ClientSettings.FullScreen = value;
@@ -159,7 +159,7 @@ public partial class ConfigDialog : DXWindow
             ClientSettings.ApplyDisplaySettings();
         }));
         AddSection(display, 0);
-        var usability = new ConfigSectionPanel("Usability", 4);
+        var usability = new ConfigSectionPanel("可用性", 4);
         usability.AddOption(Lang.CommonControlConfigWindowGraphicsTabSmoothMoveLabel, Check(Lang.CommonControlConfigWindowGraphicsTabSmoothMoveLabel, ClientSettings.SmoothMove, value => { ClientSettings.SmoothMove = value; ClientSettings.Save(); }));
         usability.AddOption("限制鼠标", Check("限制鼠标", ClientSettings.ClipMouse, value =>
         {
@@ -192,7 +192,7 @@ public partial class ConfigDialog : DXWindow
         };
         usability.AddSelect(Lang.CommonControlConfigWindowGraphicsTabLanguageLabel, language);
         AddSection(usability, Mathf.RoundToInt(display.Size.Y) + 4);
-        var effects = new ConfigSectionPanel("Effects", 4, 2);
+        var effects = new ConfigSectionPanel("特效", 4, 2);
         effects.AddOption("显示粒子", Check("显示粒子", ClientSettings.DrawParticles, value => { ClientSettings.DrawParticles = value; ClientSettings.Save(); }), 2);
         effects.AddOption("显示特效", Check("显示特效", ClientSettings.DrawEffects, value => { ClientSettings.DrawEffects = value; ClientSettings.Save(); }), 2);
         effects.AddOption("显示天气与特效", Check("显示天气与特效", GameScene.Game?.DrawWeather ?? true, value => GameScene.Game?.SetDrawWeather(value)), 2);
@@ -202,10 +202,10 @@ public partial class ConfigDialog : DXWindow
 
     private void BuildSoundPage()
     {
-        var options = new ConfigSectionPanel("Options", 1);
+        var options = new ConfigSectionPanel("选项", 1);
         options.AddOption("后台播放声音", Check("后台播放声音", ClientSettings.SoundInBackground, value => { ClientSettings.SoundInBackground = value; ClientSettings.Save(); }));
         AddSection(options, 0);
-        var volume = new ConfigSectionPanel("Volume", 5);
+        var volume = new ConfigSectionPanel("音量", 5);
         volume.AddSound(Lang.CommonControlConfigWindowSoundTabSystemVolumeLabel, SoundBar(() => ClientSettings.SystemVolume, value => ClientSettings.SystemVolume = value, () => ClientSettings.SystemVolumeMuted, value => ClientSettings.SystemVolumeMuted = value));
         volume.AddSound(Lang.CommonControlConfigWindowSoundTabMusicVolumeLabel, SoundBar(() => ClientSettings.MusicVolume, value => ClientSettings.MusicVolume = value, () => ClientSettings.MusicVolumeMuted, value => ClientSettings.MusicVolumeMuted = value));
         volume.AddSound("人物音量", SoundBar(() => ClientSettings.PlayerVolume, value => ClientSettings.PlayerVolume = value, () => ClientSettings.PlayerVolumeMuted, value => ClientSettings.PlayerVolumeMuted = value));
@@ -216,7 +216,7 @@ public partial class ConfigDialog : DXWindow
 
     private void BuildGamePage()
     {
-        var game = new ConfigSectionPanel("Game Settings", 7, 2);
+        var game = new ConfigSectionPanel("游戏设置", 7, 2);
         game.AddOption("显示物品名称", Check("显示物品名称", ClientSettings.ShowItemNames, value => { ClientSettings.ShowItemNames = value; ClientSettings.Save(); }), 2);
         game.AddOption("显示怪物名称", Check("显示怪物名称", ClientSettings.ShowMonsterNames, value => { ClientSettings.ShowMonsterNames = value; ClientSettings.Save(); }), 2);
         game.AddOption("显示人物名称", Check("显示人物名称", ClientSettings.ShowPlayerNames, value => { ClientSettings.ShowPlayerNames = value; ClientSettings.Save(); }), 2);
@@ -226,7 +226,7 @@ public partial class ConfigDialog : DXWindow
         game.AddOption(Lang.BuffAllowLabel, Check(Lang.BuffAllowLabel, _allowObservable, value => { _allowObservable = value; GameScene.Game?.SendObservable(value); }), 2);
         AddSection(game, 0);
 
-        var targetColours = new ConfigSectionPanel("Target Colours", 7, 2);
+        var targetColours = new ConfigSectionPanel("目标颜色", 7, 2);
         targetColours.AddColour("怪物：低等级", Colour(() => ClientSettings.TargetMonsterLowLevelColour, value => ClientSettings.TargetMonsterLowLevelColour = value));
         targetColours.AddColour("怪物：同等级", Colour(() => ClientSettings.TargetMonsterSameLevelColour, value => ClientSettings.TargetMonsterSameLevelColour = value));
         targetColours.AddColour("怪物：高等级", Colour(() => ClientSettings.TargetMonsterHighLevelColour, value => ClientSettings.TargetMonsterHighLevelColour = value));
@@ -239,7 +239,7 @@ public partial class ConfigDialog : DXWindow
 
     private void BuildNetworkPage()
     {
-        var network = new ConfigSectionPanel("Network Settings", 3);
+        var network = new ConfigSectionPanel("网络设置", 3);
         network.AddOption("使用网络配置", Check("使用网络配置", ClientSettings.UseNetworkConfig, value => { ClientSettings.UseNetworkConfig = value; ClientSettings.Save(); }));
         var address = new DXTextInput { Text = ClientSettings.IPAddress, MaxLength = 128 };
         address.TextChanged += value => { ClientSettings.IPAddress = value.Trim(); ClientSettings.Save(); };
@@ -259,7 +259,7 @@ public partial class ConfigDialog : DXWindow
 
     private void BuildUiPage()
     {
-        var ui = new ConfigSectionPanel("UI Settings", 6);
+        var ui = new ConfigSectionPanel("界面设置", 6);
         ui.AddOption("隐藏聊天栏", Check("隐藏聊天栏", ClientSettings.HideChatBar, value => GameScene.Game?.SetHideChatBar(value)));
         ui.AddOption("按 Shift 打开聊天", Check("按 Shift 打开聊天", ClientSettings.ShiftOpenChat, value => { ClientSettings.ShiftOpenChat = value; ClientSettings.Save(); }));
         ui.AddOption("Esc 关闭所有窗口", Check("Esc 关闭所有窗口", GameScene.Game?.EscapeCloseAll ?? false, value => GameScene.Game?.SetEscapeCloseAll(value)));
@@ -269,7 +269,7 @@ public partial class ConfigDialog : DXWindow
         ui.AddButton(keyButton);
         AddSection(ui, 0);
 
-        var colours = new ConfigSectionPanel("Chat Colours", 13, 2);
+        var colours = new ConfigSectionPanel("聊天颜色", 13, 2);
         string[] colourNames = { Lang.CommonControlConfigWindowColoursTabLocalChatLabel, "GM 密语", "收到密语", "发送密语", "组队聊天", "行会聊天", "喊话", "世界聊天", "观察者", "提示", Lang.GameSystemLabel, Lang.GameUi591Label, Lang.CommonControlConfigWindowColoursTabAnnouncementsLabel };
         colours.AddColourPair(colourNames[0], ColourPair(() => ClientSettings.LocalTextForeColour, value => ClientSettings.LocalTextForeColour = value, () => ClientSettings.LocalTextBackColour, value => ClientSettings.LocalTextBackColour = value));
         colours.AddColourPair(colourNames[1], ColourPair(() => ClientSettings.GMWhisperInTextForeColour, value => ClientSettings.GMWhisperInTextForeColour = value, () => ClientSettings.GMWhisperInTextBackColour, value => ClientSettings.GMWhisperInTextBackColour = value));
