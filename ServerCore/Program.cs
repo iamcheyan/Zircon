@@ -1,6 +1,7 @@
 ﻿using Library;
 using Server.Envir;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Server
@@ -12,6 +13,15 @@ namespace Server
             var assembly = Assembly.GetAssembly(typeof(Config));
             ConfigReader.Load(assembly);
             Config.LoadVersion();
+
+            // 单机开发模式：--singleplayer-dev 给测试账号注入满级数据（配合客户端
+            // SinglePlayerLauncher 的进程生命周期绑定，双击客户端即可本地测试 UI）。
+            if (args.Any(x => string.Equals(x, "--singleplayer-dev", StringComparison.OrdinalIgnoreCase)))
+            {
+                Config.SinglePlayerDev = true;
+                Config.MaxLevel = Math.Max(Config.MaxLevel, DevSinglePlayer.DevLevel);
+                Console.WriteLine("[SingleDev] 单机开发模式启用: 测试账号将注入满级数据");
+            }
             try
             {
                 if (!string.IsNullOrEmpty(Config.EncryptionKey))

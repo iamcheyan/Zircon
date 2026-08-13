@@ -14,8 +14,36 @@ namespace ZirconClient.Controls;
 /// </summary>
 public static class MirSkin
 {
-    /// <summary>客户端数据目录 (与 MapView 保持一致, 后续统一成配置)</summary>
-    public static string DataPath = "/home/tetsuya/development/Zircon/Debug/Client/Data/";
+    /// <summary>客户端数据目录。原硬编码为 /home/tetsuya/development/Zircon/...（大写），
+    /// 实际检出目录是小写 zircon；Linux 大小写敏感导致 UI 图库加载静默失败、
+    /// 背景贴图全部缺失。复用 LibraryCache 的动态解析（相对 res:// 探测），
+    /// 与地图/角色/快捷栏图库的加载路径保持一致。</summary>
+    public static string DataPath = ResolveDataPath();
+
+    private static string ResolveDataPath()
+    {
+        try
+        {
+            string projectDir = ProjectSettings.GlobalizePath("res://");
+            string resolved = Path.GetFullPath(Path.Combine(projectDir, "..", "Debug", "Client", "Data"));
+            if (Directory.Exists(resolved)) return resolved + Path.DirectorySeparatorChar;
+        }
+        catch
+        {
+            // 回退到候选列表
+        }
+        string[] candidates =
+        {
+            "/home/tetsuya/development/Zircon/Debug/Client/Data/",
+            "/home/tetsuya/development/zircon/Debug/Client/Data/",
+        };
+        foreach (string candidate in candidates)
+        {
+            if (Directory.Exists(candidate)) return candidate;
+        }
+        // 兜底：取第一个候选（保持原行为，便于报错定位）
+        return candidates[0];
+    }
 
     private static readonly Dictionary<LibraryFile, ZlLibrary> _libraries = new();
     private static readonly Dictionary<(LibraryFile, int), Texture2D> _textures = new();

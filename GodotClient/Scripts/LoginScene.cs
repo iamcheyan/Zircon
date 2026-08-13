@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using Library;
 using ZirconClient.Controls;
+using ZirconClient.Network;
 using S = Library.Network.ServerPackets;
 
 namespace ZirconClient.Scripts;
@@ -67,6 +68,18 @@ public partial class LoginScene : Control
         int port = AutoLoginArgs.ServerPort
                    ?? (ClientSettings.UseNetworkConfig ? ClientSettings.Port : 7000);
         GD.Print($"[Login] 目标服务器: {host}:{port}");
+        // 单机模式：目标端口无监听时自动拉起本地 ServerCore（进程生命周期绑定，
+        // 客户端退出时由 Shutdown 关闭）。远程 --server 参数指定时不触发。
+        var launcher = GetNodeOrNull<SinglePlayerLauncher>("/root/SinglePlayerLauncher");
+        if (launcher != null)
+        {
+            launcher.EnsureServerRunning(host, port);
+            if (launcher.IsSpawned && !launcher.WaitForServer(host, port))
+            {
+                SetStatus("单机服务端启动失败");
+                return;
+            }
+        }
         if (!_net.Connect(host, port))
         {
             SetStatus("无法连接服务端");

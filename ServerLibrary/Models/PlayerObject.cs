@@ -239,6 +239,9 @@ namespace Server.Models
             AddDefaultCurrencies();
 
             SetupMagic();
+
+            // 单机开发模式注入（--singleplayer-dev）：给测试账号满级/全技能/全装备。
+            DevSinglePlayer.Apply(this);
         }
 
         public MagicObject SetupMagic(UserMagic userMagic)

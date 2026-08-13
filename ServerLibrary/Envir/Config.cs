@@ -101,6 +101,9 @@ namespace Server.Envir
         public static TimeSpan ShoutDelay { get; set; } = TimeSpan.FromSeconds(10);
         public static TimeSpan GlobalDelay { get; set; } = TimeSpan.FromSeconds(60);
         public static int MaxLevel { get; set; } = 10;
+        /// <summary>单机开发模式（命令行 --singleplayer-dev）：给测试账号注入满级数据。
+        /// 默认关闭，正常联机启动不受影响。</summary>
+        public static bool SinglePlayerDev { get; set; } = false;
         public static int DayCycleCount { get; set; } = 3;
         public static int SkillExp { get; set; } = 3;
         public static bool AllowObservation { get; set; } = true;

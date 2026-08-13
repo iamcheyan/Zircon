@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 [autoload]
 
 NetworkManager="*res://Network/NetworkManager.cs"
+SinglePlayerLauncher="*res://Network/SinglePlayerLauncher.cs"
 
 [dotnet]
 

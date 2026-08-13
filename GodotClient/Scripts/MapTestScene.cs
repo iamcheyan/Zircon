@@ -23,8 +23,8 @@ namespace ZirconClient.Scripts;
 public partial class MapTestScene : Control
 {
     private Label _statusLabel;
-    private string _dataPath = "/home/tetsuya/development/Zircon/Debug/Client/Data/";
-    private string _mapPath = "/home/tetsuya/development/Zircon/Debug/Client/Map/";
+    private string _dataPath = MirSkin.DataPath;
+    private string _mapPath = "/home/tetsuya/development/zircon/Debug/Client/Map/";
     private Dictionary<LibraryFile, ZlLibrary> _libCache = new();
     private bool _renderAudit;
     private bool _actionAudit;
