@@ -47,7 +47,12 @@ public partial class DXLabel : DXControl
         if (Align == HorizontalAlignment.Center) pos.X = TextPadding.X + (Size.X - textSize.X - TextPadding.X * 2) / 2f;
         else if (Align == HorizontalAlignment.Right) pos.X = Size.X - textSize.X - TextPadding.X;
         float lineHeight = textSize.Y;
-        float blockHeight = lineHeight * lines.Count;
+        // 居中基准用"字形高度"而非完整行高：GetStringSize 的 Y 含
+        // ascent+descent+内部行距，直接用它算居中会让文字视觉偏上。
+        // 这里用 ascent+descent 作为文字块真实高度，行距保持 lineHeight。
+        float ascent = font.GetAscent(MirSkin.ScaledSize(FontSize));
+        float descent = Mathf.Max(1f, font.GetDescent(MirSkin.ScaledSize(FontSize)));
+        float blockHeight = (ascent + descent) * lines.Count;
         if (VAlign == VerticalAlignment.Center) pos.Y = TextPadding.Y + (Size.Y - blockHeight - TextPadding.Y * 2) / 2f;
         else if (VAlign == VerticalAlignment.Bottom) pos.Y = Size.Y - blockHeight - TextPadding.Y;
 
@@ -56,7 +61,7 @@ public partial class DXLabel : DXControl
         // Godot DrawString 的 Y 是基线 (baseline)，旧版 GDI TextRenderer.DrawText
         // 的 Y 是文本顶部。不补偿会让所有文字整体上移约一个 ascent（升部），
         // 表现为文本偏高。这里把基线 Y 下移 ascent，使视觉位置与旧版一致。
-        float ascent = font.GetAscent(MirSkin.ScaledSize(FontSize));
+        // （ascent 已在上面居中计算时定义）
 
         for (int i = 0; i < lines.Count; i++)
         {
