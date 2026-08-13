@@ -1,0 +1,1508 @@
+1	Basic Potion Main	Drugs, Get your Drugs here,
+
+You there, You look like an addict, Wanna by some potions!?
+
+[Browse Potions:1]
+
+[Back away slowly:0]
+2	Basic Potion BuySell	Excellent...
+
+Now spend every penny.
+
+
+
+[Back:1]
+
+[Exit:0]
+3	Meat Main	Welcome to my store,
+
+I have been in business for years, I know all of the best cuts.
+
+What can I do for you?
+
+[Browse Store:1]
+
+[Exit:0]
+4	Meat BuySell	Be with you in a moment,
+
+Take a look let me know if there is anything you would like...
+
+I am getting low on stock so I will pay well for some high quality meat.
+
+
+[Back:1]
+
+[Exit:0]
+5	Weapon Main	What can I do for you, 
+
+My services are:
+
+[Browse Weapons:1]
+[Repair Weapons:2]
+
+[Exit:0]
+6	Weapon BuySell	Take your time,
+
+I've got all day.
+
+
+[Back:1]
+
+[Exit:0]
+7	Weapon Repair	I can do a cheap repair or I can do a perfect repair, the choice is yours.
+
+
+[Back:1]
+
+[Exit:0]
+8	Jewellery Main	One moment,
+ 
+Just putting this shipment away.
+
+[Browse Rings:1]
+[Browse Bracelets:2]
+[Browse Necklaces:3]
+
+[Repair Jewellery:4]
+
+[Exit:0]
+9	Ring BuySell	I have some new rings for sale,
+
+Take your time, they are all genuine, none of them are counterfeits...
+
+[Browse Bracelets:1]
+
+[Browse Necklaces:2]
+
+[Back:3]
+
+[Exit:0]
+10	Bracelet BuySell	I have some new bracelets for sale,
+
+Take your time, they are all genuine, none of them are counterfeits...
+
+[Browse Rings:1]
+
+[Browse Necklaces:2]
+
+[Back:3]
+
+[Exit:0]
+11	Necklace BuySell	I have some new necklaces for sale,
+
+Take your time, they are all genuine, none of them are counterfeits...
+
+[Browse Rings:1]
+
+[Browse Bracelets:2]
+
+[Back:3]
+
+[Exit:0]
+12	Jewellery Repair	Lay your precious "valuables" on this table,
+
+I shall inspect them thoroughly...
+
+[Back:1]
+
+[Exit:0]
+13	Book Main	Quiet, I am reading my books, take a look and then tell me what you want.
+
+[Warrior Books:1]
+[Wizard Books:2]
+[Taoist Books:3]
+[Assassin Books:4]
+
+[Exit:0]
+14	Warrior Books	Quiet, I am reading my books, take a look and then tell me what you want.
+
+Warrior Books
+[Wizard Books:2]
+[Taoist Books:3]
+[Assassin Books:4]
+
+[Exit:0]
+15	Wizard Books	Quiet, I am reading my books, take a look and then tell me what you want.
+
+[Warrior Books:1]
+Wizard Books
+[Taoist Books:3]
+[Assassin Books:4]
+
+[Exit:0]
+16	Taoist Books	Quiet, I am reading my books, take a look and then tell me what you want.
+
+[Warrior Books:1]
+[Wizard Books:2]
+Taoist Books
+[Assassin Books:4]
+
+[Exit:0]
+17	Assassin Books	Quiet, I am reading my books, take a look and then tell me what you want.
+
+[Warrior Books:1]
+[Wizard Books:2]
+[Taoist Books:3]
+Assassin Books
+
+[Exit:0]
+18	Essentials Main	I got what you need,
+
+My prices are just,
+
+[Browse Essentials:1]
+[Browse Taoist Goods:2]
+[Browse Dark Stones:3]
+
+[Exit:0]
+19	Armour Main	I've got some fabulous new outfits,
+
+What are you interested in?
+
+[Browse Armours:1]
+[Browse Helmets and Shoes:2]
+[Repair Armours:3]
+
+[Exit:0]
+20	Collector BuySell	I'm a collector, 
+
+I collect items most consider worthless.
+
+
+[Exit:0]
+
+
+21	Essentials BuySell	I should be getting some new stock soon!
+
+
+[Browse Taoist Goods:2]
+[Browse Dark Stones:3]
+
+
+[Exit:0]
+22	Armour BuySell	Armours and Clothing,
+
+One size fits all.
+
+[Back:1]
+
+[Exit:0]
+23	Armour Repair	Fine,
+
+I will also fix the hobo suit.
+
+[Back:1]
+
+[Exit:0]
+24	Armour Other BuySell	Helmets and Shoes,
+
+One size fits all.
+
+[Back:1]
+
+[Exit:0]
+30	Teleport Fail Cost	Failed to teleport to destination,
+
+Not enough gold.
+
+[Exit:0]
+38	BT Teleporter	Select Destination
+
+[Lost Paradise:1] 10,000 Gold
+[Sabuk Keep:2] 3,000 Gold
+[Banya Village:3] 5,000 Gold
+
+[Bichon Castle:4] 10,000 Gold,  (Level 45+)
+
+
+[Freedom Pass:5] [Exit:0]
+39	BV Teleporter	Select Destination
+
+[Numa Village:1] 10,000 Gold
+[Sabuk Keep:2] 3,000 Gold
+[Bichon Town:3] 5,000 Gold
+
+[Banya Island:4] 10,000 Gold (Level 25+)
+[Infernal Island:5] 50,000 Gold
+
+[Freedom Pass:6] [Exit:0]
+40	LP Teleporter	Select Destination
+
+[Bichon Town:1] 10,000 Gold
+[Desert Mud Wall:2] 3,000 Gold
+[Numa Village:3] 5,000 Gold
+
+[Taoist Temple:4] 10,000 Gold
+
+[Frost Village:5] 20,000 Gold,  (Level 45+)
+
+[Freedom Pass:6] [Exit:0]
+41	SK Teleporter	Select Destination
+
+[Bichon Town:1] 3,000 Gold
+[Desert Mud Wall:2] 5,000 Gold
+[Banya Village:3] 3,000 Gold
+
+
+[Exit:0]
+42	MW Teleporter	Select Destination
+
+[Lost Paradise:1] 3,000 Gold
+[Sabuk Keep:2] 5,000 Gold
+[Numa Village:3] 3,000 Gold
+
+
+[Exit:0]
+43	NV Teleporter	Select Destination
+
+[Banya Village:1] 10,000 Gold
+[Desert Mud Wall:2] 3,000 Gold
+[Lost Paradise:3] 5,000 Gold
+[Western Arids:5] 5,000,000 Gold (Level 60+)
+[Arid Flats:6] 5,000,000 Gold + Freedom Pass (Level 60+)
+
+[Freedom Pass:4] [Exit:0]
+49	BI Teleporter	Select Destination
+
+[Banya Village:1] 10,000 Gold
+
+[Lost Land:3] 30,000 Gold (Level 35+)
+
+
+[Freedom Pass:2] [Exit:0]
+68	Amulet BuySell	I should be getting some new stock soon!
+
+[Browse Essentials:1]
+
+[Browse Dark Stones:3]
+
+
+[Exit:0]
+69	DarkStone BuySell	I should be getting some new stock soon!
+
+[Browse Essentials:1]
+[Browse Taoist Goods:2]
+
+
+
+[Exit:0]
+71	Weapon Refiner	I'm an artisan who refines weapons. Let me refine your weapon for you.
+
+[Refine:1] your weapon. 
+[Retrieve:2] a refined weapon.
+[Change:4] element of weapon at a cost of 100,000 Gold.
+[Inquire:3] about refining.
+[Inquire:5] about the refinement stone.
+[Reset:6] Weapon Level
+[Start:7] Master refining process.
+[Start:8] Special refining process.
+
+[Exit:0]
+72	Weapon Refiner - Fail - No Weapon	You are not holding a weapon.
+
+Please come back when you have a weapon.
+
+
+[Exit:0]
+73	Weapon Refiner - Change Element - Start	What element would you like to embue your weapon with?
+
+Change to [Fire:1] element.
+Change to [Ice:2] element.
+Change to [Lightning:3] element.
+Change to [Wind:4] element.
+Change to [Holy:5] element.
+Change to [Dark:6] element.
+Change to [Phantom:7] element.
+
+[Exit:0]
+74	Weapon Refiner - Change Element - Fail - No Elements	The weapon you are holding does not contain any elemental properties.
+
+I cannot help.
+
+
+[Exit:0]
+75	Weapon Refiner - Change Element - Complete - Fire	Congratulations,
+
+Your weapon is now Fire element.
+
+[Exit:0]
+76	Weapon Refiner - Fail - No Gold	You do not have enough Gold.
+
+Please come back when you have enough Gold.
+
+
+[Exit:0]
+77	Weapon Refiner - Change Element - Fail - Same Element	Failed to change the element of your weapon...
+
+Your weapon is already this element.
+
+[Exit:0]
+78	Weapon Refiner - Change Element - Complete - Ice	Congratulations,
+
+Your weapon is now Ice element.
+
+[Exit:0]
+79	Weapon Refiner - Change Element - Complete - Lightning	Congratulations,
+
+Your weapon is now Lightning element.
+
+[Exit:0]
+80	Weapon Refiner - Change Element - Complete - Wind	Congratulations,
+
+Your weapon is now Wind element.
+
+[Exit:0]
+81	Weapon Refiner - Change Element - Complete - Holy	Congratulations,
+
+Your weapon is now Holy element.
+
+[Exit:0]
+82	Weapon Refiner - Change Element - Complete - Dark	Congratulations,
+
+Your weapon is now Dark element.
+
+[Exit:0]
+83	Weapon Refiner - Change Element - Complete - Phantom	Congratulations,
+
+Your weapon is now Phantom element.
+
+[Exit:0]
+84	Todo	
+
+Not Yet Added
+
+[Exit:0]
+85	Weapon Refiner - Refine Weapon - Start	Good news, I can see that your weapon is ready to be refined.
+
+Refinement: DC.
+Refinement: Spell Power (MC, SC or both depending on the weapon).
+
+Refinement: Fire Element, Ice Element, Lightning Element, Wind Element.
+Refinement: Holy Element, Dark Element.
+Refinement: Phantom Element.
+
+[Exit:0]
+86	Weapon Refiner - Refine Weapon - Fail - Cannot Refine	Failed to refine your weapon...
+
+
+It is not ready to be refined.
+
+[Exit:0]
+97	Weapon Refiner - Refine Weapon - Retreive Weapon	Here's the list of weapons you are currently refineing,
+
+If you don't see it, then you must have already received it.
+
+
+[Exit:0]
+98	Essentials Main - Castle	I got what you need,
+
+My prices are just,
+
+[Browse Essentials:1]
+[Browse Taoist Goods:2]
+[Browse Dark Stones:3]
+
+[Exit:0]
+99	DarkStone BuySell - Castle	I should be getting some new stock soon!
+
+[Browse Essentials:1]
+[Browse Taoist Goods:2]
+
+
+
+[Exit:0]
+100	Amulet BuySell - Castle	I should be getting some new stock soon!
+
+[Browse Essentials:1]
+
+[Browse Dark Stones:3]
+
+
+[Exit:0]
+101	Essentials BuySell - Castle	I should be getting some new stock soon!
+
+
+[Browse Taoist Goods:2]
+[Browse Dark Stones:3]
+
+
+[Exit:0]
+102	Basic Potion Main - Castle	Drugs, Get your Drugs here,
+
+You there, You look like an addict, Wanna by some potions!?
+
+[Browse Potions:1]
+
+[Back away slowly:0]
+103	Basic Potion BuySell - Castle	Excellent...
+
+Now spend every penny.
+
+
+
+[Back:1]
+
+[Exit:0]
+104	II Teleporter	Select Destination
+
+[Numa Village:1] 1,000 Gold
+
+
+
+
+
+[Exit:0]
+108	PK Fail - Text	Leave this instant.
+
+I do not want to get blood all over my products.
+
+[Exit:0]
+110	II Merchant	I do no want to be seen dealing with you.
+
+[Buy Items:1]
+[Repair Items:2]
+
+
+[Exit:0]
+111	II Buy	Faster, before someone arrives.
+
+
+
+[Back:1]
+
+
+[Exit:0]
+112	II Repair	Quick, I think someone is coming.
+
+
+[Back:1]
+
+
+[Exit:0]
+113	SK1 Teleporter	Select Destination
+
+[Inner Wall:1] 1,000 Gold
+
+
+
+
+[Exit:0]
+114	MW1 Teleporter	Select Destination
+
+[Inner Wall:1] 1,000 Gold
+
+
+
+
+[Exit:0]
+119	Horse Main	Welcome to my stables.
+Here's a selection of the horses available.
+
+[Brown Horse:1] - 500,000 Gold, Level 15.
+[White Horse:2] - 20,000,000 Gold, Level 42.
+[Red Horse:3] - 100,000,000 Gold, Level 51.
+[Black Horse:4] - 600,000,000 Gold, Level 75.
+
+[Sell Horse:5]
+
+[Exit:0]
+121	Buy Horse Fail - Already have horse	I am unable to sell you another horse at the moment.
+
+You currently already own a horse.
+
+Please sell your current horse if you want to buy a new one.
+
+[Main:1]
+
+[Exit:0]
+122	Buy Horse Fail - Level	I am unable to sell you this horse at the moment.
+
+You not strong enough.
+
+Please come back when you are higher level.
+
+[Main:1]
+
+[Exit:0]
+123	Buy Horse Fail - Gold	I am unable to sell you this horse at the moment.
+
+You cannot afford to buy this horse
+
+Please come back when you are wealthier.
+
+[Main:1]
+
+[Exit:0]
+124	Buy Horse Success	Congratulations on purchasing your new horse.
+
+Please take good care of it.
+
+[Exit:0]
+129	Horse - Sell	It's sad to see another horse abandoned by its owner, My offer is as follows:
+
+Brown Horse - 250,000 Gold.
+White Horse - 10,00,000 Gold.
+Red Horse - 50,000,000 Gold.
+Black Horse - 300,000,000 Gold.
+
+[Main:1]
+
+[Sell Horse:2]
+
+[Exit:0]
+130	Brown Horse - Buy Start	Horse Contract Information:
+
+Type: Brown Horse.
+Cost: 500,000 Gold.
+
+If you want to buy this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+131	White Horse - Buy Start	Horse Contract Information:
+
+Type: White Horse.
+Cost: 20,000,000 Gold.
+
+If you want to buy this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+132	Red Horse - Buy Start	Horse Contract Information:
+
+Type: Red Horse.
+Cost: 100,000,000 Gold.
+
+If you want to buy this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+133	Black Horse - Buy Start	Horse Contract Information:
+
+Type: Black Horse.
+Cost: 600,000,000 Gold.
+
+If you want to buy this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+134	Horse Sell - None - Start	I am unable to buy a horse from you.
+
+You currently don't own any horse.
+
+[Main:1]
+
+[Exit:0]
+135	Horse Sell - Brown - Start	Horse Contract Information:
+
+Type: Brown Horse.
+Price: 250,000 Gold.
+
+If you want to sell this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+136	Horse Sell - White - Start	Horse Contract Information:
+
+Type: White Horse.
+Price: 10,000,000 Gold.
+
+If you want to sell this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+137	Horse Sell - Red - Start	Horse Contract Information:
+
+Type: Red Horse.
+Price: 50,000,000 Gold.
+
+If you want to sell this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+138	Horse Sell - Black - Start	Horse Contract Information:
+
+Type: Black Horse.
+Price: 300,000,000 Gold.
+
+If you want to sell this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+139	Horse Sell - Unknown - Start	Horse Contract Information:
+
+Type: Unknown Horse.
+Cost: Your Soul...
+
+If you want to sell this horse please [Sign Here:1]
+
+[Main:2]
+[Exit:0]
+141	Sell Horse Success	You've sold your horse.
+
+It no longer loves you, Not even if you feed it a carrot.
+
+
+[Main:1]
+
+[Exit:0]
+146	Teleport Fail Level	Failed to teleport to destination,
+
+Not High Enough Level.
+
+[Exit:0]
+147	Notice Board	...
+148	Companion Main	Want to adopt a lovable companion?
+
+They will help you pick up items whilst you hunt.
+
+[Manage Pets:1]
+[Buy Pet Food:2]
+
+[Exit:0]
+
+149	Companion Manage	Please take your time,
+
+
+[Back:1]
+
+
+[Exit:0]
+150	Companion BuySell	I have all of the pet food your lovable pet could ever want.
+
+
+[Back:1]
+
+[Exit:0]
+151	Marriage Main	Hello, How can I help someone such as yourself.
+
+[Get Married:1]
+[Get Devorced:2]
+[Remove Wedding Ring:3]
+[Make Wedding Ring:4]
+
+[Rebirth:5]
+
+[Exit:0]
+
+152	Marriage - Request Start	Please face your partner...
+
+Let me know when you are ready.
+
+I will charge both of you 500,000 gold for a successful marriage.
+
+[Continue:1]
+
+[Back:2]
+153	Marriage - Divorce Start	Are you sure you want to get Divorced?
+
+It will cost you 1,000,000 Gold.
+
+[Proceed:1]
+
+[Main:2]
+154	Marriage - Remove Ring Start	Are you sure you want to remove your wedding ring?
+
+It will cost you 200,000 Gold.
+
+[Remove Ring:1]
+
+[Exit:0]
+155	Marriage - Make Ring	I understand that you have a ring in your possession that you want to make as your wedding ring.
+
+Please show me the ring you would like to use.
+
+[Back:1]
+
+[Exit:0]
+157	Marriage Fail - Gold	You do not have enough gold to use this service.
+
+[Exit:0]
+162	Marriage Fail - Already Married	I am unable to provide you with the service you requested.
+
+You are already married.
+
+[Exit:0]
+163	Marriage Fail - Not Married	I am unable to provide you with the service you requested.
+
+You are not married.
+
+[Exit:0]
+164	Marriage Fail - No Ring	I am unable to provide you with the service you requested.
+
+You do not currently have a wedding ring.
+
+[Exit:0]
+165	Marriage Fail - Already Have Ring	I am unable to provide you with the service you requested.
+
+You already have a wedding ring.
+
+[Exit:0]
+166	Weapon Refiner - About Refine	You seek knowledge on the refinement process?
+
+Your weapon needs to be ready for refine.
+You can use upto 5 Black Iron Ore, Higher the purity the higher the success rate.
+You can use upto 3 Accessories, Higher the level and quality the higher the succes rate.
+Duration, The longer the refine time, the higher the success rate.
+
+[Main:1]
+[Exit:0]
+167	Weapon Refiner - Refinement Stone	If you want to make a refinement stone. You will need the following:
+
+1x Crystal
+2x Gold Ore
+4x Diamond
+4x Silver Ore
+4x Iron Ore
+Gold... As much or as little as you like, Higher is always better!
+
+[Main:1]
+[Exit:0]
+
+168	Weapon Refiner - Master Refine	You will need the following:
+
+Fragment (I) x10
+Fragment (II) x10
+Fragment (III) x1 ~ x1000
+Refinement Stone x1
+
+The process will either Add or Remove 5 of your chosen stat type.
+You cannot break your weapon.
+
+[Main:1]
+[Exit:0]
+169	Weapon Refiner - Weapon Reset	Hello,  So you are looking to reset your weapons level?
+
+This process takes 24 hours and has 100% success rate.
+There's a chance to keep some of the stats gained refining.
+The cost to reset your weapon is 1,000,000 Gold and 1x Refinement Stone.
+
+[Reset Weapon:1]
+
+[Back:2]
+[Exit:0]
+170	Item Fragment - Main	Hello, Welcome... How can I help you?
+
+[Fragment Items:1]
+
+[Exchange Frament:2] :- 100x Fragment + 20,000 Gold = 1x Fragment (II)
+[Exchange Frament (II):3]  :- 25x Fragment (II) + 50,000 Gold = 1x Fragment (III)
+
+
+[Exit:0]
+171	Item Fragment - Fragment	Please show me the item you want to fragment.
+
+I can break down, Weapons, Armours, Helmets, Necklaces, Bracelets, Rings and Shoes.
+
+Common Items will yield Fragments
+Superiour and Elite Items will result in Fragment (II)s.
+
+[Back:1]
+[Exit:0]
+174	Item Fragment - Fail - Gold	I cannot upgrade your fragments.
+
+
+Not enough Money.
+
+
+[Main:1]
+[Exit:0]
+175	Item Fragment - Fail - Not enough Fragments	I cannot upgrade your fragments.
+
+Not enough Fragments.
+
+
+[Main:1]
+[Exit:0]
+176	Item Fragment - Fail - Not enough Fragment (II)s	I cannot upgrade your fragments.
+
+Not enough Fragments (II).
+
+
+[Main:1]
+[Exit:0]
+177	Item Fragment - Fail - Not enough Inventory Room	I cannot upgrade your fragments.
+
+Not enough space in your inventory.
+
+
+[Main:1]
+[Exit:0]
+179	Weapon Refiner - Fail - Not Leveled	Your weapon has not leveled.
+
+Please come back when you have a weapon that's leveled.
+
+
+[Exit:0]
+180	Weapon Refiner - Fail - Reset Cooldown	Your weapon has recently been reset.
+
+Please come back when the reset cooldown has finished
+
+
+[Exit:0]
+181	Weapon Refiner - Fail - No Refinement Stone	You do not have a Refinement Stone.
+
+Please come back when you have a Refinement Stone.
+
+
+[Exit:0]
+182	TT Teleporter	Select Destination
+
+[Lost Paradise:1] 10,000 Gold
+
+
+
+
+[Freedom Pass:2] [Exit:0]
+190	FV Teleporter	Select Destination
+
+[Lost Paradise:1] 20,000 Gold
+
+[Holy Palace:2] 30,000 Gold
+
+
+[Freedom Pass:3] [Exit:0]
+191	BC Teleporter	Select Destination
+
+[Bichon Town:1] 10,000 Gold
+
+
+
+
+[Freedom Pass:2] [Exit:0]
+194	Accessory Refiner - Main	So you're looking to upgrade your accessory...
+
+[About:1] Accessory upgrading.
+
+[Level Up:2] Accessory.
+[Upgrade:3] Accessory.
+
+[Reset:4] Accessory.
+
+
+[Exit:0]
+195	Accessory Refiner - About	In order to upgrade an accessory you first must level it up.
+
+You melt down the same type of accessory until the accessory has leveled.
+
+Once the accessory has leveled you can then choose what to upgrade.
+
+[Main:1]
+[Exit:0]
+196	Accessory Refiner - Level Up	First Select the accessory that you want to level up.
+
+Then select other assessories that you want to melt down and use.
+
+
+[Main:1]
+[Exit:0]
+197	Accessory Refiner - Upgrade	Show me your accessory that has leveled up and is ready for upgrade.
+
+The process cannot fail, so do not worry.
+
+
+[Main:1]
+[Exit:0]
+198	Rusty Accessory Main	Welcome!
+
+[Ask:1] About Numa Rusty Accessories
+
+[Ask:2] About Lair Accessories.
+
+[Exit:0]
+200	Rusty Accessory - Numa Start	The Cleaning fee is 1,000,000 but the process rarely works because of how old the items are.
+
+[Rusty Signet Of Myrmidon:1]
+[Rusty Signet Of Evoker:2]
+[Rusty Signet Of Vicar:3]
+[Rusty Charm Of The Destroyer:4]
+[Rusty Amulet Of Dark Sorcery:5]
+[Rusty Pendant Of Purification:6]
+[Rusty Bracer Of Revelation:7]
+[Rusty Ring Of Enlightenment:8]
+[Rusty Bracelet Of Ascension:9]
+
+202	Rusty Accessory - Signet Of Myrmidon - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+203	Rusty Accessory - Numa - Fail - No Item	I am unable to find the rusty item.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+204	Rusty Accessory - Numa - Fail - No Room	You do not have inventory space.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+205	Rusty Accessory - Numa - Fail - No Gold	You cannot aford the cost of the cleaning service.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+206	Rusty Accessory - Numa - Fail - Break	I am sorry, The ring was too old to survive the cleaning process.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+208	Rusty Accessory - Signet Of Evoker - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+210	Rusty Accessory - Signet Of Vicar - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+212	Rusty Accessory - Charm Of The Destroyer - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+214	Rusty Accessory - Amulet Of Dark Sorcery - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+221	Rusty Accessory - Pendant Of Purification - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+223	Rusty Accessory - Bracer Of Revelation - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+225	Rusty Accessory - Ring Of Enlightenment - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+227	Rusty Accessory - Bracelet Of Ascension - End	Congratulations,
+
+Your ring has survive the clearning process, You can now go and Upgrade the accessory in Bichon Town.
+
+[Exit:0]
+228	Weapon Refiner - Fail - Not Max Level	Your weapon has not reached the maximum level.
+
+Please come back when you have a weapon that's fully leveled up.
+
+
+[Exit:0]
+237	Teleport Fail Freedom Pass	Failed to teleport to destination,
+
+No Freedom Pass.
+
+[Exit:0]
+238	Freedom Teleporter	Where would you like to teleport to?
+
+[Mystery Ship:1] Freedom Pass
+
+[Lava Area:2] Freedom Pass (Level 45+)
+
+[Banyo Cave:3] Freedom Pass (Level 45+)
+
+[Exit:0]
+239	Rusty Accessory - Lair Start	The Forging fee is 2,000,000 but the process rarely works because of how old the items are.
+
+[Seal Of Overlord:1]
+[Bracelet Of Overlord:2]
+[Medallion Of Overlord:3]
+[Arcanist's Band Of Dignity:4]
+[Arcanist's Bracelet Of Dignity:5]
+[Arcanist's Amulet Of Dignity:6]
+[Hierophant's Signet Of Moon:7]
+[Hierophant's Bracer Of Moon:8]
+[Hierophant's Pendant Of Moon:9]
+
+240	Rusty Accessory - Lair - Fail - No Rings	I am unable to find the items.
+
+You need Rusty, Cracked and Worn Rings
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+241	Rusty Accessory - Lair - Fail - No Bracelets	I am unable to find the items.
+
+You need Rusty, Cracked, Scracted and Worn Bracelets
+
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+242	Rusty Accessory - Lair - Fail - No Necklace	I am unable to find the items.
+
+You need Rusty, Cracked and Worn Necklaces
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+243	Rusty Accessory - Lair - Fail - No Room	You do not have inventory space.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+244	Rusty Accessory - Lair - Fail - No Gold	You cannot aford the cost of the cleaning service.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+245	Rusty Accessory - Lair - Fail - Break	I am sorry, The items was too old and damaged.
+
+[Retry:1]
+
+[Main:2]
+
+[Exit:0]
+247	Rusty Accessory - Seal Of Overlord - End	Congratulations,
+
+Your ring has survive the forging process.
+
+[Exit:0]
+249	Rusty Accessory - Bracelet Of Overlord - End	Congratulations,
+
+Your bracelet has survive the forging process.
+
+[Exit:0]
+252	Rusty Accessory - Medallion Of Overlord - End	Congratulations,
+
+Your Necklace has survive the forging process.
+
+[Exit:0]
+255	Rusty Accessory - Arcanist's Band Of Dignity - End	Congratulations,
+
+Your ring has survive the forging process.
+
+[Exit:0]
+257	Rusty Accessory - Arcanist's Bracelet Of Dignity - End	Congratulations,
+
+Your bracelet has survive the forging process.
+
+[Exit:0]
+259	Rusty Accessory - Arcanist's Amulet Of Dignity - End	Congratulations,
+
+Your Necklace has survive the forging process.
+
+[Exit:0]
+261	Rusty Accessory - Hierophant's Signet Of Moon - End	Congratulations,
+
+Your ring has survive the forging process.
+
+[Exit:0]
+263	Rusty Accessory - Hierophant's Bracer Of Moon - End	Congratulations,
+
+Your bracelet has survive the forging process.
+
+[Exit:0]
+265	Rusty Accessory - Hierophant's Pendant Of Moon - End	Congratulations,
+
+Your Necklace has survive the forging process.
+
+[Exit:0]
+266	Accessory Refiner - Reset	Show me your accessory that has been leveled up and is ready to be reset.
+
+The process cannot fail, so do not worry.
+
+
+[Main:1]
+[Exit:0]
+267	Weapon Craft Main	...
+
+
+[Craft Weapon:1]
+
+[Upgrade Trinkets:2]
+
+
+[Exit:0]
+268	Weapon Craft - Craft	...
+
+Each Jewel will add a stat to the weapon.
+
+Higher quality Jewels will result in more stats.
+
+[Back:1]
+
+[Main:0]
+269	Weapon Craft - Upgrade	Upgrade will need Component x100 and 100,000 Gold.
+
+[Yellow Orb to Yellow Trinket:20] -- [Yellow Trinket to Yellow Cube:21]
+[Blue Orb to Blue Trinket:30] -- [Blue Trinket to Blue Cube:31]
+[Red Orb to Red Trinket:40] -- [Red Trinket to Red Cube:41]
+[Purple Orb to Purple Trinket:50] -- [Purple Trinket to Purple Cube:51]
+[Green Orb to Green Trinket:60] -- [Green Trinket to Green Cube:61]
+[Grey Orb to Grey Trinket:70] -- [Grey Trinket to Grey Cube:71]
+
+[Back:1]
+[Exit:0]
+270	Weapon Craft - Failed - Not enough Items	Failed to craft item.
+
+Not enough items.
+
+[Main:1]
+
+[Exit:0]
+271	Weapon Craft - Failed - Not enough Gold	Failed to craft item.
+
+Not enough gold.
+
+[Main:1]
+
+[Exit:0]
+272	Weapon Craft - Failed - Not enough Space	Failed to craft item.
+
+Not enough inventory space.
+
+[Main:1]
+
+[Exit:0]
+274	Weapon Craft - Yellow Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+275	Weapon Craft - Yellow Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+276	Weapon Craft - Blue Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+277	Weapon Craft - Blue Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+278	Weapon Craft - Red Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+279	Weapon Craft - Red Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+280	Weapon Craft - Purple Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+281	Weapon Craft - Purple Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+282	Weapon Craft - Green Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+283	Weapon Craft - Green Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+284	Weapon Craft - Grey Orb	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+285	Weapon Craft - Grey Trinket	Your Item has been crafted successfully.
+
+
+
+[Again:2]
+
+[Main:1]
+
+
+
+[Exit:0]
+286	LL Teleporter	Select Destination
+
+[Banya Island:1] 10,000 Gold (Level 25+)
+
+
+
+[Freedom Pass:2] [Exit:0]
+289	Emblem Main	Emblems are expensive to make...
+
+
+[Buy:1] an Emblem
+
+
+
+[Exit:0] 
+
+290	Emblem Buy Sell	Take your time...
+
+
+
+
+[Back:1]
+
+[Exit:0]
+291	Weapon Refiner - Special Refine - Main	Special Refine requires:
+
+Oil of Conservation x1
+Oil of The War God x1
+
+[Fragment (III):1] x30 + Crystal x 30
+[Fragment (III):2] x60 + Crystal x 50 
+[Fragment (III):3] x100 + Crystal x 50 
+
+[Main:4]
+[Exit:0]
+292	Weapon Refiner - Special Refine - 30	For 30 Fragments I can offer:
+
+[Health:1] + 75    (Limit: +1250)
+[Mana:2] +40    (Limit: +850)
+[Accuracy:3] +3    (Limit: +30)
+[Agility:4] +3    (Limit: +30)
+[AC:5] 0-5    (Limit: +50)
+[MR:6] 0-5    (Limit: +50)
+
+[Main:7]
+[Exit:0]
+293	Weapon Refiner - Special Refine - 60	For 60 Fragments I can offer:
+
+[Critical Chance:1] +1    (Limit: +25)
+[Critical Damage:2] +5    (Limit: +200)
+[Attack Speed:3] +3    (Limit: +15)
+[Life Steal:4] +3    (Limit: +21)
+
+
+
+[Main:5]
+[Exit:0]
+294	Weapon Refiner - Special Refine - 100	For 100 Fragments I can offer:
+
+[Paralysis:1] +1% (PvP and PvE - 2 Seconds)    (Limit: +13)
+[Slow:2] +1% (PvE) - 10 Seconds    (Limit: +15)
+[Silence:3] +1% (PvP and PvE - 5 Seconds)    (Limit: +10)
+[Block Chance:4] +1% (Melee)    (Limit: +10)
+[Evasion Chance:5] + 1% (Magic)    (Limit: +10)
+
+
+[Main:6]
+[Exit:0]
+295	Weapon Refiner - Special Refine - Health Q	Are you sure you want to add Health to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+297	Weapon Refiner - Special Refine - Mana Q	Are you sure you want to add Mana to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+300	Weapon Refiner - Special Refine - Accuracy Q	Are you sure you want to add Accuracy to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+302	Weapon Refiner - Special Refine - Agility Q	Are you sure you want to add Agility to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+304	Weapon Refiner - Special Refine - AC Q	Are you sure you want to add AC to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+306	Weapon Refiner - Special Refine - MR Q	Are you sure you want to add MR to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+308	Weapon Refiner - Special Refine - Not enough Material	You lack the required materials to special refine.
+
+[Main:1]
+[Exit:0]
+309	Weapon Refiner - Special Refine - Critical Chance Q	Are you sure you want to add Critical Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+311	Weapon Refiner - Special Refine - Critical Damage Q	Are you sure you want to add Critical Damage to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+313	Weapon Refiner - Special Refine - Attack Speed Q	Are you sure you want to add Attack Speed to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+315	Weapon Refiner - Special Refine - Life Steal Q	Are you sure you want to add Life Steal to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+317	Weapon Refiner - Special Refine - Paralysis Chance Q	Are you sure you want to add Paralysis Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+319	Weapon Refiner - Special Refine - Slow Chance Q	Are you sure you want to add Slow Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+321	Weapon Refiner - Special Refine - Silence Chance Q	Are you sure you want to add Silence Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+323	Weapon Refiner - Special Refine - Block Chance Q	Are you sure you want to add Block Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+325	Weapon Refiner - Special Refine - Evasion Chance Q	Are you sure you want to add Evasoin Chance to your weapon?
+
+[Yes, Refine:1]
+
+[Main:2]
+[Exit:0]
+327	Weapon Refiner - Special Refine - Too many Status	You cannot not add anymore of this stat to your weapon.
+
+[Main:1]
+[Exit:0]
+332	Rebirth Main	For EACH rebirth that you accept the following changes will happen:
+
+You will need to be level  86 + Current Rebith Count.
+When Rebirthing, you will be set to level 1 and keep 0.5% of your current experience
+x50% More Damage in PvE
+x20% More Damage in PvP
++20% More Drop Rate
++20% More Gold Rate
+x50% Less Experience Gained.
+Every death in PvE will cost you all of your experience. (PvP no Punishment)
+[Accept:1]
+333	Rebirth Act	If you met the requirements You will have rebirthed.
+334	Fame Main	I am the village chief. If you have been doing quests throughout the world you can earn rewards and titles as recognition.
+
+{<1:Unlimited>:LawnGreen} points are required for your next title.
+
+[Purchase Title:1]
+[Browse Store:2]
+
+[Close:0]
+337	Fame Fail	You cannot increase your fame any further right now.
+
+[Back:1]
+[Close:0]
+338	Fame BuySell	Take your time,
+
+I've got all day.
+
+[Back:1]
+[Close:0]
