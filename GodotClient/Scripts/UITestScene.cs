@@ -214,9 +214,23 @@ public partial class UITestScene : Control
         if (_configAudit) AuditConfig();
         if (_keyBindAudit) AuditKeyBind();
         if (_windowChromeAudit) AuditWindowChrome();
+        if (OS.GetCmdlineUserArgs().Contains("--store-dump")) DumpStore();
 
         // 等 10 帧后截图一次 (供我分析), 然后挂起等用户按键
         ScreenshotThenWait();
+    }
+
+    /// <summary>--store-dump：经真实客户端 DatabaseLoader 读 System.db，
+    /// 打印 StoreInfo 全表（dbeditor 同步验收用：编辑器改价 → 游戏端读值）。</summary>
+    private static void DumpStore()
+    {
+        bool loaded = Network.DatabaseLoader.Load();
+        var list = Globals.StoreInfoList?.Binding;
+        GD.Print($"[StoreDump] loaded={loaded} rows={(list == null ? -1 : list.Count)}");
+        if (list == null) return;
+        foreach (var s in list.Where(x => x != null).OrderBy(x => x.Index))
+            GD.Print($"[StoreDump] #{s.Index} {s.Item?.ItemName} Price={s.Price} "
+                     + $"Hunt={s.HuntGoldPrice} Available={s.Available} Filter={s.Filter}");
     }
 
     private static void AuditHud(MainPanel hud)
