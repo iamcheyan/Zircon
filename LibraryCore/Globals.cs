@@ -1139,6 +1139,7 @@ namespace Library
         public List<AutoPathRouteLeg> Legs { get; set; } = new List<AutoPathRouteLeg>();
         public int DestinationMapIndex { get; set; }
         public Point Destination { get; set; }
+        public Point DisplayDestination { get; set; }
         public int WaypointNumber { get; set; } = 1;
     }
 

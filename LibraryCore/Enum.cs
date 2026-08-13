@@ -1498,6 +1498,20 @@ namespace Library
         Boat
     }
 
+    public enum NPCCategory
+    {
+        None = 0,
+
+        Store = 1,
+        Equipment = 2,
+        Storage = 3,
+        Transaction = 4,
+        Teleportation = 5,
+        Helper = 6,
+        Event = 7,
+        Common = 8,
+    }
+
     public enum Effect
     {
         TeleportOut,

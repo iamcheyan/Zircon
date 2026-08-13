@@ -87,6 +87,7 @@ namespace Client.Scenes
 
         public MapObject MagicObject, MouseObject, TargetObject, FocusObject;
         public DXControl ItemLabel, MagicLabel, FameLabel;
+        private bool _showItemSetDetails;
 
         #region MouseItem
 
@@ -1132,24 +1133,7 @@ namespace Client.Scenes
             for (int i = MapControl.ParticleEffects.Count - 1; i >= 0; i--)
                 MapControl.ParticleEffects[i].Process();
 
-            if (ItemLabel != null && !ItemLabel.IsDisposed)
-            {
-                int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
-
-                if (x + ItemLabel.Size.Width > Size.Width + Location.X)
-                    x = Size.Width - ItemLabel.Size.Width + Location.X;
-
-                if (y + ItemLabel.Size.Height > Size.Height + Location.Y)
-                    y = Size.Height - ItemLabel.Size.Height + Location.Y;
-
-                if (x < Location.X)
-                    x = Location.X;
-
-                if (y <= Location.Y)
-                    y = Location.Y;
-
-                ItemLabel.Location = new Point(x, y);
-            }
+            UpdateItemLabelLocation();
 
             if (MagicLabel != null && !MagicLabel.IsDisposed)
             {
@@ -1223,6 +1207,15 @@ namespace Client.Scenes
 
             switch (e.KeyCode)
             {
+                case Keys.Menu:
+                case Keys.LMenu:
+                case Keys.RMenu:
+                    if (MouseItem?.Info.Set == null) break;
+
+                    _showItemSetDetails = !_showItemSetDetails;
+                    CreateItemLabel();
+                    e.Handled = true;
+                    return;
                 case Keys.Escape:
                     MonsterBox.Monster = null;
                     e.Handled = true;
@@ -1688,6 +1681,7 @@ namespace Client.Scenes
                 AddItemLabelDescription(builder, displayInfo);
                 builder.Complete();
                 ItemLabel = builder.Label;
+                UpdateItemLabelLocation();
                 return;
             }
 
@@ -1758,7 +1752,17 @@ namespace Client.Scenes
             if (MouseItem.Info.Set != null)
             {
                 builder.StartSection();
-                AddSetItemInfo(builder, MouseItem.Info.Set);
+                builder.AddIconLine(
+                    _showItemSetDetails ? CEnvir.Language.ItemLabelHideSetDetails : CEnvir.Language.ItemLabelShowSetDetails,
+                    Color.FromArgb(150, 135, 105),
+                    LibraryFile.GameInter,
+                    9080);
+
+                if (_showItemSetDetails)
+                {
+                    builder.StartSection();
+                    AddSetItemInfo(builder, MouseItem.Info.Set);
+                }
             }
 
             if ((MouseItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
@@ -1794,6 +1798,28 @@ namespace Client.Scenes
 
             builder.Complete();
             ItemLabel = builder.Label;
+            UpdateItemLabelLocation();
+        }
+
+        private void UpdateItemLabelLocation()
+        {
+            if (ItemLabel == null || ItemLabel.IsDisposed) return;
+
+            int x = CEnvir.MouseLocation.X + 15, y = CEnvir.MouseLocation.Y;
+
+            if (x + ItemLabel.Size.Width > Size.Width + Location.X)
+                x = Size.Width - ItemLabel.Size.Width + Location.X;
+
+            if (y + ItemLabel.Size.Height > Size.Height + Location.Y)
+                y = Size.Height - ItemLabel.Size.Height + Location.Y;
+
+            if (x < Location.X)
+                x = Location.X;
+
+            if (y <= Location.Y)
+                y = Location.Y;
+
+            ItemLabel.Location = new Point(x, y);
         }
 
         private void CreateFameLabel()
@@ -2859,7 +2885,7 @@ namespace Client.Scenes
             {
                 level = InspectBox.Level;
                 userClass = InspectBox.Class;
-                equipment = InspectBox.Equipment;
+                equipment = cell.ItemGrid ?? InspectBox.Equipment;
             }
             else
             {
@@ -2889,8 +2915,6 @@ namespace Client.Scenes
                 builder.AddLine("    " + info.ItemName, hasPart ? Color.LimeGreen : Color.Gray);
             }
 
-            builder.AddLine("Set Bonus:", Color.LimeGreen);
-
             foreach (SetInfoStat stat in set.SetStats)
             {
                 if (level < stat.Level) continue;
@@ -2914,10 +2938,18 @@ namespace Client.Scenes
                 setBonus[stat.Stat] += stat.Amount;
             }
 
+            bool setBonusTitleAdded = false;
+
             foreach (KeyValuePair<Stat, int> pair in setBonus.Values)
             {
                 string text = setBonus.GetDisplay(pair.Key);
                 if (text == null) continue;
+
+                if (!setBonusTitleAdded)
+                {
+                    builder.AddLine("Set Bonus:", Color.LimeGreen);
+                    setBonusTitleAdded = true;
+                }
 
                 builder.AddLine("    " + text, hasFullSet ? Color.LimeGreen : Color.Gray);
             }
