@@ -107,7 +107,7 @@ public partial class GameStoreDialog : DXWindow
         _page = new DXLabel { Text = "1 / 1", FontSize = 10, TextColour = Colors.White, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Size = new Vector2I(106, 20), Location = new Vector2I(349, 473), IsControl = false }; AddControl(_page);
         _nextButton = new DXButton { LibraryFile = LibraryFile.GameInter, Index = 4845, Location = new Vector2I(464, 477) };
         _nextButton.MouseClick += (o, e) => { if (_pageIndex + 1 < PageCount) { _pageIndex++; Refresh(); } }; AddControl(_nextButton);
-        BuildCategoryTree();
+        _nextButton.MouseClick += (o, e) => GD.Print("[GameStore] 下一页点击"); // dbeditor 验收辅助
         Refresh();
     }
 
