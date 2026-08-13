@@ -133,6 +133,8 @@ public sealed class BotAgent
     private DateTime _regionPointAt = DateTime.MinValue;
     private DateTime _pathFailRetryAt;
     private DateTime _nextEquipShopBuy = DateTime.MinValue;
+    private DateTime _nextBreakoutLog = DateTime.MinValue;
+    private DateTime _nextPathFailLog = DateTime.MinValue;
     private DateTime _nextChatCorpus = DateTime.MinValue;
     private DateTime _lastPositionSample = DateTime.MinValue;
     private Point _lastSampledPosition;
@@ -1029,7 +1031,11 @@ public sealed class BotAgent
             {
                 _lastPathFailGoal = goal;
                 _pathFailRetryAt = now.AddSeconds(8);
-                Log($"path: A* fail to {goal} ({DistanceTo(goal)} cells), greedy fallback");
+                if (now >= _nextPathFailLog)
+                {
+                    Log($"path: A* fail to {goal} ({DistanceTo(goal)} cells), greedy fallback");
+                    _nextPathFailLog = now.AddSeconds(10);
+                }
                 MoveToward(goal, 1, now);
                 return;
             }
@@ -2376,8 +2382,12 @@ public sealed class BotAgent
         }
         if (nearest != null)
         {
-            var info = Globals.MonsterInfoList?.Binding.FirstOrDefault(m => m.Index == nearest.MonsterIndex);
-            Log($"breakout: walled by {monsterNeighbors} monsters ({info?.MonsterName ?? "?"}), cutting through");
+            if (now >= _nextBreakoutLog)
+            {
+                var info = Globals.MonsterInfoList?.Binding.FirstOrDefault(m => m.Index == nearest.MonsterIndex);
+                Log($"breakout: walled by {monsterNeighbors} monsters ({info?.MonsterName ?? "?"}), cutting through");
+                _nextBreakoutLog = now.AddSeconds(10);
+            }
             CombatStep(nearest, now);
             return true;
         }
