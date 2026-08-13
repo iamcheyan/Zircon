@@ -65,6 +65,9 @@ public partial class SelectScene : Control
         AddChild(_uiLayer);
         BuildLegacySelectUi();
         UiScaler.UpdateScale(_uiLayer, GetViewport());
+        // 调试审计：ZIRCON_UI_AUDIT=1 时列出所有超出逻辑画布的控件
+        if (System.Environment.GetEnvironmentVariable("ZIRCON_UI_AUDIT") == "1")
+            UiScaler.AuditOverflow(_uiLayer, "SelectScene");
         // 窗口大小变化后视口才更新，用 Viewport.SizeChanged 确保缩放跟随。
         GetViewport().SizeChanged += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
 

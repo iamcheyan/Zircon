@@ -62,6 +62,9 @@ public partial class LoginScene : Control
         AddChild(_uiLayer);
         BuildLegacyLoginUi();
         UiScaler.UpdateScale(_uiLayer, GetViewport());
+        // 调试审计：ZIRCON_UI_AUDIT=1 时列出所有超出逻辑画布的控件
+        if (System.Environment.GetEnvironmentVariable("ZIRCON_UI_AUDIT") == "1")
+            UiScaler.AuditOverflow(_uiLayer, "LoginScene");
         // 窗口大小变化后视口才更新，Resized（Control）可能错过时序，
         // 用 Viewport.SizeChanged 确保窗口变化时重新应用缩放。
         GetViewport().SizeChanged += () => UiScaler.UpdateScale(_uiLayer, GetViewport());
@@ -509,8 +512,8 @@ public partial class LoginScene : Control
         _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, _uiLayer); };
         dialog.AddControl(_skinActivation);
 
-        // 状态提示 Label（dialog 底框在 y≈633，此处底边 633+92+36=761 < 768 不溢出画布）
-        _skinStatus = new DXLabel { Text = Lang.LoginUi492Label, FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 92) };
+        // 状态提示 Label（审计实测底边 772 → 上移至 84，底边 764 留 4px 余量）
+        _skinStatus = new DXLabel { Text = Lang.LoginUi492Label, FontSize = 9, TextColour = new Color(1f, .85f, .45f), DrawOutline = true, Size = new Vector2I(500, 36), Location = new Vector2I(20, 84) };
         dialog.AddControl(_skinStatus);
 
         // 初始隐藏弹出的对话框（排行榜和选项配置）

@@ -60,4 +60,42 @@ public static class UiScaler
         GD.Print($"[UiScaler] scale={scale} viewport={vp} offset={offset}");
         layer.Transform = new Transform2D(scale, 0, 0, scale, offset.X, offset.Y);
     }
+
+    /// <summary>
+    /// 溢出审计（调试）：遍历缩放层整棵树，列出所有超出 1024x768 逻辑画布的可见控件。
+    /// 用法：ZIRCON_UI_AUDIT=1 时场景 _Ready 后自动调用。
+    /// 原理：层 Transform 暂置恒等 → GetGlobalRect() 即逻辑画布坐标 → 越界者打印。
+    /// </summary>
+    public static void AuditOverflow(CanvasLayer layer, string sceneName)
+    {
+        if (layer == null || !GodotObject.IsInstanceValid(layer)) return;
+        Transform2D saved = layer.Transform;
+        layer.Transform = Transform2D.Identity; // 让全局坐标回到逻辑画布系
+        int found = 0;
+        Walk(layer, sceneName, ref found);
+        layer.Transform = saved;
+        GD.Print($"[UiScaler] 审计完成 {sceneName}: {found} 个溢出控件");
+    }
+
+    private static void Walk(Node node, string sceneName, ref int found)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is Control c && c.IsVisibleInTree() && c.Size.X > 1 && c.Size.Y > 1)
+            {
+                Rect2 r = c.GetGlobalRect();
+                bool over = r.End.X > BaseWidth + 2 || r.End.Y > BaseHeight + 2
+                            || r.Position.X < -2 || r.Position.Y < -2;
+                if (over)
+                {
+                    found++;
+                    GD.Print($"[UiScaler] 溢出 {sceneName}: {c.GetType().Name} '{c.Name}' " +
+                             $"rect=({r.Position.X:F0},{r.Position.Y:F0})-({r.End.X:F0},{r.End.Y:F0}) " +
+                             $"超出 {(r.End.X > BaseWidth + 2 ? $"右+{r.End.X - BaseWidth:F0} " : "")}" +
+                             $"{(r.End.Y > BaseHeight + 2 ? $"下+{r.End.Y - BaseHeight:F0}" : "")}");
+                }
+            }
+            Walk(child, sceneName, ref found);
+        }
+    }
 }
