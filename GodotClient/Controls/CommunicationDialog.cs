@@ -522,6 +522,30 @@ public partial class CommunicationDialog : DXWindow
 
     private string FriendFilterText() => _friendStateFilter switch { 1 => "仅在线", 2 => "仅离线", _ => "全部好友" };
 
+    /// <summary>
+    /// 旧版 CommunicationDialog.UpdateStateLabel：自己的在线状态按钮
+    /// 文本 + 颜色（在线绿/离开橙/忙碌红/离线灰）。点击切换后由
+    /// GameScene.CycleOnlineState 调用。
+    /// </summary>
+    public void RefreshOwnState(OnlineState state)
+    {
+        if (_friendStatus == null) return;
+        _friendStatus.Text = state switch
+        {
+            OnlineState.Online => "在线",
+            OnlineState.Away => "离开",
+            OnlineState.Busy => "忙碌",
+            _ => "离线",
+        };
+        _friendStatus.TextColour = state switch
+        {
+            OnlineState.Online => Colors.LimeGreen,
+            OnlineState.Away => Colors.Orange,
+            OnlineState.Busy => Colors.Red,
+            _ => Colors.Gray,
+        };
+    }
+
     private void RebuildFriends()
     {
         if (_page != 0 || _body == null) return;

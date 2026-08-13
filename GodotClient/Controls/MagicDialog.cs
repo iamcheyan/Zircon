@@ -490,9 +490,14 @@ public partial class MagicCellView : DXControl
             modulate: _magic == null ? new Color(1f, 0.35f, 0.35f, opacity) : new Color(0.8f, 0.8f, 0.8f, opacity));
 
         string experienceText;
+        Color experienceColour = new Color(1f, 0.85f, 0.45f, opacity);
         if (_magic == null)
         {
+            // 旧版 MagicDialog: 未学习时 Required Level 按玩家等级红/绿显示。
             experienceText = $"Required Level: {_info.NeedLevel1}";
+            experienceColour = (game?.PlayerLevel ?? 0) >= _info.NeedLevel1
+                ? new Color(0.5f, 1f, 0.5f, opacity)
+                : new Color(1f, 0.35f, 0.35f, opacity);
         }
         else
         {
@@ -507,7 +512,7 @@ public partial class MagicCellView : DXControl
             experienceText = MagicExperienceText(_magic);
         }
         DrawString(MirSkin.GetFont(), new Vector2(364, 31), experienceText,
-            HorizontalAlignment.Right, 205, MirSkin.ScaledSize(10), new Color(1f, 0.85f, 0.45f, opacity));
+            HorizontalAlignment.Right, 205, MirSkin.ScaledSize(10), experienceColour);
 
         // 当前栏组键位
         if (game != null && _magic != null)

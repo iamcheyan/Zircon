@@ -249,11 +249,32 @@ public partial class NPCGoodsPanel : DXControl
                     LibraryFile = LibraryFile.Ground, Index = _currency.DropItem.Image,
                     Location = new Vector2I(41, 22), Size = new Vector2I(16, 16), FixedSize = true, IsControl = false,
                 });
+            // 旧版 NPCGoodsPanel.UpdateCosts：余额不足时价格变红，否则黄色。
+            long balance = GameScene.Game?.Currencies.FirstOrDefault(x =>
+                x?.Info == _currency || x?.Info?.Type == _currency?.Type)?.Amount ?? 0;
+            bool afford = cost <= balance;
             row.AddControl(new DXLabel
             {
-                Text = $"{cost:#,##0}", FontSize = 9, TextColour = new Color(1f, .85f, .3f),
+                Text = $"{cost:#,##0}", FontSize = 9,
+                TextColour = afford ? new Color(1f, .85f, .3f) : Colors.Red,
                 Location = new Vector2I(60, 21), Size = new Vector2I(125, 17), IsControl = false,
             });
+            // 旧版 UpdateColours 的 RequirementLabel：可装备/使用物品显示 Can use Item（青绿），
+            // 否则 Cannot use Item（红）。
+            if (good.Item.ItemType is ItemType.Consumable or ItemType.Scroll or ItemType.Weapon
+                or ItemType.Armour or ItemType.Helmet or ItemType.Necklace or ItemType.Bracelet
+                or ItemType.Ring or ItemType.Shoes or ItemType.Poison or ItemType.Amulet
+                or ItemType.DarkStone or ItemType.Bundle or ItemType.Torch)
+            {
+                bool canUse = GameScene.Game?.CanUseItem(new ClientUserItem(good.Item, 1)) == true;
+                row.AddControl(new DXLabel
+                {
+                    Text = canUse ? "Can use Item" : "Cannot use Item",
+                    FontSize = 8,
+                    TextColour = canUse ? Colors.Aquamarine : Colors.Red,
+                    Location = new Vector2I(41, 33), Size = new Vector2I(160, 15), IsControl = false,
+                });
+            }
             int selected = i; row.MouseClick += (o, e) => { _selected = selected; _buy.Enabled = true; RefreshRows(); };
             // 旧版 NPCDialog 双击商品 -> C.NPCBuy (Godot DXControl.MouseDoubleClick 已修复触发)
             int doubleSelected = i; row.MouseDoubleClick += (o, e) => { _selected = doubleSelected; RefreshRows(); BuySelected(); };

@@ -6403,6 +6403,8 @@ public partial class GameScene : Control
     {
         _onlineState = _onlineState switch { OnlineState.Online => OnlineState.Busy, OnlineState.Busy => OnlineState.Away, _ => OnlineState.Online };
         SendOnlineState(_onlineState);
+        // 旧版 UpdateStateLabel：切换后立刻刷新好友面板状态按钮。
+        _communicationDialog?.RefreshOwnState(_onlineState);
     }
     public void SendGuildWar(string guildName) => _net?.Connection?.SendGuildWar(guildName);
     public void SendGuildRequestConquest(int index) => _net?.Connection?.SendGuildRequestConquest(index);

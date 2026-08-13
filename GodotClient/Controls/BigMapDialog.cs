@@ -267,6 +267,9 @@ public partial class BigMapDialog : DXWindow
         var marker = MapMarkerFactory.CreateNpcMarker(npc);
         var npcIndex = npc.Index;
         marker.MouseDoubleClick += (o, e) => GameScene.Game?.SendAutoPathStart(npcIndex);
+        // 旧版 BigMapDialog 的 control.Hint = name：悬停标记显示 NPC 名。
+        if (marker.TooltipText.Length == 0 && !string.IsNullOrWhiteSpace(npc.NPCName))
+            marker.TooltipText = npc.NPCName;
         marker.Location = new Vector2I(
             (int)(ScaleX * c.Value.X) - (int)marker.Size.X / 2,
             (int)(ScaleY * c.Value.Y) - (int)marker.Size.Y / 2);

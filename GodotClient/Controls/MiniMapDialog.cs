@@ -232,6 +232,9 @@ public partial class MiniMapDialog : DXWindow
         marker.Location = new Vector2I(
             (int)(ScaleX * c.Value.X) - (int)marker.Size.X / 2,
             (int)(ScaleY * c.Value.Y) - (int)marker.Size.Y / 2);
+        // 旧版 GameScene.GetNPCControl 的 control.Hint = name：悬停标记显示 NPC 名。
+        if (marker.TooltipText.Length == 0 && !string.IsNullOrWhiteSpace(npc.NPCName))
+            marker.TooltipText = npc.NPCName;
         Image.AddControl(marker);
         _staticMarkers.Add(marker);
     }
@@ -484,6 +487,15 @@ public partial class MiniMapDialog : DXWindow
             TimeOfDay.Night => 218,
             TimeOfDay.Day => 216,
             _ => 0,
+        };
+        // 旧版 TimeOfDayImage.Hint = TimeOfDayLabel：悬停显示当前时段文字。
+        TimeOfDayImage.TooltipText = GameScene.Game?.TimeOfDay switch
+        {
+            TimeOfDay.Dawn => "黎明",
+            TimeOfDay.Dusk => "黄昏",
+            TimeOfDay.Night => "夜晚",
+            TimeOfDay.Day => "白天",
+            _ => string.Empty,
         };
     }
 

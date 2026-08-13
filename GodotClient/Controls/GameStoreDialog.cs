@@ -315,6 +315,8 @@ public partial class GameStoreDialog : DXWindow
         };
         row.AddControl(gift);
         var favourite = new DXButton { LibraryFile = LibraryFile.GameInter, Index = _favourites.Contains(info.Index) ? 4857 : 4855, Location = new Vector2I(151, 51) };
+        // 旧版 RefreshFavourite 的 Hint：收藏/取消收藏悬停提示。
+        favourite.TooltipText = _favourites.Contains(info.Index) ? "取消收藏" : "收藏";
         // 原版只发送切换请求，图标/收藏集合由
         // S.GameStoreFavouriteChanged 回包确认；不能乐观修改，否则服务端
         // 拒绝请求时客户端会永久显示错误收藏状态。
