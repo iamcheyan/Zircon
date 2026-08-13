@@ -2402,14 +2402,17 @@ namespace Library
         B0014N,
         B100,
         B122,
+        B200,
         B300,
         B400,
         B14001,
         BD00,
         BD01,
         BD02,
+        BD002,
         BD041,
         BD042,
+        BD402,
         BD50,
         BD60,
         BD70,
@@ -2583,6 +2586,7 @@ namespace Library
         TeleportationStart,
 
         LavaStrikeStart,
+        LavaStrikeEnd,
 
         LightningBeamEnd,
 
