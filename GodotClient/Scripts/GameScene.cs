@@ -5805,7 +5805,7 @@ public partial class GameScene : Control
         {
             var clsMember = typeof(RequiredClass).GetMember(displayInfo.RequiredClass.ToString()).FirstOrDefault();
             var clsDesc = clsMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
-            sb.Append('\n').Append($"所需职业: {clsDesc ?? displayInfo.RequiredClass.ToString()}");
+            sb.Append('\n').Append($"所需职业: {displayInfo.RequiredClass.Local()}");
         }
 
         if (displayInfo.RequiredAmount <= 0) return;
@@ -9524,7 +9524,7 @@ public partial class GameScene : Control
     private void RefreshStatusWindow()
     {
         string mapName = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex)?.Local() ?? $"Map{_playerMapIndex}";
-        string className = StartInfo?.Class.ToString() ?? "-";
+        string className = StartInfo?.Class.Local() ?? "-";
         _statusWindow.Refresh(
             StartInfo?.Name ?? "-", className,
             _player.Health, _player.MaxHealth, _player.MaxMana,

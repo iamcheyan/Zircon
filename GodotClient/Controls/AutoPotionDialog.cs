@@ -175,7 +175,7 @@ public sealed partial class AutoPotionRow : DXControl
         AddControl(Health);
         AddControl(Mana);
 
-        EnabledCheck = new DXCheckButton("Enabled") { Location = new Vector2I(188, 5) };
+        EnabledCheck = new DXCheckButton("启用") { Location = new Vector2I(188, 5) };
         AddControl(EnabledCheck);
 
         _up = new DXButton { Index = 44, LibraryFile = LibraryFile.Interface, Size = new Vector2I(18, 18), Location = new Vector2I(5, 5) };

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Godot;
+using Library;
 using Library.SystemModels;
 using ZirconClient.Translations;
 
@@ -85,4 +86,36 @@ public static class LocalizedName
     public static string Local(this NPCInfo info) { EnsureLoaded(); return Lookup(_npcs, info?.NPCName, info?.NPCName); }
     public static string Local(this MagicInfo info) { EnsureLoaded(); return Lookup(_magics, info?.Name, info?.Name); }
     public static string Local(this MapInfo info) { EnsureLoaded(); return Lookup(_maps, info?.Description, info?.Description); }
+
+    /// <summary>职业中文名（Warrior=战士 等）。</summary>
+    public static string Local(this MirClass cls) =>
+        cls switch
+        {
+            MirClass.Warrior => "战士",
+            MirClass.Wizard => "法师",
+            MirClass.Taoist => "道士",
+            MirClass.Assassin => "刺客",
+            _ => cls.ToString(),
+        };
+
+    /// <summary>装备需求职业中文名（RequiredClass 位标志，可组合）。</summary>
+    public static string Local(this RequiredClass req)
+    {
+        if (req == RequiredClass.None) return "无";
+        var parts = new List<string>();
+        if ((req & RequiredClass.Warrior) != 0) parts.Add("战士");
+        if ((req & RequiredClass.Wizard) != 0) parts.Add("法师");
+        if ((req & RequiredClass.Taoist) != 0) parts.Add("道士");
+        if ((req & RequiredClass.Assassin) != 0) parts.Add("刺客");
+        return parts.Count > 0 ? string.Join("/", parts) : req.ToString();
+    }
+
+    /// <summary>性别中文名。</summary>
+    public static string Local(this MirGender gender) =>
+        gender switch
+        {
+            MirGender.Male => "男",
+            MirGender.Female => "女",
+            _ => gender.ToString(),
+        };
 }

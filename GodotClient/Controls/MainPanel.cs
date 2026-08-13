@@ -289,7 +289,7 @@ public partial class MainPanel : DXImageControl
 
     public void SetClass(MirClass cls)
     {
-        ClassLabel.Text = cls.ToString();
+        ClassLabel.Text = cls.Local();
         bool showMC = cls == MirClass.Wizard || cls == MirClass.Warrior;
         bool showSC = cls == MirClass.Taoist || cls == MirClass.Assassin;
         MCLabel.Visible = showMC;

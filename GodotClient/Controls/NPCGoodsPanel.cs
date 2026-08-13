@@ -40,7 +40,7 @@ public partial class NPCGoodsPanel : DXControl
         _scroll.ValueChanged += (o, e) => RefreshRows(); AddControl(_scroll);
         _buy = new DXButton { Text = "购买", Type = DXButton.ButtonType.Default, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(40, 359), Size = new Vector2I(80, 25), Enabled = false };
         _buy.MouseClick += (o, e) => BuySelected(); AddControl(_buy);
-        _guildFunds = new DXCheckButton("Use Guild Funds:") { Location = new Vector2I(120, 363), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
+        _guildFunds = new DXCheckButton("使用行会资金:") { Location = new Vector2I(120, 363), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
         // 原版 BuySell 页的出售状态由独立 InventoryDialog.SellMode 负责；
         // 这里保留内部链接逻辑作为旧调用兼容，但不在商品面板绘制出售按钮。
         _sell = new DXButton

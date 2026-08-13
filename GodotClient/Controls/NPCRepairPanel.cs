@@ -41,17 +41,17 @@ public partial class NPCRepairPanel : DXControl
         int bottom = 224;
         AddControl(new DXLabel { Text = "修理费用：", FontSize = 9, TextColour = Colors.White, Location = new Vector2I(9, bottom), Size = new Vector2I(79, 20), IsControl = false, Border = true, BorderColour = new Color(1f, .75f, .25f) });
         _cost = new DXLabel { Text = "0", FontSize = 10, TextColour = Colors.White, Location = new Vector2I(88, bottom), Size = new Vector2I(248, 20), IsControl = false, Border = true, BorderColour = new Color(1f, .75f, .25f) }; AddControl(_cost);
-        _special = new DXCheckButton("Special Repair") { Location = new Vector2I(210, bottom + 25), Size = new Vector2I(100, 19), FontSize = 9 };
+        _special = new DXCheckButton("特殊修理") { Location = new Vector2I(210, bottom + 25), Size = new Vector2I(100, 19), FontSize = 9 };
         _special.Changed += (o, e) => { if (_special.Checked) ClearUnavailableSpecialItems(); RebuildLinks(); }; AddControl(_special);
-        _guildFunds = new DXCheckButton("Use Guild Funds") { Location = new Vector2I(200, bottom + 47), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
+        _guildFunds = new DXCheckButton("使用行会资金") { Location = new Vector2I(200, bottom + 47), Size = new Vector2I(110, 19), FontSize = 9, Enabled = false }; AddControl(_guildFunds);
 
         int buttonY = bottom + 25;
-        AddSourceButton("Inventory", 9, buttonY, () => ImportCells(GameScene.Game?.InventoryCells));
-        AddSourceButton("Equipment", 93, buttonY, () => ImportCells(GameScene.Game?.EquipmentCells));
+        AddSourceButton("背包", 9, buttonY, () => ImportCells(GameScene.Game?.InventoryCells));
+        AddSourceButton("装备", 93, buttonY, () => ImportCells(GameScene.Game?.EquipmentCells));
         _repair = new DXButton { Text = "修理", Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(315, buttonY), Size = new Vector2I(79, 25), Enabled = false };
         _repair.MouseClick += (o, e) => Submit(); AddControl(_repair);
-        AddSourceButton("Storage", 9, buttonY + 30, () => ImportCells(GameScene.Game?.StorageCells));
-        AddSourceButton("Guild Storage", 93, buttonY + 30, () => ImportCells(GameScene.Game?.GuildStorageCells));
+        AddSourceButton("仓库", 9, buttonY + 30, () => ImportCells(GameScene.Game?.StorageCells));
+        AddSourceButton("行会仓库", 93, buttonY + 30, () => ImportCells(GameScene.Game?.GuildStorageCells));
     }
 
     public void Clear()

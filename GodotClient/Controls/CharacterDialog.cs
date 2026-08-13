@@ -324,7 +324,7 @@ public partial class CharacterDialog : DXWindow
         _hermitPanel.Visible = false;
         _statsPanel.Visible = false;
         WeightLabel.Visible = false;
-        _characterNameLabel.Text = $"{info.Name} Lv.{info.Level} {info.Class}";
+        _characterNameLabel.Text = $"{info.Name} Lv.{info.Level} {info.Class.Local()}";
         _guildNameLabel.Text = info.GuildName ?? string.Empty;
         _guildRankLabel.Text = info.GuildRank ?? string.Empty;
         _partnerName = info.Partner ?? string.Empty;

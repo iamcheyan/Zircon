@@ -49,7 +49,7 @@ public partial class RankingDialog : DXWindow
     public void ApplyInspect(S.Inspect packet)
     {
         if (_detail == null || packet == null) return;
-        _detail.Text = $"{packet.Name}\nLv. {packet.Level} · {packet.Class}\n\n" +
+        _detail.Text = $"{packet.Name}\nLv. {packet.Level} · {packet.Class.Local()}\n\n" +
             $"行会：{packet.GuildName ?? "-"}\n职位：{packet.GuildRank ?? "-"}\n" +
             string.Format(Lang.RankingEquipmentLabel, packet.Items?.Count ?? 0);
 
@@ -66,7 +66,7 @@ public partial class RankingDialog : DXWindow
         _inspectName.Text = packet.Name ?? string.Empty;
         _inspectGuild.Text = packet.GuildName ?? string.Empty;
         _inspectGuildRank.Text = packet.GuildRank ?? string.Empty;
-        _inspectLevel.Text = $"Lv. {packet.Level} - Cl. {packet.Class}";
+        _inspectLevel.Text = $"Lv. {packet.Level} - Cl. {packet.Class.Local()}";
         _inspectDoll.SetInspect(packet, _inspectItems);
         foreach (var cell in _inspectPanel.Controls)
         {
