@@ -30,18 +30,18 @@ public sealed partial class FortuneCheckerDialog : DXWindow
 
     public FortuneCheckerDialog()
     {
-        Text = "Fortune Checker";
+        Text = "算命师";
         Size = new Vector2I(503, 597);
         AddControl(new LegacyWindowFrame { Size = Size, HasTitle = true, HasFooter = false });
         AddControl(new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(485, 26), Border = true, BorderColour = new Color(1f, .8f, .3f), IsControl = false });
-        AddControl(new DXLabel { Text = "Name:", FontSize = 10, Location = new Vector2I(14, 42), IsControl = false });
+        AddControl(new DXLabel { Text = "名称：", FontSize = 10, Location = new Vector2I(14, 42), IsControl = false });
         _name = new DXTextInput { Location = new Vector2I(48, 41), Size = new Vector2I(180, 20) };
         AddControl(_name);
-        AddControl(new DXLabel { Text = "Item:", FontSize = 10, Location = new Vector2I(238, 42), IsControl = false });
-        _itemType = new DXButton { Text = "All", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(95, 25), Location = new Vector2I(270, 40), Index = -1, LibraryFile = LibraryFile.Interface };
+        AddControl(new DXLabel { Text = "物品：", FontSize = 10, Location = new Vector2I(238, 42), IsControl = false });
+        _itemType = new DXButton { Text = "全部", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(95, 25), Location = new Vector2I(270, 40), Index = -1, LibraryFile = LibraryFile.Interface };
         _itemType.MouseClick += (s, e) => _itemTypeMenu.Visible = !_itemTypeMenu.Visible;
         AddControl(_itemType);
-        _search = new DXButton { Text = "Search", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(80, 25), Location = new Vector2I(389, 40), Index = -1, LibraryFile = LibraryFile.Interface };
+        _search = new DXButton { Text = "搜索", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(80, 25), Location = new Vector2I(389, 40), Index = -1, LibraryFile = LibraryFile.Interface };
         _search.MouseClick += (s, e) => Search();
         AddControl(_search);
         _itemTypeMenu = new FortuneItemTypeMenu(SelectItemType) { Location = new Vector2I(270, 65), Visible = false };
@@ -127,7 +127,7 @@ public sealed partial class FortuneRow : DXControl
         _dateLabelLabel = CreateRightLabel("Last Check:", 35);
         _dateLabel = CreateValueLabel(35);
 
-        _check = new DXButton { Text = "Check", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(410, 34), Index = -1, LibraryFile = LibraryFile.Interface };
+        _check = new DXButton { Text = "查询", Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(410, 34), Index = -1, LibraryFile = LibraryFile.Interface };
         _check.MouseClick += (s, e) => Check();
         AddControl(_check);
         Visible = false;
@@ -162,9 +162,9 @@ public sealed partial class FortuneRow : DXControl
     {
         if (fortune == null)
         {
-            _countLabel.Text = "Not Checked";
-            _progressLabel.Text = "Not Checked";
-            _dateLabel.Text = "Not Checked";
+            _countLabel.Text = "未查询";
+            _progressLabel.Text = "未查询";
+            _dateLabel.Text = "未查询";
             return;
         }
 
@@ -221,7 +221,7 @@ public sealed partial class FortuneItemTypeMenu : DXControl
         _scroll.ValueChanged += (s, e) => UpdateLocations();
         AddControl(_scroll);
 
-        AddItem("All", null);
+        AddItem("全部", null);
         foreach (var itemType in Enum.GetValues<ItemType>())
         {
             if (itemType == ItemType.Nothing) continue;
@@ -236,7 +236,7 @@ public sealed partial class FortuneItemTypeMenu : DXControl
 
     public string GetDisplayName(ItemType? type)
     {
-        if (!type.HasValue) return "All";
+        if (!type.HasValue) return "全部";
         return _items.FirstOrDefault(x => Equals(x.Tag, type))?.Text ?? type.Value.ToString();
     }
 

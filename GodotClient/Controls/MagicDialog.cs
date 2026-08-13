@@ -485,7 +485,7 @@ public partial class MagicCellView : DXControl
             modulate: new Color(1f, 1f, 1f, opacity));
 
         // 等级 / 学习状态
-        string levelText = _magic == null ? "Not\nLearned" : $"Level: {_magic.Level}";
+        string levelText = _magic == null ? "未\n学习" : $"等级: {_magic.Level}";
         DrawString(MirSkin.GetFont(), new Vector2(54, 36), levelText, fontSize: MirSkin.ScaledSize(11),
             modulate: _magic == null ? new Color(1f, 0.35f, 0.35f, opacity) : new Color(0.8f, 0.8f, 0.8f, opacity));
 
@@ -494,7 +494,7 @@ public partial class MagicCellView : DXControl
         if (_magic == null)
         {
             // 旧版 MagicDialog: 未学习时 Required Level 按玩家等级红/绿显示。
-            experienceText = $"Required Level: {_info.NeedLevel1}";
+            experienceText = $"所需等级: {_info.NeedLevel1}";
             experienceColour = (game?.PlayerLevel ?? 0) >= _info.NeedLevel1
                 ? new Color(0.5f, 1f, 0.5f, opacity)
                 : new Color(1f, 0.35f, 0.35f, opacity);
@@ -561,7 +561,7 @@ public partial class MagicCellView : DXControl
 
     private static string MagicExperienceText(ClientUserMagic magic)
     {
-        if (magic.Level >= Globals.MagicMaxLevel) return "Experience: Max Level";
+        if (magic.Level >= Globals.MagicMaxLevel) return "经验: 已满级";
         long required = magic.Level switch
         {
             0 => magic.Info.Experience1,
@@ -569,7 +569,7 @@ public partial class MagicCellView : DXControl
             2 => magic.Info.Experience3,
             _ => (magic.Level - 2) * 500L,
         };
-        return required <= 0 ? "Experience: 0/0" : $"Experience: {magic.Experience}/{required}";
+        return required <= 0 ? "经验: 0/0" : $"经验: {magic.Experience}/{required}";
     }
 
     private static float MagicExperiencePercent(ClientUserMagic magic)

@@ -1226,7 +1226,7 @@ public partial class DXItemCell : DXControl
                     case ItemEffect.ArmourDye:
                         if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item == null)
                         {
-                            GameScene.Game.ReceiveChat("You need to be wearing an armour before you can apply a dye.", MessageType.System);
+                            GameScene.Game.ReceiveChat("必须先穿戴护甲才能使用染色。", MessageType.System);
                             return false;
                         }
                         GameScene.Game.OpenEditCharacterDialog(EditCharacterChange.Armour);

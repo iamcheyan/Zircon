@@ -27,7 +27,7 @@ public sealed partial class CaptionDialog : DXWindow
             TextColour = new Color(1f, .85f, .3f),
             Location = new Vector2I(260, 50),
             IsControl = false,
-            TooltipText = $"Caption.\nAccepted characters: a-z A-Z 0-9.\nLength: {Globals.MinCaptionLength}-{Globals.MaxCaptionLength}.\nAvoid harmful and racist words.",
+            TooltipText = $"标题。\n可用字符: a-z A-Z 0-9。\n长度: {Globals.MinCaptionLength}-{Globals.MaxCaptionLength}.\nAvoid harmful and racist words.",
         });
         _change = new DXButton { Text = "更换", Size = new Vector2I(60, 24), Location = new Vector2I(273, 50), Enabled = false };
         _change.MouseClick += (s, e) => Submit();

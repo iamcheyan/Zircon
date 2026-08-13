@@ -138,7 +138,7 @@ public sealed partial class NPCQuestDialog : DXWindow
             if (_quest == null || GameScene.Game?.IsObserver == true) return;
             if (!CanComplete(_choiceRewards.Count, _selectedChoice))
             {
-                GameScene.Game?.ReceiveChat("Please select a reward.", MessageType.System);
+                GameScene.Game?.ReceiveChat("请选择一个奖励。", MessageType.System);
                 return;
             }
             GameScene.Game?.SendQuestComplete(_quest.Index, _selectedChoice >= 0 ? _choiceRewards[_selectedChoice].Index : 0);

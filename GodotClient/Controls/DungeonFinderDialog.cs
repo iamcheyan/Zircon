@@ -47,7 +47,7 @@ public sealed partial class DungeonFinderDialog : DXWindow
         filterPanel.AddControl(_filter);
         filterPanel.AddControl(new DXLabel { Text = "排序：", FontSize = 9, Location = new Vector2I(237, 5), IsControl = false });
         _sort = new DXButton { Text = "名称", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(272, 1), Size = new Vector2I(100, 24), Index = -1, LibraryFile = LibraryFile.Interface };
-        _sort.MouseClick += (s, e) => { _sortMode = (DungeonFinderSort)(((int)_sortMode + 1) % 3); _sort.Text = $"Sort: {_sortMode}"; Search(); };
+        _sort.MouseClick += (s, e) => { _sortMode = (DungeonFinderSort)(((int)_sortMode + 1) % 3); _sort.Text = $"排序: {_sortMode}"; Search(); };
         filterPanel.AddControl(_sort);
         var search = new DXButton { Text = "搜索", Type = DXButton.ButtonType.SmallButton, FontSize = 10, Location = new Vector2I(447, 1), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         search.MouseClick += (s, e) => Search(); filterPanel.AddControl(search);
@@ -182,16 +182,16 @@ internal sealed partial class DungeonFinderRow : DXControl
         BackColour = selected ? new Color(.28f, .22f, .10f, .92f) : new Color(.08f, .06f, .045f, .82f);
         _name.Text = info.Name ?? string.Empty;
         _type.Text = info.Type.ToString();
-        _level.Text = $"Level: {GetLevel(info)}";
-        _count.Text = $"Player Count: {GetPlayerCount(info)}";
+        _level.Text = $"等级: {GetLevel(info)}";
+        _count.Text = $"玩家人数: {GetPlayerCount(info)}";
         QueueRedraw();
     }
 
     private static string GetLevel(InstanceInfo info)
-        => info.MinPlayerLevel == 0 && info.MaxPlayerLevel == 0 ? "Any" : info.MaxPlayerLevel == 0 ? $"{info.MinPlayerLevel}+" : $"{info.MinPlayerLevel} - {info.MaxPlayerLevel}";
+        => info.MinPlayerLevel == 0 && info.MaxPlayerLevel == 0 ? "任意" : info.MaxPlayerLevel == 0 ? $"{info.MinPlayerLevel}+" : $"{info.MinPlayerLevel} - {info.MaxPlayerLevel}";
 
     private static string GetPlayerCount(InstanceInfo info)
-        => info.MaxPlayerCount == 0 ? "Any" : $"{info.MinPlayerCount} - {info.MaxPlayerCount}";
+        => info.MaxPlayerCount == 0 ? "任意" : $"{info.MinPlayerCount} - {info.MaxPlayerCount}";
 
     private static DXLabel MakeLabel(int x) => new()
     {

@@ -5507,20 +5507,20 @@ public partial class GameScene : Control
 
         var sb = new System.Text.StringBuilder(displayInfo.Local() ?? item.Info.Local() ?? string.Empty);
         if (item.Info.ItemEffect == ItemEffect.ItemPart)
-            sb.Append(" - [Part]");
+            sb.Append(" - [部件]");
 
         // 原版 AddItemLabelMetadata 的 Type 行。
         var typeMember = typeof(ItemType).GetMember(displayInfo.ItemType.ToString()).FirstOrDefault();
         var description = typeMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
-        sb.Append('\n').Append($"Type: {description ?? displayInfo.ItemType.ToString()}");
+        sb.Append('\n').Append($"类型: {description ?? displayInfo.ItemType.ToString()}");
 
         // 原版 Expirable 标记的过期时间行。
         if ((item.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
-            sb.Append('\n').Append($"Expires in {Functions.ToString(item.ExpireTime, true)}");
+            sb.Append('\n').Append($"过期于 {Functions.ToString(item.ExpireTime, true)}");
 
         // 原版 Locked 标记的提示行。
         if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked)
-            sb.Append('\n').Append("Locked: Prevents accidentally selling or throwing away");
+            sb.Append('\n').Append("已锁定: 防止误售或误扔");
 
         return sb.ToString();
     }
@@ -5546,14 +5546,14 @@ public partial class GameScene : Control
         // ---- Header: 名称 + [Part] ----
         sb.Append(displayInfo.Local() ?? item.Info.Local() ?? string.Empty);
         if (item.Info.ItemEffect == ItemEffect.ItemPart)
-            sb.Append(" - [Part]");
+            sb.Append(" - [部件]");
 
         // ---- Metadata ----
         if (displayInfo.ItemType != ItemType.Nothing)
         {
             var typeMember = typeof(ItemType).GetMember(displayInfo.ItemType.ToString()).FirstOrDefault();
             var typeDesc = typeMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
-            sb.Append('\n').Append($"Type: {typeDesc ?? displayInfo.ItemType.ToString()}");
+            sb.Append('\n').Append($"类型: {typeDesc ?? displayInfo.ItemType.ToString()}");
         }
 
         if (item.Info.Durability > 0)
@@ -5561,34 +5561,34 @@ public partial class GameScene : Control
             switch (displayInfo.ItemType)
             {
                 case ItemType.Book:
-                    sb.Append('\n').Append($"Pages: {item.CurrentDurability / 1000}/{item.MaxDurability / 1000}");
+                    sb.Append('\n').Append($"页数: {item.CurrentDurability / 1000}/{item.MaxDurability / 1000}");
                     break;
                 case ItemType.Meat:
-                    sb.Append('\n').Append($"Quality: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
+                    sb.Append('\n').Append($"品质: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
                     break;
                 case ItemType.Ore:
-                    sb.Append('\n').Append($"Purity: {Math.Round(item.CurrentDurability / 1000M)}");
+                    sb.Append('\n').Append($"纯度: {Math.Round(item.CurrentDurability / 1000M)}");
                     break;
                 case ItemType.SocketGem:
-                    sb.Append('\n').Append($"Gem Type: {GemTypeName(item.Info.Shape)}");
-                    sb.Append('\n').Append($"Purity: {GemPurityText(item)}");
+                    sb.Append('\n').Append($"宝石类型: {GemTypeName(item.Info.Shape)}");
+                    sb.Append('\n').Append($"纯度: {GemPurityText(item)}");
                     break;
                 default:
                     if (item.Info.StackSize == 1)
-                        sb.Append('\n').Append($"Durability: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
+                        sb.Append('\n').Append($"耐久: {Math.Round(item.CurrentDurability / 1000M)}/{Math.Round(item.MaxDurability / 1000M)}");
                     break;
             }
         }
 
         if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
-            sb.Append('\n').Append($"Amount: {item.Count:#,##0}");
+            sb.Append('\n').Append($"数量: {item.Count:#,##0}");
         else if (item.Info.ItemEffect == ItemEffect.ItemPart)
-            sb.Append('\n').Append($"Parts: {item.Count}/{displayInfo.PartCount}.");
+            sb.Append('\n').Append($"部件: {item.Count}/{displayInfo.PartCount}。");
         else if (item.Info.StackSize > 1)
-            sb.Append('\n').Append($"Count: {item.Count}/{item.Info.StackSize}");
+            sb.Append('\n').Append($"数量: {item.Count}/{item.Info.StackSize}");
 
         if (item.Info.Weight > 0)
-            sb.Append('\n').Append($"Weight: {item.Info.Weight}");
+            sb.Append('\n').Append($"重量: {item.Info.Weight}");
 
         // ---- 货币/经验物品：直接返回（旧版只显示描述）----
         if (IsCurrencyItem(item.Info) || item.Info.ItemEffect == ItemEffect.Experience)
@@ -5642,16 +5642,16 @@ public partial class GameScene : Control
                 case ItemType.Shield:
                     sb.Append('\n');
                     if (Library.Time.Now >= item.NextSpecialRepair)
-                        sb.Append("Can Special Repair");
+                        sb.Append("可特殊修理");
                     else
-                        sb.Append($"Special Repair in {Functions.ToString(item.NextSpecialRepair - Library.Time.Now, true)}");
+                        sb.Append($"特殊修理将于 {Functions.ToString(item.NextSpecialRepair - Library.Time.Now, true)}");
                     break;
             }
         }
 
         // ---- 过期 / 复活 ----
         if ((item.Flags & UserItemFlags.Expirable) == UserItemFlags.Expirable)
-            sb.Append('\n').Append($"Expires in {Functions.ToString(item.ExpireTime, true)}");
+            sb.Append('\n').Append($"过期于 {Functions.ToString(item.ExpireTime, true)}");
 
         if (item.AddedStats != null && item.AddedStats[Stat.ItemReviveTime] > 0)
         {
@@ -5670,22 +5670,22 @@ public partial class GameScene : Control
 
         // ---- 结婚 / GM ----
         if ((item.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage)
-            sb.Append('\n').Append("Wedding Ring.");
+            sb.Append('\n').Append("婚戒。");
         if ((item.Flags & UserItemFlags.GameMaster) == UserItemFlags.GameMaster)
-            sb.Append('\n').Append("Created by a Game Master.");
+            sb.Append('\n').Append("由管理员创建。");
 
         // ---- 碎片 / 重置 / 锁定 ----
         if (item.CanFragment())
         {
-            sb.Append('\n').Append($"Fragment Cost: {item.FragmentCost():#,##0}");
-            sb.Append('\n').Append($"Fragments: {(item.Info.Rarity == Rarity.Common ? "Fragment" : "Fragment (II)")} x{item.FragmentCount():#,##0}");
+            sb.Append('\n').Append($"碎片费用: {item.FragmentCost():#,##0}");
+            sb.Append('\n').Append($"碎片: {(item.Info.Rarity == Rarity.Common ? "Fragment" : "Fragment (II)")} x{item.FragmentCount():#,##0}");
         }
 
         if (Library.Time.Now < item.NextReset)
-            sb.Append('\n').Append($"Reset Available in {Functions.ToString(item.NextReset - Library.Time.Now, true)}");
+            sb.Append('\n').Append($"重置可用时间: {Functions.ToString(item.NextReset - Library.Time.Now, true)}");
 
         if ((item.Flags & UserItemFlags.Locked) == UserItemFlags.Locked)
-            sb.Append('\n').Append("Locked: Prevents accidentally selling or throwing away\n[Middle Mouse Button] or [Scroll Lock] to Unlock.");
+            sb.Append('\n').Append("已锁定: 防止误售或误扔\n[鼠标中键] 或 [Scroll Lock] 解锁ck.");
 
         return sb.ToString();
     }
@@ -5768,7 +5768,7 @@ public partial class GameScene : Control
         }
 
         if (item.Info.Durability > 0)
-            sb.Append('\n').Append($"Cooldown: {Functions.ToString(TimeSpan.FromMilliseconds(item.Info.Durability), true)}");
+            sb.Append('\n').Append($"冷却: {Functions.ToString(TimeSpan.FromMilliseconds(item.Info.Durability), true)}");
     }
 
     private void AppendTrainingInfo(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
@@ -5799,13 +5799,13 @@ public partial class GameScene : Control
     private void AppendRequirements(System.Text.StringBuilder sb, ClientUserItem item, ItemInfo displayInfo)
     {
         if (displayInfo.RequiredGender != RequiredGender.None)
-            sb.Append('\n').Append($"Required Gender: {displayInfo.RequiredGender}");
+            sb.Append('\n').Append($"所需性别: {displayInfo.RequiredGender}");
 
         if (displayInfo.RequiredClass != RequiredClass.All)
         {
             var clsMember = typeof(RequiredClass).GetMember(displayInfo.RequiredClass.ToString()).FirstOrDefault();
             var clsDesc = clsMember?.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>()?.Description;
-            sb.Append('\n').Append($"Required Class: {clsDesc ?? displayInfo.RequiredClass.ToString()}");
+            sb.Append('\n').Append($"所需职业: {clsDesc ?? displayInfo.RequiredClass.ToString()}");
         }
 
         if (displayInfo.RequiredAmount <= 0) return;
@@ -5813,19 +5813,19 @@ public partial class GameScene : Control
         string text;
         switch (displayInfo.RequiredType)
         {
-            case RequiredType.Level: text = $"Required Level: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.MaxLevel: text = $"Max Level: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.AC: text = $"Required AC: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.MR: text = $"Required MR: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.DC: text = $"Required DC: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.MC: text = $"Required MC: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.SC: text = $"Required SC: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.Health: text = $"Required Health: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.Mana: text = $"Required Mana: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.CompanionLevel: text = $"Companion Level: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.MaxCompanionLevel: text = $"Max Companion Level: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.RebirthLevel: text = $"Rebirth Level: {displayInfo.RequiredAmount}"; break;
-            case RequiredType.MaxRebirthLevel: text = $"Max Rebirth Level: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.Level: text = $"所需等级: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxLevel: text = $"最大等级: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.AC: text = $"所需防御: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MR: text = $"所需魔抗: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.DC: text = $"所需攻击: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MC: text = $"所需魔法: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.SC: text = $"所需道术: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.Health: text = $"所需生命: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.Mana: text = $"所需魔法值: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.CompanionLevel: text = $"伙伴等级: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxCompanionLevel: text = $"Max 伙伴等级: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.RebirthLevel: text = $"转生等级: {displayInfo.RequiredAmount}"; break;
+            case RequiredType.MaxRebirthLevel: text = $"Max 转生等级: {displayInfo.RequiredAmount}"; break;
             default: text = "Unknown Type Required"; break;
         }
         sb.Append('\n').Append(text);
@@ -5862,7 +5862,7 @@ public partial class GameScene : Control
 
         if (sale > 0)
         {
-            sb.Append('\n').Append($"Sell Value: {sale:#,##0}");
+            sb.Append('\n').Append($"售价: {sale:#,##0}");
             any = true;
         }
 

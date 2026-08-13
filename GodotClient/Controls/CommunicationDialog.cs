@@ -669,7 +669,7 @@ public partial class CommunicationDialog : DXWindow
         {
             if (!CanDeleteMail(mail))
             {
-                GameScene.Game?.ReceiveChat("You cannot delete a mail with items inside", MessageType.System);
+                GameScene.Game?.ReceiveChat("无法删除含物品的邮件", MessageType.System);
                 return;
             }
             GameScene.Game?.SendMailDelete(mail.Index);

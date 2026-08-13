@@ -471,7 +471,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         }
         evaluate = Button("Evaluate", 320, 128, () => SubmitMaster(true), false);
         submit = Button("Submit", 408, 128, () => SubmitMaster(false), false);
-        Add(new DXLabel { Text = $"Cost: {Globals.MasterRefineEvaluateCost:#,##0}", FontSize = 8, Location = new Vector2I(320, 111), IsControl = false });
+        Add(new DXLabel { Text = $"费用: {Globals.MasterRefineEvaluateCost:#,##0}", FontSize = 8, Location = new Vector2I(320, 111), IsControl = false });
     }
 
     private void SubmitMaster(bool evaluate)
@@ -500,7 +500,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         }
         if (stone.Count == 0)
         {
-            GameScene.Game?.ReceiveChat("You need Refinement Stone x1 to Master Refine", MessageType.System);
+            GameScene.Game?.ReceiveChat("需要精炼石 x1 才能进行大师精炼", MessageType.System);
             return;
         }
         if (BeginSubmit(fragment1, fragment2, fragment3, stone, special).Count == 0) return;

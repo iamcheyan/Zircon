@@ -574,13 +574,13 @@ public sealed partial class ConsignItemDialog : DXWindow
         if (ItemCell.Item == null)
         {
             // 原版：未放入物品时提示。
-            GameScene.Game?.ReceiveChat("Error: No Item selected.", MessageType.System);
+            GameScene.Game?.ReceiveChat("错误：未选择物品。", MessageType.System);
             return;
         }
         if (price <= 0)
         {
             // 原版：价格无效时提示。
-            GameScene.Game?.ReceiveChat("Error: Invalid Price.", MessageType.System);
+            GameScene.Game?.ReceiveChat("错误：价格无效。", MessageType.System);
             return;
         }
         long fee = Globals.MarketPlaceFee;

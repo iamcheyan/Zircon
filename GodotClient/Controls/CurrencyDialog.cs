@@ -16,7 +16,7 @@ public sealed partial class CurrencyDialog : DXWindow
     public CurrencyDialog()
     {
         Movable = true;
-        Text = "Currency";
+        Text = "货币";
         // 原版 SetClientSize(227, 7 * 43 + 1) 经 Interface 通用窗口框架
         // 展开后为 245x348，CurrencyTree 位于客户区 (9,37)。
         Size = new Vector2I(245, 348);
