@@ -111,7 +111,7 @@ public sealed partial class NPCQuestDialog : DXWindow
         _name = new DXLabel { FontSize = 12, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, Size = new Vector2I(334, 28), Location = new Vector2I(10, 40), IsControl = false }; AddControl(_name);
         _description = new DXLabel { FontSize = 10, TextColour = Colors.White, Size = new Vector2I(313, 81), Location = new Vector2I(13, 86), IsControl = false }; AddControl(_description);
         _tasks = new DXLabel { FontSize = 10, TextColour = Colors.White, Size = new Vector2I(334, 61), Location = new Vector2I(13, 185), IsControl = false }; AddControl(_tasks);
-        AddControl(new DXLabel { Text = "奖励", FontSize = 10, DrawOutline = true, Location = new Vector2I(10, 270), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.QuestTabRewardsLabel, FontSize = 10, DrawOutline = true, Location = new Vector2I(10, 270), IsControl = false });
         _rewardGrid = new DXItemGrid { GridSize = new Vector2I(5, 1), GridType = GridType.None, ItemGrid = _rewards, ReadOnly = true, Location = new Vector2I(12, 292) }; AddControl(_rewardGrid);
         AddControl(new DXLabel { Text = "可选奖励", FontSize = 10, DrawOutline = true, Location = new Vector2I(215, 270), IsControl = false });
         _choiceGrid = new DXItemGrid { GridSize = new Vector2I(4, 1), GridType = GridType.None, ItemGrid = _choices, ReadOnly = true, Location = new Vector2I(217, 292) }; AddControl(_choiceGrid);
@@ -151,7 +151,7 @@ public sealed partial class NPCQuestDialog : DXWindow
     {
         _quest = quest;
         if (quest == null) return;
-        _name.Text = quest.QuestName ?? "任务";
+        _name.Text = quest.QuestName ?? Lang.QuestTabTasksLabel;
         var game = GameScene.Game;
         var userQuest = game?.GetUserQuest(quest.Index);
         _description.Text = game?.GetQuestText(quest, userQuest) ?? quest.AcceptText ?? quest.ProgressText ?? quest.CompletedText ?? string.Empty;

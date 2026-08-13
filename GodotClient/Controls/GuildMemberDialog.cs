@@ -26,14 +26,14 @@ public sealed partial class GuildMemberDialog : DXWindow
         _permission.MouseClick += (s, e) => CyclePermission();
         AddControl(_permission);
         AddControl(new DXLabel { Text = "权限包含：公告、邀请、仓库、维修、商店、市场、战争", FontSize = 8, Location = new Vector2I(18, 138), Size = new Vector2I(185, 32), IsControl = false });
-        var confirm = new DXButton { Text = "确认", FontSize = 9, Location = new Vector2I(30, 195), Size = new Vector2I(70, 25), Index = -1, LibraryFile = LibraryFile.Interface };
+        var confirm = new DXButton { Text = Lang.CommonControlConfirm, FontSize = 9, Location = new Vector2I(30, 195), Size = new Vector2I(70, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         confirm.MouseClick += (s, e) =>
         {
             GameScene.Game?.SendGuildEditMember(_index, _rank.Text, _permissions);
             WindowManager.Close(this);
         };
         AddControl(confirm);
-        var kick = new DXButton { Text = "踢出", FontSize = 9, Location = new Vector2I(120, 195), Size = new Vector2I(70, 25), Index = -1, LibraryFile = LibraryFile.Interface };
+        var kick = new DXButton { Text = Lang.GuildMemberDialogKickButtonLabel, FontSize = 9, Location = new Vector2I(120, 195), Size = new Vector2I(70, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         kick.MouseClick += (s, e) =>
         {
             GameScene.Game?.SendGuildKickMember(_index);

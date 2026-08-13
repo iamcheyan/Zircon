@@ -42,12 +42,12 @@ public partial class CompanionDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this); AddControl(close);
-        AddControl(new DXLabel { Text = "伙伴", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(464, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CompanionDialogTitle, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(464, 18), IsControl = false });
         // 原版 DXTabControl 这里只注册一个 CompanionTab；加成/筛选/背包
         // 是主页签底部的视图切换按钮，不是顶部四个页签。
         _companionTab = new DXButton
         {
-            Text = "伙伴",
+            Text = Lang.CompanionDialogTitle,
             FontSize = 10,
             TextColour = new Color(1f, .85f, .3f),
             LibraryFile = LibraryFile.Interface,
@@ -61,8 +61,8 @@ public partial class CompanionDialog : DXWindow
         _body = new DXControl { Location = new Vector2I(0, 62), Size = new Vector2I(464, 300), Clip = true }; AddControl(_body);
         AddMainLabel("名称", 10, 156, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
         AddMainLabel("等级", 10, 178, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
-        AddMainLabel("经验", 10, 200, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
-        AddMainLabel("饥饿", 10, 222, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
+        AddMainLabel(Lang.CompanionDialogCompanionTabExpLabel, 10, 200, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
+        AddMainLabel(Lang.CompanionDialogCompanionTabHungerLabel, 10, 222, new Color(1f, .85f, .3f), HorizontalAlignment.Left, 60);
         _name = AddMainLabel("未召唤伙伴", 73, 156, Colors.White, HorizontalAlignment.Center, 152);
         _level = AddMainLabel("0", 73, 178, Colors.White, HorizontalAlignment.Center, 152);
         _experience = AddMainLabel("0%", 73, 200, Colors.White, HorizontalAlignment.Center, 152);
@@ -82,7 +82,7 @@ public partial class CompanionDialog : DXWindow
         _bonusButton = AddBottomButton("加成", 10, () => ShowPage(1));
         _filterButton = AddBottomButton("筛选", 90, () => ShowPage(2));
         _bagButton = AddBottomButton("背包", 170, () => ShowPage(3));
-        _saveFilter = new DXButton { Text = "保存设置", FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(370, 40), Size = new Vector2I(80, 24), Visible = false };
+        _saveFilter = new DXButton { Text = Lang.FilterDialogSaveButtonLabel, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(370, 40), Size = new Vector2I(80, 24), Visible = false };
         _saveFilter.MouseClick += (o, e) => SaveFilters(); AddControl(_saveFilter);
         DrawEquipment();
         ShowPage(0);
@@ -156,10 +156,10 @@ public partial class CompanionDialog : DXWindow
 
     private void BuildFilterPanel()
     {
-        AddFilterGroup("职业", Enum.GetValues<MirClass>(), _classFilters, 10);
+        AddFilterGroup(Lang.MainPanelClassHint, Enum.GetValues<MirClass>(), _classFilters, 10);
         AddFilterGroup("稀有度", Enum.GetValues<Rarity>(), _rarityFilters, 70);
         var excluded = new HashSet<ItemType> { ItemType.Nothing, ItemType.Consumable, ItemType.Torch, ItemType.Poison, ItemType.Amulet, ItemType.Meat, ItemType.Ore, ItemType.Currency, ItemType.DarkStone, ItemType.RefineSpecial, ItemType.HorseArmour, ItemType.CompanionFood, ItemType.System, ItemType.ItemPart, ItemType.Hook, ItemType.Float, ItemType.Bait, ItemType.Finder, ItemType.Reel };
-        AddFilterGroup("物品类型", Enum.GetValues<ItemType>().Where(t => !excluded.Contains(t) && !t.ToString().Contains("Companion")), _typeFilters, 130);
+        AddFilterGroup(Lang.ConsignmentDialogItemTypesLabel, Enum.GetValues<ItemType>().Where(t => !excluded.Contains(t) && !t.ToString().Contains("Companion")), _typeFilters, 130);
     }
 
     private void AddFilterGroup<T>(string title, IEnumerable<T> values, Dictionary<T, DXCheckButton> target, int y) where T : struct, Enum

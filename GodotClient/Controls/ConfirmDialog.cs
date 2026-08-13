@@ -1,3 +1,4 @@
+using ZirconClient.Scripts;
 using System;
 using Godot;
 using Library;
@@ -11,7 +12,7 @@ public sealed partial class ConfirmDialog : DXWindow
 
     public ConfirmDialog(string message, string title, Action confirm)
     {
-        Text = title ?? "确认";
+        Text = title ?? Lang.CommonControlConfirm;
         HasTitle = false;
         HasFooter = false;
         Size = new Vector2I(252, 128);

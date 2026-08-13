@@ -54,7 +54,7 @@ public partial class DXImageControl : DXControl
         // 原版 DXWindow/DXImageControl 对 Interface[15] 关闭按钮统一提供
         // CommonControlClose Hint；窗口若有更具体提示，可在此之前覆盖。
         if (LibraryFile == LibraryFile.Interface && Index == 15 && string.IsNullOrEmpty(TooltipText))
-            TooltipText = "关闭";
+            TooltipText = Lang.CommonControlClose;
         base._Ready();
     }
 

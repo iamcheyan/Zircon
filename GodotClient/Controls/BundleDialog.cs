@@ -43,7 +43,7 @@ public sealed partial class BundleDialog : DXWindow
         _slot = slot; _selectedIndex = -1; _selectedBundle = GameScene.Game?.InventoryCells?.ElementAtOrDefault(slot); _selectedBundleItem = item;
         _selectedBundle?.Locked = true; _selectedBundle?.UpdateBorder();
         ResetCells();
-        _confirm.Text = _info.Type switch { BundleType.AnyOf => "随机领取", BundleType.AllOf => "全部领取", BundleType.OneOf => "选择并领取", _ => "确认" };
+        _confirm.Text = _info.Type switch { BundleType.AnyOf => "随机领取", BundleType.AllOf => "全部领取", BundleType.OneOf => "选择并领取", _ => Lang.CommonControlConfirm };
         _confirm.Enabled = _info.Type != BundleType.OneOf;
         foreach (var entry in contents ?? new List<ClientBundleItemInfo>())
         {

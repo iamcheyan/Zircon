@@ -1059,7 +1059,7 @@ public partial class UITestScene : Control
 
         bool standardClose = standard.DefaultCloseButton != null
             && standard.DefaultCloseButton.Index == 15
-            && standard.DefaultCloseButton.TooltipText == "关闭"
+            && standard.DefaultCloseButton.TooltipText == Lang.CommonControlClose
             && milestone.DefaultCloseButton != null;
         bool floatingHidden = floating.DefaultCloseButton == null
             && belt.DefaultCloseButton == null

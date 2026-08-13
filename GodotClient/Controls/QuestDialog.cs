@@ -49,7 +49,7 @@ public partial class QuestDialog : DXWindow
 
         AddControl(new DXLabel
         {
-            Text = "任务日志",
+            Text = Lang.QuestDialogTitle,
             FontSize = 11,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,
@@ -206,7 +206,7 @@ public partial class QuestDialog : DXWindow
             foreach (var milestone in GameScene.Game?.Milestones ?? Enumerable.Empty<ClientUserMilestone>())
             {
                 var info = milestone.Info ?? Globals.MilestoneInfoList?.Binding.FirstOrDefault(x => x.Index == milestone.InfoIndex);
-                string state = milestone.IsComplete ? "完成" : "进行中";
+                string state = milestone.IsComplete ? "完成" : Lang.GuildCastlePanelInProgressText;
                 var title = AddLine($"{info?.Title ?? "里程碑"} [{state}]", 12, new Color(1f, 0.85f, 0.3f), 8, milestoneY);
                 title.MouseFilter = Control.MouseFilterEnum.Stop;
                 int index = milestone.Index;
@@ -381,7 +381,7 @@ public partial class QuestDialog : DXWindow
         AddDetailText(description, 10, 84, 10, Colors.White, 285, 62);
         AddDetailText("任务目标", 10, 152, 10, new Color(1f, .85f, .3f));
         AddDetailText(GameScene.Game?.GetTaskText(quest, _selectedQuest) ?? string.Join("\n", quest.Tasks?.Select(t => t?.Task.ToString()) ?? Enumerable.Empty<string>()), 10, 172, 10, Colors.White, 285, 48);
-        AddDetailText("奖励", 10, 230, 10, new Color(1f, .85f, .3f));
+        AddDetailText(Lang.QuestTabRewardsLabel, 10, 230, 10, new Color(1f, .85f, .3f));
         var rewards = quest.Rewards?.Where(r => r?.Item != null && !r.Choice).Take(5).ToList() ?? new List<QuestReward>();
         if (rewards.Count == 0) AddDetailText("无固定物品奖励", 10, 250, 9, Colors.Gray);
         else

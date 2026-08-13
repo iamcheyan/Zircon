@@ -320,7 +320,7 @@ public partial class RankingDialog : DXWindow
         };
         _classButton.Text = _classFilter switch
         {
-            RequiredClass.Warrior => "战士",
+            RequiredClass.Warrior => Lang.NewCharacterSelectedClassLabel,
             RequiredClass.Wizard => "法师",
             RequiredClass.Taoist => "道士",
             RequiredClass.Assassin => "刺客",

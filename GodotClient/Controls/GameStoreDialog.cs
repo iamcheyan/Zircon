@@ -67,8 +67,8 @@ public partial class GameStoreDialog : DXWindow
         currency.MouseClick += (o, e) => { _useHuntGold = !_useHuntGold; BuildCategoryTree(); Refresh(); };
         AddControl(currency);
 
-        AddControl(new DXLabel { Text = "排序", FontSize = 9, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(225, 44), IsControl = false });
-        _sort = new DXButton { Text = "名称", Type = DXButton.ButtonType.SmallButton, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(270, 39), Size = new Vector2I(108, 25) };
+        AddControl(new DXLabel { Text = Lang.GameStoreDialogSortByLabel, FontSize = 9, TextColour = new Color(1f, .85f, .3f), Location = new Vector2I(225, 44), IsControl = false });
+        _sort = new DXButton { Text = Lang.GameStoreDialogSortNameLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(270, 39), Size = new Vector2I(108, 25) };
         _sort.MouseClick += (o, e) =>
         {
             if (_sortMenu == null)
@@ -178,7 +178,7 @@ public partial class GameStoreDialog : DXWindow
         (int)MarketPlaceStoreSort.HighestPrice => "最高价",
         (int)MarketPlaceStoreSort.LowestPrice => "最低价",
         (int)MarketPlaceStoreSort.Favourite => "收藏",
-        _ => "名称",
+        _ => Lang.GameStoreDialogSortNameLabel,
     };
 
     private void BuildCategoryTree()
@@ -217,16 +217,16 @@ public partial class GameStoreDialog : DXWindow
             .OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList() ?? new List<string>();
         foreach (var filter in filters) Add($"{filter}", () => SetFilter(GameStoreCategory.All, null, filter, true), 1);
 
-        if (Globals.StoreInfoList?.Binding.Any(x => x?.Item != null) == true) Add("新品", () => SetFilter(GameStoreCategory.NewItems));
+        if (Globals.StoreInfoList?.Binding.Any(x => x?.Item != null) == true) Add(Lang.GameStoreDialogNewItemsLabel, () => SetFilter(GameStoreCategory.NewItems));
 
         Add("全部商品", () => SetFilter(GameStoreCategory.All));
-        Add("装备", () => SetFilter(GameStoreCategory.Equipment));
+        Add(Lang.GameStoreDialogEquipmentLabel, () => SetFilter(GameStoreCategory.Equipment));
         AddTypeFilters(type => IsEquipment(type), y, Add);
-        Add("消耗品", () => SetFilter(GameStoreCategory.Consumables));
+        Add(Lang.GameStoreDialogConsumablesLabel, () => SetFilter(GameStoreCategory.Consumables));
         AddTypeFilters(type => IsConsumable(type), y, Add);
         Add("时装", () => SetFilter(GameStoreCategory.Cosmetics));
         AddTypeFilters(type => IsCosmetic(type), y, Add);
-        Add("其他", () => SetFilter(GameStoreCategory.Other));
+        Add(Lang.GameStoreDialogOtherLabel, () => SetFilter(GameStoreCategory.Other));
 
         _categoryContent.Size = new Vector2I(168, Math.Max(305, y));
         _categoryScroll.MaxValue = Math.Max(305, y);
@@ -464,7 +464,7 @@ public sealed partial class GameStoreSortMenu : DXControl
         BackColour = new Color(0.02f, 0.015f, 0.02f, .98f);
         Clip = true;
         IsControl = true;
-        AddItem(MarketPlaceStoreSort.Alphabetical, "名称");
+        AddItem(MarketPlaceStoreSort.Alphabetical, Lang.GameStoreDialogSortNameLabel);
         AddItem(MarketPlaceStoreSort.HighestPrice, "最高价");
         AddItem(MarketPlaceStoreSort.LowestPrice, "最低价");
         AddItem(MarketPlaceStoreSort.Favourite, "收藏");

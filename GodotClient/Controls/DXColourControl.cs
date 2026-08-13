@@ -65,7 +65,7 @@ public sealed partial class DXColourPicker : DXWindow
         _target = target;
         _previous = previous;
         _selected = previous;
-        Text = "颜色选择";
+        Text = Lang.CommonControlColourPickerTitle;
         HasFooter = true;
         Movable = true;
         Size = new Vector2I(380, 253);
@@ -86,19 +86,19 @@ public sealed partial class DXColourPicker : DXWindow
         _green.TextChanged += value => ChannelChanged();
         _blue.TextChanged += value => ChannelChanged();
 
-        AddControl(new DXLabel { Text = "颜色", FontSize = 9, Location = new Vector2I(282, 174), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CommonControlColourPickerColourLabel, FontSize = 9, Location = new Vector2I(282, 174), IsControl = false });
         _colourBox = new DXControl { Location = new Vector2I(303, 172), Size = new Vector2I(55, 20), Border = true, BorderColour = new Color(1f, .75f, .25f) };
         AddControl(_colourBox);
         _noneLabel = new DXLabel { Text = "无", FontSize = 9, Location = new Vector2I(315, 174), Visible = previous.A <= 0, IsControl = false };
         AddControl(_noneLabel);
 
-        var select = new DXButton { Text = "选择", Type = DXButton.ButtonType.Default, FontSize = 9, Location = new Vector2I(105, 218), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var select = new DXButton { Text = Lang.CommonControlSelect, Type = DXButton.ButtonType.Default, FontSize = 9, Location = new Vector2I(105, 218), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
         select.MouseClick += (o, e) => { _target.ApplyColour(_selected); WindowManager.Close(this); };
         AddControl(select);
-        var cancel = new DXButton { Text = "取消", Type = DXButton.ButtonType.Default, FontSize = 9, Location = new Vector2I(195, 218), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var cancel = new DXButton { Text = Lang.CommonControlCancel, Type = DXButton.ButtonType.Default, FontSize = 9, Location = new Vector2I(195, 218), Size = new Vector2I(80, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
         cancel.MouseClick += (o, e) => { _target.ApplyColour(_previous); WindowManager.Close(this); };
         AddControl(cancel);
-        var empty = new DXButton { Text = "清除", Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(280, 115), Size = new Vector2I(78, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
+        var empty = new DXButton { Text = Lang.GuildDialogStorageTabClearButtonLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 9, Location = new Vector2I(280, 115), Size = new Vector2I(78, 25), LibraryFile = LibraryFile.Interface, Index = -1 };
         empty.MouseClick += (o, e) => SetSelected(new Color(0, 0, 0, 0));
         AddControl(empty);
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(350, 3) };

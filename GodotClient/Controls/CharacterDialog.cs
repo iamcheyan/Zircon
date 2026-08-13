@@ -98,7 +98,7 @@ public partial class CharacterDialog : DXWindow
         // 原版 CharacterDialog 继承 DXImageControl，不绘制通用标题栏。
         HasTitle = false;
         Movable = true;
-        Text = "角色";
+        Text = Lang.CharacterCharacterTabLabel;
         Size = _inspectMode ? InspectSize : OwnSize;
 
         _background = new DXImageControl
@@ -125,7 +125,7 @@ public partial class CharacterDialog : DXWindow
         close.MouseClick += (o, e) => Visible = false;
         AddControl(close);
 
-        AddTab("角色", 0, 110);
+        AddTab(Lang.CharacterCharacterTabLabel, 0, 110);
         AddTab("修炼", 62, 112);
         AddTab("隐士", 124, 111);
 
@@ -393,7 +393,7 @@ public partial class CharacterDialog : DXWindow
             IsControl = false,
         };
         _attributePanel.AddControl(_disciplineLevelImage);
-        _attributePanel.AddControl(new DXLabel { Text = "等级", FontSize = 9, Location = new Vector2I(13, 313), IsControl = false });
+        _attributePanel.AddControl(new DXLabel { Text = Lang.MainPanelLevelHint, FontSize = 9, Location = new Vector2I(13, 313), IsControl = false });
         _disciplineLevelValue = new DXLabel
         {
             Text = "0",
@@ -406,7 +406,7 @@ public partial class CharacterDialog : DXWindow
             IsControl = false,
         };
         _attributePanel.AddControl(_disciplineLevelValue);
-        _attributePanel.AddControl(new DXLabel { Text = "经验", FontSize = 9, Location = new Vector2I(13, 336), IsControl = false });
+        _attributePanel.AddControl(new DXLabel { Text = Lang.CompanionDialogCompanionTabExpLabel, FontSize = 9, Location = new Vector2I(13, 336), IsControl = false });
         _disciplineExperienceLabel = new DXLabel
         {
             Text = "0/0",
@@ -455,7 +455,7 @@ public partial class CharacterDialog : DXWindow
 
     private void BuildStatsPanel()
     {
-        string[] names = { "攻击", "防御", "负重", "其他", "元素攻", "元素优", "元素劣" };
+        string[] names = { "攻击", "防御", "负重", Lang.GameStoreDialogOtherLabel, "元素攻", "元素优", "元素劣" };
         for (int i = 0; i < names.Length; i++)
         {
             int page = i;
@@ -481,16 +481,16 @@ public partial class CharacterDialog : DXWindow
         }
 
         AddStatRow(0, "攻击", Stat.MaxDC, Stat.MinDC, 15, 6);
-        AddStatRow(0, "魔法", Stat.MaxMC, Stat.MinMC, 15, 28);
+        AddStatRow(0, Lang.MagicDialogTitle, Stat.MaxMC, Stat.MinMC, 15, 28);
         AddStatRow(0, "道术", Stat.MaxSC, Stat.MinSC, 15, 50);
         AddStatRow(0, "暴击伤害", Stat.CriticalDamage, null, 15, 72);
-        AddStatRow(0, "准确", Stat.Accuracy, null, 168, 6);
+        AddStatRow(0, Lang.MainPanelAccuracyHint, Stat.Accuracy, null, 168, 6);
         AddStatRow(0, "攻速", Stat.AttackSpeed, null, 168, 28);
-        AddStatRow(0, "幸运", Stat.Luck, null, 168, 50);
+        AddStatRow(0, Lang.CommonStatusHoly, Stat.Luck, null, 168, 50);
         AddStatRow(0, "暴击率", Stat.CriticalChance, null, 168, 72);
 
         AddStatRow(1, "防御", Stat.MaxAC, Stat.MinAC, 15, 6);
-        AddStatRow(1, "魔防", Stat.MaxMR, Stat.MinMR, 15, 28);
+        AddStatRow(1, Lang.CommonStatusMR, Stat.MaxMR, Stat.MinMR, 15, 28);
         AddStatRow(1, "闪避", Stat.Agility, null, 168, 6);
         AddStatRow(1, "吸血", Stat.LifeSteal, null, 168, 28);
 
@@ -507,7 +507,7 @@ public partial class CharacterDialog : DXWindow
         {
             (Stat.FireAttack, "火", 600), (Stat.IceAttack, "冰", 601),
             (Stat.LightningAttack, "雷", 602), (Stat.WindAttack, "风", 603),
-            (Stat.HolyAttack, "神圣", 604), (Stat.DarkAttack, "暗黑", 605),
+            (Stat.HolyAttack, "神圣", 604), (Stat.DarkAttack, Lang.CommonStatusDark, 605),
             (Stat.PhantomAttack, "幻影", 606),
         };
         AddElementPage(4, elements, 1);
@@ -516,8 +516,8 @@ public partial class CharacterDialog : DXWindow
         {
             (Stat.FireResistance, "火", 600), (Stat.IceResistance, "冰", 601),
             (Stat.LightningResistance, "雷", 602), (Stat.WindResistance, "风", 603),
-            (Stat.HolyResistance, "神圣", 604), (Stat.DarkResistance, "暗黑", 605),
-            (Stat.PhantomResistance, "幻影", 606), (Stat.PhysicalResistance, "物理", 1517),
+            (Stat.HolyResistance, "神圣", 604), (Stat.DarkResistance, Lang.CommonStatusDark, 605),
+            (Stat.PhantomResistance, "幻影", 606), (Stat.PhysicalResistance, Lang.CommonStatusPhysical, 1517),
         };
         AddElementPage(5, resistances, 2);
         AddElementPage(6, resistances, 3);

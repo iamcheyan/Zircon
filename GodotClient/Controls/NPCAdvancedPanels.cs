@@ -330,7 +330,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         AddGrid(GridType.RefinementStoneGoldOre, 35, 125, 2, 1, "Gold Ore");
         AddGrid(GridType.RefinementStoneCrystal, 186, 125, 1, 1, "Crystal");
         var gold = Add(new DXNumberField("", 0, 2_000_000_000) { Location = new Vector2I(338, 125), Size = new Vector2I(139, 19) });
-        var submit = Button("提交", 399, 150, () =>
+        var submit = Button(Lang.GuildCastlePanelRequestButtonLabel, 399, 150, () =>
         {
             var iron = Links(GridType.RefinementStoneIronOre);
             var silver = Links(GridType.RefinementStoneSilverOre);
@@ -668,7 +668,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
             Add(check); checks.Add(check);
             Add(new DXLabel { Text = options[i].Item2, FontSize = 8, Location = new Vector2I(x + 17, y + 1), IsControl = false });
         }
-        submit = Button("提交", 40, 124, () => SubmitSingle(GridType.AccessoryRefineUpgradeTarget), false);
+        submit = Button(Lang.GuildCastlePanelRequestButtonLabel, 40, 124, () => SubmitSingle(GridType.AccessoryRefineUpgradeTarget), false);
         target.Cells[0].LinkChanged += _ => submit.Enabled = _refineType != RefineType.None && target.Cells[0].Item != null;
     }
 
@@ -678,7 +678,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var grid = AddGrid(GridType.AccessoryReset, 41, 41, 1, 1, null);
         Add(new DXLabel { Text = $"费用: {Globals.AccessoryResetCost:#,##0}", FontSize = 9, Align = HorizontalAlignment.Center,
             Size = new Vector2I(100, 20), Location = new Vector2I(9, 77), IsControl = false });
-        var button = Add(new DXButton { Text = "重置", FontSize = 9, Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(34, 102), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false });
+        var button = Add(new DXButton { Text = Lang.ResetPasswordResetButtonLabel, FontSize = 9, Type = DXButton.ButtonType.SmallButton, Size = new Vector2I(50, 25), Location = new Vector2I(34, 102), LibraryFile = LibraryFile.Interface, Index = -1, Enabled = false });
         button.MouseClick += (_, _) => SubmitSingle(GridType.AccessoryReset);
         grid.Cells[0].LinkChanged += cell => button.Enabled = cell.Item != null;
     }
@@ -844,10 +844,10 @@ public sealed partial class NPCAdvancedPanel : DXControl
         var available = (Globals.CompanionInfoList?.Binding?.AsEnumerable() ?? Enumerable.Empty<CompanionInfo>())
             .Where(x => x?.MonsterInfo != null).ToList();
         int selected = 0;
-        Add(new DXLabel { Text = "名称", FontSize = 9, Location = new Vector2I(38, 190), IsControl = false });
+        Add(new DXLabel { Text = Lang.ConsignmentDialogNameLabel, FontSize = 9, Location = new Vector2I(38, 190), IsControl = false });
         var nameLabel = Add(new DXLabel { FontSize = 11, TextColour = Colors.White, DrawOutline = true,
             Align = HorizontalAlignment.Center, Size = new Vector2I(150, 24), Location = new Vector2I(70, 192), IsControl = false });
-        Add(new DXLabel { Text = "价格", FontSize = 9, Location = new Vector2I(38, 214), IsControl = false });
+        Add(new DXLabel { Text = Lang.ConsignmentDialogPriceLabel, FontSize = 9, Location = new Vector2I(38, 214), IsControl = false });
         var description = Add(new DXLabel { FontSize = 9, TextColour = Colors.White, Size = new Vector2I(195, 63), Location = new Vector2I(30, 242), IsControl = false });
         var price = Add(new DXLabel { FontSize = 10, TextColour = Colors.White, Align = HorizontalAlignment.Center,
             Size = new Vector2I(150, 22), Location = new Vector2I(70, 214), IsControl = false });
@@ -904,7 +904,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
     {
         Base(yut ? "Yut Game" : "Dice Game", 280, 190);
         Add(new DXLabel { Text = yut ? "Yut" : "Dice", FontSize = 22, Align = HorizontalAlignment.Center, AutoSize = false, Size = new Vector2I(280, 70), Location = new Vector2I(0, 48), IsControl = false });
-        Button("开始", 99, 133, () => GameScene.Game?.SendNPCRoll(yut ? 1 : 0));
+        Button(Lang.SocketDialogStartButtonLabel, 99, 133, () => GameScene.Game?.SendNPCRoll(yut ? 1 : 0));
     }
 
     public void ShowRollResult(int type, int result)

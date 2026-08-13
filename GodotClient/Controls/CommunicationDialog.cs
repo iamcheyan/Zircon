@@ -58,7 +58,7 @@ public partial class CommunicationDialog : DXWindow
         AddControl(new DXLabel { Text = "通信", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(296, 18), IsControl = false });
         // 原版 DXTabControl：TabControl 位于 y=37，页签从 x=10 按 60px+1px 间距排列，
         // 内容页从 y=60 开始，尺寸为 296x316。
-        AddTab("好友", 10, 0);
+        AddTab(Lang.CommunicationDialogFriendTabLabel, 10, 0);
         AddTab("收件箱", 71, 1);
         AddTab("写邮件", 132, 2);
         AddTab("屏蔽", 193, 3);
@@ -112,7 +112,7 @@ public partial class CommunicationDialog : DXWindow
 
     private void CreateActionButtons()
     {
-        _friendAdd = ActionButton("添加好友", new Vector2I(43, 383), 100);
+        _friendAdd = ActionButton(Lang.CommunicationDialogFriendTabFriendAddButtonLabel, new Vector2I(43, 383), 100);
         _friendAdd.Visible = true;
         _friendAdd.MouseClick += (o, e) =>
         {
@@ -130,7 +130,7 @@ public partial class CommunicationDialog : DXWindow
                 _friendInput = null;
             }
         };
-        _friendRemove = ActionButton("删除好友", new Vector2I(153, 383), 100);
+        _friendRemove = ActionButton(Lang.CommunicationDialogFriendTabFriendRemoveButtonLabel, new Vector2I(153, 383), 100);
         _friendRemove.Visible = true;
         _friendRemove.Enabled = false;
         _friendRemove.MouseClick += (o, e) =>
@@ -140,7 +140,7 @@ public partial class CommunicationDialog : DXWindow
 
         _receivedCollectAll = ActionButton("领取全部", new Vector2I(15, 383), 80);
         _receivedDeleteAll = ActionButton("删除全部", new Vector2I(105, 383), 80);
-        _receivedNew = ActionButton("新邮件", new Vector2I(195, 383), 80);
+        _receivedNew = ActionButton(Lang.CommunicationDialogReceivedTabNewButtonLabel, new Vector2I(195, 383), 80);
         _receivedCollectAll.MouseClick += (o, e) =>
         {
             foreach (var mail in _mails.Where(x => x?.Items?.Count > 0).Take(15))
@@ -473,7 +473,7 @@ public partial class CommunicationDialog : DXWindow
     private void BuildFriendsPage()
     {
         AddBodyLabel("在线状态", 25, 10, 9, Colors.White).Size = new Vector2I(120, 18);
-        _friendStatus = new DXButton { Text = "在线", FontSize = 9, Size = new Vector2I(122, 18), Location = new Vector2I(151, 10), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _friendStatus = new DXButton { Text = Lang.GuildMemberRowOnlineLabel, FontSize = 9, Size = new Vector2I(122, 18), Location = new Vector2I(151, 10), LibraryFile = LibraryFile.Interface, Index = -1 };
         _friendStatus.MouseClick += (o, e) => GameScene.Game?.CycleOnlineState();
         _body.AddControl(_friendStatus);
         AddBodyLabel("查看状态", 25, 31, 9, Colors.White).Size = new Vector2I(120, 18);
@@ -532,7 +532,7 @@ public partial class CommunicationDialog : DXWindow
         if (_friendStatus == null) return;
         _friendStatus.Text = state switch
         {
-            OnlineState.Online => "在线",
+            OnlineState.Online => Lang.GuildMemberRowOnlineLabel,
             OnlineState.Away => "离开",
             OnlineState.Busy => "忙碌",
             _ => "离线",
@@ -580,14 +580,14 @@ public partial class CommunicationDialog : DXWindow
     {
         _pageBackground.Index = 202;
         foreach (var child in _body.GetChildren()) if (child is Node node) node.QueueFree();
-        AddBodyHeader("分类", 15, 5, 50);
-        AddBodyHeader("标题", 65, 5, 140);
+        AddBodyHeader(Lang.CommunicationDialogReceivedTabCategoryLabel, 15, 5, 50);
+        AddBodyHeader(Lang.CommunicationDialogReceivedTabTitleLabel, 65, 5, 140);
         AddBodyHeader("日期", 200, 5, 65);
         int offset = _scroll?.Value ?? 0;
         for (int i = 0; i < _mails.Count; i++)
         {
             var mail = _mails[i];
-            string category = mail.HasItem ? "物品" : mail.Gold > 0 ? "金币" : string.Empty;
+            string category = mail.HasItem ? "物品" : mail.Gold > 0 ? Lang.TradeDialogGoldLabel : string.Empty;
             var row = new DXButton { Text = $"{category,-4}{(mail.Opened ? "" : "● ")}{mail.Subject}  {mail.Date:MM/dd}", FontSize = 9, TextColour = mail.Opened ? Colors.White : new Color(1f, 0.85f, 0.3f), Size = new Vector2I(240, 40), Location = new Vector2I(18, 43 + i * 49 - offset), LibraryFile = LibraryFile.Interface, Index = -1 };
             int mailIndex = mail.Index;
             row.MouseClick += (o, e) => OpenMail(mailIndex);
@@ -649,7 +649,7 @@ public partial class CommunicationDialog : DXWindow
         _body.AddControl(back);
 
         _readReplyButton ??= new DXButton { Text = "回复邮件", Type = DXButton.ButtonType.Default, FontSize = 9, Size = new Vector2I(100, 25), Location = new Vector2I(43, 384), LibraryFile = LibraryFile.Interface, Index = -1 };
-        _readDeleteButton ??= new DXButton { Text = "删除邮件", Type = DXButton.ButtonType.Default, FontSize = 9, Size = new Vector2I(100, 25), Location = new Vector2I(153, 384), LibraryFile = LibraryFile.Interface, Index = -1 };
+        _readDeleteButton ??= new DXButton { Text = Lang.CommunicationDialogReadTabDeleteButtonLabel, Type = DXButton.ButtonType.Default, FontSize = 9, Size = new Vector2I(100, 25), Location = new Vector2I(153, 384), LibraryFile = LibraryFile.Interface, Index = -1 };
         if (_readReplyButton.GetParent() == null) AddControl(_readReplyButton);
         if (_readDeleteButton.GetParent() == null) AddControl(_readDeleteButton);
         _readReplyButton.Visible = true;
@@ -704,7 +704,7 @@ public partial class CommunicationDialog : DXWindow
             _sendMailCells[i] = new DXItemCell { GridType = GridType.SendMail, Slot = i, ItemGrid = _sendMailItems, Location = new Vector2I(13 + i * 35, 265) };
             _body.AddControl(_sendMailCells[i]);
         }
-        AddBodyLabel("金币", 8, 304, 9, new Color(1f, 0.85f, 0.3f));
+        AddBodyLabel(Lang.TradeDialogGoldLabel, 8, 304, 9, new Color(1f, 0.85f, 0.3f));
         var gold = new DXTextInput { Text = "0", Location = new Vector2I(86, 303), Size = new Vector2I(122, 18), MaxLength = 10 };
         // 原版 SendGoldBox.ValueTextBox.ValueChanged（GoldBox_ValueChanged）：
         // MaxValue=2000000000 钳制 + 边框色（0 原色、合法绿、否则红）。
@@ -712,7 +712,7 @@ public partial class CommunicationDialog : DXWindow
         _body.AddControl(gold);
         if (_sendButton == null)
         {
-            _sendButton = ActionButton("发送", new Vector2I(113, 383), 70);
+            _sendButton = ActionButton(Lang.CommunicationDialogSendTabSendButtonLabel, new Vector2I(113, 383), 70);
             _sendButton.MouseClick += (o, e) =>
             {
                 if (!_mailSending && IsMailSendValid(gold, out long amount))

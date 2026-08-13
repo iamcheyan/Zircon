@@ -141,7 +141,7 @@ public sealed partial class MonsterDialog : DXWindow
         // 旧版 RefreshStats：GrowthLevel > 0 时显示成长图标（ProgUse 630）。
         int growthLevel = _monster.Stats?[Stat.GrowthLevel] ?? 0;
         _growthIcon.Visible = growthLevel > 0;
-        _growthIcon.TooltipText = growthLevel > 0 ? $"成长等级 {growthLevel}" : "成长";
+        _growthIcon.TooltipText = growthLevel > 0 ? $"成长等级 {growthLevel}" : Lang.MonsterDialogGrowthIconDefaultHint;
 
         // 旧版各图标的 Hint（悬停文字）：元素/抗性/速度/可驯服/亡灵。
         _attackIcon.TooltipText = stats.GetAffinityElement() switch
@@ -153,15 +153,15 @@ public sealed partial class MonsterDialog : DXWindow
             Element.Holy => "神圣",
             Element.Dark => "黑暗",
             Element.Phantom => "幻影",
-            _ => "物理",
+            _ => Lang.CommonStatusPhysical,
         };
-        string[] resistNames = { "火", "冰", "闪电", "风", "神圣", "黑暗", "幻影", "物理" };
+        string[] resistNames = { "火", "冰", "闪电", "风", "神圣", "黑暗", "幻影", Lang.CommonStatusPhysical };
         for (int i = 0; i < _resistIcons.Length && i < resistNames.Length; i++)
         {
             if (_resistIcons[i] != null) _resistIcons[i].TooltipText = $"{resistNames[i]}抗性";
         }
-        _attackSpeedIcon.TooltipText = "攻击速度";
-        _movementSpeedIcon.TooltipText = "移动速度";
+        _attackSpeedIcon.TooltipText = Lang.MonsterDialogAttackingIconDefaultHint;
+        _movementSpeedIcon.TooltipText = Lang.MonsterDialogMovingIconDefaultHint;
         _tamableIcon.TooltipText = info.CanTame ? "可驯服" : "不可驯服";
         _undeadIcon.TooltipText = info.Undead ? "亡灵" : "生者";
     }

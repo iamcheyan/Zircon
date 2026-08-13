@@ -1215,7 +1215,7 @@ public partial class DXItemCell : DXControl
                     case ItemEffect.GenderChange:
                         if (GameScene.Game.EquipmentCells[(int)EquipmentSlot.Armour].Item != null)
                         {
-                            GameScene.Game.ReceiveChat("衣服穿戴中无法进行变性操作.", MessageType.System);
+                            GameScene.Game.ReceiveChat(Lang.CannotChangeGenderWhileWearingArmour, MessageType.System);
                             return false;
                         }
                         GameScene.Game.OpenEditCharacterDialog(EditCharacterChange.Gender);

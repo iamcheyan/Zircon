@@ -1,3 +1,4 @@
+using ZirconClient.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +129,7 @@ public partial class BuffDialog : DXWindow
             BuffType.Observable => "允许被观察",
             BuffType.Castle => "城堡领主",
             BuffType.Guild => "行会",
-            BuffType.Companion => "伙伴",
+            BuffType.Companion => Lang.CompanionDialogTitle,
             BuffType.MapEffect => "地图效果",
             BuffType.InstanceEffect => "副本效果",
             BuffType.Fame => "声望",

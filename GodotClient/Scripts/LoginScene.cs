@@ -46,10 +46,10 @@ public partial class LoginScene : Control
         _newPasswordEdit = new LineEdit { PlaceholderText = "新密码", Secret = true };
         vbox.AddChild(_keyEdit);
         vbox.AddChild(_newPasswordEdit);
-        AddAccountButton(vbox, "修改密码", () => _net.Connection?.SendChangePassword(_emailEdit.Text, _passwordEdit.Text, _newPasswordEdit.Text));
+        AddAccountButton(vbox, Lang.LoginDialogChangePasswordButtonLabel, () => _net.Connection?.SendChangePassword(_emailEdit.Text, _passwordEdit.Text, _newPasswordEdit.Text));
         AddAccountButton(vbox, "申请密码重置", () => _net.Connection?.SendRequestPasswordReset(_emailEdit.Text));
         AddAccountButton(vbox, "重置密码", () => _net.Connection?.SendResetPassword(_keyEdit.Text, _newPasswordEdit.Text));
-        AddAccountButton(vbox, "激活账号", () => _net.Connection?.SendActivation(_keyEdit.Text));
+        AddAccountButton(vbox, Lang.ActivationTitle, () => _net.Connection?.SendActivation(_keyEdit.Text));
         AddAccountButton(vbox, "申请激活码", () => _net.Connection?.SendRequestActivationKey(_emailEdit.Text));
 
         _loginBtn.Pressed += OnLoginPressed;
@@ -305,7 +305,7 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateChangeDialog()
     {
-        var dialog = new LegacyLoginDialog("修改密码", new Vector2I(330, 205),
+        var dialog = new LegacyLoginDialog(Lang.LoginDialogChangePasswordButtonLabel, new Vector2I(330, 205),
             new[] { "邮箱", "当前密码", "新密码", "确认新密码" }, new[] { false, true, true, true });
         dialog.Submitted += values =>
         {
@@ -338,7 +338,7 @@ public partial class LoginScene : Control
 
     private LegacyLoginDialog CreateActivationDialog()
     {
-        var dialog = new LegacyLoginDialog("激活账号", new Vector2I(330, 155), new[] { "激活码" }, secondary: "重新申请激活码");
+        var dialog = new LegacyLoginDialog(Lang.ActivationTitle, new Vector2I(330, 155), new[] { "激活码" }, secondary: "重新申请激活码");
         dialog.Submitted += values => { if (!string.IsNullOrWhiteSpace(values[0])) _net.Connection?.SendActivation(values[0]); };
         dialog.SecondaryClicked += () => { _requestActivationDialog ??= CreateRequestActivationDialog(); WindowManager.Close(dialog); WindowManager.Open(_requestActivationDialog, this); };
         return dialog;
@@ -450,14 +450,14 @@ public partial class LoginScene : Control
         if (defaultButtonHeight <= 0) defaultButtonHeight = 21;
 
         // 登录/退出 主按钮
-        _skinLogin = new DXButton { Text = "登录", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(550, 60), Size = new Vector2I(100, defaultButtonHeight), Enabled = false };
-        _skinExit = new DXButton { Text = "退出", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(660, 60), Size = new Vector2I(100, defaultButtonHeight) };
+        _skinLogin = new DXButton { Text = Lang.LoginDialogLoginButtonLabel, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(550, 60), Size = new Vector2I(100, defaultButtonHeight), Enabled = false };
+        _skinExit = new DXButton { Text = Lang.CommonControlExit, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(660, 60), Size = new Vector2I(100, defaultButtonHeight) };
 
         // 顶部功能页签按钮 (排行榜、选项、注册账号、修改密码)
         _skinRanking = new DXButton { Text = "排行榜", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(20, 0), Size = new Vector2I(68, 32) };
         _skinOptions = new DXButton { Text = "选项", FontSize = 9, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 153, Location = new Vector2I(93, 0), Size = new Vector2I(68, 32) };
         _skinRegister = new DXButton { Text = "注册新账号", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(485, 0), Size = new Vector2I(136, 32), Enabled = false };
-        _skinChange = new DXButton { Text = "修改密码", FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(625, 0), Size = new Vector2I(136, 32) };
+        _skinChange = new DXButton { Text = Lang.LoginDialogChangePasswordButtonLabel, FontSize = 10, TextColour = new Color(1f, .88f, .55f), LibraryFile = LibraryFile.Interface, Index = 152, Location = new Vector2I(625, 0), Size = new Vector2I(136, 32) };
 
         _skinLogin.MouseClick += (o, e) => OnLoginPressed();
         _skinRegister.MouseClick += (o, e) => OpenAccountDialog();
@@ -492,7 +492,7 @@ public partial class LoginScene : Control
         dialog.AddControl(_skinRemember);
 
         // 激活账号 按钮
-        _skinActivation = new DXButton { Text = "激活账号", FontSize = 9, TextColour = new Color(1f, .75f, .25f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(20, 36), Size = new Vector2I(72, 20) };
+        _skinActivation = new DXButton { Text = Lang.ActivationTitle, FontSize = 9, TextColour = new Color(1f, .75f, .25f), LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(20, 36), Size = new Vector2I(72, 20) };
         _skinActivation.MouseClick += (o, e) => { _activationDialog ??= CreateActivationDialog(); WindowManager.Open(_activationDialog, this); };
         dialog.AddControl(_skinActivation);
 

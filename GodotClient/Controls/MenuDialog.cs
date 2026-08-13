@@ -38,7 +38,7 @@ public partial class MenuDialog : DXWindow
 
         var title = new DXLabel
         {
-            Text = "菜单",
+            Text = Lang.MenuDialogTitle,
             FontSize = 11,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,
@@ -51,12 +51,12 @@ public partial class MenuDialog : DXWindow
         };
         AddControl(title);
 
-        SettingsButton = AddMenuButton("设置", 40);
+        SettingsButton = AddMenuButton(Lang.MenuDialogSettingsButtonLabel, 40);
         HelpButton = AddMenuButton("帮助", 70);
         GuildButton = AddMenuButton("行会", 100);
         StorageButton = AddMenuButton("仓库", 130);
         RankingButton = AddMenuButton("排行", 160);
-        CompanionButton = AddMenuButton("伙伴", 190);
+        CompanionButton = AddMenuButton(Lang.CompanionDialogTitle, 190);
         LeaveButton = AddMenuButton("退出游戏", 220);
 
         StorageButton.MouseClick += (o, e) => GameScene.Game?.ToggleStorageWindow();

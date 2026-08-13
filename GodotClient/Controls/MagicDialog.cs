@@ -66,7 +66,7 @@ public partial class MagicDialog : DXWindow
 
         AddControl(new DXLabel
         {
-            Text = "魔法",
+            Text = Lang.MagicDialogTitle,
             FontSize = 10,
             TextColour = new Color(1f, 0.85f, 0.3f),
             DrawOutline = true,

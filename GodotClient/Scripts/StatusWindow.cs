@@ -34,7 +34,7 @@ public partial class StatusWindow : DXWindow
             MouseFilter = MouseFilterEnum.Ignore,
         });
 
-        string[] keys = { "角色", "职业", "生命", "魔法", "位置", "方向", "地图", "周围物体" };
+        string[] keys = { Lang.CharacterCharacterTabLabel, "职业", "生命", Lang.MagicDialogTitle, Lang.SelectLocationLabel, "方向", "地图", "周围物体" };
         float y = 36;
         foreach (string key in keys)
         {
@@ -57,11 +57,11 @@ public partial class StatusWindow : DXWindow
                         int cellX, int cellY, MirDirection dir, string mapName, int objCount)
     {
         if (_rows.Count < 8) return;
-        SetRow(0, "角色", name);
+        SetRow(0, Lang.CharacterCharacterTabLabel, name);
         SetRow(1, "职业", className);
         SetRow(2, "生命", maxHp > 0 ? $"{hp} / {maxHp}" : "-");
-        SetRow(3, "魔法", maxMana > 0 ? $"0 / {maxMana}" : "-");
-        SetRow(4, "位置", $"({cellX}, {cellY})");
+        SetRow(3, Lang.MagicDialogTitle, maxMana > 0 ? $"0 / {maxMana}" : "-");
+        SetRow(4, Lang.SelectLocationLabel, $"({cellX}, {cellY})");
         SetRow(5, "方向", DirectionName(dir));
         SetRow(6, "地图", mapName);
         SetRow(7, "周围物体", objCount.ToString());

@@ -21,16 +21,16 @@ public partial class ChatOptionsDialog : DXWindow
 
     private static readonly (MessageType Type, string Name)[] FilterTypes =
     {
-        (MessageType.Normal, "本地"),
-        (MessageType.Shout, "喊话"),
-        (MessageType.WhisperIn, "私聊"),
-        (MessageType.Group, "队伍"),
-        (MessageType.Global, "世界"),
-        (MessageType.Hint, "提示"),
-        (MessageType.System, "系统"),
+        (MessageType.Normal, Lang.ChatOptionsPanelLocalChatLabel),
+        (MessageType.Shout, Lang.ChatOptionsPanelShoutChatLabel),
+        (MessageType.WhisperIn, Lang.ChatOptionsPanelWhisperChatLabel),
+        (MessageType.Group, Lang.ChatOptionsPanelGroupChatLabel),
+        (MessageType.Global, Lang.ChatOptionsPanelGlobalChatLabel),
+        (MessageType.Hint, Lang.ChatOptionsPanelHintTextLabel),
+        (MessageType.System, Lang.ChatOptionsPanelSystemTextLabel),
         (MessageType.Combat, "战斗"),
-        (MessageType.ObserverChat, "观察"),
-        (MessageType.Guild, "行会"),
+        (MessageType.ObserverChat, Lang.ChatOptionsPanelObserverChatLabel),
+        (MessageType.Guild, Lang.ChatOptionsPanelGuildChatLabel),
     };
 
     public ChatOptionsDialog()
@@ -47,7 +47,7 @@ public partial class ChatOptionsDialog : DXWindow
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "聊天选项", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(368, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.ChatOptionsDialogTitle, FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(368, 18), IsControl = false });
 
         _list = new DXControl { Location = new Vector2I(9, 37), Size = new Vector2I(120, 220), Clip = true };
         AddControl(_list);
@@ -110,7 +110,7 @@ public partial class ChatOptionsDialog : DXWindow
             UpdateFilterButton(entry.Type, entry.Name);
         }
 
-        var add = Button("添加", new Vector2I(79, 262), new Vector2I(50, 25), DXButton.ButtonType.SmallButton);
+        var add = Button(Lang.ChatOptionsDialogButtonAdd, new Vector2I(79, 262), new Vector2I(50, 25), DXButton.ButtonType.SmallButton);
         add.MouseClick += (o, e) =>
         {
             var title = $"聊天 {_count + 1}";
@@ -132,13 +132,13 @@ public partial class ChatOptionsDialog : DXWindow
             GameScene.Game?.ResetChatTabs();
             SelectTab(0);
         };
-        var save = Button("保存所有", new Vector2I(9, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
+        var save = Button(Lang.ChatOptionsDialogButtonSaveAll, new Vector2I(9, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
         save.MouseClick += (o, e) =>
         {
             GameScene.Game?.SaveChatTabs();
             GameScene.Game?.ReceiveChat("聊天布局已保存", MessageType.Announcement);
         };
-        var reload = Button("重新加载", new Vector2I(94, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
+        var reload = Button(Lang.ChatOptionsDialogButtonReloadAll, new Vector2I(94, 307), new Vector2I(80, 25), DXButton.ButtonType.Default);
         reload.MouseClick += (o, e) =>
         {
             GameScene.Game?.LoadChatTabs();

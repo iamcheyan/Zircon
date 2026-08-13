@@ -86,7 +86,7 @@ public sealed partial class ConsignmentDialog : DXWindow
         _consignPage = new DXControl { Location = new Vector2I(0, 60), Size = new Vector2I(720, 380), Clip = true, Visible = false };
         AddControl(_consignPage);
 
-        _searchPage.AddControl(new DXLabel { Text = "排序", Location = new Vector2I(10, 6), FontSize = 10, TextColour = new Color(1f, .85f, .3f), IsControl = false });
+        _searchPage.AddControl(new DXLabel { Text = Lang.StorageDialogSortButtonLabel, Location = new Vector2I(10, 6), FontSize = 10, TextColour = new Color(1f, .85f, .3f), IsControl = false });
         var sort = new DXButton { Text = "最新", FontSize = 10, Location = new Vector2I(62, 10), Size = new Vector2I(105, 22), Index = -1, LibraryFile = LibraryFile.Interface };
         sort.MouseClick += (s, e) => { _sort = _sort == MarketPlaceSort.Newest ? MarketPlaceSort.LowestPrice : MarketPlaceSort.Newest; sort.Text = _sort == MarketPlaceSort.Newest ? "最新" : "最低价"; Search(); };
         _searchPage.AddControl(sort);
@@ -103,11 +103,11 @@ public sealed partial class ConsignmentDialog : DXWindow
         _searchPage.AddControl(_typeFilter);
         _searchPage.AddControl(_typeFilterScroll);
         BuildTypeFilter();
-        AddHeader(_searchPage, "物品类型", new Vector2I(4, 32), new Vector2I(160, 20));
+        AddHeader(_searchPage, Lang.ConsignmentDialogItemTypesLabel, new Vector2I(4, 32), new Vector2I(160, 20));
         AddHeader(_searchPage, "名称", new Vector2I(180, 32), new Vector2I(172, 20));
         AddHeader(_searchPage, "等级", new Vector2I(356, 32), new Vector2I(55, 20));
-        AddHeader(_searchPage, "价格", new Vector2I(415, 32), new Vector2I(110, 20));
-        AddHeader(_searchPage, "卖家", new Vector2I(525, 32), new Vector2I(160, 20));
+        AddHeader(_searchPage, Lang.ConsignmentDialogPriceLabel, new Vector2I(415, 32), new Vector2I(110, 20));
+        AddHeader(_searchPage, Lang.ConsignmentDialogSellerLabel, new Vector2I(525, 32), new Vector2I(160, 20));
         _searchCount = new DXLabel { Text = "第 1/0 条", Location = new Vector2I(38, 338), Size = new Vector2I(106, 17), FontSize = 9, TextColour = Colors.Yellow, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, IsControl = false };
         _searchPage.AddControl(_searchCount);
 
@@ -135,8 +135,8 @@ public sealed partial class ConsignmentDialog : DXWindow
 
         AddHeader(_consignPage, "名称", new Vector2I(14, 32), new Vector2I(250, 20));
         AddHeader(_consignPage, "等级", new Vector2I(260, 32), new Vector2I(60, 20));
-        AddHeader(_consignPage, "价格", new Vector2I(325, 32), new Vector2I(140, 20));
-        AddHeader(_consignPage, "寄售日期", new Vector2I(479, 32), new Vector2I(200, 20));
+        AddHeader(_consignPage, Lang.ConsignmentDialogPriceLabel, new Vector2I(325, 32), new Vector2I(140, 20));
+        AddHeader(_consignPage, Lang.ConsignmentDialogConsignDateLabel, new Vector2I(479, 32), new Vector2I(200, 20));
         _consignCount = new DXLabel { Text = "第 1/0 条", Location = new Vector2I(38, 338), Size = new Vector2I(106, 17), FontSize = 9, TextColour = Colors.Yellow, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, IsControl = false };
         _consignPage.AddControl(_consignCount);
         _consignScroll = new DXVScrollBar { Location = new Vector2I(691, 52), Size = new Vector2I(18, 268), VisibleSize = VisibleRows };
@@ -154,7 +154,7 @@ public sealed partial class ConsignmentDialog : DXWindow
         _consignPage.AddControl(_consignTarget);
         _consignPrice = new DXTextInput { Location = new Vector2I(145, 281), Size = new Vector2I(120, 24), Visible = false };
         _consignPage.AddControl(_consignPrice);
-        _consignButton = ActionButton("确认寄售", 615, 338);
+        _consignButton = ActionButton(Lang.ConsignmentDialogConsignConfirmCaption, 615, 338);
         _consignButton.MouseClick += (s, e) => OpenConsignPopup();
         _consignPage.AddControl(_consignButton);
         _removeButton = ActionButton("下架", 510, 338);
@@ -312,7 +312,7 @@ public sealed partial class ConsignmentDialog : DXWindow
         }
         _typeFilterButtons.Clear();
         int y = 0;
-        AddTypeButton("全部", null, ref y);
+        AddTypeButton(Lang.ConsignmentDialogAllLabel, null, ref y);
         foreach (var type in Enum.GetValues<ItemType>())
         {
             if (type == ItemType.Nothing) continue;
@@ -442,7 +442,7 @@ public sealed partial class ConsignmentDialog : DXWindow
             bool slotExists = index >= 0 && index < list.Count;
             labels[i].Visible = slotExists;
             cells[i].Visible = info?.Item != null;
-            labels[i].Text = info?.Item == null ? "加载中..." : search
+            labels[i].Text = info?.Item == null ? Lang.ConsignmentDialogLoadingLabel : search
                 ? $"{info.Item.Info.ItemName} x{info.Item.Count:#,##0}    {info.Price:#,##0} 金币    {info.Seller ?? "未知"}\n{info.Message ?? ""}"
                 : $"{info.Item.Info.ItemName} x{info.Item.Count:#,##0}    {info.Price:#,##0} 金币    {info.ConsignDate:yyyy-MM-dd}";
             labels[i].TextColour = index == selected ? Colors.Yellow : Colors.White;
@@ -543,7 +543,7 @@ public sealed partial class ConsignItemDialog : DXWindow
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 303, FixedSize = true, Size = new Vector2I(296, 60), MouseFilter = MouseFilterEnum.Ignore });
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 304, FixedSize = true, Size = new Vector2I(296, 84), Location = new Vector2I(0, 60), MouseFilter = MouseFilterEnum.Ignore });
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 305, FixedSize = true, Size = new Vector2I(296, 84), Location = new Vector2I(0, 144), MouseFilter = MouseFilterEnum.Ignore });
-        AddControl(new DXLabel { Text = "寄售物品", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(296, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.ConsignmentDialogConsignItemTitle, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(296, 18), IsControl = false });
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (s, e) => WindowManager.Close(this); AddControl(close);
@@ -559,7 +559,7 @@ public sealed partial class ConsignItemDialog : DXWindow
         plus.MouseClick += (s, e) => _price.Text = (ParsePrice() + 5000).ToString(); AddControl(plus);
         var minus = new DXButton { Text = "-5000", FontSize = 8, Location = new Vector2I(246, 122), Size = new Vector2I(45, 22), Index = -1 };
         minus.MouseClick += (s, e) => _price.Text = Math.Max(0, ParsePrice() - 5000).ToString(); AddControl(minus);
-        var confirmButton = new DXButton { Text = "确认寄售", FontSize = 9, Location = new Vector2I(43, 178), Size = new Vector2I(80, 27), Index = -1 };
+        var confirmButton = new DXButton { Text = Lang.ConsignmentDialogConsignConfirmCaption, FontSize = 9, Location = new Vector2I(43, 178), Size = new Vector2I(80, 27), Index = -1 };
         confirmButton.MouseClick += (s, e) => Confirm(); AddControl(confirmButton);
         var cancel = new DXButton { Text = "取消", FontSize = 9, Location = new Vector2I(173, 178), Size = new Vector2I(80, 27), Index = -1 };
         cancel.MouseClick += (s, e) => WindowManager.Close(this); AddControl(cancel);
@@ -584,7 +584,7 @@ public sealed partial class ConsignItemDialog : DXWindow
             return;
         }
         long fee = Globals.MarketPlaceFee;
-        var confirm = new ConfirmDialog($"{_itemName.Text} x{ItemCell.Item?.Count ?? 1}\n\n单价: {price:#,##0}\n寄售费用: {fee:#,##0}", "确认寄售", () => { _confirm?.Invoke(ItemCell, price); WindowManager.Close(this); });
+        var confirm = new ConfirmDialog($"{_itemName.Text} x{ItemCell.Item?.Count ?? 1}\n\n单价: {price:#,##0}\n寄售费用: {fee:#,##0}", Lang.ConsignmentDialogConsignConfirmCaption, () => { _confirm?.Invoke(ItemCell, price); WindowManager.Close(this); });
         WindowManager.Open(confirm, GameScene.Game?.UILayer ?? GetParent());
     }
 }

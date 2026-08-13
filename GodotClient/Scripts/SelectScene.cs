@@ -432,7 +432,7 @@ public partial class SelectScene : Control
         int defaultButtonHeight = MirSkin.GetSize(LibraryFile.Interface, 16).Y;
         if (defaultButtonHeight <= 0) defaultButtonHeight = 21;
         _skinStart = new DXButton { Text = "进入游戏", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(25, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
-        _skinCreate = new DXButton { Text = "创建角色", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(120, 382), Size = new Vector2I(80, defaultButtonHeight) };
+        _skinCreate = new DXButton { Text = Lang.NewCharacterTitle, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(120, 382), Size = new Vector2I(80, defaultButtonHeight) };
         _skinDelete = new DXButton { Text = "删除角色", FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(215, 382), Size = new Vector2I(80, defaultButtonHeight), Enabled = false };
         _skinStart.MouseClick += (o, e) => OnStartPressed();
         _skinDelete.MouseClick += (o, e) => OnDeletePressed();
@@ -453,12 +453,12 @@ public partial class SelectScene : Control
             HasTitle = true,
             HasFooter = true,
         });
-        _skinCreatePanel.AddControl(new DXLabel { Text = "创建角色", FontSize = 12, TextColour = new Color(1f, .85f, .35f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(260, 30), IsControl = false });
+        _skinCreatePanel.AddControl(new DXLabel { Text = Lang.NewCharacterTitle, FontSize = 12, TextColour = new Color(1f, .85f, .35f), DrawOutline = true, Align = HorizontalAlignment.Center, Size = new Vector2I(260, 30), IsControl = false });
 
         var classBox = CreateOptionBox("选择职业", new Vector2I(30, 40));
         _selectedClassLabel = new DXLabel { Text = "Warrior", FontSize = 8, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 65), Size = new Vector2I(80, 15), IsControl = false };
         classBox.AddControl(_selectedClassLabel);
-        _createClassButtons.Add(AddCreateOption(classBox, 0, "战士", 120, () => SelectCreateClass(MirClass.Warrior)));
+        _createClassButtons.Add(AddCreateOption(classBox, 0, Lang.NewCharacterSelectedClassLabel, 120, () => SelectCreateClass(MirClass.Warrior)));
         _createClassButtons.Add(AddCreateOption(classBox, 1, "法师", 126, () => SelectCreateClass(MirClass.Wizard)));
         _createClassButtons.Add(AddCreateOption(classBox, 2, "道士", 131, () => SelectCreateClass(MirClass.Taoist)));
         _createClassButtons.Add(AddCreateOption(classBox, 3, "刺客", 136, () => SelectCreateClass(MirClass.Assassin)));
@@ -466,7 +466,7 @@ public partial class SelectScene : Control
         var genderBox = CreateOptionBox("选择性别", new Vector2I(30, 135));
         _selectedGenderLabel = new DXLabel { Text = "Male", FontSize = 8, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 65), Size = new Vector2I(80, 15), IsControl = false };
         genderBox.AddControl(_selectedGenderLabel);
-        _createGenderButtons.Add(AddCreateOption(genderBox, 1, "男", 115, () => SelectCreateGender(MirGender.Male)));
+        _createGenderButtons.Add(AddCreateOption(genderBox, 1, Lang.NewCharacterSelectedGenderLabel, 115, () => SelectCreateGender(MirGender.Male)));
         _createGenderButtons.Add(AddCreateOption(genderBox, 2, "女", 111, () => SelectCreateGender(MirGender.Female)));
 
         var appearance = new DXControl { Size = new Vector2I(200, 330), Location = new Vector2I(30, 230), BackColour = new Color(.28f, .14f, .14f), Border = true, BorderColour = new Color(.75f, .55f, .2f) };
@@ -483,7 +483,7 @@ public partial class SelectScene : Control
         AddColourChoice(appearance, new Vector2I(90, 75), DrawingColor.White, true);
         var previewPanel = new DXControl { Size = new Vector2I(190, 225), Location = new Vector2I(5, 100), BackColour = new Color(.19f, .16f, .09f), Border = true, BorderColour = new Color(.75f, .55f, .2f) };
         appearance.AddControl(previewPanel);
-        previewPanel.AddControl(new DXLabel { Text = "预览", FontSize = 9, TextColour = new Color(1f, .85f, .55f), Align = HorizontalAlignment.Center, Size = new Vector2I(190, 20), IsControl = false });
+        previewPanel.AddControl(new DXLabel { Text = Lang.NewCharacterPreviewLabel, FontSize = 9, TextColour = new Color(1f, .85f, .55f), Align = HorizontalAlignment.Center, Size = new Vector2I(190, 20), IsControl = false });
         _createPreview = new DXAnimatedControl { LibraryFile = LibraryFile.Interface1c, BaseIndex = 300, FrameCount = 13, AnimationDelay = TimeSpan.FromMilliseconds(1900), Animated = true, Loop = true, UseOffSet = true, Location = new Vector2I(70, 145), MouseFilter = MouseFilterEnum.Ignore };
         previewPanel.AddControl(_createPreview);
         _skinCreateName = new DXTextInput { Location = new Vector2I(75, 570), Size = new Vector2I(155, 20), Text = "TestHero" };

@@ -89,7 +89,7 @@ public sealed partial class NPCSocketPanel : DXControl
     {
         if (gem?.Info == null || gem.Info.ItemType != ItemType.SocketGem)
         {
-            GameScene.Game?.ReceiveChat("右上栏位必须放入镶嵌宝石。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketInvalidGem, MessageType.System);
             return false;
         }
         if (_target.Item?.Info == null)
@@ -101,7 +101,7 @@ public sealed partial class NPCSocketPanel : DXControl
         int shape = gem.Info.Shape;
         if (shape is not (0 or 1 or 2 or 4))
         {
-            GameScene.Game?.ReceiveChat("右上栏位必须放入镶嵌宝石。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketInvalidGem, MessageType.System);
             return false;
         }
         if (target.Info.ItemType is not (ItemType.Weapon or ItemType.Armour))
@@ -128,7 +128,7 @@ public sealed partial class NPCSocketPanel : DXControl
         if (shape is 1 or 2 && target.Sockets.All(x => x.Gem != null) &&
             target.Sockets.All(x => x.Gem?.InfoIndex != gem.Info.Index))
         {
-            GameScene.Game?.ReceiveChat("没有可用的已解锁空镶嵌孔。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketNoAvailableSocket, MessageType.System);
             return false;
         }
         return true;
@@ -354,17 +354,17 @@ public sealed partial class NPCSocketCombinePanel : DXControl
     {
         if (_gems[0].LinkedSourceSlot < 0 || _gems[1].LinkedSourceSlot < 0 || _gems[2].LinkedSourceSlot < 0)
         {
-            GameScene.Game?.ReceiveChat("请在上方栏位放入三颗相同的镶嵌宝石。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketMissingGems, MessageType.System);
             return;
         }
         if (_gems.Any(cell => cell.Item?.Info?.ItemType != ItemType.SocketGem))
         {
-            GameScene.Game?.ReceiveChat("请在上方栏位放入三颗相同的镶嵌宝石。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketMissingGems, MessageType.System);
             return;
         }
         if (_gems.Skip(1).Any(cell => cell.Item?.Info != _gems[0].Item?.Info))
         {
-            GameScene.Game?.ReceiveChat("三颗镶嵌宝石必须是相同物品。", MessageType.System);
+            GameScene.Game?.ReceiveChat(Lang.UnableToSocketMismatch, MessageType.System);
             return;
         }
         _operating = true;

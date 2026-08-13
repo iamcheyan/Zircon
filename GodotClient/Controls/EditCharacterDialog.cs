@@ -54,7 +54,7 @@ public sealed partial class EditCharacterDialog : DXWindow
         AddControl(new DXLabel { Text = "角色预览", FontSize = 10, Align = HorizontalAlignment.Center, Location = new Vector2I(60, 338), Size = new Vector2I(140, 20), IsControl = false });
         AddControl(new DXLabel { Text = "Name:", FontSize = 10, Location = new Vector2I(28, 482), IsControl = false });
         _name = new DXTextInput { Location = new Vector2I(75, 478), Size = new Vector2I(155, 20) }; AddControl(_name);
-        var confirm = new DXButton { Text = "确认", FontSize = 10, Location = new Vector2I(90, 517), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
+        var confirm = new DXButton { Text = Lang.CommonControlConfirm, FontSize = 10, Location = new Vector2I(90, 517), Size = new Vector2I(80, 25), Index = -1, LibraryFile = LibraryFile.Interface };
         confirm.MouseClick += (s, e) => Confirm(); AddControl(confirm);
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15 };
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);

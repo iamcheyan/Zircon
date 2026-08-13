@@ -14,14 +14,14 @@ public sealed partial class GameStoreGiftDialog : DXWindow
 
     public GameStoreGiftDialog(string itemName, Action<string> send)
     {
-        Text = "赠送商城物品";
+        Text = Lang.GameStoreDialogGiftCaption;
         HasTitle = false;
         HasFooter = false;
         Size = new Vector2I(252, 128);
         _send = send;
 
         AddControl(new DXImageControl { LibraryFile = LibraryFile.Interface, Index = 281, FixedSize = true, Size = Size, MouseFilter = MouseFilterEnum.Ignore });
-        AddControl(new DXLabel { Text = "赠送商城物品", FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(252, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.GameStoreDialogGiftCaption, FontSize = 10, TextColour = new Color(1f, .85f, .3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I(252, 18), IsControl = false });
         AddControl(new DXLabel { Text = $"物品: {itemName}", FontSize = 9, Location = new Vector2I(16, 28), Size = new Vector2I(220, 18), IsControl = false });
         AddControl(new DXLabel { Text = "角色名:", FontSize = 10, Location = new Vector2I(16, 55), Size = new Vector2I(60, 22), IsControl = false });
         _recipient = new DXTextInput { Location = new Vector2I(76, 53), Size = new Vector2I(160, 20) };

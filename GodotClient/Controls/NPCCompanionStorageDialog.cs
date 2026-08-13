@@ -34,7 +34,7 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
 
         AddControl(new DXLabel { Text = "名称", FontSize = 9, Location = new Vector2I(50, 52), IsControl = false });
         AddControl(new DXLabel { Text = "等级", FontSize = 9, Location = new Vector2I(50, 74), IsControl = false });
-        AddControl(new DXLabel { Text = "经验", FontSize = 9, Location = new Vector2I(50, 96), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CompanionDialogCompanionTabExpLabel, FontSize = 9, Location = new Vector2I(50, 96), IsControl = false });
         AddControl(new DXLabel { Text = "饱食度", FontSize = 9, Location = new Vector2I(50, 118), IsControl = false });
         _name = ValueLabel(52); _level = ValueLabel(74); _experience = ValueLabel(96); _hunger = ValueLabel(118);
         _experienceBar = AddBar(196, 98, 4310);
@@ -154,7 +154,7 @@ public sealed partial class NPCCompanionStorageDialog : DXWindow
             _preview.SetAnimation(MirAnimation.Standing);
             AddChild(_preview);
         }
-        _name.Text = companion?.Name ?? companion?.CompanionInfo?.MonsterInfo?.MonsterName ?? "伙伴";
+        _name.Text = companion?.Name ?? companion?.CompanionInfo?.MonsterInfo?.MonsterName ?? Lang.CompanionDialogTitle;
         _level.Text = $"Lv. {companion?.Level ?? 0}";
         var levelInfo = Globals.CompanionLevelInfoList?.Binding?.FirstOrDefault(x => x.Level == companion?.Level);
         int maxExperience = levelInfo?.MaxExperience ?? 1;

@@ -16,7 +16,7 @@ public sealed partial class ChatTextBox : DXWindow
         Local, Whisper, Group, Guild, Shout, Global, Observer,
     }
 
-    private static readonly string[] ModeNames = { "普通", "悄悄话", "队伍", "行会", "喊话", "世界", "观察" };
+    private static readonly string[] ModeNames = { Lang.CommonControlConfigWindowColoursTabShoutChatLabel, Lang.ChatOptionsPanelWhisperChatLabel, Lang.ChatOptionsPanelGroupChatLabel, Lang.ChatOptionsPanelGuildChatLabel, Lang.ChatOptionsPanelShoutChatLabel, Lang.ChatOptionsPanelGlobalChatLabel, Lang.ChatOptionsPanelObserverChatLabel };
     private readonly DXTextInput _input;
     private readonly DXButton _modeButton;
     private readonly DXButton _optionsButton;
