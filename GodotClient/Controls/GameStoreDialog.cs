@@ -91,6 +91,7 @@ public partial class GameStoreDialog : DXWindow
         };
         AddControl(_sort);
         _search = new DXTextInput { Location = new Vector2I(385, 39), Size = new Vector2I(132, 20) };
+        _search.TextChanged += (t) => GD.Print($"[GameStore] 搜索框输入: '{t}'");
         AddControl(_search);
         var search = new DXButton { Text = Lang.GameStoreDialogSearchButtonLabel, Type = DXButton.ButtonType.SmallButton, FontSize = 10, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(530, 38), Size = new Vector2I(68, 25) };
         search.MouseClick += (o, e) => { _pageIndex = 0; Refresh(); };
@@ -295,6 +296,7 @@ public partial class GameStoreDialog : DXWindow
         row.AddControl(cell);
         // [dbeditor 验收诊断] 商城行渲染日志：物品名 + 实际显示价格（dbeditor 同步验收用）
         GD.Print($"[GameStore] 行渲染: {info.Item.ItemName} | 显示价: {(info.Available ? $"{EffectivePrice(info):#,##0}" : "Unavailable")}");
+        row.AddControl(new DXLabel { Text = info.Item.Local(), FontSize = 9, TextColour = Colors.White, Location = new Vector2I(65, 8), Size = new Vector2I(128, 17), IsControl = false });
         row.AddControl(new DXLabel { Text = info.Available ? $"{EffectivePrice(info):#,##0}" : "Unavailable", FontSize = 9, TextColour = info.Available ? new Color(1f, .55f, .1f) : new Color(.55f, .55f, .55f), Align = HorizontalAlignment.Center, Location = new Vector2I(7, 59), Size = new Vector2I(58, 16), IsControl = false });
         int quantityValue = 1;
         var quantity = new DXButton { Text = "1", Type = DXButton.ButtonType.SmallButton, FontSize = 8, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(72, 30), Size = new Vector2I(117, 20) };
