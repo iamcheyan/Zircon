@@ -1010,7 +1010,7 @@ public partial class GameScene : Control
             () => _rightClickDeTarget,
             IsMouseOverUi,
             () => !IsFishingActive && !IsTamingActive,
-            () => ReceiveChat("Unable to throw Shuriken, Your target is too far.", MessageType.Hint),
+            () => ReceiveChat("目标太远，无法投掷飞镖。", MessageType.Hint),
             () => _player?.LibraryWeaponShape == Globals.ShurikenLibraryWeaponShape,
             () => _playerHorse != HorseType.None,
             () => _player?.ElementalHurricane == true,

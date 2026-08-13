@@ -34,7 +34,7 @@ public sealed partial class KeyBindDialog : DXWindow
         var close = new DXButton { LibraryFile = LibraryFile.Interface, Index = 15, Location = new Vector2I(420, 3) };
         close.MouseClick += (s, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "选择一个条目并按按键来更改。Esc 取stores the current key.", FontSize = 9, Location = new Vector2I(18, 39), Size = new Vector2I(410, 18), IsControl = false });
+        AddControl(new DXLabel { Text = "选择一个条目并按按键来更改。Esc 取消并保存当前按键。", FontSize = 9, Location = new Vector2I(18, 39), Size = new Vector2I(410, 18), IsControl = false });
         _list = new DXControl { Location = new Vector2I(9, 60), Size = new Vector2I(414, 330), Clip = true, Border = true, BorderColour = new Color(.45f, .34f, .16f) };
         AddControl(_list);
         _scroll = new DXVScrollBar { Location = new Vector2I(425, 60), Size = new Vector2I(14, 330), VisibleSize = 20, Change = 3 };

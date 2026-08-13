@@ -75,8 +75,8 @@ public static class LocalizedName
         if (table != null && table.TryGetValue(name, out var entry))
         {
             string lang = LangCode;
-            if (lang == "CN" && !string.IsNullOrEmpty(entry["zh"])) return entry["zh"];
-            if (lang == "JA" && !string.IsNullOrEmpty(entry["ja"])) return entry["ja"];
+            if (entry.TryGetValue("zh", out var zh) && !string.IsNullOrWhiteSpace(zh) && lang == "CN") return zh;
+            if (entry.TryGetValue("ja", out var ja) && !string.IsNullOrWhiteSpace(ja) && lang == "JA") return ja;
         }
         return fallback ?? name;
     }
