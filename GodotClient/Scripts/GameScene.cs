@@ -126,6 +126,10 @@ public partial class GameScene : Control
     // ---- M9 物品系统: 数据模型 (数组即底层格, DXItemCell 直读直写) ----
     public static GameScene Game;
     public IEnumerable<ClientUserMilestone> Milestones => _milestones.Values;
+
+    /// <summary>旧版 HasUnclaimedMilestoneReward：存在完成但未领取且有奖励的里程碑。</summary>
+    public bool HasUnclaimedMilestoneReward()
+        => _milestones.Values.Any(x => x.IsComplete && !x.Claimed && x.Info?.Reward != null);
     public bool QuestTrackerVisible { get; private set; } = true;
     public ClientUserQuest GetUserQuest(int index) => _userQuests.TryGetValue(index, out var quest) ? quest : null;
 
@@ -6208,12 +6212,16 @@ public partial class GameScene : Control
         _milestones.Clear();
         foreach (var milestone in packet?.Milestones ?? new List<ClientUserMilestone>())
             if (milestone != null) _milestones[milestone.Index] = milestone;
+        // 里程碑数据变化后刷新任务窗口页签提醒。
+        _questDialog?.RefreshAlerts();
     }
 
     private void OnMilestoneEarned(S.MilestoneEarned packet)
     {
         if (packet != null && _milestones.TryGetValue(packet.Index, out var milestone))
             _milestoneDialog?.ShowMilestone(milestone);
+        // 新里程碑完成后页签提醒立即出现（旧版 UpdateAlertIcons 同路径）。
+        _questDialog?.RefreshAlerts();
     }
 
     private void OnObjectTaming(S.ObjectTaming p)

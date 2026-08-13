@@ -548,6 +548,8 @@ public partial class ChatLogPanel : Control
                 OutlineColour = Colors.Black,
                 // 旧版 ProcessText 用 FontStyle.Underline 标记物品链接
                 DrawUnderline = true,
+                // 旧版链接 Sound = SoundIndex.ButtonC（悬停音效）
+                Sound = Library.SoundIndex.ButtonC,
                 AutoSize = false,
                 Size = new Vector2I(Math.Max(1, (int)measured.X + 2), Math.Max(1, (int)measured.Y)),
                 Position = position,
@@ -558,6 +560,8 @@ public partial class ChatLogPanel : Control
                 GameScene.Game?.SetHoverItem(item);
                 linked.TextColour = Colors.Red;
                 linked.QueueRedraw();
+                // 旧版链接 Sound = ButtonC 在 MouseEnter 触发
+                GameScene.Game?.PlaySound(Library.SoundIndex.ButtonC);
             };
             linked.MouseLeave += (sender, args) =>
             {

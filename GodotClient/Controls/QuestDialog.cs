@@ -19,6 +19,7 @@ public partial class QuestDialog : DXWindow
     private DXVScrollBar _scroll;
     private readonly DXControl _detailPanel;
     private readonly List<(DXButton Button, int Page)> _tabs = new();
+    private readonly Dictionary<int, DXImageControl> _tabAlerts = new();
     private ClientUserQuest _selectedQuest;
     private QuestInfo _selectedAvailable;
     private int _page;
@@ -65,7 +66,6 @@ public partial class QuestDialog : DXWindow
         AddTab("可接任务", 118, 25, 1);
         // 原版已完成页签默认隐藏；保留数据页但不把它错误显示在主页签栏。
         AddTab("里程碑", 218, 25, 3);
-
         _content = new DXControl
         {
             Location = new Vector2I(18, 58),
@@ -135,8 +135,32 @@ public partial class QuestDialog : DXWindow
             UpdateTabStyles();
             RefreshPage();
         };
+        // 旧版 QuestTab/MilestoneTab 的 AlertIcon：可接任务/未领里程碑奖励时
+        // 页签右上角显示 GameInter 240 感叹号提醒。
+        var alertIcon = new DXImageControl
+        {
+            LibraryFile = LibraryFile.GameInter,
+            Index = 240,
+            Location = new Vector2I(78, 4),
+            IsControl = false,
+            Visible = false,
+        };
+        tab.AddControl(alertIcon);
+        _tabAlerts[page] = alertIcon;
         AddControl(tab);
         _tabs.Add((tab, page));
+    }
+
+    /// <summary>
+    /// 旧版 QuestDialog.UpdateAlertIcons：可接任务>0 或存在未领取的里程碑
+    /// 奖励时，对应页签显示提醒图标。
+    /// </summary>
+    public void UpdateAlertIcons()
+    {
+        if (_tabAlerts.TryGetValue(1, out var availableAlert))
+            availableAlert.Visible = _available.Count > 0;
+        if (_tabAlerts.TryGetValue(3, out var milestoneAlert))
+            milestoneAlert.Visible = GameScene.Game?.HasUnclaimedMilestoneReward() == true;
     }
 
     private void UpdateTabStyles()
@@ -159,7 +183,12 @@ public partial class QuestDialog : DXWindow
                 _available.Add(quest);
         }
         RefreshPage();
+        // 旧版 UpdateAlertIcons：可接/里程碑页签提醒。
+        UpdateAlertIcons();
     }
+
+    /// <summary>可接任务/里程碑提醒由 SetQuests 和里程碑变化时刷新。</summary>
+    public void RefreshAlerts() => UpdateAlertIcons();
 
     private void RefreshPage()
     {
