@@ -289,7 +289,7 @@ public partial class GameStoreDialog : DXWindow
         var itemGrid = new[] { CreateStoreItem(info) };
         var cell = new DXItemCell { Location = new Vector2I(19, 18), Size = new Vector2I(36, 36), ItemGrid = itemGrid, Slot = 0, ReadOnly = true, GridType = GridType.None, Border = false };
         row.AddControl(cell);
-        row.AddControl(new DXLabel { Text = info.Item.ItemName, FontSize = 9, TextColour = Colors.White, Location = new Vector2I(65, 8), Size = new Vector2I(128, 17), IsControl = false });
+        row.AddControl(new DXLabel { Text = info.Item.Local(), FontSize = 9, TextColour = Colors.White, Location = new Vector2I(65, 8), Size = new Vector2I(128, 17), IsControl = false });
         row.AddControl(new DXLabel { Text = info.Available ? $"{EffectivePrice(info):#,##0}" : "Unavailable", FontSize = 9, TextColour = info.Available ? new Color(1f, .55f, .1f) : new Color(.55f, .55f, .55f), Align = HorizontalAlignment.Center, Location = new Vector2I(7, 59), Size = new Vector2I(58, 16), IsControl = false });
         int quantityValue = 1;
         var quantity = new DXButton { Text = "1", Type = DXButton.ButtonType.SmallButton, FontSize = 8, LibraryFile = LibraryFile.Interface, Index = -1, Location = new Vector2I(72, 30), Size = new Vector2I(117, 20) };
@@ -521,7 +521,7 @@ public sealed partial class GameStoreTopItemRow : DXControl
         AddControl(ItemCell);
         AddControl(new DXLabel
         {
-            Text = info.Item.ItemName,
+            Text = info.Item.Local(),
             FontSize = 9,
             TextColour = Colors.White,
             Location = new Vector2I(65, 30),

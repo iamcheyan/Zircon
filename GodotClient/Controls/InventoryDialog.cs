@@ -326,14 +326,14 @@ public partial class InventoryDialog : DXWindow
             cell.Item.Flags.HasFlag(UserItemFlags.Worthless) ||
             cell.Item.Info?.CanSell != true)
         {
-            GameScene.Game?.ReceiveChat($"无法出售 {cell.Item.Info?.ItemName}, it cannot be sold.");
+            GameScene.Game?.ReceiveChat($"无法出售 {cell.Item.Info?.Local()}, 该物品不可出售。");
             return true;
         }
         // 原版 InventoryDialog.Cell_SelectedChanged：类型不在商店可售列表时
         // 提示 UnableToSellHere 并取消选中。
         if (SellableItemTypes.Count > 0 && !SellableItemTypes.Contains(cell.Item.Info.ItemType))
         {
-            GameScene.Game?.ReceiveChat($"无法在 {cell.Item.Info?.ItemName} 这里进行售卖.");
+            GameScene.Game?.ReceiveChat($"无法在 {cell.Item.Info?.Local()} 这里进行售卖。");
             return true;
         }
 

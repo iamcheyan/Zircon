@@ -43,7 +43,7 @@ public sealed partial class MarketHistoryDialog : DXWindow
         var displayInfo = item.Info;
         if (item.Info.ItemEffect == ItemEffect.ItemPart && partIndex > 0)
             displayInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == partIndex) ?? displayInfo;
-        _item.Text = displayInfo.ItemName;
+        _item.Text = displayInfo.Local();
         _sales.Text = Lang.MarketHistoryUi275Label;
         _last.Text = string.Empty;
         _average.Text = string.Empty;

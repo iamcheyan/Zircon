@@ -124,7 +124,7 @@ public partial class QuestTrackerDialog : DXWindow
                 label.Text += " (Complete)";
                 var finish = new DXLabel
                 {
-                    Text = $"Goto {quest.FinishNPC?.NPCName} in {quest.FinishNPC?.RegionName}",
+                    Text = $"Goto {quest.FinishNPC?.Local()} in {quest.FinishNPC?.RegionName}",
                     TextColour = Colors.White,
                     DrawOutline = true,
                     OutlineColour = Colors.Black,

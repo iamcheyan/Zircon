@@ -191,8 +191,8 @@ public partial class GameScene : Control
             userQuest.IsComplete && !isLog ? questInfo.CompletedText : questInfo.ProgressText;
         text ??= string.Empty;
         text = text.Replace("[PLAYERNAME]", StartInfo?.Name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
-        text = text.Replace("[STARTNAME]", questInfo.StartNPC?.NPCName ?? string.Empty, StringComparison.OrdinalIgnoreCase);
-        text = text.Replace("[FINISHNAME]", questInfo.FinishNPC?.NPCName ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        text = text.Replace("[STARTNAME]", questInfo.StartNPC?.Local() ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        text = text.Replace("[FINISHNAME]", questInfo.FinishNPC?.Local() ?? string.Empty, StringComparison.OrdinalIgnoreCase);
         return text;
     }
 
@@ -7406,7 +7406,7 @@ public partial class GameScene : Control
         if (slot is EquipmentSlot.Hook or EquipmentSlot.Float or EquipmentSlot.Bait or EquipmentSlot.Finder or EquipmentSlot.Reel &&
             Equipment[(int)EquipmentSlot.Weapon]?.Info?.ItemEffect != ItemEffect.FishingRod)
         {
-            ReceiveChat($"Unable to hold {item.Info.ItemName}, must be holding fishing rod.", MessageType.System);
+            ReceiveChat($"无法持有{item.Info.Local()}，必须手持鱼竿。", MessageType.System);
             return false;
         }
 
@@ -7417,13 +7417,13 @@ public partial class GameScene : Control
         {
             if (HandWeight + weight > _playerStats[Stat.HandWeight])
             {
-                ReceiveChat($"Unable to hold {item.Info.ItemName}, it is too heavy.", MessageType.System);
+                ReceiveChat($"无法持有{item.Info.Local()}，它太重了。", MessageType.System);
                 return false;
             }
         }
         else if (WearWeight + weight > _playerStats[Stat.WearWeight])
         {
-            ReceiveChat($"Unable to wear {item.Info.ItemName}, it is too heavy.", MessageType.System);
+            ReceiveChat($"无法穿戴{item.Info.Local()}，它太重了。", MessageType.System);
             return false;
         }
 
@@ -9523,7 +9523,7 @@ public partial class GameScene : Control
     // M11: 填充状态窗口 (玩家真实数据)
     private void RefreshStatusWindow()
     {
-        string mapName = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex)?.Description ?? $"Map{_playerMapIndex}";
+        string mapName = Globals.MapInfoList?.Binding.FirstOrDefault(m => m.Index == _playerMapIndex)?.Local() ?? $"Map{_playerMapIndex}";
         string className = StartInfo?.Class.ToString() ?? "-";
         _statusWindow.Refresh(
             StartInfo?.Name ?? "-", className,

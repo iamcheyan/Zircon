@@ -106,7 +106,7 @@ public partial class ObjectRenderer : MapObjectNode
         var r = new ObjectRenderer
         {
             Type = Kind.NPC,
-            DisplayName = ni.NPCName,
+            DisplayName = ni.Local(),
             NameColour = new Color(0.4f, 1f, 0.4f),
             BodyLibrary = LibraryCache.Get(LibraryFile.NPC),
             BodyShape = ni.Image,
@@ -151,7 +151,7 @@ public partial class ObjectRenderer : MapObjectNode
         var r = new ObjectRenderer
         {
             Type = Kind.Item,
-            DisplayName = info.ItemName ?? "Item",
+            DisplayName = info.Local() ?? "Item",
             NameColour = Colors.White,
             BodyLibrary = LibraryCache.Get(LibraryFile.Ground),
             BodyShape = 0,

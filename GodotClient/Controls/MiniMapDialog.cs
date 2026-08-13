@@ -169,7 +169,7 @@ public partial class MiniMapDialog : DXWindow
         _playerObjectID = playerObjectID;
         _hasPlayer = false;
 
-        Text = map.PlayerDescription;
+        Text = map.Local();
         Image.Index = map.MiniMap;
         Image.Location = Vector2I.Zero;
 

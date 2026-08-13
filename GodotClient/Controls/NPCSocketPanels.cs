@@ -94,7 +94,7 @@ public sealed partial class NPCSocketPanel : DXControl
         }
         if (_target.Item?.Info == null)
         {
-            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel, gem.Info.ItemName), MessageType.System);
+            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel, gem.Info.Local()), MessageType.System);
             return false;
         }
         var target = _target.Item;
@@ -106,23 +106,23 @@ public sealed partial class NPCSocketPanel : DXControl
         }
         if (target.Info.ItemType is not (ItemType.Weapon or ItemType.Armour))
         {
-            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel2, gem.Info.ItemName), MessageType.System);
+            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel2, gem.Info.Local()), MessageType.System);
             return false;
         }
         if (shape is 0 or 1 or 2 && gem.Info.Rarity != target.Info.Rarity)
         {
-            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsRarityLabel, gem.Info.ItemName), MessageType.System);
+            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsRarityLabel, gem.Info.Local()), MessageType.System);
             return false;
         }
         if (shape == 0 && target.Sockets.Count >= SocketCount)
         {
-            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel3, gem.Info.ItemName), MessageType.System);
+            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel3, gem.Info.Local()), MessageType.System);
             return false;
         }
         if ((shape == 1 && target.Info.ItemType != ItemType.Weapon) ||
             (shape == 2 && target.Info.ItemType != ItemType.Armour))
         {
-            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel2, gem.Info.ItemName), MessageType.System);
+            GameScene.Game?.ReceiveChat(string.Format(Lang.NPCSocketPanelsNoneLabel2, gem.Info.Local()), MessageType.System);
             return false;
         }
         if (shape is 1 or 2 && target.Sockets.All(x => x.Gem != null) &&

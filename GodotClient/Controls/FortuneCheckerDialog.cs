@@ -154,7 +154,7 @@ public sealed partial class FortuneRow : DXControl
         if (info == null) return;
         _cell.ItemGrid[0] = new ClientUserItem(info, 1);
         _cell.RefreshItem();
-        _name.Text = info.ItemName;
+        _name.Text = info.Local();
         UpdateInfo(GameScene.Game?.GetFortune(info.Index));
     }
 

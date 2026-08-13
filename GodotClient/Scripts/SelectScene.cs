@@ -255,7 +255,7 @@ public partial class SelectScene : Control
     {
         if (Globals.MapInfoList?.Binding == null) return "New Character";
         foreach (var map in Globals.MapInfoList.Binding)
-            if (map.Index == index) return map.Description ?? "New Character";
+            if (map.Index == index) return map.Local() ?? "New Character";
         return "New Character";
     }
 

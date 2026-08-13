@@ -191,7 +191,7 @@ public partial class CompanionDialog : DXWindow
     public void RefreshCompanionStats(ClientUserCompanion companion)
     {
         if (companion == null) return;
-        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.MonsterName ?? string.Format(Lang.CompanionCompanionLabel, companion.CompanionIndex) : companion.Name;
+        _name.Text = string.IsNullOrWhiteSpace(companion.Name) ? companion.CompanionInfo?.MonsterInfo?.Local() ?? string.Format(Lang.CompanionCompanionLabel, companion.CompanionIndex) : companion.Name;
         _level.Text = $"Lv. {companion.Level}";
         var info = Globals.CompanionLevelInfoList?.Binding?.FirstOrDefault(x => x.Level == companion.Level);
         int maxExperience = Math.Max(1, info?.MaxExperience ?? 1), maxHunger = Math.Max(1, info?.MaxHunger ?? 100);

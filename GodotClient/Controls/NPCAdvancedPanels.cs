@@ -883,7 +883,7 @@ public sealed partial class NPCAdvancedPanel : DXControl
                 _companionPreview.SetAnimation(MirAnimation.Standing);
                 AddChild(_companionPreview);
             }
-            nameLabel.Text = info?.MonsterInfo?.MonsterName ?? Lang.NPCCompanionStorageCompanionLabel;
+            nameLabel.Text = info?.MonsterInfo?.Local() ?? Lang.NPCCompanionStorageCompanionLabel;
             description.Text = info?.Description ?? string.Empty;
             price.Text = info == null ? string.Empty : string.Format(Lang.NPCAdvancedPanelsPriceLabel, info.Price, info.Currency?.Abbreviation ?? string.Empty);
             if (info != null) index.Text = info.Index.ToString();

@@ -240,7 +240,7 @@ public partial class NPCGoodsPanel : DXControl
             });
             row.AddControl(new DXLabel
             {
-                Text = good.Item.ItemName, FontSize = 9, TextColour = row.TextColour,
+                Text = good.Item.Local(), FontSize = 9, TextColour = row.TextColour,
                 Location = new Vector2I(41, 3), Size = new Vector2I(145, 17), IsControl = false,
             });
             if (_currency?.DropItem != null)
@@ -302,7 +302,7 @@ public partial class NPCGoodsPanel : DXControl
         if (maxAmount <= 0)
         {
             // 原版：余额不足以购买时提示。
-            GameScene.Game?.ReceiveChat($"You do not have enough {currency?.Name ?? "gold"} to buy a '{good.Item.ItemName}'.", MessageType.System);
+            GameScene.Game?.ReceiveChat($"你没有足够的{currency?.Name ?? "金币"}来购买'{good.Item.Local()}'。", MessageType.System);
             return;
         }
 
@@ -313,7 +313,7 @@ public partial class NPCGoodsPanel : DXControl
             {
                 if (freeWeight < good.Item.Weight)
                 {
-                    GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+                    GameScene.Game?.ReceiveChat($"你的负重不够，无法购买'{good.Item.Local()}'。", MessageType.System);
                     return;
                 }
             }
@@ -323,7 +323,7 @@ public partial class NPCGoodsPanel : DXControl
             // 背包没有可用重量时不应打开一个 Amount=0 的确认框；原版超重时直接提示终止。
             if (maxAmount <= 0)
             {
-                GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+                GameScene.Game?.ReceiveChat($"你的负重不够，无法购买'{good.Item.Local()}'。", MessageType.System);
                 return;
             }
         }
@@ -342,12 +342,12 @@ public partial class NPCGoodsPanel : DXControl
 
         if (good.Item.Weight > 0 && (game.PlayerStats?[Stat.BagWeight] ?? 0) - game.BagWeight < good.Item.Weight)
         {
-            GameScene.Game?.ReceiveChat($"You do not have enough weight to buy any '{good.Item.ItemName}'.", MessageType.System);
+            GameScene.Game?.ReceiveChat($"你的负重不够，无法购买'{good.Item.Local()}'。", MessageType.System);
             return;
         }
         if (good.CostFor(currency, 1) > balance)
         {
-            GameScene.Game?.ReceiveChat($"You do not have enough {currency?.Name ?? "gold"} to buy a '{good.Item.ItemName}'.", MessageType.System);
+            GameScene.Game?.ReceiveChat($"你没有足够的{currency?.Name ?? "金币"}来购买'{good.Item.Local()}'。", MessageType.System);
             return;
         }
         game.SendNPCBuy(good.Index, 1, _guildFunds.Checked);

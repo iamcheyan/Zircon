@@ -22,7 +22,7 @@ public sealed partial class ItemAmountDialog : DXWindow
 
     public ItemAmountDialog(ClientUserItem item, Action<long> confirm)
         // 原版 DXItemAmountWindow 在打开时统一从 1 开始，而不是默认半堆。
-        : this(item?.Info?.ItemName ?? Lang.ConsignmentItemLabel, Math.Max(1, item?.Count ?? 1), 1, confirm, item)
+        : this(item?.Info?.Local() ?? Lang.ConsignmentItemLabel, Math.Max(1, item?.Count ?? 1), 1, confirm, item)
     {
     }
 

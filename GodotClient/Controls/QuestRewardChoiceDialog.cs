@@ -28,7 +28,7 @@ public sealed partial class QuestRewardChoiceDialog : DXWindow
             var choice = reward;
             var button = new DXButton
             {
-                Text = $"{choice.Item.ItemName} x{choice.Amount}",
+                Text = $"{choice.Item.Local()} x{choice.Amount}",
                 Location = new Vector2I(20, y), Size = new Vector2I(300, 28)
             };
             button.MouseClick += (s, e) =>
