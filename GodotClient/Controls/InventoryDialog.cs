@@ -35,7 +35,7 @@ public partial class InventoryDialog : DXWindow
         // 原版 InventoryDialog 直接使用 Interface 130 背景图。
         HasTitle = false;
         Movable = true;
-        Text = "背包";
+        Text = Lang.InventoryDialogTitle;
         Size = new Vector2I(264, 436);
 
         var bg = new DXImageControl
@@ -52,7 +52,7 @@ public partial class InventoryDialog : DXWindow
         // 不能只给 DXWindow.Text 赋值，否则 HasTitle=false 时不会绘制标题。
         _titleLabel = new DXLabel
         {
-            Text = "背包",
+            Text = Lang.InventoryDialogTitle,
             FontSize = 10,
             TextColour = new Color(1f, .85f, .3f),
             DrawOutline = true,
@@ -108,7 +108,7 @@ public partial class InventoryDialog : DXWindow
 
         _goldTitle = new DXLabel
         {
-            Text = "金币",
+            Text = Lang.InventoryDialogPrimaryCurrencyTitle,
             TextColour = new Color(0.85f, 0.68f, 0.2f),
             Location = new Vector2I(55, 381),
             AutoSize = false,
@@ -283,8 +283,8 @@ public partial class InventoryDialog : DXWindow
         ClearSaleSelection();
         InvMode = InventoryMode.Sell;
         _titleLabel.Text = "背包 [出售]";
-        _goldTitle.Text = _primaryCurrency?.Abbreviation ?? "金币";
-        _ggTitle.Text = "总计";
+        _goldTitle.Text = _primaryCurrency?.Abbreviation ?? Lang.InventoryDialogPrimaryCurrencyTitle;
+        _ggTitle.Text = Lang.InventoryDialogSecondaryCurrencyTitle;
         _ggTitle.TextColour = new Color(.4f, .65f, 1f);
         GgLabel.Text = "0";
         TrashButton.Visible = false;
@@ -301,8 +301,8 @@ public partial class InventoryDialog : DXWindow
         SellableItemTypes.Clear();
         _primaryCurrency = null;
         InvMode = InventoryMode.Normal;
-        _titleLabel.Text = "背包";
-        _goldTitle.Text = "金币";
+        _titleLabel.Text = Lang.InventoryDialogTitle;
+        _goldTitle.Text = Lang.InventoryDialogPrimaryCurrencyTitle;
         _goldTitle.TextColour = new Color(.85f, .68f, .2f);
         _ggTitle.Text = "GG";
         _ggTitle.TextColour = new Color(1f, .55f, .2f);

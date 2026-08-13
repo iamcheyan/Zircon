@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Reflection;
 using Godot;
 using Library;
+using ZirconClient.Scripts;
 
 namespace ZirconClient.Controls;
 
@@ -55,15 +56,16 @@ public partial class MainPanel : DXImageControl
 
         // 原版 MainPanel 在每个按钮/属性图标上提供 Hint；Godot 使用
         // Control.TooltipText 承载相同的悬停提示，键位从已加载的持久化表读取。
-        CharacterButton.TooltipText = $"角色 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.CharacterWindow)}]";
-        InventoryButton.TooltipText = $"背包 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.InventoryWindow)}]\n宠物 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.CompanionWindow)}]";
-        SpellButton.TooltipText = $"技能 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MagicWindow)}]";
-        QuestButton.TooltipText = $"任务 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.QuestLogWindow)}]";
-        MailButton.TooltipText = $"聊天 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MailBoxWindow)}]";
-        BeltButton.TooltipText = $"腰带 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.BeltWindow)}]";
-        GroupButton.TooltipText = $"编组 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.GroupWindow)}]";
-        MenuButton.TooltipText = $"菜单 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.MenuWindow)}]";
-        CashShopButton.TooltipText = $"商铺 [{KeyBindManager.GetKeyBindLabel(KeyBindAction.GameStoreWindow)}]";
+        CharacterButton.TooltipText = string.Format(Lang.MainPanelCharacterButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.CharacterWindow));
+        InventoryButton.TooltipText = string.Format(Lang.MainPanelInventoryButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.InventoryWindow))
+            + "\n" + string.Format(Lang.MainPanelCompanionButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.CompanionWindow));
+        SpellButton.TooltipText = string.Format(Lang.MainPanelSpellButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.MagicWindow));
+        QuestButton.TooltipText = string.Format(Lang.MainPanelQuestButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.QuestLogWindow));
+        MailButton.TooltipText = string.Format(Lang.MainPanelMailButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.MailBoxWindow));
+        BeltButton.TooltipText = string.Format(Lang.MainPanelBeltButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.BeltWindow));
+        GroupButton.TooltipText = string.Format(Lang.MainPanelGroupButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.GroupWindow));
+        MenuButton.TooltipText = string.Format(Lang.MainPanelMenuButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.MenuWindow));
+        CashShopButton.TooltipText = string.Format(Lang.MainPanelCashShopButtonHint, KeyBindManager.GetKeyBindLabel(KeyBindAction.GameStoreWindow));
 
         NewMailIcon = new DXImageControl
         {
@@ -102,8 +104,8 @@ public partial class MainPanel : DXImageControl
 
         ClassImage = CreateStatImage(70, 277, 25);
         LevelImage = CreateStatImage(71, 277, 45);
-        ClassImage.TooltipText = "职业";
-        LevelImage.TooltipText = "等级";
+        ClassImage.TooltipText = Lang.MainPanelClassLabel;
+        LevelImage.TooltipText = Lang.MainPanelLevelLabel;
         FPImage = CreateStatImage(72, 362, 25);
         CPImage = CreateStatImage(73, 362, 45);
         ACImage = CreateStatImage(66, 445, 25);
@@ -113,11 +115,11 @@ public partial class MainPanel : DXImageControl
         SCImage = CreateStatImage(64, 547, 45);
         FPImage.TooltipText = "战斗力";
         CPImage.TooltipText = "贡献";
-        ACImage.TooltipText = "防御";
-        DCImage.TooltipText = "攻击";
-        MACImage.TooltipText = "魔法防御";
-        MCImage.TooltipText = "魔法攻击";
-        SCImage.TooltipText = "道术攻击";
+        ACImage.TooltipText = Lang.MainPanelACLabel;
+        DCImage.TooltipText = Lang.MainPanelDCLabel;
+        MACImage.TooltipText = Lang.MainPanelMRLabel;
+        MCImage.TooltipText = Lang.MainPanelMCLabel;
+        SCImage.TooltipText = Lang.MainPanelSCLabel;
 
         ClassLabel = CreateStatLabel(300, 22);
         LevelLabel = CreateStatLabel(300, 42);

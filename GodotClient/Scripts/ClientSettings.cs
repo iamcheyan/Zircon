@@ -136,6 +136,11 @@ public static class ClientSettings
     {
         if (_loaded) return;
         _loaded = true;
+
+        // UI 翻译：必须放在 file.Load 之前——ini 不存在时 Load 提前 return，
+        // 放在末尾会导致语言永远不初始化（Lang.Reload 不执行）。
+        Lang.Reload();
+
         var file = new ConfigFile();
         if (file.Load(FilePath) != Error.Ok) return;
         DrawEffects = Read(file, "Game", nameof(DrawEffects), DrawEffects);
@@ -208,6 +213,10 @@ public static class ClientSettings
         LoadColours(file);
         if (migrateMagicBarPosition || migrateMagicBarPositionV2)
             Save();
+
+        // ini 存在时 Language 已从文件读出：重载一次让 UI 用持久化语言
+        //（首次 Reload 在 file.Load 前，读到的还是默认值）。
+        Lang.Reload();
     }
 
     public static void Save()

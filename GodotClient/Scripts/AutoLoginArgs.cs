@@ -50,6 +50,9 @@ public static class AutoLoginArgs
 
     public static bool RunningTest => Has("--test-running");
     public static bool RightRunTest => Has("--test-right-run");
+
+    /// <summary>启动指定 UI 语言：--lang ENGLISH / --lang CHINESE（Lang.Reload 优先使用）。</summary>
+    public static string Language => GetValue("--lang", "--language");
     /// <summary>
     /// 只在本地执行移动预测/动画，不发送 C.Move，也不等待 S.ObjectMove。
     /// 登录和初始地图仍使用现有流程，便于直接在真实地图上检查走跑切换。

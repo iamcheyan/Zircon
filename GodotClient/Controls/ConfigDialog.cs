@@ -27,10 +27,10 @@ public partial class ConfigDialog : DXWindow
         close.Location = new Vector2I((int)Size.X - (int)close.Size.X - 3, 3);
         close.MouseClick += (o, e) => WindowManager.Close(this);
         AddControl(close);
-        AddControl(new DXLabel { Text = "设置", FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
+        AddControl(new DXLabel { Text = Lang.CommonControlConfigWindowTitle, FontSize = 10, TextColour = new Color(1f, 0.85f, 0.3f), DrawOutline = true, OutlineColour = Colors.Black, Align = HorizontalAlignment.Center, VAlign = VerticalAlignment.Center, AutoSize = false, Location = new Vector2I(0, 8), Size = new Vector2I((int)Size.X, 18), IsControl = false });
 
         _tabs = new DXButton[5];
-        string[] names = { "画面", "声音", "游戏", "网络", "界面" };
+        string[] names = { Lang.CommonControlConfigWindowGraphicsTabLabel, Lang.CommonControlConfigWindowSoundTabLabel, Lang.CommonControlConfigWindowGameTabLabel, Lang.CommonControlConfigWindowNetworkTabLabel, Lang.CommonControlConfigWindowUITabLabel };
         for (int i = 0; i < names.Length; i++)
         {
             int tab = i;
@@ -182,6 +182,7 @@ public partial class ConfigDialog : DXWindow
         {
             ClientSettings.Language = language.SelectedIndex == 1 ? "ENGLISH" : "CHINESE";
             ClientSettings.Save();
+            Lang.Reload(); // UI 文本即时切换
             GameScene.Game?.SendSelectLanguage(ClientSettings.Language);
         };
         usability.AddSelect("语言", language);
