@@ -30,7 +30,8 @@ public static class SoundPlayback
 
         if (entry.Loop && stream is AudioStreamWav wav)
             wav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
-        var player = new AudioStreamPlayer { Stream = stream, Bus = "Master" };
+        // 按音效分类走对应总线（设置页 5 类音量/静音的消费端）
+        var player = new AudioStreamPlayer { Stream = stream, Bus = ClientSettings.BusFor(entry.Category) };
         owner.AddChild(player);
         if (entry.Loop)
         {

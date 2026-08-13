@@ -230,6 +230,8 @@ public partial class MirEffectNode : Node2D
 
     public override void _Draw()
     {
+        // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
+        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
         // Keep the legacy NORMAL screen blend. The shader discards fully
         // transparent pixels before sampling SCREEN_TEXTURE, so it cannot
         // turn the sprite's transparent rectangle into an opaque square.

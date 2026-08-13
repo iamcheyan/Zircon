@@ -180,6 +180,8 @@ public partial class MirProjectileNode : MirEffectNode
 
     public override void _Draw()
     {
+        // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
+        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
         // Use the legacy screen blend; transparent pixels are discarded by
         // the shader before the screen-texture sample is written.
         Material = Blend ? BlendMaterial : null;

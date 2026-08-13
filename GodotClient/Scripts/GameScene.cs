@@ -30,6 +30,8 @@ public partial class GameScene : Control
     public float DayTime { get; private set; } = 1f;
     public TimeOfDay TimeOfDay { get; private set; } = TimeOfDay.Day;
     public bool DrawWeather { get; private set; } = true;
+    /// <summary>玩家当前"隐藏头盔"状态（设置页初始勾选用，服务端回包同步）。</summary>
+    public bool PlayerHideHead => _player?.HideHead ?? false;
 
     private Network.NetworkManager _net;
     private MapView _mapView;
@@ -906,6 +908,7 @@ public partial class GameScene : Control
         ClientSettings.Load();
         KeyBindManager.Load();
         ClientSettings.ApplyDisplaySettings();
+        ClientSettings.ApplyAudioSettings();
         SoundPlayback.Stop(SoundIndex.LoginScene);
         SoundPlayback.Stop(SoundIndex.SelectScene);
         Game = this;
@@ -3547,7 +3550,8 @@ public partial class GameScene : Control
             return;
         if (entry.Loop && stream is AudioStreamWav loopWav)
             loopWav.LoopMode = AudioStreamWav.LoopModeEnum.Forward;
-        var player = new AudioStreamPlayer { Stream = stream, Bus = "Master" };
+        // 按音效分类走对应总线（设置页 5 类音量/静音的消费端）
+        var player = new AudioStreamPlayer { Stream = stream, Bus = ClientSettings.BusFor(entry.Category) };
         AddChild(player);
         if (entry.Loop)
         {
@@ -8038,6 +8042,18 @@ public partial class GameScene : Control
 
     private static Weather ResolveMapWeather(MapInfo mapInfo)
         => mapInfo?.Weather ?? Weather.None;
+
+    public override void _Notification(int what)
+    {
+        // 后台播放声音：失焦且未开启时 Master 静音，回焦恢复（设置页"后台播放声音"消费端）
+        if (what == NotificationApplicationFocusOut && !ClientSettings.SoundInBackground)
+            AudioServer.SetBusMute(0, true);
+        else if (what == NotificationApplicationFocusIn)
+        {
+            ClientSettings.ApplyAudioSettings(); // 重新按音量/静音设置计算（含 Master 解除）
+        }
+        base._Notification(what);
+    }
 
     public override void _Process(double delta)
     {

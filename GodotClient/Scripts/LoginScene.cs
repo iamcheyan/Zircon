@@ -34,6 +34,7 @@ public partial class LoginScene : Control
     {
         ClientSettings.Load();
         ClientSettings.ApplyDisplaySettings();
+        ClientSettings.ApplyAudioSettings();
         SoundPlayback.Play(this, SoundIndex.LoginScene);
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");
 

@@ -66,6 +66,8 @@ public partial class MirRopeEffectNode : Node2D
 
     public override void _Draw()
     {
+        // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
+        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
         if (_library == null || _points.Count < 2 || _library.Images.Length <= 81) return;
         var image = _library.Images[81];
         // MirRopeEffect 继承 MirLineEffect，旧版源图类型是 Image；不要

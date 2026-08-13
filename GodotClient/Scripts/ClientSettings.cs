@@ -10,7 +10,7 @@ public static class ClientSettings
     private static bool _loaded;
 
     public static bool DrawEffects { get; set; } = true;
-    public static bool DrawParticles { get; set; }
+    public static bool DrawParticles { get; set; } = true;
     public static bool DrawWeather { get; set; } = true;
     public static bool ShowTargetOutline { get; set; } = true;
     public static bool ShowItemNames { get; set; } = true;
@@ -276,9 +276,42 @@ public static class ClientSettings
         file.Save(FilePath);
     }
 
-    /// <summary>将原版 Graphics 页的窗口选项映射到 Godot 当前窗口。</summary>
-    public static void ApplyDisplaySettings()
+    /// <summary>音效分类 → 音频总线名（default_bus_layout.tres 中定义）。</summary>
+    public static string BusFor(SoundCategory category) => category switch
     {
+        SoundCategory.Music => "Music",
+        SoundCategory.Player => "Player",
+        SoundCategory.Magic => "Magic",
+        SoundCategory.Monster => "Monster",
+        _ => "System",
+    };
+
+    /// <summary>应用 5 类音量/静音到音频总线（设置页音量条与启动时调用）。</summary>
+    public static void ApplyAudioSettings()
+    {
+        void Apply(int idx, string bus, int volume, bool muted)
+        {
+            if (idx < 0 || idx >= AudioServer.BusCount) return;
+            if (AudioServer.GetBusName(idx) != bus) return;
+            AudioServer.SetBusVolumeDb(idx, volume <= 0 || muted ? -80f : Mathf.LinearToDb(volume / 100f));
+            AudioServer.SetBusMute(idx, muted || volume <= 0);
+        }
+        for (int i = 0; i < AudioServer.BusCount; i++)
+        {
+            string name = AudioServer.GetBusName(i);
+            switch (name)
+            {
+                case "System": Apply(i, name, SystemVolume, SystemVolumeMuted); break;
+                case "Music": Apply(i, name, MusicVolume, MusicVolumeMuted); break;
+                case "Player": Apply(i, name, PlayerVolume, PlayerVolumeMuted); break;
+                case "Monster": Apply(i, name, MonsterVolume, MonsterVolumeMuted); break;
+                case "Magic": Apply(i, name, MagicVolume, MagicVolumeMuted); break;
+            }
+        }
+    }
+
+    /// <summary>将原版 Graphics 页的窗口选项映射到 Godot 当前窗口。</summary>
+    public static void ApplyDisplaySettings()    {
         // --window 强制窗口模式：覆盖 ini 的全屏/无边框设置。
         // 分辨率缺省按主屏幕 75% 计算（保证 UiScale 在 1..2 区间内自动适配）。
         if (AutoLoginArgs.Window)

@@ -1,0 +1,14 @@
+[gd_resource type="AudioBusLayout" format=3]
+
+[resource]
+bus/0/volume_db = 0.0
+bus/1/name = &"System"
+bus/1/send = &"Master"
+bus/2/name = &"Music"
+bus/2/send = &"Master"
+bus/3/name = &"Player"
+bus/3/send = &"Master"
+bus/4/name = &"Monster"
+bus/4/send = &"Master"
+bus/5/name = &"Magic"
+bus/5/send = &"Master"

@@ -166,7 +166,7 @@ public sealed partial class ConfigSelect : DXControl
             LibraryFile = LibraryFile.Interface,
             Index = -1,
         };
-        _button.MouseClick += (s, e) => _menu.Visible = !_menu.Visible;
+        _button.MouseClick += (s, e) => ToggleMenu();
         AddControl(_button);
 
         _menu = new DXControl
@@ -179,9 +179,64 @@ public sealed partial class ConfigSelect : DXControl
             Clip = true,
             IsControl = true,
             Visible = false,
+            // 菜单展开时置顶绘制（Godot 树序命中：默认子节点被后续兄弟遮挡/抢点击）
+            ZIndex = 64,
+        };
+        // 打开时把菜单挂到顶层（避开同层兄弟树序压制 + 父容器 Clip 裁剪）
+        _menu.VisibilityChanged += () =>
+        {
+            if (_menu.Visible)
+            {
+                var root = GetTree()?.Root;
+                if (root != null && _menu.GetParent() != root)
+                {
+                    var global = _menu.GlobalPosition;
+                    _menu.Reparent(root, false);
+                    _menu.GlobalPosition = global;
+                    _menu.ZIndex = 64;
+                }
+            }
         };
         AddControl(_menu);
     }
+
+    /// <summary>打开/关闭下拉菜单。打开时全屏透明捕获层接管"点击外部关闭"。</summary>
+    private void ToggleMenu()
+    {
+        if (_menu.Visible) { CloseMenu(); return; }
+        _menu.Visible = true;
+        // 全屏透明捕获层：任何点击 = 关闭菜单且不透传（原版 DXComboBox 模式）
+        var vp = GetViewport();
+        if (vp != null)
+        {
+            var catcher = new Control
+            {
+                Name = "ConfigSelectCatcher",
+                MouseFilter = Control.MouseFilterEnum.Stop,
+                ZIndex = 63, // 菜单(64)之下，其余一切之上
+            };
+            catcher.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+            catcher.GuiInput += (inputEvent) =>
+            {
+                if (inputEvent is InputEventMouseButton mb && mb.Pressed)
+                {
+                    catcher.QueueFree();
+                    CloseMenu();
+                }
+            };
+            vp.AddChild(catcher);
+            _catcher = catcher;
+        }
+    }
+
+    private void CloseMenu()
+    {
+        _menu.Visible = false;
+        if (_catcher != null && GodotObject.IsInstanceValid(_catcher)) _catcher.QueueFree();
+        _catcher = null;
+    }
+
+    private Control _catcher;
 
     public void AddItem(string text)
     {

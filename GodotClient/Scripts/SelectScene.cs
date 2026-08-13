@@ -47,6 +47,7 @@ public partial class SelectScene : Control
     {
         ClientSettings.Load();
         ClientSettings.ApplyDisplaySettings();
+        ClientSettings.ApplyAudioSettings();
         SoundPlayback.Stop(SoundIndex.LoginScene);
         SoundPlayback.Play(this, SoundIndex.SelectScene);
         _net = GetNode<Network.NetworkManager>("/root/NetworkManager");

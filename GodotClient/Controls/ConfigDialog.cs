@@ -1,6 +1,7 @@
 using Godot;
 using Library;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ZirconClient.Scripts;
 
@@ -10,6 +11,8 @@ namespace ZirconClient.Controls;
 public partial class ConfigDialog : DXWindow
 {
     private readonly DXControl _page;
+    private DXControl _content;
+    private DXVScrollBar _scroll;
     private readonly DXButton[] _tabs;
     private bool _allowObservable = true;
     private KeyBindDialog _keyBind;
@@ -46,11 +49,24 @@ public partial class ConfigDialog : DXWindow
     {
         foreach (var child in _page.GetChildren())
             if (child is Node node) node.Free();
+        _content = new DXControl { Size = new Vector2I(348, 0), IsControl = false };
+        _page.AddControl(_content);
         if (tab == 0) BuildGraphicsPage();
         else if (tab == 1) BuildSoundPage();
         else if (tab == 2) BuildGamePage();
         else if (tab == 3) BuildNetworkPage();
         else BuildUiPage();
+        // 内容超过 _page(340) 时接滚动条（原版 DXConfigWindow 图形页即滚动式）
+        int bottom = 0;
+        foreach (var child in _content.GetChildren())
+            if (child is DXControl c && c.Visible) bottom = Math.Max(bottom, (int)c.Location.Y + (int)c.Size.Y);
+        if (bottom > 340)
+        {
+            _scroll = new DXVScrollBar { Location = new Vector2I(334, 0), Size = new Vector2I(14, 340), VisibleSize = 340, Change = 20 };
+            _scroll.MaxValue = Math.Max(1, bottom);
+            _scroll.ValueChanged += (s, e) => _content.Location = new Vector2I(0, -_scroll.Value);
+            _page.AddControl(_scroll);
+        }
     }
 
     private ConfigCheckBox Check(string text, bool value, Action<bool> changed)
@@ -88,7 +104,7 @@ public partial class ConfigDialog : DXWindow
     private void AddSection(ConfigSectionPanel section, int y)
     {
         section.Location = new Vector2I(0, y);
-        _page.AddControl(section);
+        _content.AddControl(section);
     }
 
     private void BuildGraphicsPage()
@@ -117,7 +133,11 @@ public partial class ConfigDialog : DXWindow
         display.AddSelect("渲染管线", pipeline);
 
         var resolution = new ConfigSelect();
-        foreach (var size in new[] { new Vector2I(1024, 768), new Vector2I(1280, 720), new Vector2I(1280, 800), new Vector2I(1366, 768), new Vector2I(1600, 900), new Vector2I(1920, 1080) })
+        // 档位 = 常用分辨率 + 当前窗口尺寸（去重排序），保证当前值总能匹配显示
+        var resolutions = new List<Vector2I> { new(1024, 768), new(1280, 720), new(1280, 800), new(1366, 768), new(1600, 900), new(1920, 1080), new(2560, 1440), new(3840, 2160) };
+        var current = (Vector2I)DisplayServer.WindowGetSize();
+        if (!resolutions.Contains(current)) resolutions.Add(current);
+        foreach (var size in resolutions.OrderBy(r => r.X).ThenBy(r => r.Y))
             resolution.AddItem($"{size.X} x {size.Y}");
         resolution.SelectItem($"{ClientSettings.GameSize.X} x {ClientSettings.GameSize.Y}");
         resolution.SelectedChanged += (s, e) =>
@@ -196,7 +216,7 @@ public partial class ConfigDialog : DXWindow
         effects.AddOption("显示粒子", Check("显示粒子", ClientSettings.DrawParticles, value => { ClientSettings.DrawParticles = value; ClientSettings.Save(); }), 2);
         effects.AddOption("显示特效", Check("显示特效", ClientSettings.DrawEffects, value => { ClientSettings.DrawEffects = value; ClientSettings.Save(); }), 2);
         effects.AddOption("显示天气与特效", Check("显示天气与特效", GameScene.Game?.DrawWeather ?? true, value => GameScene.Game?.SetDrawWeather(value)), 2);
-        effects.AddOption("隐藏头盔", Check("隐藏头盔", false, value => GameScene.Game?.SendHelmetToggle(value)), 2);
+        effects.AddOption("隐藏头盔", Check("隐藏头盔", GameScene.Game?.PlayerHideHead ?? false, value => GameScene.Game?.SendHelmetToggle(value)), 2);
         AddSection(effects, usability.Location.Y + Mathf.RoundToInt(usability.Size.Y) + 4);
     }
 
@@ -206,11 +226,11 @@ public partial class ConfigDialog : DXWindow
         options.AddOption("后台播放声音", Check("后台播放声音", ClientSettings.SoundInBackground, value => { ClientSettings.SoundInBackground = value; ClientSettings.Save(); }));
         AddSection(options, 0);
         var volume = new ConfigSectionPanel("音量", 5);
-        volume.AddSound(Lang.CommonControlConfigWindowSoundTabSystemVolumeLabel, SoundBar(() => ClientSettings.SystemVolume, value => ClientSettings.SystemVolume = value, () => ClientSettings.SystemVolumeMuted, value => ClientSettings.SystemVolumeMuted = value));
-        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMusicVolumeLabel, SoundBar(() => ClientSettings.MusicVolume, value => ClientSettings.MusicVolume = value, () => ClientSettings.MusicVolumeMuted, value => ClientSettings.MusicVolumeMuted = value));
-        volume.AddSound("人物音量", SoundBar(() => ClientSettings.PlayerVolume, value => ClientSettings.PlayerVolume = value, () => ClientSettings.PlayerVolumeMuted, value => ClientSettings.PlayerVolumeMuted = value));
-        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMonsterVolumeLabel, SoundBar(() => ClientSettings.MonsterVolume, value => ClientSettings.MonsterVolume = value, () => ClientSettings.MonsterVolumeMuted, value => ClientSettings.MonsterVolumeMuted = value));
-        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMagicVolumeLabel, SoundBar(() => ClientSettings.MagicVolume, value => ClientSettings.MagicVolume = value, () => ClientSettings.MagicVolumeMuted, value => ClientSettings.MagicVolumeMuted = value));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabSystemVolumeLabel, SoundBar(() => ClientSettings.SystemVolume, value => { ClientSettings.SystemVolume = value; ClientSettings.ApplyAudioSettings(); }, () => ClientSettings.SystemVolumeMuted, value => { ClientSettings.SystemVolumeMuted = value; ClientSettings.ApplyAudioSettings(); }));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMusicVolumeLabel, SoundBar(() => ClientSettings.MusicVolume, value => { ClientSettings.MusicVolume = value; ClientSettings.ApplyAudioSettings(); }, () => ClientSettings.MusicVolumeMuted, value => { ClientSettings.MusicVolumeMuted = value; ClientSettings.ApplyAudioSettings(); }));
+        volume.AddSound("人物音量", SoundBar(() => ClientSettings.PlayerVolume, value => { ClientSettings.PlayerVolume = value; ClientSettings.ApplyAudioSettings(); }, () => ClientSettings.PlayerVolumeMuted, value => { ClientSettings.PlayerVolumeMuted = value; ClientSettings.ApplyAudioSettings(); }));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMonsterVolumeLabel, SoundBar(() => ClientSettings.MonsterVolume, value => { ClientSettings.MonsterVolume = value; ClientSettings.ApplyAudioSettings(); }, () => ClientSettings.MonsterVolumeMuted, value => { ClientSettings.MonsterVolumeMuted = value; ClientSettings.ApplyAudioSettings(); }));
+        volume.AddSound(Lang.CommonControlConfigWindowSoundTabMagicVolumeLabel, SoundBar(() => ClientSettings.MagicVolume, value => { ClientSettings.MagicVolume = value; ClientSettings.ApplyAudioSettings(); }, () => ClientSettings.MagicVolumeMuted, value => { ClientSettings.MagicVolumeMuted = value; ClientSettings.ApplyAudioSettings(); }));
         AddSection(volume, Mathf.RoundToInt(options.Size.Y) + 4);
     }
 
@@ -292,17 +312,19 @@ public partial class ConfigDialog : DXWindow
         bool tabs = _tabs.Length == 5
             && _tabs[0].Location == new Vector2I(8, 37)
             && _tabs[4].Location == new Vector2I(288, 37);
+        // 分区挂在 _content 下（滚动容器），用递归查找
+        IEnumerable<ConfigSectionPanel> Sections() => _page.GetChildren().OfType<DXControl>().SelectMany(x => x.GetChildren().OfType<ConfigSectionPanel>());
         SelectTab(0);
-        int graphicsSections = _page.GetChildren().OfType<ConfigSectionPanel>().Count();
+        int graphicsSections = Sections().Count();
         SelectTab(1);
-        int soundSections = _page.GetChildren().OfType<ConfigSectionPanel>().Count();
-        bool soundBars = _page.GetChildren().OfType<ConfigSectionPanel>().SelectMany(x => x.GetChildren()).OfType<ConfigSoundBar>().Count() == 5;
+        int soundSections = Sections().Count();
+        bool soundBars = Sections().SelectMany(x => x.GetChildren()).OfType<ConfigSoundBar>().Count() == 5;
         SelectTab(2);
-        int gameSections = _page.GetChildren().OfType<ConfigSectionPanel>().Count();
+        int gameSections = Sections().Count();
         SelectTab(3);
-        int networkSections = _page.GetChildren().OfType<ConfigSectionPanel>().Count();
+        int networkSections = Sections().Count();
         SelectTab(4);
-        int uiSections = _page.GetChildren().OfType<ConfigSectionPanel>().Count();
+        int uiSections = Sections().Count();
         details = $"size={Size} tabs={_tabs.Length} tab0={_tabs[0].Location}/{_tabs[0].Size} page={_page.Location}/{_page.Size} sections=g{graphicsSections}/s{soundSections}/game{gameSections}/net{networkSections}/ui{uiSections} soundBars={soundBars}";
         return Size == new Vector2I(364, 416) && tabs && _page.Location == new Vector2I(8, 62) && _page.Size == new Vector2I(348, 340)
             && graphicsSections == 3 && soundSections == 2 && soundBars && gameSections == 2 && networkSections == 1 && uiSections == 2;
