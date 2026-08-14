@@ -48,6 +48,12 @@ public partial class UITestScene : Control
 
     public override void _Ready()
     {
+        // --ui-export: 导出全部 DXWindow 控件树为 UI/ui_tree.json 后退出（Web 编辑器数据源）
+        if (UiTreeExporter.ExportRequested)
+        {
+            _ = UiTreeExporter.Run(this);
+            return;
+        }
         _uiAudit = OS.GetCmdlineUserArgs().Contains("--ui-audit");
         _npcAudit = OS.GetCmdlineUserArgs().Contains("--npc-audit");
         _communicationAudit = OS.GetCmdlineUserArgs().Contains("--communication-audit");

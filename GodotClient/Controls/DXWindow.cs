@@ -129,8 +129,16 @@ public abstract partial class DXWindow : DXControl
             AddChild(_titleLabel);
         }
 
+
+        // 布局完成后应用 Web 编辑器 overlay（deferred：等子类 _Ready 尾部的重排
+        // 如 InventoryDialog.CenterWeightLabel 跑完再覆盖）。无 overlay 时零开销。
+        if (UiOverlay.HasOverrides)
+            CallDeferred(nameof(ApplyUiOverlay));
         UpdateClientArea();
     }
+
+    /// <summary>UiOverlay 应用入口（CallDeferred 目标，见 _Ready 尾部）。</summary>
+    public void ApplyUiOverlay() => UiOverlay.ApplyWindow(this);
 
     public override void _Draw()
     {

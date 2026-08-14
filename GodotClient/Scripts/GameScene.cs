@@ -290,6 +290,16 @@ public partial class GameScene : Control
     public void SendChat(string text, List<int> linkedItemIndexes)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
+
+        // 客户端本地调试命令 @uiReload：重读 UI/ui_overlay.json 并刷新全部窗口
+        //（与 F12 等价；服务器没有对应命令，直接拦截不发送）
+        if (text.Trim() == "@uiReload")
+        {
+            UiOverlay.ReloadAll();
+            ReceiveChat("[UiOverlay] 已热重载 ui_overlay.json", MessageType.System);
+            return;
+        }
+
         _net?.Connection?.Enqueue(new C.Chat
         {
             Text = text.Trim(),
@@ -907,6 +917,9 @@ public partial class GameScene : Control
     {
         ClientSettings.Load();
         KeyBindManager.Load();
+        // Web 编辑器 overlay（UI/ui_overlay.json）：启动加载，之后 CreateHud 布局
+        // 完成、每个窗口 _Ready（deferred）和 F12 热重载时应用。
+        UiOverlay.Load();
         ClientSettings.ApplyDisplaySettings();
         ClientSettings.ApplyAudioSettings();
         SoundPlayback.Stop(SoundIndex.LoginScene);
@@ -4428,6 +4441,9 @@ public partial class GameScene : Control
             _currencyDialog.RefreshCurrencies(Currencies);
         };
         LayoutHud();
+        // HUD 锚定（LayoutHud 设定各窗口根位置）之后应用 overlay 覆盖，
+        // 保证窗口级 location 覆盖不会被默认布局冲掉。
+        UiOverlay.ApplyAll();
         _mainPanel.BeltButton.MouseClick += (o, e) => WindowManager.Toggle(_beltDialog, _uiLayer);
         _mainPanel.SpellButton.MouseClick += (o, e) =>
         {
@@ -9831,6 +9847,20 @@ public partial class GameScene : Control
         if (_chatTextBox?.HandleGlobalKey(key) == true)
             return;
 
+        // F12 = 开发调试键：UI overlay 热重载 + 截图 + 可见窗口矩形导出
+        // （截图/矩形供 uieditor 的 underlay 对齐用）。
+        // 必须放在 KeyBindManager 分发之前——默认键位 SpellUse12=F12 会让
+        // 走到后面的分支永远不可达；需要 F12 施法的玩家可在按键设置里改绑。
+        if (key.Keycode == Key.F12)
+        {
+            UiOverlay.ReloadAll();
+            DumpVisibleWindowRects();
+            var img = GetViewport().GetTexture().GetImage();
+            img.SavePng("/tmp/game_screenshot.png");
+            GD.Print("[Game] F12: overlay 热重载 + 截图 /tmp/game_screenshot.png + 窗口矩形 /tmp/ui_window_rects.json");
+            return;
+        }
+
         if (key.Keycode == Key.Escape)
         {
             if (WindowManager.CloseTop())
@@ -9883,11 +9913,31 @@ public partial class GameScene : Control
             if (CanPlayerMove())
                 SendMouseMove(dir.Value, 1, false);
         }
-        else if (key.Keycode == Key.F12)
+    }
+
+    /// <summary>
+    /// 导出当前可见窗口的逻辑画布矩形（F12，配合 /tmp/game_screenshot.png）：
+    /// uieditor 的截图 underlay 脚本按矩形裁剪出每窗口底图，保证像素级对齐。
+    /// </summary>
+    private void DumpVisibleWindowRects()
+    {
+        var rects = new Dictionary<string, int[]>();
+        foreach (DXWindow window in DXWindow.Windows.ToArray())
         {
-            var img = GetViewport().GetTexture().GetImage();
-            img.SavePng("/tmp/game_screenshot.png");
-            GD.Print("[Game] 截图保存 /tmp/game_screenshot.png");
+            if (window is not GodotObject g || !GodotObject.IsInstanceValid(g) || !window.Visible) continue;
+            rects[window.GetType().Name] = new[]
+            {
+                (int)window.Position.X, (int)window.Position.Y,
+                (int)window.Size.X, (int)window.Size.Y,
+            };
+        }
+        try
+        {
+            File.WriteAllText("/tmp/ui_window_rects.json", System.Text.Json.JsonSerializer.Serialize(rects));
+        }
+        catch (Exception ex)
+        {
+            GD.PushWarning($"[Game] 窗口矩形导出失败: {ex.Message}");
         }
     }
 
