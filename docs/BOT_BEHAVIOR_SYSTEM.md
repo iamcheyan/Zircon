@@ -65,6 +65,33 @@ Tick
 4. **死亡自愈**：`S.ObjectDied` → 自动 `C.TownRevive` 回城。
 5. **A* 失败节流**：8s 内不重算，期间 8 向避障贪心直走（服务端会纠正撞墙）。
 
+
+## 道士召唤闭环（护符链, 2026-08-14 修复）
+
+召唤出真宠物的端到端链: 买符 → 穿符 → 施放 → `pets=1`。此前 91 次施放
+全部被服务端 `UseAmulet(5,0)` 静默拒绝（无符）。四个根因:
+
+1. **A* 禁斜穿墙角规则是错的**: 服务端 `Walk` 只校验目标格
+   （`MonsterObject.Walk → cell.IsBlocking`）, 无墙角约束; 旧规则切断
+   纯斜向阶梯走廊（Mr.Kang→Lennard 一线 58 步路径直接判不可达）。
+2. **黑名单茧房**: 8 bot 在补给街互堵, 被拉黑格子围死 A*（连 3 格
+   目标都失败）。改软代价（+80 ≈ 6 格绕行代价）+45s TTL + 同目标连续
+   失败整体清空。
+3. **`BackgroundReactions` 是孤儿函数**: 喝药/穿符/卡死检测/活动报告
+   从未被调用——Tick 内联了旧副本。接回后穿符（`TryEquipAmulet`,
+   ItemMove 到 Amulet 槽）才真正执行。
+4. **商店多页结构**: Lennard 首页卖火把/卷轴, 护符在子页; NPC 选择
+   改 BFS 全页链（`NpcSellsAmulet`/`HasSupplyShop`）, 购买时翻页
+   （`_npcPageHops ≤4`）。`Town Portal` 卷轴实为 `Consumable Shape==2`
+   而非 `ItemType.Scroll`, 口径修正后消除无限买卷循环。
+
+关键日志: `shop: buy Talisman x200 at Lennard` → `equip: wear amulet
+Talisman x200` → `pets=1`（active 报告, 双道士持续）。
+
+崩溃防护: `Program.cs` 挂 `AppDomain.UnhandledException` +
+`TaskScheduler.UnobservedTaskException`（SetObserved）打印完整栈,
+进程不再静默 exit(1)。
+
 ## 运行
 
 
