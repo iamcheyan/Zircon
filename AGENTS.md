@@ -139,3 +139,19 @@ godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --server 127.0
    先读原版客户端/服务端源码确认约定（如 `MapControl.cs` 的 `+1` 存储），再写转换工具。
 4. **验证工具不得与生产工具共用同一错误**：校验脚本若复用了生产工具的解析逻辑，
    错误会被"自洽"掩盖。校验必须用独立实现或对照真实游戏表现。
+
+## 今日新工具（2026-08-14）
+
+| 工具 | 端口 | 用途 |
+|---|---|---|
+| uieditor | :8820 | UI 所见即所得编辑器：`--ui-export` 导出控件树 → 浏览器拖拽改 → 保存 ui_overlay.json → 游戏内 F12 热重载生效 |
+| webclient | :8822 | 静态世界测试台（不连服）：627 地图+连接切图+四职业 255 级 GM+全技能装备+NPC/怪物摆放+GM 面板。详见 Mir3-Research/Tools/webclient/README.md |
+| zdocs 文档库 | — | docs/codebase/ 23 篇原版代码深度文档（战斗公式/怪物AI/协议/玩法/基础设施）——移植任何功能前先查这里 |
+
+## 模型交接注意
+
+- **无头验证配方**：Xvfb :100 + openbox + godot-mono（/tmp/godot-mono）+ scrot；用户参数在 `--` 之后；4K 缩放测试用 ZIRCON_UI_SCALE=2
+- **构建**：`dotnet build GodotClient/ZirconClient.csproj`（仓库根目录执行；增量有缓存坑用 --no-incremental）
+- **服务端口表**：7000 ServerCore / 8810 dbeditor / 8820 uieditor / 8822 webclient / 8800 dbviewer / 8899 mapviewer / 8765 wilviewer / 8830 yomu / 8831 fudoki / 80 svc-dashboard
+- **写库纪律**：服务端运行中绝不写 System.db；双库（服务端+客户端）同步写；写前备份；round-trip 读回验证。工具模板见 Mir3-Research/AGENTS.md
+- **goal 体系**：omp goal 跑在 tmux（一 goal 一会话）；goal_watchdog.sh GOALS 数组注册（id|jsonl|tmux会话|workdir|label）；终态自动回收记 ~/.omp/logs/goal-completed.log
