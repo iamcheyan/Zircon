@@ -44,6 +44,7 @@ public sealed class BotAgent
     private DateTime _supplyInteractionUntil = DateTime.MinValue;
     private bool _sellAutopathBlocked;
     private DateTime _nextAmuletAction = DateTime.MinValue;
+    private DateTime _nextCandidatesLog = DateTime.MinValue;
     private int _npcPageHops;
     private bool _supplyAutopathBlocked;
     private bool _npcCallPending;
@@ -466,13 +467,9 @@ public sealed class BotAgent
             return;
         }
 
-        // 道士护符穿戴必须最先执行: 后续任意层返回/goto 都会跳过层尾的
-        // 周期块, 导致买了 200 符却永远不穿。
-        if (now >= _nextAmuletAction)
-        {
-            TryEquipAmulet();
-            _nextAmuletAction = now.AddSeconds(8);
-        }
+        // 背景反应层每 tick 跑(喝药/治疗/盾与召唤维持/穿符/火炬/整理/
+        // 卡死检测/活动报告)。曾因未被调用成死代码: 喝药与穿符全失效。
+        BackgroundReactions(now);
 
         // ---- 破围层: 被静态怪(城镇动物等)围死时砍开一条路 ----
         if (TryBreakout(now)) return;
@@ -643,6 +640,14 @@ public sealed class BotAgent
         // 低血队友治疗(道士反应, 与行为层并行)
         if (World.Class == MirClass.Taoist && now >= _nextSupport && TrySupportAlly(now))
             _nextSupport = now.AddSeconds(3 + _random.NextDouble() * 2);
+
+        // 道士护符: 装备到符槽(召唤必需)。背景层最尾部防被跳过,
+        // 且在火炬块之前(独立计时)。
+        if (now >= _nextAmuletAction)
+        {
+            TryEquipAmulet();
+            _nextAmuletAction = now.AddSeconds(8);
+        }
 
         // 火炬: 夜间视野
         if (now >= _nextTorchAction && World.EquippedTorch == null && World.SpareTorch != null)
@@ -2272,7 +2277,11 @@ public sealed class BotAgent
             (_supplyPurchasePending || DateTime.UtcNow >= _nextSupplyAction))
         {
             if (_supplyPurchasePending)
-                Console.WriteLine($"[{Name}] shop: candidates={string.Join(",", page.Goods?.Where(x => x.Item != null).Select(x => $"{x.Item.ItemName}:{x.Item.ItemType}") ?? Enumerable.Empty<string>())}");
+                if (DateTime.UtcNow >= _nextCandidatesLog)
+                {
+                    _nextCandidatesLog = DateTime.UtcNow.AddSeconds(30);
+                    Console.WriteLine($"[{Name}] shop: candidates={string.Join(",", page.Goods?.Where(x => x.Item != null).Select(x => $"{x.Item.ItemName}:{x.Item.ItemType}") ?? Enumerable.Empty<string>())}");
+                }
             // 跨图缺回城卷时优先补卷, 否则药水排序会一直压过卷轴,
             // 导致困在陌生地图(如竞技场)买不到卷回城。
             // Count>0: 用尽的卷轴条目(缓存残留)不算有卷, 否则永远补不上。
