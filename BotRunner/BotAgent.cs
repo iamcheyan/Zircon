@@ -39,8 +39,12 @@ public sealed class BotAgent
     private DateTime _nextSupplyAction;
     private DateTime _nextSellAction;
     private bool _supplyPurchasePending;
+    private Point? _supplyTravelDest;
+    private DateTime _supplyTravelUntil = DateTime.MinValue;
     private DateTime _supplyInteractionUntil = DateTime.MinValue;
     private bool _sellAutopathBlocked;
+    private DateTime _nextAmuletAction = DateTime.MinValue;
+    private int _npcPageHops;
     private bool _supplyAutopathBlocked;
     private bool _npcCallPending;
     private bool _repairCallPending;
@@ -119,7 +123,9 @@ public sealed class BotAgent
     private DateTime _nextBehaviorLog = DateTime.MinValue;
     private string _lastBehavior = "";
     private Point _pendingStepGoal;
+    private int _blacklistFailStreak;
     private Point _lastPathFailGoal;
+    private readonly Dictionary<Point, DateTime> _blockedAt = new();
     private readonly HashSet<Point> _runtimeBlocked = new();
     private Point _pendingStep;
     private Point _pendingStepFrom;
@@ -449,8 +455,23 @@ public sealed class BotAgent
         // ---- 背景反应层(与行为调度并行, 每 tick 都跑) ----
         if (World.Dead)
         {
-            if (now >= _nextAttack) { _connection.Enqueue(new C.TownRevive()); _nextAttack = now.AddSeconds(5); }
+            if (now >= _nextAttack)
+            {
+                // 回城复活: 世界坐标整体重置, 拉黑条目全部失效
+                _runtimeBlocked.Clear();
+                _blockedAt.Clear();
+                _connection.Enqueue(new C.TownRevive());
+                _nextAttack = now.AddSeconds(5);
+            }
             return;
+        }
+
+        // 道士护符穿戴必须最先执行: 后续任意层返回/goto 都会跳过层尾的
+        // 周期块, 导致买了 200 符却永远不穿。
+        if (now >= _nextAmuletAction)
+        {
+            TryEquipAmulet();
+            _nextAmuletAction = now.AddSeconds(8);
         }
 
         // ---- 破围层: 被静态怪(城镇动物等)围死时砍开一条路 ----
@@ -636,12 +657,6 @@ public sealed class BotAgent
             });
             _nextTorchAction = now.AddSeconds(8);
         }
-        // 道士护身符: 装备到符槽(召唤必需, 装备评分不覆盖消耗品槽)
-        if (now >= _nextTorchAction)
-        {
-            TryEquipAmulet();
-            _nextTorchAction = now.AddSeconds(8);
-        }
 
         // 定期整理背包
         if (now >= _nextInventorySort && World.Inventory.Count >= Math.Max(10, Globals.InventorySize / 2))
@@ -772,10 +787,13 @@ public sealed class BotAgent
         return true;
     }
 
-    /// <summary>城内服务链: 修装/任务 NPC 接近 + 卖垃圾 + 买补给(保留原实现)。</summary>
     private bool TryTownServices(DateTime now)
     {
         bool npcPriorityMove = false;
+        // 缺职业补给(道士护符)时供给绝对优先: 否则修装/任务分支
+        // 会把 bot 反复拉向就近 NPC, 与供给目的地(如 Lennard)形成
+        // NW-SE 锯齿拉锯, 永远到不了。
+        if (NeedsClassSupplies() && TrySupplyBehavior(now)) return true;
         if (now >= _nextRepairAction && now >= _supplyInteractionUntil && !_npcCallPending && NeedsRepair())
         {
             var repairNpc = World.Npcs.Values
@@ -994,8 +1012,15 @@ public sealed class BotAgent
             World.Location == track.From &&
             (now - track.At).TotalSeconds > 2.5)
         {
+            // 拉黑(45s TTL, 见 A* 构造处的过期清理)。死亡回城时位置
+            // 整体失效, 黑名单一并清空(见 TownRevive 发送点)。
             _runtimeBlocked.Add(track.Step);
-            if (_runtimeBlocked.Count > 40) _runtimeBlocked.Clear();
+            _blockedAt[track.Step] = now;
+            if (_runtimeBlocked.Count > 40)
+            {
+                _runtimeBlocked.Clear();
+                _blockedAt.Clear();
+            }
             _pathGoal = Point.Empty;
             _stuckRecoveries++;
             Log($"path: server-blocked {track.Step}, blacklisted ({_runtimeBlocked.Count}), reroute");
@@ -1024,22 +1049,46 @@ public sealed class BotAgent
                 MoveToward(goal, 1, now);
                 return;
             }
+            // 过期黑名单清理: 怪物占位是瞬态的, >45s 的拉黑条目重新开放,
+            // 否则走廊被永久毒化, A* 找不到长路(城镇→Lennard 实际 291 步)。
+            if (_blockedAt.Count > 0)
+            {
+                var expired = _blockedAt.Where(kv => (now - kv.Value).TotalSeconds > 45)
+                    .Select(kv => kv.Key).ToList();
+                foreach (var p in expired) { _blockedAt.Remove(p); _runtimeBlocked.Remove(p); }
+            }
             _pathfinder = new BotPathfinder(map, _runtimeBlocked);
-            _pathfinder.SetDestination(World.Location, goal);
-            _pathGoal = goal;
+            if (!_pathfinder.SetDestination(World.Location, goal))
+            {
+                _pathGoal = Point.Empty;
+                _pathfinder = null;
+            }
+            else
+                _pathGoal = goal;
             if (!_pathfinder.HasPath)
             {
+                bool sameGoal = _lastPathFailGoal == goal;
                 _lastPathFailGoal = goal;
                 _pathFailRetryAt = now.AddSeconds(8);
                 if (now >= _nextPathFailLog)
                 {
-                    Log($"path: A* fail to {goal} ({DistanceTo(goal)} cells), greedy fallback");
+                    Log($"path: A* fail to {goal} ({DistanceTo(goal)} cells) on map {World.MapIndex}({map.Width}x{map.Height}) at {World.Location} walk(S)={map.CanWalk(World.Location)} walk(G)={map.CanWalk(goal)} bl={_runtimeBlocked.Count}, greedy fallback");
                     _nextPathFailLog = now.AddSeconds(10);
+                }
+                // 同一目标连续失败: 动态占位把路围死了, 清空黑名单整体重置
+                if (sameGoal) _blacklistFailStreak++;
+                if (_blacklistFailStreak >= 2)
+                {
+                    _runtimeBlocked.Clear();
+                    _blockedAt.Clear();
+                    _blacklistFailStreak = 0;
+                    Log("path: blacklist reset (persistent A* fail)");
                 }
                 MoveToward(goal, 1, now);
                 return;
             }
             _lastPathFailGoal = Point.Empty;
+            _blacklistFailStreak = 0;
         }
 
         if (!_pathfinder.TryGetStep(World.Location, out var step))
@@ -1382,7 +1431,13 @@ public sealed class BotAgent
         var bag = World.Inventory.FirstOrDefault(x =>
             x is { Slot: >= 0, Info: not null } && x.Slot < Globals.InventorySize &&
             x.Info.ItemType == ItemType.Amulet && x.Info.Shape == 0 && x.Count > 0);
-        if (bag == null) return;
+        if (bag == null)
+        {
+            var anyAmu = World.Inventory.Where(x => x?.Info?.ItemType == ItemType.Amulet).ToList();
+            if (anyAmu.Count > 0)
+                Log($"equip: amulet in bag but unusable: {string.Join(",", anyAmu.Select(x => $"slot={x.Slot} shape={x.Info.Shape} cnt={x.Count}"))} invSize={Globals.InventorySize}");
+            return;
+        }
         _connection.Enqueue(new C.ItemMove
         {
             FromGrid = GridType.Inventory,
@@ -2192,6 +2247,20 @@ public sealed class BotAgent
             }
         }
 
+        // 道士缺符但当前页没有护符: 商店可能是多页的(如火把/卷轴首页+
+        // 护符子页), 沿按钮继续翻页找 BuySell 子页(限深 4 防环)。
+        if (page.DialogType == NPCDialogType.BuySell && World.Class == MirClass.Taoist && NeedsAmulets() &&
+            page.Goods?.Any(x => x.Item?.ItemType == ItemType.Amulet && x.Item.Shape == 0) != true)
+        {
+            var next = page.Buttons?.FirstOrDefault(x => x.DestinationPage?.DialogType == NPCDialogType.BuySell);
+            if (next != null && _npcPageHops < 4)
+            {
+                _npcPageHops++;
+                _connection.Enqueue(new C.NPCButton { ButtonID = next.ButtonID });
+                return;
+            }
+        }
+        _npcPageHops = 0;
         if (page.DialogType != NPCDialogType.BuySell)
         {
             var buyButton = page.Buttons?.FirstOrDefault(x => x.DestinationPage?.DialogType == NPCDialogType.BuySell);
@@ -2227,13 +2296,17 @@ public sealed class BotAgent
             if (potion?.Item != null)
             {
                 long amount = potion.Item.CanAutoPot ? 20
-                    : potion.Item.ItemType == ItemType.Amulet ? 50
+                    : potion.Item.ItemType == ItemType.Amulet ? 200
                     : potion.Item.ItemType == ItemType.Consumable && potion.Item.Shape == 2 ? 3 : 1;
                 _connection.Enqueue(new C.NPCBuy { Index = potion.Index, Amount = amount, GuildFunds = false });
                 _nextSupplyAction = DateTime.UtcNow.AddSeconds(90);
                 _supplyPurchasePending = false;
                 _shopPurchases++;
-                Console.WriteLine($"[{Name}] shop: buy {potion.Item.ItemName} x{amount} gold={World.Gold}");
+                var shopNpc = World.Npcs.Values.FirstOrDefault(n => n.ObjectID == _npcObjectId);
+                var shopName = shopNpc != null
+                    ? Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == shopNpc.NPCIndex)?.NPCName ?? "?"
+                    : $"obj#{_npcObjectId}";
+                Console.WriteLine($"[{Name}] shop: buy {potion.Item.ItemName} x{amount} at {shopName} gold={World.Gold}");
             }
             else if (_supplyPurchasePending)
                 Console.WriteLine($"[{Name}] shop: no suitable goods on this page");
@@ -2289,12 +2362,8 @@ public sealed class BotAgent
             .Where(x => x.CurrentDurability < x.MaxDurability && x.MaxDurability > 0)
             .Where(x => x.Info.ItemType is ItemType.Weapon or ItemType.Armour or ItemType.Helmet or ItemType.Necklace
                 or ItemType.Bracelet or ItemType.Ring or ItemType.Shoes or ItemType.Shield)
-            .Select(x => new CellLinkInfo
-            {
-                GridType = GridType.Equipment,
-                Slot = x.Slot - Globals.EquipmentOffSet,
-                Count = 1
-            })
+            .Take(40)
+            .Select(x => new CellLinkInfo { GridType = GridType.Equipment, Slot = x.Slot - Globals.EquipmentOffSet, Count = 1 })
             .ToList();
         if (links.Count > 0)
         {
@@ -2311,12 +2380,14 @@ public sealed class BotAgent
         if (World.Class == MirClass.Taoist &&
             World.Inventory.Where(x => x.Info?.ItemType == ItemType.Amulet).Sum(x => Math.Max(0, x.Count)) < 20)
             return true;
-        if (World.Inventory.All(x => x.Info?.ItemType != ItemType.Scroll))
-            return true;
-        // 跨图回城卷轴(Consumable Shape==2): 备 3 张, 免于卡在异地
-        return World.Inventory
-            .Where(x => x.Info?.ItemType == ItemType.Consumable && x.Info.Shape == 2)
-            .Sum(x => Math.Max(0, x.Count)) < 3;
+        // 回城卷轴: 老口径只认 ItemType.Scroll, 但本数据集的 Town Portal
+        // 是 Consumable Shape==2 — 两者都算, 备 3 张。否则买了也判缺,
+        // 陷入无限买卷且供给层永久垄断 tick。
+        var portals = World.Inventory
+            .Where(x => x.Info?.ItemType == ItemType.Scroll ||
+                        (x.Info?.ItemType == ItemType.Consumable && x.Info.Shape == 2))
+            .Sum(x => Math.Max(0, x.Count));
+        return portals < 3;
     }
 
     /// <summary>低血/低蓝判断(药水使用与购买共享)。</summary>
@@ -2415,6 +2486,25 @@ public sealed class BotAgent
 
     private bool TrySupplyBehavior(DateTime now)
     {
+        // 粘性行走: 上次选定的供给目的地未到站前一直持有移动权,
+        // 否则 1s 冷却间隙会被行为层(grind)反向拉扯造成拉锯。
+        if (_supplyTravelDest is Point travelDest && now < _supplyTravelUntil && !World.Dead)
+        {
+            if (DistanceTo(travelDest) <= 2) _supplyTravelDest = null;
+            else if (CanMove(now))
+            {
+                MoveToDestination(travelDest, now);
+                return true;
+            }
+        }
+        else _supplyTravelDest = null;
+        if (NeedsClassSupplies() && now >= _nextSupplyDiag)
+        {
+            _nextSupplyDiag = now.AddSeconds(45);
+            var amu = World.Inventory.Where(x => x.Info?.ItemType == ItemType.Amulet).Sum(x => Math.Max(0, x.Count));
+            var eq = World.Inventory.FirstOrDefault(x => x.Slot == Globals.EquipmentOffSet + (int)EquipmentSlot.Amulet);
+            Log($"supply: diag needs-class=True inv-amulet={amu} eq-amulet={eq?.Count ?? 0} cooldown={(_nextSupplyAction - now).TotalSeconds:F0}s at={World.Location} sticky={( _supplyTravelDest?.ToString() ?? "-")} sell-blocked={_sellAutopathBlocked}");
+        }
         if (now < _nextSupplyAction) return false;
         // 道士在城内且想练召唤 → 推迟补给 60s 让行为层训练; 最多连缓 2 次
         if (World.Class == MirClass.Taoist && InTownArea && !World.Dead &&
@@ -2425,15 +2515,22 @@ public sealed class BotAgent
             return false;
         }
         _trainDeferCount = 0;
-        if (now >= _nextSupplyDiag)
-        {
-            _nextSupplyDiag = now.AddSeconds(60);
-        }
+        var needAmulets = World.Class == MirClass.Taoist && NeedsAmulets();
+        // 缺回城卷(任何职业): 只选真卖卷的店, 否则非道士会在武器店
+        // 空转("no suitable goods")循环。
+        var needPortal = !needAmulets &&
+            World.Inventory.Where(x => x.Info?.ItemType == ItemType.Scroll ||
+                    (x.Info?.ItemType == ItemType.Consumable && x.Info.Shape == 2))
+                .Sum(x => Math.Max(0, x.Count)) < 3;
         var npc = World.Npcs.Values
             .Select(x => (Object: x, Info: Globals.NPCInfoList?.Binding.FirstOrDefault(n => n.Index == x.NPCIndex)))
             .Where(x => x.Info != null && HasSupplyShop(x.Info))
-            .OrderByDescending(x => World.Class == MirClass.Taoist && NeedsAmulets() && NpcSellsAmulet(x.Info))
-            .ThenBy(x => SellsTownPortal(x.Info) ? 0 : 1)
+            // 缺特定货时可见 NPC 必须真能卖它, 否则选了也白跑 —
+            // 交给 fallback 走去有货的店(如 Lennard)。
+            .Where(x => !needAmulets || NpcSellsAmulet(x.Info))
+            .Where(x => !needPortal || SellsTownPortal(x.Info))
+            .OrderByDescending(x => needAmulets && NpcSellsAmulet(x.Info))
+            .ThenByDescending(x => needPortal && SellsTownPortal(x.Info))
             .ThenBy(x => Distance(World.Location, x.Object.CurrentLocation))
             .FirstOrDefault(x => Distance(World.Location, x.Object.CurrentLocation) <= Math.Max(20, _config.PatrolRadius * 2));
         // retry at the next slow interval.
@@ -2443,7 +2540,10 @@ public sealed class BotAgent
         {
             var supplyNpc = Globals.NPCInfoList?.Binding
                 .Where(n => HasSupplyShop(n) && n.Region?.Map?.Index == World.MapIndex)
-                .OrderByDescending(n => World.Class == MirClass.Taoist && NeedsAmulets() && NpcSellsAmulet(n))
+                .Where(n => !needAmulets || NpcSellsAmulet(n))
+                .Where(n => !needPortal || SellsTownPortal(n))
+                .OrderByDescending(n => needAmulets && NpcSellsAmulet(n))
+                .ThenByDescending(n => needPortal && SellsTownPortal(n))
                 .FirstOrDefault()
                 ?? Globals.NPCInfoList?.Binding.FirstOrDefault(HasSupplyShop);
             if (supplyNpc == null) return false;
@@ -2476,10 +2576,17 @@ public sealed class BotAgent
             if (_supplyAutopathBlocked || !ServerAutoPathUsable)
             {
                 var dest = NpcRegionPoint(supplyNpc);
+                if (now >= _nextSupplyDiag)
+                {
+                    Log($"supply: fallback npc={supplyNpc.NPCName} idx={supplyNpc.Index} regionPt={dest} from={World.Location}");
+                    _nextSupplyDiag = now.AddSeconds(45);
+                }
                 if (dest != Point.Empty)
                 {
                     if (DistanceTo(dest) > 2 && CanMove(now))
                     {
+                        _supplyTravelDest = dest;
+                        _supplyTravelUntil = now.AddSeconds(120);
                         MoveToDestination(dest, now);
                         _nextSupplyAction = now.AddSeconds(1);
                         return true;
@@ -2622,9 +2729,18 @@ public sealed class BotAgent
     private static bool HasSupplyShop(NPCInfo info)
     {
         if (info?.EntryPage == null) return false;
-        var pages = new[] { info.EntryPage }
-            .Concat(info.EntryPage.Buttons?.Where(x => x.DestinationPage != null).Select(x => x.DestinationPage) ?? Enumerable.Empty<NPCPage>());
-        return pages.Any(p => p.DialogType == NPCDialogType.BuySell);
+        var seen = new HashSet<NPCPage> { info.EntryPage };
+        var queue = new Queue<NPCPage>();
+        queue.Enqueue(info.EntryPage);
+        for (int depth = 0; queue.Count > 0 && depth < 40; depth++)
+        {
+            var page = queue.Dequeue();
+            if (page.DialogType == NPCDialogType.BuySell) return true;
+            foreach (var b in page.Buttons ?? Enumerable.Empty<NPCButton>())
+                if (b.DestinationPage != null && seen.Add(b.DestinationPage))
+                    queue.Enqueue(b.DestinationPage);
+        }
+        return false;
     }
 
     private Point NpcRegionPoint(NPCInfo npcInfo)

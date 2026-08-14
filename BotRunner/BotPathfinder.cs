@@ -10,7 +10,7 @@ namespace Zircon.BotRunner;
 /// </summary>
 public sealed class BotPathfinder
 {
-    private const int MaxExpandNodes = 60000;
+    private const int MaxExpandNodes = 500000;
     private const int MaxPathLength = 400;
 
     /// <summary>运行时屏蔽格(服务端动态占位: 玩家/怪/NPC 站位不在
@@ -158,14 +158,16 @@ public sealed class BotPathfinder
             {
                 if (dx == 0 && dy == 0) continue;
                 var next = new Point(current.X + dx, current.Y + dy);
-                if (closed.Contains(next) || !_map.CanWalk(next) || RuntimeBlocked.Contains(next)) continue;
-                // 斜穿墙角禁止: 斜向移动要求两个相邻直向格至少一个可走
-                if (dx != 0 && dy != 0 &&
-                    !_map.CanWalk(new Point(current.X + dx, current.Y)) &&
-                    !_map.CanWalk(new Point(current.X, current.Y + dy)))
-                    continue;
+                if (closed.Contains(next) || !_map.CanWalk(next)) continue;
+                // 注: 服务端 Walk 只校验目标格(MonsterObject.Walk →
+                // cell.IsBlocking), 无墙角规则; 此前的禁斜穿切断了
+                // 纯斜向阶梯走廊(如 MrKang→Lennard 一线), 已移除。
 
+                // 动态占位(怪/人/NPC)拉黑是瞬态的: 软代价而非硬排除,
+                // 否则补给街多 bot 互堵会把 A* 围死(茧房), 连 3 格目标
+                // 都找不到路。有替代路线时必然绕开(+80 ≈ 6 格绕行)。
                 int stepCost = (dx != 0 && dy != 0) ? 14 : 10;
+                if (RuntimeBlocked.Contains(next)) stepCost += 80;
                 int newG = gScore[current] + stepCost;
                 if (gScore.TryGetValue(next, out int old) && old <= newG) continue;
 
