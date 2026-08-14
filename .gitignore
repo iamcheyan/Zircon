@@ -23,3 +23,7 @@ __pycache__/
 /deploy-out/
 # 上游条目
 /milestones
+
+# 82服务器本地备份(保留在磁盘, 不进 git)
+/BotRunner.82.json.before-*
+/Tools.pre-pull-*/
