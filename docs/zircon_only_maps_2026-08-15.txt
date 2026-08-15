@@ -1,0 +1,170 @@
+10	Bichon Castle	file-kept
+11	Taoist Temple	file-kept
+11_002	Weapon Shop	file-kept
+11_003	Potion Merchant	file-kept
+11_004	Armor Shop	file-kept
+11_005	Misc Item Vendor	file-kept
+13	Banyo Island	file-kept
+14_000	Assassin's Hideout	file-kept
+15		file-kept
+15_001		file-kept
+15_002		file-kept
+15_003		file-kept
+16	Western Arids	file-kept
+16_001	Beyond Shore	file-kept
+16_002	Western Coast	file-kept
+16_003	Western Pass	file-kept
+17	Lost Oasis	file-kept
+18	Arid Flats	file-kept
+19	Lost Village	file-kept
+19_1	Lost Pass	file-kept
+3_000	Sabuk Guild Territory	file-kept
+5_000	Desert Guild Territory	file-kept
+7	Infernal Island	file-kept
+8_001	Holy Palace Ent old	file-kept
+D004	Banya Valley South	file-kept
+D005	Homeland TroopBase	file-kept
+D1005	Banya Temple Lv 5	file-kept
+D1006	Banya Temple Hall	file-kept
+D1007	Banya Temple Lv 6	file-kept
+D1008	Banya Temple Lv 7	file-kept
+D1009	Banya Temple Lv 8	file-kept
+D101	Bichon Cave Lv 1	file-kept
+D10101	Banya Temple Lv 9 West	file-kept
+D10102	Banya Temple Lv 9 East	file-kept
+D102	Bichon Cave Lv 2	file-kept
+D103	Bichon Cave Lv 3	file-kept
+D1103	Zuma Temple Lv 3	file-kept
+D1106	Zuma Temple	file-kept
+D111	Lost Paradise Cave Lv 1	file-kept
+D112	Lost Paradise Cave Lv 2	file-kept
+D113	Lost Paradise Cave Lv 3	file-kept
+D1200	Jinchon Palace Lv 1	file-kept
+D12011	Jinchon Palace Lv 2-W	file-kept
+D12012	Jinchon Palace Lv 2-S	file-kept
+D12013	Jinchon Palace Lv 2-E	file-kept
+D12014	Jinchon Palace Lv 2-N	file-kept
+D12021	Jinchon Palace Lv 3-W	file-kept
+D12022	Jinchon Palace Lv 3-S	file-kept
+D12023	Jinchon Palace Lv 3-E	file-kept
+D12024	Jinchon Palace Lv 3-N	file-kept
+D12033	Jinchon Palace Lv 4-N	file-kept
+D12041	Jinchon Palace Lv 5-E	file-kept
+D12042	Jinchon Palace Lv 5-N	file-kept
+D1206	Jinchon Palace	file-kept
+D121	Banya Cave Lv 1	file-kept
+D122	Banya Cave Lv 2	file-kept
+D123	Banya Cave Lv 3	file-kept
+D13021	Black Palace Lv 2-W	file-kept
+D13022	Black Palace Lv 2-E	file-kept
+D1406	Flight Deck	file-kept
+D1501	Numa Ruins Lv 1	file-kept
+D1502	Numa Ruins Lv 2	file-kept
+D15031	Numa Ruins Lv 3	file-kept
+D15032	Numa Ruins Lv 3	file-kept
+D15033	Numa Ruins Lv 3	file-kept
+D15034	Numa Ruins Lv 3	file-kept
+D1504	Numa Ruins Lv 4	file-kept
+D1505	Numa Ruins Lv 5	file-kept
+D1601	Numa Hill	file-kept
+D1602	Numa Valley	file-kept
+D1603	Numa Valley	file-kept
+D1604	Numa Stronghold	file-kept
+D1802	Purgatory	file-kept
+D2001	Desert Dungeon Lv 1	file-kept
+D20011	Desert Dungeon Lv 2	file-kept
+D20012	Desert Dungeon Lv 3	file-kept
+D2002	Underground City Lv 1	file-kept
+D20021	Underground City Lv 2	file-kept
+D20022	Underground City Lv 3	file-kept
+D20023	Underground City Lv 4	file-kept
+D2003	Underground Mine Lv 1	file-kept
+D20031	Underground Mine Lv 2	file-kept
+D20032	Underground Mine Lv 3	file-kept
+D2004	Desert Royal Chamber	file-kept
+D201	Deserted Mine Lv 1	file-kept
+D2101	Frost Dungeon Lv 1	file-kept
+D2102	Frost Dungeon Lv 2	file-kept
+D2103	Frost Dungeon Lv 3	file-kept
+D2104	Frost Dungeon Lv 4	file-kept
+D21051	Frost Dungeon Lv 5	file-kept
+D21052	Frost Dungeon Lv 5	file-kept
+D21053	Frost Dungeon Lv 5	file-kept
+D21054	Frost Dungeon Lv 5	file-kept
+D21055	Frost Dungeon Lv 5	file-kept
+D21056	Frost Dungeon Lv 5	file-kept
+D2106	Frost Dungeon Lv 6	file-kept
+D2107	Frost Dungeon	file-kept
+D22021	Frost Holy Palace Lv 2	file-kept
+D22022	Frost Holy Palace Old	file-kept
+D22031	Frost Holy Palace Old	file-kept
+D22032	Frost Holy Palace Old	file-kept
+D2301	Goru Cave Lv 1	file-kept
+D2302	Goru Cave Lv 2	file-kept
+D2303	Goru Cave Lv 3	file-kept
+D2304	Goru Cave Lv 4	file-kept
+D2401	Hyunmoon Temple Lv 1	file-kept
+D2402	Hyunmoon Temple Lv 2	file-kept
+D2403	Hyunmoon Temple Lv 3	file-kept
+D2404	Hyunmoon Temple	file-kept
+D2501	Departed Valley Lv 1	file-kept
+D2502	Departed Valley Lv 2	file-kept
+D2503	Departed Valley Lv 3	file-kept
+D2601	Banyo Cave	file-kept
+D2904	The Lair Lv 3	file-kept
+D29052	The Lair Lv 4 East	file-kept
+D2906	The Lair Lv 5	file-kept
+D2907	The Lair	file-kept
+D3001	Dragon Abyss Lv 1	file-kept
+D3002	Dragon Abyss Lv 2	file-kept
+D3003	Dragon Abyss Lv 3 - OLD	file-kept
+D3004	Dragon Abyss Lv 3	file-kept
+D3005_BH	Dragon Abyss Lv 5	file-kept
+D3005_CR	Dragon Abyss Lv 5	file-kept
+D3005_HM	Dragon Abyss Lv 5	file-kept
+D3005_JJ	Dragon Abyss Lv 5	file-kept
+D3006	Dragon Abyss	file-kept
+D301	Flea Cave Lv 1	file-kept
+D302	Flea Cave Lv 2	file-kept
+D303	Flea Cave Lv 3	file-kept
+D3103		file-kept
+D3106		file-kept
+D3400	Lost Land	file-kept
+D3400_1	Lost Land 2	file-kept
+D3901		file-kept
+D3902		file-kept
+D3903		file-kept
+D3904		file-kept
+D3905		file-kept
+D3906		file-kept
+D4000	Southern Dunes	file-kept
+D4001	Southern Wastes	file-kept
+D4002	Southern Coast	file-kept
+D4003	Southern Check Point	file-kept
+D4101	Southern Wall	file-kept
+D4102	Lost Way	file-kept
+D702	Carved Stone Tomb Lv 2	file-kept
+D703	Carved Stone Tomb Lv 3	file-kept
+D704	Carved Stone Tomb Lv 4	file-kept
+D705	Carved Stone Tomb	file-kept
+D902	Red Moon Valley Lv 2	file-kept
+D903	Red Moon Valley Lv 3	file-kept
+D904	Red Moon Valley Lv 4	file-kept
+D905	Red Moon Valley	file-kept
+E01	North Way	file-kept
+E02	North Way	file-kept
+E11	South Way	file-kept
+E12	South Way	file-kept
+ER51_Ice	Lost Land 3	file-kept
+GM	GM Map	file-kept
+ID3_014	The Wall	file-kept
+ID3_024	The Wall 2	file-kept
+ID7_000	Quartz Mine Lv 1	file-kept
+ID7_001	Quartz Mine Lv 2	file-kept
+ID7_002	Quartz Mine Lv 3	file-kept
+ID7_003	Quartz Mine Lv 4	file-kept
+ID7_004	Quartz Mine	file-kept
+ID9_00	Abandoned Town	file-kept
+ID9_01	Forgotten Monastery Lv 1	file-kept
+ID9_02	Forgotton Monastery Lv 2	file-kept3_000	Sabuk Guild Territory	restored-as_3_000_Z
+D201	Deserted Mine Lv 1	restored-as_D201_Z
