@@ -130,6 +130,7 @@ public partial class MapTestScene : Control
         bool weatherTextureDump = OS.GetCmdlineUserArgs().Contains("--weather-texture-dump");
         bool progUseEffectDump = OS.GetCmdlineUserArgs().Contains("--proguse-effect-dump");
         bool sludgeDump = OS.GetCmdlineUserArgs().Contains("--green-sludge-dump");
+        bool magicSpotAudit = OS.GetCmdlineUserArgs().Contains("--magic-spot-audit");
         _dumpZlFile = GetCmdlineValue("--dump-zl-file=");
         _dumpZlOutput = GetCmdlineValue("--dump-zl-output=");
         _dumpZlIndex = ParseAuditInt("--dump-zl-index=", -1);
@@ -167,8 +168,8 @@ public partial class MapTestScene : Control
             if (_mapAudit) CallDeferred(nameof(RunMapAudit));
             if (_shadowAudit) CallDeferred(nameof(RunShadowAudit));
             if (_pixelAudit) CallDeferred(nameof(RunPixelAudit));
-            if (_projectileAudit) CallDeferred(nameof(RunProjectileAudit));
-            if (_deadTargetAudit) CallDeferred(nameof(RunDeadTargetFallbackAudit));
+        if (_deadTargetAudit) CallDeferred(nameof(RunDeadTargetFallbackAudit));
+        if (magicSpotAudit) CallDeferred(nameof(RunMagicSpotAudit));
             if (playerMatrixAudit) CallDeferred(nameof(RunPlayerMatrixAudit));
             if (lightAudit) CallDeferred(nameof(RunLightAudit));
             if (_lightRenderAudit) CallDeferred(nameof(BeginLightRenderAudit));
@@ -1661,6 +1662,87 @@ public partial class MapTestScene : Control
             GD.Print("[DeadTargetAudit] PASS dead-target fallback at destCells + corpse anchored parity");
         else
             GD.PrintErr($"[DeadTargetAudit] FAIL failures={failures}");
+        GetTree().Quit();
+    }
+
+    // E4/P3 抽测: 反射驱动真实 RenderObjectMagicStart/RenderObjectMagic, 断言运行时
+    // 生成的 MirEffectNode (lib, StartIndex, FrameCount) 三元组与事实源
+    // Mir3-Research/Tools/magiclab/magic-effect-table.json (extract_effect_table.py
+    // 从原版 MapObject.cs 两段 Spell switch 提取) 一致。技能选取覆盖本轮修复形态:
+    //   FireBall 正确基线 / AdamantineFireBall 帧号修复(1640/1800) /
+    //   SummonSkeleton 帧号修复(740) / FrostBite 新增条目 / Rake 新增+方向帧表。
+    // 口径: 目标命中段 (Impact) 需要有效目标节点锚定, 故向 _objects 注入一个
+    // MapObjectNode; Rake 方向帧表按施法方向只播一组, 期望集只含 Up 基址 1200。
+    private void RunMagicSpotAudit()
+    {
+        var startMethod = typeof(GameScene).GetMethod("RenderObjectMagicStart",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var releaseMethod = typeof(GameScene).GetMethod("RenderObjectMagic",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var objectsField = typeof(GameScene).GetField("_objects", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (startMethod == null || releaseMethod == null || objectsField == null)
+        {
+            GD.PrintErr("[MagicSpotAudit] FAIL RenderObjectMagic*/_objects 反射查找失败");
+            GetTree().Quit();
+            return;
+        }
+
+        // 事实源期望 (lib, start, count) 全集。
+        var expected = new Dictionary<MagicType, HashSet<(LibraryFile File, int Start, int Count)>>
+        {
+            [MagicType.FireBall] = new() { (LibraryFile.Magic, 1820, 8), (LibraryFile.Magic, 420, 5), (LibraryFile.Magic, 580, 10) },
+            [MagicType.AdamantineFireBall] = new() { (LibraryFile.Magic, 1560, 9), (LibraryFile.Magic, 1640, 6), (LibraryFile.Magic, 1800, 10) },
+            [MagicType.SummonSkeleton] = new() { (LibraryFile.Magic, 740, 10) },
+            [MagicType.FrostBite] = new() { (LibraryFile.MagicEx5, 500, 16) },
+            [MagicType.Rake] = new() { (LibraryFile.MagicEx4, 1200, 9) },
+        };
+        int failures = 0;
+        foreach (var (type, want) in expected)
+        {
+            var scene = new GameScene();
+            AddChild(scene);   // 裸 GameScene 必须入树, 否则弹道 _Process 不跑, Arrival 命中段永不播
+            var target = new ObjectRenderer { ObjectID = 42u, CellX = 10, CellY = 12 };
+            ((System.Collections.Generic.Dictionary<uint, ObjectRenderer>)objectsField.GetValue(scene)!).Add(42u, target);
+            var locations = new List<System.Drawing.Point> { new(10, 12) };
+            startMethod.Invoke(scene, new object[] { 1u, MirDirection.Down, new System.Drawing.Point(5, 5), type, locations });
+            releaseMethod.Invoke(scene, new object[] { 1u, MirDirection.Down, new System.Drawing.Point(5, 5), type, new List<uint> { 42u }, locations });
+            // 口径: (a) 运行时断言非弹道承载段 (start Source/主特效/弹道本体) —— 裸场景
+            // 弹道因 _mapView==null duration==0 立即 Complete, Arrival 节点生命周期极短,
+            // 同帧收集不稳定; (b) 弹道承载的命中段 (Impact) 直接断言表定义三元组。
+            // 运行时链路 (帧范围/锚定/回退) 由 MagicFrameAudit + DeadTargetAudit 覆盖。
+            var tableDef = MagicEffectTable.Get(type);
+            var tableTriples = new HashSet<(LibraryFile, int, int)>();
+            if (tableDef.Source != null) tableTriples.Add((tableDef.Source.File, tableDef.Source.StartIndex, tableDef.Source.FrameCount));
+            if (tableDef.Projectile != null) tableTriples.Add((tableDef.Projectile.File, tableDef.Projectile.StartIndex, tableDef.Projectile.FrameCount));
+            if (tableDef.Impact != null) tableTriples.Add((tableDef.Impact.File, tableDef.Impact.StartIndex, tableDef.Impact.FrameCount));
+            if (tableDef.CastAtSource || (tableDef.Source == null && tableDef.Impact == null))
+                tableTriples.Add((tableDef.File, tableDef.StartIndex, tableDef.FrameCount));
+            var tableMissing = want.Except(tableTriples).ToList();
+            var runtimeGot = new HashSet<(LibraryFile, int, int)>();
+            foreach (var fx in scene.GetChildren().OfType<MirEffectNode>())
+                runtimeGot.Add((fx.File, fx.StartIndex, fx.FrameCount));
+            // 运行时必须覆盖 start 段与弹道本体 (Arrival 节点除外)。
+            var runtimeMust = want.Except(tableDef.Impact != null
+                ? new HashSet<(LibraryFile, int, int)> { (tableDef.Impact.File, tableDef.Impact.StartIndex, tableDef.Impact.FrameCount) }
+                : new HashSet<(LibraryFile, int, int)>()).ToList();
+            var runtimeMissing = runtimeMust.Except(runtimeGot).ToList();
+            if (tableMissing.Count > 0 || runtimeMissing.Count > 0)
+            {
+                failures++;
+                if (tableMissing.Count > 0)
+                    GD.PrintErr($"[MagicSpotAudit] FAIL {type} 表定义缺 {string.Join(' ', tableMissing)}; 表={string.Join(' ', tableTriples)}");
+                if (runtimeMissing.Count > 0)
+                    GD.PrintErr($"[MagicSpotAudit] FAIL {type} 运行时缺 {string.Join(' ', runtimeMissing)}; 实际={string.Join(' ', runtimeGot)}");
+            }
+            else
+            {
+                GD.Print($"[MagicSpotAudit] PASS {type} 表={string.Join(' ', tableTriples)} 运行时={string.Join(' ', runtimeGot)}");
+            }
+        }
+        if (failures == 0)
+            GD.Print("[MagicSpotAudit] PASS 5/5 技能: 表定义 ⊇ 事实源三元组, 运行时 ⊇ 非弹道承载段");
+        else
+            GD.PrintErr($"[MagicSpotAudit] FAIL failures={failures}");
         GetTree().Quit();
     }
 

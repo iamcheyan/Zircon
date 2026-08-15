@@ -29,6 +29,7 @@ public partial class MirEffectNode : Node2D
     protected Func<Vector2> _cameraFn; // GameScene.ComputeObjectScreenPos 委托
 
     // 图库
+    public LibraryFile File;   // Setup 时记录, 供审计比对 (原三元组之一)
     protected ZlLibrary _lib;
 
     // 帧序列
@@ -76,6 +77,7 @@ public partial class MirEffectNode : Node2D
     public void Setup(LibraryFile file, int startIndex, int frameCount, double frameDelayMs,
         MapObjectNode target, int mapCellX, int mapCellY, Func<Vector2> cameraFn)
     {
+        File = file;
         _lib = LibraryCache.Get(file);
         StartIndex = startIndex;
         FrameCount = frameCount;
@@ -100,6 +102,7 @@ public partial class MirEffectNode : Node2D
         Node2D target, Func<int> targetRenderYFn)
     {
         _lib = LibraryCache.Get(file);
+        File = file;
         StartIndex = startIndex;
         FrameCount = frameCount;
         _target = target as MapObjectNode;
