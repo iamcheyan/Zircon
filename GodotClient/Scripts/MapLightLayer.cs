@@ -15,11 +15,15 @@ public partial class MapLightLayer : Node2D
     private const float NightAmbient = 0.25f;
     private const float TwilightAmbient = 100f / 255f;
     private const int MaxLights = 64;
+    // 原版死亡红染: Color.IndianRed (205,92,92) 整层相乘染色
+    // (Client/Scenes/Views/MapControl.cs Light.OnClearTexture user.Dead 分支)。
+    public static readonly Color DeadTint = new(205f / 255f, 92f / 255f, 92f / 255f);
     private MapInfo _mapInfo;
     private MapView _mapView;
     private float _dayTime = 1f;
     private LightSetting? _auditLightOverride;
     private Func<IEnumerable<LightSource>> _sources;
+    private Func<PlayerLightState> _playerState;
     private ShaderMaterial _lightMaterial;
 
     public readonly struct LightSource
@@ -29,6 +33,17 @@ public partial class MapLightLayer : Node2D
         public readonly Color Colour;
         public LightSource(Vector2 position, int radius, Color colour)
         { Position = position; Radius = radius; Colour = colour; }
+    }
+
+    // 原版特殊光照态: 死亡→全屏红染; 深渊中毒→全黑+玩家微光。
+    // 白天也强制渲染 (ShouldRenderLightLayer 对二者直接返回 true)。
+    public readonly struct PlayerLightState
+    {
+        public readonly bool Dead;
+        public readonly bool Abyss;
+        public readonly Vector2 Position;
+        public PlayerLightState(bool dead, bool abyss, Vector2 position)
+        { Dead = dead; Abyss = abyss; Position = position; }
     }
 
     public void SetMap(MapInfo info, MapView view)
@@ -50,6 +65,7 @@ shader_type canvas_item;
 render_mode unshaded;
 uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
 uniform float ambient = 1.0;
+uniform vec3 global_tint = vec3(1.0);
 uniform int light_count = 0;
 uniform vec2 viewport_size = vec2(1.0);
 uniform vec2 light_positions[64];
@@ -68,7 +84,7 @@ void fragment() {
         brightness = max(brightness, ambient + influence * (1.0 - ambient));
         tint = mix(tint, light_colours[i], influence * 0.22);
     }
-    COLOR = vec4(scene.rgb * brightness * tint, scene.a);
+    COLOR = vec4(scene.rgb * brightness * tint * global_tint, scene.a);
 }
 "
         };
@@ -78,7 +94,7 @@ void fragment() {
 
     public void SetDayTime(float dayTime)
     {
-        _dayTime = Math.Clamp(dayTime, 0f, 1f);
+        _dayTime = dayTime;
         QueueRedraw();
     }
 
@@ -92,6 +108,12 @@ void fragment() {
     public void SetObjectSources(Func<IEnumerable<LightSource>> sources)
     {
         _sources = sources;
+        QueueRedraw();
+    }
+
+    public void SetPlayerState(Func<PlayerLightState> state)
+    {
+        _playerState = state;
         QueueRedraw();
     }
 
@@ -123,11 +145,41 @@ void fragment() {
     public static float EffectLightRadius(int frameLight)
         => ObjectLightRadius(Math.Max(1, frameLight / 5));
 
+    // 原版深渊微光: scale = BaseLightSize + 4 × LightScale = 0.18,
+    // 与 ObjectLightRadius 同一 256 基准 (1024 纹理直径 / 2 / WorldScale)。
+    public static float AbyssGlowRadius() => 256f * (0.1f + 4 * 0.02f);
+
     public override void _Draw()
     {
         if (_mapInfo == null || _mapView?.Map == null) return;
 
         Vector2 viewport = GetViewport().GetVisibleRect().Size / WorldScale;
+        var playerState = _playerState?.Invoke() ?? default;
+
+        // 原版 MapControl.Light.OnClearTexture: 死亡 → 整层 IndianRed 红染,
+        // 深渊中毒 → 全黑 + 玩家微光。死亡优先于深渊; 二者白天也渲染。
+        if (playerState.Dead)
+        {
+            DrawOverlay(viewport, 1f,
+                new Godot.Collections.Array<Vector2>(),
+                new Godot.Collections.Array<float>(),
+                new Godot.Collections.Array<Color>(),
+                new Vector3(DeadTint.R, DeadTint.G, DeadTint.B));
+            return;
+        }
+
+        if (playerState.Abyss)
+        {
+            // 原版: Clear 黑 + 玩家位置微光 scale = BaseLightSize + 4×LightScale。
+            // Abyss 环绕特效由 GameScene 循环施放 (MagicType.Abyss)。
+            DrawOverlay(viewport, 0f,
+                new Godot.Collections.Array<Vector2> { playerState.Position },
+                new Godot.Collections.Array<float> { AbyssGlowRadius() },
+                new Godot.Collections.Array<Color> { new Color(1f, 1f, 1f) },
+                new Vector3(1f, 1f, 1f));
+            return;
+        }
+
         float ambient = AmbientFor(_auditLightOverride ?? _mapInfo.Light, _dayTime);
 
         if (ambient >= 0.999f) return;
@@ -173,12 +225,20 @@ void fragment() {
             colours.Add(Colors.White);
         }
 
+        DrawOverlay(viewport, ambient, positions, radii, colours, new Vector3(1f, 1f, 1f));
+    }
+
+    private void DrawOverlay(Vector2 viewport, float ambient,
+        Godot.Collections.Array<Vector2> positions, Godot.Collections.Array<float> radii,
+        Godot.Collections.Array<Color> colours, Vector3 globalTint)
+    {
         _lightMaterial.SetShaderParameter("ambient", ambient);
         _lightMaterial.SetShaderParameter("light_count", positions.Count);
         _lightMaterial.SetShaderParameter("viewport_size", viewport);
         _lightMaterial.SetShaderParameter("light_positions", positions);
         _lightMaterial.SetShaderParameter("light_radii", radii);
         _lightMaterial.SetShaderParameter("light_colours", colours);
+        _lightMaterial.SetShaderParameter("global_tint", globalTint);
         DrawRect(new Rect2(Vector2.Zero, viewport), Colors.White);
     }
 }

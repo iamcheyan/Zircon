@@ -71,7 +71,7 @@ public partial class MapTestScene : Control
     private int _lightAuditStage;
     private int _lightAuditFrames;
     // 拷贝点劫持探针区域 (逻辑坐标, 根节点 Scale=2 后落在视口内)。
-    private static readonly Rect2 LightProbeArea = new(700, 350, 48, 32);
+    private static readonly Rect2 LightProbeArea = new(300, 200, 48, 32);
     private ColorRect? _probeBackdrop;
     private ColorRect? _probeHijacker;
     private ColorRect? _probeWhite;
@@ -81,11 +81,14 @@ public partial class MapTestScene : Control
     private int _mapFamilyIndex;
     private int _mapFamilyFrames;
     private static readonly string[] MapFamilySamples = { "0", "1", "5", "D001", "E01" };
-    private static readonly (string Name, LightSetting Setting, float DayTime)[] LightRenderStages =
+    private static readonly (string Name, LightSetting Setting, float DayTime, bool Dead, bool Abyss)[] LightRenderStages =
     {
-        ("night", LightSetting.Night, 1f),
-        ("twilight", LightSetting.Twilight, 1f),
-        ("default", LightSetting.Default, 0.42f),
+        ("night", LightSetting.Night, 1f, false, false),
+        ("twilight", LightSetting.Twilight, 1f, false, false),
+        ("default", LightSetting.Default, 0.42f, false, false),
+        // 原版特殊光照态: 死亡红染 / 深渊黑视白天也强制渲染
+        ("dead", LightSetting.Light, 1f, true, false),
+        ("abyss", LightSetting.Light, 1f, false, true),
     };
     private readonly HashSet<int> _actionFrames = new();
     private readonly HashSet<MirAnimation> _actionAnimations = new();
@@ -340,7 +343,10 @@ public partial class MapTestScene : Control
             && Math.Abs(MapLightLayer.AmbientFor(LightSetting.Default, 0.42f) - 0.42f) < epsilon
             && Math.Abs(MapLightLayer.ObjectLightRadius(3) - 56.32f) < epsilon
             && Math.Abs(MapLightLayer.TileLightRadius(1) - 179.2f) < epsilon
-            && Math.Abs(MapLightLayer.EffectLightRadius(35) - 97.28f) < epsilon;
+            && Math.Abs(MapLightLayer.EffectLightRadius(35) - 97.28f) < epsilon
+            && Math.Abs(MapLightLayer.AbyssGlowRadius() - 46.08f) < epsilon
+            && Math.Abs(MapLightLayer.DeadTint.R - 205f / 255f) < epsilon
+            && Math.Abs(MapLightLayer.DeadTint.G - 92f / 255f) < epsilon;
         if (pass)
             GD.Print("[LightAudit] PASS Night=0.25 Twilight=100/255 Light=255/255 Default=DayTime");
         else
@@ -418,6 +424,7 @@ public partial class MapTestScene : Control
 
         _lightAuditStage = 0;
         _lightAuditFrames = 0;
+
         ApplyLightRenderStage();
     }
 
@@ -426,6 +433,11 @@ public partial class MapTestScene : Control
         var stage = LightRenderStages[_lightAuditStage];
         _lightAuditLayer.SetAuditLightOverride(stage.Setting);
         _lightAuditLayer.SetDayTime(stage.DayTime);
+        // 特殊光照态: 死亡/深渊用探针位置合成状态驱动 (生产链路为
+        // GameScene → SetPlayerState; 审计不依赖网络/角色状态)。
+        var probeCentre = LightProbeArea.Position + LightProbeArea.Size / 2;
+        _lightAuditLayer.SetPlayerState(() => new MapLightLayer.PlayerLightState(
+            stage.Dead, stage.Abyss, probeCentre));
         _lightAuditLayer.QueueRedraw();
         GD.Print($"[LightRenderAudit] START {stage.Name} ambient={MapLightLayer.AmbientFor(stage.Setting, stage.DayTime):0.000}");
     }
@@ -461,10 +473,21 @@ public partial class MapTestScene : Control
         else
             GD.Print($"[LightRenderAudit] PASS {stage.Name} probe=(0x{probePixel.ToHtml()}) lum={probeLum:0.000}");
 
+        // 特殊态语义断言: 死亡 → 白板被 IndianRed 相乘 (红通道显著高于绿);
+        // 深渊 → 探针位于微光中心, 亮度应接近全亮。
+        if (stage.Dead && probePixel.R <= probePixel.G + 0.05f)
+            GD.PrintErr($"[LightRenderAudit] FAIL {stage.Name} probe=(0x{probePixel.ToHtml()}) 死亡红染未生效 (R 应显著大于 G)");
+        else if (stage.Dead)
+            GD.Print($"[LightRenderAudit] PASS {stage.Name} dead-tint probe=(0x{probePixel.ToHtml()})");
+        if (stage.Abyss && probeLum < 0.5f)
+            GD.PrintErr($"[LightRenderAudit] FAIL {stage.Name} probe=(0x{probePixel.ToHtml()}) lum={probeLum:0.000} < 0.5 深渊微光未生效");
+        else if (stage.Abyss)
+            GD.Print($"[LightRenderAudit] PASS {stage.Name} abyss-glow probe=(0x{probePixel.ToHtml()}) lum={probeLum:0.000}");
+
         _lightAuditStage++;
         if (_lightAuditStage >= LightRenderStages.Length)
         {
-            GD.Print("[LightRenderAudit] PASS all=3 stages=night,twilight,default");
+            GD.Print("[LightRenderAudit] PASS all=5 stages=night,twilight,default,dead,abyss");
             _lightRenderAudit = false;
             return;
         }

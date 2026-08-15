@@ -778,6 +778,8 @@ public partial class GameScene : Control
     private uint _pendingNpcClickObjectId;
     private double _nextInspectMs;
     private PoisonType _playerPoison;
+    private bool _abyssVisionActive;
+    private double _abyssEffectTimer;
     private bool _observer;
     public bool IsObserver => _observer;
     public bool InSafeZone { get; private set; }
@@ -964,6 +966,10 @@ public partial class GameScene : Control
         lightCanvas.AddChild(_lightLayer);
         AddChild(lightCanvas);
         _lightLayer.SetObjectSources(GetObjectLightSources);
+        _lightLayer.SetPlayerState(() => new MapLightLayer.PlayerLightState(
+            _player != null && _player.Dead,
+            _playerPoison.HasFlag(PoisonType.Abyss),
+            _player != null ? _player.Position + new Vector2(24f, 0f) : Vector2.Zero));
         // 旧端天气在 LLayer 环境光之前绘制，夜间天气也必须一起变暗。
         _weatherLayer = new MapWeatherLayer { ZIndex = RenderOrder.Particles };
         AddChild(_weatherLayer);
@@ -4934,6 +4940,7 @@ public partial class GameScene : Control
             _playerStats = new Stats();
         _observer = false;
         _playerPoison = info.Poison;
+        UpdateAbyssVision(_playerPoison.HasFlag(PoisonType.Abyss));
         _playerLevel = info.Level;
         _playerExperience = info.Experience;
         InSafeZone = info.InSafeZone;
@@ -5040,6 +5047,25 @@ public partial class GameScene : Control
         _player.Light = Math.Max(3, _playerStats[Stat.Light]);
         if (_player.Health <= 0) _player.Health = _playerStats[Stat.Health];
         RefreshPlayerBars();
+    }
+
+    // 原版深渊黑视: 光照层全黑+玩家微光由 MapLightLayer.PlayerLightState 处理;
+    // 这里循环施放 Abyss 环绕特效——原版每次光照层重建都重画
+    // user.CreateMagicEffect(MagicEffect.Abyss), 对应 14帧×70ms≈980ms。
+    private const double AbyssEffectIntervalSeconds = 0.98;
+
+    private void UpdateAbyssVision(bool active)
+    {
+        if (active == _abyssVisionActive) return;
+        _abyssVisionActive = active;
+        _abyssEffectTimer = 0; // 置零后下一帧立即出特效
+    }
+
+    private void SpawnAbyssVisionEffect()
+    {
+        var def = MagicEffectTable.Get(MagicType.Abyss);
+        if (def == null) return;
+        SpawnCastEffect(def, _playerLocation.X, _playerLocation.Y);
     }
 
     private IEnumerable<MapLightLayer.LightSource> GetObjectLightSources()
@@ -5259,7 +5285,10 @@ public partial class GameScene : Control
     private void OnObjectPoison(uint objectID, PoisonType poison)
     {
         if (objectID == _playerObjectID)
+        {
             _playerPoison = poison;
+            UpdateAbyssVision(_playerPoison.HasFlag(PoisonType.Abyss));
+        }
         var target = GetMagicTargetNode(objectID);
         if (target == null) return;
         if (_objectPoisonEffects.Remove(objectID, out var oldFx)) oldFx.QueueFree();
@@ -8089,6 +8118,17 @@ public partial class GameScene : Control
         {
             // 窗口拖动/缩放也必须实时受边界约束，而不是只在重排时约束。
             ClampHudControlsToViewport(hudViewport / UiScale);
+        }
+
+        // 深渊黑视期间的环绕特效循环; 死亡红染优先于深渊(原版同序)。
+        if (_abyssVisionActive && !(_player?.Dead ?? false))
+        {
+            _abyssEffectTimer -= delta;
+            if (_abyssEffectTimer <= 0)
+            {
+                SpawnAbyssVisionEffect();
+                _abyssEffectTimer = AbyssEffectIntervalSeconds;
+            }
         }
 
         // 原版 ProcessInput 第一步：MagicAction 队列在动作边界释放。
