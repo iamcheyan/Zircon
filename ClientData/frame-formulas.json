@@ -1,7 +1,7 @@
 {
  "_meta": {
   "generator": "Tools/resedit/frameformulas.py",
-  "generated_at": "2026-08-16T11:58:53+0900",
+  "generated_at": "2026-08-16T12:30:13+0900",
   "purpose": "动画帧表/纸娃娃公式单一数据源 (webport + wilviewer 共读)",
   "rule": "本文件由提取器生成, 手改会被 --check 门禁拦下; 改 C# 后重跑生成器",
   "sources": {
@@ -3277,22 +3277,6 @@
     "reversed": false,
     "staticSpeed": false
    },
-   "hide": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": true,
-    "staticSpeed": false
-   },
-   "show": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": false,
-    "staticSpeed": false
-   },
    "standing": {
     "start": 0,
     "count": 6,
@@ -3330,22 +3314,6 @@
    "die": {
     "start": 320,
     "count": 7,
-    "offset": 10,
-    "ms": 100,
-    "reversed": false,
-    "staticSpeed": false
-   },
-   "hide": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": true,
-    "staticSpeed": false
-   },
-   "show": {
-    "start": 640,
-    "count": 8,
     "offset": 10,
     "ms": 100,
     "reversed": false,
@@ -3401,22 +3369,6 @@
     "reversed": false,
     "staticSpeed": false
    },
-   "hide": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": true,
-    "staticSpeed": false
-   },
-   "show": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": false,
-    "staticSpeed": false
-   },
    "standing": {
     "start": 0,
     "count": 6,
@@ -3459,14 +3411,6 @@
     "reversed": false,
     "staticSpeed": false
    },
-   "hide": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": true,
-    "staticSpeed": false
-   },
    "pushed": {
     "start": 80,
     "count": 8,
@@ -3474,14 +3418,6 @@
     "ms": 50,
     "reversed": true,
     "staticSpeed": true
-   },
-   "show": {
-    "start": 640,
-    "count": 8,
-    "offset": 10,
-    "ms": 100,
-    "reversed": false,
-    "staticSpeed": false
    },
    "standing": {
     "start": 0,

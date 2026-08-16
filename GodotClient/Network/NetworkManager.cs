@@ -19,6 +19,8 @@ public partial class NetworkManager : Node
 
     public override void _Ready()
     {
+        // E5/B2: 数据层装载 (autoload 首位, 先于任何 FrameSet/MagicEffectTable 消费者)
+        Scripts.DataLayer.LoadAll();
         DatabaseLoader.Load();
     }
 
