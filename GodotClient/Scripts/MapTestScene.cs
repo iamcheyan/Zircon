@@ -96,6 +96,7 @@ public partial class MapTestScene : Control
     private const float WorldScale = 2f;
     private string _dumpZlFile;
     private string _dumpZlOutput;
+    private string _tableSnapshotPath;
     private int _dumpZlIndex = -1;
 
     // 网格常量（第 7.1 章）
@@ -134,6 +135,7 @@ public partial class MapTestScene : Control
         _dumpZlFile = GetCmdlineValue("--dump-zl-file=");
         _dumpZlOutput = GetCmdlineValue("--dump-zl-output=");
         _dumpZlIndex = ParseAuditInt("--dump-zl-index=", -1);
+        _tableSnapshotPath = GetCmdlineValue("--table-snapshot=");
 
         // 与实际 GameScene 保持一致：地图、对象、特效都在逻辑 48x32
         // 坐标绘制，根世界统一放大 2 倍。否则审计截图只能验证 1x。
@@ -197,6 +199,20 @@ public partial class MapTestScene : Control
         {
             _statusLabel.Text = string.Format(Lang.MapTestUi601Label, ex.Message);
             GD.PrintErr($"[MapTest] {ex}");
+        }
+
+        // E5/B: 表快照导出 — 纯内存反射, 不依赖地图资源, 导出即退出。
+        if (!string.IsNullOrWhiteSpace(_tableSnapshotPath))
+        {
+            try
+            {
+                TableSnapshotTool.DumpAll(_tableSnapshotPath);
+            }
+            catch (Exception ex)
+            {
+                GD.PrintErr($"[TableSnapshot] FAIL {ex}");
+            }
+            GetTree().Quit();
         }
     }
 
