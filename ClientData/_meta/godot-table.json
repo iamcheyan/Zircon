@@ -1,0 +1,2875 @@
+{
+ "originalSpellCases": [
+  "Abyss",
+  "AdamantineFireBall",
+  "Asteroid",
+  "AugmentPoisonDust",
+  "Beckon",
+  "BindingTalisman",
+  "BloodLust",
+  "BlowEarth",
+  "BrainStorm",
+  "BurningFire",
+  "CelestialLight",
+  "Chain",
+  "ChainLightning",
+  "Cloak",
+  "Concentration",
+  "Containment",
+  "CorpseExploder",
+  "CrescentMoon",
+  "CrushingWave",
+  "CursedDoll",
+  "Cyclone",
+  "DarkSoulPrison",
+  "Defiance",
+  "DoomClawLeftPinch",
+  "DoomClawLeftSwipe",
+  "DoomClawRightPinch",
+  "DoomClawRightSwipe",
+  "DoomClawSpit",
+  "DragonRepulse",
+  "DragonTornado",
+  "ElectricShock",
+  "ElementalSuperiority",
+  "Endurance",
+  "Evasion",
+  "EvilSlayer",
+  "ExpelUndead",
+  "ExplosiveTalisman",
+  "Fetter",
+  "FireBall",
+  "FireBounce",
+  "FireStorm",
+  "FireSword",
+  "FireWall",
+  "FlamingDaggers",
+  "FlashOfLight",
+  "FourWheels",
+  "FrostBite",
+  "FrozenDragon",
+  "FrozenEarth",
+  "GeoManipulation",
+  "GreaterEvilSlayer",
+  "GreaterFrozenEarth",
+  "GreenSludgeBall",
+  "GustBlast",
+  "Heal",
+  "HeavenlySky",
+  "HellFire",
+  "Hemorrhage",
+  "IceAura",
+  "IceBlades",
+  "IceBolt",
+  "IceBreaker",
+  "IceDragon",
+  "IceRain",
+  "IceStorm",
+  "ImprovedExplosiveTalisman",
+  "Interchange",
+  "Invincibility",
+  "Invisibility",
+  "LifeSteal",
+  "LightningBall",
+  "LightningBeam",
+  "LightningStrike",
+  "LightningWave",
+  "MagicCombustion",
+  "MagicResistance",
+  "MagicShield",
+  "MassBeckon",
+  "MassHeal",
+  "MassInvisibility",
+  "MeteorShower",
+  "Might",
+  "MirrorImage",
+  "MonsterIceStorm",
+  "MonsterScortchedEarth",
+  "MonsterThunderStorm",
+  "Neutralize",
+  "Parasite",
+  "PinkFireBall",
+  "PoisonCloud",
+  "PoisonDust",
+  "Purification",
+  "RagingWind",
+  "Rake",
+  "ReflectDamage",
+  "Renounce",
+  "Repulsion",
+  "Resilience",
+  "Resurrection",
+  "SamaBlackIce",
+  "SamaBlueLightning",
+  "SamaGuardianFire",
+  "SamaGuardianIce",
+  "SamaGuardianLightning",
+  "SamaGuardianWind",
+  "SamaPhoenixFire",
+  "SamaProphetFire",
+  "SamaProphetLightning",
+  "SamaProphetWind",
+  "SamaWhiteWind",
+  "ScortchedEarth",
+  "SearingLight",
+  "SeismicSlam",
+  "Shredding",
+  "SoulResonance",
+  "Spiritualism",
+  "StrengthOfFaith",
+  "SummonDead",
+  "SummonDemonicCreature",
+  "SummonJinSkeleton",
+  "SummonPuppet",
+  "SummonShinsu",
+  "SummonSkeleton",
+  "SuperiorMagicShield",
+  "SwiftBlade",
+  "TaecheonSword",
+  "Teleportation",
+  "Tempest",
+  "TheNewBeginning",
+  "ThunderBolt",
+  "ThunderKick",
+  "ThunderStrike",
+  "Tornado",
+  "Transparency",
+  "TrapOctagon",
+  "WraithGrip"
+ ],
+ "noVisualSpellCases": [
+  "CombatKick",
+  "JudgementOfHeaven"
+ ],
+ "attackTable": {
+  "None": {
+   "file": "MagicEx",
+   "startIndex": 1090,
+   "frameCount": 6,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Slaying": {
+   "file": "Magic",
+   "startIndex": 1350,
+   "frameCount": 6,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Thrusting": {
+   "file": "MagicEx3",
+   "startIndex": 0,
+   "frameCount": 6,
+   "colour": "None",
+   "skip": 10,
+   "_type": "ImpactDef"
+  },
+  "HalfMoon": {
+   "file": "Magic",
+   "startIndex": 230,
+   "frameCount": 6,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "DestructiveSurge": {
+   "file": "MagicEx2",
+   "startIndex": 1420,
+   "frameCount": 6,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "FlamingSword": {
+   "file": "Magic",
+   "startIndex": 1470,
+   "frameCount": 6,
+   "colour": "Fire",
+   "_type": "ImpactDef"
+  },
+  "DragonRise": {
+   "file": "Magic",
+   "startIndex": 2185,
+   "frameCount": 10,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "BladeStorm": {
+   "file": "MagicEx",
+   "startIndex": 1780,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "DefensiveBlow": {
+   "file": "MagicEx7",
+   "startIndex": 800,
+   "frameCount": 9,
+   "colour": "Fire",
+   "drawType": "Floor",
+   "startDelayMs": 200,
+   "_type": "ImpactDef"
+  },
+  "FlameSplash": {
+   "file": "MagicEx4",
+   "startIndex": 900,
+   "frameCount": 8,
+   "colour": "Fire",
+   "_type": "ImpactDef"
+  },
+  "DragonBlood": {
+   "file": "MagicEx5",
+   "startIndex": 200,
+   "frameCount": 7,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "SeismicSlam": {
+   "file": "MagicEx5",
+   "startIndex": 4900,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "_type": "ImpactDef"
+  },
+  "CrushingWave": {
+   "file": "MagicEx6",
+   "startIndex": 100,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "_type": "ImpactDef"
+  },
+  "Endurance": {
+   "file": "MagicEx3",
+   "startIndex": 190,
+   "frameCount": 10,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "ReflectDamage": {
+   "file": "MagicEx2",
+   "startIndex": 1220,
+   "frameCount": 10,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Fetter": {
+   "file": "MagicEx2",
+   "startIndex": 2370,
+   "frameCount": 10,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Repulsion": {
+   "file": "Magic",
+   "startIndex": 90,
+   "frameCount": 10,
+   "colour": "Wind",
+   "_type": "ImpactDef"
+  },
+  "Renounce": {
+   "file": "MagicEx2",
+   "startIndex": 80,
+   "frameCount": 10,
+   "colour": "Phantom",
+   "_type": "ImpactDef"
+  },
+  "Tempest": {
+   "file": "MagicEx2",
+   "startIndex": 910,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Wind",
+   "_type": "ImpactDef"
+  },
+  "MirrorImage": {
+   "file": "MagicEx2",
+   "startIndex": 1260,
+   "frameCount": 6,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "FrostBite": {
+   "file": "MagicEx5",
+   "startIndex": 500,
+   "frameCount": 16,
+   "delayMs": 60,
+   "colour": "Ice",
+   "_type": "ImpactDef"
+  },
+  "Transparency": {
+   "file": "MagicEx2",
+   "startIndex": 430,
+   "frameCount": 7,
+   "colour": "Phantom",
+   "_type": "ImpactDef"
+  },
+  "CursedDoll": {
+   "file": "MagicEx3",
+   "startIndex": 690,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Fire",
+   "_type": "ImpactDef"
+  },
+  "Spiritualism": {
+   "file": "MagicEx2",
+   "startIndex": 1580,
+   "frameCount": 11,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Containment": {
+   "file": "MagicEx3",
+   "startIndex": 590,
+   "frameCount": 9,
+   "delayMs": 60,
+   "colour": "None",
+   "_type": "ImpactDef"
+  },
+  "Rake": {
+   "file": "MagicEx4",
+   "startIndex": 1200,
+   "frameCount": 9,
+   "colour": "Ice",
+   "directionStartIndices": [
+    1200,
+    1210,
+    1220,
+    1230,
+    1240,
+    1200,
+    1200,
+    1200
+   ],
+   "_type": "ImpactDef"
+  }
+ },
+ "table": {
+  "SwiftBlade": {
+   "file": "MagicEx2",
+   "startIndex": 2330,
+   "frameCount": 16,
+   "colour": "None",
+   "_type": "CastEffect"
+  },
+  "TaecheonSword": {
+   "file": "MagicEx5",
+   "startIndex": 5000,
+   "frameCount": 31,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "FireSword": {
+   "file": "MagicEx5",
+   "startIndex": 5100,
+   "frameCount": 39,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "HalfMoon": {
+   "file": "Magic",
+   "startIndex": 230,
+   "frameCount": 6,
+   "delayMs": 100,
+   "colour": "None",
+   "castAtSource": true,
+   "directionFromCast": true,
+   "_type": "CastEffect"
+  },
+  "DestructiveSurge": {
+   "file": "MagicEx2",
+   "startIndex": 1420,
+   "frameCount": 6,
+   "delayMs": 100,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "FireBall": {
+   "file": "Magic",
+   "startIndex": 420,
+   "frameCount": 5,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 1820,
+    "frameCount": 8,
+    "delayMs": 70,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 420,
+    "frameCount": 5,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 580,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "LightningBall": {
+   "file": "Magic",
+   "startIndex": 3070,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2990,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 3070,
+    "frameCount": 6,
+    "colour": "Lightning",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 3230,
+    "frameCount": 10,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceBolt": {
+   "file": "Magic",
+   "startIndex": 2700,
+   "frameCount": 3,
+   "colour": "Ice",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2620,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 2700,
+    "frameCount": 3,
+    "colour": "Ice",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 2860,
+    "frameCount": 10,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "GustBlast": {
+   "file": "MagicEx",
+   "startIndex": 430,
+   "frameCount": 5,
+   "colour": "Wind",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 350,
+    "frameCount": 7,
+    "delayMs": 70,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx",
+    "startIndex": 430,
+    "frameCount": 5,
+    "colour": "Wind",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 590,
+    "frameCount": 10,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ElectricShock": {
+   "file": "Magic",
+   "startIndex": 10,
+   "frameCount": 10,
+   "colour": "Lightning",
+   "source": {
+    "file": "Magic",
+    "startIndex": 0,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 10,
+    "frameCount": 10,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ThunderBolt": {
+   "file": "Magic",
+   "startIndex": 1430,
+   "frameCount": 12,
+   "delayMs": 50,
+   "colour": "Lightning",
+   "castAtSource": true,
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1450,
+    "frameCount": 3,
+    "delayMs": 150,
+    "colour": "Lightning",
+    "frameLight": 150,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ThunderStrike": {
+   "file": "Magic",
+   "startIndex": 1430,
+   "frameCount": 12,
+   "delayMs": 50,
+   "colour": "Lightning",
+   "castAtSource": true,
+   "mapImpact": {
+    "file": "Magic",
+    "startIndex": 1450,
+    "frameCount": 3,
+    "delayMs": 150,
+    "colour": "Lightning",
+    "frameLight": 150,
+    "_type": "ImpactDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1450,
+    "frameCount": 3,
+    "delayMs": 150,
+    "colour": "Lightning",
+    "frameLight": 150,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "FireBounce": {
+   "file": "Magic",
+   "startIndex": 1640,
+   "frameCount": 6,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 1560,
+    "frameCount": 9,
+    "delayMs": 65,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 1640,
+    "frameCount": 6,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1800,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "MeteorShower": {
+   "file": "Magic",
+   "startIndex": 1640,
+   "frameCount": 6,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 1560,
+    "frameCount": 9,
+    "delayMs": 65,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 1640,
+    "frameCount": 6,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1800,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceBlades": {
+   "file": "Magic",
+   "startIndex": 2960,
+   "frameCount": 6,
+   "delayMs": 50,
+   "colour": "Ice",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2880,
+    "frameCount": 6,
+    "delayMs": 115,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 2960,
+    "frameCount": 6,
+    "delayMs": 50,
+    "colour": "Ice",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 2970,
+    "frameCount": 10,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Cyclone": {
+   "file": "MagicEx",
+   "startIndex": 1990,
+   "frameCount": 5,
+   "colour": "Wind",
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 1970,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Wind",
+    "frameLight": 50,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 1990,
+    "frameCount": 5,
+    "colour": "Wind",
+    "frameLight": 50,
+    "_type": "ImpactDef"
+   },
+   "targetEffect": {
+    "file": "MagicEx",
+    "startIndex": 1970,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Wind",
+    "frameLight": 50,
+    "_type": "ImpactDef"
+   },
+   "additional": [
+    {
+     "file": "MagicEx",
+     "startIndex": 2000,
+     "frameCount": 8,
+     "startDelayMs": 500,
+     "colour": "Wind",
+     "frameLight": 50,
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "FireStorm": {
+   "file": "Magic",
+   "startIndex": 940,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Fire",
+   "castAtSource": true,
+   "mapImpact": {
+    "file": "Magic",
+    "startIndex": 950,
+    "frameCount": 7,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "MagicShield": {
+   "file": "Magic",
+   "startIndex": 830,
+   "frameCount": 19,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "SuperiorMagicShield": {
+   "file": "MagicEx2",
+   "startIndex": 1900,
+   "frameCount": 17,
+   "delayMs": 60,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Heal": {
+   "file": "Magic",
+   "startIndex": 660,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Holy",
+   "impact": {
+    "file": "Magic",
+    "startIndex": 610,
+    "frameCount": 10,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "MassHeal": {
+   "file": "Magic",
+   "startIndex": 660,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Holy",
+   "mapImpact": {
+    "file": "Magic",
+    "startIndex": 670,
+    "frameCount": 7,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "PoisonDust": {
+   "file": "Magic",
+   "startIndex": 60,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Dark",
+   "impact": {
+    "file": "Magic",
+    "startIndex": 70,
+    "frameCount": 10,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "AugmentPoisonDust": {
+   "file": "Magic",
+   "startIndex": 60,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Dark",
+   "impact": {
+    "file": "Magic",
+    "startIndex": 70,
+    "frameCount": 10,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Purification": {
+   "file": "MagicEx2",
+   "startIndex": 220,
+   "frameCount": 10,
+   "colour": "Holy",
+   "impact": {
+    "file": "MagicEx2",
+    "startIndex": 230,
+    "frameCount": 10,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "SummonDemonicCreature": {
+   "file": "Magic",
+   "startIndex": 740,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "_type": "CastEffect"
+  },
+  "SummonShinsu": {
+   "file": "Magic",
+   "startIndex": 2590,
+   "frameCount": 19,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "_type": "CastEffect"
+  },
+  "PoisonCloud": {
+   "file": "MagicEx5",
+   "startIndex": 5500,
+   "frameCount": 56,
+   "colour": "Dark",
+   "_type": "CastEffect"
+  },
+  "Repulsion": {
+   "file": "Magic",
+   "startIndex": 90,
+   "frameCount": 10,
+   "colour": "Wind",
+   "_type": "CastEffect"
+  },
+  "Teleportation": {
+   "file": "Magic",
+   "startIndex": 110,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "AdamantineFireBall": {
+   "file": "Magic",
+   "startIndex": 1640,
+   "frameCount": 6,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 1560,
+    "frameCount": 9,
+    "delayMs": 65,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 1640,
+    "frameCount": 6,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1800,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ScortchedEarth": {
+   "file": "Magic",
+   "startIndex": 1900,
+   "frameCount": 30,
+   "delayMs": 50,
+   "distanceDelayMs": 50,
+   "colour": "Fire",
+   "blendRate": 1.0,
+   "noColourKey": true,
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 1820,
+    "frameCount": 8,
+    "delayMs": 60,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "Magic",
+    "startIndex": 1900,
+    "frameCount": 30,
+    "delayMs": 50,
+    "distanceDelayMs": 50,
+    "colour": "Fire",
+    "blendRate": 1.0,
+    "noColourKey": true,
+    "_type": "ImpactDef"
+   },
+   "additional": [
+    {
+     "file": "Magic",
+     "startIndex": 2450,
+     "frameCount": 10,
+     "delayMs": 250,
+     "startDelayMs": 500,
+     "distanceDelayMs": 50,
+     "colour": "None",
+     "drawType": "Floor",
+     "blendRate": 1.0,
+     "noColourKey": true,
+     "_type": "ImpactDef"
+    },
+    {
+     "file": "ProgUse",
+     "startIndex": 220,
+     "frameCount": 1,
+     "delayMs": 3500,
+     "startDelayMs": 500,
+     "distanceDelayMs": 50,
+     "colour": "None",
+     "drawType": "Floor",
+     "opacity": 0.8,
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "LightningBeam": {
+   "file": "MagicEx",
+   "startIndex": 1180,
+   "frameCount": 4,
+   "colour": "Lightning",
+   "source": {
+    "file": "Magic",
+    "startIndex": 1970,
+    "frameCount": 10,
+    "delayMs": 30,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "sourcePerLocation": [
+    {
+     "file": "MagicEx",
+     "startIndex": 1180,
+     "frameCount": 4,
+     "colour": "Lightning",
+     "frameLight": 150,
+     "_type": "ImpactDef"
+    }
+   ],
+   "noTargetVisual": true,
+   "_type": "CastEffect"
+  },
+  "FrozenEarth": {
+   "file": "MagicEx",
+   "startIndex": 90,
+   "frameCount": 20,
+   "delayMs": 50,
+   "colour": "Ice",
+   "blendRate": 0.5,
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 0,
+    "frameCount": 10,
+    "delayMs": 50,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "targetEffect": {
+    "file": "MagicEx",
+    "startIndex": 0,
+    "frameCount": 10,
+    "delayMs": 50,
+    "colour": "Ice",
+    "directionFromCast": true,
+    "_type": "ImpactDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 90,
+    "frameCount": 20,
+    "delayMs": 50,
+    "distanceDelayMs": 50,
+    "colour": "Ice",
+    "frameLight": 20,
+    "opacity": 0.5,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 90,
+    "frameCount": 20,
+    "delayMs": 50,
+    "distanceDelayMs": 50,
+    "colour": "Ice",
+    "blendRate": 0.5,
+    "opacity": 0.5,
+    "_type": "ImpactDef"
+   },
+   "additional": [
+    {
+     "file": "ProgUse",
+     "startIndex": 260,
+     "frameCount": 1,
+     "delayMs": 2500,
+     "startDelayMs": 1000,
+     "distanceDelayMs": 50,
+     "colour": "Ice",
+     "frameLight": 0,
+     "drawType": "Floor",
+     "opacity": 0.8,
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "BlowEarth": {
+   "file": "MagicEx",
+   "startIndex": 1990,
+   "frameCount": 5,
+   "colour": "Wind",
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 1970,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "targetEffect": {
+    "file": "MagicEx",
+    "startIndex": 1970,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx",
+    "startIndex": 1990,
+    "frameCount": 5,
+    "colour": "Wind",
+    "skip": 0,
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 2000,
+    "frameCount": 8,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 2000,
+    "frameCount": 8,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ExpelUndead": {
+   "file": "Magic",
+   "startIndex": 130,
+   "frameCount": 10,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "impact": {
+    "file": "Magic",
+    "startIndex": 140,
+    "frameCount": 10,
+    "colour": "Phantom",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "FireWall": {
+   "file": "Magic",
+   "startIndex": 910,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "GeoManipulation": {
+   "file": "Magic",
+   "startIndex": 110,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "LightningWave": {
+   "file": "Magic",
+   "startIndex": 1430,
+   "frameCount": 12,
+   "delayMs": 50,
+   "colour": "Lightning",
+   "castAtSource": true,
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 980,
+    "frameCount": 8,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceStorm": {
+   "file": "Magic",
+   "startIndex": 770,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Ice",
+   "castAtSource": true,
+   "mapImpact": {
+    "file": "Magic",
+    "startIndex": 780,
+    "frameCount": 7,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "DragonTornado": {
+   "file": "MagicEx",
+   "startIndex": 1030,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Wind",
+   "castAtSource": true,
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 1040,
+    "frameCount": 16,
+    "colour": "Wind",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "GreaterFrozenEarth": {
+   "file": "MagicEx",
+   "startIndex": 90,
+   "frameCount": 20,
+   "delayMs": 50,
+   "colour": "Ice",
+   "blendRate": 0.5,
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 0,
+    "frameCount": 10,
+    "delayMs": 50,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "targetEffect": {
+    "file": "MagicEx",
+    "startIndex": 0,
+    "frameCount": 10,
+    "delayMs": 50,
+    "colour": "Ice",
+    "directionFromCast": true,
+    "_type": "ImpactDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 90,
+    "frameCount": 20,
+    "delayMs": 50,
+    "distanceDelayMs": 50,
+    "colour": "Ice",
+    "frameLight": 20,
+    "opacity": 0.5,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx",
+    "startIndex": 90,
+    "frameCount": 20,
+    "delayMs": 50,
+    "distanceDelayMs": 50,
+    "colour": "Ice",
+    "blendRate": 0.5,
+    "opacity": 0.5,
+    "_type": "ImpactDef"
+   },
+   "additional": [
+    {
+     "file": "ProgUse",
+     "startIndex": 260,
+     "frameCount": 1,
+     "delayMs": 2500,
+     "startDelayMs": 1000,
+     "distanceDelayMs": 50,
+     "colour": "None",
+     "frameLight": 0,
+     "drawType": "Floor",
+     "opacity": 0.8,
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "ChainLightning": {
+   "file": "MagicEx2",
+   "startIndex": 470,
+   "frameCount": 10,
+   "colour": "Lightning",
+   "source": {
+    "file": "Magic",
+    "startIndex": 1430,
+    "frameCount": 12,
+    "delayMs": 50,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx2",
+    "startIndex": 470,
+    "frameCount": 10,
+    "delayMs": 100,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Asteroid": {
+   "file": "MagicEx5",
+   "startIndex": 1300,
+   "frameCount": 10,
+   "colour": "Fire",
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 1300,
+    "frameCount": 10,
+    "colour": "Fire",
+    "skip": 0,
+    "explode": true,
+    "originOffsetX": 4,
+    "originOffsetY": -10,
+    "originFromTarget": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 1320,
+    "frameCount": 8,
+    "colour": "None",
+    "frameLight": 100,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx5",
+    "startIndex": 1320,
+    "frameCount": 8,
+    "colour": "None",
+    "frameLight": 100,
+    "_type": "ImpactDef"
+   },
+   "noTargetVisual": true,
+   "_type": "CastEffect"
+  },
+  "LightningStrike": {
+   "file": "MagicEx6",
+   "startIndex": 500,
+   "frameCount": 8,
+   "colour": "Lightning",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx6",
+    "startIndex": 400,
+    "frameCount": 8,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx6",
+    "startIndex": 500,
+    "frameCount": 8,
+    "colour": "Lightning",
+    "skip": 0,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx6",
+    "startIndex": 500,
+    "frameCount": 8,
+    "colour": "Lightning",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceRain": {
+   "file": "MagicEx7",
+   "startIndex": 700,
+   "frameCount": 7,
+   "colour": "Ice",
+   "source": {
+    "file": "Magic",
+    "startIndex": 1430,
+    "frameCount": 12,
+    "delayMs": 50,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "projectileDelayStepMs": 200,
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 700,
+    "frameCount": 7,
+    "colour": "Ice",
+    "skip": 0,
+    "explode": true,
+    "originOffsetY": -10,
+    "originFromTarget": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 720,
+    "frameCount": 7,
+    "colour": "Ice",
+    "frameLight": 100,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MagicEx7",
+    "startIndex": 720,
+    "frameCount": 7,
+    "colour": "Ice",
+    "frameLight": 100,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceAura": {
+   "file": "MagicEx5",
+   "startIndex": 2500,
+   "frameCount": 6,
+   "colour": "Ice",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2620,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 2500,
+    "frameCount": 6,
+    "colour": "Ice",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceDragon": {
+   "file": "MagicEx5",
+   "startIndex": 2800,
+   "frameCount": 6,
+   "colour": "Ice",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2620,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 2800,
+    "frameCount": 6,
+    "colour": "Ice",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "targetProjectile": {
+    "file": "MagicEx5",
+    "startIndex": 2800,
+    "frameCount": 6,
+    "delayMs": 150,
+    "colour": "Ice",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "additionalProjectiles": [
+    {
+     "file": "MagicEx5",
+     "startIndex": 2900,
+     "frameCount": 6,
+     "colour": "Ice",
+     "has16Directions": false,
+     "_type": "ProjectileDef"
+    }
+   ],
+   "targetAdditionalProjectiles": [
+    {
+     "file": "MagicEx5",
+     "startIndex": 2900,
+     "frameCount": 6,
+     "delayMs": 150,
+     "colour": "Ice",
+     "has16Directions": false,
+     "_type": "ProjectileDef"
+    }
+   ],
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 3000,
+    "frameCount": 12,
+    "colour": "Ice",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "IceBreaker": {
+   "file": "MagicEx5",
+   "startIndex": 5200,
+   "frameCount": 37,
+   "colour": "Ice",
+   "_type": "CastEffect"
+  },
+  "FrozenDragon": {
+   "file": "MagicEx5",
+   "startIndex": 5300,
+   "frameCount": 41,
+   "colour": "Ice",
+   "_type": "CastEffect"
+  },
+  "ExplosiveTalisman": {
+   "file": "Magic",
+   "startIndex": 980,
+   "frameCount": 3,
+   "colour": "Dark",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2080,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "Dark",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 1140,
+    "frameCount": 10,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "EvilSlayer": {
+   "file": "Magic",
+   "startIndex": 3330,
+   "frameCount": 6,
+   "colour": "Holy",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 3250,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 3330,
+    "frameCount": 6,
+    "colour": "Holy",
+    "skip": 0,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 3340,
+    "frameCount": 10,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Invisibility": {
+   "file": "Magic",
+   "startIndex": 810,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "MagicResistance": {
+   "file": "Magic",
+   "startIndex": 2080,
+   "frameCount": 6,
+   "delayMs": 80,
+   "colour": "None",
+   "castAtSource": true,
+   "directionFromCast": true,
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "None",
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 200,
+    "frameCount": 8,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "BloodLust": {
+   "file": "Magic",
+   "startIndex": 2080,
+   "frameCount": 6,
+   "delayMs": 80,
+   "colour": "Dark",
+   "castAtSource": true,
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "Dark",
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 140,
+    "frameCount": 7,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "GreaterEvilSlayer": {
+   "file": "Magic",
+   "startIndex": 3440,
+   "frameCount": 6,
+   "delayMs": 50,
+   "colour": "Holy",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 3360,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 3440,
+    "frameCount": 6,
+    "delayMs": 50,
+    "colour": "Holy",
+    "skip": 0,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 3450,
+    "frameCount": 10,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Resilience": {
+   "file": "Magic",
+   "startIndex": 2080,
+   "frameCount": 6,
+   "delayMs": 80,
+   "colour": "None",
+   "castAtSource": true,
+   "directionFromCast": true,
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "None",
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 170,
+    "frameCount": 8,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ElementalSuperiority": {
+   "file": "Magic",
+   "startIndex": 2080,
+   "frameCount": 6,
+   "delayMs": 80,
+   "colour": "None",
+   "castAtSource": true,
+   "directionFromCast": true,
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "None",
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx",
+    "startIndex": 1870,
+    "frameCount": 10,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "MassInvisibility": {
+   "file": "Magic",
+   "startIndex": 2080,
+   "frameCount": 6,
+   "delayMs": 80,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "projectile": {
+    "file": "Magic",
+    "startIndex": 980,
+    "frameCount": 3,
+    "colour": "Phantom",
+    "explode": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "Magic",
+    "startIndex": 820,
+    "frameCount": 7,
+    "colour": "Phantom",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Resurrection": {
+   "file": "MagicEx",
+   "startIndex": 320,
+   "frameCount": 7,
+   "colour": "Holy",
+   "source": {
+    "file": "MagicEx",
+    "startIndex": 310,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "StrengthOfFaith": {
+   "file": "MagicEx2",
+   "startIndex": 370,
+   "frameCount": 10,
+   "colour": "Phantom",
+   "source": {
+    "file": "MagicEx2",
+    "startIndex": 360,
+    "frameCount": 10,
+    "delayMs": 100,
+    "colour": "Phantom",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "CelestialLight": {
+   "file": "MagicEx2",
+   "startIndex": 290,
+   "frameCount": 9,
+   "colour": "Holy",
+   "source": {
+    "file": "MagicEx2",
+    "startIndex": 280,
+    "frameCount": 8,
+    "delayMs": 100,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "LifeSteal": {
+   "file": "MagicEx2",
+   "startIndex": 2500,
+   "frameCount": 10,
+   "colour": "Dark",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx2",
+    "startIndex": 2410,
+    "frameCount": 9,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "ImprovedExplosiveTalisman": {
+   "file": "MagicEx2",
+   "startIndex": 980,
+   "frameCount": 6,
+   "colour": "Dark",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx2",
+    "startIndex": 980,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx2",
+    "startIndex": 980,
+    "frameCount": 6,
+    "colour": "Dark",
+    "has16Directions": false,
+    "skip": 0,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx2",
+    "startIndex": 1160,
+    "frameCount": 10,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Parasite": {
+   "file": "MagicEx5",
+   "startIndex": 800,
+   "frameCount": 6,
+   "colour": "None",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx5",
+    "startIndex": 1000,
+    "frameCount": 5,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 800,
+    "frameCount": 6,
+    "colour": "None",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 1200,
+    "frameCount": 10,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Neutralize": {
+   "file": "MagicEx7",
+   "startIndex": 300,
+   "frameCount": 4,
+   "delayMs": 80,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2080,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 300,
+    "frameCount": 4,
+    "delayMs": 80,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 460,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "DarkSoulPrison": {
+   "file": "MagicEx6",
+   "startIndex": 600,
+   "frameCount": 9,
+   "colour": "Dark",
+   "_type": "CastEffect"
+  },
+  "SearingLight": {
+   "file": "MagicEx3",
+   "startIndex": 1210,
+   "frameCount": 10,
+   "delayMs": 70,
+   "colour": "Holy",
+   "source": {
+    "file": "MagicEx3",
+    "startIndex": 1190,
+    "frameCount": 8,
+    "delayMs": 70,
+    "colour": "Holy",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx3",
+    "startIndex": 1210,
+    "frameCount": 10,
+    "delayMs": 70,
+    "colour": "Holy",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx3",
+    "startIndex": 1300,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "SoulResonance": {
+   "file": "MagicEx7",
+   "startIndex": 500,
+   "frameCount": 8,
+   "colour": "None",
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 500,
+    "frameCount": 8,
+    "colour": "None",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 670,
+    "frameCount": 9,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "BindingTalisman": {
+   "file": "MagicEx5",
+   "startIndex": 3600,
+   "frameCount": 1,
+   "colour": "None",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx5",
+    "startIndex": 3500,
+    "frameCount": 4,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 3600,
+    "frameCount": 1,
+    "colour": "None",
+    "_type": "ProjectileDef"
+   },
+   "_type": "CastEffect"
+  },
+  "TrapOctagon": {
+   "file": "Magic",
+   "startIndex": 630,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Dark",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "BrainStorm": {
+   "file": "MagicEx5",
+   "startIndex": 3200,
+   "frameCount": 5,
+   "colour": "None",
+   "directionFromCast": true,
+   "source": {
+    "file": "MagicEx5",
+    "startIndex": 4600,
+    "frameCount": 10,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 3200,
+    "frameCount": 5,
+    "colour": "None",
+    "frameLight": 15,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 3400,
+    "frameCount": 15,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "HeavenlySky": {
+   "file": "MagicEx5",
+   "startIndex": 5400,
+   "frameCount": 39,
+   "colour": "Lightning",
+   "_type": "CastEffect"
+  },
+  "WraithGrip": {
+   "file": "MagicEx4",
+   "startIndex": 1460,
+   "frameCount": 15,
+   "delayMs": 60,
+   "colour": "None",
+   "drawType": "Floor",
+   "blendRate": 0.4,
+   "source": {
+    "file": "MagicEx4",
+    "startIndex": 1460,
+    "frameCount": 15,
+    "delayMs": 60,
+    "colour": "None",
+    "drawType": "Floor",
+    "blendRate": 0.4,
+    "_type": "ImpactDef"
+   },
+   "impact": {
+    "file": "MagicEx4",
+    "startIndex": 1420,
+    "frameCount": 14,
+    "colour": "None",
+    "drawType": "Floor",
+    "blendRate": 0.4,
+    "_type": "ImpactDef"
+   },
+   "additional": [
+    {
+     "file": "MagicEx4",
+     "startIndex": 1440,
+     "frameCount": 14,
+     "colour": "None",
+     "drawType": "Floor",
+     "blendRate": 0.4,
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "HellFire": {
+   "file": "MagicEx4",
+   "startIndex": 1500,
+   "frameCount": 10,
+   "colour": "Fire",
+   "drawType": "Floor",
+   "source": {
+    "file": "MagicEx4",
+    "startIndex": 1520,
+    "frameCount": 15,
+    "delayMs": 60,
+    "colour": "Fire",
+    "drawType": "Floor",
+    "blendRate": 0.4,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "BurningFire": {
+   "file": "MagicEx6",
+   "startIndex": 900,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "MagicCombustion": {
+   "file": "MagicEx7",
+   "startIndex": 100,
+   "frameCount": 6,
+   "colour": "None",
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 100,
+    "frameCount": 6,
+    "colour": "None",
+    "frameLight": 0,
+    "_type": "ProjectileDef"
+   },
+   "targetProjectile": {
+    "file": "MagicEx7",
+    "startIndex": 100,
+    "frameCount": 6,
+    "colour": "None",
+    "explode": true,
+    "frameLight": 0,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 280,
+    "frameCount": 10,
+    "colour": "None",
+    "frameLight": 20,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Chain": {
+   "file": "MagicEx7",
+   "startIndex": 20,
+   "frameCount": 7,
+   "colour": "None",
+   "source": {
+    "file": "MagicEx7",
+    "startIndex": 0,
+    "frameCount": 7,
+    "delayMs": 140,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "FourWheels": {
+   "file": "MagicEx5",
+   "startIndex": 5600,
+   "frameCount": 35,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "CrescentMoon": {
+   "file": "MagicEx5",
+   "startIndex": 5700,
+   "frameCount": 21,
+   "colour": "Phantom",
+   "_type": "CastEffect"
+  },
+  "Swordsmanship": {
+   "file": "MagicEx2",
+   "startIndex": 0,
+   "frameCount": 9,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "FlamingSword": {
+   "file": "Magic",
+   "startIndex": 1470,
+   "frameCount": 6,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Interchange": {
+   "file": "MagicEx2",
+   "startIndex": 0,
+   "frameCount": 9,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Defiance": {
+   "file": "MagicEx2",
+   "startIndex": 40,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Invincibility": {
+   "file": "MagicEx5",
+   "startIndex": 400,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Beckon": {
+   "file": "MagicEx2",
+   "startIndex": 580,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Might": {
+   "file": "MagicEx2",
+   "startIndex": 60,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Endurance": {
+   "file": "MagicEx3",
+   "startIndex": 190,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "ReflectDamage": {
+   "file": "MagicEx2",
+   "startIndex": 1220,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Fetter": {
+   "file": "MagicEx2",
+   "startIndex": 2370,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "MassBeckon": {
+   "file": "MagicEx5",
+   "startIndex": 100,
+   "frameCount": 10,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Renounce": {
+   "file": "MagicEx2",
+   "startIndex": 80,
+   "frameCount": 10,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Tempest": {
+   "file": "MagicEx2",
+   "startIndex": 910,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Wind",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "MirrorImage": {
+   "file": "MagicEx2",
+   "startIndex": 1260,
+   "frameCount": 6,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Tornado": {
+   "file": "MagicEx5",
+   "startIndex": 2400,
+   "frameCount": 4,
+   "colour": "Wind",
+   "_type": "CastEffect"
+  },
+  "Transparency": {
+   "file": "MagicEx2",
+   "startIndex": 430,
+   "frameCount": 7,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "CursedDoll": {
+   "file": "MagicEx3",
+   "startIndex": 690,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "SummonSkeleton": {
+   "file": "Magic",
+   "startIndex": 740,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "SummonJinSkeleton": {
+   "file": "Magic",
+   "startIndex": 740,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "CrushingWave": {
+   "file": "MagicEx6",
+   "startIndex": 100,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "FrostBite": {
+   "file": "MagicEx5",
+   "startIndex": 500,
+   "frameCount": 16,
+   "delayMs": 60,
+   "colour": "Ice",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Rake": {
+   "file": "MagicEx4",
+   "startIndex": 1200,
+   "frameCount": 9,
+   "colour": "Ice",
+   "source": {
+    "file": "MagicEx4",
+    "startIndex": 1200,
+    "frameCount": 9,
+    "delayMs": 100,
+    "colour": "Ice",
+    "directionStartIndices": [
+     1200,
+     1210,
+     1220,
+     1230,
+     1240,
+     1200,
+     1200,
+     1200
+    ],
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "SeismicSlam": {
+   "file": "MagicEx5",
+   "startIndex": 4900,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Spiritualism": {
+   "file": "MagicEx2",
+   "startIndex": 1580,
+   "frameCount": 11,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "SummonDead": {
+   "file": "Magic",
+   "startIndex": 740,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "AugmentCelestialLight": {
+   "file": "MagicEx2",
+   "startIndex": 300,
+   "frameCount": 3,
+   "delayMs": 200,
+   "colour": "Holy",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "PoisonousCloud": {
+   "file": "MagicEx5",
+   "startIndex": 5500,
+   "frameCount": 56,
+   "colour": "Dark",
+   "_type": "CastEffect"
+  },
+  "Cloak": {
+   "file": "MagicEx4",
+   "startIndex": 600,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Phantom",
+   "_type": "CastEffect"
+  },
+  "SummonPuppet": {
+   "file": "MagicEx4",
+   "startIndex": 800,
+   "frameCount": 16,
+   "colour": "Phantom",
+   "blendRate": 0.8,
+   "_type": "CastEffect"
+  },
+  "TheNewBeginning": {
+   "file": "MagicEx4",
+   "startIndex": 2200,
+   "frameCount": 8,
+   "colour": "None",
+   "_type": "CastEffect"
+  },
+  "DragonRepulse": {
+   "file": "MagicEx4",
+   "startIndex": 1020,
+   "frameCount": 10,
+   "delayMs": 60,
+   "colour": "Lightning",
+   "source": {
+    "file": "MagicEx4",
+    "startIndex": 1000,
+    "frameCount": 10,
+    "delayMs": 60,
+    "colour": "None",
+    "_type": "ImpactDef"
+   },
+   "sourceAdditional": [
+    {
+     "file": "MagicEx4",
+     "startIndex": 1020,
+     "frameCount": 10,
+     "delayMs": 60,
+     "colour": "Lightning",
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "Abyss": {
+   "file": "MagicEx4",
+   "startIndex": 2000,
+   "frameCount": 14,
+   "delayMs": 70,
+   "colour": "Phantom",
+   "_type": "CastEffect"
+  },
+  "FlashOfLight": {
+   "file": "MagicEx4",
+   "startIndex": 2300,
+   "frameCount": 8,
+   "delayMs": 60,
+   "colour": "None",
+   "directionFromCast": true,
+   "_type": "CastEffect"
+  },
+  "Evasion": {
+   "file": "MagicEx4",
+   "startIndex": 2500,
+   "frameCount": 12,
+   "delayMs": 70,
+   "colour": "None",
+   "drawType": "Floor",
+   "_type": "CastEffect"
+  },
+  "RagingWind": {
+   "file": "MagicEx4",
+   "startIndex": 2600,
+   "frameCount": 12,
+   "delayMs": 70,
+   "colour": "None",
+   "drawType": "Floor",
+   "_type": "CastEffect"
+  },
+  "Concentration": {
+   "file": "MagicEx5",
+   "startIndex": 300,
+   "frameCount": 15,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Containment": {
+   "file": "MagicEx3",
+   "startIndex": 590,
+   "frameCount": 9,
+   "delayMs": 60,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "Assault": {
+   "file": "MagicEx2",
+   "startIndex": 740,
+   "frameCount": 3,
+   "colour": "None",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "HundredFist": {
+   "file": "MagicEx5",
+   "startIndex": 2100,
+   "frameCount": 5,
+   "delayMs": 200,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  },
+  "ThunderKick": {
+   "file": "MagicEx2",
+   "startIndex": 1190,
+   "frameCount": 10,
+   "colour": "None",
+   "_type": "CastEffect"
+  },
+  "CorpseExploder": {
+   "file": "MagicEx7",
+   "startIndex": 300,
+   "frameCount": 4,
+   "colour": "Fire",
+   "directionFromCast": true,
+   "source": {
+    "file": "Magic",
+    "startIndex": 2080,
+    "frameCount": 6,
+    "delayMs": 80,
+    "colour": "Dark",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 300,
+    "frameCount": 4,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 1000,
+    "frameCount": 17,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Hemorrhage": {
+   "file": "MagicEx7",
+   "startIndex": 1100,
+   "frameCount": 6,
+   "colour": "Fire",
+   "projectile": {
+    "file": "MagicEx7",
+    "startIndex": 1100,
+    "frameCount": 6,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx7",
+    "startIndex": 1270,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "FlamingDaggers": {
+   "file": "MagicEx5",
+   "startIndex": 3900,
+   "frameCount": 7,
+   "colour": "Fire",
+   "source": {
+    "file": "MagicEx5",
+    "startIndex": 3800,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 3900,
+    "frameCount": 7,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 4100,
+    "frameCount": 8,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "Shredding": {
+   "file": "MagicEx5",
+   "startIndex": 4300,
+   "frameCount": 5,
+   "colour": "Fire",
+   "source": {
+    "file": "MagicEx5",
+    "startIndex": 4200,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "projectile": {
+    "file": "MagicEx5",
+    "startIndex": 4300,
+    "frameCount": 5,
+    "colour": "Fire",
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MagicEx5",
+    "startIndex": 4500,
+    "frameCount": 10,
+    "colour": "Fire",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "PinkFireBall": {
+   "file": "MonMagicEx20",
+   "startIndex": 1500,
+   "frameCount": 6,
+   "colour": "Phantom",
+   "projectile": {
+    "file": "MonMagicEx20",
+    "startIndex": 1500,
+    "frameCount": 6,
+    "colour": "Phantom",
+    "_type": "ProjectileDef"
+   },
+   "targetProjectile": {
+    "file": "MonMagicEx20",
+    "startIndex": 1600,
+    "frameCount": 6,
+    "colour": "Phantom",
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MonMagicEx20",
+    "startIndex": 1700,
+    "frameCount": 10,
+    "colour": "Phantom",
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "GreenSludgeBall": {
+   "file": "MonMagicEx23",
+   "startIndex": 2600,
+   "frameCount": 7,
+   "colour": [
+    0.6,
+    1.0,
+    0.1
+   ],
+   "projectile": {
+    "file": "MonMagicEx23",
+    "startIndex": 2600,
+    "frameCount": 7,
+    "colour": [
+     0.6,
+     1.0,
+     0.1
+    ],
+    "has16Directions": true,
+    "_type": "ProjectileDef"
+   },
+   "targetProjectile": {
+    "file": "MonMagicEx23",
+    "startIndex": 2600,
+    "frameCount": 7,
+    "colour": [
+     0.6,
+     1.0,
+     0.1
+    ],
+    "has16Directions": false,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MonMagicEx23",
+    "startIndex": 2780,
+    "frameCount": 6,
+    "colour": [
+     0.6,
+     1.0,
+     0.1
+    ],
+    "directionFromCast": true,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "MonsterScortchedEarth": {
+   "file": "Magic",
+   "startIndex": 1930,
+   "frameCount": 30,
+   "delayMs": 50,
+   "distanceDelayMs": 50,
+   "colour": "Fire",
+   "drawType": "Floor",
+   "blendRate": 1.0,
+   "additional": [
+    {
+     "file": "ProgUse",
+     "startIndex": 220,
+     "frameCount": 1,
+     "delayMs": 3000,
+     "startDelayMs": 500,
+     "distanceDelayMs": 50,
+     "colour": "None",
+     "drawType": "Floor",
+     "opacity": 0.8,
+     "_type": "ImpactDef"
+    },
+    {
+     "file": "Magic",
+     "startIndex": 2450,
+     "frameCount": 10,
+     "delayMs": 250,
+     "startDelayMs": 500,
+     "distanceDelayMs": 50,
+     "colour": "None",
+     "drawType": "Floor",
+     "_type": "ImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "MonsterIceStorm": {
+   "file": "MonMagicEx3",
+   "startIndex": 6230,
+   "frameCount": 10,
+   "colour": "Ice",
+   "blendRate": 1.0,
+   "_type": "CastEffect"
+  },
+  "MonsterDeathCloud": {
+   "file": "MonMagicEx2",
+   "startIndex": 850,
+   "frameCount": 10,
+   "colour": "Dark",
+   "blendRate": 1.0,
+   "_type": "CastEffect"
+  },
+  "MonsterThunderStorm": {
+   "file": "MonMagicEx5",
+   "startIndex": 650,
+   "frameCount": 6,
+   "colour": "Lightning",
+   "blendRate": 1.0,
+   "_type": "CastEffect"
+  },
+  "SamaGuardianFire": {
+   "file": "MonMagicEx9",
+   "startIndex": 4000,
+   "frameCount": 10,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "SamaGuardianIce": {
+   "file": "MonMagicEx9",
+   "startIndex": 4100,
+   "frameCount": 10,
+   "colour": "Ice",
+   "_type": "CastEffect"
+  },
+  "SamaGuardianLightning": {
+   "file": "MonMagicEx9",
+   "startIndex": 4200,
+   "frameCount": 10,
+   "colour": "Lightning",
+   "_type": "CastEffect"
+  },
+  "SamaGuardianWind": {
+   "file": "MonMagicEx9",
+   "startIndex": 4300,
+   "frameCount": 10,
+   "colour": "Wind",
+   "_type": "CastEffect"
+  },
+  "SamaPhoenixFire": {
+   "file": "MonMagicEx9",
+   "startIndex": 4500,
+   "frameCount": 10,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "SamaBlackIce": {
+   "file": "MonMagicEx9",
+   "startIndex": 4600,
+   "frameCount": 10,
+   "colour": "Ice",
+   "_type": "CastEffect"
+  },
+  "SamaBlueLightning": {
+   "file": "MonMagicEx9",
+   "startIndex": 4700,
+   "frameCount": 10,
+   "colour": "Lightning",
+   "_type": "CastEffect"
+  },
+  "SamaWhiteWind": {
+   "file": "MonMagicEx9",
+   "startIndex": 4800,
+   "frameCount": 10,
+   "colour": "Wind",
+   "_type": "CastEffect"
+  },
+  "SamaProphetFire": {
+   "file": "MonMagicEx9",
+   "startIndex": 5600,
+   "frameCount": 10,
+   "colour": "Fire",
+   "_type": "CastEffect"
+  },
+  "SamaProphetLightning": {
+   "file": "MonMagicEx9",
+   "startIndex": 5200,
+   "frameCount": 10,
+   "colour": "Lightning",
+   "_type": "CastEffect"
+  },
+  "SamaProphetWind": {
+   "file": "MonMagicEx9",
+   "startIndex": 5400,
+   "frameCount": 10,
+   "colour": "Wind",
+   "_type": "CastEffect"
+  },
+  "DoomClawLeftPinch": {
+   "file": "MonMagicEx19",
+   "startIndex": 2660,
+   "frameCount": 7,
+   "colour": "None",
+   "additionalMapEffects": [
+    {
+     "file": "MonMagicEx19",
+     "startIndex": 2680,
+     "frameCount": 9,
+     "startDelayMs": 700,
+     "colour": "None",
+     "offsetX": 5,
+     "_type": "OffsetImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "DoomClawLeftSwipe": {
+   "file": "MonMagicEx19",
+   "startIndex": 2720,
+   "frameCount": 8,
+   "colour": "None",
+   "_type": "CastEffect"
+  },
+  "DoomClawRightPinch": {
+   "file": "MonMagicEx19",
+   "startIndex": 2640,
+   "frameCount": 7,
+   "colour": "None",
+   "additionalMapEffects": [
+    {
+     "file": "MonMagicEx19",
+     "startIndex": 2680,
+     "frameCount": 9,
+     "startDelayMs": 700,
+     "colour": "None",
+     "offsetX": 5,
+     "_type": "OffsetImpactDef"
+    }
+   ],
+   "_type": "CastEffect"
+  },
+  "DoomClawRightSwipe": {
+   "file": "MonMagicEx19",
+   "startIndex": 2700,
+   "frameCount": 8,
+   "colour": "None",
+   "_type": "CastEffect"
+  },
+  "DoomClawSpit": {
+   "file": "MonMagicEx19",
+   "startIndex": 2500,
+   "frameCount": 7,
+   "colour": "None",
+   "projectile": {
+    "file": "MonMagicEx19",
+    "startIndex": 2500,
+    "frameCount": 7,
+    "colour": "None",
+    "skip": 0,
+    "explode": true,
+    "frameLight": 0,
+    "originOffsetY": -10,
+    "originFromTarget": true,
+    "_type": "ProjectileDef"
+   },
+   "impact": {
+    "file": "MonMagicEx19",
+    "startIndex": 2520,
+    "frameCount": 8,
+    "colour": "None",
+    "frameLight": 0,
+    "_type": "ImpactDef"
+   },
+   "mapImpact": {
+    "file": "MonMagicEx19",
+    "startIndex": 2520,
+    "frameCount": 8,
+    "colour": "None",
+    "frameLight": 0,
+    "_type": "ImpactDef"
+   },
+   "_type": "CastEffect"
+  },
+  "FlameSplash": {
+   "file": "MagicEx4",
+   "startIndex": 900,
+   "frameCount": 8,
+   "delayMs": 100,
+   "colour": "Fire",
+   "castAtSource": true,
+   "_type": "CastEffect"
+  }
+ }
+}

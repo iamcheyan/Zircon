@@ -1,0 +1,5634 @@
+{
+ "_meta": {
+  "generator": "Tools/resedit/frameformulas.py",
+  "generated_at": "2026-08-16T11:58:53+0900",
+  "purpose": "动画帧表/纸娃娃公式单一数据源 (webport + wilviewer 共读)",
+  "rule": "本文件由提取器生成, 手改会被 --check 门禁拦下; 改 C# 后重跑生成器",
+  "sources": {
+   "LibraryCore/Enum.cs": "MirAction/MirAnimation/MirDirection/MirClass/MagicType",
+   "LibraryCore/FrameSet.cs": "帧表 (Players/Default*/Companion_*)",
+   "LibraryCore/Functions.cs": "GetAttackAnimation/GetMagicAnimation",
+   "GodotClient/Scripts/PlayerRenderer.cs": "纸娃娃层公式/ArmourShift/方向分组",
+   "GodotClient/Scripts/ObjectRenderer.cs": "NPC 特例帧表/怪物·NPC·物品 bodyOffset"
+  },
+  "notes": [
+   "MirClass 本 fork 仅 4 职业 (无 Archer); webport 保留 Archer=4 别名兼容上游",
+   "GetMagicAnimation default: C# throw NotImplementedException, Godot 客户端容错为 Combat1",
+   "NPC 特例 image 64/65/... 的 single 帧为 FromHours(1)=3600000ms (静态帧)"
+  ]
+ },
+ "enums": {
+  "mirAction": {
+   "Standing": 0,
+   "Moving": 1,
+   "Pushed": 2,
+   "Attack": 3,
+   "RangeAttack": 4,
+   "Spell": 5,
+   "Harvest": 6,
+   "Struck": 7,
+   "Die": 8,
+   "Dead": 9,
+   "Show": 10,
+   "Hide": 11,
+   "Mount": 12,
+   "Mining": 13,
+   "Fishing": 14,
+   "Taming": 15,
+   "Idle": 16
+  },
+  "mirAnimation": [
+   "Standing",
+   "Walking",
+   "CreepStanding",
+   "CreepWalkSlow",
+   "CreepWalkFast",
+   "Running",
+   "Pushed",
+   "Combat1",
+   "Combat2",
+   "Combat3",
+   "Combat4",
+   "Combat5",
+   "Combat6",
+   "Combat7",
+   "Combat8",
+   "Combat9",
+   "Combat10",
+   "Combat11",
+   "Combat12",
+   "Combat13",
+   "Combat14",
+   "Combat15",
+   "Harvest",
+   "Stance",
+   "Struck",
+   "Die",
+   "Dead",
+   "Skeleton",
+   "Show",
+   "Hide",
+   "HorseStanding",
+   "HorseWalking",
+   "HorseRunning",
+   "HorseStruck",
+   "StoneStanding",
+   "DragonRepulseStart",
+   "DragonRepulseMiddle",
+   "DragonRepulseEnd",
+   "ChannellingStart",
+   "ChannellingMiddle",
+   "ChannellingEnd",
+   "FishingCast",
+   "FishingWait",
+   "FishingReel",
+   "TamingCast",
+   "TamingWait"
+  ],
+  "mirDirection": [
+   "Up",
+   "UpRight",
+   "Right",
+   "DownRight",
+   "Down",
+   "DownLeft",
+   "Left",
+   "UpLeft"
+  ],
+  "mirClass": {
+   "Warrior": 0,
+   "Wizard": 1,
+   "Taoist": 2,
+   "Assassin": 3
+  }
+ },
+ "magicTypes": {
+  "None": 0,
+  "Swordsmanship": 100,
+  "PotionMastery": 101,
+  "Slaying": 102,
+  "Thrusting": 103,
+  "HalfMoon": 104,
+  "ShoulderDash": 105,
+  "FlamingSword": 106,
+  "DragonRise": 107,
+  "BladeStorm": 108,
+  "DestructiveSurge": 109,
+  "Interchange": 110,
+  "Defiance": 111,
+  "Beckon": 112,
+  "Might": 113,
+  "SwiftBlade": 114,
+  "Assault": 115,
+  "Endurance": 116,
+  "ReflectDamage": 117,
+  "Fetter": 118,
+  "AugmentDestructiveSurge": 119,
+  "AugmentDefiance": 120,
+  "AugmentReflectDamage": 121,
+  "AdvancedPotionMastery": 122,
+  "MassBeckon": 123,
+  "SeismicSlam": 124,
+  "Invincibility": 125,
+  "CrushingWave": 126,
+  "DefensiveMastery": 127,
+  "PhysicalImmunity": 128,
+  "MagicImmunity": 129,
+  "DefensiveBlow": 130,
+  "ElementalSwords": 131,
+  "Shuriken": 132,
+  "HundredFist": 133,
+  "OffensiveBlow": 134,
+  "TaecheonSword": 135,
+  "FireSword": 136,
+  "FlameArt": 137,
+  "FireBall": 201,
+  "LightningBall": 202,
+  "IceBolt": 203,
+  "GustBlast": 204,
+  "Repulsion": 205,
+  "ElectricShock": 206,
+  "Teleportation": 207,
+  "AdamantineFireBall": 208,
+  "ThunderBolt": 209,
+  "IceBlades": 210,
+  "Cyclone": 211,
+  "ScortchedEarth": 212,
+  "LightningBeam": 213,
+  "FrozenEarth": 214,
+  "BlowEarth": 215,
+  "FireWall": 216,
+  "ExpelUndead": 217,
+  "GeoManipulation": 218,
+  "MagicShield": 219,
+  "FireStorm": 220,
+  "LightningWave": 221,
+  "IceStorm": 222,
+  "DragonTornado": 223,
+  "GreaterFrozenEarth": 224,
+  "ChainLightning": 225,
+  "MeteorShower": 226,
+  "Renounce": 227,
+  "Tempest": 228,
+  "JudgementOfHeaven": 229,
+  "ThunderStrike": 230,
+  "FireBounce": 231,
+  "ElementalHurricane": 232,
+  "SuperiorMagicShield": 233,
+  "Burning": 234,
+  "Shocked": 235,
+  "LightningStrike": 236,
+  "MirrorImage": 237,
+  "IceRain": 238,
+  "FrostBite": 239,
+  "Asteroid": 240,
+  "Storm": 241,
+  "Tornado": 242,
+  "IceAura": 243,
+  "IceDragon": 244,
+  "IceBreaker": 245,
+  "FrozenDragon": 246,
+  "UnityWithNature": 247,
+  "Heal": 300,
+  "SpiritSword": 301,
+  "PoisonDust": 302,
+  "ExplosiveTalisman": 303,
+  "EvilSlayer": 304,
+  "Invisibility": 305,
+  "MagicResistance": 306,
+  "MassInvisibility": 307,
+  "GreaterEvilSlayer": 308,
+  "Resilience": 309,
+  "TrapOctagon": 310,
+  "CombatKick": 311,
+  "ElementalSuperiority": 312,
+  "MassHeal": 313,
+  "BloodLust": 314,
+  "Resurrection": 315,
+  "Purification": 316,
+  "Transparency": 317,
+  "CelestialLight": 318,
+  "EmpoweredHealing": 319,
+  "LifeSteal": 320,
+  "ImprovedExplosiveTalisman": 321,
+  "AugmentPoisonDust": 322,
+  "CursedDoll": 323,
+  "ThunderKick": 324,
+  "SoulResonance": 325,
+  "Parasite": 326,
+  "Spiritualism": 327,
+  "AugmentExplosiveTalisman": 328,
+  "AugmentEvilSlayer": 329,
+  "AugmentPurification": 330,
+  "AugmentResurrection": 331,
+  "SummonSkeleton": 332,
+  "SummonShinsu": 333,
+  "SummonJinSkeleton": 334,
+  "StrengthOfFaith": 335,
+  "SummonDemonicCreature": 336,
+  "DemonExplosion": 337,
+  "Infection": 338,
+  "DemonicRecovery": 339,
+  "Neutralize": 340,
+  "AugmentNeutralize": 341,
+  "DarkSoulPrison": 342,
+  "SearingLight": 343,
+  "AugmentCelestialLight": 344,
+  "CorpseExploder": 345,
+  "SummonDead": 346,
+  "BindingTalisman": 347,
+  "BrainStorm": 348,
+  "HeavenlySky": 349,
+  "PoisonCloud": 350,
+  "SupremeHealing": 351,
+  "WillowDance": 401,
+  "VineTreeDance": 402,
+  "Discipline": 403,
+  "PoisonousCloud": 404,
+  "FullBloom": 405,
+  "Cloak": 406,
+  "WhiteLotus": 407,
+  "CalamityOfFullMoon": 408,
+  "WraithGrip": 409,
+  "RedLotus": 410,
+  "HellFire": 411,
+  "PledgeOfBlood": 412,
+  "Rake": 413,
+  "SweetBrier": 414,
+  "SummonPuppet": 415,
+  "Karma": 416,
+  "TouchOfTheDeparted": 417,
+  "WaningMoon": 418,
+  "GhostWalk": 419,
+  "ElementalPuppet": 420,
+  "Rejuvenation": 421,
+  "Resolution": 422,
+  "ChangeOfSeasons": 423,
+  "Release": 424,
+  "FlameSplash": 425,
+  "BloodyFlower": 426,
+  "TheNewBeginning": 427,
+  "DanceOfSwallow": 428,
+  "DarkConversion": 429,
+  "DragonRepulse": 430,
+  "AdventOfDemon": 431,
+  "AdventOfDevil": 432,
+  "Abyss": 433,
+  "FlashOfLight": 434,
+  "Stealth": 435,
+  "Evasion": 436,
+  "RagingWind": 437,
+  "Unused": 438,
+  "Massacre": 439,
+  "ArtOfShadows": 440,
+  "DragonBlood": 441,
+  "FatalBlow": 442,
+  "LastStand": 443,
+  "MagicCombustion": 444,
+  "Vitality": 445,
+  "Chain": 446,
+  "Concentration": 447,
+  "DualWeaponSkills": 448,
+  "Containment": 449,
+  "DragonWave": 450,
+  "Hemorrhage": 451,
+  "BurningFire": 452,
+  "ChainOfFire": 453,
+  "FlamingDaggers": 454,
+  "Shredding": 455,
+  "FourWheels": 456,
+  "CrescentMoon": 457,
+  "ManaBurn": 458,
+  "MonsterScortchedEarth": 501,
+  "MonsterIceStorm": 502,
+  "MonsterDeathCloud": 503,
+  "MonsterThunderStorm": 504,
+  "SamaGuardianFire": 505,
+  "SamaGuardianIce": 506,
+  "SamaGuardianLightning": 507,
+  "SamaGuardianWind": 508,
+  "SamaPhoenixFire": 509,
+  "SamaBlackIce": 510,
+  "SamaBlueLightning": 511,
+  "SamaWhiteWind": 512,
+  "SamaProphetFire": 513,
+  "SamaProphetLightning": 514,
+  "SamaProphetWind": 515,
+  "DoomClawLeftPinch": 520,
+  "DoomClawLeftSwipe": 521,
+  "DoomClawRightPinch": 522,
+  "DoomClawRightSwipe": 523,
+  "DoomClawWave": 524,
+  "DoomClawSpit": 525,
+  "PinkFireBall": 530,
+  "GreenSludgeBall": 540,
+  "RushingMount": 700,
+  "AscendingMount": 701
+ },
+ "frameSets": {
+  "players": {
+   "channellingEnd": {
+    "start": 0,
+    "count": 1,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "channellingMiddle": {
+    "start": 563,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "channellingStart": {
+    "start": 560,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat1": {
+    "start": 560,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false,
+    "delays": {
+     "1": 200
+    }
+   },
+   "combat10": {
+    "start": 1280,
+    "count": 10,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat11": {
+    "start": 1360,
+    "count": 10,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat12": {
+    "start": 1440,
+    "count": 10,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat13": {
+    "start": 1520,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat14": {
+    "start": 1600,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat15": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 640,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false,
+    "delays": {
+     "3": 200
+    }
+   },
+   "combat3": {
+    "start": 720,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 800,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat5": {
+    "start": 880,
+    "count": 10,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat6": {
+    "start": 960,
+    "count": 10,
+    "offset": 10,
+    "ms": 60,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat7": {
+    "start": 1040,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat8": {
+    "start": 1120,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": false,
+    "staticSpeed": true
+   },
+   "combat9": {
+    "start": 1200,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "creepStanding": {
+    "start": 1680,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "creepWalkFast": {
+    "start": 1760,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "creepWalkSlow": {
+    "start": 1760,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 1929,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 1920,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseEnd": {
+    "start": 1606,
+    "count": 2,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseMiddle": {
+    "start": 1605,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseStart": {
+    "start": 1600,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "fishingCast": {
+    "start": 2000,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "fishingReel": {
+    "start": 2160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "fishingWait": {
+    "start": 2080,
+    "count": 6,
+    "offset": 10,
+    "ms": 120,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "harvest": {
+    "start": 480,
+    "count": 2,
+    "offset": 10,
+    "ms": 300,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "horseRunning": {
+    "start": 2400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "horseStanding": {
+    "start": 2240,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "horseStruck": {
+    "start": 2480,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "horseWalking": {
+    "start": 2320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "running": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "stance": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 1840,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "tamingCast": {
+    "start": 720,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "tamingWait": {
+    "start": 725,
+    "count": 1,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "defaultItem": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "defaultNPC": {
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 0,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "defaultMonster": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 329,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 640,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "show": {
+    "start": 640,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "skeleton": {
+    "start": 880,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "stoneStanding": {
+    "start": 640,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 2,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionPig": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat5": {
+    "start": 400,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat6": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "combat7": {
+    "start": 480,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat8": {
+    "start": 560,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionTuskLord": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionSkeletonLord": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionGriffin": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionDragon": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionDonkey": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionSheep": {
+   "combat1": {
+    "start": 160,
+    "count": 12,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionBanyoLordGuzak": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionPanda": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionRabbit": {
+   "combat1": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionDog": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 8,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionJinchon": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "companionDino": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "forestYeti": {
+   "dead": {
+    "start": 323,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "chestnutTree": {
+   "dead": {
+    "start": 328,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "carnivorousPlant": {
+   "hide": {
+    "start": 640,
+    "count": 8,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 640,
+    "count": 8,
+    "offset": 0,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "devouringGhost": {
+   "show": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "larva": {
+   "standing": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "zumaGuardian": {
+   "show": {
+    "start": 640,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "zumaKing": {
+   "show": {
+    "start": 640,
+    "count": 20,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "stoneStanding": {
+    "start": 640,
+    "count": 1,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "monkey": {
+   "combat2": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "netherWorldGate": {
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "cursedCactus": {
+   "combat1": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "numaMage": {
+   "combat3": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "westDesertLizard": {
+   "combat2": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "banyaGuard": {
+   "combat2": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "jinchonDevil": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 480,
+    "count": 8,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "emperorSaWoo": {
+   "combat2": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "archLichTaeda": {
+   "combat2": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 739,
+    "count": 1,
+    "offset": 20,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 720,
+    "count": 20,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "pachonTheChaosBringer": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseEnd": {
+    "start": 487,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseMiddle": {
+    "start": 486,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseStart": {
+    "start": 480,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "icySpiritGeneral": {
+   "combat3": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "fieryDancer": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "emeraldDancer": {
+   "combat1": {
+    "start": 160,
+    "count": 20,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 320,
+    "count": 20,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 20,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 569,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 560,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 480,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "queenOfDawn": {
+   "combat2": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "oYoungBeast": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "yumgonWitch": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "jinhwanSpirit": {
+   "combat2": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "chiwooGeneral": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "dragonQueen": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 327,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "dragonLord": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "ferociousIceTiger": {
+   "combat1": {
+    "start": 480,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 560,
+    "count": 16,
+    "offset": 0,
+    "ms": 40,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 560,
+    "count": 16,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "samaFireGuardian": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 409,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "phoenix": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 489,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "enshrinementBox": {
+   "dead": {
+    "start": 89,
+    "count": 1,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 80,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "bloodStone": {
+   "dead": {
+    "start": 328,
+    "count": 1,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 2,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "samaCursedBladesman": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "samaCursedSlave": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "samaProphet": {
+   "combat1": {
+    "start": 130,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 210,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 290,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 459,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 450,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 50,
+    "count": 4,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 370,
+    "count": 3,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "samaSorcerer": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 489,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "easterEvent": {
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseEnd": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseMiddle": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dragonRepulseStart": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "stoneStanding": {
+    "start": 0,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "orangeTiger": {
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "redTiger": {
+   "combat2": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "orangeBossTiger": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 406,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "bigBossTiger": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 560,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 329,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 2,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob3": {
+   "hide": {
+    "start": 640,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 640,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   }
+  },
+  "sDMob8": {
+   "combat2": {
+    "start": 480,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob15": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 409,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 7,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob16": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 409,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 7,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob17": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 409,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob18": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 328,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob19": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob21": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob22": {
+   "combat1": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 325,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob23": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 327,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "show": {
+    "start": 640,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob24": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 7,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob25": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 7,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sDMob26": {
+   "combat1": {
+    "start": 160,
+    "count": 10,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 70,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 326,
+    "count": 1,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 7,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "lobsterLord": {
+   "combat1": {
+    "start": 30,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 40,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 60,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat4": {
+    "start": 70,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat5": {
+    "start": 80,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat6": {
+    "start": 110,
+    "count": 8,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat7": {
+    "start": 120,
+    "count": 4,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 138,
+    "count": 1,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 130,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 20,
+    "count": 6,
+    "offset": 0,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 50,
+    "count": 4,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "jinamStoneGate": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "deadTree": {
+   "dead": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 200,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "monasteryMon1": {
+   "combat1": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 488,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 15,
+    "offset": 20,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "monasteryMon3": {
+   "combat1": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 568,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 560,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 15,
+    "offset": 20,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 480,
+    "count": 4,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "terracotta1": {
+   "combat1": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 490,
+    "count": 1,
+    "offset": 20,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 11,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 160,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "terracotta2": {
+   "combat1": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 491,
+    "count": 1,
+    "offset": 20,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 12,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 160,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "terracotta3": {
+   "combat1": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 489,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 160,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 400,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "terracottaSub": {
+   "combat1": {
+    "start": 320,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 572,
+    "count": 1,
+    "offset": 20,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 560,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 13,
+    "offset": 20,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 160,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 480,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "terracottaBoss": {
+   "combat1": {
+    "start": 240,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 411,
+    "count": 1,
+    "offset": 20,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 11,
+    "offset": 20,
+    "ms": 120,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "bobbitWorm": {
+   "hide": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "tornado": {
+   "combat1": {
+    "start": 10,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 20,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 20,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "show": {
+    "start": 0,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 10,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 10,
+    "count": 9,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "infernalSoldier": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 240,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 409,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 480,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "show": {
+    "start": 480,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 4,
+    "offset": 10,
+    "ms": 500,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 320,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "seaHorseCavalry": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 329,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "seamancer": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 329,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "coralStoneDuin": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 490,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "hide": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "show": {
+    "start": 400,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "brachiopod": {
+   "combat1": {
+    "start": 160,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 400,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat3": {
+    "start": 560,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 410,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "show": {
+    "start": 480,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 3,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "giantClam": {
+   "combat1": {
+    "start": 160,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 330,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "blueMassif": {
+   "combat1": {
+    "start": 160,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 320,
+    "count": 9,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 410,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 400,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 7,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "mollusk": {
+   "combat1": {
+    "start": 160,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 330,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 10,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "pushed": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 50,
+    "reversed": true,
+    "staticSpeed": true
+   },
+   "standing": {
+    "start": 0,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "walking": {
+    "start": 80,
+    "count": 6,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "giantClam1": {
+   "dead": {
+    "start": 488,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 480,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 8,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 5,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "castleFlag": {
+   "standing": {
+    "start": 0,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 0,
+    "count": 10,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  },
+  "sabukGate": {
+   "combat1": {
+    "start": 640,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "combat2": {
+    "start": 640,
+    "count": 7,
+    "offset": 0,
+    "ms": 100,
+    "reversed": true,
+    "staticSpeed": false
+   },
+   "dead": {
+    "start": 327,
+    "count": 1,
+    "offset": 0,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "die": {
+    "start": 320,
+    "count": 8,
+    "offset": 0,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 10,
+    "ms": 1000,
+    "reversed": false,
+    "staticSpeed": false
+   },
+   "struck": {
+    "start": 240,
+    "count": 2,
+    "offset": 10,
+    "ms": 100,
+    "reversed": false,
+    "staticSpeed": false
+   }
+  }
+ },
+ "npcSpecial": {
+  "64": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "65": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "91": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "92": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "93": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "157": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "158": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "160": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "165": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "166": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "168": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "208": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "209": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "210": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "211": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "212": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "213": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "214": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "231": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "234": {
+   "standing": {
+    "start": 0,
+    "count": 1,
+    "offset": 0,
+    "ms": 3600000,
+    "static": true
+   }
+  },
+  "56": {
+   "standing": {
+    "start": 0,
+    "count": 12,
+    "offset": 0,
+    "ms": 200
+   }
+  },
+  "57": {
+   "standing": {
+    "start": 0,
+    "count": 12,
+    "offset": 0,
+    "ms": 200
+   }
+  },
+  "156": {
+   "standing": {
+    "start": 0,
+    "count": 16,
+    "offset": 0,
+    "ms": 200
+   }
+  }
+ },
+ "attackDispatch": {
+  "rules": [
+   {
+    "type": "group",
+    "magics": [
+     "DefensiveBlow",
+     "Slaying",
+     "Thrusting",
+     "FlamingSword"
+    ],
+    "anim": "combat3"
+   },
+   {
+    "type": "group",
+    "magics": [
+     "OffensiveBlow",
+     "HalfMoon",
+     "DestructiveSurge"
+    ],
+    "anim": "combat4"
+   },
+   {
+    "type": "group",
+    "magics": [
+     "DragonRise"
+    ],
+    "anim": "combat5"
+   },
+   {
+    "type": "group",
+    "magics": [
+     "BladeStorm"
+    ],
+    "anim": "combat6"
+   },
+   {
+    "type": "groupWeapon",
+    "magics": [
+     "DanceOfSwallow",
+     "FullBloom",
+     "WhiteLotus",
+     "RedLotus"
+    ],
+    "byWeapon": [
+     {
+      "min": 1200,
+      "anim": "combat13"
+     },
+     {
+      "min": 1100,
+      "anim": "combat5"
+     },
+     {
+      "min": 0,
+      "anim": "combat3"
+     }
+    ]
+   },
+   {
+    "type": "groupWeapon",
+    "magics": [
+     "Karma",
+     "SweetBrier"
+    ],
+    "byWeapon": [
+     {
+      "min": 1200,
+      "anim": "combat12"
+     },
+     {
+      "min": 1100,
+      "anim": "combat10"
+     },
+     {
+      "min": 0,
+      "anim": "combat3"
+     }
+    ]
+   },
+   {
+    "type": "classWeapon",
+    "class": "Assassin",
+    "magics": null,
+    "byWeapon": [
+     {
+      "min": 1200,
+      "anim": "combat11"
+     },
+     {
+      "min": 1100,
+      "anim": "combat4"
+     },
+     {
+      "min": 0,
+      "anim": "combat3"
+     }
+    ]
+   },
+   {
+    "type": "default",
+    "anim": "combat3"
+   }
+  ]
+ },
+ "magicDispatch": {
+  "groups": [
+   {
+    "magics": [
+     "Shredding",
+     "Beckon",
+     "MassBeckon",
+     "FireBall",
+     "IceBolt",
+     "LightningBall",
+     "GustBlast",
+     "ScortchedEarth",
+     "LightningBeam",
+     "AdamantineFireBall",
+     "FireBounce",
+     "IceBlades",
+     "FrozenEarth",
+     "MeteorShower",
+     "LightningStrike",
+     "IceAura",
+     "IceDragon",
+     "ExplosiveTalisman",
+     "EvilSlayer",
+     "MagicResistance",
+     "Resilience",
+     "MassInvisibility",
+     "GreaterEvilSlayer",
+     "GreaterFrozenEarth",
+     "Parasite",
+     "ElementalSuperiority",
+     "BloodLust",
+     "LifeSteal",
+     "ImprovedExplosiveTalisman",
+     "Neutralize",
+     "CorpseExploder",
+     "SoulResonance",
+     "SearingLight",
+     "BindingTalisman",
+     "BrainStorm",
+     "Hemorrhage",
+     "FlamingDaggers"
+    ],
+    "anim": "combat1"
+   },
+   {
+    "magics": [
+     "PoisonCloud",
+     "Interchange",
+     "ElementalSwords",
+     "TaecheonSword",
+     "FireSword",
+     "Repulsion",
+     "ElectricShock",
+     "LightningWave",
+     "Cyclone",
+     "Teleportation",
+     "FireWall",
+     "FireStorm",
+     "BlowEarth",
+     "ExpelUndead",
+     "MagicShield",
+     "IceStorm",
+     "DragonTornado",
+     "ChainLightning",
+     "GeoManipulation",
+     "Transparency",
+     "ThunderBolt",
+     "Renounce",
+     "FrostBite",
+     "Tempest",
+     "JudgementOfHeaven",
+     "ThunderStrike",
+     "MirrorImage",
+     "Asteroid",
+     "SuperiorMagicShield",
+     "IceRain",
+     "Tornado",
+     "IceBreaker",
+     "FrozenDragon",
+     "Heal",
+     "PoisonDust",
+     "Invisibility",
+     "TrapOctagon",
+     "MassHeal",
+     "Resurrection",
+     "Purification",
+     "SummonSkeleton",
+     "SummonJinSkeleton",
+     "SummonShinsu",
+     "StrengthOfFaith",
+     "CelestialLight",
+     "AugmentPoisonDust",
+     "SummonDemonicCreature",
+     "DemonExplosion",
+     "CursedDoll",
+     "DarkSoulPrison",
+     "SummonDead",
+     "HeavenlySky"
+    ],
+    "anim": "combat2"
+   },
+   {
+    "magics": [
+     "ElementalHurricane"
+    ],
+    "anim": "channellingStart"
+   },
+   {
+    "magics": [
+     "CrescentMoon",
+     "PoisonousCloud",
+     "SummonPuppet",
+     "Containment",
+     "FourWheels"
+    ],
+    "anim": "combat14"
+   },
+   {
+    "magics": [
+     "DragonRepulse"
+    ],
+    "anim": "dragonRepulseStart"
+   },
+   {
+    "magics": [
+     "CombatKick",
+     "ThunderKick"
+    ],
+    "anim": "combat7"
+   },
+   {
+    "magics": [
+     "HundredFist"
+    ],
+    "anim": "combat8"
+   },
+   {
+    "magics": [
+     "Chain",
+     "Cloak",
+     "WraithGrip",
+     "HellFire",
+     "TheNewBeginning",
+     "DarkConversion",
+     "Abyss",
+     "Evasion",
+     "RagingWind",
+     "Concentration",
+     "BurningFire"
+    ],
+    "anim": "combat9"
+   },
+   {
+    "magics": [
+     "MagicCombustion",
+     "Rake"
+    ],
+    "anim": "combat5"
+   },
+   {
+    "magics": [
+     "FlashOfLight"
+    ],
+    "anim": "combat10"
+   },
+   {
+    "magics": [
+     "Spiritualism",
+     "Defiance",
+     "Might",
+     "ReflectDamage",
+     "Fetter",
+     "Endurance",
+     "Invincibility"
+    ],
+    "anim": "combat15"
+   },
+   {
+    "magics": [
+     "CrushingWave",
+     "Shuriken",
+     "SwiftBlade",
+     "SeismicSlam"
+    ],
+    "anim": "combat3"
+   }
+  ],
+  "default": null
+ },
+ "armourShift": {
+  "combat1": -400,
+  "combat10": -480,
+  "combat11": -400,
+  "combat12": -400,
+  "combat13": -400,
+  "combat14": 0,
+  "combat2": 0,
+  "combat3": 0,
+  "combat4": 80,
+  "combat5": 400,
+  "combat6": 400,
+  "combat7": 400,
+  "combat8": 720,
+  "combat9": -960,
+  "creepStanding": 240,
+  "creepWalkFast": 240,
+  "creepWalkSlow": 240,
+  "dead": -400,
+  "die": -400,
+  "dragonRepulseEnd": 0,
+  "dragonRepulseMiddle": 0,
+  "dragonRepulseStart": 0,
+  "fishingCast": 80,
+  "fishingReel": 80,
+  "fishingWait": 80,
+  "harvest": 160,
+  "horseRunning": 80,
+  "horseStanding": 80,
+  "horseStruck": 80,
+  "horseWalking": 80,
+  "pushed": 160,
+  "running": 1600,
+  "stance": 160,
+  "standing": 0,
+  "struck": -640,
+  "tamingCast": 0,
+  "tamingWait": 0,
+  "walking": 1600
+ },
+ "paperdoll": {
+  "drawFrame": {
+   "expr": "DrawFrame = FrameIndex + Start + OffSet * Direction",
+   "frameIndexExpr": "frameIndex + start + offset * direction"
+  },
+  "shapeOffset": {
+   "default": 5000,
+   "Assassin": 3000
+  },
+  "layers": {
+   "armour": {
+    "expr": "DrawFrame + (CostumeShape >= 0 ? (CostumeShape % 10) : (ArmourShape % 11)) * ArmourShapeOffSet + ArmourShift"
+   },
+   "hair": {
+    "expr": "DrawFrame + (HairType - 1) * 5000"
+   },
+   "helmet": {
+    "expr": "DrawFrame + ((HelmetShape - 1) % 10) * ArmourShapeOffSet + ArmourShift"
+   },
+   "weapon": {
+    "expr": "DrawFrame + (WeaponShape % 10) * 5000",
+    "shapeNormalize": "LibraryWeaponShape >= 1000 ? LibraryWeaponShape - 1000 : LibraryWeaponShape"
+   },
+   "shield": {
+    "expr": "DrawFrame + (ShieldShape % 10) * ArmourShapeOffSet + ArmourShift"
+   }
+  },
+  "drawOrder": [
+   "horse",
+   "backWeapon",
+   "backShield",
+   "body",
+   "head",
+   "frontWeapon"
+  ],
+  "headPriority": [
+   "helmet",
+   "hair"
+  ],
+  "directionGroups": {
+   "backWeapon": [
+    0,
+    5,
+    6,
+    7
+   ],
+   "backShield": [
+    1,
+    2,
+    3
+   ],
+   "frontWeapon": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  "costumeShapeHideWeapon": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   16,
+   17,
+   18
+  ],
+  "sources": {
+   "ArmourShift": "PlayerRenderer.cs:805-838",
+   "layerFrames": "PlayerRenderer.cs:840-846",
+   "DrawPlayerAt": "PlayerRenderer.cs:922-966"
+  }
+ },
+ "objects": {
+  "monster": {
+   "bodyOffset": 1000,
+   "frameExpr": "BodyFrame = DrawFrame + BodyShape * 1000"
+  },
+  "npc": {
+   "bodyOffset": 100,
+   "frameExpr": "BodyFrame = DrawFrame + Image * 100"
+  },
+  "item": {
+   "bodyOffset": 0,
+   "frameExpr": "frame = DrawImage"
+  }
+ }
+}

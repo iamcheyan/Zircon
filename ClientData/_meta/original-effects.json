@@ -1,0 +1,8934 @@
+{
+ "_meta": {
+  "schema": "magic-effects/original-2",
+  "source": {
+   "MapObject.cs": "/home/tetsuya/development/zircon/Client/Models/MapObject.cs",
+   "releaseSwitch": [
+    767,
+    3219
+   ],
+   "startSwitch": [
+    3602,
+    5143
+   ],
+   "Functions.cs": "/home/tetsuya/development/zircon/LibraryCore/Functions.cs"
+  },
+  "caseCount": {
+   "release": 88,
+   "start": 107
+  },
+  "effectCount": 272,
+  "animCoverage": 117
+ },
+ "SwiftBlade": {
+  "MagicType": "SwiftBlade",
+  "release": {
+   "effects": [
+    {
+     "frame": 2330,
+     "count": 16,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 781,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SwiftBladeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:777(release)",
+  "castAnim": "Combat3",
+  "sound": {
+   "travel": [
+    "SwiftBladeEnd"
+   ]
+  }
+ },
+ "TaecheonSword": {
+  "MagicType": "TaecheonSword",
+  "release": {
+   "effects": [
+    {
+     "frame": 5000,
+     "count": 31,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 0,
+     "endLight": 50,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 799,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TaecheonSword",
+     "ctx": []
+    }
+   ],
+   "shakes": [
+    20.0
+   ]
+  },
+  "notes": "MapObject.cs:796(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "TaecheonSword"
+   ]
+  }
+ },
+ "FireSword": {
+  "MagicType": "FireSword",
+  "release": {
+   "effects": [
+    {
+     "frame": 5100,
+     "count": 39,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 823,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireSword",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:820(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "FireSword"
+   ]
+  }
+ },
+ "FireBall": {
+  "MagicType": "FireBall",
+  "release": {
+   "effects": [
+    {
+     "frame": 420,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 845,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 420,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 855,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 580,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 864,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "FireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:842(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1820,
+     "count": 8,
+     "delayMs": 70,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3778,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "FireBallStart"
+   ],
+   "end": [
+    "FireBallEnd"
+   ],
+   "travel": [
+    "FireBallTravel"
+   ]
+  }
+ },
+ "LightningBall": {
+  "MagicType": "LightningBall",
+  "release": {
+   "effects": [
+    {
+     "frame": 3070,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Lightning",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 887,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3070,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Lightning",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 897,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3230,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 906,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ThunderBoltEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ThunderBoltTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:884(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2990,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3793,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ThunderBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ThunderBoltStart"
+   ],
+   "end": [
+    "ThunderBoltEnd"
+   ],
+   "travel": [
+    "ThunderBoltTravel"
+   ]
+  }
+ },
+ "IceBolt": {
+  "MagicType": "IceBolt",
+  "release": {
+   "effects": [
+    {
+     "frame": 2700,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "particle": "IceBoltTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 930,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2700,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "particle": "IceBoltTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 940,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2860,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 949,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBoltEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "IceBoltTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:926(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2620,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3807,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "IceBoltStart"
+   ],
+   "end": [
+    "IceBoltEnd"
+   ],
+   "travel": [
+    "IceBoltTravel"
+   ]
+  }
+ },
+ "GustBlast": {
+  "MagicType": "GustBlast",
+  "release": {
+   "effects": [
+    {
+     "frame": 430,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Wind",
+     "origin": "caster",
+     "particle": "GustTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 972,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 430,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Wind",
+     "origin": "caster",
+     "particle": "GustTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 982,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 590,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 991,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GustBlastEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "GustBlastTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:969(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 350,
+     "count": 7,
+     "delayMs": 70,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3824,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GustBlastStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GustBlastStart"
+   ],
+   "end": [
+    "GustBlastEnd"
+   ],
+   "travel": [
+    "GustBlastTravel"
+   ]
+  }
+ },
+ "ElectricShock": {
+  "MagicType": "ElectricShock",
+  "release": {
+   "effects": [
+    {
+     "frame": 10,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1014,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 10,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1024,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ElectricShockEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1011(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 0,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3851,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ElectricShockStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ElectricShockStart"
+   ],
+   "travel": [
+    "ElectricShockEnd"
+   ]
+  }
+ },
+ "FireBounce": {
+  "MagicType": "FireBounce",
+  "release": {
+   "effects": [
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1044,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1054,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1800,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1063,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "GreaterFireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1040(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1560,
+     "count": 9,
+     "delayMs": 65,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3877,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GreaterFireBallStart"
+   ],
+   "end": [
+    "GreaterFireBallEnd"
+   ],
+   "travel": [
+    "GreaterFireBallTravel"
+   ]
+  }
+ },
+ "AdamantineFireBall": {
+  "MagicType": "AdamantineFireBall",
+  "release": {
+   "effects": [
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1044,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1054,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1800,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1063,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "GreaterFireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1040(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1560,
+     "count": 9,
+     "delayMs": 65,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3877,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GreaterFireBallStart"
+   ],
+   "end": [
+    "GreaterFireBallEnd"
+   ],
+   "travel": [
+    "GreaterFireBallTravel"
+   ]
+  }
+ },
+ "MeteorShower": {
+  "MagicType": "MeteorShower",
+  "release": {
+   "effects": [
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1044,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1640,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "particle": "FireballTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1054,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1800,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1063,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "GreaterFireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1040(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1560,
+     "count": 9,
+     "delayMs": 65,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3877,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFireBallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GreaterFireBallStart"
+   ],
+   "end": [
+    "GreaterFireBallEnd"
+   ],
+   "travel": [
+    "GreaterFireBallTravel"
+   ]
+  }
+ },
+ "ThunderStrike": {
+  "MagicType": "ThunderStrike",
+  "release": {
+   "effects": [
+    {
+     "frame": 1450,
+     "count": 3,
+     "delayMs": 150,
+     "lib": "Magic",
+     "startLight": 150,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1087,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 1450,
+     "count": 3,
+     "delayMs": 150,
+     "lib": "Magic",
+     "startLight": 150,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1097,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1084(release)",
+  "start": {
+   "effects": [],
+   "sounds": [
+    {
+     "name": "LightningStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "LightningStrikeStart"
+   ],
+   "travel": [
+    "LightningStrikeEnd"
+   ]
+  }
+ },
+ "ThunderBolt": {
+  "MagicType": "ThunderBolt",
+  "release": {
+   "effects": [
+    {
+     "frame": 1450,
+     "count": 3,
+     "delayMs": 150,
+     "lib": "Magic",
+     "startLight": 150,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1087,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 1450,
+     "count": 3,
+     "delayMs": 150,
+     "lib": "Magic",
+     "startLight": 150,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1097,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1084(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1430,
+     "count": 12,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3894,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "LightningStrikeStart"
+   ],
+   "travel": [
+    "LightningStrikeEnd"
+   ]
+  }
+ },
+ "IceBlades": {
+  "MagicType": "IceBlades",
+  "release": {
+   "effects": [
+    {
+     "frame": 2960,
+     "count": 6,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "particle": "IceBladesTrail",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1117,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Skip": 0,
+      "BlendRate": 1.0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2960,
+     "count": 6,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "particle": "IceBladesTrail",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1129,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Skip": 0,
+      "BlendRate": 1.0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2970,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1140,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterIceBoltEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "GreaterIceBoltTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1114(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2880,
+     "count": 6,
+     "delayMs": 115,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3907,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterIceBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GreaterIceBoltStart"
+   ],
+   "end": [
+    "GreaterIceBoltEnd"
+   ],
+   "travel": [
+    "GreaterIceBoltTravel"
+   ]
+  }
+ },
+ "Cyclone": {
+  "MagicType": "Cyclone",
+  "release": {
+   "effects": [
+    {
+     "frame": 1990,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1162,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 2000,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1171,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    },
+    {
+     "frame": 1990,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1183,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    },
+    {
+     "frame": 2000,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1192,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "CycloneEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1159(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1970,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3922,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "CycloneStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "CycloneStart"
+   ],
+   "travel": [
+    "CycloneEnd"
+   ]
+  }
+ },
+ "ScortchedEarth": {
+  "MagicType": "ScortchedEarth",
+  "release": {
+   "effects": [
+    {
+     "frame": 220,
+     "count": 1,
+     "delayMs": 3500,
+     "lib": "ProgUse",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1213,
+     "target": "point",
+     "extra": {
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "Opacity": 0.8,
+      "DrawType": "Floor"
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": null,
+     "frameExpr": "2450 + CEnvir.Random.Next(5) * 10",
+     "count": 10,
+     "delayMs": 250,
+     "lib": "Magic",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1221,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "DrawType": "Floor"
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 1900,
+     "count": 30,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1229,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 0,
+      "DistanceDelayMs": 50,
+      "BlendRate": 1.0
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1209(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1820,
+     "count": 8,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3938,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LavaStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "LavaStrikeStart"
+   ]
+  }
+ },
+ "LightningBeam": {
+  "MagicType": "LightningBeam",
+  "release": {
+   "effects": [
+    {
+     "frame": 1180,
+     "count": 4,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 150,
+     "endLight": 150,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1248,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningBeamEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1244(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1970,
+     "count": 10,
+     "delayMs": 30,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3953,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ThunderBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ThunderBoltStart"
+   ],
+   "travel": [
+    "LightningBeamEnd"
+   ]
+  }
+ },
+ "FrozenEarth": {
+  "MagicType": "FrozenEarth",
+  "release": {
+   "effects": [
+    {
+     "frame": 90,
+     "count": 20,
+     "delayMs": 50,
+     "lib": "MagicEx",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1268,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 0,
+      "DistanceDelayMs": 50,
+      "Opacity": 0.5
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 260,
+     "count": 1,
+     "delayMs": 2500,
+     "lib": "ProgUse",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1279,
+     "target": "point",
+     "extra": {
+      "Opacity": 0.8,
+      "DrawType": "Floor"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FrozenEarthEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1264(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 0,
+     "count": 10,
+     "delayMs": 50,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3967,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FrozenEarthStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "FrozenEarthStart"
+   ],
+   "travel": [
+    "FrozenEarthEnd"
+   ]
+  }
+ },
+ "BlowEarth": {
+  "MagicType": "BlowEarth",
+  "release": {
+   "effects": [
+    {
+     "frame": 1990,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [],
+     "line": 1304,
+     "target": "finalPoint",
+     "extra": {
+      "Blend": true,
+      "Skip": 0,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2000,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "arrival"
+     ],
+     "line": 1315,
+     "target": "finalPoint",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BlowEarthEnd",
+     "ctx": [
+      "arrival"
+     ]
+    },
+    {
+     "name": "BlowEarthTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1296(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1970,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3981,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BlowEarthStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "BlowEarthStart"
+   ],
+   "end": [
+    "BlowEarthEnd"
+   ],
+   "travel": [
+    "BlowEarthTravel"
+   ]
+  }
+ },
+ "ExpelUndead": {
+  "MagicType": "ExpelUndead",
+  "release": {
+   "effects": [
+    {
+     "frame": 140,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1336,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExpelUndeadEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1333(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 130,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4007,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExpelUndeadStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ExpelUndeadStart"
+   ],
+   "travel": [
+    "ExpelUndeadEnd"
+   ]
+  }
+ },
+ "FireStorm": {
+  "MagicType": "FireStorm",
+  "release": {
+   "effects": [
+    {
+     "frame": 950,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1354,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireStormEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1351(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 940,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4046,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireStormStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "FireStormStart"
+   ],
+   "travel": [
+    "FireStormEnd"
+   ]
+  }
+ },
+ "LightningWave": {
+  "MagicType": "LightningWave",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1372,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningWaveEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1369(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1430,
+     "count": 12,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4059,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningWaveStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "LightningWaveStart"
+   ],
+   "travel": [
+    "LightningWaveEnd"
+   ]
+  }
+ },
+ "IceStorm": {
+  "MagicType": "IceStorm",
+  "release": {
+   "effects": [
+    {
+     "frame": 780,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1389,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceStormEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1386(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 770,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4072,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceStormStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "IceStormStart"
+   ],
+   "travel": [
+    "IceStormEnd"
+   ]
+  }
+ },
+ "DragonTornado": {
+  "MagicType": "DragonTornado",
+  "release": {
+   "effects": [
+    {
+     "frame": 1040,
+     "count": 16,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1407,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DragonTornadoEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1404(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1030,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4085,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DragonTornadoStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "DragonTornadoStart"
+   ],
+   "travel": [
+    "DragonTornadoEnd"
+   ]
+  }
+ },
+ "GreaterFrozenEarth": {
+  "MagicType": "GreaterFrozenEarth",
+  "release": {
+   "effects": [
+    {
+     "frame": 90,
+     "count": 20,
+     "delayMs": 50,
+     "lib": "MagicEx",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1425,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 0,
+      "DistanceDelayMs": 50,
+      "Opacity": 0.5
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 260,
+     "count": 1,
+     "delayMs": 2500,
+     "lib": "ProgUse",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1436,
+     "target": "point",
+     "extra": {
+      "Opacity": 0.8,
+      "DrawType": "Floor"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFrozenEarthEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1422(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 0,
+     "count": 10,
+     "delayMs": 50,
+     "lib": "MagicEx",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4098,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "GreaterFrozenEarthStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "GreaterFrozenEarthStart"
+   ],
+   "travel": [
+    "GreaterFrozenEarthEnd"
+   ]
+  }
+ },
+ "ChainLightning": {
+  "MagicType": "ChainLightning",
+  "release": {
+   "effects": [
+    {
+     "frame": 470,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1456,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ChainLightningEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1453(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1430,
+     "count": 12,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4112,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ChainLightningStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ChainLightningStart"
+   ],
+   "travel": [
+    "ChainLightningEnd"
+   ]
+  }
+ },
+ "Asteroid": {
+  "MagicType": "Asteroid",
+  "release": {
+   "effects": [
+    {
+     "frame": 1300,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 50,
+     "endLight": 80,
+     "colour": "Fire",
+     "rawExtra": [
+      "p"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1478,
+     "target": "point",
+     "extra": {
+      "Skip": 0,
+      "Explode": true,
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1320,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 100,
+     "endLight": 100,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1489,
+     "target": "eff.MapTarget",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1472(release)",
+  "castAnim": "Combat2"
+ },
+ "LightningStrike": {
+  "MagicType": "LightningStrike",
+  "release": {
+   "effects": [
+    {
+     "frame": 500,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Lightning",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1504,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 500,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Lightning",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1515,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 500,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1524,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningBeamEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "LightningBeamEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1501(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 400,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4206,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ChainLightningStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ChainLightningStart"
+   ],
+   "end": [
+    "LightningBeamEnd"
+   ],
+   "travel": [
+    "LightningBeamEnd"
+   ]
+  }
+ },
+ "IceRain": {
+  "MagicType": "IceRain",
+  "release": {
+   "effects": [
+    {
+     "frame": 700,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Ice",
+     "rawExtra": [
+      "p"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1550,
+     "target": "point",
+     "extra": {
+      "Skip": 0,
+      "Blend": true,
+      "Explode": true,
+      "StartDelayExpr": "delay"
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 720,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 100,
+     "endLight": 100,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1562,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBoltEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1543(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1430,
+     "count": 12,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4220,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LightningStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "LightningStrikeStart"
+   ],
+   "end": [
+    "IceBoltEnd"
+   ]
+  }
+ },
+ "IceAura": {
+  "MagicType": "IceAura",
+  "release": {
+   "effects": [
+    {
+     "frame": 2500,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1582,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceAuraTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1579(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2620,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3807,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "IceBoltStart"
+   ],
+   "travel": [
+    "IceAuraTravel"
+   ]
+  }
+ },
+ "IceDragon": {
+  "MagicType": "IceDragon",
+  "release": {
+   "effects": [
+    {
+     "frame": 2800,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1604,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection",
+      "Skip": 10,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2900,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1612,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection",
+      "Skip": 10,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2800,
+     "count": 6,
+     "delayMs": 150,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1627,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Skip": 10,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2900,
+     "count": 6,
+     "delayMs": 150,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Ice",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1635,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection",
+      "Skip": 10,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3000,
+     "count": 12,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1648,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceDragonBreak",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "IceDragonTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1599(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2620,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3807,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBoltStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "IceBoltStart"
+   ],
+   "end": [
+    "IceDragonBreak"
+   ],
+   "travel": [
+    "IceDragonTravel"
+   ]
+  }
+ },
+ "IceBreaker": {
+  "MagicType": "IceBreaker",
+  "release": {
+   "effects": [
+    {
+     "frame": 5200,
+     "count": 37,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1671,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "IceBreaker",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1668(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "IceBreaker"
+   ]
+  }
+ },
+ "FrozenDragon": {
+  "MagicType": "FrozenDragon",
+  "release": {
+   "effects": [
+    {
+     "frame": 5300,
+     "count": 41,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 1689,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FrozenDragon",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1686(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "FrozenDragon"
+   ]
+  }
+ },
+ "Heal": {
+  "MagicType": "Heal",
+  "release": {
+   "effects": [
+    {
+     "frame": 610,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1712,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HealEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1708(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 660,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4251,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HealStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "HealStart"
+   ],
+   "travel": [
+    "HealEnd"
+   ]
+  }
+ },
+ "AugmentPoisonDust": {
+  "MagicType": "AugmentPoisonDust",
+  "release": {
+   "effects": [
+    {
+     "frame": 70,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1731,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PoisonDustEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1728(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "PoisonDustEnd"
+   ]
+  }
+ },
+ "PoisonDust": {
+  "MagicType": "PoisonDust",
+  "release": {
+   "effects": [
+    {
+     "frame": 70,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 1731,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PoisonDustEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1728(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 60,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4264,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PoisonDustStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "PoisonDustStart"
+   ],
+   "travel": [
+    "PoisonDustEnd"
+   ]
+  }
+ },
+ "ExplosiveTalisman": {
+  "MagicType": "ExplosiveTalisman",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Dark",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1751,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Dark",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1761,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1140,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1770,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ExplosiveTalismanTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1748(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4277,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ExplosiveTalismanStart"
+   ],
+   "end": [
+    "ExplosiveTalismanEnd"
+   ],
+   "travel": [
+    "ExplosiveTalismanTravel"
+   ]
+  }
+ },
+ "EvilSlayer": {
+  "MagicType": "EvilSlayer",
+  "release": {
+   "effects": [
+    {
+     "frame": 3330,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1793,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3330,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1804,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3340,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1814,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HolyStrikeEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "HolyStrikeTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1790(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 3250,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4292,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HolyStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "HolyStrikeStart"
+   ],
+   "end": [
+    "HolyStrikeEnd"
+   ],
+   "travel": [
+    "HolyStrikeTravel"
+   ]
+  }
+ },
+ "MagicResistance": {
+  "MagicType": "MagicResistance",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1837,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 200,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 80,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1847,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MagicResistanceEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    },
+    {
+     "name": "MagicResistanceTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1834(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4335,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "MagicResistanceEnd"
+   ],
+   "travel": [
+    "MagicResistanceTravel"
+   ]
+  }
+ },
+ "MassInvisibility": {
+  "MagicType": "MassInvisibility",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Phantom",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1870,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 820,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 80,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1880,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MassInvisibilityEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    },
+    {
+     "name": "MassInvisibilityTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1867(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4348,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "MassInvisibilityEnd"
+   ],
+   "travel": [
+    "MassInvisibilityTravel"
+   ]
+  }
+ },
+ "GreaterEvilSlayer": {
+  "MagicType": "GreaterEvilSlayer",
+  "release": {
+   "effects": [
+    {
+     "frame": 3440,
+     "count": 6,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1902,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3440,
+     "count": 6,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 1913,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Skip": 0
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3450,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 1923,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ImprovedHolyStrikeEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ImprovedHolyStrikeTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1899(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 3360,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4362,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ImprovedHolyStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ImprovedHolyStrikeStart"
+   ],
+   "end": [
+    "ImprovedHolyStrikeEnd"
+   ],
+   "travel": [
+    "ImprovedHolyStrikeTravel"
+   ]
+  }
+ },
+ "Resilience": {
+  "MagicType": "Resilience",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1947,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 170,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 80,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1957,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ResilienceEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ResilienceTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1943(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4377,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "ResilienceEnd"
+   ],
+   "travel": [
+    "ResilienceTravel"
+   ]
+  }
+ },
+ "TrapOctagon": {
+  "MagicType": "TrapOctagon",
+  "release": {
+   "effects": [],
+   "sounds": [
+    {
+     "name": "ShacklingTalismanEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1978(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 630,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4390,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ShacklingTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ShacklingTalismanStart"
+   ],
+   "travel": [
+    "ShacklingTalismanEnd"
+   ]
+  }
+ },
+ "ElementalSuperiority": {
+  "MagicType": "ElementalSuperiority",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 1989,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1870,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 20,
+     "endLight": 80,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 1999,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BloodLustEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    },
+    {
+     "name": "BloodLustTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:1986(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4412,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "BloodLustEnd"
+   ],
+   "travel": [
+    "BloodLustTravel"
+   ]
+  }
+ },
+ "MassHeal": {
+  "MagicType": "MassHeal",
+  "release": {
+   "effects": [
+    {
+     "frame": 670,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 40,
+     "endLight": 60,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2022,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MassHealEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2019(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 660,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4436,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MassHealStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "MassHealStart"
+   ],
+   "travel": [
+    "MassHealEnd"
+   ]
+  }
+ },
+ "BloodLust": {
+  "MagicType": "BloodLust",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 3,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Dark",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2041,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 140,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 20,
+     "endLight": 80,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 2051,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BloodLustEnd",
+     "ctx": [
+      "point",
+      "arrival"
+     ]
+    },
+    {
+     "name": "BloodLustTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2038(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4449,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "BloodLustEnd"
+   ],
+   "travel": [
+    "BloodLustTravel"
+   ]
+  }
+ },
+ "Resurrection": {
+  "MagicType": "Resurrection",
+  "release": {
+   "effects": [
+    {
+     "frame": 320,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2073,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2070(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 310,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4462,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ResurrectionStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ResurrectionStart"
+   ]
+  }
+ },
+ "Purification": {
+  "MagicType": "Purification",
+  "release": {
+   "effects": [
+    {
+     "frame": 230,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2090,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PurificationEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2087(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 220,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4475,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PurificationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "PurificationStart"
+   ],
+   "travel": [
+    "PurificationEnd"
+   ]
+  }
+ },
+ "StrengthOfFaith": {
+  "MagicType": "StrengthOfFaith",
+  "release": {
+   "effects": [
+    {
+     "frame": 370,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2109,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "StrengthOfFaithEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2106(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 360,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4488,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "StrengthOfFaithStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "StrengthOfFaithStart"
+   ],
+   "travel": [
+    "StrengthOfFaithEnd"
+   ]
+  }
+ },
+ "CelestialLight": {
+  "MagicType": "CelestialLight",
+  "release": {
+   "effects": [
+    {
+     "frame": 290,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2128,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2125(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 280,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4514,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MagicShieldStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "MagicShieldStart"
+   ]
+  }
+ },
+ "LifeSteal": {
+  "MagicType": "LifeSteal",
+  "release": {
+   "effects": [
+    {
+     "frame": 2500,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2145,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HolyStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2141(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2410,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4528,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HolyStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "HolyStrikeStart"
+   ],
+   "travel": [
+    "HolyStrikeEnd"
+   ]
+  }
+ },
+ "ImprovedExplosiveTalisman": {
+  "MagicType": "ImprovedExplosiveTalisman",
+  "release": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Dark",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2164,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 980,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Dark",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2175,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1160,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2185,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireStormEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ExplosiveTalismanTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2161(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 980,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4542,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ExplosiveTalismanStart"
+   ],
+   "end": [
+    "FireStormEnd"
+   ],
+   "travel": [
+    "ExplosiveTalismanTravel"
+   ]
+  }
+ },
+ "Parasite": {
+  "MagicType": "Parasite",
+  "release": {
+   "effects": [
+    {
+     "frame": 800,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2208,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 800,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2219,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1200,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2228,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ParasiteTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2205(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1000,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4594,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "FireBallStart"
+   ],
+   "travel": [
+    "ParasiteTravel"
+   ]
+  }
+ },
+ "Neutralize": {
+  "MagicType": "Neutralize",
+  "release": {
+   "effects": [
+    {
+     "frame": 300,
+     "count": 4,
+     "delayMs": 80,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2248,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 300,
+     "count": 4,
+     "delayMs": 80,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2258,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 460,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2267,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "NeutralizeEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "NeutralizeTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2245(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4609,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ExplosiveTalismanStart"
+   ],
+   "end": [
+    "NeutralizeEnd"
+   ],
+   "travel": [
+    "NeutralizeTravel"
+   ]
+  }
+ },
+ "DarkSoulPrison": {
+  "MagicType": "DarkSoulPrison",
+  "release": {
+   "effects": [
+    {
+     "frame": 600,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 2287,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DarkSoulPrison",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2287(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "DarkSoulPrison"
+   ]
+  }
+ },
+ "CorpseExploder": {
+  "MagicType": "CorpseExploder",
+  "release": {
+   "effects": [
+    {
+     "frame": 300,
+     "count": 4,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2302,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 300,
+     "count": 4,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2313,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1000,
+     "count": 17,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2322,
+     "target": "location",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "CorpseExploderEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "ExplosiveTalismanTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2299(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 2080,
+     "count": 6,
+     "delayMs": 80,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4624,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ExplosiveTalismanStart"
+   ],
+   "end": [
+    "CorpseExploderEnd"
+   ],
+   "travel": [
+    "ExplosiveTalismanTravel"
+   ]
+  }
+ },
+ "SearingLight": {
+  "MagicType": "SearingLight",
+  "release": {
+   "effects": [
+    {
+     "frame": 1210,
+     "count": 10,
+     "delayMs": 70,
+     "lib": "MagicEx3",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "rawExtra": [
+      "null"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2345,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1210,
+     "count": 10,
+     "delayMs": 70,
+     "lib": "MagicEx3",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Holy",
+     "origin": "caster",
+     "rawExtra": [
+      "null"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2356,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1300,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx3",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2366,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "HolyStrikeTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2342(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1190,
+     "count": 8,
+     "delayMs": 70,
+     "lib": "MagicEx3",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Holy",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4662,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HolyStrikeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "HolyStrikeStart"
+   ],
+   "end": [
+    "FireBallEnd"
+   ],
+   "travel": [
+    "HolyStrikeTravel"
+   ]
+  }
+ },
+ "SoulResonance": {
+  "MagicType": "SoulResonance",
+  "release": {
+   "effects": [
+    {
+     "frame": 500,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "rawExtra": [
+      "null"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2389,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 500,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "rawExtra": [
+      "null"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2399,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 670,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2409,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "FireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2386(release)",
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "FireBallEnd"
+   ],
+   "travel": [
+    "FireBallTravel"
+   ]
+  }
+ },
+ "BindingTalisman": {
+  "MagicType": "BindingTalisman",
+  "release": {
+   "effects": [
+    {
+     "frame": 3600,
+     "count": 1,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 15,
+     "endLight": 15,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2432,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3600,
+     "count": 1,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 15,
+     "endLight": 15,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2443,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2429(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 3500,
+     "count": 4,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4689,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ExplosiveTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "ExplosiveTalismanStart"
+   ],
+   "travel": [
+    "ExplosiveTalismanTravel"
+   ]
+  }
+ },
+ "BrainStorm": {
+  "MagicType": "BrainStorm",
+  "release": {
+   "effects": [
+    {
+     "frame": 3200,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2465,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3200,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 15,
+     "endLight": 15,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2476,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 3400,
+     "count": 15,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 25,
+     "endLight": 25,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2486,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Loop": false
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BrainStorm",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2462(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 4600,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4704,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection",
+      "Skip": 20
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BindingTalisman",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "BindingTalisman"
+   ],
+   "end": [
+    "BrainStorm"
+   ]
+  }
+ },
+ "HeavenlySky": {
+  "MagicType": "HeavenlySky",
+  "release": {
+   "effects": [
+    {
+     "frame": 5400,
+     "count": 39,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2507,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "HeavenlySky",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2504(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "HeavenlySky"
+   ]
+  }
+ },
+ "PoisonCloud": {
+  "MagicType": "PoisonCloud",
+  "release": {
+   "effects": [
+    {
+     "frame": 5500,
+     "count": 56,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Dark",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2526,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "PoisonCloud",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2523(release)",
+  "castAnim": "Combat2",
+  "sound": {
+   "travel": [
+    "PoisonCloud"
+   ]
+  }
+ },
+ "WraithGrip": {
+  "MagicType": "WraithGrip",
+  "release": {
+   "effects": [
+    {
+     "frame": 1420,
+     "count": 14,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2567,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "BlendRate": "0.4f",
+      "DrawType": "Floor"
+     },
+     "segment": "hitEffect"
+    },
+    {
+     "frame": 1440,
+     "count": 14,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2578,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "BlendRate": "0.4f",
+      "DrawType": "Floor"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "WraithGripEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2562(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1460,
+     "count": 15,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4751,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "BlendRate": "0.4f",
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "WraithGripStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "WraithGripStart"
+   ],
+   "travel": [
+    "WraithGripEnd"
+   ]
+  }
+ },
+ "HellFire": {
+  "MagicType": "HellFire",
+  "release": {
+   "effects": [
+    {
+     "frame": 1500,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2599,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "DrawType": "Floor"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "WraithGripEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2596(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 1520,
+     "count": 15,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4766,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "WraithGripStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "WraithGripStart"
+   ],
+   "travel": [
+    "WraithGripEnd"
+   ]
+  }
+ },
+ "BurningFire": {
+  "MagicType": "BurningFire",
+  "release": {
+   "effects": [
+    {
+     "frame": 900,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx6",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2673,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireWallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2669(release)",
+  "castAnim": "Combat9",
+  "sound": {
+   "travel": [
+    "FireWallStart"
+   ]
+  }
+ },
+ "MagicCombustion": {
+  "MagicType": "MagicCombustion",
+  "release": {
+   "effects": [
+    {
+     "frame": 100,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2690,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 100,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2700,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Explode": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 280,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 20,
+     "endLight": 50,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2710,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ElementalSwordsEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2687(release)",
+  "castAnim": "Combat5",
+  "sound": {
+   "end": [
+    "ElementalSwordsEnd"
+   ]
+  }
+ },
+ "Hemorrhage": {
+  "MagicType": "Hemorrhage",
+  "release": {
+   "effects": [
+    {
+     "frame": 1100,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2729,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1100,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2739,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1270,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2748,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Hemorrhage",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2726(release)",
+  "castAnim": "Combat1",
+  "sound": {
+   "travel": [
+    "Hemorrhage"
+   ]
+  }
+ },
+ "Chain": {
+  "MagicType": "Chain",
+  "release": {
+   "effects": [
+    {
+     "frame": 20,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx7",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "target"
+     ],
+     "line": 2776,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    },
+    {
+     "frame": null,
+     "frameExpr": "primaryTarget",
+     "count": null,
+     "kind": "chain",
+     "ctx": [
+      "target"
+     ],
+     "line": 2786,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 700
+     },
+     "segment": "chain"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Chain",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2766(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 0,
+     "count": 7,
+     "delayMs": 140,
+     "lib": "MagicEx7",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4977,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Chain",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "Chain"
+   ],
+   "travel": [
+    "Chain"
+   ]
+  }
+ },
+ "FlamingDaggers": {
+  "MagicType": "FlamingDaggers",
+  "release": {
+   "effects": [
+    {
+     "frame": 3900,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2807,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 4100,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2817,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FlamingDaggers",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2804(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 3800,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4990,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "end": [
+    "FlamingDaggers"
+   ]
+  }
+ },
+ "Shredding": {
+  "MagicType": "Shredding",
+  "release": {
+   "effects": [
+    {
+     "frame": 4300,
+     "count": 5,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Fire",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2838,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 4500,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2848,
+     "target": "target",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Shredding",
+     "ctx": [
+      "target"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2835(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 4200,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 5002,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "castAnim": "Combat1",
+  "sound": {
+   "travel": [
+    "Shredding"
+   ]
+  }
+ },
+ "FourWheels": {
+  "MagicType": "FourWheels",
+  "release": {
+   "effects": [
+    {
+     "frame": 5600,
+     "count": 35,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2869,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FourWheels",
+     "ctx": [
+      "point",
+      "frameAction"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2866(release)",
+  "castAnim": "Combat14",
+  "sound": {
+   "end": [
+    "FourWheels"
+   ]
+  }
+ },
+ "CrescentMoon": {
+  "MagicType": "CrescentMoon",
+  "release": {
+   "effects": [
+    {
+     "frame": 5700,
+     "count": 21,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 50,
+     "endLight": 50,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 2891,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "CrescentMoon",
+     "ctx": [
+      "point",
+      "frameAction"
+     ]
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2888(release)",
+  "castAnim": "Combat14",
+  "sound": {
+   "end": [
+    "CrescentMoon"
+   ]
+  }
+ },
+ "PinkFireBall": {
+  "MagicType": "PinkFireBall",
+  "release": {
+   "effects": [
+    {
+     "frame": 1500,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MonMagicEx20",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.Purple",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2915,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1600,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MonMagicEx20",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.Purple",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2926,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 1700,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx20",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.Purple",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2936,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "FireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2912(release)",
+  "castAnim": null,
+  "sound": {
+   "end": [
+    "FireBallEnd"
+   ],
+   "travel": [
+    "FireBallTravel"
+   ]
+  }
+ },
+ "GreenSludgeBall": {
+  "MagicType": "GreenSludgeBall",
+  "release": {
+   "effects": [
+    {
+     "frame": 2600,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MonMagicEx23",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.GreenYellow",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 2960,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2600,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MonMagicEx23",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.GreenYellow",
+     "origin": "caster",
+     "kind": "projectile",
+     "ctx": [
+      "target"
+     ],
+     "line": 2971,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "Has16Directions": false
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2780,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MonMagicEx23",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "Color.GreenYellow",
+     "kind": "effect",
+     "ctx": [
+      "target",
+      "arrival"
+     ],
+     "line": 2981,
+     "target": "target",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "hitEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireBallEnd",
+     "ctx": [
+      "target",
+      "arrival"
+     ]
+    },
+    {
+     "name": "FireBallTravel",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:2957(release)",
+  "castAnim": null,
+  "sound": {
+   "end": [
+    "FireBallEnd"
+   ],
+   "travel": [
+    "FireBallTravel"
+   ]
+  }
+ },
+ "MonsterScortchedEarth": {
+  "MagicType": "MonsterScortchedEarth",
+  "release": {
+   "effects": [
+    {
+     "frame": 220,
+     "count": 1,
+     "delayMs": 3000,
+     "lib": "ProgUse",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3006,
+     "target": "point",
+     "extra": {
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "Opacity": 0.8,
+      "DrawType": "Floor"
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": null,
+     "frameExpr": "2450 + CEnvir.Random.Next(5) * 10",
+     "count": 10,
+     "delayMs": 250,
+     "lib": "Magic",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3014,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "DrawType": "Floor"
+     },
+     "segment": "aoe"
+    },
+    {
+     "frame": 1930,
+     "count": 30,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3022,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 0,
+      "DistanceDelayMs": 50,
+      "BlendRate": 1.0
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LavaStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3002(release)",
+  "start": {
+   "effects": [
+    {
+     "frame": 220,
+     "count": 1,
+     "delayMs": 3000,
+     "lib": "ProgUse",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 5023,
+     "target": "point",
+     "extra": {
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "Opacity": 0.8,
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    },
+    {
+     "frame": null,
+     "frameExpr": "2450 + CEnvir.Random.Next(5) * 10",
+     "count": 10,
+     "delayMs": 250,
+     "lib": "Magic",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 5031,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 500,
+      "DistanceDelayMs": 50,
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    },
+    {
+     "frame": 1930,
+     "count": 30,
+     "delayMs": 50,
+     "lib": "Magic",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 5039,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 0,
+      "DistanceDelayMs": 50,
+      "BlendRate": 1.0
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "LavaStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "castAnim": null,
+  "sound": {
+   "start": [
+    "LavaStrikeEnd"
+   ],
+   "travel": [
+    "LavaStrikeEnd"
+   ]
+  }
+ },
+ "MonsterIceStorm": {
+  "MagicType": "MonsterIceStorm",
+  "release": {
+   "effects": [
+    {
+     "frame": 6230,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx3",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3043,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "BlendRate": 1.0
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3040(release)",
+  "castAnim": null
+ },
+ "MonsterThunderStorm": {
+  "MagicType": "MonsterThunderStorm",
+  "release": {
+   "effects": [
+    {
+     "frame": 650,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MonMagicEx5",
+     "startLight": 20,
+     "endLight": 70,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3056,
+     "target": "point",
+     "extra": {
+      "Blend": true,
+      "BlendRate": 1.0
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3053(release)",
+  "castAnim": null
+ },
+ "SamaGuardianFire": {
+  "MagicType": "SamaGuardianFire",
+  "release": {
+   "effects": [
+    {
+     "frame": 4000,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3073,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3069(release)",
+  "castAnim": null
+ },
+ "SamaGuardianIce": {
+  "MagicType": "SamaGuardianIce",
+  "release": {
+   "effects": [
+    {
+     "frame": 4100,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3085,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3081(release)",
+  "castAnim": null
+ },
+ "SamaGuardianLightning": {
+  "MagicType": "SamaGuardianLightning",
+  "release": {
+   "effects": [
+    {
+     "frame": 4200,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3097,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3093(release)",
+  "castAnim": null
+ },
+ "SamaGuardianWind": {
+  "MagicType": "SamaGuardianWind",
+  "release": {
+   "effects": [
+    {
+     "frame": 4300,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3109,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3105(release)",
+  "castAnim": null
+ },
+ "SamaPhoenixFire": {
+  "MagicType": "SamaPhoenixFire",
+  "release": {
+   "effects": [
+    {
+     "frame": 4500,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3122,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3118(release)",
+  "castAnim": null
+ },
+ "SamaBlackIce": {
+  "MagicType": "SamaBlackIce",
+  "release": {
+   "effects": [
+    {
+     "frame": 4600,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3134,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3130(release)",
+  "castAnim": null
+ },
+ "SamaBlueLightning": {
+  "MagicType": "SamaBlueLightning",
+  "release": {
+   "effects": [
+    {
+     "frame": 4700,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3146,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3142(release)",
+  "castAnim": null
+ },
+ "SamaWhiteWind": {
+  "MagicType": "SamaWhiteWind",
+  "release": {
+   "effects": [
+    {
+     "frame": 4800,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [
+      "point"
+     ],
+     "line": 3158,
+     "target": "point",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "aoe"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3154(release)",
+  "castAnim": null
+ },
+ "SamaProphetFire": {
+  "MagicType": "SamaProphetFire",
+  "release": {
+   "effects": [
+    {
+     "frame": 5600,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3168,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3166(release)",
+  "castAnim": null
+ },
+ "SamaProphetLightning": {
+  "MagicType": "SamaProphetLightning",
+  "release": {
+   "effects": [
+    {
+     "frame": 5200,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3179,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3177(release)",
+  "castAnim": null
+ },
+ "SamaProphetWind": {
+  "MagicType": "SamaProphetWind",
+  "release": {
+   "effects": [
+    {
+     "frame": 5400,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MonMagicEx9",
+     "startLight": 30,
+     "endLight": 80,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3190,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3188(release)",
+  "castAnim": null
+ },
+ "Interchange": {
+  "MagicType": "Interchange",
+  "start": {
+   "effects": [
+    {
+     "frame": 0,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3627,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TeleportationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3627(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "TeleportationStart"
+   ]
+  }
+ },
+ "Defiance": {
+  "MagicType": "Defiance",
+  "start": {
+   "effects": [
+    {
+     "frame": 40,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3640,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DefianceStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3640(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "DefianceStart"
+   ]
+  }
+ },
+ "Invincibility": {
+  "MagicType": "Invincibility",
+  "start": {
+   "effects": [
+    {
+     "frame": 400,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3653,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "InvincibilityStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3653(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "InvincibilityStart"
+   ]
+  }
+ },
+ "Beckon": {
+  "MagicType": "Beckon",
+  "start": {
+   "effects": [
+    {
+     "frame": 580,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3666,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TeleportationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3666(start)",
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "TeleportationStart"
+   ]
+  }
+ },
+ "Might": {
+  "MagicType": "Might",
+  "start": {
+   "effects": [
+    {
+     "frame": 60,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3680,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DragonRise",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3680(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "DragonRise"
+   ]
+  }
+ },
+ "SeismicSlam": {
+  "MagicType": "SeismicSlam",
+  "start": {
+   "effects": [
+    {
+     "frame": 4900,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3693,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SeismicSlam",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3693(start)",
+  "castAnim": "Combat3",
+  "sound": {
+   "start": [
+    "SeismicSlam"
+   ]
+  }
+ },
+ "CrushingWave": {
+  "MagicType": "CrushingWave",
+  "start": {
+   "effects": [
+    {
+     "frame": 100,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx6",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3707,
+     "target": "this",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3707(start)",
+  "castAnim": "Combat3"
+ },
+ "Endurance": {
+  "MagicType": "Endurance",
+  "start": {
+   "effects": [
+    {
+     "frame": 190,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx3",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3722,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DefianceStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3722(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "DefianceStart"
+   ]
+  }
+ },
+ "ReflectDamage": {
+  "MagicType": "ReflectDamage",
+  "start": {
+   "effects": [
+    {
+     "frame": 1220,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3735,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ReflectDamageStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3735(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "ReflectDamageStart"
+   ]
+  }
+ },
+ "MassBeckon": {
+  "MagicType": "MassBeckon",
+  "start": {
+   "effects": [
+    {
+     "frame": 100,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3748,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TeleportationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3748(start)",
+  "castAnim": "Combat1",
+  "sound": {
+   "start": [
+    "TeleportationStart"
+   ]
+  }
+ },
+ "Fetter": {
+  "MagicType": "Fetter",
+  "start": {
+   "effects": [
+    {
+     "frame": 2370,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3761,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DragonRise",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3761(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "DragonRise"
+   ]
+  }
+ },
+ "Repulsion": {
+  "MagicType": "Repulsion",
+  "start": {
+   "effects": [
+    {
+     "frame": 90,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3838,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "RepulsionEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3838(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "RepulsionEnd"
+   ]
+  }
+ },
+ "Teleportation": {
+  "MagicType": "Teleportation",
+  "start": {
+   "effects": [
+    {
+     "frame": 110,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3864,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TeleportationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3864(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "TeleportationStart"
+   ]
+  }
+ },
+ "FireWall": {
+  "MagicType": "FireWall",
+  "start": {
+   "effects": [
+    {
+     "frame": 910,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 3994,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireWallStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:3994(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "FireWallStart"
+   ]
+  }
+ },
+ "GeoManipulation": {
+  "MagicType": "GeoManipulation",
+  "start": {
+   "effects": [
+    {
+     "frame": 110,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4020,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TeleportationStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4020(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "TeleportationStart"
+   ]
+  }
+ },
+ "MagicShield": {
+  "MagicType": "MagicShield",
+  "start": {
+   "effects": [
+    {
+     "frame": 830,
+     "count": 19,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4033,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MagicShieldStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4033(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "MagicShieldStart"
+   ]
+  }
+ },
+ "Renounce": {
+  "MagicType": "Renounce",
+  "start": {
+   "effects": [
+    {
+     "frame": 80,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4125,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DefianceStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4125(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "DefianceStart"
+   ]
+  }
+ },
+ "Tempest": {
+  "MagicType": "Tempest",
+  "start": {
+   "effects": [
+    {
+     "frame": 910,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4138,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "BlowEarthStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4138(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "BlowEarthStart"
+   ]
+  }
+ },
+ "JudgementOfHeaven": {
+  "MagicType": "JudgementOfHeaven",
+  "start": {
+   "effects": [],
+   "sounds": [
+    {
+     "name": "LightningStrikeEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4151(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "LightningStrikeEnd"
+   ]
+  }
+ },
+ "MirrorImage": {
+  "MagicType": "MirrorImage",
+  "start": {
+   "effects": [
+    {
+     "frame": 1260,
+     "count": 6,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4167,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "ShacklingTalismanStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4167(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "ShacklingTalismanStart"
+   ]
+  }
+ },
+ "FrostBite": {
+  "MagicType": "FrostBite",
+  "start": {
+   "effects": [
+    {
+     "frame": 500,
+     "count": 16,
+     "delayMs": 60,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4180,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FrostBiteStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4180(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "FrostBiteStart"
+   ]
+  }
+ },
+ "SuperiorMagicShield": {
+  "MagicType": "SuperiorMagicShield",
+  "start": {
+   "effects": [
+    {
+     "frame": 1900,
+     "count": 17,
+     "delayMs": 60,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4193,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "MagicShieldStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4193(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "MagicShieldStart"
+   ]
+  }
+ },
+ "Tornado": {
+  "MagicType": "Tornado",
+  "start": {
+   "effects": [
+    {
+     "frame": 2400,
+     "count": 4,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 10,
+     "endLight": 10,
+     "colour": "Wind",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4233,
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TornadoStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4233(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "TornadoStart"
+   ]
+  }
+ },
+ "SummonDemonicCreature": {
+  "MagicType": "SummonDemonicCreature",
+  "start": {
+   "effects": [
+    {
+     "frame": 740,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4307,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonSkeletonStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4307(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonSkeletonStart"
+   ]
+  }
+ },
+ "SummonSkeleton": {
+  "MagicType": "SummonSkeleton",
+  "start": {
+   "effects": [
+    {
+     "frame": 740,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4307,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonSkeletonStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4307(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonSkeletonStart"
+   ]
+  }
+ },
+ "SummonJinSkeleton": {
+  "MagicType": "SummonJinSkeleton",
+  "start": {
+   "effects": [
+    {
+     "frame": 740,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4307,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonSkeletonStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4307(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonSkeletonStart"
+   ]
+  }
+ },
+ "Invisibility": {
+  "MagicType": "Invisibility",
+  "start": {
+   "effects": [
+    {
+     "frame": 810,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4322,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "InvisibilityEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4322(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "InvisibilityEnd"
+   ]
+  }
+ },
+ "CombatKick": {
+  "MagicType": "CombatKick",
+  "start": {
+   "effects": [],
+   "sounds": [
+    {
+     "name": "TaoistCombatKickStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4404(start)",
+  "castAnim": "Combat7",
+  "sound": {
+   "start": [
+    "TaoistCombatKickStart"
+   ]
+  }
+ },
+ "SummonShinsu": {
+  "MagicType": "SummonShinsu",
+  "start": {
+   "effects": [
+    {
+     "frame": 2590,
+     "count": 19,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4425,
+     "target": "this",
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonShinsuStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4425(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonShinsuStart"
+   ]
+  }
+ },
+ "Transparency": {
+  "MagicType": "Transparency",
+  "start": {
+   "effects": [
+    {
+     "frame": 430,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4501,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "InvisibilityEnd",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4501(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "InvisibilityEnd"
+   ]
+  }
+ },
+ "CursedDoll": {
+  "MagicType": "CursedDoll",
+  "start": {
+   "effects": [
+    {
+     "frame": 690,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx3",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Fire",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4557,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonSkeletonStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4557(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonSkeletonStart"
+   ]
+  }
+ },
+ "ThunderKick": {
+  "MagicType": "ThunderKick",
+  "start": {
+   "effects": [
+    {
+     "frame": 1190,
+     "count": 10,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 20,
+     "endLight": 40,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4577,
+     "target": "front",
+     "extra": {
+      "Blend": true,
+      "StartDelayMs": 400
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "FireStormEnd",
+     "ctx": []
+    },
+    {
+     "name": "TaoistCombatKickStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4571(start)",
+  "castAnim": "Combat7",
+  "sound": {
+   "start": [
+    "FireStormEnd",
+    "TaoistCombatKickStart"
+   ]
+  }
+ },
+ "Spiritualism": {
+  "MagicType": "Spiritualism",
+  "start": {
+   "effects": [
+    {
+     "frame": 1580,
+     "count": 11,
+     "delayMs": 100,
+     "lib": "MagicEx2",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "attackColour",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4648,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DefianceStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4639(start)",
+  "castAnim": "Combat15",
+  "sound": {
+   "start": [
+    "DefianceStart"
+   ]
+  }
+ },
+ "SummonDead": {
+  "MagicType": "SummonDead",
+  "start": {
+   "effects": [
+    {
+     "frame": 740,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "Magic",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4676,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonSkeletonStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4676(start)",
+  "castAnim": "Combat2",
+  "sound": {
+   "start": [
+    "SummonSkeletonStart"
+   ]
+  }
+ },
+ "Cloak": {
+  "MagicType": "Cloak",
+  "start": {
+   "effects": [
+    {
+     "frame": 600,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 10,
+     "endLight": 35,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4734,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "CloakStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4734(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "CloakStart"
+   ]
+  }
+ },
+ "Rake": {
+  "MagicType": "Rake",
+  "start": {
+   "effects": [
+    {
+     "frame": 1200,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "Ice",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4807,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect",
+     "directionFrames": [
+      1200,
+      1210,
+      1220,
+      1230,
+      1240
+     ]
+    }
+   ],
+   "sounds": [
+    {
+     "name": "RakeStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4782(start)",
+  "castAnim": "Combat5",
+  "sound": {
+   "start": [
+    "RakeStart"
+   ]
+  }
+ },
+ "SummonPuppet": {
+  "MagicType": "SummonPuppet",
+  "start": {
+   "effects": [
+    {
+     "frame": 800,
+     "count": 16,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 80,
+     "endLight": 50,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4822,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "SummonPuppet",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4822(start)",
+  "castAnim": "Combat14",
+  "sound": {
+   "start": [
+    "SummonPuppet"
+   ]
+  }
+ },
+ "TheNewBeginning": {
+  "MagicType": "TheNewBeginning",
+  "start": {
+   "effects": [
+    {
+     "frame": 2200,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MagicEx4",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4857,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "TheNewBeginning",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4857(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "TheNewBeginning"
+   ]
+  }
+ },
+ "DragonRepulse": {
+  "MagicType": "DragonRepulse",
+  "start": {
+   "effects": [
+    {
+     "frame": 1000,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4874,
+     "target": "CurrentLocation",
+     "segment": "castEffect"
+    },
+    {
+     "frame": 1020,
+     "count": 10,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 80,
+     "endLight": 50,
+     "colour": "Lightning",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4878,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "DragonRepulseStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4874(start)",
+  "castAnim": "DragonRepulseStart",
+  "sound": {
+   "start": [
+    "DragonRepulseStart"
+   ]
+  }
+ },
+ "Abyss": {
+  "MagicType": "Abyss",
+  "start": {
+   "effects": [
+    {
+     "frame": 2000,
+     "count": 14,
+     "delayMs": 70,
+     "lib": "MagicEx4",
+     "startLight": 80,
+     "endLight": 50,
+     "colour": "Phantom",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4895,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "AbyssStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4895(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "AbyssStart"
+   ]
+  }
+ },
+ "FlashOfLight": {
+  "MagicType": "FlashOfLight",
+  "start": {
+   "effects": [
+    {
+     "frame": 2300,
+     "count": 8,
+     "delayMs": 60,
+     "lib": "MagicEx4",
+     "startLight": 35,
+     "endLight": 35,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4908,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true,
+      "DirectionSemantic": "castDirection"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4908(start)",
+  "castAnim": "Combat10"
+ },
+ "Evasion": {
+  "MagicType": "Evasion",
+  "start": {
+   "effects": [
+    {
+     "frame": 2500,
+     "count": 12,
+     "delayMs": 70,
+     "lib": "MagicEx4",
+     "startLight": 80,
+     "endLight": 50,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4923,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true,
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "EvasionStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4923(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "EvasionStart"
+   ]
+  }
+ },
+ "RagingWind": {
+  "MagicType": "RagingWind",
+  "start": {
+   "effects": [
+    {
+     "frame": 2600,
+     "count": 12,
+     "delayMs": 70,
+     "lib": "MagicEx4",
+     "startLight": 80,
+     "endLight": 50,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4937,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true,
+      "DrawType": "Floor"
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "RagingWindStart",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4937(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "RagingWindStart"
+   ]
+  }
+ },
+ "Concentration": {
+  "MagicType": "Concentration",
+  "start": {
+   "effects": [
+    {
+     "frame": 300,
+     "count": 15,
+     "delayMs": 100,
+     "lib": "MagicEx5",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4951,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Concentration",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4951(start)",
+  "castAnim": "Combat9",
+  "sound": {
+   "start": [
+    "Concentration"
+   ]
+  }
+ },
+ "Containment": {
+  "MagicType": "Containment",
+  "start": {
+   "effects": [
+    {
+     "frame": 590,
+     "count": 9,
+     "delayMs": 60,
+     "lib": "MagicEx3",
+     "startLight": 60,
+     "endLight": 60,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 4964,
+     "target": "this",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [
+    {
+     "name": "Containment",
+     "ctx": []
+    }
+   ],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:4964(start)",
+  "castAnim": "Combat14",
+  "sound": {
+   "start": [
+    "Containment"
+   ]
+  }
+ },
+ "DoomClawRightPinch": {
+  "MagicType": "DoomClawRightPinch",
+  "start": {
+   "effects": [
+    {
+     "frame": 2640,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 5053,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    },
+    {
+     "frame": 2680,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "arrival"
+     ],
+     "line": 5063,
+     "target": "Functions.Move(Functions.Move(CurrentLocation, MirDirection.Down, 0), MirDirection.Right, 5)",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:5052(start)",
+  "castAnim": null
+ },
+ "DoomClawLeftPinch": {
+  "MagicType": "DoomClawLeftPinch",
+  "start": {
+   "effects": [
+    {
+     "frame": 2660,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 5073,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    },
+    {
+     "frame": 2680,
+     "count": 9,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "arrival"
+     ],
+     "line": 5083,
+     "target": "Functions.Move(CurrentLocation, MirDirection.Right, 5)",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:5072(start)",
+  "castAnim": null
+ },
+ "DoomClawRightSwipe": {
+  "MagicType": "DoomClawRightSwipe",
+  "start": {
+   "effects": [
+    {
+     "frame": 2700,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 5092,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:5091(start)",
+  "castAnim": null
+ },
+ "DoomClawLeftSwipe": {
+  "MagicType": "DoomClawLeftSwipe",
+  "start": {
+   "effects": [
+    {
+     "frame": 2720,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [],
+     "line": 5101,
+     "target": "CurrentLocation",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:5100(start)",
+  "castAnim": null
+ },
+ "DoomClawSpit": {
+  "MagicType": "DoomClawSpit",
+  "start": {
+   "effects": [
+    {
+     "frame": 2500,
+     "count": 7,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "rawExtra": [
+      "p"
+     ],
+     "kind": "projectile",
+     "ctx": [
+      "point"
+     ],
+     "line": 5114,
+     "target": "point",
+     "extra": {
+      "Skip": 0,
+      "Explode": true,
+      "Blend": true
+     },
+     "segment": "projectile"
+    },
+    {
+     "frame": 2520,
+     "count": 8,
+     "delayMs": 100,
+     "lib": "MonMagicEx19",
+     "startLight": 0,
+     "endLight": 0,
+     "colour": "None",
+     "kind": "effect",
+     "ctx": [
+      "point",
+      "arrival"
+     ],
+     "line": 5125,
+     "target": "eff.MapTarget",
+     "extra": {
+      "Blend": true
+     },
+     "segment": "castEffect"
+    }
+   ],
+   "sounds": [],
+   "shakes": []
+  },
+  "notes": "MapObject.cs:5109(start)",
+  "castAnim": null
+ }
+}

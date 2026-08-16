@@ -1,0 +1,5473 @@
+{
+ "_meta": {
+  "schema": "sounds/1",
+  "generated_at": "2026-08-16T11:58:30+0900",
+  "generator": "Tools/magiclab/extract_sound_catalogs.py",
+  "sources": {
+   "SoundCatalog.cs": "SoundIndex→文件/类别/循环 (DXSoundManager.SoundList 移植)",
+   "MagicSoundCatalog.cs": "技能分阶段音效+门控 (显式表)",
+   "MonsterSoundCatalog.cs": "怪物 Attack/Struck/Die"
+  },
+  "fallback": {
+   "rule": "MagicSoundCatalog.ResolveSpecs: 无显式条目时按 {magic}{phase后缀} 试解析 SoundIndex 枚举且须存在于 catalog; 显式 None 压制回退",
+   "phaseSuffix": {
+    "start": "Start",
+    "travel": "Travel",
+    "end": "End",
+    "duration": "Duration"
+   }
+  },
+  "gates": [
+   "always",
+   "locations",
+   "targets",
+   "locationsOrTargets"
+  ],
+  "deadRefs": [
+   "DragonRepulseStart",
+   "RakeStart",
+   "WraithGripEnd"
+  ]
+ },
+ "sounds": {
+  "LoginScene": {
+   "file": "Opening.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "LoginScene2": {
+   "file": "Main.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "LoginScene3": {
+   "file": "Ending.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "SelectScene": {
+   "file": "SelChr.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B000": {
+   "file": "B000.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B100": {
+   "file": "B100.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B122": {
+   "file": "B122.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B200": {
+   "file": "B200.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B300": {
+   "file": "B300.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B2": {
+   "file": "B2.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B400": {
+   "file": "B400.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "B8": {
+   "file": "B8.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD00": {
+   "file": "BD00.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD002": {
+   "file": "BD002.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD01": {
+   "file": "BD01.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD02": {
+   "file": "BD02.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD041": {
+   "file": "BD041.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD042": {
+   "file": "BD042.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD402": {
+   "file": "BD402.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD210": {
+   "file": "BD210.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD50": {
+   "file": "BD50.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD60": {
+   "file": "BD60.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD70": {
+   "file": "BD70.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BD99": {
+   "file": "BD99.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BDUnderseaCave": {
+   "file": "BDUnderseaCave.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "BDUnderseaCaveBoss": {
+   "file": "BDUnderseaCaveBoss.wav",
+   "category": "Music",
+   "loop": true
+  },
+  "Foot1": {
+   "file": "1.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "Foot2": {
+   "file": "2.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "Foot3": {
+   "file": "3.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "Foot4": {
+   "file": "4.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FishingCast": {
+   "file": "84.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FishingBob": {
+   "file": "85.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FishingReel": {
+   "file": "86.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "HorseWalk1": {
+   "file": "33.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "HorseWalk2": {
+   "file": "34.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "HorseRun": {
+   "file": "35.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "GenericStruckPlayer": {
+   "file": "61.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "DaggerSwing": {
+   "file": "50.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "WoodSwing": {
+   "file": "51.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "IronSwordSwing": {
+   "file": "52.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "ShortSwordSwing": {
+   "file": "53.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "AxeSwing": {
+   "file": "54.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "ClubSwing": {
+   "file": "55.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "WandSwing": {
+   "file": "56.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FistSwing": {
+   "file": "57.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "GlaiveAttack": {
+   "file": "63.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "ClawAttack": {
+   "file": "64.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "MiningHit": {
+   "file": "125.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "MiningStruck": {
+   "file": "126.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "MaleStruck": {
+   "file": "138.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FemaleStruck": {
+   "file": "139.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "MaleDie": {
+   "file": "144.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "FemaleDie": {
+   "file": "145.wav",
+   "category": "Player",
+   "loop": false
+  },
+  "ButtonA": {
+   "file": "103.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ButtonB": {
+   "file": "104.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ButtonC": {
+   "file": "105.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectWarriorMale": {
+   "file": "JMCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectWarriorFemale": {
+   "file": "JWCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectWizardMale": {
+   "file": "SMCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectWizardFemale": {
+   "file": "SWCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectTaoistMale": {
+   "file": "DMCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectTaoistFemale": {
+   "file": "DWCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectAssassinMale": {
+   "file": "AMCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SelectAssassinFemale": {
+   "file": "AWCre.wav",
+   "category": "System",
+   "loop": false
+  },
+  "TeleportIn": {
+   "file": "109.wav",
+   "category": "System",
+   "loop": false
+  },
+  "TeleportOut": {
+   "file": "110.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemPotion": {
+   "file": "108.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemWeapon": {
+   "file": "111.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemArmour": {
+   "file": "112.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemRing": {
+   "file": "113.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemBracelet": {
+   "file": "114.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemNecklace": {
+   "file": "115.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemHelmet": {
+   "file": "116.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemShoes": {
+   "file": "117.wav",
+   "category": "System",
+   "loop": false
+  },
+  "ItemDefault": {
+   "file": "118.wav",
+   "category": "System",
+   "loop": false
+  },
+  "GoldPickUp": {
+   "file": "120.wav",
+   "category": "System",
+   "loop": false
+  },
+  "GoldGained": {
+   "file": "122.wav",
+   "category": "System",
+   "loop": false
+  },
+  "RollDice": {
+   "file": "dice_roll.wav",
+   "category": "System",
+   "loop": false
+  },
+  "RollYut": {
+   "file": "yut_sticks.wav",
+   "category": "System",
+   "loop": false
+  },
+  "QuestTake": {
+   "file": "Qtake.wav",
+   "category": "System",
+   "loop": false
+  },
+  "QuestComplete": {
+   "file": "Qcomp.wav",
+   "category": "System",
+   "loop": false
+  },
+  "GemStart": {
+   "file": "Sopen.wav",
+   "category": "System",
+   "loop": false
+  },
+  "GemCombine": {
+   "file": "Scombine.wav",
+   "category": "System",
+   "loop": false
+  },
+  "SlayingMale": {
+   "file": "M7-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SlayingFemale": {
+   "file": "M7-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "EnergyBlast": {
+   "file": "M12-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HalfMoon": {
+   "file": "M25-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FlamingSword": {
+   "file": "M26-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DragonRise": {
+   "file": "M26-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BladeStorm": {
+   "file": "M34-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DefensiveBlow": {
+   "file": "m140-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DestructiveSurge": {
+   "file": "M103-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DefianceStart": {
+   "file": "M106-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ReflectDamageStart": {
+   "file": "m126-0.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "InvincibilityStart": {
+   "file": "m137-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "AssaultStart": {
+   "file": "M109-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SwiftBladeEnd": {
+   "file": "M131-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SeismicSlam": {
+   "file": "m140-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ElementalSwordsStart": {
+   "file": "cs252-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ElementalSwordsEnd": {
+   "file": "cs252-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireBallStart": {
+   "file": "M1-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireBallTravel": {
+   "file": "M1-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireBallEnd": {
+   "file": "M1-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ThunderBoltStart": {
+   "file": "M41-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ThunderBoltTravel": {
+   "file": "M41-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ThunderBoltEnd": {
+   "file": "M41-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceBoltStart": {
+   "file": "M39-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceBoltTravel": {
+   "file": "M39-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceBoltEnd": {
+   "file": "M39-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GustBlastStart": {
+   "file": "M67-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GustBlastTravel": {
+   "file": "M67-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GustBlastEnd": {
+   "file": "M67-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "RepulsionEnd": {
+   "file": "M8-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ElectricShockStart": {
+   "file": "M20-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ElectricShockEnd": {
+   "file": "M20-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterFireBallStart": {
+   "file": "M5-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterFireBallTravel": {
+   "file": "M5-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterFireBallEnd": {
+   "file": "M5-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LightningStrikeStart": {
+   "file": "M11-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LightningStrikeEnd": {
+   "file": "M11-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterIceBoltStart": {
+   "file": "M40-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterIceBoltTravel": {
+   "file": "M40-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterIceBoltEnd": {
+   "file": "M40-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CycloneStart": {
+   "file": "M74-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CycloneEnd": {
+   "file": "M74-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LavaStrikeStart": {
+   "file": "M9-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LavaStrikeEnd": {
+   "file": "M9-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LightningBeamEnd": {
+   "file": "M10-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TeleportationStart": {
+   "file": "M21-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireWallStart": {
+   "file": "M22-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireWallDurationLong": {
+   "file": "M22-2.wav",
+   "category": "Magic",
+   "loop": true
+  },
+  "FireWallDuration": {
+   "file": "M22-3.wav",
+   "category": "Magic",
+   "loop": true
+  },
+  "FireStormStart": {
+   "file": "M23-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireStormEnd": {
+   "file": "M23-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LightningWaveStart": {
+   "file": "M24-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "LightningWaveEnd": {
+   "file": "M24-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FrozenEarthStart": {
+   "file": "M53-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FrozenEarthEnd": {
+   "file": "M53-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BlowEarthStart": {
+   "file": "M73-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BlowEarthTravel": {
+   "file": "M73-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BlowEarthEnd": {
+   "file": "M73-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ExpelUndeadStart": {
+   "file": "M32-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ExpelUndeadEnd": {
+   "file": "M32-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MagicShieldStart": {
+   "file": "M31-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceStormStart": {
+   "file": "M33-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceStormEnd": {
+   "file": "M33-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DragonTornadoStart": {
+   "file": "M72-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DragonTornadoEnd": {
+   "file": "M72-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterFrozenEarthStart": {
+   "file": "M53-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GreaterFrozenEarthEnd": {
+   "file": "M53-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ChainLightningStart": {
+   "file": "M111-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ChainLightningEnd": {
+   "file": "M111-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TempestDuration": {
+   "file": "M114-3.wav",
+   "category": "Magic",
+   "loop": true
+  },
+  "FrostBiteStart": {
+   "file": "m135-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ParasiteTravel": {
+   "file": "m139-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ParasiteExplode": {
+   "file": "m139-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ElementalHurricane": {
+   "file": "m141-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TornadoStart": {
+   "file": "cs255-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HealStart": {
+   "file": "M2-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HealEnd": {
+   "file": "M2-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PoisonDustStart": {
+   "file": "M6-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PoisonDustEnd": {
+   "file": "M6-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ExplosiveTalismanStart": {
+   "file": "M13-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ExplosiveTalismanTravel": {
+   "file": "M13-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ExplosiveTalismanEnd": {
+   "file": "M13-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HolyStrikeStart": {
+   "file": "M37-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HolyStrikeTravel": {
+   "file": "M37-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HolyStrikeEnd": {
+   "file": "M37-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ImprovedHolyStrikeStart": {
+   "file": "M38-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ImprovedHolyStrikeTravel": {
+   "file": "M38-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ImprovedHolyStrikeEnd": {
+   "file": "M38-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MagicResistanceTravel": {
+   "file": "M14-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MagicResistanceEnd": {
+   "file": "M14-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ResilienceTravel": {
+   "file": "M15-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ResilienceEnd": {
+   "file": "M15-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ShacklingTalismanStart": {
+   "file": "M16-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ShacklingTalismanEnd": {
+   "file": "M16-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonSkeletonStart": {
+   "file": "M17-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonSkeletonEnd": {
+   "file": "M17-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CursedDollEnd": {
+   "file": "m137-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "InvisibilityEnd": {
+   "file": "M18-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MassInvisibilityTravel": {
+   "file": "M19-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MassInvisibilityEnd": {
+   "file": "M19-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TaoistCombatKickStart": {
+   "file": "M36-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MassHealStart": {
+   "file": "M29-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "MassHealEnd": {
+   "file": "M29-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BloodLustTravel": {
+   "file": "M94-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BloodLustEnd": {
+   "file": "M94-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ResurrectionStart": {
+   "file": "M77-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PurificationStart": {
+   "file": "M120-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PurificationEnd": {
+   "file": "M120-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonShinsuStart": {
+   "file": "M30-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonShinsuEnd": {
+   "file": "M30-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "StrengthOfFaithStart": {
+   "file": "M123-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "StrengthOfFaithEnd": {
+   "file": "M123-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "NeutralizeTravel": {
+   "file": "M19-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "NeutralizeEnd": {
+   "file": "m138-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "DarkSoulPrison": {
+   "file": "m136-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonDeadEnd": {
+   "file": "cs258-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PoisonousCloudStart": {
+   "file": "as_157-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CloakStart": {
+   "file": "as_163.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FullBloom": {
+   "file": "as_165.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "WhiteLotus": {
+   "file": "as_166.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "RedLotus": {
+   "file": "as_167.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SweetBrier": {
+   "file": "as_168.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SweetBrierMale": {
+   "file": "as_168-m.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SweetBrierFemale": {
+   "file": "as_168-f.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CalamityOfFullMoon": {
+   "file": "as_171.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "WaningMoon": {
+   "file": "as_176.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "Karma": {
+   "file": "as_172.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TheNewBeginning": {
+   "file": "as_174.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "Concentration": {
+   "file": "m134-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "SummonPuppet": {
+   "file": "as_164-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "WraithGripStart": {
+   "file": "as_159-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HellFireStart": {
+   "file": "as_160-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "AbyssStart": {
+   "file": "M14-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FlashOfLightEnd": {
+   "file": "M123-3.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "RagingWindStart": {
+   "file": "243-5.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "EvasionStart": {
+   "file": "M26-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CorpseExploderEnd": {
+   "file": "m125-2.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "Hemorrhage": {
+   "file": "43621.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "ChainofFireExplode": {
+   "file": "cs261-1.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HundredFist": {
+   "file": "37380.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "OffensiveBlow": {
+   "file": "37400.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceAuraTravel": {
+   "file": "37410.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceDragonTravel": {
+   "file": "37440.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceDragonBreak": {
+   "file": "37450.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BindingTalisman": {
+   "file": "37460.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "BrainStorm": {
+   "file": "37470.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FlamingDaggers": {
+   "file": "37510.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "Shredding": {
+   "file": "37520.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "TaecheonSword": {
+   "file": "40300.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FireSword": {
+   "file": "40310.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "IceBreaker": {
+   "file": "40320.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FrozenDragon": {
+   "file": "40330.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "HeavenlySky": {
+   "file": "40340.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "PoisonCloud": {
+   "file": "40350.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "FourWheels": {
+   "file": "40360.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "CrescentMoon": {
+   "file": "40370.wav",
+   "category": "Magic",
+   "loop": false
+  },
+  "GenericStruckMonster": {
+   "file": "61.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChickenAttack": {
+   "file": "220-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChickenStruck": {
+   "file": "220-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChickenDie": {
+   "file": "220-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PigAttack": {
+   "file": "300-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PigStruck": {
+   "file": "300-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PigDie": {
+   "file": "300-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CowAttack": {
+   "file": "301-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CowStruck": {
+   "file": "301-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CowDie": {
+   "file": "301-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeerAttack": {
+   "file": "221-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeerStruck": {
+   "file": "221-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeerDie": {
+   "file": "221-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SheepAttack": {
+   "file": "258-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SheepStruck": {
+   "file": "258-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SheepDie": {
+   "file": "258-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkyStingerAttack": {
+   "file": "69-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkyStingerStruck": {
+   "file": "69-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkyStingerDie": {
+   "file": "69-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawCatAttack": {
+   "file": "238-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawCatStruck": {
+   "file": "238-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawCatDie": {
+   "file": "238-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WolfAttack": {
+   "file": "265-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WolfStruck": {
+   "file": "265-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WolfDie": {
+   "file": "265-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ForestYetiAttack": {
+   "file": "230-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ForestYetiStruck": {
+   "file": "230-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ForestYetiDie": {
+   "file": "230-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CarnivorousPlantAttack": {
+   "file": "231-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CarnivorousPlantStruck": {
+   "file": "231-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CarnivorousPlantDie": {
+   "file": "231-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YobAttack": {
+   "file": "211-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YobStruck": {
+   "file": "211-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YobDie": {
+   "file": "211-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaAttack": {
+   "file": "223-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaStruck": {
+   "file": "223-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaDie": {
+   "file": "223-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TigerSnakeAttack": {
+   "file": "257-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TigerSnakeStruck": {
+   "file": "257-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TigerSnakeDie": {
+   "file": "257-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpittingSpiderAttack": {
+   "file": "225-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpittingSpiderStruck": {
+   "file": "225-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpittingSpiderDie": {
+   "file": "225-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScarecrowAttack": {
+   "file": "240-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScarecrowStruck": {
+   "file": "240-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScarecrowDie": {
+   "file": "240-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaHeroAttack": {
+   "file": "224-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaHeroStruck": {
+   "file": "224-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OmaHeroDie": {
+   "file": "224-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveBatAttack": {
+   "file": "229-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveBatStruck": {
+   "file": "229-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveBatDie": {
+   "file": "229-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScorpionAttack": {
+   "file": "228-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScorpionStruck": {
+   "file": "228-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ScorpionDie": {
+   "file": "228-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAttack": {
+   "file": "232-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonStruck": {
+   "file": "232-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonDie": {
+   "file": "232-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeManAttack": {
+   "file": "234-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeManStruck": {
+   "file": "234-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeManDie": {
+   "file": "234-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeThrowerAttack": {
+   "file": "233-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeThrowerStruck": {
+   "file": "233-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonAxeThrowerDie": {
+   "file": "233-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonWarriorAttack": {
+   "file": "235-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonWarriorStruck": {
+   "file": "235-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonWarriorDie": {
+   "file": "235-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonLordAttack": {
+   "file": "236-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonLordStruck": {
+   "file": "236-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SkeletonLordDie": {
+   "file": "236-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveMaggotAttack": {
+   "file": "237-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveMaggotStruck": {
+   "file": "237-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CaveMaggotDie": {
+   "file": "237-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostSorcererAttack": {
+   "file": "248-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostSorcererStruck": {
+   "file": "248-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostSorcererDie": {
+   "file": "248-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostMageAppear": {
+   "file": "249-0.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostMageAttack": {
+   "file": "249-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostMageStruck": {
+   "file": "249-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostMageDie": {
+   "file": "249-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VoraciousGhostAttack": {
+   "file": "252-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VoraciousGhostStruck": {
+   "file": "252-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VoraciousGhostDie": {
+   "file": "252-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhoulChampionAttack": {
+   "file": "253-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhoulChampionStruck": {
+   "file": "253-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhoulChampionDie": {
+   "file": "253-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArmoredAntAttack": {
+   "file": "214-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArmoredAntStruck": {
+   "file": "214-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArmoredAntDie": {
+   "file": "214-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AntNeedlerAttack": {
+   "file": "296-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AntNeedlerStruck": {
+   "file": "296-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AntNeedlerDie": {
+   "file": "296-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShellNipperAttack": {
+   "file": "260-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShellNipperStruck": {
+   "file": "260-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShellNipperDie": {
+   "file": "260-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VisceralWormAttack": {
+   "file": "261-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VisceralWormStruck": {
+   "file": "261-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VisceralWormDie": {
+   "file": "261-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "KeratoidAttack": {
+   "file": "263-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "KeratoidStruck": {
+   "file": "263-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "KeratoidDie": {
+   "file": "263-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantFleaAttack": {
+   "file": "325-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantFleaStruck": {
+   "file": "325-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantFleaDie": {
+   "file": "325-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PoisonousMutantFleaAttack": {
+   "file": "326-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PoisonousMutantFleaStruck": {
+   "file": "326-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PoisonousMutantFleaDie": {
+   "file": "326-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlasterMutantFleaAttack": {
+   "file": "327-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlasterMutantFleaStruck": {
+   "file": "327-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlasterMutantFleaDie": {
+   "file": "327-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WasHatchlingAttack": {
+   "file": "271-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WasHatchlingStruck": {
+   "file": "271-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WasHatchlingDie": {
+   "file": "271-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CentipedeAttack": {
+   "file": "266-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CentipedeStruck": {
+   "file": "266-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CentipedeDie": {
+   "file": "266-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ButterflyWormAttack": {
+   "file": "272-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ButterflyWormStruck": {
+   "file": "272-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ButterflyWormDie": {
+   "file": "272-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantMaggotAttack": {
+   "file": "268-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantMaggotStruck": {
+   "file": "268-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantMaggotDie": {
+   "file": "268-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EarwigAttack": {
+   "file": "269-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EarwigStruck": {
+   "file": "269-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EarwigDie": {
+   "file": "269-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IronLanceAttack": {
+   "file": "270-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IronLanceStruck": {
+   "file": "270-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IronLanceDie": {
+   "file": "270-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LordNiJaeAttack": {
+   "file": "267-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LordNiJaeStruck": {
+   "file": "267-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LordNiJaeDie": {
+   "file": "267-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RottingGhoulAttack": {
+   "file": "318-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RottingGhoulStruck": {
+   "file": "318-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RottingGhoulDie": {
+   "file": "318-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DecayingGhoulAttack": {
+   "file": "312-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DecayingGhoulStruck": {
+   "file": "312-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DecayingGhoulDie": {
+   "file": "312-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BloodThirstyGhoulAttack": {
+   "file": "242-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BloodThirstyGhoulStruck": {
+   "file": "242-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BloodThirstyGhoulDie": {
+   "file": "242-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpinedDarkLizardAttack": {
+   "file": "246-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpinedDarkLizardStruck": {
+   "file": "246-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpinedDarkLizardDie": {
+   "file": "246-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DungAttack": {
+   "file": "246-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DungStruck": {
+   "file": "246-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DungDie": {
+   "file": "246-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaInfidelAttack": {
+   "file": "242-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaInfidelStruck": {
+   "file": "242-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaInfidelDie": {
+   "file": "242-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaFlameThrowerAttack": {
+   "file": "243-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaFlameThrowerStruck": {
+   "file": "243-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaFlameThrowerDie": {
+   "file": "243-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaAnguisherAttack": {
+   "file": "244-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaAnguisherStruck": {
+   "file": "244-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaAnguisherDie": {
+   "file": "244-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaKingAttack": {
+   "file": "245-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaKingStruck": {
+   "file": "245-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "UmaKingDie": {
+   "file": "245-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpiderBatAttack": {
+   "file": "297-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpiderBatStruck": {
+   "file": "297-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpiderBatDie": {
+   "file": "297-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArachnidGazerStruck": {
+   "file": "304-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArachnidGazerDie": {
+   "file": "304-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LarvaAttack": {
+   "file": "303-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LarvaStruck": {
+   "file": "303-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonGuardianAttack": {
+   "file": "305-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonGuardianStruck": {
+   "file": "305-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonGuardianDie": {
+   "file": "305-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonProtectorAttack": {
+   "file": "306-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonProtectorStruck": {
+   "file": "306-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonProtectorDie": {
+   "file": "306-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomousArachnidAttack": {
+   "file": "307-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomousArachnidStruck": {
+   "file": "307-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomousArachnidDie": {
+   "file": "307-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DarkArachnidAttack": {
+   "file": "308-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DarkArachnidStruck": {
+   "file": "308-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DarkArachnidDie": {
+   "file": "308-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonTheFallenAttack": {
+   "file": "302-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonTheFallenStruck": {
+   "file": "302-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedMoonTheFallenDie": {
+   "file": "302-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ViciousRatAttack": {
+   "file": "281-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ViciousRatStruck": {
+   "file": "281-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ViciousRatDie": {
+   "file": "281-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaSharpShooterAttack": {
+   "file": "282-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaSharpShooterStruck": {
+   "file": "282-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaSharpShooterDie": {
+   "file": "282-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaFanaticAttack": {
+   "file": "283-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaFanaticStruck": {
+   "file": "283-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaFanaticDie": {
+   "file": "283-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaGuardianAttack": {
+   "file": "284-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaGuardianStruck": {
+   "file": "284-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaGuardianDie": {
+   "file": "284-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaKingAppear": {
+   "file": "285-0.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaKingAttack": {
+   "file": "285-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaKingStruck": {
+   "file": "285-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ZumaKingDie": {
+   "file": "285-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilFanaticAttack": {
+   "file": "335-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilFanaticStruck": {
+   "file": "335-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilFanaticDie": {
+   "file": "335-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MonkeyAttack": {
+   "file": "332-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MonkeyStruck": {
+   "file": "332-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MonkeyDie": {
+   "file": "332-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilElephantAttack": {
+   "file": "336-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilElephantStruck": {
+   "file": "336-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EvilElephantDie": {
+   "file": "336-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CannibalFanaticAttack": {
+   "file": "334-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CannibalFanaticStruck": {
+   "file": "334-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CannibalFanaticDie": {
+   "file": "334-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpikedBeetleAttack": {
+   "file": "264-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpikedBeetleStruck": {
+   "file": "264-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SpikedBeetleDie": {
+   "file": "264-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaGruntAttack": {
+   "file": "309-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaGruntStruck": {
+   "file": "309-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaGruntDie": {
+   "file": "309-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaMageAttack": {
+   "file": "213-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaMageStruck": {
+   "file": "213-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaMageDie": {
+   "file": "213-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaEliteAttack": {
+   "file": "217-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaEliteStruck": {
+   "file": "217-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaEliteDie": {
+   "file": "217-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SandSharkAttack": {
+   "file": "342-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SandSharkStruck": {
+   "file": "342-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SandSharkDie": {
+   "file": "342-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGolemAppear": {
+   "file": "204-0.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGolemAttack": {
+   "file": "204-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGolemStruck": {
+   "file": "204-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGolemDie": {
+   "file": "204-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WindfurySorceressAttack": {
+   "file": "344-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WindfurySorceressStruck": {
+   "file": "344-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WindfurySorceressDie": {
+   "file": "344-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CursedCactusAttack": {
+   "file": "294-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CursedCactusStruck": {
+   "file": "294-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CursedCactusDie": {
+   "file": "294-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RagingLizardAttack": {
+   "file": "233-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RagingLizardStruck": {
+   "file": "233-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RagingLizardDie": {
+   "file": "233-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SawToothLizardAttack": {
+   "file": "212-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SawToothLizardStruck": {
+   "file": "212-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SawToothLizardDie": {
+   "file": "212-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantLizardAttack": {
+   "file": "234-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantLizardStruck": {
+   "file": "234-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantLizardDie": {
+   "file": "234-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomSpitterAttack": {
+   "file": "235-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomSpitterStruck": {
+   "file": "235-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "VenomSpitterDie": {
+   "file": "235-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SonicLizardAttack": {
+   "file": "325-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SonicLizardStruck": {
+   "file": "325-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SonicLizardDie": {
+   "file": "325-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GiantLizardAttack": {
+   "file": "244-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GiantLizardStruck": {
+   "file": "244-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GiantLizardDie": {
+   "file": "244-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrazedLizardAttack": {
+   "file": "335-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrazedLizardStruck": {
+   "file": "335-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrazedLizardDie": {
+   "file": "335-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TaintedTerrorAttack": {
+   "file": "361-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TaintedTerrorStruck": {
+   "file": "361-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TaintedTerrorDie": {
+   "file": "361-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TaintedTerrorAttack2": {
+   "file": "361-8.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeathLordJichonAttack": {
+   "file": "362-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeathLordJichonStruck": {
+   "file": "362-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeathLordJichonDie": {
+   "file": "362-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeathLordJichonAttack2": {
+   "file": "M25-1.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DeathLordJichonAttack3": {
+   "file": "362-8.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MinotaurAttack": {
+   "file": "317-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MinotaurStruck": {
+   "file": "317-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MinotaurDie": {
+   "file": "317-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostMinotaurAttack": {
+   "file": "314-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostMinotaurStruck": {
+   "file": "314-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostMinotaurDie": {
+   "file": "314-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BanyaLeftGuardAttack": {
+   "file": "310-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BanyaLeftGuardStruck": {
+   "file": "310-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BanyaLeftGuardDie": {
+   "file": "310-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmperorSaWooAttack": {
+   "file": "335-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmperorSaWooStruck": {
+   "file": "335-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmperorSaWooDie": {
+   "file": "335-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneArcherAttack": {
+   "file": "322-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneArcherStruck": {
+   "file": "322-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneArcherDie": {
+   "file": "322-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneCaptainAttack": {
+   "file": "320-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneCaptainStruck": {
+   "file": "320-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BoneCaptainDie": {
+   "file": "320-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArchLichTaeduAttack": {
+   "file": "321-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArchLichTaeduStruck": {
+   "file": "321-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ArchLichTaeduDie": {
+   "file": "321-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothLarvaAttack": {
+   "file": "273-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothLarvaStruck": {
+   "file": "273-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothLarvaDie": {
+   "file": "273-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LesserWedgeMothAttack": {
+   "file": "274-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LesserWedgeMothStruck": {
+   "file": "274-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LesserWedgeMothDie": {
+   "file": "274-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothAttack": {
+   "file": "275-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothStruck": {
+   "file": "275-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WedgeMothDie": {
+   "file": "275-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedBoarAttack": {
+   "file": "277-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedBoarStruck": {
+   "file": "277-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RedBoarDie": {
+   "file": "277-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawSerpentAttack": {
+   "file": "279-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawSerpentStruck": {
+   "file": "279-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ClawSerpentDie": {
+   "file": "279-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackBoarAttack": {
+   "file": "277-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackBoarStruck": {
+   "file": "277-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackBoarDie": {
+   "file": "277-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TuskLordAttack": {
+   "file": "277-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TuskLordStruck": {
+   "file": "277-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TuskLordDie": {
+   "file": "277-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RazorTuskAttack": {
+   "file": "328-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RazorTuskStruck": {
+   "file": "328-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "RazorTuskDie": {
+   "file": "328-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PinkGoddessAttack": {
+   "file": "340-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PinkGoddessStruck": {
+   "file": "340-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PinkGoddessDie": {
+   "file": "340-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GreenGoddessAttack": {
+   "file": "340-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GreenGoddessStruck": {
+   "file": "340-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GreenGoddessDie": {
+   "file": "340-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantCaptainAttack": {
+   "file": "339-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantCaptainStruck": {
+   "file": "339-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutantCaptainDie": {
+   "file": "339-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGriffinAttack": {
+   "file": "337-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGriffinStruck": {
+   "file": "337-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "StoneGriffinDie": {
+   "file": "337-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FlameGriffinAttack": {
+   "file": "337-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FlameGriffinStruck": {
+   "file": "337-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FlameGriffinDie": {
+   "file": "337-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhiteBoneAttack": {
+   "file": "63.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhiteBoneStruck": {
+   "file": "232-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhiteBoneDie": {
+   "file": "256-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuSmallStruck": {
+   "file": "289-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuSmallDie": {
+   "file": "289-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuBigAttack": {
+   "file": "290-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuBigStruck": {
+   "file": "290-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuBigDie": {
+   "file": "290-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ShinsuShow": {
+   "file": "290-0.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorpseStalkerAttack": {
+   "file": "212-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorpseStalkerStruck": {
+   "file": "212-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorpseStalkerDie": {
+   "file": "212-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LightArmedSoldierAttack": {
+   "file": "206-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LightArmedSoldierStruck": {
+   "file": "206-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "LightArmedSoldierDie": {
+   "file": "206-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorrosivePoisonSpitterAttack": {
+   "file": "293-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorrosivePoisonSpitterStruck": {
+   "file": "293-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CorrosivePoisonSpitterDie": {
+   "file": "293-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhantomSoldierAttack": {
+   "file": "347-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhantomSoldierStruck": {
+   "file": "347-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhantomSoldierDie": {
+   "file": "347-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutatedOctopusAttack": {
+   "file": "202-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutatedOctopusStruck": {
+   "file": "202-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MutatedOctopusDie": {
+   "file": "202-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AquaLizardAttack": {
+   "file": "345-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AquaLizardStruck": {
+   "file": "345-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "AquaLizardDie": {
+   "file": "345-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrimsonNecromancerAttack": {
+   "file": "346-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrimsonNecromancerStruck": {
+   "file": "346-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "CrimsonNecromancerDie": {
+   "file": "346-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChaosKnightAttack": {
+   "file": "210-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChaosKnightStruck": {
+   "file": "210-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChaosKnightDie": {
+   "file": "210-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PachontheChaosbringerAttack": {
+   "file": "343-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PachontheChaosbringerStruck": {
+   "file": "343-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PachontheChaosbringerDie": {
+   "file": "343-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaCavalryAttack": {
+   "file": "355-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaCavalryStruck": {
+   "file": "355-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaCavalryDie": {
+   "file": "355-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaHighMageAttack": {
+   "file": "359-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaHighMageStruck": {
+   "file": "359-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaHighMageDie": {
+   "file": "359-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaStoneThrowerAttack": {
+   "file": "358-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaStoneThrowerStruck": {
+   "file": "358-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaStoneThrowerDie": {
+   "file": "358-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaRoyalGuardAttack": {
+   "file": "357-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaRoyalGuardStruck": {
+   "file": "357-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaRoyalGuardDie": {
+   "file": "357-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaArmoredSoldierAttack": {
+   "file": "356-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaArmoredSoldierStruck": {
+   "file": "356-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "NumaArmoredSoldierDie": {
+   "file": "356-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyRangerAttack": {
+   "file": "375-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyRangerStruck": {
+   "file": "375-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyRangerDie": {
+   "file": "375-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyGoddessAttack": {
+   "file": "374-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyGoddessStruck": {
+   "file": "374-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcyGoddessDie": {
+   "file": "374-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritWarriorAttack": {
+   "file": "378-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritWarriorStruck": {
+   "file": "378-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritWarriorDie": {
+   "file": "378-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostKnightAttack": {
+   "file": "373-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostKnightStruck": {
+   "file": "373-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "GhostKnightDie": {
+   "file": "373-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSpearmanAttack": {
+   "file": "376-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSpearmanStruck": {
+   "file": "376-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSpearmanDie": {
+   "file": "376-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WerewolfAttack": {
+   "file": "372-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WerewolfStruck": {
+   "file": "372-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WerewolfDie": {
+   "file": "372-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhitefangAttack": {
+   "file": "371-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhitefangStruck": {
+   "file": "371-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WhitefangDie": {
+   "file": "371-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSoliderAttack": {
+   "file": "377-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSoliderStruck": {
+   "file": "377-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "IcySpiritSoliderDie": {
+   "file": "377-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WildBoarAttack": {
+   "file": "328-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WildBoarStruck": {
+   "file": "328-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "WildBoarDie": {
+   "file": "338-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostLordHwaAttack": {
+   "file": "379-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostLordHwaStruck": {
+   "file": "379-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FrostLordHwaDie": {
+   "file": "379-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinchonDevilAttack": {
+   "file": "341-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinchonDevilAttack2": {
+   "file": "341-7.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinchonDevilAttack3": {
+   "file": "341-8.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinchonDevilStruck": {
+   "file": "341-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinchonDevilDie": {
+   "file": "341-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EscortCommanderAttack": {
+   "file": "381-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EscortCommanderStruck": {
+   "file": "381-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EscortCommanderDie": {
+   "file": "381-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FieryDancerAttack": {
+   "file": "383-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FieryDancerStruck": {
+   "file": "383-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FieryDancerDie": {
+   "file": "383-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmeraldDancerAttack": {
+   "file": "384-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmeraldDancerStruck": {
+   "file": "384-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "EmeraldDancerDie": {
+   "file": "384-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "QueenOfDawnAttack": {
+   "file": "382-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "QueenOfDawnStruck": {
+   "file": "382-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "QueenOfDawnDie": {
+   "file": "382-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OYoungBeastAttack": {
+   "file": "388-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OYoungBeastStruck": {
+   "file": "388-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "OYoungBeastDie": {
+   "file": "388-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonWitchAttack": {
+   "file": "391-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonWitchStruck": {
+   "file": "391-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonWitchDie": {
+   "file": "391-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MaWarlordAttack": {
+   "file": "389-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MaWarlordStruck": {
+   "file": "389-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "MaWarlordDie": {
+   "file": "389-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanSpiritAttack": {
+   "file": "392-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanSpiritStruck": {
+   "file": "392-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanSpiritDie": {
+   "file": "392-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanGuardianAttack": {
+   "file": "393-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanGuardianStruck": {
+   "file": "393-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "JinhwanGuardianDie": {
+   "file": "393-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonGeneralAttack": {
+   "file": "390-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonGeneralStruck": {
+   "file": "390-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "YumgonGeneralDie": {
+   "file": "390-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChiwooGeneralAttack": {
+   "file": "385-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChiwooGeneralStruck": {
+   "file": "385-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "ChiwooGeneralDie": {
+   "file": "385-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonQueenAttack": {
+   "file": "387-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonQueenStruck": {
+   "file": "387-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonQueenDie": {
+   "file": "387-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonLordAttack": {
+   "file": "386-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonLordStruck": {
+   "file": "386-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "DragonLordDie": {
+   "file": "386-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FerociousIceTigerAttack": {
+   "file": "201-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FerociousIceTigerStruck": {
+   "file": "201-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "FerociousIceTigerDie": {
+   "file": "201-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaFireGuardianAttack": {
+   "file": "400-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaFireGuardianStruck": {
+   "file": "400-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaFireGuardianDie": {
+   "file": "400-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaIceGuardianAttack": {
+   "file": "398-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaIceGuardianStruck": {
+   "file": "398-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaIceGuardianDie": {
+   "file": "398-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaLightningGuardianAttack": {
+   "file": "397-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaLightningGuardianStruck": {
+   "file": "397-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaLightningGuardianDie": {
+   "file": "397-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaWindGuardianAttack": {
+   "file": "399-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaWindGuardianStruck": {
+   "file": "399-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "SamaWindGuardianDie": {
+   "file": "399-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhoenixAttack": {
+   "file": "402-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhoenixStruck": {
+   "file": "402-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "PhoenixDie": {
+   "file": "402-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackTortoiseAttack": {
+   "file": "404-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackTortoiseStruck": {
+   "file": "404-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlackTortoiseDie": {
+   "file": "404-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlueDragonAttack": {
+   "file": "403-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlueDragonStruck": {
+   "file": "403-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "BlueDragonDie": {
+   "file": "403-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta1Attack": {
+   "file": "m414-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta1Struck": {
+   "file": "m414-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta1Die": {
+   "file": "m414-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta2Attack": {
+   "file": "m415-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta2Struck": {
+   "file": "m415-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta2Die": {
+   "file": "m415-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta3Attack": {
+   "file": "m416-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta3Struck": {
+   "file": "m416-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta3Die": {
+   "file": "m416-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta4Attack": {
+   "file": "m417-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta4Struck": {
+   "file": "m417-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "Terracotta4Die": {
+   "file": "m417-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaSubAttack": {
+   "file": "m418-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaSubAttack2": {
+   "file": "m418-7.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaSubStruck": {
+   "file": "m418-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaSubDie": {
+   "file": "m414-5.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaBossAttack": {
+   "file": "m419-2.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaBossAttack2": {
+   "file": "m419-7.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaBossStruck": {
+   "file": "m419-4.wav",
+   "category": "Monster",
+   "loop": false
+  },
+  "TerracottaBossDie": {
+   "file": "m419-5.wav",
+   "category": "Monster",
+   "loop": false
+  }
+ },
+ "magic": {
+  "HundredFist": {
+   "Start": [
+    {
+     "sound": "HundredFist",
+     "gate": "Always"
+    }
+   ]
+  },
+  "HalfMoon": {
+   "Start": [
+    {
+     "sound": "HalfMoon",
+     "gate": "Always"
+    }
+   ]
+  },
+  "DestructiveSurge": {
+   "Start": [
+    {
+     "sound": "DestructiveSurge",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FlamingSword": {
+   "Start": [
+    {
+     "sound": "FlamingSword",
+     "gate": "Always"
+    }
+   ]
+  },
+  "DragonRise": {
+   "Start": [
+    {
+     "sound": "DragonRise",
+     "gate": "Always"
+    }
+   ]
+  },
+  "BladeStorm": {
+   "Start": [
+    {
+     "sound": "BladeStorm",
+     "gate": "Always"
+    }
+   ]
+  },
+  "DefensiveBlow": {
+   "Start": [
+    {
+     "sound": "DefensiveBlow",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FlameSplash": {
+   "Start": [
+    {
+     "sound": "BladeStorm",
+     "gate": "Always"
+    }
+   ]
+  },
+  "WaningMoon": {
+   "Start": [
+    {
+     "sound": "WaningMoon",
+     "gate": "Always"
+    }
+   ]
+  },
+  "CalamityOfFullMoon": {
+   "Start": [
+    {
+     "sound": "CalamityOfFullMoon",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Defiance": {
+   "Start": [
+    {
+     "sound": "DefianceStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Endurance": {
+   "Start": [
+    {
+     "sound": "DefianceStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Renounce": {
+   "Start": [
+    {
+     "sound": "DefianceStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Spiritualism": {
+   "Start": [
+    {
+     "sound": "DefianceStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Invincibility": {
+   "Start": [
+    {
+     "sound": "InvincibilityStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "ReflectDamage": {
+   "Start": [
+    {
+     "sound": "ReflectDamageStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Teleportation": {
+   "Start": [
+    {
+     "sound": "TeleportationStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Interchange": {
+   "Start": [
+    {
+     "sound": "TeleportationStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Beckon": {
+   "Start": [
+    {
+     "sound": "TeleportationStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "MassBeckon": {
+   "Start": [
+    {
+     "sound": "TeleportationStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "GeoManipulation": {
+   "Start": [
+    {
+     "sound": "TeleportationStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Might": {
+   "Start": [
+    {
+     "sound": "DragonRise",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Fetter": {
+   "Start": [
+    {
+     "sound": "DragonRise",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SeismicSlam": {
+   "Start": [
+    {
+     "sound": "SeismicSlam",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FireBall": {
+   "Start": [
+    {
+     "sound": "FireBallStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "FireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "LightningBall": {
+   "Start": [
+    {
+     "sound": "ThunderBoltStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ThunderBoltTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "IceBolt": {
+   "Start": [
+    {
+     "sound": "None",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "IceBoltTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "IceAura": {
+   "Start": [
+    {
+     "sound": "IceBoltStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "IceAuraTravel",
+     "gate": "Always"
+    }
+   ]
+  },
+  "IceDragon": {
+   "Start": [
+    {
+     "sound": "IceBoltStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "IceDragonTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "GustBlast": {
+   "Start": [
+    {
+     "sound": "GustBlastStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GustBlastTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "Repulsion": {
+   "Start": [
+    {
+     "sound": "RepulsionEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "ElectricShock": {
+   "Start": [
+    {
+     "sound": "ElectricShockStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ElectricShockEnd",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "AdamantineFireBall": {
+   "Start": [
+    {
+     "sound": "GreaterFireBallStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GreaterFireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "MeteorShower": {
+   "Start": [
+    {
+     "sound": "GreaterFireBallStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GreaterFireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "FireBounce": {
+   "Start": [
+    {
+     "sound": "GreaterFireBallStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GreaterFireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "ThunderBolt": {
+   "Start": [
+    {
+     "sound": "LightningStrikeStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "LightningStrikeEnd",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "ThunderStrike": {
+   "Start": [
+    {
+     "sound": "LightningStrikeStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "LightningStrikeEnd",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "IceBlades": {
+   "Start": [
+    {
+     "sound": "GreaterIceBoltStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GreaterIceBoltTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "Cyclone": {
+   "Start": [
+    {
+     "sound": "CycloneStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "CycloneEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "ScortchedEarth": {
+   "Start": [
+    {
+     "sound": "LavaStrikeStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "LightningBeam": {
+   "Start": [
+    {
+     "sound": "ThunderBoltStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "LightningBeamEnd",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "FrozenEarth": {
+   "Start": [
+    {
+     "sound": "FrozenEarthStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "FrozenEarthEnd",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "BlowEarth": {
+   "Start": [
+    {
+     "sound": "BlowEarthStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "BlowEarthTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "FireWall": {
+   "Start": [
+    {
+     "sound": "FireWallStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "ExpelUndead": {
+   "Start": [
+    {
+     "sound": "ExpelUndeadStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ExpelUndeadEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "MagicShield": {
+   "Start": [
+    {
+     "sound": "MagicShieldStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SuperiorMagicShield": {
+   "Start": [
+    {
+     "sound": "MagicShieldStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FireStorm": {
+   "Start": [
+    {
+     "sound": "FireStormStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "FireStormEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "LightningWave": {
+   "Start": [
+    {
+     "sound": "LightningWaveStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "LightningWaveEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "IceStorm": {
+   "Start": [
+    {
+     "sound": "IceStormStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "IceStormEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "DragonTornado": {
+   "Start": [
+    {
+     "sound": "DragonTornadoStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "DragonTornadoEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "GreaterFrozenEarth": {
+   "Start": [
+    {
+     "sound": "GreaterFrozenEarthStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "GreaterFrozenEarthEnd",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "ChainLightning": {
+   "Start": [
+    {
+     "sound": "ChainLightningStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ChainLightningEnd",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "Tempest": {
+   "Start": [
+    {
+     "sound": "BlowEarthStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "JudgementOfHeaven": {
+   "Start": [
+    {
+     "sound": "LightningStrikeEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FrostBite": {
+   "Start": [
+    {
+     "sound": "FrostBiteStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "LightningStrike": {
+   "Start": [
+    {
+     "sound": "ChainLightningStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "LightningBeamEnd",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "IceRain": {
+   "Start": [
+    {
+     "sound": "LightningStrikeStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "IceBoltTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "Tornado": {
+   "Start": [
+    {
+     "sound": "TornadoStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Heal": {
+   "Start": [
+    {
+     "sound": "HealStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "HealEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "PoisonDust": {
+   "Start": [
+    {
+     "sound": "PoisonDustStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "PoisonDustEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "ExplosiveTalisman": {
+   "Start": [
+    {
+     "sound": "ExplosiveTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ExplosiveTalismanTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "EvilSlayer": {
+   "Start": [
+    {
+     "sound": "HolyStrikeStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SummonSkeleton": {
+   "Start": [
+    {
+     "sound": "SummonSkeletonStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SummonJinSkeleton": {
+   "Start": [
+    {
+     "sound": "SummonSkeletonStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SummonDemonicCreature": {
+   "Start": [
+    {
+     "sound": "SummonSkeletonStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Invisibility": {
+   "Start": [
+    {
+     "sound": "InvisibilityEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Transparency": {
+   "Start": [
+    {
+     "sound": "InvisibilityEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "GreaterEvilSlayer": {
+   "Start": [
+    {
+     "sound": "ImprovedHolyStrikeStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "TrapOctagon": {
+   "Start": [
+    {
+     "sound": "ShacklingTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ShacklingTalismanEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "CombatKick": {
+   "Start": [
+    {
+     "sound": "TaoistCombatKickStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SummonShinsu": {
+   "Start": [
+    {
+     "sound": "SummonShinsuStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "MassHeal": {
+   "Start": [
+    {
+     "sound": "MassHealStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "MassHealEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Resurrection": {
+   "Start": [
+    {
+     "sound": "ResurrectionStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "None",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Purification": {
+   "Start": [
+    {
+     "sound": "PurificationStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "PurificationEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "StrengthOfFaith": {
+   "Start": [
+    {
+     "sound": "StrengthOfFaithStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "StrengthOfFaithEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "CelestialLight": {
+   "Start": [
+    {
+     "sound": "MagicShieldStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "None",
+     "gate": "Always"
+    }
+   ]
+  },
+  "LifeSteal": {
+   "Start": [
+    {
+     "sound": "HolyStrikeStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "HolyStrikeEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "ImprovedExplosiveTalisman": {
+   "Start": [
+    {
+     "sound": "ExplosiveTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ExplosiveTalismanTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "CursedDoll": {
+   "Start": [
+    {
+     "sound": "SummonSkeletonStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "ThunderKick": {
+   "Start": [
+    {
+     "sound": "FireStormEnd",
+     "gate": "Always"
+    },
+    {
+     "sound": "TaoistCombatKickStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Neutralize": {
+   "Start": [
+    {
+     "sound": "ExplosiveTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "NeutralizeTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "CorpseExploder": {
+   "Start": [
+    {
+     "sound": "ExplosiveTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ExplosiveTalismanTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "SummonDead": {
+   "Start": [
+    {
+     "sound": "SummonSkeletonStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "BindingTalisman": {
+   "Start": [
+    {
+     "sound": "ExplosiveTalismanStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "ExplosiveTalismanTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "BrainStorm": {
+   "Start": [
+    {
+     "sound": "BindingTalisman",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "None",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Cloak": {
+   "Start": [
+    {
+     "sound": "CloakStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "WraithGrip": {
+   "Start": [
+    {
+     "sound": "WraithGripStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "WraithGripEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "HellFire": {
+   "Start": [
+    {
+     "sound": "WraithGripStart",
+     "gate": "Always"
+    }
+   ],
+   "End": [
+    {
+     "sound": "WraithGripEnd",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "Rake": {
+   "Start": [
+    {
+     "sound": "RakeStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "SummonPuppet": {
+   "Start": [
+    {
+     "sound": "SummonPuppet",
+     "gate": "Always"
+    }
+   ]
+  },
+  "TheNewBeginning": {
+   "Start": [
+    {
+     "sound": "TheNewBeginning",
+     "gate": "Always"
+    }
+   ]
+  },
+  "DragonRepulse": {
+   "Start": [
+    {
+     "sound": "DragonRepulseStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Concentration": {
+   "Start": [
+    {
+     "sound": "Concentration",
+     "gate": "Always"
+    }
+   ]
+  },
+  "OffensiveBlow": {
+   "End": [
+    {
+     "sound": "OffensiveBlow",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Parasite": {
+   "End": [
+    {
+     "sound": "ParasiteTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "SearingLight": {
+   "End": [
+    {
+     "sound": "HolyStrikeTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "PinkFireBall": {
+   "End": [
+    {
+     "sound": "FireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "GreenSludgeBall": {
+   "End": [
+    {
+     "sound": "FireBallTravel",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "IceBreaker": {
+   "End": [
+    {
+     "sound": "IceBreaker",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FrozenDragon": {
+   "End": [
+    {
+     "sound": "FrozenDragon",
+     "gate": "Always"
+    }
+   ]
+  },
+  "FireSword": {
+   "End": [
+    {
+     "sound": "FireSword",
+     "gate": "Always"
+    }
+   ]
+  },
+  "TaecheonSword": {
+   "End": [
+    {
+     "sound": "TaecheonSword",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "SwiftBlade": {
+   "End": [
+    {
+     "sound": "SwiftBladeEnd",
+     "gate": "Always"
+    }
+   ]
+  },
+  "BurningFire": {
+   "End": [
+    {
+     "sound": "FireWallStart",
+     "gate": "Always"
+    }
+   ]
+  },
+  "BloodLust": {
+   "End": [
+    {
+     "sound": "BloodLustTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "Resilience": {
+   "End": [
+    {
+     "sound": "ResilienceTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "MagicResistance": {
+   "End": [
+    {
+     "sound": "MagicResistanceTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "ElementalSuperiority": {
+   "End": [
+    {
+     "sound": "BloodLustTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "MassInvisibility": {
+   "End": [
+    {
+     "sound": "MassInvisibilityTravel",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "DarkSoulPrison": {
+   "End": [
+    {
+     "sound": "DarkSoulPrison",
+     "gate": "Always"
+    }
+   ]
+  },
+  "Hemorrhage": {
+   "End": [
+    {
+     "sound": "Hemorrhage",
+     "gate": "LocationsOrTargets"
+    }
+   ]
+  },
+  "Shredding": {
+   "End": [
+    {
+     "sound": "Shredding",
+     "gate": "Targets"
+    }
+   ]
+  },
+  "HeavenlySky": {
+   "End": [
+    {
+     "sound": "HeavenlySky",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "PoisonCloud": {
+   "End": [
+    {
+     "sound": "PoisonCloud",
+     "gate": "Locations"
+    }
+   ]
+  },
+  "FlamingDaggers": {
+   "End": [
+    {
+     "sound": "None",
+     "gate": "Always"
+    }
+   ]
+  }
+ },
+ "monster": {
+  "Chicken": {
+   "attack": "ChickenAttack",
+   "struck": "ChickenStruck",
+   "die": "ChickenDie"
+  },
+  "Pig": {
+   "attack": "PigAttack",
+   "struck": "PigStruck",
+   "die": "PigDie"
+  },
+  "Deer": {
+   "attack": "DeerAttack",
+   "struck": "DeerStruck",
+   "die": "DeerDie"
+  },
+  "Cow": {
+   "attack": "CowAttack",
+   "struck": "CowStruck",
+   "die": "CowDie"
+  },
+  "Sheep": {
+   "attack": "SheepAttack",
+   "struck": "SheepStruck",
+   "die": "SheepDie"
+  },
+  "SkyStinger": {
+   "attack": "SkyStingerAttack",
+   "struck": "SkyStingerStruck",
+   "die": "SkyStingerDie"
+  },
+  "ClawCat": {
+   "attack": "ClawCatAttack",
+   "struck": "ClawCatStruck",
+   "die": "ClawCatDie"
+  },
+  "RakingCat": {
+   "attack": "ClawCatAttack",
+   "struck": "ClawCatStruck",
+   "die": "ClawCatDie"
+  },
+  "Wolf": {
+   "attack": "WolfAttack",
+   "struck": "WolfStruck",
+   "die": "WolfDie"
+  },
+  "ForestYeti": {
+   "attack": "ForestYetiAttack",
+   "struck": "ForestYetiStruck",
+   "die": "ForestYetiDie"
+  },
+  "CarnivorousPlant": {
+   "attack": "CarnivorousPlantAttack",
+   "struck": "CarnivorousPlantStruck",
+   "die": "CarnivorousPlantDie"
+  },
+  "Oma": {
+   "attack": "OmaAttack",
+   "struck": "OmaStruck",
+   "die": "OmaDie"
+  },
+  "OmaInfant": {
+   "attack": "OmaAttack",
+   "struck": "OmaStruck",
+   "die": "OmaDie"
+  },
+  "Yob": {
+   "attack": "YobAttack",
+   "struck": "YobStruck",
+   "die": "YobDie"
+  },
+  "TigerSnake": {
+   "attack": "TigerSnakeAttack",
+   "struck": "TigerSnakeStruck",
+   "die": "TigerSnakeDie"
+  },
+  "RedSnake": {
+   "attack": "TigerSnakeAttack",
+   "struck": "TigerSnakeStruck",
+   "die": "TigerSnakeDie"
+  },
+  "SpittingSpider": {
+   "attack": "SpittingSpiderAttack",
+   "struck": "SpittingSpiderStruck",
+   "die": "SpittingSpiderDie"
+  },
+  "Scarecrow": {
+   "attack": "ScarecrowAttack",
+   "struck": "ScarecrowStruck",
+   "die": "ScarecrowDie"
+  },
+  "OmaHero": {
+   "attack": "OmaHeroAttack",
+   "struck": "OmaHeroStruck",
+   "die": "OmaHeroDie"
+  },
+  "CaveBat": {
+   "attack": "CaveBatAttack",
+   "struck": "CaveBatStruck",
+   "die": "CaveBatDie"
+  },
+  "Scorpion": {
+   "attack": "ScorpionAttack",
+   "struck": "ScorpionStruck",
+   "die": "ScorpionDie"
+  },
+  "Skeleton": {
+   "attack": "SkeletonAttack",
+   "struck": "SkeletonStruck",
+   "die": "SkeletonDie"
+  },
+  "SkeletonAxeMan": {
+   "attack": "SkeletonAxeManAttack",
+   "struck": "SkeletonAxeManStruck",
+   "die": "SkeletonAxeManDie"
+  },
+  "SkeletonAxeThrower": {
+   "attack": "SkeletonAxeThrowerAttack",
+   "struck": "SkeletonAxeThrowerStruck",
+   "die": "SkeletonAxeThrowerDie"
+  },
+  "SkeletonWarrior": {
+   "attack": "SkeletonWarriorAttack",
+   "struck": "SkeletonWarriorStruck",
+   "die": "SkeletonWarriorDie"
+  },
+  "SkeletonLord": {
+   "attack": "SkeletonLordAttack",
+   "struck": "SkeletonLordStruck",
+   "die": "SkeletonLordDie"
+  },
+  "CaveMaggot": {
+   "attack": "CaveMaggotAttack",
+   "struck": "CaveMaggotStruck",
+   "die": "CaveMaggotDie"
+  },
+  "GhostSorcerer": {
+   "attack": "GhostSorcererAttack",
+   "struck": "GhostSorcererStruck",
+   "die": "GhostSorcererDie"
+  },
+  "GhostMage": {
+   "attack": "GhostMageAttack",
+   "struck": "GhostMageStruck",
+   "die": "GhostMageDie"
+  },
+  "VoraciousGhost": {
+   "attack": "VoraciousGhostAttack",
+   "struck": "VoraciousGhostStruck",
+   "die": "VoraciousGhostDie"
+  },
+  "DevouringGhost": {
+   "attack": "VoraciousGhostAttack",
+   "struck": "VoraciousGhostStruck",
+   "die": "VoraciousGhostDie"
+  },
+  "CorpseRaisingGhost": {
+   "attack": "VoraciousGhostAttack",
+   "struck": "VoraciousGhostStruck",
+   "die": "VoraciousGhostDie"
+  },
+  "GhoulChampion": {
+   "attack": "GhoulChampionAttack",
+   "struck": "GhoulChampionStruck",
+   "die": "GhoulChampionDie"
+  },
+  "ArmoredAnt": {
+   "attack": "ArmoredAntAttack",
+   "struck": "ArmoredAntStruck",
+   "die": "ArmoredAntDie"
+  },
+  "AntSoldier": {
+   "attack": "ArmoredAntAttack",
+   "struck": "ArmoredAntStruck",
+   "die": "ArmoredAntDie"
+  },
+  "AntHealer": {
+   "attack": "ArmoredAntAttack",
+   "struck": "ArmoredAntStruck",
+   "die": "ArmoredAntDie"
+  },
+  "AntNeedler": {
+   "attack": "AntNeedlerAttack",
+   "struck": "AntNeedlerStruck",
+   "die": "AntNeedlerDie"
+  },
+  "Beetle": {
+   "attack": "KeratoidAttack",
+   "struck": "KeratoidStruck",
+   "die": "KeratoidDie"
+  },
+  "ShellNipper": {
+   "attack": "ShellNipperAttack",
+   "struck": "ShellNipperStruck",
+   "die": "ShellNipperDie"
+  },
+  "VisceralWorm": {
+   "attack": "VisceralWormAttack",
+   "struck": "VisceralWormStruck",
+   "die": "VisceralWormDie"
+  },
+  "MutantFlea": {
+   "attack": "MutantFleaAttack",
+   "struck": "MutantFleaStruck",
+   "die": "MutantFleaDie"
+  },
+  "PurpleFlea": {
+   "attack": "MutantFleaAttack",
+   "struck": "MutantFleaStruck",
+   "die": "MutantFleaDie"
+  },
+  "BlasterMutantFlea": {
+   "attack": "BlasterMutantFleaAttack",
+   "struck": "BlasterMutantFleaStruck",
+   "die": "BlasterMutantFleaDie"
+  },
+  "BlueBlasterMutantFlea": {
+   "attack": "BlasterMutantFleaAttack",
+   "struck": "BlasterMutantFleaStruck",
+   "die": "BlasterMutantFleaDie"
+  },
+  "PoisonousMutantFlea": {
+   "attack": "PoisonousMutantFleaAttack",
+   "struck": "PoisonousMutantFleaStruck",
+   "die": "PoisonousMutantFleaDie"
+  },
+  "WaspHatchling": {
+   "attack": "WasHatchlingAttack",
+   "struck": "WasHatchlingStruck",
+   "die": "WasHatchlingDie"
+  },
+  "Centipede": {
+   "attack": "CentipedeAttack",
+   "struck": "CentipedeStruck",
+   "die": "CentipedeDie"
+  },
+  "ButterflyWorm": {
+   "attack": "ButterflyWormAttack",
+   "struck": "ButterflyWormStruck",
+   "die": "ButterflyWormDie"
+  },
+  "MutantMaggot": {
+   "attack": "MutantMaggotAttack",
+   "struck": "MutantMaggotStruck",
+   "die": "MutantMaggotDie"
+  },
+  "Earwig": {
+   "attack": "EarwigAttack",
+   "struck": "EarwigStruck",
+   "die": "EarwigDie"
+  },
+  "IronLance": {
+   "attack": "IronLanceAttack",
+   "struck": "IronLanceStruck",
+   "die": "IronLanceDie"
+  },
+  "LordNiJae": {
+   "attack": "LordNiJaeAttack",
+   "struck": "LordNiJaeStruck",
+   "die": "LordNiJaeDie"
+  },
+  "RottingGhoul": {
+   "attack": "RottingGhoulAttack",
+   "struck": "RottingGhoulStruck",
+   "die": "RottingGhoulDie"
+  },
+  "DecayingGhoul": {
+   "attack": "DecayingGhoulAttack",
+   "struck": "DecayingGhoulStruck",
+   "die": "DecayingGhoulDie"
+  },
+  "BloodThirstyGhoul": {
+   "attack": "BloodThirstyGhoulAttack",
+   "struck": "BloodThirstyGhoulStruck",
+   "die": "BloodThirstyGhoulDie"
+  },
+  "SpinedDarkLizard": {
+   "attack": "SpinedDarkLizardAttack",
+   "struck": "SpinedDarkLizardStruck",
+   "die": "SpinedDarkLizardDie"
+  },
+  "Dung": {
+   "attack": "DungAttack",
+   "struck": "DungStruck",
+   "die": "DungDie"
+  },
+  "UmaInfidel": {
+   "attack": "UmaInfidelAttack",
+   "struck": "UmaInfidelStruck",
+   "die": "UmaInfidelDie"
+  },
+  "UmaFlameThrower": {
+   "attack": "UmaFlameThrowerAttack",
+   "struck": "UmaFlameThrowerStruck",
+   "die": "UmaFlameThrowerDie"
+  },
+  "UmaTridentInfidel": {
+   "attack": "UmaInfidelAttack",
+   "struck": "UmaInfidelStruck",
+   "die": "UmaInfidelDie"
+  },
+  "UmaAnguisher": {
+   "attack": "UmaAnguisherAttack",
+   "struck": "UmaAnguisherStruck",
+   "die": "UmaAnguisherDie"
+  },
+  "UmaKing": {
+   "attack": "UmaKingAttack",
+   "struck": "UmaKingStruck",
+   "die": "UmaKingDie"
+  },
+  "SpiderBat": {
+   "attack": "SpiderBatAttack",
+   "struck": "SpiderBatStruck",
+   "die": "SpiderBatDie"
+  },
+  "ArachnidGazer": {
+   "attack": "None",
+   "struck": "ArachnidGazerStruck",
+   "die": "ArachnidGazerDie"
+  },
+  "Larva": {
+   "attack": "LarvaAttack",
+   "struck": "LarvaStruck",
+   "die": "None"
+  },
+  "RedMoonGuardian": {
+   "attack": "RedMoonGuardianAttack",
+   "struck": "RedMoonGuardianStruck",
+   "die": "RedMoonGuardianDie"
+  },
+  "RedMoonProtector": {
+   "attack": "RedMoonProtectorAttack",
+   "struck": "RedMoonProtectorStruck",
+   "die": "RedMoonProtectorDie"
+  },
+  "VenomousArachnid": {
+   "attack": "VenomousArachnidAttack",
+   "struck": "VenomousArachnidStruck",
+   "die": "VenomousArachnidDie"
+  },
+  "DarkArachnid": {
+   "attack": "DarkArachnidAttack",
+   "struck": "DarkArachnidStruck",
+   "die": "DarkArachnidDie"
+  },
+  "RedMoonTheFallen": {
+   "attack": "RedMoonTheFallenAttack",
+   "struck": "RedMoonTheFallenStruck",
+   "die": "RedMoonTheFallenDie"
+  },
+  "ViciousRat": {
+   "attack": "ViciousRatAttack",
+   "struck": "ViciousRatStruck",
+   "die": "ViciousRatDie"
+  },
+  "ZumaSharpShooter": {
+   "attack": "ZumaSharpShooterAttack",
+   "struck": "ZumaSharpShooterStruck",
+   "die": "ZumaSharpShooterDie"
+  },
+  "ZumaFanatic": {
+   "attack": "ZumaFanaticAttack",
+   "struck": "ZumaFanaticStruck",
+   "die": "ZumaFanaticDie"
+  },
+  "ZumaGuardian": {
+   "attack": "ZumaGuardianAttack",
+   "struck": "ZumaGuardianStruck",
+   "die": "ZumaGuardianDie"
+  },
+  "ZumaKing": {
+   "attack": "ZumaKingAttack",
+   "struck": "ZumaKingStruck",
+   "die": "ZumaKingDie"
+  },
+  "EvilFanatic": {
+   "attack": "EvilFanaticAttack",
+   "struck": "EvilFanaticStruck",
+   "die": "EvilFanaticDie"
+  },
+  "Monkey": {
+   "attack": "MonkeyAttack",
+   "struck": "MonkeyStruck",
+   "die": "MonkeyDie"
+  },
+  "EvilElephant": {
+   "attack": "EvilElephantAttack",
+   "struck": "EvilElephantStruck",
+   "die": "EvilElephantDie"
+  },
+  "CannibalFanatic": {
+   "attack": "CannibalFanaticAttack",
+   "struck": "CannibalFanaticStruck",
+   "die": "CannibalFanaticDie"
+  },
+  "SpikedBeetle": {
+   "attack": "SpikedBeetleAttack",
+   "struck": "SpikedBeetleStruck",
+   "die": "SpikedBeetleDie"
+  },
+  "NumaGrunt": {
+   "attack": "NumaGruntAttack",
+   "struck": "NumaGruntStruck",
+   "die": "NumaGruntDie"
+  },
+  "NumaWarrior": {
+   "attack": "NumaGruntAttack",
+   "struck": "NumaGruntStruck",
+   "die": "NumaGruntDie"
+  },
+  "NumaMage": {
+   "attack": "NumaMageAttack",
+   "struck": "NumaMageStruck",
+   "die": "NumaMageDie"
+  },
+  "NumaElite": {
+   "attack": "NumaEliteAttack",
+   "struck": "NumaEliteStruck",
+   "die": "NumaEliteDie"
+  },
+  "SandShark": {
+   "attack": "SandSharkAttack",
+   "struck": "SandSharkStruck",
+   "die": "SandSharkDie"
+  },
+  "StoneGolem": {
+   "attack": "StoneGolemAttack",
+   "struck": "StoneGolemStruck",
+   "die": "StoneGolemDie"
+  },
+  "WindfurySorceress": {
+   "attack": "WindfurySorceressAttack",
+   "struck": "WindfurySorceressStruck",
+   "die": "WindfurySorceressDie"
+  },
+  "CursedCactus": {
+   "attack": "CursedCactusAttack",
+   "struck": "CursedCactusStruck",
+   "die": "CursedCactusDie"
+  },
+  "RagingLizard": {
+   "attack": "RagingLizardAttack",
+   "struck": "RagingLizardStruck",
+   "die": "RagingLizardDie"
+  },
+  "SawToothLizard": {
+   "attack": "SawToothLizardAttack",
+   "struck": "SawToothLizardStruck",
+   "die": "SawToothLizardDie"
+  },
+  "MutantLizard": {
+   "attack": "MutantLizardAttack",
+   "struck": "MutantLizardStruck",
+   "die": "MutantLizardDie"
+  },
+  "VenomSpitter": {
+   "attack": "VenomSpitterAttack",
+   "struck": "VenomSpitterStruck",
+   "die": "VenomSpitterDie"
+  },
+  "SonicLizard": {
+   "attack": "SonicLizardAttack",
+   "struck": "SonicLizardStruck",
+   "die": "SonicLizardDie"
+  },
+  "GiantLizard": {
+   "attack": "GiantLizardAttack",
+   "struck": "GiantLizardStruck",
+   "die": "GiantLizardDie"
+  },
+  "CrazedLizard": {
+   "attack": "CrazedLizardAttack",
+   "struck": "CrazedLizardStruck",
+   "die": "CrazedLizardDie"
+  },
+  "TaintedTerror": {
+   "attack": "TaintedTerrorAttack",
+   "struck": "TaintedTerrorStruck",
+   "die": "TaintedTerrorDie"
+  },
+  "DeathLordJichon": {
+   "attack": "DeathLordJichonAttack",
+   "struck": "DeathLordJichonStruck",
+   "die": "DeathLordJichonDie"
+  },
+  "Minotaur": {
+   "attack": "MinotaurAttack",
+   "struck": "MinotaurStruck",
+   "die": "MinotaurDie"
+  },
+  "FrostMinotaur": {
+   "attack": "FrostMinotaurAttack",
+   "struck": "FrostMinotaurStruck",
+   "die": "FrostMinotaurDie"
+  },
+  "ShockMinotaur": {
+   "attack": "FrostMinotaurAttack",
+   "struck": "FrostMinotaurStruck",
+   "die": "FrostMinotaurDie"
+  },
+  "FlameMinotaur": {
+   "attack": "FrostMinotaurAttack",
+   "struck": "FrostMinotaurStruck",
+   "die": "FrostMinotaurDie"
+  },
+  "FuryMinotaur": {
+   "attack": "FrostMinotaurAttack",
+   "struck": "FrostMinotaurStruck",
+   "die": "FrostMinotaurDie"
+  },
+  "BanyaLeftGuard": {
+   "attack": "BanyaLeftGuardAttack",
+   "struck": "BanyaLeftGuardStruck",
+   "die": "BanyaLeftGuardDie"
+  },
+  "BanyaRightGuard": {
+   "attack": "BanyaLeftGuardAttack",
+   "struck": "BanyaLeftGuardStruck",
+   "die": "BanyaLeftGuardDie"
+  },
+  "EmperorSaWoo": {
+   "attack": "EmperorSaWooAttack",
+   "struck": "EmperorSaWooStruck",
+   "die": "EmperorSaWooDie"
+  },
+  "BoneArcher": {
+   "attack": "BoneArcherAttack",
+   "struck": "BoneArcherStruck",
+   "die": "BoneArcherDie"
+  },
+  "BoneBladesman": {
+   "attack": "BoneArcherAttack",
+   "struck": "BoneArcherStruck",
+   "die": "BoneArcherDie"
+  },
+  "BoneCaptain": {
+   "attack": "BoneCaptainAttack",
+   "struck": "BoneCaptainStruck",
+   "die": "BoneCaptainDie"
+  },
+  "BoneSoldier": {
+   "attack": "BoneArcherAttack",
+   "struck": "BoneArcherStruck",
+   "die": "BoneArcherDie"
+  },
+  "ArchLichTaedu": {
+   "attack": "ArchLichTaeduAttack",
+   "struck": "ArchLichTaeduStruck",
+   "die": "ArchLichTaeduDie"
+  },
+  "WedgeMothLarva": {
+   "attack": "WedgeMothLarvaAttack",
+   "struck": "WedgeMothLarvaStruck",
+   "die": "WedgeMothLarvaDie"
+  },
+  "LesserWedgeMoth": {
+   "attack": "LesserWedgeMothAttack",
+   "struck": "LesserWedgeMothStruck",
+   "die": "LesserWedgeMothDie"
+  },
+  "WedgeMoth": {
+   "attack": "WedgeMothAttack",
+   "struck": "WedgeMothStruck",
+   "die": "WedgeMothDie"
+  },
+  "RedBoar": {
+   "attack": "RedBoarAttack",
+   "struck": "RedBoarStruck",
+   "die": "RedBoarDie"
+  },
+  "ClawSerpent": {
+   "attack": "ClawSerpentAttack",
+   "struck": "ClawSerpentStruck",
+   "die": "ClawSerpentDie"
+  },
+  "BlackBoar": {
+   "attack": "BlackBoarAttack",
+   "struck": "BlackBoarStruck",
+   "die": "BlackBoarDie"
+  },
+  "TuskLord": {
+   "attack": "TuskLordAttack",
+   "struck": "TuskLordStruck",
+   "die": "TuskLordDie"
+  },
+  "RazorTusk": {
+   "attack": "RazorTuskAttack",
+   "struck": "RazorTuskStruck",
+   "die": "RazorTuskDie"
+  }
+ }
+}
