@@ -129,18 +129,28 @@ public static class MirSkin
         return new Vector2I(lib.Images[index].OffSetX, lib.Images[index].OffSetY);
     }
 
-    /// <summary>中文字体 (Noto Sans CJK, 系统自带)。Godot 默认字体不含 CJK, UI 文字必须用它。</summary>
+    /// <summary>中文字体 (Noto Sans CJK)。优先用客户端自带 Fonts/, 其次系统路径与
+    /// ~/.local/share/fonts。Godot 默认字体不含 CJK, UI 文字必须用它。</summary>
     public static FontFile GetFont()
     {
         if (_font != null) return _font;
         if (_fontFailed) return null;
 
-        var candidates = new List<string>
+        var candidates = new List<string>();
+        // 客户端自带字体优先 (Debug/Client/Fonts/NotoSansCJK*): 不依赖系统环境,
+        // nixos-rebuild / 换机 / 无中文字体的系统都不受影响。
+        try
+        {
+            candidates.AddRange(Directory.EnumerateFiles(
+                Path.GetFullPath(Path.Combine(DataPath, "..", "Fonts")), "NotoSansCJK*"));
+        }
+        catch (Exception) { /* 目录不存在或不可读 */ }
+        candidates.AddRange(new[]
         {
             "/usr/share/fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc",
             "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        };
+        });
         // NixOS: 系统字体在 /nix/store（路径每次 rebuild 变化, 不能硬编码）;
         // 用户字体目录 ~/.local/share/fonts 跨世代稳定, 是 fontconfig 同源的事实位置。
         string home = System.Environment.GetEnvironmentVariable("HOME") ?? "";
@@ -161,6 +171,7 @@ public static class MirSkin
             if (font.LoadDynamicFont(path) == Error.Ok)
             {
                 _font = font;
+                GD.Print($"[MirSkin] 中文字体加载: {path}");
                 return font;
             }
             font.Dispose();
