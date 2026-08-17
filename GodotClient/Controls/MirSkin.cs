@@ -135,12 +135,24 @@ public static class MirSkin
         if (_font != null) return _font;
         if (_fontFailed) return null;
 
-        string[] candidates =
+        var candidates = new List<string>
         {
             "/usr/share/fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc",
             "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         };
+        // NixOS: 系统字体在 /nix/store（路径每次 rebuild 变化, 不能硬编码）;
+        // 用户字体目录 ~/.local/share/fonts 跨世代稳定, 是 fontconfig 同源的事实位置。
+        string home = System.Environment.GetEnvironmentVariable("HOME") ?? "";
+        if (home.Length > 0)
+        {
+            try
+            {
+                candidates.AddRange(Directory.EnumerateFiles(
+                    Path.Combine(home, ".local/share/fonts"), "NotoSansCJK*"));
+            }
+            catch (Exception) { /* 目录不存在或不可读 */ }
+        }
 
         foreach (string path in candidates)
         {
