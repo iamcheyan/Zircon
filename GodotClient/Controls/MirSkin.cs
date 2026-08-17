@@ -135,14 +135,15 @@ public static class MirSkin
     {
         if (_font != null) return _font;
         if (_fontFailed) return null;
-
         var candidates = new List<string>();
-        // 客户端自带字体优先 (Debug/Client/Fonts/NotoSansCJK*): 不依赖系统环境,
-        // nixos-rebuild / 换机 / 无中文字体的系统都不受影响。
+        // 客户端自带字体优先 (GodotClient/Fonts/NotoSansCJK*, 随仓库分发): 不依赖
+        // 系统环境, nixos-rebuild / 换机 / 无中文字体的系统都不受影响。
+        // Fonts/ 带 .gdignore — 不让 Godot 编辑器扫描生成 .import 噪音。
         try
         {
+            string projectDir = ProjectSettings.GlobalizePath("res://");
             candidates.AddRange(Directory.EnumerateFiles(
-                Path.GetFullPath(Path.Combine(DataPath, "..", "Fonts")), "NotoSansCJK*"));
+                Path.Combine(projectDir, "Fonts"), "NotoSansCJK*"));
         }
         catch (Exception) { /* 目录不存在或不可读 */ }
         candidates.AddRange(new[]
