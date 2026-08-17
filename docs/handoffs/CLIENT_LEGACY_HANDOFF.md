@@ -37,6 +37,30 @@
 ---
 
 ## 1. 工程总览与规模实测
+### 1.0 定位：行为权威 / 移植参照，不是维护主线
+
+本项目（fork 后）的**现役客户端是 `GodotClient/`**；`Client/` 原版客户端的角色是
+**行为权威与移植对照基准**——判定新版行为是否正确，最终以原版客户端的实际表现
+（或其源码逻辑）为准。仓库根 `README.md:26` 明确 `Client/` 为「♻️ 部分参考」，
+`GodotClient/` 为「🚧 持续开发」。因此本手册的读者目标是**读懂它、对照它**，
+而不是在它上面继续开发新功能。
+
+### 1.1 怎么跑起来（仅 Windows 可跑 + 本次未验证）
+
+- **Linux 构建不可行**：`Client.csproj` 目标 `net10.0-windows8.0`（Windows TFM），
+  依赖 WinForms + DirectX 渲染 + DevExpress（部分周边工程）；本机为 Linux
+  （Debian 13），**未做构建尝试也未运行验证**（AGENTS.md 禁止浪费时间的重量级构建）。
+- **Windows 理论启动方式**：Visual Studio 打开仓库根 `Zircon Server.sln`，还原
+  NuGet 后编译 Client 工程；产物输出到 `Debug/Client/`（`Client.csproj:25`
+  `OutputPath ..\..\Debug\Client\`），运行时需同目录存在 `Data/`（.Zl+System.db）、
+  `Map/`、`Sound/` 资产（资产随仓库 `Debug/` 分发）。README「环境与构建」节
+  （`README.md:55-57`）要求 .NET 10 SDK + WinForms/DevExpress/DirectX 依赖。
+- **与服务端的连接配置**：`Zircon.ini`（`Config.cs:8` `[ConfigPath(@".\Zircon.ini")]`），
+  Network 节（`Config.cs:16`）`UseNetworkConfig` 开关 + `IPAddress/Port` 自定义项；
+  未启用时用默认 `DefaultIPAddress="127.0.0.1"` / `DefaultPort=7000`（`Config.cs:13-14`）。
+  也可临时用启动参数覆盖（`CEnvir.ProcessArgs`，`CEnvir.cs:93` 起）。
+
+### 1.2 规模实测
 
 本仓库 `git` 根目录工程清单（`ls` 实测，2026-08-17）：
 
@@ -53,10 +77,9 @@ ServerCore/  ServerLibrary/  System.db  Tools/  "Zircon Server.sln"
 | 工程 | 目录 | .cs 文件数 | 总行数 | 说明 |
 |---|---|---|---|---|
 | 客户端主程序 | `Client/` | 121 | 104,344 | WinForms 原版客户端（可执行产物 Zircon.exe） |
-| └ 场景 UI | `Client/Scenes/Views/` | 44 | ≈42,000 | 全部对话框（详见 §7） |
+| └ 场景 UI | `Client/Scenes/Views/`（含 Character/3） | 47 | 48,642 | 全部对话框（完整清单 §7.3） |
 | 共享库 | `LibraryCore/` | 65 | 23,269 | 协议/DB/模型/枚举（客户端+服务端共享） |
 | └ DB 模型 | `LibraryCore/SystemModels/` | 39 | 13,611 | DBObject 派生模型 |
-| 渲染库 | `RenderingCore/` | 39 | 15,585 | 多管线渲染层 + .Zl 图库加载 |
 | 启动器 | `Launcher/` | 9 | 883 | DevExpress WinForms，HTTP 更新 |
 | 补丁下载器 | `Patcher/` | 6 | 310 | DevExpress WaitForm，原子替换 |
 | 补丁打包 | `PatchManager/` | 8 | 977 | WinSCP 上传补丁 |
@@ -66,8 +89,7 @@ ServerCore/  ServerLibrary/  System.db  Tools/  "Zircon Server.sln"
 | 插件独立程序 | `PluginStandalone/` | 4 | 184 | 插件宿主 |
 | 机器人 | `BotRunner/` | 13 | 4,630 | 协议级测试机器人 |
 | 二进制组件 | `Components/` | **0** | — | SlimDX / ManagedSquish / NativeSquish_x64 等 DLL |
-
-**总量**：约 359 个 .cs、约 218,000 行（不含服务端 Server*/ 与 GodotClient/）。
+**总量**：约 359 个 .cs、约 225,000 行（不含服务端 Server*/ 与 GodotClient/；Views 合计实测 48,642 行）。
 
 关键常识：
 
@@ -150,6 +172,34 @@ ServerCore/  ServerLibrary/  System.db  Tools/  "Zircon Server.sln"
   `Client/Client.csproj` 无插件引用、源码零命中——**客户端不加载插件**。
 - `Components/` 四 DLL 中 `SlimDX.dll` 全仓库无引用（死资产）；`ManagedSquish` +
   `NativeSquish_x64` 仅被 `ImageManager/`、`LibraryEditor/` 引用（DXT 解码/编码）。
+
+### 2.1 一次鼠标点击 → 网络包发出（数据流）
+
+以「点击地图上的 NPC」为例（全部行号实测）：
+
+```
+WinForms 消息泵
+ └─ TargetForm.OnMouseClick                // Client/TargetForm.cs:116-120
+     └─ DXControl.ActiveScene?.OnMouseClick(e)
+        └─ DXControl 递归命中测试与冒泡      // Client/Controls/DXControl.cs:1648/:1670
+           （ActiveScene → GameScene → MapControl）
+           └─ MapControl.OnMouseClick       // Client/Scenes/Views/MapControl.cs:750
+               ├─ e.Button==Left、非 Observer、AutoRun=false
+               ├─ MapObject.MouseObject as NPCObject（悬停目标由
+               │   CheckCursor :790 每帧刷新）
+               ├─ NPCTime 1 秒节流          // :763-765
+               └─ CEnvir.Enqueue(new C.NPCCall { ObjectID })  // :767
+                  └─ CEnvir.Enqueue          // Client/Envir/CEnvir.cs:554-557
+                      └─ Connection?.Enqueue(packet) → BaseConnection.SendList
+                  └─ 下一帧 GameLoop → UpdateRealtime
+                      → Connection?.Process() // CEnvir.cs:217
+                      → BaseConnection.Process // LibraryCore/Network/BaseConnection.cs:311-394
+                          合帧（List<byte>）→ BeginSend → TCP 7000
+```
+
+右键 + Ctrl 点玩家则走 `C.Inspect`（`MapControl.cs:785`，2.5 秒节流 :783）。
+所有 UI 交互同构：**控件回调 → `CEnvir.Enqueue(C.Xxx)` → 每帧网络泵统一冲刷**，
+业务代码从不同步阻塞 socket。
 
 ## 3. 启动流程：入口 → 初始化 → 登录 → 进游戏
 
@@ -450,11 +500,11 @@ NPC/物品列表包）注意分帧。
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `Client/Program.cs` | ~90 | 入口/Init/管线上下文/消息循环（§3.1） |
-| `Client/TargetForm.cs` | 265 | WinForms 宿主窗体（KeyDown 转发、DragDrop） |
+| `Client/Program.cs` | 134 | 入口/Init/管线上下文/消息循环（§3.1） |
+| `Client/TargetForm.cs` | 316 | WinForms 宿主窗体（鼠标/键盘转发 ActiveScene，:62-144；DragDrop） |
 | `Client/Envir/CEnvir.cs` | 1102 | 全局静态状态、GameLoop、DB、翻译、音频 |
 | `Client/Envir/CConnection.cs` | 5109 | 客户端网络门面（300+ Process 分发） |
-| `Client/Envir/Config.cs` | ~250 | `Zircon.ini` 配置（`[ConfigPath(@".\Zircon.ini")]`；IntroSceneSize=1024×768；MapPath=@".\Map\"；Language="English"；RenderingPipeline=SilkDXD3D11；FontName="MS Sans Serif"） |
+| `Client/Envir/Config.cs` | 133 | `Zircon.ini` 配置（`:8` ConfigPath；IntroSceneSize=1024×768；MapPath=@".\Map\"；Language="English"；RenderingPipeline=SilkDXD3D11；FontName="MS Sans Serif"；`:16` Network 节） |
 | `Client/Envir/DXSound.cs` / `DXSoundManager.cs` | 12+ | ISoundCacheItem 实现 / 音频管理 |
 | `Client/Envir/Translations/*` | — | 757 键三语言（§8.4） |
 | `Client/Models/` | 26 文件 | 客户端独有显示模型（UserObject/MapObjectObject/用户界面状态等）+ 存盘 `SaveFile.cs` |
@@ -464,27 +514,44 @@ NPC/物品列表包）注意分帧。
 
 | 文件 | 行数 | 职责 |
 |---|---|---|
-| `Client/Scenes/LoginScene.cs` | 2562 | 登录/版本检查/重连/DatabaseVersion 提示 |
-| `Client/Scenes/SelectScene.cs` | ~1290 | 选角色（CharacterList :446、`CanStartGame/StartGameAttempted` 防重入 :446/:453-469） |
+| `Client/Scenes/LoginScene.cs` | 3508 | 登录/版本检查/重连/DatabaseVersion 提示 |
+| `Client/Scenes/SelectScene.cs` | 1874 | 选角色（CharacterList :446、`CanStartGame/StartGameAttempted` 防重入 :446/:453-469） |
 | `Client/Scenes/GameScene.cs` | 5051 | 游戏主场景（User/MapControl/全部窗口装配 :842-932 SetDefaultLocations，§11 坑 1） |
-| `Client/Scenes/GameScene.AutoPath.cs` | — | 自动寻路（A*） |
-| `Client/Scenes/Views/` | 44 文件 | 对话框 UI（见下） |
+| `Client/Scenes/GameScene.AutoPath.cs` | 145 | 自动寻路（A*） |
+| `Client/Scenes/Views/` | 47 文件 | 对话框 UI（含 Character/ 子目录 3 文件，完整清单见下） |
 
-### 7.3 Views/ 全清单（44 + Character/3 + AutoPath = 48 文件，≈42,000 行）
+### 7.3 Views/ 全清单（44 顶层 + Character/3 = 47 文件，实测 48,642 行）
 
-按文件名（行数为实测；★ = 关键大文件）：
+`wc -l` 逐文件实测（★ = Godot 移植最常对照的文件）：
 
-```
-AutoPathRouteControl 267   AutoPotionDialog 453   BeltDialog 160
-BigMapDialog 1361★        BuffDialog 552        BundleDialog 278
-CaptionDialog 168         CharacterDialog 3683★  ChatOptionsDialog 647
-ChatTab 804★              ChatTextBox 361★      CommunicationDialog 2005★
-CompanionDialog 1478      ConsignmentDialog 1600★ CurrencyDialog 598
-DungeonFinderDialog 750   EditCharacterDialog 852 ExitDialog 100
-FilterDropDialog 100      FishingDialog 745      FortuneCheckerDialog 566
-GameStoreDialog 1236      GroupDialog 1303       GuildDialog …
-GuildMessageDialog …（尾部清单以 `ls` 实测 44 为准，见下）
-```
+| 文件 | 行数 | 文件 | 行数 |
+|---|---|---|---|
+| NPCDialog ★ | **8498** | QuestDialog ★ | 2849 |
+| CharacterDialog ★ | 3683 | GuildDialog ★ | 3308 |
+| MapControl ★ | 1939 | RankingDialog | 1827 |
+| CommunicationDialog | 2005 | ConsignmentDialog | 1600 |
+| BigMapDialog | 1361 | GameStoreDialog | 1236 |
+| GroupDialog | 1303 | MagicDialog | 1064 |
+| MonsterDialog | 953 | EditCharacterDialog | 852 |
+| HelpDialog | 809 | NPCSocketCombineDialog | 801 |
+| ChatTab | 804 | MainPanel ★ | 820 |
+| NPCSocketDialog | 781 | MiniMapDialog | 787 |
+| InventoryDialog ★ | 736 | FishingDialog | 745 |
+| DungeonFinderDialog | 750 | MagicBarDialog | 473 |
+| CompanionDialog | 1478 | FortuneCheckerDialog | 566 |
+| CurrencyDialog | 597 | BuffDialog | 552 |
+| StorageDialog | 546 | ChatOptionsDialog | 647 |
+| AutoPotionDialog | 453 | HorseTameDialog | 435 |
+| LootBoxDialog | 430 | AutoPathRouteControl | 267 |
+| TradeDialog | 363 | ChatTextBox | 361 |
+| MenuDialog | 275 | BundleDialog | 278 |
+| QuestTrackerDialog | 292 | TimerDialog | 288 |
+| CaptionDialog | 167 | BeltDialog | 159 |
+| FilterDropDialog | 100 | ExitDialog | 148 |
+| Character/EquipEffectDecider | 96 | Character/FameEffectDecider | 81 |
+| Character/ItemEffectDecider | 79 | | |
+
+（表格双列排版；“文件”列均为 `Client/Scenes/Views/` 下同名 .cs）
 
 **要点**：
 
@@ -543,6 +610,41 @@ Front 层：每格
 | .Zl 加载/解码 | `RenderingCore/Library/MirLibrary.cs`（1885 行）：旧格式 v0/1 头 :54-105、ZL2 容器 `TryReadCompressedContainer` :107-153、`CreateImage` :224、`TryGetTexture` :252、`GetRenderTexture` :268、`Draw` :453 |
 | 帧元数据 | `RenderingCore/LibraryFormat/ZlImageMetadata.cs`（99 行）：宽高/偏移/影子/Overlay/codec/BC7 备用段 :20-40；version 0=Dxt1、1=Dxt5 归因 :50-53 |
 | 容器/编码 | `RenderingCore/LibraryFormat/ZlFormat.cs` |
+
+**哪个库装什么**（按 `Libraries.cs` LibraryList 实测归类，行号为字典条目处）：
+
+| 库 | 路径 | 内容 |
+|---|---|---|
+| Interface1c / Interface1cExtended / Interface | `Data\Interface1c.Zl` 等（:9-11） | 登录/选人/游戏主 UI 框架贴图 |
+| GameInter / GameInter2 | `Data\GameInter(2).Zl`（:12/:25） | 游戏内通用界面元素 |
+| Inventory | `Data\Inventory.Zl`（:22） | 背包/物品格图标 |
+| StoreItem | `Data\StoreItem.Zl`（:21） | 商城物品图标 |
+| Equip / EquipEffect_* | `Data\Equip.Zl` 等（:13-17） | 装备图标与特效 UI/部件/全身 |
+| Ground | `Data\Ground.Zl`（:23） | 地面掉落物 |
+| MiniMap / MiniMap2 / MiniMapIcon | `Data\MiniMap*.Zl`（:26-27/:31） | 小地图与小地图图标 |
+| M_Hum* / WM_Hum*（Ex1-13、A 系列、Cx） | `Data\M-Hum*.Zl` 等（:47-86） | 男/女角色全身动画帧（按发型/染色分库） |
+| M_Hair / WM_Hair(+A) | `Data\M-Hair.Zl`（:71-72/:88-89） | 头发覆盖层 |
+| M_Weapon1/2、M_Shield1/2 | :111-112 等 | 武器/盾牌覆盖动画 |
+| Horse* 系列 | `Data\Horse_*.Zl`（:107-109） | 坐骑与坐骑特效 |
+| Mon_1 … Mon_57 | `Data\Mon-N.Zl`（:238-299） | 全部怪物动画（编号→MonsterInfo.Image） |
+| Magic / MagicEx | `Data\Magic(Ex).Zl`（:301-302） | 技能特效帧 |
+| Tilesc/Tiles30c/Tiles5c/SmTilesc/Wallsc/… | `Data\Map Data\*.Zl`（:321-327） | 默认地形库组（KROrder 0-13） |
+| Wood_/Sand_/Snow_/Forest_ 组 | `Data\Map Data\<风格>\*.Zl`（:329-380） | 四套主题地形库组（KROrder 15-71） |
+| Sabak | `Data\Map Data\Sabak.Zl`（:382） | 沙巴克专用库（Zircon 自定义，KROrder 尾部） |
+
+**地形库 ↔ 地图文件绑定**：.map 文件每格存 `FrontFile/MiddleFile/BackFile` 字节 →
+经 `KROrder`（`Libraries.cs:385` 起，`[0]=Tilesc …`）翻译成 `LibraryFile` 枚举 →
+从 `CEnvir.LibraryList` 取库（`MapControl.cs:359/:362/:1499/:1521/:1535`）。
+`Tilesc`（0 号）为默认地表，未命中 KROrder 的索引走默认库。
+
+### 8.2b Sound 目录结构
+
+- 路径约定：`DXSoundManager.cs:12` `private const string SoundPath = @".\Sound\"`
+  ——相对进程工作目录（即 `Debug/Client/`），与 `Data/` 平级。
+- 目录实测：**扁平结构**，3172 个文件，数字编号（`1.wav/1.ogg …`）成对
+  （.wav 老格式 + .ogg 压缩版并存，DXSound 按 index 查找）。
+- 具名音乐：`Opening.wav/Main.wav/Ending.wav`（登录三曲，`DXSoundManager.cs:22-24`）、
+  `SelChr.wav`（选人 :25）。
 
 **易错点**：`LibraryCore` 中**不存在** `LibraryImage.cs`/`LibraryFile.cs` 类（grep
 双策略确认）；`LibraryFile` 是 `Libraries.cs` 里的枚举。先前交接文本
@@ -613,7 +715,32 @@ Front 层：每格
 | `BotRunner/` | `GodotClient` 单机模式 | 单机启动器拉起 BotRunner 当服务端 |
 | `Client/Scenes/Views/*.cs` | `GodotClient/UI/**` | 对话框逐一对位（见 §7.3 表） |
 
-### 10.2 已确认的移植行为差异源（详见 §11）
+
+### 10.2 移植判定方法论（怎么查「是否已移植」）
+
+**判定「是否已移植」必须按功能概念 grep，不能按旧类名搜**。旧 `NPCDialog.cs`
+（8498 行、22 个平级类）在新版被拆成多个文件，旧类名大多不存在；正确流程：
+
+1. 先在 `GodotClient/` 按功能关键词搜（如「修理」「回购」「寄售」的拼音/英文/
+   翻译键），再看 `GodotClient/Translations/` 是否有对应键；
+2. 对照表方法见 `docs/UI_INSPECT_WEAPONCRAFT_PORT_2026-08-13.md`（武器鉴定移植
+   时的旧版 → 新版逐项对照记录，可作模板）；
+3. 大规模 UI 移植进度参考 `Mir3-Research/docs/notes/21-UI全窗口按原版移植记录.md`；
+4. 原版 UI 逆向证据（截图/坐标/层级）在
+   `Mir3-Research/docs/research/ei-ui-layout/README.md`——**布局争议以它为准**。
+
+### 10.3 翻译体系对照
+
+- 原版：`CEnvir.Language`（`CEnvir.cs:73`）+ `LoadLanguage`（:98-108），757 键
+  三语言（English/Chinese/Japanese Messages + StringMessages）。
+  **两层不完整问题**：语言类之间存在键覆盖不全（某语言缺键回退不明确），加上
+  `Translation` 启用开关与语言选择两层叠加（§11 坑 4）。
+- Godot 侧集成研究与键表工具：`Mir3-Research/docs/notes/08-多语言机制与中文翻译的由来.md`
+  + `Mir3-Research/Tools/i18n/`（`i18n_gen_keys.py`/`i18n_apply_keys.py`/
+  `i18n_translate.py` 等脚本与 `translations/` 键表）。
+- 判定翻译是否已迁移：对比两侧键数与键名集合（i18n 脚本可自动 diff）。
+
+### 10.4 已确认的移植行为差异源（详见 §11）
 
 1. **布局**：原版 `SetDefaultLocations` 连环挂载（GameScene.cs:842-932）→ Godot
    HUD 分项叠加——**不是单一全局偏移**，逐窗口对照。
@@ -649,7 +776,7 @@ Front 层：每格
    黑底时打开；会忽略颜色键并以黑色替换**，逐处核对是黑底还是透明底。
 7. **.map 帧号 +1**（§8.1）：写 .map 工具必须存 UInt16+1、渲染时 -1；曾因
    「+1/-1 双重偏移」导致墙体缺口（2026-08-11 沙巴克移植事故，见
-   `Docs/Sabak_Map_Migration_Audit.md`）。校验工具不得复用生产解析逻辑（AGENTS.md
+   `docs/Sabak_Map_Migration_Audit_2026-08-11.md`）。校验工具不得复用生产解析逻辑（AGENTS.md
    强制规则 4）。
 8. **SharpDX 遗留陷阱**：`RenderingCore/Rendering/SharpDXD3D9|11/` 被
    `RenderingCore.csproj:17-18` 排除编译，`Client.csproj:52-53` 却仍引用 SharpDX
@@ -661,6 +788,11 @@ Front 层：每格
 
 **「别做什么」红线**：
 
+> 红线源头：AGENTS.md「不要触碰原版 `Client/` 源码（除非通过 `NoColourKey` 机制等
+> 明确手段）」——`Client/` 在本仓库的角色是**只读的行为权威**（§1.0）。
+
+- **不改 `Client/` 原版源码**（AGENTS.md 红线；仅 NoColourKey 等明确机制例外，见坑 6），
+  也不要把它当现役开发主线——新功能一律去 `GodotClient/`；
 - 不要改 `Server/` `ServerCore/` `ServerLibrary/`、`GodotClient/`（各自另文档/交接）；
 - 不要试图在 Linux 上完整构建 WinForms 客户端（依赖 WinForms + SharpDX + DevExpress，
   必然失败）；验证用 `dotnet build GodotClient/ZirconClient.csproj` 或 Godot 运行；
@@ -675,7 +807,7 @@ Front 层：每格
   怪物 AI/协议/玩法/基础设施——**移植任何功能前先查这里**）
 - `docs/codebase/protocol/packets-c2s.md`（153+7）、`packets-s2c.md`（216+7）——
   包计数与本文 §6 完全一致
-- `Docs/Sabak_Map_Migration_Audit.md`（+1 坑事故复盘）、`MAP_FORMAT_COMPARISON.md`
+- `docs/Sabak_Map_Migration_Audit_2026-08-11.md`（+1 坑事故复盘）、`MAP_FORMAT_COMPARISON.md`
   （.Zl vs NAS .wil 格式对比）、`MAGIC_FULL_AUDIT.md`、`MAGIC_GROUND_EFFECT_FIXES.md`
 - `docs/handoffs/`（本系列交接文档）
 
@@ -705,7 +837,7 @@ Front 层：每格
 3. **口径差异**：任务描述「DXManager」已不存在 → `RenderingPipelineManager.cs`;
    SharpDX 管线目录 csproj 排除；唯一同名类在 `Server/Views/MapViewer.cs:370`（GDI+）。
 
-### 20 处引用抽查（行号 ↔ 源码）
+### 30 处引用抽查（行号 ↔ 源码；含目标要求的随机 20 处 + v2 新增 10 处）
 
 | # | 引用 | 核验结果 |
 |---|---|---|
@@ -729,13 +861,26 @@ Front 层：每格
 | 18 | `RenderingCore.csproj:17-18` Compile Remove | ✔ SharpDXD3D9/11 两目录 |
 | 19 | `MapControl.cs:516-517` `ReadUInt16()+1` | ✔ :516/:517 帧号 +1 |
 | 20 | `MapControl.cs:1523/1537` 渲染 `-1` | ✔ :1523 MiddleImage-1、:1537 FrontImage-1 |
+| 21 | `TargetForm.cs:116-120` OnMouseClick→ActiveScene | ✔ :116 override、:120 转发 |
+| 22 | `MapControl.cs:750/767` 点击→`C.NPCCall` | ✔ :750 OnMouseClick、:767 Enqueue |
+| 23 | `Config.cs:8` `[ConfigPath(@".\Zircon.ini")]` | ✔ |
+| 24 | `Client.csproj:25` OutputPath | ✔ `..\..\Debug\Client\` |
+| 25 | `Libraries.cs:22` Inventory 映射 | ✔ `Data\Inventory.Zl` |
+| 26 | `Libraries.cs:238` Mon_1 映射 | ✔ `Data\Mon-1.Zl` |
+| 27 | `DXSoundManager.cs:12` SoundPath | ✔ `@".\Sound\"` |
+| 28 | `DXSoundManager.cs:22-25` 登录/选人音乐 | ✔ Opening/Main/Ending/SelChr.wav |
+| 29 | `README.md:26/55-57` 复用边界/构建 | ✔ Client=♻️部分参考；.NET10+WinForms/DirectX |
+| 30 | `LoginScene.cs` 行数 3508 / `SelectScene.cs` 1874 | ✔ `wc -l` 实测（旧版误记 2562/~1290，已更正） |
 
 ### 事实性备注
 
 - 端到端登录/渲染**未在本机跑通**（Linux 无 WinForms/SharpDX 运行环境，AGENTS.md
-  红线）；行号均为源码级 `grep`/`read` 核验，行为结论来自代码阅读与既有审计文档，
-  非运行取证。
+  红线）；行号均为源码级 `grep`/`read`/`wc` 核验，行为结论来自代码阅读与既有审计
+  文档，非运行取证。Windows 构建方式为**理论推导**（README + csproj），未验证。
 - 包计数 153/216/7 与 `docs/codebase/protocol/*.md` 一致（三方交叉：源码反射表 +
   zdocs + 本文）。
-- 20 处抽查全部通过；草稿期 2 处错误（`:164`→`:162`；「LibraryCore/MirLibrary.cs」
-  笔误 → 真实在 RenderingCore）已在本版修正并标注。
+- 30 处抽查全部通过。修订历史：v1 草稿 2 处错（`:164`→`:162`；
+  「LibraryCore/MirLibrary.cs」→ RenderingCore）；v2 复审更正 6 处
+  （LoginScene/SelectScene/Program/TargetForm/Config/AutoPath 行数、Views 合计
+  42,000→48,642、Sabak 审计路径 `Docs/`→`docs/…2026-08-11.md`、SharpDX 包行号
+  :49-50→:52-53、Encryption.SetKey :76-80→:89、ReturnToLogin :364-372→:363-371）。
