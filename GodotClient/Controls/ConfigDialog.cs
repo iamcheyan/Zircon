@@ -14,8 +14,11 @@ public partial class ConfigDialog : DXWindow
     private DXControl _content;
     private DXVScrollBar _scroll;
     private readonly DXButton[] _tabs;
+    private int _currentTab;
     private bool _allowObservable = true;
     private KeyBindDialog _keyBind;
+    private bool _dragging;
+    private Vector2 _dragOffset;
 
     public ConfigDialog()
     {
@@ -45,8 +48,53 @@ public partial class ConfigDialog : DXWindow
         SelectTab(0);
     }
 
+    public override void _GuiInput(InputEvent e)
+    {
+        // HasTitle=false 时 DXWindow 不支持拖拽；这里允许在标题栏区域
+        // （y < 37，即标签栏上方的装饰框区域）拖拽移动窗口。
+        if (e is InputEventMouseButton mb && mb.ButtonIndex == MouseButton.Left)
+        {
+            if (mb.Pressed && !_dragging)
+            {
+                // 排除关闭按钮区域（右上角）
+                var closeRect = new Rect2((int)Size.X - 30, 0, 30, 25);
+                if (mb.Position.Y < 37 && !closeRect.HasPoint(mb.Position))
+                {
+                    _dragging = true;
+                    _dragOffset = mb.Position;
+                    AcceptEvent();
+                    return;
+                }
+            }
+            else if (!mb.Pressed && _dragging)
+            {
+                _dragging = false;
+            }
+        }
+        else if (e is InputEventMouseMotion mm && _dragging)
+        {
+            Vector2 target = Position + mm.Relative;
+            Vector2 vp = GetViewport().GetVisibleRect().Size / GameScene.UiScale;
+            target.X = Mathf.Clamp(target.X, 0, Mathf.Max(0, vp.X - Size.X));
+            target.Y = Mathf.Clamp(target.Y, 0, Mathf.Max(0, vp.Y - Size.Y));
+            Position = target;
+            AcceptEvent();
+            return;
+        }
+        base._GuiInput(e);
+    }
+
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+        if (_dragging && !Input.IsMouseButtonPressed(MouseButton.Left))
+            _dragging = false;
+    }
+
     private void SelectTab(int tab)
     {
+        _currentTab = tab;
+        _scroll = null;
         foreach (var child in _page.GetChildren())
             if (child is Node node) node.Free();
         _content = new DXControl { Size = new Vector2I(348, 0), IsControl = false };
@@ -67,8 +115,9 @@ public partial class ConfigDialog : DXWindow
             _scroll.ValueChanged += (s, e) => _content.Location = new Vector2I(0, -_scroll.Value);
             _page.AddControl(_scroll);
         }
+        // 鼠标滚轮在内容区任意位置都能滚动（不只限于滚动条本身）
+        _page.MouseWheel += (s, e) => { if (_scroll != null) _scroll.DoMouseWheel(s, e); };
     }
-
     private ConfigCheckBox Check(string text, bool value, Action<bool> changed)
     {
         var check = new ConfigCheckBox(text) { Checked = value };
@@ -124,13 +173,9 @@ public partial class ConfigDialog : DXWindow
         }));
 
         var pipeline = new ConfigSelect();
-        pipeline.AddItem(ClientSettings.RenderingPipeline);
-        pipeline.SelectedChanged += (s, e) =>
-        {
-            ClientSettings.RenderingPipeline = pipeline.SelectedItem;
-            ClientSettings.Save();
-        };
-        display.AddSelect("渲染管线", pipeline);
+        pipeline.AddItem("Forward Plus");
+        pipeline.Enabled = false; // Godot 4 Forward Plus 是项目固定渲染器，无运行时切换。
+        display.AddSelect($"{Lang.CommonControlConfigWindowGraphicsTabRenderingPipelineLabel}（固定）", pipeline);
 
         var resolution = new ConfigSelect();
         // 档位 = 常用分辨率 + 当前窗口尺寸（去重排序），保证当前值总能匹配显示
@@ -139,7 +184,8 @@ public partial class ConfigDialog : DXWindow
         if (!resolutions.Contains(current)) resolutions.Add(current);
         foreach (var size in resolutions.OrderBy(r => r.X).ThenBy(r => r.Y))
             resolution.AddItem($"{size.X} x {size.Y}");
-        resolution.SelectItem($"{ClientSettings.GameSize.X} x {ClientSettings.GameSize.Y}");
+        // 当前窗口尺寸是实际生效值；GameSize 可能仍是启动参数/ini 的旧值。
+        resolution.SelectItem($"{current.X} x {current.Y}");
         resolution.SelectedChanged += (s, e) =>
         {
             string[] parts = resolution.SelectedItem.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -155,7 +201,9 @@ public partial class ConfigDialog : DXWindow
         for (int i = 0; i < monitorCount; i++)
         {
             Vector2I monitorSize = DisplayServer.GetName() == "headless" ? Vector2I.Zero : DisplayServer.ScreenGetSize(i);
-            monitor.AddItem(monitorSize == Vector2I.Zero ? $"显示器 {i + 1}" : $"显示器 {i + 1} ({monitorSize.X} x {monitorSize.Y})");
+            monitor.AddItem(monitorSize == Vector2I.Zero
+                ? $"显示器 {i + 1}"
+                : $"显示器 {i + 1}（物理 {monitorSize.X} x {monitorSize.Y}）");
         }
         monitor.SelectedIndex = Mathf.Clamp(ClientSettings.DefaultMonitor, 0, monitorCount - 1);
         monitor.SelectedChanged += (s, e) =>
@@ -207,8 +255,15 @@ public partial class ConfigDialog : DXWindow
         {
             ClientSettings.Language = language.SelectedIndex switch { 1 => "ENGLISH", 2 => "JAPANESE", _ => "CHINESE" };
             ClientSettings.Save();
-            Lang.Reload(); // UI 文本即时切换
+            Lang.Reload();
             GameScene.Game?.SendSelectLanguage(ClientSettings.Language);
+            // 重建当前页：建页时取 Lang 快照的文本（标签页标题、分区标题、选项标签）
+            // 不会随 Lang.Reload 自动刷新，必须重调 SelectTab 重建整个页面。
+            // 同时刷新标签页按钮文字。
+            string[] tabNames = { Lang.CommonControlConfigWindowGraphicsTabLabel, Lang.CommonControlConfigWindowSoundTabLabel, Lang.CommonControlConfigWindowGameTabLabel, Lang.CommonControlConfigWindowNetworkTabLabel, Lang.CommonControlConfigWindowUITabLabel };
+            for (int i = 0; i < _tabs.Length && i < tabNames.Length; i++)
+                _tabs[i].Text = tabNames[i];
+            SelectTab(_currentTab);
         };
         usability.AddSelect(Lang.CommonControlConfigWindowGraphicsTabLanguageLabel, language);
         AddSection(usability, Mathf.RoundToInt(display.Size.Y) + 4);

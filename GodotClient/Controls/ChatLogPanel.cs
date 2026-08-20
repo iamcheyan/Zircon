@@ -115,6 +115,15 @@ public partial class ChatLogPanel : Control
         _idleSeconds = 0;
         _textArea.Opacity = 1f;
         _messages.Add(new ChatMessage(text, type, ClientSettings.ChatForeColour(type), ClientSettings.ChatBackColour(type), linkedItems));
+        if (ClientSettings.LogChat)
+        {
+            using var file = FileAccess.Open("user://Chat Logs.txt", FileAccess.ModeFlags.WriteRead);
+            if (file != null)
+            {
+                file.SeekEnd();
+                file.StoreLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{type}] {text}");
+            }
+        }
         while (_messages.Count > MaxLines)
         {
             _messages.RemoveAt(0);

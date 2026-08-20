@@ -64,7 +64,7 @@ public partial class MapWeatherLayer : Node2D
 
     public override void _Process(double delta)
     {
-        if (!_enabled || _weather == Weather.None || _library == null) return;
+        if (!_enabled || !ClientSettings.DrawParticles || _weather == Weather.None || _library == null) return;
         double ms = delta * 1000.0;
         Vector2 size = LogicalViewport();
 
@@ -164,7 +164,7 @@ public partial class MapWeatherLayer : Node2D
 
     public override void _Draw()
     {
-        if (!_enabled || _library == null) return;
+        if (!_enabled || !ClientSettings.DrawParticles || _library == null) return;
         foreach (var p in _particles) DrawParticle(p);
     }
 

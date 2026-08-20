@@ -8,6 +8,7 @@ public static class ClientSettings
 {
     private const string FilePath = "user://Zircon.ini";
     private static bool _loaded;
+    private static bool _windowArgsApplied;
 
     public static bool DrawEffects { get; set; } = true;
     public static bool DrawParticles { get; set; } = true;
@@ -312,25 +313,29 @@ public static class ClientSettings
 
     /// <summary>将原版 Graphics 页的窗口选项映射到 Godot 当前窗口。</summary>
     public static void ApplyDisplaySettings()    {
-        // --window 强制窗口模式：覆盖 ini 的全屏/无边框设置。
-        // 分辨率缺省按主屏幕 75% 计算（保证 UiScale 在 1..2 区间内自动适配）。
+        // --window 只覆盖启动阶段的窗口模式和初始尺寸；之后设置页可以
+        // 通过 GameSize 真正调整窗口，不能每次 Apply 都重写用户刚选的尺寸。
         if (AutoLoginArgs.Window)
         {
             FullScreen = false;
             Borderless = false;
-            Vector2I size = AutoLoginArgs.WindowSize;
-            if (size.X > 0 && size.Y > 0)
+            if (!_windowArgsApplied)
             {
-                GameSize = size;
+                Vector2I size = AutoLoginArgs.WindowSize;
+                if (size.X > 0 && size.Y > 0)
+                {
+                    GameSize = size;
+                }
+                else if (DisplayServer.GetName() != "headless")
+                {
+                    Vector2I screen = DisplayServer.ScreenGetSize();
+                    GameSize = new Vector2I(
+                        Mathf.Clamp(screen.X * 3 / 4, 1024, 1920),
+                        Mathf.Clamp(screen.Y * 3 / 4, 768, 1080));
+                }
+                _windowArgsApplied = true;
+                GD.Print($"[Display] --window 初始尺寸: {GameSize.X}x{GameSize.Y}");
             }
-            else if (DisplayServer.GetName() != "headless")
-            {
-                Vector2I screen = DisplayServer.ScreenGetSize();
-                GameSize = new Vector2I(
-                    Mathf.Clamp(screen.X * 3 / 4, 1024, 1920),
-                    Mathf.Clamp(screen.Y * 3 / 4, 768, 1080));
-            }
-            GD.Print($"[Display] --window 强制窗口模式: {GameSize.X}x{GameSize.Y}");
         }
 
         if (DisplayServer.GetName() == "headless") return;

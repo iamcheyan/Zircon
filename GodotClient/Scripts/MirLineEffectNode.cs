@@ -82,7 +82,7 @@ public partial class MirLineEffectNode : Node2D
     public override void _Draw()
     {
         // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
-        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
+        if (!ClientSettings.DrawEffects || !ClientSettings.DrawParticles) return;
         if (_library == null || _points.Length < 2 || _startIndex < 0 || _startIndex >= _library.Images.Length) return;
         var image = _library.Images[_startIndex];
         // 旧版 MirLineEffect 使用 ImageType.Image，即使 Blend=true 也不能

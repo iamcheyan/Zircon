@@ -125,7 +125,12 @@ public sealed partial class ChatTextBox : DXWindow
         // _Input 在 Godot GUI 控件处理前触发。输入框已经获得焦点时，
         // 必须告诉 GameScene 停止快捷键分发，但不能把事件标记为已处理，
         // 这样后续 LineEdit 仍能接收到字母、数字和退格。
-        if (focused != null && (focused == _input || IsAncestorOf(focused))) return true;
+        if (ClientSettings.ShiftOpenChat && key.ShiftPressed && key.Keycode is >= Key.Key0 and <= Key.Key9)
+        {
+            OpenChat();
+            GetViewport()?.SetInputAsHandled();
+            return true;
+        }
 
         if (key.Keycode == Key.Space || key.Keycode == Key.Enter)
         {
