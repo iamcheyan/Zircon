@@ -165,9 +165,9 @@ public partial class MirEffectNode : Node2D
     {
         if (DrawType == EffectLayer.Object && _targetNode is PlayerRenderer)
         {
-            // MapControl draws the local player's target effects after the
-            // particle pass and after the player itself.
-            ZIndex = RenderOrder.LocalPlayerEffect;
+            // 持续 Buff/护盾围绕角色，但角色身体必须绘制在其上方；
+            // 否则魔法盾等帧的非透明像素会遮住腿部。
+            ZIndex = RenderOrder.PlayerBuffEffect;
             return;
         }
         // 目标已释放时按格子回退，不再读 _targetRenderYFn/_target（可能访问
@@ -234,7 +234,7 @@ public partial class MirEffectNode : Node2D
     public override void _Draw()
     {
         // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
-        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
+        if (!ClientSettings.DrawEffects || !ClientSettings.DrawParticles) return;
         // Keep the legacy NORMAL screen blend. The shader discards fully
         // transparent pixels before sampling SCREEN_TEXTURE, so it cannot
         // turn the sprite's transparent rectangle into an opaque square.

@@ -24,7 +24,15 @@ public partial class MapTestScene : Control
 {
     private Label _statusLabel;
     private string _dataPath = MirSkin.DataPath;
-    private string _mapPath = "/home/tetsuya/development/zircon/Debug/Client/Map/";
+    private string _mapPath = ResolveMapPath();
+
+    private static string ResolveMapPath()
+    {
+        string configured = System.Environment.GetEnvironmentVariable("ZIRCON_MAP_DATA");
+        if (!string.IsNullOrWhiteSpace(configured)) return configured;
+        string local = Path.GetFullPath(Path.Combine(MirSkin.DataPath, "..", "Map"));
+        return Directory.Exists(local) ? local : "/home/tetsuya/development/zircon/Debug/Client/Map/";
+    }
     private Dictionary<LibraryFile, ZlLibrary> _libCache = new();
     private bool _renderAudit;
     private bool _actionAudit;

@@ -66,11 +66,13 @@ public partial class MirProjectileNode : MirEffectNode
         // 用 IsInstanceValid 回退到目标格，避免 ObjectDisposedException。
         Vector2 originScreen = _cameraFnByCell(Origin.X, Origin.Y);
         Vector2 targetScreen = (_targetNode != null && IsInstanceValid(_targetNode))
-            // 与 MirEffectNode 一致：目标特效锚在对象节点（objectBaseline），
-            // 不还原到旧端格子原点帧，否则相对身体恒高 32px。
-            ? _targetNode.Position
+            // 原版 MirProjectile 读取 Target.CurrentLocation，而不是对象
+            // 的 baseline Position；对象 baseline 会比地图格原点低一个 CellHeight。
+            ? _targetNode is MapObjectNode targetObject
+                ? _cameraFnByCell(targetObject.CellX, targetObject.CellY)
+                : _targetNode.Position
             : (_target != null && IsInstanceValid(_target))
-                ? _target.Position
+                ? _cameraFnByCell(_target.CellX, _target.CellY)
                 : _cameraFnByCell(_targetCellX, _targetCellY);
         var origin = ToLegacyProjectilePoint(originScreen);
         var target = ToLegacyProjectilePoint(targetScreen);
@@ -181,7 +183,7 @@ public partial class MirProjectileNode : MirEffectNode
     public override void _Draw()
     {
         // 设置开关门控：关闭"显示特效/粒子"时不绘制（客户端特效唯一总闸）
-        if (!ClientSettings.DrawEffects && !ClientSettings.DrawParticles) return;
+        if (!ClientSettings.DrawEffects || !ClientSettings.DrawParticles) return;
         // Use the legacy screen blend; transparent pixels are discarded by
         // the shader before the screen-texture sample is written.
         Material = Blend ? BlendMaterial : null;
