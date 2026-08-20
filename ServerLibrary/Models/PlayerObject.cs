@@ -8414,73 +8414,82 @@ namespace Server.Models
             {
                 Link = p.Link
             };
-            Enqueue(result);
 
             if (Dead || !ParseLinks(p.Link))
+            {
+                Enqueue(result);
                 return;
-
+            }
 
             UserItem[] fromArray;
-
             switch (p.Link.GridType)
             {
                 case GridType.Inventory:
                     fromArray = Inventory;
                     break;
                 case GridType.CompanionInventory:
-                    if (Companion == null) return;
-
+                    if (Companion == null) { Enqueue(result); return; }
                     fromArray = Companion.Inventory;
                     break;
                 default:
+                    Enqueue(result);
                     return;
             }
 
-            if (p.Link.Slot < 0 || p.Link.Slot >= fromArray.Length) return;
+            if (p.Link.Slot < 0 || p.Link.Slot >= fromArray.Length)
+            {
+                Enqueue(result);
+                return;
+            }
 
             UserItem fromItem = fromArray[p.Link.Slot];
-
-            if (fromItem == null || p.Link.Count > fromItem.Count || !fromItem.Info.CanDrop || (fromItem.Flags & UserItemFlags.Locked) == UserItemFlags.Locked) return;
-
-            if ((fromItem.Flags & UserItemFlags.Marriage) == UserItemFlags.Marriage) return;
-            Cell cell = GetDropLocation(1, null);
-
-            if (cell == null) return;
-
-            result.Success = true;
-
-            UserItem dropItem;
-
-            if (p.Link.Count == fromItem.Count)
+            if (fromItem == null || p.Link.Count <= 0 || p.Link.Count > fromItem.Count
+                || !fromItem.Info.CanDrop
+                || (fromItem.Flags & (UserItemFlags.Locked | UserItemFlags.Marriage)) != 0)
             {
-                dropItem = fromItem;
+                Enqueue(result);
+                return;
+            }
+
+            Cell cell = GetDropLocation(1, null);
+            if (cell == null)
+            {
+                Enqueue(result);
+                return;
+            }
+
+            bool dropAll = p.Link.Count == fromItem.Count;
+            UserItem dropItem = dropAll ? fromItem : SEnvir.CreateFreshItem(fromItem);
+            dropItem.Count = p.Link.Count;
+            dropItem.SetTemporary(true);
+
+            ItemObject ob = new ItemObject { Item = dropItem };
+            if ((fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
+                ob.Account = Character.Account;
+
+            // 先生成地面物品，生成失败时不得先扣除背包物品。
+            if (!ob.Spawn(CurrentMap, cell.Location))
+            {
+                Enqueue(result);
+                return;
+            }
+
+            if (dropAll)
+            {
                 RemoveItem(fromItem);
                 fromArray[p.Link.Slot] = null;
-
                 result.Link.Count = 0;
             }
             else
             {
-                dropItem = SEnvir.CreateFreshItem(fromItem);
-                dropItem.Count = p.Link.Count;
                 fromItem.Count -= p.Link.Count;
-
                 result.Link.Count = fromItem.Count;
             }
 
             RefreshWeight();
             Companion?.RefreshWeight();
-            dropItem.SetTemporary(true);
-
-            ItemObject ob = new ItemObject
-            {
-                Item = dropItem,
-            };
-
-            if ((fromItem.Flags & UserItemFlags.Bound) == UserItemFlags.Bound)
-                ob.Account = Character.Account;
-
-            ob.Spawn(CurrentMap, cell.Location);
+            result.Success = true;
+            Enqueue(result);
         }
         public void CurrencyDrop(C.CurrencyDrop p)
         {
@@ -8596,8 +8605,7 @@ namespace Server.Models
                     {
                         if (x < 0) continue;
                         if (x >= CurrentMap.Width) break;
-
-                        Cell cell = CurrentMap.Cells[x, y]; //Direct Access we've checked the boudaries.
+                        Cell cell = CurrentMap.Cells[x, y];
 
                         if (cell?.Objects == null) continue;
 

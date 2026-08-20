@@ -672,7 +672,8 @@ public partial class GameScene : Control
     // 物品交互状态
     public double UseItemTime;          // 服务端 S.ItemUseDelay 给的下次可用时间 (绝对 ms)
     private double _pickUpNextMs;       // Tab 拾取节流 (250ms)
-    private DXLabel _mouseItemLabel;    // 拿起物品跟随鼠标的悬浮图标
+    private DXImageControl _mouseItemIcon;  // 拿起物品跟随鼠标的图标
+    private DXLabel _mouseItemLabel;    // 拿起物品跟随鼠标的文字
     private DXLabel _hoverLabel;        // 物品悬浮提示
     private ClientUserItem _hoverItem;
     private readonly System.Collections.Generic.Dictionary<uint, MirEffectNode> _itemGlows = new(); // 地面物品稀有度光效
@@ -1426,6 +1427,17 @@ public partial class GameScene : Control
         }
 
         // M9: 鼠标跟随物品图标 + 悬浮提示 (窗口层最顶)
+        // M9: 鼠标跟随物品图标 (原版拖物品时图标跟随鼠标)
+        _mouseItemIcon = new DXImageControl
+        {
+            FixedSize = true,
+            Size = new Vector2I(32, 32),
+            ZIndex = 501,
+            Visible = false,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+        };
+        _uiLayer.AddChild(_mouseItemIcon);
+
         _mouseItemLabel = new DXLabel
         {
             TextColour = Colors.White,
@@ -5472,11 +5484,21 @@ public partial class GameScene : Control
         var dragged = DXItemCell.SelectedCell?.Item;
         if (dragged != null)
         {
+            // 物品图标
+            if (_mouseItemIcon != null)
+            {
+                int drawIndex = DXItemCell.GetItemDrawIndex(dragged);
+                _mouseItemIcon.LibraryFile = DXItemCell.ItemIconLibraryFile;
+                _mouseItemIcon.Index = drawIndex;
+                _mouseItemIcon.Visible = true;
+            }
+            // 物品名称
             _mouseItemLabel.Visible = true;
             _mouseItemLabel.Text = $"{dragged.Info?.Local()}" + (dragged.Count > 1 ? $" x{dragged.Count}" : "");
         }
         else
         {
+            if (_mouseItemIcon != null) _mouseItemIcon.Visible = false;
             _mouseItemLabel.Visible = false;
         }
 
@@ -5491,10 +5513,13 @@ public partial class GameScene : Control
             _hoverLabel.Visible = false;
         }
 
-        if (_mouseItemLabel.Visible || _hoverLabel.Visible)
+        if (_mouseItemIcon?.Visible == true || _mouseItemLabel.Visible || _hoverLabel.Visible)
         {
             var p = GetGlobalMousePosition() / UiScale;
-            _mouseItemLabel.Position = new Vector2(p.X + 14, p.Y + 10);
+            // 图标在鼠标右下方，文字在图标右侧
+            if (_mouseItemIcon != null && _mouseItemIcon.Visible)
+                _mouseItemIcon.Position = new Vector2(p.X + 8, p.Y + 8);
+            _mouseItemLabel.Position = new Vector2(p.X + 42, p.Y + 14);
             _hoverLabel.Position = new Vector2(p.X + 14, p.Y + 10);
         }
     }
@@ -6489,6 +6514,7 @@ public partial class GameScene : Control
         _pickUpNextMs = now + 250.0;
         _net?.Connection?.SendPickUp();
     }
+
     public void SendGroupSwitch(bool allow)
         => _net.Connection.Enqueue(new C.GroupSwitch { Allow = allow });
     public void SendGroupInvite(string name)
@@ -8095,7 +8121,10 @@ public partial class GameScene : Control
             AudioServer.SetBusMute(0, true);
         else if (what == NotificationApplicationFocusIn)
         {
-            ClientSettings.ApplyAudioSettings(); // 重新按音量/静音设置计算（含 Master 解除）
+            // 失焦时静音的是 Master，总线恢复必须先解除 Master mute；
+            // ApplyAudioSettings 只重设五条分类子总线，不会自动解除 Master。
+            AudioServer.SetBusMute(0, false);
+            ClientSettings.ApplyAudioSettings();
         }
         base._Notification(what);
     }
@@ -9622,16 +9651,12 @@ public partial class GameScene : Control
     {
         // Keep remote players on the same camera-centred transform as map
         // objects, the local player, and the hidden mouse-picking proxy.
-        // PlayerRenderer's legacy helper omits MapView's viewport-centering
-        // offset, causing a visible player and its hit box to drift apart.
         player.Position = _mapView.CellToScreen(player.CellX, player.CellY, true)
             + new Vector2(player.OffsetX, player.OffsetY);
         player.ZIndex = RenderOrder.Object(player.RenderY);
 
         // The visible player uses PlayerRenderer, while mouse picking uses the
-        // hidden ObjectRenderer proxy in _objects. Keep both representations
-        // authoritative; otherwise a remote player is visible but cannot be
-        // selected or inspected after moving.
+        // hidden ObjectRenderer proxy in _objects.
         foreach (var pair in _otherPlayers)
         {
             if (pair.Value != player || !_objects.TryGetValue(pair.Key, out var proxy)) continue;
@@ -10181,8 +10206,13 @@ public partial class GameScene : Control
             return;
         }
 
+        var pickupObject = _combatController?.MouseObject;
+        bool mouseOnPlayerCell = _combatController?.MouseCell() == _playerLocation;
+        bool mouseOnNearbyItem = pickupObject?.Type == ObjectRenderer.Kind.Item
+            && Math.Max(Math.Abs(pickupObject.CellX - _playerLocation.X),
+                Math.Abs(pickupObject.CellY - _playerLocation.Y)) <= 1;
         if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left &&
-            _combatController?.MouseCell() == _playerLocation)
+            (mouseOnPlayerCell || mouseOnNearbyItem))
         {
             if (!CanSendMapPickup(_observer, _player?.Dead == true,
                     _playerPoison.HasFlag(PoisonType.Paralysis),
@@ -10192,9 +10222,8 @@ public partial class GameScene : Control
                 GetViewport().SetInputAsHandled();
                 return;
             }
-            // 旧版 MapControl：点击玩家当前逻辑格时无论该帧是否成功命中
-            // 掉落物都发送 PickUp；不能把“鼠标对象必须是 Item”作为前置，
-            // 否则脚下掉落物未被渲染/命中时就会变成普通移动。
+            // 点击玩家当前格或拾取范围内的地面物品都发送 PickUp；
+            // 物品精灵的可点击图像区域可能跨越逻辑格边界。
             _pendingNpcClickObjectId = _combatController.MouseObject?.Type == ObjectRenderer.Kind.NPC
                 ? _combatController.MouseObject.ObjectID
                 : 0;

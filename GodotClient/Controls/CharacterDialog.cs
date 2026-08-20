@@ -165,10 +165,10 @@ public partial class CharacterDialog : DXWindow
             IsControl = false,
         };
         AddControl(namePanel);
-        _characterNameLabel = CreateCharacterLabel(20, new Color(0.87f, 1f, 0.87f));
-        _guildNameLabel = CreateCharacterLabel(15, new Color(1f, 1f, 0.71f));
+        _characterNameLabel = CreateCharacterLabel(12, new Color(0.87f, 1f, 0.87f));
+        _guildNameLabel = CreateCharacterLabel(9, new Color(1f, 1f, 0.71f));
         _guildNameLabel.Location = new Vector2I(0, 18);
-        _guildRankLabel = CreateCharacterLabel(13, new Color(0.78f, 0.78f, 0.78f));
+        _guildRankLabel = CreateCharacterLabel(8, new Color(0.78f, 0.78f, 0.78f));
         _guildRankLabel.Location = new Vector2I(0, 34);
         namePanel.AddControl(_characterNameLabel);
         namePanel.AddControl(_guildNameLabel);

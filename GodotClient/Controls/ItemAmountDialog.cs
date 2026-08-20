@@ -35,6 +35,7 @@ public sealed partial class ItemAmountDialog : DXWindow
     {
         Text = Lang.ItemAmountSelectLabel;
         HasFooter = true;
+        BackColour = new Color(0.035f, 0.022f, 0.012f, 1f);
         _confirm = confirm;
         // 原版 DXItemAmountWindow 的客户区为 200x46；这里保留物品格和数量
         // 控件的原始相对关系，窗口总尺寸按标题/底栏框架计算。
@@ -78,6 +79,15 @@ public sealed partial class ItemAmountDialog : DXWindow
         // 原版构造末尾 AmountBox.Value = 1 触发 ValueChanged：边框绿、货币
         // 预览数量立即同步为输入值。
         UpdateAmount(Amount.ToString());
+    }
+
+    public override void _Ready()
+    {
+        base._Ready();
+        Vector2 logicalViewport = GetViewportRect().Size / GameScene.UiScale;
+        Position = new Vector2(
+            Mathf.Max(0f, (logicalViewport.X - Size.X) / 2f),
+            Mathf.Max(0f, (logicalViewport.Y - Size.Y) / 2f));
     }
 
     private void Confirm()

@@ -219,6 +219,9 @@ public partial class DXItemCell : DXControl
 
     protected override void DrawControl()
     {
+        // 装备栏的武器/衣服/头盔/盾牌由 PaperDoll 绘制；
+        // 格子仍保留鼠标命中区域用于卸下，但不重复绘制背包图标。
+        if (Hidden) return;
         // 装备槽: 空槽图由面板画 (BeforeDraw), 有物品时这里画图标
         var item = Item;
         // 原版 DXItemCell.LootBoxLocked：未揭示的宝箱格不显示普通物品图标，
@@ -422,6 +425,23 @@ public partial class DXItemCell : DXControl
         var image = currency.Images.OrderByDescending(x => x.Amount).FirstOrDefault(x => x.Amount <= count);
         return image?.Image ?? currency.DropItem.Image;
     }
+
+    /// <summary>计算物品在图库中的绘制索引（供鼠标跟随图标等外部使用）。</summary>
+    public static int GetItemDrawIndex(ClientUserItem item)
+    {
+        ItemInfo info = item.Info;
+        if (IsCurrencyItem(info))
+            return CurrencyImage(info, item.Count);
+        if (info.ItemEffect == ItemEffect.ItemPart && item.AddedStats != null && item.AddedStats[Stat.ItemIndex] > 0)
+        {
+            var partInfo = Globals.ItemInfoList?.Binding.FirstOrDefault(x => x.Index == item.AddedStats[Stat.ItemIndex]);
+            if (partInfo != null) return partInfo.Image;
+        }
+        return info.Image;
+    }
+
+    /// <summary>物品图标使用的图库文件（与 DXItemCell.ItemLibraryFile 一致）。</summary>
+    public static LibraryFile ItemIconLibraryFile => LibraryFile.StoreItem;
 
     // ---- 交互 ----
 
