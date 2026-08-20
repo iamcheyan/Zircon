@@ -57,8 +57,7 @@ public partial class SinglePlayerLauncher : Node
         GD.Print("[Single] 未检测到服务端，启动单机模式：拉起本地 ServerCore ...");
         try
         {
-            string root = Path.GetFullPath(Path.Combine(
-                ProjectSettings.GlobalizePath("res://"), "..", "Debug", "ServerCore"));
+            string root = ResolveServerRoot();
             string dll = Path.Combine(root, "ServerCore.dll");
             if (!File.Exists(dll))
             {
@@ -92,7 +91,7 @@ public partial class SinglePlayerLauncher : Node
             _spawnedServer.BeginErrorReadLine();
 
             // 服务端就绪后拉起机器人玩家（BotRunner，自动注册 bot01..botN 进城巡逻聊天）
-            _ = StartBotsAsync(root);
+            _ = StartBotsAsync(root, host, port);
         }
         catch (Exception ex)
         {
@@ -105,7 +104,7 @@ public partial class SinglePlayerLauncher : Node
     /// 服务端端口就绪后拉起 BotRunner（机器人玩家）。找不到 dll/配置则静默跳过，
     /// 不影响单机主流程。机器人数量由 BotRunner.single.json 的 MaxBots 控制（默认 5）。
     /// </summary>
-    private async System.Threading.Tasks.Task StartBotsAsync(string serverRoot)
+    private async System.Threading.Tasks.Task StartBotsAsync(string serverRoot, string host, int port)
     {
         try
         {
@@ -113,7 +112,7 @@ public partial class SinglePlayerLauncher : Node
             var deadline = System.Environment.TickCount64 + 12000;
             while (System.Environment.TickCount64 < deadline)
             {
-                if (IsPortOpen("127.0.0.1", 7000)) break;
+                if (IsPortOpen(host, port)) break;
                 if (_spawnedServer is { HasExited: true }) return;
                 await System.Threading.Tasks.Task.Delay(300);
             }
@@ -210,5 +209,34 @@ public partial class SinglePlayerLauncher : Node
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// 定位本地 ServerCore 运行目录。按环境变量、项目相对路径与工作目录候选依次探测。
+    /// </summary>
+    private static string ResolveServerRoot()
+    {
+        string configured = System.Environment.GetEnvironmentVariable("ZIRCON_SERVER_DIR");
+        if (!string.IsNullOrWhiteSpace(configured) && Directory.Exists(configured)
+            && File.Exists(Path.Combine(configured, "ServerCore.dll")))
+            return configured;
+
+        string resBase = ProjectSettings.GlobalizePath("res://");
+        string[] candidates =
+        {
+            Path.GetFullPath(Path.Combine(resBase, "..", "Debug", "ServerCore")),
+            Path.GetFullPath(Path.Combine(resBase, "..", "..", "Debug", "ServerCore")),
+            Path.GetFullPath("Debug/ServerCore"),
+            Path.GetFullPath("../Debug/ServerCore"),
+            Path.GetFullPath("../../Debug/ServerCore"),
+        };
+
+        foreach (var dir in candidates)
+        {
+            if (File.Exists(Path.Combine(dir, "ServerCore.dll")))
+                return dir;
+        }
+
+        return candidates[0];
     }
 }

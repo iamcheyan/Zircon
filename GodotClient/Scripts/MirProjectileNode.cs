@@ -66,11 +66,13 @@ public partial class MirProjectileNode : MirEffectNode
         // 用 IsInstanceValid 回退到目标格，避免 ObjectDisposedException。
         Vector2 originScreen = _cameraFnByCell(Origin.X, Origin.Y);
         Vector2 targetScreen = (_targetNode != null && IsInstanceValid(_targetNode))
-            // 原版 MirProjectile 读取 Target.CurrentLocation，而不是对象
-            // 的 baseline Position；对象 baseline 会比地图格原点低一个 CellHeight。
+            // 原版 MirProjectile 读取 Target.CurrentLocation（地图格），
+            // 不是对象 baseline Position。对所有目标类型统一使用地图格坐标。
             ? _targetNode is MapObjectNode targetObject
                 ? _cameraFnByCell(targetObject.CellX, targetObject.CellY)
-                : _targetNode.Position
+                : _targetNode is PlayerRenderer player
+                    ? _cameraFnByCell(player.CellX, player.CellY)
+                    : _targetNode.Position
             : (_target != null && IsInstanceValid(_target))
                 ? _cameraFnByCell(_target.CellX, _target.CellY)
                 : _cameraFnByCell(_targetCellX, _targetCellY);
@@ -119,11 +121,10 @@ public partial class MirProjectileNode : MirEffectNode
 
         if (DrawType == EffectLayer.Object)
         {
-            int renderY = (int)MathF.Round(Mathf.Lerp(Origin.Y, CurrentRenderY, (float)t));
-            // Keep projectiles in the same per-row slot as MirEffectNode.
-            // The old 100 + y value is not compatible with the compact
-            // terrain/object ordering and lets terrain rows cover the sprite.
-            ZIndex = RenderOrder.ObjectEffect(renderY);
+            // 原版 MapControl.DrawObjects: 投射物整段飞行固定在目标行深度
+            // (Target.RenderY 或 MapTarget.Y)，不从起点行插值。
+            // 插值会导致火球生成时与施法者身体同层，视觉上像从身体内部飞出。
+            ZIndex = RenderOrder.ObjectEffect(CurrentRenderY);
         }
         else
         {

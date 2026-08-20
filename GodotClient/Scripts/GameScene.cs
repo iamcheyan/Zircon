@@ -3946,9 +3946,10 @@ public partial class GameScene : Control
     private void SpawnProjectile(MagicEffectTable.CastEffect def, int fromX, int fromY, int toX, int toY, double additionalStartDelay = 0)
     {
         var proj = def.Projectile;
-        // 地面格弹道优先用 MapImpact；未显式声明时回退到 Impact，
-        // 保证无目标实体的地面落点弹道也能正常播放着弹特效。
-        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact ?? def.Impact, additionalStartDelay);
+        // 原版地面落点弹道无 CompleteAction（MirProjectile 不设 CompleteAction），
+        // 投射物飞出屏幕后才消失。只在 MapImpact 显式非空时才设着弹回调，
+        // 不能用 Impact 回退——否则地面弹道会在落点停下并播放本不该有的爆炸。
+        SpawnProjectileDefinition(proj, fromX, fromY, toX, toY, def.MapImpact, additionalStartDelay);
     }
 
     private void SpawnProjectileDefinition(MagicEffectTable.ProjectileDef proj, int fromX, int fromY, int toX, int toY, MagicEffectTable.ImpactDef impact, double additionalStartDelay = 0, bool blend = true, int delay = 0)

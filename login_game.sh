@@ -6,11 +6,19 @@
 #   bash login_game.sh all    # 连服务器一起杀并重启（服务器代码有更新时用）
 set -euo pipefail
 
-ROOT="/home/tetsuya/development/Zircon"
-SERVER_DIR="$ROOT/Debug/ServerCore"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SERVER_DIR="$ROOT/../Debug/ServerCore"
+[ -d "$SERVER_DIR" ] || SERVER_DIR="$ROOT/Debug/ServerCore"
 SERVER_LOG="/tmp/servercore_login.log"
 
-KILL_ALL=0
+# 端口配置：macOS ControlCenter 占 7000 时自动使用 7001
+PORT=7000
+if [ -f "$SERVER_DIR/Server.ini" ]; then
+    INI_PORT=$(grep -E '^[[:space:]]*Port[[:space:]]*=' "$SERVER_DIR/Server.ini" | head -n1 | cut -d'=' -f2 | tr -d '\r\n[:space:]')
+    if [ -n "$INI_PORT" ]; then PORT="$INI_PORT"; fi
+elif [ "$(uname)" = "Darwin" ]; then
+    PORT=7001
+fi
 if [ "${1:-}" = "all" ]; then
     KILL_ALL=1
 fi
@@ -101,27 +109,26 @@ echo "[3/4] 启动服务器..."
 
 # 默认模式: 服务器已在跑则跳过; all 模式: 总是重启
 PORT_OPEN=0
-if ss -H -ltn 2>/dev/null | awk '$4 ~ /:7000$/ { found=1 } END { exit(found ? 0 : 1) }'; then
+if nc -z 127.0.0.1 "$PORT" 2>/dev/null; then
     PORT_OPEN=1
 fi
-
 if [ "$KILL_ALL" = "0" ] && [ "$PORT_OPEN" = "1" ]; then
-    echo "  服务器已在运行 (端口 7000 监听中)，跳过启动"
+    echo "  服务器已在运行 (端口 $PORT 监听中)，跳过启动"
 else
     cd "$SERVER_DIR"
     nohup dotnet ServerCore.dll > "$SERVER_LOG" 2>&1 &
     SERVER_PID=$!
     echo "  服务器 PID: $SERVER_PID"
 
-    # 等待服务器就绪（端口 7000 可连接）
-    echo "  等待服务器就绪..."
+    # 等待服务器就绪
+    echo "  等待服务器就绪 (端口 $PORT)..."
     for i in $(seq 1 30); do
-        if ss -H -ltn 2>/dev/null | awk '$4 ~ /:7000$/ { found=1 } END { exit(found ? 0 : 1) }'; then
-            echo "  ✓ 服务器已就绪 (端口 7000 监听中)"
+        if nc -z 127.0.0.1 "$PORT" 2>/dev/null; then
+            echo "  ✓ 服务器已就绪 (端口 $PORT 监听中)"
             break
         fi
         sleep 1
-        if [ $i -eq 30 ]; then
+        if [ "$i" -eq 30 ]; then
             echo "  ⚠️ 服务器 30 秒未就绪，查看日志:"
             tail -20 "$SERVER_LOG"
             exit 1
@@ -131,9 +138,8 @@ fi
 
 # ---------- 4. 启动客户端 ----------
 echo ""
-echo "[4/4] 启动客户端登录..."
-godot-mono --path /home/tetsuya/development/Zircon/GodotClient -- --user test@test.com --pass test123 --char TestHero --window
-
+echo "[4/4] 启动客户端登录 (端口 $PORT)..."
+godot-mono --path "$ROOT/GodotClient" -- --server 127.0.0.1 --port "$PORT" --user test@test.com --pass test123 --char TestHero --window
 echo ""
 echo "══════════════════════════════════════"
 echo "  游戏已启动"
